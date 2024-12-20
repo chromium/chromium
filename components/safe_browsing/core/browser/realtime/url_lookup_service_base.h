@@ -21,6 +21,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -108,14 +109,16 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& url,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   // Similar to the function StartLookup above,
   // but to send Protego sampled request specifically.
   virtual void SendSampledRequest(
       const GURL& url,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   // Helper function to return a weak pointer.
   base::WeakPtr<RealTimeUrlLookupServiceBase> GetWeakPtr();
@@ -183,7 +186,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       bool is_sampled_report,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   bool shutting_down() const { return shutting_down_; }
 
@@ -247,7 +251,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       const GURL& url,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) = 0;
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) = 0;
 
   // Called when the response from the server is unauthorized, so child classes
   // can add extra handling when this happens.
@@ -320,9 +325,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Fills in fields in |RTLookupRequest|.  |url| is expected to be already
   // sanitized.
-  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url,
-                                                    bool is_sampled_report,
-                                                    SessionID tab_id);
+  std::unique_ptr<RTLookupRequest> FillRequestProto(
+      const GURL& url,
+      bool is_sampled_report,
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   // Logs |request| and |oauth_token| on any open
   // chrome://safe-browsing pages. Returns a token that can be passed

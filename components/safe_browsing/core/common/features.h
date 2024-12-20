@@ -25,6 +25,11 @@ namespace safe_browsing {
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables adding an Android app referrer to Protego pings.
+BASE_DECLARE_FEATURE(kAddReferringAppInfoToProtegoPings);
+#endif
+
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 

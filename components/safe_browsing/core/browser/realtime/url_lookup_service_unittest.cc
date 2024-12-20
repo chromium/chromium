@@ -191,7 +191,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url,
                                                     bool is_sampled_report) {
     return rt_service_->FillRequestProto(url, is_sampled_report,
-                                         SessionID::InvalidValue());
+                                         SessionID::InvalidValue(),
+                                         /*referring_app_info=*/std::nullopt);
   }
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
       const GURL& url) {
@@ -353,7 +354,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
                                        /* is_cached_response */ false, _));
     rt_service()->StartLookup(url, response_callback.Get(),
                               base::SequencedTaskRunner::GetCurrentDefault(),
-                              SessionID::InvalidValue());
+                              SessionID::InvalidValue(),
+                              /*referring_app_info=*/std::nullopt);
     task_environment_.RunUntilIdle();
   }
 
@@ -524,12 +526,14 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_PendingRequestForSameUrl) {
   base::MockCallback<RTLookupResponseCallback> response_callback_1;
   rt_service()->StartLookup(url, response_callback_1.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   base::MockCallback<RTLookupResponseCallback> response_callback_2;
   rt_service()->StartLookup(url, response_callback_2.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   // Expect both callbacks to be invoked.
   EXPECT_CALL(response_callback_1, Run(/* is_rt_lookup_successful */ true,
@@ -565,7 +569,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   base::MockCallback<RTLookupResponseCallback> response_callback;
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ true, _));
@@ -595,9 +600,9 @@ TEST_F(RealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   FulfillAccessTokenRequest("access_token_string");
   task_environment_.RunUntilIdle();
@@ -625,9 +630,9 @@ TEST_F(
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 
@@ -650,9 +655,9 @@ TEST_F(
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
   task_environment_.RunUntilIdle();
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 
@@ -676,9 +681,9 @@ TEST_F(
                                RTLookupResponse::ThreatInfo::COVERING_MATCH);
   task_environment_.RunUntilIdle();
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 
@@ -700,9 +705,9 @@ TEST_F(
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   FulfillAccessTokenRequest("access_token_string");
   task_environment_.RunUntilIdle();
@@ -725,9 +730,9 @@ TEST_F(
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
 
-  rt_service()->StartLookup(url, base::DoNothing(),
-                            base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+  rt_service()->StartLookup(
+      url, base::DoNothing(), base::SequencedTaskRunner::GetCurrentDefault(),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   FulfillAccessTokenRequest("access_token_string");
   task_environment_.RunUntilIdle();
@@ -773,7 +778,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
   FulfillAccessTokenRequest("access_token_string");
@@ -822,7 +828,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   EXPECT_TRUE(raw_token_fetcher()->WasStartCalled());
   // Token fetcher returns empty string when the token is unavailable.
@@ -859,7 +866,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 
@@ -886,7 +894,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   FulfillAccessTokenRequest("invalid_token_string");
   EXPECT_CALL(*raw_token_fetcher(),
@@ -908,7 +917,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   FulfillAccessTokenRequest("invalid_token_string");
   EXPECT_CALL(*raw_token_fetcher(), OnInvalidAccessToken(_)).Times(0);
@@ -968,7 +978,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
@@ -1049,7 +1060,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
@@ -1127,7 +1139,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
@@ -1213,7 +1226,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
@@ -1299,7 +1313,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
@@ -1361,7 +1376,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
 
@@ -1405,7 +1421,8 @@ TEST_F(
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(request_validated);
 }
@@ -1425,7 +1442,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestShutdown_CallbackNotPostedOnShutdown) {
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   rt_service()->Shutdown();
 
@@ -1467,7 +1485,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   rt_service()->Shutdown();
 
@@ -1493,7 +1512,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestSendSampledRequest) {
 
   rt_service()->SendSampledRequest(
       url, base::SequencedTaskRunner::GetCurrentDefault(),
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
   rt_service()->Shutdown();
 
   task_environment_.RunUntilIdle();
@@ -1514,10 +1533,10 @@ TEST_F(RealTimeUrlLookupServiceTest, TestConcurrentSendSampledRequests) {
   // Send two sampled requests.
   rt_service()->SendSampledRequest(
       url, base::SequencedTaskRunner::GetCurrentDefault(),
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
   rt_service()->SendSampledRequest(
       url, base::SequencedTaskRunner::GetCurrentDefault(),
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
   rt_service()->Shutdown();
 
   task_environment_.RunUntilIdle();
@@ -1549,7 +1568,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeSet) {
                                        /* is_cached_response */ false, _));
     rt_service()->StartLookup(url, response_callback.Get(),
                               base::SequencedTaskRunner::GetCurrentDefault(),
-                              SessionID::InvalidValue());
+                              SessionID::InvalidValue(),
+                              /*referring_app_info=*/std::nullopt);
     task_environment_.RunUntilIdle();
   };
   auto perform_failing_lookup = [perform_lookup]() { perform_lookup(true); };
@@ -1600,7 +1620,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeSet_UnparseableResponse) {
                                        /* is_cached_response */ false, _));
     rt_service()->StartLookup(url, response_callback.Get(),
                               base::SequencedTaskRunner::GetCurrentDefault(),
-                              SessionID::InvalidValue());
+                              SessionID::InvalidValue(),
+                              /*referring_app_info=*/std::nullopt);
     task_environment_.RunUntilIdle();
   };
 
@@ -1641,7 +1662,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeRespected_Cached) {
   test_url_loader_factory_.SetInterceptor(request_callback.Get());
   rt_service()->StartLookup(cached_url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 }
@@ -1667,7 +1689,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestBackoffModeRespected_NotCached) {
   test_url_loader_factory_.SetInterceptor(request_callback.Get());
   rt_service()->StartLookup(url, response_callback.Get(),
                             base::SequencedTaskRunner::GetCurrentDefault(),
-                            SessionID::InvalidValue());
+                            SessionID::InvalidValue(),
+                            /*referring_app_info=*/std::nullopt);
 
   task_environment_.RunUntilIdle();
 }
@@ -1688,7 +1711,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestRetriableErrors) {
                                        /* is_cached_response */ false, _));
     rt_service()->StartLookup(url, response_callback.Get(),
                               base::SequencedTaskRunner::GetCurrentDefault(),
-                              SessionID::InvalidValue());
+                              SessionID::InvalidValue(),
+                              /*referring_app_info=*/std::nullopt);
     task_environment_.RunUntilIdle();
   };
 

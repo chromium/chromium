@@ -439,7 +439,9 @@ class FakeRealTimeUrlLookupService
       const GURL& url,
       safe_browsing::RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override {
+      SessionID session_id,
+      std::optional<safe_browsing::internal::ReferringAppInfo>
+          referring_app_info) override {
     auto response = std::make_unique<safe_browsing::RTLookupResponse>();
     safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
         response->add_threat_info();

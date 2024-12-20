@@ -200,7 +200,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -246,7 +246,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,
       hash_real_time_selection,
       /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
@@ -277,7 +277,7 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
       /*hash_realtime_selection=*/
       safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone,
       /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
-      SessionID::InvalidValue());
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 }
 
 // Checks if async check should be created.

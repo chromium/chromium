@@ -83,11 +83,12 @@ void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   token_fetcher_->Start(base::BindOnce(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
       url, std::move(response_callback), std::move(callback_task_runner),
-      base::TimeTicks::Now(), tab_id));
+      base::TimeTicks::Now(), tab_id, std::move(referring_app_info)));
 }
 
 void RealTimeUrlLookupService::OnGetAccessToken(
@@ -96,6 +97,7 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
     SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
     const std::string& access_token) {
   if (shutting_down()) {
     return;
@@ -107,7 +109,8 @@ void RealTimeUrlLookupService::OnGetAccessToken(
                             !access_token.empty());
   MaybeSendRequest(url, access_token, std::move(response_callback),
                    std::move(callback_task_runner),
-                   /* is_sampled_report */ false, tab_id);
+                   /* is_sampled_report */ false, tab_id,
+                   std::move(referring_app_info));
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(

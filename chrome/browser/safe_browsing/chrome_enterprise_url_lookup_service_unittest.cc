@@ -261,9 +261,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   base::MockCallback<network::TestURLLoaderFactory::Interceptor>
       request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, response_callback.Get(),
-                                       content::GetIOThreadTaskRunner({}),
-                                       SessionID::InvalidValue());
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   test_url_loader_factory_.SetInterceptor(request_callback.Get());
   EXPECT_CALL(request_callback, Run(_)).Times(0);
@@ -288,9 +288,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                       Return(ReferrerChainProvider::SUCCESS)));
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, response_callback.Get(),
-                                       content::GetIOThreadTaskRunner({}),
-                                       SessionID::InvalidValue());
+  enterprise_rt_service()->StartLookup(
+      url, response_callback.Get(), content::GetIOThreadTaskRunner({}),
+      SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));

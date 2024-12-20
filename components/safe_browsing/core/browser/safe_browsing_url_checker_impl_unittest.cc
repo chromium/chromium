@@ -246,7 +246,8 @@ class FakeRealTimeUrlLookupService
       const GURL& gurl,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info) override {
     using enum SBThreatType;
 
     std::string url = gurl.spec();
@@ -440,7 +441,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         hash_real_time_selection,
         /*is_async_check=*/false,
         optional_args.check_allowlist_before_hash_database,
-        SessionID::InvalidValue());
+        SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
   }
 
  protected:

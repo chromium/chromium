@@ -1966,6 +1966,12 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
     referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
   }
   request_dict.Set("referrer_chain", std::move(referrer_chain));
+#if BUILDFLAG(IS_ANDROID)
+  if (request.has_referring_app_info()) {
+    request_dict.Set("referring_app_info",
+                     SerializeReferringAppInfo(request.referring_app_info()));
+  }
+#endif
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);

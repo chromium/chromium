@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
       secure_embedded_test_server()->GetURL("/"),
       base::IgnoreArgs<bool, bool, std::unique_ptr<RTLookupResponse>>(
           run_loop.QuitClosure()),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      SessionID::InvalidValue());
+      base::SequencedTaskRunner::GetCurrentDefault(), SessionID::InvalidValue(),
+      /*referring_app_info=*/std::nullopt);
   run_loop.Run();
 
   EXPECT_TRUE(base::Contains(last_realtime_request().headers,
@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
       secure_embedded_test_server()->GetURL("/"),
       base::IgnoreArgs<bool, bool, std::unique_ptr<RTLookupResponse>>(
           run_loop.QuitClosure()),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      SessionID::InvalidValue());
+      base::SequencedTaskRunner::GetCurrentDefault(), SessionID::InvalidValue(),
+      /*referring_app_info=*/std::nullopt);
   run_loop.Run();
 
   EXPECT_FALSE(base::Contains(last_realtime_request().headers,
