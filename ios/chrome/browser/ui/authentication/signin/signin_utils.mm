@@ -370,9 +370,6 @@ void MultiProfileSignOut(Browser* browser,
                          bool force_snackbar_over_toolbar,
                          MDCSnackbarMessage* snackbar_message,
                          ProceduralBlock signout_completion) {
-  // TODO(crbug.com/375605174): Remove this check, and allow using this helper
-  // for the currents flows as well.
-  CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 

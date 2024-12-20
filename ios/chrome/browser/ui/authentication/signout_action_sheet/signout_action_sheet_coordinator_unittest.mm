@@ -17,7 +17,10 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -65,7 +68,17 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
+    SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state);
+
+    stub_browser_interface_provider_ =
+        [[StubBrowserProviderInterface alloc] init];
+    stub_browser_interface_provider_.mainBrowserProvider.browser =
+        browser_.get();
+    scene_state_mock_ = OCMPartialMock(scene_state);
+    OCMStub([scene_state_mock_ browserProviderInterface])
+        .andReturn(stub_browser_interface_provider_);
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
@@ -76,6 +89,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)scene_state_mock_);
     [signout_coordinator_ stop];
     signout_coordinator_ = nil;
     PlatformTest::TearDown();
@@ -119,6 +133,9 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SignoutActionSheetCoordinator* signout_coordinator_ = nullptr;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_ = nullptr;
+  // Partial mock for stubbing scene_state's methods
+  SceneState* scene_state_mock_;
+  StubBrowserProviderInterface* stub_browser_interface_provider_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> identity_ = nil;

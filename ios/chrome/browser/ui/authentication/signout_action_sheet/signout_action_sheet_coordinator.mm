@@ -591,41 +591,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     return;
   }
   [self preventUserInteraction];
-  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
   // Prepare the signout snackbar before account switching.
   // The snackbar message might be nil if the snackbar is not needed.
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
 
   __weak __typeof(self) weakSelf = self;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    signin::MultiProfileSignOut(self.browser, _signout_source_metric,
-                                forceClearData, _forceSnackbarOverToolbar,
-                                snackbarMessage, ^{
-                                  [weakSelf signOutDidFinish];
-                                });
-    return;
-  }
-
-  BOOL forceSnackbarOverToolbar = _forceSnackbarOverToolbar;
-  self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
-    // The snackbar should be displayed even if self has been deallocated.
-    if (forceSnackbarOverToolbar) {
-      [snackbarCommandsHandler
-          showSnackbarMessageOverBrowserToolbar:snackbarMessage];
-    } else {
-      [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
-                                      bottomOffset:0];
-    }
-    [weakSelf signOutDidFinish];
-  });
-  // Get UMA metrics on the usage of different options for signout available
-  // for users with non-managed accounts.
-  if (!self.authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin)) {
-    signin_metrics::RecordSignoutForceClearDataChoice(forceClearData);
-  }
-  signin_metrics::RecordSignoutUserAction(forceClearData);
+  signin::MultiProfileSignOut(self.browser, _signout_source_metric,
+                              forceClearData, _forceSnackbarOverToolbar,
+                              snackbarMessage, ^{
+                                [weakSelf signOutDidFinish];
+                              });
 }
 
 // Called when the sign-out is done.
