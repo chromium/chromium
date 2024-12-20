@@ -298,17 +298,11 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     return MakeFallbackImageBitmap(V8GPUCanvasAlphaMode::Enum::kOpaque);
   }
 
-  // NOTE: It is necessary to call this before calling
-  // PrepareTransferableResource(), as the latter moves the current swapbuffer
-  // into `release_callback`.
-  // TODO(crbug.com/353744937): Eliminate this code needing to prepare the
-  // TransferableResource altogether in favor of it happening further down the
-  // line via the ClientSI.
-  auto client_si = swap_buffers_->GetCurrentSharedImage();
-  viz::TransferableResource transferable_resource;
+  gpu::SyncToken sk_image_sync_token;
   viz::ReleaseCallback release_callback;
-  if (!swap_buffers_->PrepareTransferableResource(&transferable_resource,
-                                                  &release_callback)) {
+  auto client_si = swap_buffers_->ExportCurrentSharedImage(sk_image_sync_token,
+                                                           &release_callback);
+  if (!client_si) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.
     // The only situation in which this could happen is when two or more calls
     // to transferToImageBitmap are made back-to-back, or when the context gets
@@ -316,12 +310,6 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     return MakeFallbackImageBitmap(alpha_mode_);
   }
   DCHECK(release_callback);
-  CHECK(client_si);
-
-  // Use the sync token generated after producing the mailbox. Waiting for this
-  // before trying to use the mailbox with some other context will ensure it is
-  // valid.
-  const auto& sk_image_sync_token = transferable_resource.sync_token();
 
   auto sk_color_type = viz::ToClosestSkColorType(
       /*gpu_compositing=*/true, client_si->format());
