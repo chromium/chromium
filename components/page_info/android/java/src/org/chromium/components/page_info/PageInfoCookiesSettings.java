@@ -8,8 +8,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
-import android.text.style.ClickableSpan;
-import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -25,6 +23,7 @@ import org.chromium.components.browser_ui.site_settings.ForwardingManagedPrefere
 import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View showing a toggle and a description for third-party cookie blocking for a site. */
@@ -111,13 +110,12 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mIsModeBUi = params.isModeBUi;
         mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-        ClickableSpan linkSpan =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        mOnCookieSettingsLinkClicked.run();
-                    }
-                };
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
+                        getContext(),
+                        (view) -> {
+                            mOnCookieSettingsLinkClicked.run();
+                        });
 
         int summaryString;
         if (!mIsModeBUi) {
@@ -195,13 +193,12 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             mCookieSwitch.setVisible(false);
             mThirdPartyCookiesTitle.setVisible(false);
             findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
-            ClickableSpan linkSpan =
-                    new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnCookieSettingsLinkClicked.run();
-                        }
-                    };
+            ChromeClickableSpan linkSpan =
+                    new ChromeClickableSpan(
+                            getContext(),
+                            (view) -> {
+                                mOnCookieSettingsLinkClicked.run();
+                            });
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
                             getString(
@@ -236,13 +233,12 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         boolean permanentException = (expiration == 0);
 
-        ClickableSpan feedbackSpan =
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(View view) {
-                        mOnFeedbackClicked.onResult(getActivity());
-                    }
-                };
+        ChromeClickableSpan feedbackSpan =
+                new ChromeClickableSpan(
+                        getContext(),
+                        (view) -> {
+                            mOnFeedbackClicked.onResult(this.getActivity());
+                        });
 
         if (protectionsOn) {
             mThirdPartyCookiesTitle.setTitle(
