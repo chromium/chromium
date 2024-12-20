@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_MAIN_THREAD_OBSERVER_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_MAIN_THREAD_OBSERVER_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_OBSERVER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 
@@ -15,9 +15,9 @@ namespace performance_manager {
 
 // Interface to observe PerformanceManager events that happen on the main
 // thread. All methods are invoked on the main thread.
-class PerformanceManagerMainThreadObserver : public base::CheckedObserver {
+class PerformanceManagerObserver : public base::CheckedObserver {
  public:
-  ~PerformanceManagerMainThreadObserver() override = default;
+  ~PerformanceManagerObserver() override = default;
 
   // Invoked when a PageNode is created for |web_contents|. The PageNode can be
   // retrieved via PerformanceManager::GetPageNodeForWebContents(). The PageNode
@@ -30,24 +30,24 @@ class PerformanceManagerMainThreadObserver : public base::CheckedObserver {
   virtual void OnBeforePerformanceManagerDestroyed() = 0;
 
  protected:
-  PerformanceManagerMainThreadObserver() = default;
+  PerformanceManagerObserver() = default;
 };
 
 // A default implementation of the observer, with all methods stubbed out.
-class PerformanceManagerMainThreadObserverDefaultImpl
-    : public PerformanceManagerMainThreadObserver {
+class PerformanceManagerObserverDefaultImpl
+    : public PerformanceManagerObserver {
  public:
-  ~PerformanceManagerMainThreadObserverDefaultImpl() override = default;
+  ~PerformanceManagerObserverDefaultImpl() override = default;
 
-  // PerformanceManagerMainThreadObserver implementation:
+  // PerformanceManagerObserver implementation:
   void OnPageNodeCreatedForWebContents(
       content::WebContents* web_contents) override {}
   void OnBeforePerformanceManagerDestroyed() override {}
 
  protected:
-  PerformanceManagerMainThreadObserverDefaultImpl() = default;
+  PerformanceManagerObserverDefaultImpl() = default;
 };
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_MAIN_THREAD_OBSERVER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_PERFORMANCE_MANAGER_OBSERVER_H_

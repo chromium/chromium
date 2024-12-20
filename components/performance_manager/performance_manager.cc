@@ -164,14 +164,12 @@ base::WeakPtr<WorkerNode> PerformanceManager::GetWorkerNodeForToken(
 }
 
 // static
-void PerformanceManager::AddObserver(
-    PerformanceManagerMainThreadObserver* observer) {
+void PerformanceManager::AddObserver(PerformanceManagerObserver* observer) {
   PerformanceManagerRegistryImpl::GetInstance()->AddObserver(observer);
 }
 
 // static
-void PerformanceManager::RemoveObserver(
-    PerformanceManagerMainThreadObserver* observer) {
+void PerformanceManager::RemoveObserver(PerformanceManagerObserver* observer) {
   PerformanceManagerRegistryImpl::GetInstance()->RemoveObserver(observer);
 }
 

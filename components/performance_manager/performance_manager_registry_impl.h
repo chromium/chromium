@@ -31,7 +31,7 @@ class WebContents;
 
 namespace performance_manager {
 
-class PerformanceManagerMainThreadObserver;
+class PerformanceManagerObserver;
 class ServiceWorkerContextAdapterImpl;
 class WorkerNodeImpl;
 class WorkerWatcher;
@@ -55,8 +55,8 @@ class PerformanceManagerRegistryImpl
 
   // Adds / removes an observer that is notified when a PageNode is created on
   // the main thread. Forwarded to from the public PerformanceManager interface.
-  void AddObserver(PerformanceManagerMainThreadObserver* observer);
-  void RemoveObserver(PerformanceManagerMainThreadObserver* observer);
+  void AddObserver(PerformanceManagerObserver* observer);
+  void RemoveObserver(PerformanceManagerObserver* observer);
 
   // PerformanceManagerRegistry:
   Binders& GetBinders() override;
@@ -145,7 +145,7 @@ class PerformanceManagerRegistryImpl
   performance_manager::TabHelperFrameNodeSource frame_node_source_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::ObserverList<PerformanceManagerMainThreadObserver> observers_
+  base::ObserverList<PerformanceManagerObserver> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

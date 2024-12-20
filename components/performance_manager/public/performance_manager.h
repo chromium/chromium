@@ -30,7 +30,7 @@ class Graph;
 class GraphOwned;
 class PageNode;
 class ProcessNode;
-class PerformanceManagerMainThreadObserver;
+class PerformanceManagerObserver;
 class WorkerNode;
 
 // The performance manager is a rendezvous point for communicating with the
@@ -139,8 +139,8 @@ class PerformanceManager {
 
   // Adds / removes an observer that is notified of PerformanceManager events
   // that happen on the main thread. Can only be called on the main thread.
-  static void AddObserver(PerformanceManagerMainThreadObserver* observer);
-  static void RemoveObserver(PerformanceManagerMainThreadObserver* observer);
+  static void AddObserver(PerformanceManagerObserver* observer);
+  static void RemoveObserver(PerformanceManagerObserver* observer);
 
   // Returns the performance manager graph task runner. This is safe to call
   // from any thread at any time between the creation of the thread pool and its

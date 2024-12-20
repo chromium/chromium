@@ -13,7 +13,7 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "components/performance_manager/public/performance_manager_observer.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/service_worker_context_adapter.h"
 #include "components/performance_manager/worker_watcher.h"
@@ -56,13 +56,13 @@ PerformanceManagerRegistryImpl* PerformanceManagerRegistryImpl::GetInstance() {
 }
 
 void PerformanceManagerRegistryImpl::AddObserver(
-    PerformanceManagerMainThreadObserver* observer) {
+    PerformanceManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void PerformanceManagerRegistryImpl::RemoveObserver(
-    PerformanceManagerMainThreadObserver* observer) {
+    PerformanceManagerObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }

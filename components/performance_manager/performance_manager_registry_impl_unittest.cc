@@ -7,7 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "components/performance_manager/public/performance_manager_observer.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "components/performance_manager/test_support/test_browser_child_process.h"
@@ -22,7 +22,7 @@ namespace {
 using PerformanceManagerRegistryImplTest = PerformanceManagerTestHarness;
 using PerformanceManagerRegistryImplDeathTest = PerformanceManagerTestHarness;
 
-class LenientMockObserver : public PerformanceManagerMainThreadObserver {
+class LenientMockObserver : public PerformanceManagerObserver {
  public:
   LenientMockObserver() = default;
   ~LenientMockObserver() override = default;
