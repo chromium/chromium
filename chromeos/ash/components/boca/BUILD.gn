@@ -69,6 +69,8 @@ static_library("invalidations") {
 
 static_library("spotlight") {
   sources = [
+    "spotlight/register_screen_request.cc",
+    "spotlight/register_screen_request.h",
     "spotlight/view_screen_request.cc",
     "spotlight/view_screen_request.h",
   ]
@@ -92,6 +94,7 @@ source_set("unit_tests") {
     "invalidations/fcm_handler_unittest.cc",
     "invalidations/invalidation_service_impl_unittest.cc",
     "notifications/boca_notification_handler_unittest.cc",
+    "spotlight/register_screen_request_unittest.cc",
     "spotlight/view_screen_request_unittest.cc",
   ]
 

@@ -44,6 +44,9 @@ inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
 inline constexpr char kViewScreenUrlTemplate[] =
     "v1/sessions/$1/viewScreen:initiate";
 
+inline constexpr char kRegisterScreenUrlTemplate[] =
+    "v1/sessions/$1/viewScreen:register";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -93,6 +96,8 @@ inline constexpr char kStudent[] = "student";
 inline constexpr char kGroupSource[] = "groupSource";
 inline constexpr char kTeacherClientDevice[] = "teacherClientDevice";
 inline constexpr char kHostDevice[] = "hostDevice";
+inline constexpr char kSpotlightConnectionCode[] = "spotlightConnectionCode";
+inline constexpr char kSpotlightConnectionParam[] = "spotlightConnectionParam";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
