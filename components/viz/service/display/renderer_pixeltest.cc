@@ -105,17 +105,14 @@ void AllocateAndRegisterSharedBitmapMemory(
     scoped_refptr<RasterContextProvider> context_provider,
     const gfx::Size& size,
     scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    base::WritableSharedMemoryMapping& mapping,
     gpu::SyncToken& sync_token) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* shared_image_interface =
       context_provider->SharedImageInterface();
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+  shared_image = shared_image_interface->CreateSharedImageForSoftwareCompositor(
       {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
 
-  shared_image = std::move(shared_image_mapping.shared_image);
-  mapping = std::move(shared_image_mapping.mapping);
   sync_token = shared_image_interface->GenVerifiedSyncToken();
   CHECK(shared_image);
 }
@@ -314,10 +311,10 @@ void CreateTestTwoColoredTextureDrawQuad(
                           gfx::ColorSpace(), MakePixelSpan(pixels), origin);
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-    base::WritableSharedMemoryMapping mapping;
     gpu::SyncToken sync_token;
     AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, mapping, sync_token);
+                                          shared_image, sync_token);
+    auto mapping = shared_image->Map();
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
@@ -329,7 +326,10 @@ void CreateTestTwoColoredTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         std::move(transferable_resource), std::move(release_callback));
 
-    auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
+    base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
+
     base::ranges::copy(pixels, span.begin());
   }
 
@@ -381,10 +381,10 @@ void CreateTestTextureDrawQuad(
                           gfx::ColorSpace(), MakePixelSpan(pixels));
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-    base::WritableSharedMemoryMapping mapping;
     gpu::SyncToken sync_token;
     AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, mapping, sync_token);
+                                          shared_image, sync_token);
+    auto mapping = shared_image->Map();
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
@@ -395,7 +395,10 @@ void CreateTestTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         std::move(transferable_resource), std::move(release_callback));
 
-    auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
+    base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
+
     base::ranges::copy(pixels, span.begin());
   }
 
