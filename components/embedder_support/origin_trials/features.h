@@ -11,6 +11,8 @@ namespace embedder_support {
 
 // Sample field trial feature for testing alternative usage restriction in
 // origin trial third party tokens.
+//  - While not used in production code, the feature must be kept for tests in
+//    components/embedder_support/origin_trials/origin_trial_policy_impl_unittest.cc.
 BASE_DECLARE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
 
 }  // namespace embedder_support
