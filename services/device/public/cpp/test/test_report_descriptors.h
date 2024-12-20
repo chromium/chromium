@@ -67,6 +67,10 @@ class TestReportDescriptors {
 
   // The report descriptor for an RFIDeas pcProx badge reader.
   static base::span<const uint8_t> RfideasPcproxBadgeReader();
+
+  // A report descriptor with a vendor-defined top-level collection, one input
+  // report, and one output report.
+  static base::span<const uint8_t> VendorDefinedInputOutput();
 };
 
 }  // namespace device

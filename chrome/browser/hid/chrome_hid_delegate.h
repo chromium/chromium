@@ -60,6 +60,8 @@ class ChromeHidDelegate : public content::HidDelegate {
       const std::string& guid) override;
   bool IsFidoAllowedForOrigin(content::BrowserContext* browser_context,
                               const url::Origin& origin) override;
+  bool IsKnownSecurityKey(content::BrowserContext* browser_context,
+                          const device::mojom::HidDeviceInfo& device) override;
   bool IsServiceWorkerAllowedForOrigin(const url::Origin& origin) override;
   void IncrementConnectionCount(content::BrowserContext* browser_context,
                                 const url::Origin& origin) override;

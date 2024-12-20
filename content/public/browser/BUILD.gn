@@ -220,6 +220,7 @@ source_set("browser_sources") {
     "gpu_utils.h",
     "guest_page_holder.h",
     "hid_chooser.h",
+    "hid_delegate.cc",
     "hid_delegate.h",
     "histogram_fetcher.h",
     "host_zoom_map.h",
