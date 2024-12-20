@@ -100,8 +100,6 @@ static_library("crosapi") {
     "emoji_picker_ash.h",
     "extension_info_private_ash.cc",
     "extension_info_private_ash.h",
-    "eye_dropper_ash.cc",
-    "eye_dropper_ash.h",
     "file_change_service_bridge_ash.cc",
     "file_change_service_bridge_ash.h",
     "file_system_access_cloud_identifier_provider_ash.cc",
