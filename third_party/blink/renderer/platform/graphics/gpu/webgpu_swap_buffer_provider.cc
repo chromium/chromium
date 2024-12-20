@@ -325,7 +325,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
       shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
   out_resource->color_space = shared_image->color_space();
-  out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->hdr_metadata = GetHDRMetadata();
   out_resource->origin = shared_image->surface_origin();
 
   return true;

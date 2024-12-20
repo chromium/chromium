@@ -107,6 +107,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // Returns the SharedImage of the current swapbuffer.
   scoped_refptr<gpu::ClientSharedImage> GetCurrentSharedImage();
 
+  gfx::HDRMetadata GetHDRMetadata() { return hdr_metadata_; }
+
   // Exports the SharedImage of the current swapbuffer for external usage:
   // * Ends any ongoing WebGPU access on that SharedImage and populates
   //   `sync_token` with a token that the external access should wait on before
