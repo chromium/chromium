@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/tab_glic_container.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/display/screen.h"
@@ -26,6 +27,8 @@ namespace {
 // Default value for how close the corner of glic has to be from a browser's
 // glic button to snap.
 constexpr static int kSnapDistanceThreshold = 50;
+constexpr static int kUnsnapDistanceThreshold = kSnapDistanceThreshold + 10;
+
 constexpr static int kWidgetWidth = 400;
 constexpr static int kWidgetHeight = 800;
 constexpr static int kWidgetTopBarHeight = 80;
@@ -94,7 +97,8 @@ class WindowEventObserver : public ui::EventObserver {
     // initiated in the draggable area.
     if (mouse_down_in_draggable_area_ &&
         event.type() == ui::EventType::kMouseDragged) {
-      glic_window_controller_->DragFromPoint(mouse_location.OffsetFromOrigin());
+      glic_window_controller_->HandleWindowDragWithOffset(
+          mouse_location.OffsetFromOrigin());
     }
   }
 
@@ -253,35 +257,44 @@ void GlicWindowController::Close() {
   NotifyIfPanelStateChanged();
 }
 
-void GlicWindowController::DragFromPoint(gfx::Vector2d mouse_location) {
+void GlicWindowController::HandleWindowDragWithOffset(
+    gfx::Vector2d mouse_offset) {
   // This code isn't set up to handle nested run loops. Nested run loops will
   // lead to crashes.
   if (!in_move_loop_) {
+    // Prepare to start a new drag of the glic window using holder_widget_ as
+    // the new parent
+    MaybeCreateHolderWindowAndReparent();
     in_move_loop_ = true;
-    gfx::Vector2d drag_offset = mouse_location;
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
-    widget_->RunMoveLoop(drag_offset, move_loop_source,
-                         views::Widget::MoveLoopEscapeBehavior::kDontHide);
-    HandleBrowserPinning(widget_->GetWindowBoundsInScreen().OffsetFromOrigin() +
-                         mouse_location);
+    holder_widget_->RunMoveLoop(
+        mouse_offset, move_loop_source,
+        views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
+    // Look for pins
+    HandleBrowserPinning(widget_.get());
+  } else {
+    // while in move loop, find browser pin targets close to the holder widget
+    // to animate glic to for a magnetic effect.
+    HandleBrowserPinning(holder_widget_.get());
   }
 }
 
-void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
+void GlicWindowController::HandleBrowserPinning(views::Widget* widget) {
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     views::Widget* window_widget =
         browser->window()->AsBrowserView()->GetWidget();
-    // Skips if the browser:
-    // - is incognito
-    // - is not visible
-    // - uses the same widget as glic
-    // - uses a different profile from glic
+    // Skips if:
+    // - incognito
+    // - not visible
+    // - is a glic-owned widget
+    // - is a different profile (uses browser context to check)
     if (browser->profile()->IsOffTheRecord() ||
         !browser->window()->IsVisible() || window_widget == widget_.get() ||
+        window_widget == holder_widget_.get() ||
         browser->GetWebView()->GetBrowserContext() !=
             GetGlicView()->web_view()->GetBrowserContext()) {
       continue;
@@ -294,28 +307,52 @@ void GlicWindowController::HandleBrowserPinning(gfx::Vector2d mouse_location) {
     gfx::Rect glic_button_rect =
         tab_strip_region_view->GetGlicButton()->GetBoundsInScreen();
 
-    float glic_button_mouse_distance =
-        (glic_button_rect.CenterPoint() -
-         gfx::PointAtOffsetFromOrigin(mouse_location))
-            .Length();
-    if (glic_button_mouse_distance < kSnapDistanceThreshold) {
-      MoveToBrowserPinTarget(browser);
-      // Close holder window if existing
-      if (holder_widget_) {
-        holder_widget_->CloseWithReason(
-            views::Widget::ClosedReason::kLostFocus);
-        holder_widget_.reset();
+    float corner_distance = (glic_button_rect.CenterPoint() -
+                             widget->GetWindowBoundsInScreen().top_right())
+                                .Length();
+    // While glic window is actively being dragged, simulate a visual effect of
+    // being pulled to and away from the browser by updating its parent.
+    if (in_move_loop_) {
+      if (corner_distance > kUnsnapDistanceThreshold &&
+          widget_->parent() == window_widget) {
+        // Pull the glic window away from the browser window anchor point when a
+        // drag is far enough away
+        views::Widget::ReparentNativeView(widget_->GetNativeView(),
+                                          holder_widget_->GetNativeView());
+        // TODO(https://crbug.com/384792988): Should use GlicView->
+        // AnimateFrameBounds here but is currently having a glitchy animation.
+      } else if (corner_distance < kSnapDistanceThreshold &&
+                 widget_->parent() != window_widget) {
+        // Temporarily attach the window for the visual effect of being
+        // magnetised to the snapping point
+        MoveToBrowserPinTarget(browser, true);
+        views::Widget::ReparentNativeView(widget_->GetNativeView(),
+                                          window_widget->GetNativeView());
       }
-      AttachToBrowser(browser, window_widget);
-    } else if (widget_->parent() == window_widget) {
-      // If farther than the snapping threshold from the current parent
-      // widget, open a blank holder window to reparent to
-      MaybeCreateHolderWindowAndReparent();
+    } else {
+      // If there is no active drag (i.e. the previous drag has ended)
+      // then determine whether to snap the glic window to the browser,
+      // or to detach it from the browser.
+      if (corner_distance < kSnapDistanceThreshold) {
+        MoveToBrowserPinTarget(browser, true);
+        // Close holder window if existing
+        if (holder_widget_) {
+          holder_widget_->CloseWithReason(
+              views::Widget::ClosedReason::kLostFocus);
+          holder_widget_.reset();
+        }
+        AttachToBrowser(browser, window_widget);
+      } else if (widget_->parent() == window_widget) {
+        // If farther than the snapping threshold from the current parent
+        // widget, open a blank holder window to reparent to
+        MaybeCreateHolderWindowAndReparent();
+      }
     }
   }
 }
 
-void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
+void GlicWindowController::MoveToBrowserPinTarget(Browser* browser,
+                                                  bool animate) {
   if (!widget_) {
     return;
   }
@@ -331,7 +368,11 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser) {
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
   glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
   glic_rect.set_y(top_right.y() + tab_strip_padding);
-  widget_->SetBounds(glic_rect);
+  if (animate) {
+    GetGlicView()->AnimateFrameBounds(glic_rect);
+  } else {
+    widget_->SetBounds(glic_rect);
+  }
   NotifyIfPanelStateChanged();
 }
 
@@ -347,9 +388,10 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
     params.accept_events = false;
     // Widget name is specified for debug purposes.
     params.name = "HolderWindow";
-    params.bounds = gfx::Rect(0, 0, 0, 0);
+    params.bounds = widget_->GetWindowBoundsInScreen();
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     holder_widget_->Init(std::move(params));
+    holder_widget_->ShowInactive();
   }
   views::Widget::ReparentNativeView(widget_->GetNativeView(),
                                     holder_widget_->GetNativeView());
@@ -445,7 +487,7 @@ void GlicWindowController::PinnedTargetWidgetObserver::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   glic_window_controller_->MoveToBrowserPinTarget(
-      chrome::FindBrowserWithWindow(widget->GetNativeWindow()));
+      chrome::FindBrowserWithWindow(widget->GetNativeWindow()), false);
 }
 
 void GlicWindowController::PinnedTargetWidgetObserver::OnWidgetDestroying(

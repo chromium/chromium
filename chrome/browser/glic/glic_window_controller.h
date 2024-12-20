@@ -65,8 +65,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Close the panel but keep the glic WebContents alive in the background.
   void Close();
 
-  // Drags the glic window following the current mouse location.
-  void DragFromPoint(gfx::Vector2d mouse_location);
+  // Drags the glic window following the current mouse location with a given
+  // offset and checks for pinning points during and after the move loop.
+  void HandleWindowDragWithOffset(gfx::Vector2d mouse_offset);
 
   const mojom::PanelState& GetPanelState() const { return panel_state_; }
   void AddStateObserver(StateObserver* observer);
@@ -139,16 +140,18 @@ class GlicWindowController : public views::WidgetObserver {
     raw_ptr<views::Widget> widget_;
   };
 
-  // If the mouse is in snapping distance of a browser's glic button, it snaps
-  // glic to the top right of the browser's glic button.
-  void HandleBrowserPinning(gfx::Vector2d mouse_location);
+  // If the widget is in snapping distance of a browser's glic button, it snaps
+  // glic to the top right of the browser's glic button. Also handles snapping
+  // when dragging for magnetism.
+  void HandleBrowserPinning(views::Widget* widget);
 
   // When glic is unpinned, reparent it to an empty holder Widget. Initializes
   // the empty holder widget if it hasn't been created yet.
   void MaybeCreateHolderWindowAndReparent();
 
-  // Moves glic view to the pin target of the specified browser.
-  void MoveToBrowserPinTarget(Browser* browser);
+  // Moves glic view to the pin target of the specified browser. Animate
+  // determines if the move to the pin target is animated or not.
+  void MoveToBrowserPinTarget(Browser* browser, bool animate);
 
   void NotifyIfPanelStateChanged();
   mojom::PanelState ComputePanelState() const;
@@ -162,7 +165,7 @@ class GlicWindowController : public views::WidgetObserver {
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
-  // Empty holder widget to reparent to when unpinned.
+  // Empty holder widget to reparent to when unpinned and when being dragged.
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;

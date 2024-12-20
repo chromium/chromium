@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_frame_bounds_change_animation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
@@ -66,5 +67,11 @@ bool GlicView::IsPointWithinDraggableArea(const gfx::Point& point) {
     }
   }
   return false;
+}
+
+void GlicView::AnimateFrameBounds(const gfx::Rect& bounds) {
+  bounds_change_animation_ =
+      std::make_unique<BrowserFrameBoundsChangeAnimation>(*GetWidget(), bounds);
+  bounds_change_animation_->Start();
 }
 }  // namespace glic

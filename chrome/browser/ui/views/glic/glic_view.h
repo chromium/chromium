@@ -19,6 +19,7 @@ class WebView;
 }  // namespace views
 
 class Profile;
+class BrowserFrameBoundsChangeAnimation;
 
 namespace glic {
 
@@ -43,11 +44,18 @@ class GlicView : public views::View {
 
   views::WebView* web_view() { return web_view_; }
 
+  // Sets the bounds of the widget with animation
+  void AnimateFrameBounds(const gfx::Rect& bounds);
+
  private:
   raw_ptr<GlicWebView> web_view_;
   // Defines the areas of the view from which it can be dragged. These areas can
   // be updated by the glic web client.
   std::vector<gfx::Rect> draggable_areas_;
+
+  // Animates programmatic changes to bounds (e.g. via `resizeTo()`
+  // `resizeBy()` and `setContentsSize()` calls).
+  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
 };
 
 }  // namespace glic
