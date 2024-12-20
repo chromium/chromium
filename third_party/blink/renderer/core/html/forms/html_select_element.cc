@@ -106,7 +106,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   explicit SelectDescendantsObserver(HTMLSelectElement& select)
       : select_(select), observer_(MutationObserver::Create(this)) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-    DCHECK(select_->IsAppearanceBasePicker());
+    DCHECK(select_->IsAppearanceBaseButton(
+        HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
 
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
@@ -1410,7 +1411,8 @@ void HTMLSelectElement::UpdateMutationObserver() {
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return;
   }
-  if (UsesMenuList() && isConnected() && IsAppearanceBasePicker()) {
+  if (UsesMenuList() && isConnected() &&
+      IsAppearanceBaseButton(StyleUpdateBehavior::kDontUpdateStyle)) {
     if (!descendants_observer_) {
       descendants_observer_ =
           MakeGarbageCollected<SelectDescendantsObserver>(*this);
@@ -1963,6 +1965,14 @@ HTMLElement* HTMLSelectElement::PopoverForAppearanceBase() const {
 }
 
 // static
+bool HTMLSelectElement::IsPopoverForAppearanceBase(const Node* node) {
+  if (auto* element = DynamicTo<Element>(node)) {
+    return IsPopoverForAppearanceBase(element);
+  }
+  return false;
+}
+
+// static
 bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
   if (auto* root = DynamicTo<ShadowRoot>(element->parentNode())) {
     return IsA<HTMLSelectElement>(root->host()) &&
@@ -1971,8 +1981,9 @@ bool HTMLSelectElement::IsPopoverForAppearanceBase(const Element* element) {
   return false;
 }
 
-bool HTMLSelectElement::IsAppearanceBaseButton() const {
-  return select_type_->IsAppearanceBaseButton();
+bool HTMLSelectElement::IsAppearanceBaseButton(
+    StyleUpdateBehavior update_behavior) const {
+  return select_type_->IsAppearanceBaseButton(update_behavior);
 }
 
 bool HTMLSelectElement::IsAppearanceBasePicker() const {
@@ -2099,8 +2110,10 @@ void HTMLSelectElement::UpdateAllSelectedcontents() {
        VectorOf<HTMLSelectedContentElement>(descendant_selectedcontents_)) {
     selectedcontent->CloneContentsFromOptionElement(option);
   }
-  if (auto* attr_selectedcontent = selectedContentElement()) {
-    attr_selectedcontent->CloneContentsFromOptionElement(option);
+  if (RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled()) {
+    if (auto* attr_selectedcontent = selectedContentElement()) {
+      attr_selectedcontent->CloneContentsFromOptionElement(option);
+    }
   }
 }
 

@@ -85,20 +85,6 @@ select:not(:-internal-list-box)::picker(select) {
     block-start span-inline-start;
 }
 
-/* This rule is here to ensure that we can get a ComputedStyle for
- * ::picker(select). Without this, the [popover] UA style would make it
- * display:none, which would mean that we wouldn't get a ComputedStyle, which
- * would mean that we can't detect the author opting in with
- * appearance:base-select on this element. This element is hidden when it isn't
- * popover open via LayoutFlexibleBox::IsChildAllowed. This also means that the
- * author can't force it to become visible while it is popover closed by
- * putting display:block on it, but hopefully that's OK.
- * TODO(crbug.com/364348901): Remove this.
- */
-select::picker(select) {
-  display: block !important;
-}
-
 select:not(:-internal-list-box) option {
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026

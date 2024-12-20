@@ -87,7 +87,8 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
   if (select && select->UsesMenuList()) [[unlikely]] {
-    if (select->IsAppearanceBaseButton()) {
+    if (select->IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
       CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
       if (IsA<HTMLOptionElement>(object->GetNode()) ||
           IsA<HTMLOptGroupElement>(object->GetNode()) ||
@@ -104,14 +105,6 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
         // If the author doesn't provide a button, then we still want to display
         // the InnerElement.
         return false;
-      }
-      if (auto* popover = select->PopoverForAppearanceBase()) {
-        if (child == popover && !popover->popoverOpen()) {
-          // This is needed in order to keep the popover hidden after the UA
-          // sheet is forcing it to be display:block in order to get a computed
-          // style.
-          return false;
-        }
       }
       return true;
     } else {

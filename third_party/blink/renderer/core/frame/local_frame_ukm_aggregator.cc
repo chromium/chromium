@@ -685,6 +685,7 @@ void LocalFrameUkmAggregator::EndForcedLayout(
 
     case DocumentUpdateReason::kAccessibility:
     case DocumentUpdateReason::kBaseColor:
+    case DocumentUpdateReason::kBaseSelect:
     case DocumentUpdateReason::kComputedStyle:
     case DocumentUpdateReason::kDisplayLock:
     case DocumentUpdateReason::kViewTransition:

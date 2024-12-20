@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<style>
+.custombutton {
+  appearance: base-select;
+}
+.custompicker::picker(select) {
+  appearance: base-select;
+}
+</style>
+
+<select>
+  <option>only text</option>
+  <option>with img
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQklEQVQ4T2P8z8AARIQBI1GqGBhA6ohSOmogzkAfDUPc6XHgkg0wXROVsIF5gHB2AqoAqho1EHceGA1D7CEw+JMNALGaMffRFnRtAAAAAElFTkSuQmCC">
+  </option>
+</select>
+
+<select class=custombutton>
+  <option>only text</option>
+  <option>with img
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQklEQVQ4T2P8z8AARIQBI1GqGBhA6ohSOmogzkAfDUPc6XHgkg0wXROVsIF5gHB2AqoAqho1EHceGA1D7CEw+JMNALGaMffRFnRtAAAAAElFTkSuQmCC">
+  </option>
+</select>
+
+<select class="custombutton custompicker">
+  <option>only text</option>
+  <option>with img
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQklEQVQ4T2P8z8AARIQBI1GqGBhA6ohSOmogzkAfDUPc6XHgkg0wXROVsIF5gHB2AqoAqho1EHceGA1D7CEw+JMNALGaMffRFnRtAAAAAElFTkSuQmCC">
+  </option>
+</select>

@@ -130,7 +130,8 @@ FocusableState HTMLOptionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
-    if (select->IsAppearanceBasePicker()) {
+    auto* popover = select->PopoverForAppearanceBase();
+    if (popover && popover->popoverOpen()) {
       // If this option is being rendered as regular web content inside a
       // base-select <select> popover, then we need this element to be
       // focusable.

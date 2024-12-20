@@ -245,6 +245,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   // Returns true if the provided element is some select element's
   // PopoverForAppearanceBase.
+  static bool IsPopoverForAppearanceBase(const Node*);
   static bool IsPopoverForAppearanceBase(const Element*);
 
   // <select> supports appearance:base-select on both the main element and
@@ -255,7 +256,14 @@ class CORE_EXPORT HTMLSelectElement final
   // has appearance:base-select, IsAppearanceBasePicker will return true and the
   // popup will be a popover element. The SelectType must also support base
   // appearance, which is currently only MenuListSelectType.
-  bool IsAppearanceBaseButton() const;
+  // IsAppearanceBaseButton should be used for code which is concerned with the
+  // in-page rendering of the button, and IsAppearanceBasePicker should be used
+  // for code which is concerned with the popup/popover and the other elements
+  // which are rendered in it.
+  // |no_update| prevents these methods from running an UpdateStyleAndLayoutTree
+  // which is needed in some cases to prevent nested style/layout recalc.
+  enum class StyleUpdateBehavior { kUpdateStyle, kDontUpdateStyle };
+  bool IsAppearanceBaseButton(StyleUpdateBehavior) const;
   bool IsAppearanceBasePicker() const;
 
   void SelectedContentElementInserted(
