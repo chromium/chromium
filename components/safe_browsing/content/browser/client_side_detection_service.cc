@@ -886,7 +886,11 @@ void ClientSideDetectionService::ModelExecutionCallback(
   LogOnDeviceModelExecutionParse(true);
 
   CHECK(session_);
-  session_.reset();
+  // TODO: Currently, due to the lifetime of session and its deletion when the
+  // model execution finishes, this causes a crash. crbug.com/384774788 tracks
+  // the ergonomic approach to deleting the session, but we can call DeleteSoon
+  // for this session.
+  // session_.reset();
 
   if (inquire_on_device_model_callback_) {
     std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
