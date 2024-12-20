@@ -235,10 +235,8 @@ bool IdleAppNameNotificationView::IsVisible() {
 }
 
 std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
-  ui::AXNodeData node_data;
   DCHECK(view_);
-  view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+  return view_->GetViewAccessibility().GetCachedName();
 }
 
 void IdleAppNameNotificationView::ShowMessage(

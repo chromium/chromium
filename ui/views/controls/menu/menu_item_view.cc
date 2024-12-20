@@ -1246,10 +1246,7 @@ std::u16string MenuItemView::CalculateAccessibleName() const {
     // The first child is taking over, just use its accessible name instead of
     // |title_|.
     View* child = children().front();
-    ui::AXNodeData child_node_data;
-    child->GetViewAccessibility().GetAccessibleNodeData(&child_node_data);
-    item_text =
-        child_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+    item_text = child->GetViewAccessibility().GetCachedName();
   } else {
     item_text = title_;
   }

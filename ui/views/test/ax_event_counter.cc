@@ -31,9 +31,8 @@ void AXEventCounter::OnViewEvent(views::View* view,
   // We should either fix those errors or stop firing the events. For now,
   // require the presence of a Widget to count events by role.
   if (view->GetWidget()) {
-    ui::AXNodeData node_data;
-    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-    ++event_counts_for_role_[std::make_pair(event_type, node_data.role)];
+    ++event_counts_for_role_[std::make_pair(
+        event_type, view->GetViewAccessibility().GetCachedRole())];
   }
 
   if (run_loop_ && event_type == wait_for_event_type_) {
