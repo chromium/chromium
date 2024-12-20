@@ -359,11 +359,13 @@ component("skia") {
   sources += skia_sksl_core_sources
   sources += skia_sksl_core_module_sources
   sources += skia_codec_shared
-  sources += skia_codec_png
+  sources += skia_codec_png_base
+  sources += skia_codec_libpng_srcs
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
-  sources += skia_encode_png_srcs
+  sources += skia_encode_png_base
+  sources += skia_encode_libpng_srcs
   sources += skia_encode_webp_srcs
   sources += [
     "//third_party/skia/src/sfnt/SkOTTable_name.cpp",
