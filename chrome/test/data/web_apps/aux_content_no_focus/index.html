@@ -4,6 +4,10 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="basic-48.png">
 </head>
+<body>
+  <h1>Aux Content Focus test</h1>
+  <pre id="message">Launch params received:</pre>
+</body>
 <script>
   console.log('Setting up the launch queue');
   var launchParamsTargetUrls = [];
@@ -33,8 +37,4 @@
     recordLaunchParam(launchParams.targetURL);
   });
 </script>
-<body>
-  <h1>Aux Content Focus test</h1>
-  <pre id="message">Launch params received:</pre>
-</body>
 </html>
