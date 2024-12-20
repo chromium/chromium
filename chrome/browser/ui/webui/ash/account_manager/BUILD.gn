@@ -42,8 +42,6 @@ static_library("account_manager") {
     "//net",
     "//ui/aura",
     "//ui/base",
-    "//ui/resources:webui_resources_grd",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/strings:ui_strings",
     "//ui/strings:ui_strings_grit",
     "//ui/views",

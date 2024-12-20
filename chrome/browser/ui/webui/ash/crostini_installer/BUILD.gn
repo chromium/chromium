@@ -38,7 +38,6 @@ static_library("crostini_installer") {
     "//ui/base",
     "//ui/base:types",
     "//ui/chromeos",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings:ui_strings",
     "//ui/web_dialogs",
     "//ui/webui",

@@ -90,7 +90,6 @@ static_library("emoji") {
     "//ui/base/metadata",
     "//ui/display",
     "//ui/gfx/geometry",
-    "//ui/resources:webui_resources_grd",
     "//ui/webui",
   ]
 }

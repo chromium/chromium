@@ -30,7 +30,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
