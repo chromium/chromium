@@ -32,13 +32,20 @@ GlicConfiguration::GlicConfiguration(Observer* manager) : manager_(manager) {
 GlicConfiguration::~GlicConfiguration() = default;
 
 // static
-void GlicConfiguration::RegisterPrefs(PrefRegistrySimple* registry) {
+void GlicConfiguration::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
   registry->RegisterDictionaryPref(
       prefs::kGlicLauncherGlobalHotkey,
       base::Value::Dict()
           .Set(kHotkeyKeyCode, ui::KeyboardCode::VKEY_UNKNOWN)
           .Set(kHotkeyModifiers, ui::EF_NONE));
+}
+
+// static
+void GlicConfiguration::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
 }
 
 bool GlicConfiguration::IsEnabled() {

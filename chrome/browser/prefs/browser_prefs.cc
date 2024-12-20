@@ -2001,7 +2001,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicConfiguration::RegisterPrefs(registry);
+  glic::GlicConfiguration::RegisterLocalStatePrefs(registry);
 #endif
 
   registry->RegisterIntegerPref(prefs::kToastAlertLevel, 0);
@@ -2038,9 +2038,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   DownloadPrefs::RegisterProfilePrefs(registry);
   fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
 #if BUILDFLAG(ENABLE_GLIC)
-  registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
-  registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
-  registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
+  glic::GlicConfiguration::RegisterProfilePrefs(registry);
 #endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);

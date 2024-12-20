@@ -30,7 +30,8 @@ class GlicConfiguration {
   explicit GlicConfiguration(Observer* manager);
   ~GlicConfiguration();
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   bool IsEnabled();
 
