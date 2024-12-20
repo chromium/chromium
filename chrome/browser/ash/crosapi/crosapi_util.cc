@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
@@ -334,7 +333,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::EmojiPicker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ExtensionInfoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EyeDropper>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::FieldTrialService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileChangeServiceBridge>(),
     MakeInterfaceVersionEntry<
         crosapi::mojom::FileSystemAccessCloudIdentifierProvider>(),

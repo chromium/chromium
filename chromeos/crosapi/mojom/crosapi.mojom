@@ -43,7 +43,6 @@ import "chromeos/crosapi/mojom/editor_panel.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/eye_dropper.mojom";
-import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
@@ -602,10 +601,7 @@ interface Crosapi {
 
   // BindFeedback@5 was removed.
 
-  // Binds the FieldTrial interface for reading active trial field group.
-  // Added in M95.
-  [MinVersion=46]
-  BindFieldTrialService@51(pending_receiver<FieldTrialService> receiver);
+  // BindFieldTrialService@51 was removed.
 
   // Binds the Media App interface for special functions of Media App
   // Added in M128.
