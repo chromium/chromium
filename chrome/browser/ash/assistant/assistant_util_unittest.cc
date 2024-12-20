@@ -33,6 +33,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -213,7 +214,7 @@ class ChromeAssistantUtilTest : public testing::Test {
 
   AccountId GetGaiaUserAccountId(const TestingProfile* profile) {
     return AccountId::FromUserEmailGaiaId(profile->GetProfileUserName(),
-                                          kTestGaiaId);
+                                          GaiaId(kTestGaiaId));
   }
 
   AccountId GetGaiaUserAccountId(const std::string& user_name,
@@ -248,7 +249,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_SecondaryUser) {
   ScopedLogIn secondary_user_login(
       GetFakeUserManager(), identity_test_env(),
-      GetGaiaUserAccountId("user2@gmail.com", "0123456789"));
+      GetGaiaUserAccountId("user2@gmail.com", GaiaId("0123456789")));
   ScopedLogIn primary_user_login(GetFakeUserManager(), identity_test_env(),
                                  GetGaiaUserAccountId(profile()));
 
@@ -315,15 +316,16 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PublicSession) {
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_NonGmail) {
   ScopedLogIn login(
       GetFakeUserManager(), identity_test_env(),
-      GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
+      GetGaiaUserAccountId("user2@someotherdomain.com", GaiaId("0123456789")));
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE,
             IsAssistantAllowedForProfile(profile()));
 }
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_GoogleMail) {
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+  ScopedLogIn login(
+      GetFakeUserManager(), identity_test_env(),
+      GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
@@ -333,7 +335,7 @@ TEST_F(ChromeAssistantUtilTest,
        IsAssistantAllowed_AllowsNonGmailOnGoogleBrandedDevices) {
   ScopedLogIn login(
       GetFakeUserManager(), identity_test_env(),
-      GetGaiaUserAccountId("user2@someotherdomain.com", "0123456789"));
+      GetGaiaUserAccountId("user2@someotherdomain.com", GaiaId("0123456789")));
 
   ScopedSpoofGoogleBrandedDevice make_google_branded_device;
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
@@ -362,8 +364,9 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCEnabled) {
   feature_list_.InitAndEnableFeature(
       ash::assistant::features::kEnableLibAssistantDLC);
 
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+  ScopedLogIn login(
+      GetFakeUserManager(), identity_test_env(),
+      GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
             IsAssistantAllowedForProfile(profile()));
@@ -373,8 +376,9 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCDisabled) {
   feature_list_.InitAndDisableFeature(
       ash::assistant::features::kEnableLibAssistantDLC);
 
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+  ScopedLogIn login(
+      GetFakeUserManager(), identity_test_env(),
+      GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_NO_BINARY,
             IsAssistantAllowedForProfile(profile()));
@@ -384,8 +388,9 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_NewEntryPointEnabled) {
   feature_list_.InitAndEnableFeature(
       ash::assistant::features::kEnableNewEntryPoint);
 
-  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
-                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+  ScopedLogIn login(
+      GetFakeUserManager(), identity_test_env(),
+      GetGaiaUserAccountId("user2@googlemail.com", GaiaId("0123456789")));
 
   EXPECT_EQ(
       ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
