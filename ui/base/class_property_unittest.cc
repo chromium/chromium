@@ -75,13 +75,10 @@ class AssignableTestProperty {
   bool was_move_assigned_ = false;
 };
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty,
-                                   kAssignableKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty, kAssignableKey)
 DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TestCascadingProperty,
-                                             kCascadingOwnedKey,
-                                             nullptr)
+                                             kCascadingOwnedKey)
 
 }  // namespace
 

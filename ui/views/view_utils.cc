@@ -16,9 +16,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, base::debug::StackTrace*)
 
 namespace views {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::debug::StackTrace,
-                                   kViewStackTraceKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::debug::StackTrace, kViewStackTraceKey)
 
 namespace {
 

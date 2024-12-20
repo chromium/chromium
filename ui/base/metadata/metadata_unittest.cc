@@ -116,8 +116,8 @@ class ClassPropertyMetaDataTestClass : public MetadataTestBaseClass {
 struct MetadataTestClassNoMetadata : public MetadataTestBaseClass {};
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, -1)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey1, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey2, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey1)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey2)
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey1, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey2, nullptr)
 DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Insets*)

@@ -39,7 +39,7 @@ namespace ash {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeviceIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeviceIdKey)
 
 // Extra spacing to add between cast stop buttons and the edge of `tri_view()`
 // header entry.

@@ -24,7 +24,7 @@ namespace views {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(InkDropHost, kInkDropKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(InkDropHost, kInkDropKey)
 
 // TODO(pbos): Remove this by changing the constructor parameters to
 // InkDropImpl.

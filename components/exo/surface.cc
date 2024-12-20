@@ -341,7 +341,7 @@ void ImmediateExplicitRelease(
 
 }  // namespace
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey)
 
 // A property key to store the window session Id set by client or full_restore
 // component.

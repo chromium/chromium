@@ -315,22 +315,22 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
 #define DEFINE_CASCADING_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT) \
   DEFINE_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, true)
 
-#define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, CASCADES) \
-  static_assert(base::IsComplete<TYPE>);                                       \
-  static_assert(sizeof(TYPE*) <= sizeof(int64_t));                             \
-  namespace {                                                                  \
-  void Deallocator##NAME(int64_t p) {                                          \
-    delete ::ui::ClassPropertyCaster<TYPE*>::FromInt64(p);                     \
-  }                                                                            \
-  constexpr ::ui::ClassProperty<TYPE*> NAME##_Value = {                        \
-      DEFAULT, #NAME, CASCADES, &Deallocator##NAME};                           \
-  } /* namespace */                                                            \
+#define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, CASCADES) \
+  static_assert(base::IsComplete<TYPE>);                              \
+  static_assert(sizeof(TYPE*) <= sizeof(int64_t));                    \
+  namespace {                                                         \
+  void Deallocator##NAME(int64_t p) {                                 \
+    delete ::ui::ClassPropertyCaster<TYPE*>::FromInt64(p);            \
+  }                                                                   \
+  constexpr ::ui::ClassProperty<TYPE*> NAME##_Value = {               \
+      nullptr, #NAME, CASCADES, &Deallocator##NAME};                  \
+  } /* namespace */                                                   \
   constexpr const ::ui::ClassProperty<TYPE*>* NAME = &NAME##_Value;
 
-#define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT) \
-  DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, false)
+#define DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME) \
+  DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, false)
 
-#define DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME, DEFAULT) \
-  DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, DEFAULT, true)
+#define DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TYPE, NAME) \
+  DEFINE_OWNED_UI_CLASS_PROPERTY_KEY_IMPL(TYPE, NAME, true)
 
 #endif  // UI_BASE_CLASS_PROPERTY_H_

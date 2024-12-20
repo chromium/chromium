@@ -48,8 +48,7 @@ namespace {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
     CaptureModeSessionFocusCycler::HighlightHelper,
-    kCaptureModeHighlightHelper,
-    nullptr)
+    kCaptureModeHighlightHelper)
 
 // The focusable items for the FocusGroup::kSelection group.
 constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {

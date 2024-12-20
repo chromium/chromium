@@ -30,7 +30,7 @@
 using std::make_pair;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::Shadow*)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Shadow, kShadowLayerKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Shadow, kShadowLayerKey)
 
 namespace wm {
 

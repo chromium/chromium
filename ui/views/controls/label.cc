@@ -63,8 +63,7 @@ bool IsOpaque(SkColor color) {
 namespace views {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(CascadingProperty<SkColor>,
-                                   kCascadingLabelEnabledColor,
-                                   nullptr)
+                                   kCascadingLabelEnabledColor)
 
 Label::Label() : Label(std::u16string()) {}
 

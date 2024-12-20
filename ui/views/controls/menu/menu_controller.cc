@@ -94,8 +94,7 @@ enum class MenuPartType { kNone, kMenuItem, kScrollUp, kScrollDown };
 // attributes by MenuController::SetSelectionIndices() so that the controller
 // can update them if children change via MenuController::MenuChildrenChanged().
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::ViewTracker>,
-                                   kOrderedMenuChildren,
-                                   nullptr)
+                                   kOrderedMenuChildren)
 
 #if BUILDFLAG(IS_MAC)
 bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {

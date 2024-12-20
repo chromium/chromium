@@ -37,8 +37,7 @@ using web_modal::ModalDialogHostObserver;
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ModalDialogHostObserver*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ModalDialogHostObserver,
-                                   kModalDialogHostObserverKey,
-                                   nullptr)
+                                   kModalDialogHostObserverKey)
 
 namespace constrained_window {
 

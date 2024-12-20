@@ -36,33 +36,31 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool,
                              false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActivateOnPointerKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAnimationsDisabledKey, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAppIconKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::SizeF, kAspectRatio, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAvatarIconKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAppIconKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::SizeF, kAspectRatio)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kAvatarIconKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowLayerDrawn, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kConstrainedWindowKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCreatedByUserGesture, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDrawAttentionKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusClient*, kFocusClientKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kHeadlessBoundsKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kHeadlessBoundsKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kHostWindowKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(Window*, kChildModalParentKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::ModalType,
                              kModalKey,
                              ui::mojom::ModalType::kNone)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kNameKey, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::OwnedWindowAnchor,
-                                   kOwnedWindowAnchor,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kNameKey)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::OwnedWindowAnchor, kOwnedWindowAnchor)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseWindowBoundsForShadow, true)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(gfx::NativeViewAccessible,
                              kParentNativeViewAccessibleKey,
                              nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kPreferredSize, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kPreferredSize)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kResizeBehaviorKey, kResizeBehaviorCanResize)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,
                              kShowStateKey,
                              ui::mojom::WindowShowState::kDefault)
@@ -75,14 +73,14 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,
 DEFINE_UI_CLASS_PROPERTY_KEY(float, kRasterScale, 1.0f)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsRestoringKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kTitleKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTopViewInset, 0)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kWindowIconKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::ImageSkia, kWindowIconKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kWindowCornerRadiusKey, -1)
 DEFINE_UI_CLASS_PROPERTY_KEY(int,
                              kWindowWorkspaceKey,
                              kWindowWorkspaceUnassignedWorkspace)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeskUuidKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeskUuidKey)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ZOrderLevel,
                              kZOrderingKey,
                              ui::ZOrderLevel::kNormal)

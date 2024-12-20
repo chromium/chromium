@@ -39,7 +39,7 @@ class ProfileTracker : public ProfileObserver {
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ProfileTracker*)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ProfileTracker, kThemeProfileKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ProfileTracker, kThemeProfileKey)
 
 void SetThemeProfileForWindow(aura::Window* window, Profile* profile) {
   window->SetProperty(kThemeProfileKey,

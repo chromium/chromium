@@ -55,9 +55,7 @@ class DesksHelperLacros : public chromeos::DesksHelper {
   raw_ptr<aura::Window> window_;
 };
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DesksHelperLacros,
-                                   kDesksHelperLacrosKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(DesksHelperLacros, kDesksHelperLacrosKey)
 
 }  // namespace
 

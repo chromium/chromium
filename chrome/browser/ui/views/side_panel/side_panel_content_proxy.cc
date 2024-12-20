@@ -6,8 +6,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentProxy*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SidePanelContentProxy,
-                                   kSidePanelContentProxyKey,
-                                   nullptr)
+                                   kSidePanelContentProxyKey)
 
 SidePanelContentProxy::SidePanelContentProxy(bool available)
     : available_(available) {}

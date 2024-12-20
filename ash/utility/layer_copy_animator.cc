@@ -16,9 +16,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(ash::LayerCopyAnimator*)
 namespace ash {
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayerCopyAnimator,
-                                   kLayerCopyAnimatorKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayerCopyAnimator, kLayerCopyAnimatorKey)
 
 // CopyOutputRequest's callback may be called on the different thread during
 // shutdown, which results in the DCHECK failure in the weak ptr when

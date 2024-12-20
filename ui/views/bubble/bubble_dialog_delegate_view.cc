@@ -83,8 +83,7 @@ namespace {
 // last item is removed, the new last item, if available, is notified that it is
 // the new primary anchored bubble.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::BubbleDialogDelegate*>,
-                                   kAnchorVector,
-                                   nullptr)
+                                   kAnchorVector)
 
 std::vector<BubbleDialogDelegate*>& GetAnchorVector(View* view) {
   if (!view->GetProperty(kAnchorVector)) {
