@@ -3408,4 +3408,98 @@ TEST_F(MenuControllerTest, MenuHostHasCorrectZOrderLevel) {
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow, host->GetZOrderLevel());
 }
 
+#if BUILDFLAG(IS_WIN)
+// The following tests are only relevant on platforms that select the first
+// menu item when a menu is opened via keyboard input.
+TEST_F(MenuControllerTest, FirstMenuItemSelectedWhenOpenedFromKeyboard) {
+  // Use existing menu items from the test setup.
+  MenuItemView* root = menu_item();
+  MenuItemView* item1 = root->GetSubmenu()->GetMenuItemAt(0);
+  MenuItemView* item2 = root->GetSubmenu()->GetMenuItemAt(1);
+  MenuItemView* item3 = root->GetSubmenu()->GetMenuItemAt(2);
+
+  // Open the menu via keyboard input.
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, root,
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kKeyboard,
+                         /*context_menu=*/false, /*is_nested_drag=*/false);
+
+  EXPECT_TRUE(item1->IsSelected());
+  EXPECT_FALSE(item2->IsSelected());
+  EXPECT_FALSE(item3->IsSelected());
+}
+
+TEST_F(MenuControllerTest, NoItemSelectedWhenOpenedFromMouse) {
+  // Use existing menu items from the test setup.
+  MenuItemView* root = menu_item();
+  MenuItemView* item1 = root->GetSubmenu()->GetMenuItemAt(0);
+  MenuItemView* item2 = root->GetSubmenu()->GetMenuItemAt(1);
+  MenuItemView* item3 = root->GetSubmenu()->GetMenuItemAt(2);
+
+  // Open the menu via mouse click.
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, root,
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kMouse,
+                         /*context_menu=*/false, /*is_nested_drag=*/false);
+
+  EXPECT_FALSE(item1->IsSelected());
+  EXPECT_FALSE(item2->IsSelected());
+  EXPECT_FALSE(item3->IsSelected());
+}
+
+TEST_F(MenuControllerTest,
+       FirstMenuItemButtonHotTrackedWhenOpenedFromKeyboard) {
+  // Set up a menu with one button in the first menu item.
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* first_item = submenu->GetMenuItemAt(0);
+  first_item->SetTitle(std::u16string());
+  const View* const buttons_view = submenu->children()[0];
+  first_item
+      ->AddChildView(
+          std::make_unique<LabelButton>(Button::PressedCallback(), u"Label"))
+      // This is an in-menu button. Hence it must be always focusable.
+      ->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  // Open the menu via keyboard input.
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kKeyboard,
+                         /*context_menu=*/false, /*is_nested_drag=*/false);
+
+  EXPECT_TRUE(first_item->IsSelected());
+
+  // Access the button inside the first menu item.
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+
+  EXPECT_TRUE(button1->IsHotTracked());
+}
+
+TEST_F(MenuControllerTest,
+       FirstMenuItemButtonNotHotTrackedWhenOpenedFromMouse) {
+  // Set up a menu with one button in the first menu item.
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* first_item = submenu->GetMenuItemAt(0);
+  first_item->SetTitle(std::u16string());
+  const View* const buttons_view = submenu->children()[0];
+  first_item
+      ->AddChildView(
+          std::make_unique<LabelButton>(Button::PressedCallback(), u"Label"))
+      // This is an in-menu button. Hence it must be always focusable.
+      ->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+
+  // Open the menu via mouse input.
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kMouse,
+                         /*context_menu=*/false, /*is_nested_drag=*/false);
+
+  EXPECT_FALSE(first_item->IsSelected());
+
+  // Access the button inside the first menu item.
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+
+  EXPECT_FALSE(button1->IsHotTracked());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace views

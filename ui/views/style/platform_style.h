@@ -75,6 +75,10 @@ class VIEWS_EXPORT PlatformStyle {
   // Default focus behavior on the platform.
   static const View::FocusBehavior kDefaultFocusBehavior;
 
+  // On Windows, the first menu item is automatically selected when a menu is
+  // opened with the keyboard.
+  static const bool kAutoSelectFirstMenuItemFromKeyboard;
+
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(
       ScrollBar::Orientation orientation);

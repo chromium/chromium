@@ -27,6 +27,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/vector_icons.h"
@@ -623,8 +624,18 @@ TEST_F(MenuItemViewPaintUnitTest,
 
   // The selected bit and selection based state should both update for all menu
   // items while they and their anscestors remain part of the menu.
-  EXPECT_FALSE(submenu_item->IsSelected());
-  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    // On Windows, we automatically select the first item when the menu is
+    // opened from the keyboard.
+    EXPECT_TRUE(submenu_item->IsSelected());
+    EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
+  } else {
+    // On other platforms, we don't automatically select the first item when the
+    // menu is opened from the keyboard.
+    EXPECT_FALSE(submenu_item->IsSelected());
+    EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  }
+
   submenu_item->SetSelected(true);
   EXPECT_TRUE(submenu_item->IsSelected());
   EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
@@ -669,7 +680,16 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
-  EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
+  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+    // On Windows, we automatically select the first item when the menu is
+    // opened from the keyboard.
+    EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
+  } else {
+    // On other platforms, we don't automatically select the first item when the
+    // menu is opened from the keyboard.
+    EXPECT_FALSE(child_menu_item->last_paint_as_selected_for_testing());
+  }
+
   child_menu_item->SetSelected(true);
   EXPECT_TRUE(child_menu_item->IsSelected());
   EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
@@ -836,27 +856,31 @@ using MenuItemViewA11yTest = MenuItemViewPaintUnitTest;
 // A MenuItemView that has a submenu should open the submenu on kExpand and
 // close the submenu on kCollapse.
 TEST_F(MenuItemViewA11yTest, HandlesExpandCollapseActions) {
-  MenuItemView* submenu_item_view =
-      menu_item_view()->AppendSubMenu(1, u"Submenu");
+  MenuItemView* menu_item = menu_item_view()->AppendMenuItem(1, u"Menu Item");
+  // On some platforms, the submenu is automatically opened when it's on the
+  // first item. To avoid this, add it to a second item.
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(2, u"SubMenu");
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
                            ui::mojom::MenuSourceType::kKeyboard);
 
   // Pre-conditions: An expandable submenu item.
-  ASSERT_TRUE(submenu_item_view->HasSubmenu());
-  ASSERT_FALSE(submenu_item_view->SubmenuIsShowing());
+  ASSERT_FALSE(menu_item->HasSubmenu());
+  ASSERT_FALSE(menu_item->SubmenuIsShowing());
+  ASSERT_TRUE(submenu->HasSubmenu());
+  ASSERT_FALSE(submenu->SubmenuIsShowing());
 
   // Send an expand action to the menu item.
   ui::AXActionData expand_action_data;
   expand_action_data.action = ax::mojom::Action::kExpand;
-  submenu_item_view->HandleAccessibleAction(expand_action_data);
-  EXPECT_TRUE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(expand_action_data);
+  EXPECT_TRUE(submenu->SubmenuIsShowing());
 
   // Send a collapse action to the menu item.
   ui::AXActionData collapse_action_data;
   collapse_action_data.action = ax::mojom::Action::kCollapse;
-  submenu_item_view->HandleAccessibleAction(collapse_action_data);
-  EXPECT_FALSE(submenu_item_view->SubmenuIsShowing());
+  submenu->HandleAccessibleAction(collapse_action_data);
+  EXPECT_FALSE(submenu->SubmenuIsShowing());
 }
 
 TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {

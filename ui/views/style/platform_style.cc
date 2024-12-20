@@ -24,8 +24,10 @@ namespace views {
 
 #if BUILDFLAG(IS_WIN)
 const bool PlatformStyle::kIsOkButtonLeading = true;
+const bool PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard = true;
 #else
 const bool PlatformStyle::kIsOkButtonLeading = false;
+const bool PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard = false;
 #endif
 
 #if !BUILDFLAG(IS_MAC)

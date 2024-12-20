@@ -268,7 +268,8 @@ void BrowserAppMenuButton::OnTouchUiChanged() {
 }
 
 void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
-  ShowMenu(event.IsKeyEvent() ? views::MenuRunner::SHOULD_SHOW_MNEMONICS
+  ShowMenu(event.IsKeyEvent() ? (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                                 views::MenuRunner::INVOKED_FROM_KEYBOARD)
                               : views::MenuRunner::NO_FLAGS);
 }
 

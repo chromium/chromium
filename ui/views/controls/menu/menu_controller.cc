@@ -51,6 +51,7 @@
 #include "ui/views/drag_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_constants.h"
@@ -593,14 +594,29 @@ void MenuController::Run(Widget* parent,
                                     : gfx::Point();
 
   ui::Event* event = nullptr;
+  bool direction_is_down = true;
+  MenuItemView* to_select = nullptr;
   if (parent) {
     View* root_view = parent->GetRootView();
     if (root_view) {
       event = static_cast<internal::RootView*>(root_view)->current_event();
+      bool is_key_event = event && event->IsKeyEvent();
       if (event && event->type() == ui::EventType::kMousePressed) {
         menu_start_mouse_press_loc_ = View::ConvertPointToScreen(
             static_cast<View*>(event->target()),
             static_cast<const ui::MouseEvent*>(event)->location());
+      } else if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard &&
+                 !IsEditableCombobox() &&
+                 (source_type == ui::mojom::MenuSourceType::kKeyboard ||
+                  is_key_event)) {
+        // On Windows, we want to select the first menu item when the menu is
+        // opened via keyboard. This is because NVDA expects the focus to be on
+        // a menu item when the menu is opened via keyboard.
+        direction_is_down =
+            !(is_key_event && event->AsKeyEvent()->key_code() == ui::VKEY_UP);
+        to_select = FindInitialSelectableMenuItem(
+            root, direction_is_down ? INCREMENT_SELECTION_DOWN
+                                    : INCREMENT_SELECTION_UP);
       }
     }
   }
@@ -644,8 +660,32 @@ void MenuController::Run(Widget* parent,
   state_ = State();
   UpdateInitialLocation(anchor_bounds, position, context_menu);
 
-  // Set the selection, which opens the initial menu.
-  SetSelection(root, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+  if (views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard && to_select) {
+    // If menu is opened via keyboard, set focus on first selectable menu item,
+    // but don't open the submenu automatically to maintain the behavior a
+    // down arrow would have (focusing a menu item from the keyboard doesn't
+    // open the submenu).
+    SetSelection(to_select, SELECTION_UPDATE_IMMEDIATELY);
+    // If the first menu item is a container, we want to select the first button
+    // inside it as well.
+    if (!to_select->children().empty() && to_select->IsContainer()) {
+      Button* hot_button = Button::AsButton(
+          GetInitialFocusableView(to_select, direction_is_down));
+      if (hot_button) {
+        SetHotTrackedButton(hot_button);
+      }
+    }
+
+    // This prevents the selection set above from overridden by simulated mouse
+    //  events fired upon opening the menu. See `MenuController::OnMouseMoved`
+    //  for more details.
+    menu_open_mouse_loc_ =
+        ConvertFromScreen(*to_select->GetRootMenuItem()->GetSubmenu(),
+                          display::Screen::GetScreen()->GetCursorScreenPoint());
+  } else {
+    // Set the selection, which opens the initial menu.
+    SetSelection(root, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+  }
 
   if (button_controller) {
     pressed_lock_ = button_controller->TakeLock(

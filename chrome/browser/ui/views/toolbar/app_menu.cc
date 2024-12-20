@@ -1017,9 +1017,8 @@ AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
     // BrowserActionsContainer view.
     types |= views::MenuRunner::FOR_DROP | views::MenuRunner::NESTED_DRAG;
   }
-  if (run_types_ & views::MenuRunner::SHOULD_SHOW_MNEMONICS) {
-    types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
-  }
+  types |= run_types_ & (views::MenuRunner::SHOULD_SHOW_MNEMONICS |
+                         views::MenuRunner::INVOKED_FROM_KEYBOARD);
 
   menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 }
