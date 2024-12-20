@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -56,71 +54,6 @@ TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
 
   // 2 distinct domains become 4 rules because of subdomain matching rules.
   EXPECT_EQ(bypass_matcher->rules().size(), 4u);
-}
-
-TEST_F(UrlMatcherWithBypassTest,
-       GetEligibleDomains_ReturnsDomainsForDefaultExperimentGroup) {
-  auto resource_owner = masked_domain_list::ResourceOwner();
-  const std::string expected_domain = "example.com";
-  const std::string experiment_domain = "experiment-domain.com";
-  const std::string excluded_domain = "excluded-domain.com";
-  resource_owner.set_owner_name("example");
-
-  // Default experiment group should not set any other experiment group fields.
-  auto* default_resource = resource_owner.add_owned_resources();
-  default_resource->set_domain(expected_domain);
-
-  // Experiment group resource that will also be eligible because it does not
-  // explicitly exclude the default experiment group.
-  auto* experiment_resource = resource_owner.add_owned_resources();
-  experiment_resource->set_domain(experiment_domain);
-  experiment_resource->add_experiment_group_ids(1);
-
-  // Experiment group that is not eligible because it explicitly excludes the
-  // default experiment group.
-  auto* excluded_resource = resource_owner.add_owned_resources();
-  excluded_resource->set_domain(excluded_domain);
-  excluded_resource->add_experiment_group_ids(1);
-  excluded_resource->set_exclude_default_group(true);
-
-  auto eligible_domains = UrlMatcherWithBypass::GetEligibleDomains(
-      resource_owner, /*excluded_domains=*/{});
-
-  EXPECT_EQ(eligible_domains,
-            std::set<std::string>({expected_domain, experiment_domain}));
-  EXPECT_FALSE(eligible_domains.contains(excluded_domain));
-}
-
-TEST_F(UrlMatcherWithBypassTest,
-       GetEligibleDomains_ReturnsDomainsForExperimentGroupOnly) {
-  // Set the experiment group to 1.
-  std::map<std::string, std::string> parameters;
-  parameters[network::features::kMaskedDomainListExperimentGroup.name] = "1";
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      network::features::kMaskedDomainList, std::move(parameters));
-
-  auto resource_owner = masked_domain_list::ResourceOwner();
-  const std::string expected_domain = "example.com";
-  const std::string experiment_domain = "experiment-domain.com";
-  resource_owner.set_owner_name("example");
-
-  // Default experiment group should be excluded.
-  auto* default_resource = resource_owner.add_owned_resources();
-  default_resource->set_domain(expected_domain);
-  default_resource->set_exclude_default_group(true);
-
-  // Experiment group resource should match the experiment group set in the
-  // feature.
-  auto* experiment_resource = resource_owner.add_owned_resources();
-  experiment_resource->set_domain(experiment_domain);
-  experiment_resource->add_experiment_group_ids(1);
-  experiment_resource->set_exclude_default_group(true);
-
-  auto eligible_domains = UrlMatcherWithBypass::GetEligibleDomains(
-      resource_owner, /*excluded_domains=*/{});
-
-  EXPECT_EQ(eligible_domains, std::set<std::string>({experiment_domain}));
 }
 
 TEST_F(UrlMatcherWithBypassTest,

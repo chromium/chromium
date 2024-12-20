@@ -140,14 +140,6 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When set, only resources in the MDL that are part of the experiment group
-// will be loaded into the proxy's allow list.
-BASE_FEATURE_PARAM(int,
-                   kMaskedDomainListExperimentGroup,
-                   &kMaskedDomainList,
-                   /*name=*/"MaskedDomainListExperimentGroup",
-                   /*default_value=*/0);
-
 // Used to build the MDL component's installer attributes and possibly control
 // which release version is retrieved.
 // Altering this value via Finch does not have any effect for WebView.

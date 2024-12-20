@@ -20,7 +20,6 @@
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
-#include "services/network/public/cpp/features.h"
 #include "url_matcher_with_bypass.h"
 
 namespace ip_protection {
@@ -146,20 +145,12 @@ std::string UrlMatcherWithBypass::PartitionMapKey(std::string_view domain) {
 std::set<std::string> UrlMatcherWithBypass::GetEligibleDomains(
     const masked_domain_list::ResourceOwner& resource_owner,
     std::unordered_set<std::string> excluded_domains) {
-  const int experiment_group_id =
-      network::features::kMaskedDomainListExperimentGroup.Get();
-  // Default group ID is 0 for the experiment_group_id field on the Resource
-  // proto.
-  const bool in_default_group = experiment_group_id == 0;
-
   // Create a set of eligible domains.
   std::set<std::string> eligible_domains;
-  for (const Resource& resource : resource_owner.owned_resources()) {
-    if ((in_default_group && !resource.exclude_default_group()) ||
-        base::Contains(resource.experiment_group_ids(), experiment_group_id)) {
-      eligible_domains.insert(resource.domain());
-    }
-  }
+  std::transform(resource_owner.owned_resources().begin(),
+                 resource_owner.owned_resources().end(),
+                 std::inserter(eligible_domains, eligible_domains.begin()),
+                 [](const Resource& resource) { return resource.domain(); });
 
   // If there are any excluded domains, remove them from the list of eligible
   // domains.
