@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
@@ -86,24 +87,11 @@ WallpaperAsh::WallpaperAsh() = default;
 
 WallpaperAsh::~WallpaperAsh() = default;
 
-void WallpaperAsh::BindReceiver(
-    mojo::PendingReceiver<mojom::Wallpaper> pending_receiver) {
-  receivers_.Add(this, std::move(pending_receiver));
-}
-
-void WallpaperAsh::SetWallpaperDeprecated(
+void WallpaperAsh::SetWallpaper(
     mojom::WallpaperSettingsPtr wallpaper_settings,
     const std::string& extension_id,
     const std::string& extension_name,
-    SetWallpaperDeprecatedCallback callback) {
-  // Delete this method once deletion is supported. https://crbug.com/1156872.
-  NOTIMPLEMENTED();
-}
-
-void WallpaperAsh::SetWallpaper(mojom::WallpaperSettingsPtr wallpaper_settings,
-                                const std::string& extension_id,
-                                const std::string& extension_name,
-                                SetWallpaperCallback callback) {
+    base::OnceCallback<void(mojom::SetWallpaperResultPtr)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(ash::LoginState::Get()->IsUserLoggedIn());
   // Prevent any in progress decodes from changing wallpaper.

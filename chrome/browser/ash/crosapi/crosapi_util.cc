@@ -150,7 +150,6 @@
 #include "chromeos/crosapi/mojom/volume_manager.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
-#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
@@ -399,7 +398,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::VolumeManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VpnService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::Wallpaper>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebAppService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebKioskService>(),
     MakeInterfaceVersionEntry<device::mojom::HidConnection>(),

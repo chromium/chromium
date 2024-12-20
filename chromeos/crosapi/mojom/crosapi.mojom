@@ -104,7 +104,6 @@ import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
 import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
-import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
@@ -760,8 +759,7 @@ interface Crosapi {
   [MinVersion=69]
   BindWebAppService@72(pending_receiver<WebAppService> receiver);
 
-  // Binds the service to allow lacros-chrome to set the chromeos wallpaper.
-  [MinVersion=84] BindWallpaper@87(pending_receiver<Wallpaper> receiver);
+  // BindWallpaper@87 was removed.
 
   // Binds the GuestOS security key forwarding service.
   // Added in M120.

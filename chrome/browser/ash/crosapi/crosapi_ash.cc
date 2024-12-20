@@ -907,11 +907,6 @@ void CrosapiAsh::BindVpnService(
   vpn_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindWallpaper(
-    mojo::PendingReceiver<mojom::Wallpaper> receiver) {
-  wallpaper_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindWebAppService(
     mojo::PendingReceiver<mojom::WebAppService> receiver) {
   web_app_service_ash_->BindReceiver(std::move(receiver));

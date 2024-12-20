@@ -377,8 +377,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWallpaper(
-      mojo::PendingReceiver<crosapi::mojom::Wallpaper> receiver) override;
   void BindWebAppService(
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(
@@ -665,6 +663,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
+  // TODO(crbug.com/373972275): Move ownership of this object elsewhere. It is
+  // no longer a crosapi, but it is still used internally by ash-chrome.
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
