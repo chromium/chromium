@@ -1076,8 +1076,10 @@ void ScaledLinearHistogram::AddScaledCount(Sample value, int64_t count) {
   }
 
   if (scaled_count > 0) {
-    DCHECK(scaled_count <= std::numeric_limits<int>::max());
-    histogram->AddCount(value, static_cast<int>(scaled_count));
+    int capped_scaled_count = scaled_count > std::numeric_limits<int>::max()
+                                  ? std::numeric_limits<int>::max()
+                                  : static_cast<int>(scaled_count);
+    histogram->AddCount(value, capped_scaled_count);
   }
 }
 

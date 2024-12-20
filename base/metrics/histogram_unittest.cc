@@ -892,6 +892,20 @@ TEST_P(HistogramTest, ScaledLinearHistogram) {
   }
 }
 
+TEST_P(HistogramTest, ScaledLinearHistogramWithOverflowCount) {
+  ScaledLinearHistogram scaled("SLH", 1, 2, 3, 100, HistogramBase::kNoFlags);
+
+  scaled.AddScaledCount(0, 1);
+  scaled.AddScaledCount(1, 101);
+  scaled.AddScaledCount(2, std::numeric_limits<int64_t>::max());
+
+  std::unique_ptr<SampleVector> samples =
+      SnapshotAllSamples(static_cast<Histogram*>(scaled.histogram()));
+  EXPECT_EQ(0, samples->GetCountAtIndex(0));
+  EXPECT_EQ(1, samples->GetCountAtIndex(1));
+  EXPECT_EQ(std::numeric_limits<int>::max(), samples->GetCountAtIndex(2));
+}
+
 // For Histogram, LinearHistogram and CustomHistogram, the minimum for a
 // declared range is 1, while the maximum is (HistogramBase::kSampleType_MAX -
 // 1). But we accept ranges exceeding those limits, and silently clamped to
