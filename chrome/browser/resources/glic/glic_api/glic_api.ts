@@ -73,7 +73,8 @@ export declare interface GlicBrowserHost {
   resizeWindow(width: number, height: number):
       Promise<{actualWidth: number, actualHeight: number}>;
 
-  // Set the areas of the glic window from which it should be draggable.
+  // Set the areas of the glic window from which it should be draggable. Returns
+  // a promise that resolves when the browser has updated the draggable area.
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
 
   // Fetches page context for the currently focused tab, optionally including
@@ -116,13 +117,16 @@ export declare interface GlicBrowserHost {
   // Returns the state of the tab context permission.
   getTabContextPermissionState?(): Observable<boolean>;
 
-  // Set the state of the microphone permission in settings.
+  // Set the state of the microphone permission in settings. Returns a promise
+  // that resolves when the browser has stored the new pref value.
   setMicrophonePermissionState(enabled: boolean): Promise<void>;
 
-  // Set the state of the location permission in settings.
+  // Set the state of the location permission in settings. Returns a promise
+  // that resolves when the browser has stored the new pref value.
   setLocationPermissionState(enabled: boolean): Promise<void>;
 
-  // Set the state of the tab context permission in settings.
+  // Set the state of the tab context permission in settings. Returns a promise
+  // that resolves when the browser has stored the new pref value.
   setTabContextPermissionState(enabled: boolean): Promise<void>;
 }
 

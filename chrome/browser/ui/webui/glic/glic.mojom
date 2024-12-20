@@ -69,19 +69,23 @@ interface WebClientHandler {
 
   // Set the areas of the Glic panel from which it should be draggable. If
   // `draggable_areas` is empty, the panel will use the top bar area by default.
-  SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas);
+  // Returns when the browser has updated the draggable area.
+  SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
 
   // Set the state of the Microphone permission pref:
-  // prefs::kGlicMicrophoneEnabled.
-  SetMicrophonePermissionState(bool enabled);
+  // prefs::kGlicMicrophoneEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetMicrophonePermissionState(bool enabled) => ();
 
   // Set the state of the Location permission pref:
-  // prefs::kGlicGeolocationEnabled.
-  SetLocationPermissionState(bool enabled);
+  // prefs::kGlicGeolocationEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetLocationPermissionState(bool enabled) => ();
 
   // Set the state of the TabContext permission pref:
-  // prefs::kGlicTabContextEnabled.
-  SetTabContextPermissionState(bool enabled);
+  // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
+  // pref value.
+  SetTabContextPermissionState(bool enabled) => ();
 };
 
 // State of the glic panel.

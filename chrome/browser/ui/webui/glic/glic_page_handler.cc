@@ -79,18 +79,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run(actual_size);
   }
 
-  void SetPanelDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override {
-    if (!draggable_areas.empty()) {
-      glic_service_->SetPanelDraggableAreas(draggable_areas);
-
-    } else {
-      // Default to the top bar area of the panel.
-      // TODO(cuianthony): Define panel dimensions constants in shared location.
-      glic_service_->SetPanelDraggableAreas({{0, 0, 400, 80}});
-    }
-  }
-
   void GetContextFromFocusedTab(
       bool include_inner_text,
       bool include_viewport_screenshot,
@@ -99,6 +87,42 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         include_inner_text, include_viewport_screenshot, std::move(callback));
   }
 
+  void SetPanelDraggableAreas(
+      const std::vector<gfx::Rect>& draggable_areas,
+      SetPanelDraggableAreasCallback callback) override {
+    if (!draggable_areas.empty()) {
+      glic_service_->SetPanelDraggableAreas(draggable_areas);
+
+    } else {
+      // Default to the top bar area of the panel.
+      // TODO(cuianthony): Define panel dimensions constants in shared location.
+      glic_service_->SetPanelDraggableAreas({{0, 0, 400, 80}});
+    }
+    std::move(callback).Run();
+  }
+
+  void SetMicrophonePermissionState(
+      bool enabled,
+      SetMicrophonePermissionStateCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
+    std::move(callback).Run();
+  }
+
+  void SetLocationPermissionState(
+      bool enabled,
+      SetLocationPermissionStateCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
+    std::move(callback).Run();
+  }
+
+  void SetTabContextPermissionState(
+      bool enabled,
+      SetTabContextPermissionStateCallback callback) override {
+    pref_service_->SetBoolean(prefs::kGlicTabContextEnabled, enabled);
+    std::move(callback).Run();
+  }
+
+  // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
@@ -107,18 +131,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void WebClientDisconnected() {
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
-  }
-
-  void SetMicrophonePermissionState(bool enabled) override {
-    pref_service_->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
-  }
-
-  void SetLocationPermissionState(bool enabled) override {
-    pref_service_->SetBoolean(prefs::kGlicGeolocationEnabled, enabled);
-  }
-
-  void SetTabContextPermissionState(bool enabled) override {
-    pref_service_->SetBoolean(prefs::kGlicTabContextEnabled, enabled);
   }
 
   void OnPrefChanged(const std::string& pref_name) {
@@ -134,7 +146,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
- private:
   void SendPermissionsToWebClient() {
     web_client_->NotifyMicrophonePermissionStateChanged(
         pref_service_->GetBoolean(prefs::kGlicMicrophoneEnabled));

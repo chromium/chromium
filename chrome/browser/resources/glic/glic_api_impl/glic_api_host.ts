@@ -221,19 +221,19 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
-    this.handler.setPanelDraggableAreas(request.areas);
+    return this.handler.setPanelDraggableAreas(request.areas);
   }
 
   glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
-    this.handler.setMicrophonePermissionState(request.enabled);
+    return this.handler.setMicrophonePermissionState(request.enabled);
   }
 
   glicBrowserSetLocationPermissionState(request: {enabled: boolean}) {
-    this.handler.setLocationPermissionState(request.enabled);
+    return this.handler.setLocationPermissionState(request.enabled);
   }
 
   glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
-    this.handler.setTabContextPermissionState(request.enabled);
+    return this.handler.setTabContextPermissionState(request.enabled);
   }
 }
 
