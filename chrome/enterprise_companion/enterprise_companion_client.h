@@ -6,7 +6,6 @@
 #define CHROME_ENTERPRISE_COMPANION_ENTERPRISE_COMPANION_CLIENT_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
@@ -52,7 +51,7 @@ void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     bool enable_usagestats,
-    const std::optional<std::string>& cohort_id,
+    const std::string& cohort_id,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
                             mojo::Remote<mojom::EnterpriseCompanion>)> callback,
     const mojo::NamedPlatformChannel::ServerName& server_name =

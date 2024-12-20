@@ -45,7 +45,7 @@ constexpr wchar_t kServerName[] = PRODUCT_FULLNAME_STRING L"Service";
 #endif
 
 bool LaunchEnterpriseCompanionApp(bool enable_usagestats,
-                                  const std::optional<std::string>& cohort_id) {
+                                  const std::string& cohort_id) {
   std::optional<base::FilePath> binary_path = FindExistingInstall();
   if (!binary_path) {
     return false;
@@ -55,8 +55,8 @@ bool LaunchEnterpriseCompanionApp(bool enable_usagestats,
   if (enable_usagestats) {
     command_line.AppendSwitch(kEnableUsageStatsSwitch);
   }
-  if (cohort_id) {
-    command_line.AppendSwitch(kCohortIdSwitch);
+  if (!cohort_id.empty()) {
+    command_line.AppendSwitchASCII(kCohortIdSwitch, cohort_id);
   }
   return base::LaunchProcess(command_line, {}).IsValid();
 }
@@ -88,7 +88,7 @@ void ConnectWithRetries(
     int tries,
     base::Time deadline,
     bool enable_usagestats,
-    const std::optional<std::string>& cohort_id,
+    const std::string& cohort_id,
     base::OnceCallback<void(mojo::PlatformChannelEndpoint)> callback) {
   if (clock->Now() > deadline) {
     VLOG(1) << "Failed to connect to EnterpriseCompanionService remote. "
@@ -145,7 +145,7 @@ void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     bool enable_usagestats,
-    const std::optional<std::string>& cohort_id,
+    const std::string& cohort_id,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
                             mojo::Remote<mojom::EnterpriseCompanion>)> callback,
     const mojo::NamedPlatformChannel::ServerName& server_name) {

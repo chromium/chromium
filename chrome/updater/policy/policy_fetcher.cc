@@ -268,13 +268,10 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
   CHECK(!fetch_complete_callback_);
   fetch_complete_callback_ = std::move(callback);
 
-  const std::string& cohort_id =
-      persisted_data_->GetCohort(enterprise_companion::kCompanionAppId);
-
   enterprise_companion::ConnectAndLaunchServer(
       base::DefaultClock::GetInstance(), connection_timeout_,
       persisted_data_->GetUsageStatsEnabled(),
-      cohort_id.empty() ? std::nullopt : std::make_optional(cohort_id),
+      persisted_data_->GetCohort(enterprise_companion::kCompanionAppId),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
                      base::WrapRefCounted(this)));
 }
