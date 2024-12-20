@@ -31,7 +31,6 @@ class WebContents;
 
 namespace performance_manager {
 
-class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
 class ServiceWorkerContextAdapterImpl;
 class WorkerNodeImpl;
@@ -59,19 +58,11 @@ class PerformanceManagerRegistryImpl
   void AddObserver(PerformanceManagerMainThreadObserver* observer);
   void RemoveObserver(PerformanceManagerMainThreadObserver* observer);
 
-  // Adds / removes main thread mechanisms. Forwarded to from the public
-  // PerformanceManager interface.
-  void AddMechanism(PerformanceManagerMainThreadMechanism* mechanism);
-  void RemoveMechanism(PerformanceManagerMainThreadMechanism* mechanism);
-  bool HasMechanism(PerformanceManagerMainThreadMechanism* mechanism);
-
   // PerformanceManagerRegistry:
   Binders& GetBinders() override;
   void CreatePageNodeForWebContents(
       content::WebContents* web_contents) override;
   void SetPageType(content::WebContents* web_contents, PageType type) override;
-  Throttles CreateThrottlesForNavigation(
-      content::NavigationHandle* handle) override;
   void NotifyBrowserContextAdded(
       content::BrowserContext* browser_context) override;
   void NotifyBrowserContextRemoved(
@@ -155,8 +146,6 @@ class PerformanceManagerRegistryImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ObserverList<PerformanceManagerMainThreadObserver> observers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ObserverList<PerformanceManagerMainThreadMechanism> mechanisms_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

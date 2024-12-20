@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/performance_manager_registry_impl.h"
 
-#include <iterator>
 #include <utility>
 
 #include "base/not_fatal_until.h"
@@ -14,13 +13,11 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
 #include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/service_worker_context_adapter.h"
 #include "components/performance_manager/worker_watcher.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -50,8 +47,7 @@ PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
   DCHECK(!g_instance);
   DCHECK(web_contents_.empty());
   DCHECK(render_process_hosts_.empty());
-  // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
-  // empty by now!
+  // TODO(crbug.com/40131811): |observers_| should also be empty by now!
 }
 
 // static
@@ -69,24 +65,6 @@ void PerformanceManagerRegistryImpl::RemoveObserver(
     PerformanceManagerMainThreadObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
-}
-
-void PerformanceManagerRegistryImpl::AddMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mechanisms_.AddObserver(mechanism);
-}
-
-void PerformanceManagerRegistryImpl::RemoveMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  mechanisms_.RemoveObserver(mechanism);
-}
-
-bool PerformanceManagerRegistryImpl::HasMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return mechanisms_.HasObserver(mechanism);
 }
 
 Binders& PerformanceManagerRegistryImpl::GetBinders() {
@@ -125,21 +103,6 @@ void PerformanceManagerRegistryImpl::SetPageType(
       // sequence, which will be sequenced after the task posted here.
       base::BindOnce(&PageNodeImpl::SetType,
                      base::Unretained(tab_helper->primary_page_node()), type));
-}
-
-PerformanceManagerRegistryImpl::Throttles
-PerformanceManagerRegistryImpl::CreateThrottlesForNavigation(
-    content::NavigationHandle* handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  Throttles combined_throttles;
-  for (auto& mechanism : mechanisms_) {
-    Throttles throttles = mechanism.CreateThrottlesForNavigation(handle);
-    combined_throttles.insert(combined_throttles.end(),
-                              std::make_move_iterator(throttles.begin()),
-                              std::make_move_iterator(throttles.end()));
-  }
-  return combined_throttles;
 }
 
 void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(

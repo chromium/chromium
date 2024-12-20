@@ -30,7 +30,6 @@ class Graph;
 class GraphOwned;
 class PageNode;
 class ProcessNode;
-class PerformanceManagerMainThreadMechanism;
 class PerformanceManagerMainThreadObserver;
 class WorkerNode;
 
@@ -142,12 +141,6 @@ class PerformanceManager {
   // that happen on the main thread. Can only be called on the main thread.
   static void AddObserver(PerformanceManagerMainThreadObserver* observer);
   static void RemoveObserver(PerformanceManagerMainThreadObserver* observer);
-
-  // Adds / removes a mechanism that need to be called synchronously on the main
-  // thread (ie, to apply NavigationThrottles).
-  static void AddMechanism(PerformanceManagerMainThreadMechanism* mechanism);
-  static void RemoveMechanism(PerformanceManagerMainThreadMechanism* mechanism);
-  static bool HasMechanism(PerformanceManagerMainThreadMechanism* mechanism);
 
   // Returns the performance manager graph task runner. This is safe to call
   // from any thread at any time between the creation of the thread pool and its

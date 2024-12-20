@@ -176,7 +176,6 @@ static_library("performance_manager") {
     "public/metrics/metrics_collector.h",
     "public/metrics/page_resource_monitor.h",
     "public/performance_manager.h",
-    "public/performance_manager_main_thread_mechanism.h",
     "public/performance_manager_main_thread_observer.h",
     "public/power/battery_level_provider_creator.h",
     "public/render_frame_host_proxy.h",

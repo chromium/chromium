@@ -176,24 +176,6 @@ void PerformanceManager::RemoveObserver(
 }
 
 // static
-void PerformanceManager::AddMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  PerformanceManagerRegistryImpl::GetInstance()->AddMechanism(mechanism);
-}
-
-// static
-void PerformanceManager::RemoveMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  PerformanceManagerRegistryImpl::GetInstance()->RemoveMechanism(mechanism);
-}
-
-// static
-bool PerformanceManager::HasMechanism(
-    PerformanceManagerMainThreadMechanism* mechanism) {
-  return PerformanceManagerRegistryImpl::GetInstance()->HasMechanism(mechanism);
-}
-
-// static
 scoped_refptr<base::SequencedTaskRunner> PerformanceManager::GetTaskRunner() {
   return PerformanceManagerImpl::GetTaskRunner();
 }
