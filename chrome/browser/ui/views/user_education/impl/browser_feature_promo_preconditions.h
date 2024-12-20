@@ -15,6 +15,8 @@ DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kOmniboxNotOpenPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kBrowserNotClosingPrecondition);
 
 // Requires that the window a promo will be shown in is active.
 class WindowActivePrecondition
@@ -48,6 +50,24 @@ class ToolbarNotCollapsedPrecondition
  public:
   explicit ToolbarNotCollapsedPrecondition(BrowserView& browser_view);
   ~ToolbarNotCollapsedPrecondition() override;
+
+  // FeaturePromoPreconditionBase:
+  user_education::FeaturePromoResult CheckPrecondition(
+      ComputedData& data) const override;
+
+ private:
+  const raw_ref<BrowserView> browser_view_;
+};
+
+// Trying to show an IPH while the browser is closing can cause problems; see
+// https://crbug.com/346461762 for an example. This can also crash unit_tests
+// that use a BrowserWindow but not a browser, so also check if the browser
+// view's widget is closing.
+class BrowserNotClosingPrecondition
+    : public user_education::FeaturePromoPreconditionBase {
+ public:
+  explicit BrowserNotClosingPrecondition(BrowserView& browser_view);
+  ~BrowserNotClosingPrecondition() override;
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(

@@ -271,3 +271,30 @@ IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
           },
           user_education::FeaturePromoResult::kBlockedByUi));
 }
+
+using BrowserNotClosingPreconditionUiTest =
+    BrowserFeaturePromoPreconditionsUiTest;
+
+IN_PROC_BROWSER_TEST_F(BrowserNotClosingPreconditionUiTest,
+                       BrowserClosingOrNotClosing) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId),
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            BrowserNotClosingPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()),
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            BrowserNotClosingPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            browser_view->GetWidget()->Close();
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::kBlockedByUi)
+          .SetMustRemainVisible(false));
+}

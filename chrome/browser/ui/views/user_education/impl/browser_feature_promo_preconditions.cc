@@ -26,6 +26,8 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kOmniboxNotOpenPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kBrowserNotClosingPrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -82,6 +84,22 @@ ToolbarNotCollapsedPrecondition::CheckPrecondition(ComputedData&) const {
     if (controller->InOverflowMode()) {
       return user_education::FeaturePromoResult::kBlockedByUi;
     }
+  }
+  return user_education::FeaturePromoResult::Success();
+}
+
+BrowserNotClosingPrecondition::BrowserNotClosingPrecondition(
+    BrowserView& browser_view)
+    : FeaturePromoPreconditionBase(kBrowserNotClosingPrecondition,
+                                   "Browser is not closing"),
+      browser_view_(browser_view) {}
+BrowserNotClosingPrecondition::~BrowserNotClosingPrecondition() = default;
+
+user_education::FeaturePromoResult
+BrowserNotClosingPrecondition::CheckPrecondition(ComputedData&) const {
+  if (browser_view_->browser()->IsBrowserClosing() ||
+      browser_view_->GetWidget()->IsClosed()) {
+    return user_education::FeaturePromoResult::kBlockedByUi;
   }
   return user_education::FeaturePromoResult::Success();
 }
