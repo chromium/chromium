@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
@@ -44,12 +45,24 @@ void WrapBufferList(AudioBufferList* buffer_list, AudioBus* bus, int frames) {
   const int buffer_list_channels = buffer_list->mNumberBuffers;
   CHECK_EQ(channels, buffer_list_channels);
 
-  // Copy pointers from AudioBufferList.
-  for (int i = 0; i < channels; ++i)
-    bus->SetChannelData(i, static_cast<float*>(buffer_list->mBuffers[i].mData));
-
-  // Finally set the actual length.
+  // Set the actual length.
   bus->set_frames(frames);
+
+  // Copy pointers from AudioBufferList.
+  for (int i = 0; i < channels; ++i) {
+    // The byte data size should always be a multiple of sizeof(float).
+    const size_t data_size_in_bytes = buffer_list->mBuffers[i].mDataByteSize;
+    CHECK_EQ(data_size_in_bytes % sizeof(float), 0U);
+
+    // SAFETY: We don't have much choice here... We have to trust that the
+    // information given to us by the OS is valid.
+    auto channel_span = UNSAFE_BUFFERS(
+        base::span(static_cast<float*>(buffer_list->mBuffers[i].mData),
+                   data_size_in_bytes / sizeof(float)));
+
+    bus->SetChannelData(i,
+                        channel_span.first(base::checked_cast<size_t>(frames)));
+  }
 }
 
 // Sets the stream format on the AUHAL to PCM Float32 non-interleaved for the
