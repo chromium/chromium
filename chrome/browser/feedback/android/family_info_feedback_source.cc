@@ -86,9 +86,7 @@ void FamilyInfoFeedbackSource::OnSuccess(
             supervised_user::WebFilterTypeToDisplayString(web_filter_type));
       }
       Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
-          env, java_ref_,
-          ConvertUTF8ToJavaString(
-              env, supervised_user::FamilyRoleToString(member.role())),
+          env, java_ref_, supervised_user::FamilyRoleToString(member.role()),
           child_web_filter_type);
     }
   }

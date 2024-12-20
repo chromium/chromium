@@ -8,6 +8,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -28,7 +29,8 @@ public class NotificationSettingsBridge {
      * @return The channel created for this origin.
      */
     @CalledByNative
-    static SiteChannel createChannel(String origin, long creationTime, boolean enabled) {
+    static SiteChannel createChannel(
+            @JniType("std::string") String origin, long creationTime, boolean enabled) {
         return SiteChannelsManager.getInstance().createSiteChannel(origin, creationTime, enabled);
     }
 
@@ -39,7 +41,7 @@ public class NotificationSettingsBridge {
     }
 
     @CalledByNative
-    static void deleteChannel(String channelId) {
+    static void deleteChannel(@JniType("std::string") String channelId) {
         SiteChannelsManager.getInstance().deleteSiteChannel(channelId);
     }
 
@@ -67,7 +69,7 @@ public class NotificationSettingsBridge {
         }
 
         @CalledByNative("SiteChannel")
-        public String getOrigin() {
+        public @JniType("std::string") String getOrigin() {
             return mOrigin;
         }
 
@@ -77,7 +79,7 @@ public class NotificationSettingsBridge {
         }
 
         @CalledByNative("SiteChannel")
-        public String getId() {
+        public @JniType("std::string") String getId() {
             return mId;
         }
 

@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.os.StatFs;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.LocaleUtils;
@@ -61,10 +62,13 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getCpuArchitecture();
 
+        @JniType("std::string")
         String getGpuVendor();
 
+        @JniType("std::string")
         String getGpuModel();
 
         int getAvailableMemoryMB();

@@ -413,10 +413,8 @@ static jlong JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
   return reinterpret_cast<intptr_t>(reader);
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_PartnerBookmarksReader_GetNativeUrlString(
+static std::string JNI_PartnerBookmarksReader_GetNativeUrlString(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
-  GURL url(ConvertJavaStringToUTF8(j_url));
-  return ConvertUTF8ToJavaString(env, url.spec());
+    std::string& url) {
+  return GURL(url).spec();
 }

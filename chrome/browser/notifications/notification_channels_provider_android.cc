@@ -61,11 +61,10 @@ class NotificationChannelsBridgeImpl
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> jchannel =
         Java_NotificationSettingsBridge_createChannel(
-            env, ConvertUTF8ToJavaString(env, origin),
-            timestamp.ToInternalValue(), enabled);
+            env, origin, timestamp.ToInternalValue(), enabled);
     return NotificationChannel(
-        ConvertJavaStringToUTF8(Java_SiteChannel_getId(env, jchannel)),
-        ConvertJavaStringToUTF8(Java_SiteChannel_getOrigin(env, jchannel)),
+        Java_SiteChannel_getId(env, jchannel),
+        Java_SiteChannel_getOrigin(env, jchannel),
         base::Time::FromInternalValue(
             Java_SiteChannel_getTimestamp(env, jchannel)),
         static_cast<NotificationChannelStatus>(
@@ -74,8 +73,7 @@ class NotificationChannelsBridgeImpl
 
   void DeleteChannel(const std::string& origin) override {
     JNIEnv* env = AttachCurrentThread();
-    Java_NotificationSettingsBridge_deleteChannel(
-        env, ConvertUTF8ToJavaString(env, origin));
+    Java_NotificationSettingsBridge_deleteChannel(env, origin);
   }
 
   void GetChannels(NotificationChannelsProviderAndroid::GetChannelsCallback
@@ -153,13 +151,12 @@ static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
     const JavaParamRef<jobjectArray>& j_channels) {
   std::vector<NotificationChannel> channels;
   for (auto jchannel : j_channels.ReadElements<jobject>()) {
-    channels.emplace_back(
-        ConvertJavaStringToUTF8(Java_SiteChannel_getId(env, jchannel)),
-        ConvertJavaStringToUTF8(Java_SiteChannel_getOrigin(env, jchannel)),
-        base::Time::FromInternalValue(
-            Java_SiteChannel_getTimestamp(env, jchannel)),
-        static_cast<NotificationChannelStatus>(
-            Java_SiteChannel_getStatus(env, jchannel)));
+    channels.emplace_back(Java_SiteChannel_getId(env, jchannel),
+                          Java_SiteChannel_getOrigin(env, jchannel),
+                          base::Time::FromInternalValue(
+                              Java_SiteChannel_getTimestamp(env, jchannel)),
+                          static_cast<NotificationChannelStatus>(
+                              Java_SiteChannel_getStatus(env, jchannel)));
   }
 
   // Convert java long long int to c++ pointer, take ownership.

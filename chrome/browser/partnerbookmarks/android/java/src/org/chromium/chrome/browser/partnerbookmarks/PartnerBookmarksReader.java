@@ -417,7 +417,8 @@ public class PartnerBookmarksReader {
         void partnerBookmarksCreationComplete(
                 long nativePartnerBookmarksReader, PartnerBookmarksReader caller);
 
-        String getNativeUrlString(String url);
+        @JniType("std::string")
+        String getNativeUrlString(@JniType("std::string") String url);
 
         void disablePartnerBookmarksEditing();
     }

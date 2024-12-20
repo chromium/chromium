@@ -26,13 +26,11 @@ using base::android::ScopedJavaLocalRef;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 
-static jlong JNI_LocaleTemplateUrlLoader_Init(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jlocale,
-    Profile* profile) {
+static jlong JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
+                                              std::string& locale,
+                                              Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
-      ConvertJavaStringToUTF8(env, jlocale),
-      TemplateURLServiceFactory::GetForProfile(profile), profile));
+      locale, TemplateURLServiceFactory::GetForProfile(profile), profile));
 }
 
 LocaleTemplateUrlLoader::LocaleTemplateUrlLoader(const std::string& locale,

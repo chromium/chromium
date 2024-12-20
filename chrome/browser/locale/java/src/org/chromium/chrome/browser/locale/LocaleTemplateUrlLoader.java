@@ -78,7 +78,7 @@ public class LocaleTemplateUrlLoader {
 
     @NativeMethods
     interface Natives {
-        long init(String localeId, @JniType("Profile*") Profile profile);
+        long init(@JniType("std::string") String localeId, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeLocaleTemplateUrlLoader);
 
