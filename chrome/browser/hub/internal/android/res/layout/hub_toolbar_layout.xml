@@ -46,6 +46,7 @@ found in the LICENSE file.
         android:visibility="gone"
         app:buttonColor="@android:color/transparent"
         app:buttonTextColor="@color/default_text_color_list"
+        app:rippleColor="?attr/globalTextButtonRippleColor"
         app:verticalInset="0dp" />
 
       <com.google.android.material.tabs.TabLayout
