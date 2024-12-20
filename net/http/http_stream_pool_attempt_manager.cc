@@ -811,6 +811,8 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetInfoAsValue() const {
   dict.Set("preconnect_count_all", static_cast<int>(preconnects_.size()));
   dict.Set("preconnect_count_pending",
            static_cast<int>(PendingPreconnectCount()));
+  dict.Set("preconnect_count_notifying",
+           static_cast<int>(notifying_preconnect_completion_count_));
   dict.Set("in_flight_attempt_count", static_cast<int>(InFlightAttemptCount()));
   dict.Set("slow_attempt_count", static_cast<int>(slow_attempt_count_));
   dict.Set("is_failing", is_failing_);
@@ -1494,8 +1496,7 @@ void HttpStreamPool::AttemptManager::NotifyPreconnectsComplete(int rv) {
   while (!preconnects_.empty()) {
     std::unique_ptr<PreconnectEntry> entry =
         std::move(preconnects_.extract(preconnects_.begin()).value());
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(entry->callback), rv));
+    InvokePreconnectCallbackLater(std::move(entry->callback), rv);
   }
   MaybeCompleteLater();
 }
@@ -1519,12 +1520,30 @@ void HttpStreamPool::AttemptManager::ProcessPreconnectsAfterAttemptComplete(
     CHECK(it != preconnects_.end());
     std::unique_ptr<PreconnectEntry> entry =
         std::move(preconnects_.extract(it).value());
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(entry->callback), entry->result));
+    InvokePreconnectCallbackLater(std::move(entry->callback), entry->result);
   }
   if (preconnects_.empty()) {
     MaybeCompleteLater();
   }
+}
+
+void HttpStreamPool::AttemptManager::InvokePreconnectCallbackLater(
+    CompletionOnceCallback callback,
+    int rv) {
+  ++notifying_preconnect_completion_count_;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AttemptManager::InvokePreconnectCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), rv));
+}
+
+void HttpStreamPool::AttemptManager::InvokePreconnectCallback(
+    CompletionOnceCallback callback,
+    int rv) {
+  CHECK_GT(notifying_preconnect_completion_count_, 0u);
+  --notifying_preconnect_completion_count_;
+  MaybeCompleteLater();
+  std::move(callback).Run(rv);
 }
 
 void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
@@ -2016,6 +2035,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
 
 bool HttpStreamPool::AttemptManager::CanComplete() const {
   return jobs_.empty() && notified_jobs_.empty() && preconnects_.empty() &&
+         notifying_preconnect_completion_count_ == 0 &&
          in_flight_attempts_.empty() && !quic_task_;
 }
 

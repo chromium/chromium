@@ -377,6 +377,11 @@ class HttpStreamPool::AttemptManager
   void ProcessPreconnectsAfterAttemptComplete(int rv,
                                               size_t active_stream_count);
 
+  // Helper methods to post a task to invoke `callback`. If `this` is deleted
+  // `callback` is canceled.
+  void InvokePreconnectCallbackLater(CompletionOnceCallback callback, int rv);
+  void InvokePreconnectCallback(CompletionOnceCallback callback, int rv);
+
   // Creates a text based stream and notifies the highest priority job.
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket,
@@ -479,6 +484,7 @@ class HttpStreamPool::AttemptManager
   // Holds preconnect requests.
   std::set<std::unique_ptr<PreconnectEntry>, base::UniquePtrComparator>
       preconnects_;
+  size_t notifying_preconnect_completion_count_ = 0;
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
       service_endpoint_request_;

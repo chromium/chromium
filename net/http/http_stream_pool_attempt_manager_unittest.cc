@@ -6459,4 +6459,28 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyCancelTcpBasedAttempt) {
   EXPECT_EQ(delegate2.negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
+// Regression test for crbug.com/384759835.
+TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringPreconnect) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  MockConnectCompleter completer;
+  data.set_connect_data(MockConnect(&completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  Preconnector preconnector("http://a.test");
+  preconnector.Preconnect(pool());
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  completer.Complete(OK);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  // Destroy the pool.
+  InitializeSession();
+  FastForwardUntilNoTasksRemain();
+}
+
 }  // namespace net
