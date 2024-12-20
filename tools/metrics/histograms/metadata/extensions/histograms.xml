@@ -5253,6 +5253,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.WebRequest.ProxyDecision"
+    enum="WebRequest.ProxyDecision" expires_after="2025-03-01">
+  <owner>toyoshima@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the decision of whether to proxy the request for the WebRequest API.
+    This is recorded whenever a URLLoaderFactory is created for renderers.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.WebRequest.RequestHeaderAdded"
     enum="WebRequest.RequestHeader" expires_after="never">
 <!-- expires-never: For monitoring Web Request API usage. -->

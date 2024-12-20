@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -391,9 +392,30 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         header_client,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
     const url::Origin& request_initiator) {
+  const ProxyDecision decision = MaybeProxyURLLoaderFactoryInternal(
+      browser_context, frame, render_process_id, type, navigation_id,
+      ukm_source_id, factory_builder, header_client,
+      std::move(navigation_response_task_runner), request_initiator);
+  base::UmaHistogramEnumeration("Extensions.WebRequest.ProxyDecision",
+                                decision);
+  return decision != ProxyDecision::kWillNotProxy;
+}
+
+WebRequestAPI::ProxyDecision WebRequestAPI::MaybeProxyURLLoaderFactoryInternal(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* frame,
+    int render_process_id,
+    URLLoaderFactoryType type,
+    std::optional<int64_t> navigation_id,
+    ukm::SourceIdObj ukm_source_id,
+    network::URLLoaderFactoryBuilder& factory_builder,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+    const url::Origin& request_initiator) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
-    bool use_proxy = false;
+    ProxyDecision decision = ProxyDecision::kWillNotProxy;
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
@@ -413,10 +435,12 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
                     util::GetBrowserContextId(browser_context),
                     BrowserFrameContextData(frame))
                 .is_available()) {
-          use_proxy = true;
+          decision = ProxyDecision::kWillProxyForWebUI;
         }
       } else {
-        use_proxy = IsAvailableToWebViewEmbedderFrame(frame);
+        if (IsAvailableToWebViewEmbedderFrame(frame)) {
+          decision = ProxyDecision::kWillProxyForEmbedderWebView;
+        }
       }
     }
 #endif
@@ -434,10 +458,10 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         !base::FeatureList::IsEnabled(
             safe_browsing::
                 kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
-      use_proxy = true;
+      decision = ProxyDecision::kWillProxyForTelemetry;
     }
-    if (!use_proxy) {
-      return false;
+    if (decision == ProxyDecision::kWillNotProxy) {
+      return decision;
     }
   }
 
@@ -475,7 +499,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       std::move(navigation_id), ukm_source_id, factory_builder,
       std::move(header_client_receiver), proxies_.get(), type,
       std::move(navigation_response_task_runner));
-  return true;
+  return ProxyDecision::kWillProxyForExtension;
 }
 
 bool WebRequestAPI::MaybeProxyAuthRequest(
