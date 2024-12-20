@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
@@ -1506,6 +1507,64 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
   ScrollIntoViewNoVisualUpdate(std::move(params));
 }
 
+// TODO(crbug.com/385129957): This only searches up to the nearest scroll
+// container. Ancestor scroll containers might also need to be notified.
+void Element::NotifyScrollMarkerGroupOfTargetedScroll() {
+  ScrollMarkerPseudoElement* marker = nullptr;
+  if (auto* this_marker = DynamicTo<ScrollMarkerPseudoElement>(this)) {
+    // This itself is a scroll-marker.
+    marker = this_marker;
+  } else if (PseudoElement* scroll_marker =
+                 GetPseudoElement(kPseudoIdScrollMarker)) {
+    // This itself has a scroll-marker.
+    marker = DynamicTo<ScrollMarkerPseudoElement>(scroll_marker);
+  }
+
+  if (marker) {
+    if (ScrollMarkerGroupPseudoElement* group = marker->ScrollMarkerGroup()) {
+      group->PinSelectedMarker(marker);
+    }
+    return;
+  }
+
+  LayoutObject* target_obj = GetLayoutObject();
+  if (!target_obj) {
+    return;
+  }
+
+  // Search for the scroll-marker before |this| in pre-order.
+  for (LayoutObject* obj = target_obj->PreviousInPreOrder(); obj;
+       obj = obj->PreviousInPreOrder()) {
+    if (obj->IsScrollContainerWithScrollMarkerGroup()) {
+      // Don't escape the target's nearest containing
+      // scroll-marker-group-generating containing scroll container.
+      break;
+    }
+    auto* obj_node = obj->GetNode();
+    if (!obj_node) {
+      continue;
+    }
+    if (ScrollMarkerPseudoElement* marker_node =
+            DynamicTo<ScrollMarkerPseudoElement>(obj_node)) {
+      marker = marker_node;
+      break;
+    } else if (auto* obj_element = DynamicTo<Element>(obj_node)) {
+      if (ScrollMarkerPseudoElement* previous_marker =
+              DynamicTo<ScrollMarkerPseudoElement>(
+                  obj_element->GetPseudoElement(kPseudoIdScrollMarker))) {
+        marker = previous_marker;
+        break;
+      }
+    }
+  }
+
+  if (marker) {
+    if (ScrollMarkerGroupPseudoElement* group = marker->ScrollMarkerGroup()) {
+      group->PinSelectedMarker(marker);
+    }
+  }
+}
+
 void Element::ScrollIntoViewNoVisualUpdate(
     mojom::blink::ScrollIntoViewParamsPtr params) {
   if (!GetLayoutObject() || !GetDocument().GetPage()) {
@@ -1532,6 +1591,8 @@ void Element::ScrollIntoViewNoVisualUpdate(
           *originating_element, DisplayLockActivationReason::kScrollIntoView)) {
     return;
   }
+
+  NotifyScrollMarkerGroupOfTargetedScroll();
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
   scroll_into_view_util::ScrollRectToVisible(*target, bounds,

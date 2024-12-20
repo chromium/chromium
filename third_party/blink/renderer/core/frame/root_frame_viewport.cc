@@ -313,7 +313,8 @@ bool RootFrameViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollCallback on_finish) {
+    ScrollCallback on_finish,
+    bool targeted_scroll) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)

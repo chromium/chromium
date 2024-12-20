@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -1488,6 +1489,25 @@ void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
   }
 }
 
+void WebFrameWidgetImpl::NotifyLatchedScrollMarkerGroup(
+    const cc::CompositorCommitData& commit_data) {
+  Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
+      commit_data.scroll_latched_element_id);
+  if (!target_node) {
+    return;
+  }
+  if (ScrollableArea* scrollable_area =
+          ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
+    if (ScrollMarkerGroupPseudoElement* group =
+            scrollable_area->GetScrollMarkerGroup()) {
+      if (group->SelectedMarkerIsPinned()) {
+        group->UnPinSelectedMarker();
+        scrollable_area->UpdateScrollMarkers();
+      }
+    }
+  }
+}
+
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
   is_scroll_gesture_active_ = commit_data.is_scroll_active;
@@ -1506,6 +1526,7 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
       SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
                                       commit_data.scroll_latched_element_id);
     }
+    NotifyLatchedScrollMarkerGroup(commit_data);
   }
 
   // TODO(bokan): If a scroll ended and a new one began in the same Blink frame

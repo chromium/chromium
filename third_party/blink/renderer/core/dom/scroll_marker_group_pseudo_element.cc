@@ -237,6 +237,11 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
   if (!scroller || !scroller->IsScrollContainer()) {
     return false;
   }
+
+  if (selected_marker_is_pinned_) {
+    return false;
+  }
+
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
   CHECK(scrollable_area);
 

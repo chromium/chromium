@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -254,6 +255,9 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
       GetScrollAnimator().UserScroll(granularity, scrollable_axis_delta,
                                      std::move(run_scroll_complete_callbacks));
   if (result.DidScroll()) {
+    if (ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup()) {
+      group->UnPinSelectedMarker();
+    }
     UpdateScrollMarkers();
   }
 
@@ -277,7 +281,8 @@ void ScrollableArea::ClearPendingScrollAnchorAdjustment() {
 bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
                                      mojom::blink::ScrollBehavior behavior,
-                                     ScrollCallback on_finish) {
+                                     ScrollCallback on_finish,
+                                     bool targeted_scroll) {
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -301,6 +306,14 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     std::move(run_scroll_complete_callbacks)
         .Run(ScrollCompletionMode::kFinished);
     return false;
+  }
+
+  // If this was not a targeted scroll, the associated scroll-marker-group
+  // should stop pinning its selected scroll-marker.
+  if (!targeted_scroll) {
+    if (ScrollMarkerGroupPseudoElement* marker_group = GetScrollMarkerGroup()) {
+      marker_group->UnPinSelectedMarker();
+    }
   }
 
   ScrollOffset previous_offset = GetScrollOffset();
@@ -1159,7 +1172,16 @@ gfx::Size ScrollableArea::ExcludeScrollbars(const gfx::Size& size) const {
 
 void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   ScrollOffset new_offset(ScrollPositionToOffset(position));
-  SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor);
+  ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
+  // A non-latched compositor scroll update might be in service of a
+  // targeted (i.e. smooth scrollIntoView) or non-targeted scroll (e.g
+  // smooth scrollTo or a gesture scroll). If we are still executing a
+  // targeted scroll, the associated ScrollMarkerGroupPseudoElement's
+  // selected marker will still be pinned and we should not change that.
+  bool targeted_scroll = group && group->SelectedMarkerIsPinned();
+  SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
+                  mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
+                  targeted_scroll);
 }
 
 Scrollbar* ScrollableArea::GetScrollbar(

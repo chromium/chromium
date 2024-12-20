@@ -79,6 +79,7 @@ class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
 class SmoothScrollSequencer;
+class ScrollMarkerGroupPseudoElement;
 
 using MainThreadScrollingReasons = uint32_t;
 
@@ -131,7 +132,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool SetScrollOffset(const ScrollOffset&,
                                mojom::blink::ScrollType,
                                mojom::blink::ScrollBehavior,
-                               ScrollCallback on_finish);
+                               ScrollCallback on_finish,
+                               bool targeted_scroll = false);
   virtual bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
@@ -607,8 +609,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
 
- protected:
+  virtual ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const {
+    return nullptr;
+  }
+
   virtual void UpdateScrollMarkers() {}
+
+ protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
   // instant or smooth scroll.

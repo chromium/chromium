@@ -2012,6 +2012,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const QualifiedName& name,
       const HeapVector<Member<Element>>* given_elements);
 
+  void NotifyScrollMarkerGroupOfTargetedScroll();
+
   QualifiedName tag_name_;
   // This `ComputedStyle` field is a hot accessed member. Keep uncompressed for
   // performance reasons.

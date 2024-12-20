@@ -2445,7 +2445,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
     if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-      SetScrollOffset(new_scroll_offset, params->type, behavior);
+      SetScrollOffset(new_scroll_offset, params->type, behavior,
+                      ScrollCallback(), true);
     } else {
       CHECK(GetSmoothScrollSequencer());
       DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
@@ -2455,7 +2456,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     }
   } else {
     SetScrollOffset(new_scroll_offset, params->type,
-                    mojom::blink::ScrollBehavior::kInstant);
+                    mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
+                    true);
   }
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.
@@ -3407,18 +3409,26 @@ ScrollOffset PaintLayerScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
   return offset_for_scroll_marker_update;
 }
 
-void PaintLayerScrollableArea::UpdateScrollMarkers() {
+ScrollMarkerGroupPseudoElement* PaintLayerScrollableArea::GetScrollMarkerGroup()
+    const {
   if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
-    ScrollOffset scroll_offset = GetScrollOffsetForScrollMarkerUpdate();
     if (PseudoElement* before =
             element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
-      group_before->UpdateSelectedScrollMarker(scroll_offset);
+      return group_before;
     } else if (PseudoElement* after =
                    element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
       auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
-      group_after->UpdateSelectedScrollMarker(scroll_offset);
+      return group_after;
     }
+  }
+  return nullptr;
+}
+
+void PaintLayerScrollableArea::UpdateScrollMarkers() {
+  if (ScrollMarkerGroupPseudoElement* marker_group = GetScrollMarkerGroup()) {
+    ScrollOffset scroll_offset = GetScrollOffsetForScrollMarkerUpdate();
+    marker_group->UpdateSelectedScrollMarker(scroll_offset);
   }
 }
 

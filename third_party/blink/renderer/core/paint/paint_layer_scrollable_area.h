@@ -70,6 +70,7 @@ class LayoutCustomScrollbarPart;
 struct PaintInvalidatorContext;
 class PaintLayer;
 class ScrollingCoordinator;
+class ScrollMarkerGroupPseudoElement;
 class SnappedQueryScrollSnapshot;
 
 struct CORE_EXPORT PaintLayerScrollableAreaRareData final
@@ -761,6 +762,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   ScrollOffset GetScrollOffsetForScrollMarkerUpdate();
   void UpdateScrollMarkers() override;
+  ScrollMarkerGroupPseudoElement* GetScrollMarkerGroup() const override;
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will

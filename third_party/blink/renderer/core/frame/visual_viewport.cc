@@ -765,7 +765,8 @@ bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollCallback on_finish) {
+    ScrollCallback on_finish,
+    bool targeted_scroll) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
   // set to a non-clamped offset by ScrollableArea::setScrollOffset,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down

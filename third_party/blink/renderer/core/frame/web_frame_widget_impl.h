@@ -1040,6 +1040,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
 
+  // Let latched scroller know to unpin its selected scroll-marker.
+  void NotifyLatchedScrollMarkerGroup(
+      const cc::CompositorCommitData& commit_data);
+
 #if BUILDFLAG(IS_WIN)
   // Computes a contiguous range of character bounds within proximity of
   // `pivot_position` to enable gesture support for StylusHandwritingWin.
