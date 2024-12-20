@@ -168,10 +168,23 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted() {
     return;
   }
   CHECK(!app_id_.empty());
-  if (app_lock_->registrar().IsInstallState(
-          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+
+  bool is_installable;
+  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
+    is_installable = true;
+  } else {
+    switch (app_lock_->registrar().GetInstallState(app_id_).value()) {
+      case web_app::proto::SUGGESTED_FROM_ANOTHER_DEVICE:
+        is_installable = true;
+        break;
+      case web_app::proto::INSTALLED_WITH_OS_INTEGRATION:
+      case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
+        is_installable = false;
+        break;
+    }
+  }
+
+  if (!is_installable) {
     // If the app is already installed, we don't show the dialog. Since nothing
     // went wrong, this is still considered a success.
     CompleteAndSelfDestruct(

@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -329,11 +330,10 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       return;
     }
 
-    if (lock.registrar().IsInstallState(
-            app_id.value(),
-            {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+    std::optional<proto::InstallState> install_state =
+        lock.registrar().GetInstallState(app_id.value());
+    if (install_state == web_app::proto::INSTALLED_WITH_OS_INTEGRATION ||
+        install_state == web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
       if (install_options.placeholder_resolution_behavior ==
               PlaceholderResolutionBehavior::kWaitForAppWindowsClosed &&
           lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {
@@ -365,18 +365,18 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
         StartInstallationTask(std::move(front),
                               /*installed_placeholder_app_id=*/std::nullopt);
         return;
-      } else {
-        debug_value.Set("simple_source_addition", true);
-        // Add install source before returning the result.
-        ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
-        WebApp* app_to_update = update->UpdateApp(app_id.value());
-        app_to_update->AddSource(ConvertExternalInstallSourceToSource(
-            install_options.install_source));
-        app_to_update->AddInstallURLToManagementExternalConfigMap(
-            ConvertExternalInstallSourceToSource(
-                install_options.install_source),
-            install_options.install_url);
       }
+
+      debug_value.Set("simple_source_addition", true);
+      // Add install source before returning the result.
+      ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+      WebApp* app_to_update = update->UpdateApp(app_id.value());
+      app_to_update->AddSource(
+          ConvertExternalInstallSourceToSource(install_options.install_source));
+      app_to_update->AddInstallURLToManagementExternalConfigMap(
+          ConvertExternalInstallSourceToSource(install_options.install_source),
+          install_options.install_url);
+
       std::move(front->callback)
           .Run(install_options.install_url,
                ExternallyManagedAppManager::InstallResult(

@@ -965,19 +965,20 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
       if (app->IsPolicyInstalledApp()) {
         UninstallPolicyAppById(profile, app_id);
       }
-      if (provider->registrar_unsafe().IsInstallState(
-              app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
-        ASSERT_TRUE(app->CanUserUninstallWebApp());
-        UninstallCompleteWaiter uninstall_waiter(profile, app_id);
-        base::test::TestFuture<webapps::UninstallResultCode> future;
-        provider->scheduler().RemoveUserUninstallableManagements(
-            app_id, webapps::WebappUninstallSource::kAppsPage,
-            future.GetCallback());
-        EXPECT_TRUE(UninstallSucceeded(future.Get()));
-        uninstall_waiter.Wait();
+
+      if (provider->registrar_unsafe().IsNotInRegistrar(app_id)) {
+        LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
+        continue;
       }
+
+      ASSERT_TRUE(app->CanUserUninstallWebApp());
+      UninstallCompleteWaiter uninstall_waiter(profile, app_id);
+      base::test::TestFuture<webapps::UninstallResultCode> future;
+      provider->scheduler().RemoveUserUninstallableManagements(
+          app_id, webapps::WebappUninstallSource::kAppsPage,
+          future.GetCallback());
+      EXPECT_TRUE(UninstallSucceeded(future.Get()));
+      uninstall_waiter.Wait();
       LOG(INFO) << "TearDownOnMainThread: Uninstall complete.";
     }
     // TODO(crbug.com/40206415): Investigate the true source of flakiness
