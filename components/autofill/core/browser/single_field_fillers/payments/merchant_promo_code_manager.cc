@@ -15,7 +15,11 @@
 
 namespace autofill {
 
-MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
+MerchantPromoCodeManager::MerchantPromoCodeManager(
+    PaymentsDataManager* payments_data_manager,
+    bool is_off_the_record)
+    : payments_data_manager_(payments_data_manager),
+      is_off_the_record_(is_off_the_record) {}
 
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
@@ -33,11 +37,10 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
 
   // If merchant promo code offers are available for the given site, and the
   // profile is not OTR, show the promo code offers.
-  if (!is_off_the_record_ && personal_data_manager_) {
+  if (!is_off_the_record_ && payments_data_manager_) {
     const std::vector<const AutofillOfferData*> promo_code_offers =
-        personal_data_manager_->payments_data_manager()
-            .GetActiveAutofillPromoCodeOffersForOrigin(
-                form_structure.main_frame_origin().GetURL());
+        payments_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
+            form_structure.main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(std::move(promo_code_offers), field,
                                std::move(on_suggestions_returned));
@@ -50,12 +53,6 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
   uma_recorder_.OnOfferSuggestionSelected(suggestion.type);
-}
-
-void MerchantPromoCodeManager::Init(PersonalDataManager* personal_data_manager,
-                                    bool is_off_the_record) {
-  personal_data_manager_ = personal_data_manager;
-  is_off_the_record_ = is_off_the_record;
 }
 
 void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(

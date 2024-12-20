@@ -264,9 +264,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
-
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
-
   std::unique_ptr<MockMandatoryReauthManager>
       mock_payments_mandatory_reauth_manager_;
 };

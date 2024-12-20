@@ -49,8 +49,6 @@ class SingleFieldFillRouterTest : public testing::Test {
                        CHROME_VERSION_MAJOR);
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     history_manager().Init(web_data_service_, prefs_.get(), false);
-    promo_code_manager().Init(&personal_data_manager(),
-                              /*is_off_the_record=*/false);
 
     FormData form;
     test_api(form).Append(
@@ -82,7 +80,8 @@ class SingleFieldFillRouterTest : public testing::Test {
   std::unique_ptr<PrefService> prefs_;
   MockAutocompleteHistoryManager autocomplete_history_manager_;
   MockIbanManager iban_manager_;
-  MockMerchantPromoCodeManager merchant_promo_code_manager_;
+  MockMerchantPromoCodeManager merchant_promo_code_manager_{
+      &personal_data_manager().payments_data_manager()};
   SingleFieldFillRouter single_field_fill_router_;
   std::unique_ptr<FormStructure> form_structure_;
 };

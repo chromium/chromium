@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -39,7 +40,9 @@
 namespace autofill::payments {
 
 TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
-    : client_(CHECK_DEREF(client)) {}
+    : client_(CHECK_DEREF(client)),
+      mock_merchant_promo_code_manager_(
+          &client_->GetPersonalDataManager().payments_data_manager()) {}
 
 TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 

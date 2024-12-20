@@ -13,7 +13,8 @@ namespace autofill {
 
 class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
  public:
-  MockMerchantPromoCodeManager();
+  explicit MockMerchantPromoCodeManager(
+      PaymentsDataManager* payments_data_manager);
   ~MockMerchantPromoCodeManager() override;
 
   MOCK_METHOD(bool,

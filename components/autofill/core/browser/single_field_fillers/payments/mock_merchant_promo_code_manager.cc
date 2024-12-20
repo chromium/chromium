@@ -4,9 +4,14 @@
 
 #include "components/autofill/core/browser/single_field_fillers/payments/mock_merchant_promo_code_manager.h"
 
+#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
+
 namespace autofill {
 
-MockMerchantPromoCodeManager::MockMerchantPromoCodeManager() = default;
+MockMerchantPromoCodeManager::MockMerchantPromoCodeManager(
+    PaymentsDataManager* payments_data_manager)
+    : MerchantPromoCodeManager(payments_data_manager,
+                               /*is_off_the_record=*/false) {}
 
 MockMerchantPromoCodeManager::~MockMerchantPromoCodeManager() = default;
 
