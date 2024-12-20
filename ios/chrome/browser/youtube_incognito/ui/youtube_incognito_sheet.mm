@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -99,6 +100,13 @@ CGFloat const kAnimationScalFactor = 0.5;
 - (void)customizeSubtitle:(UITextView*)subtitle {
   subtitle.textAlignment = NSTextAlignmentNatural;
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  // `Got it` button was clicked.
+  [self.delegate didTapPrimaryActionButton];
 }
 
 #pragma mark - Private

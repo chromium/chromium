@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet.h"
+#import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
 
 namespace {
 
@@ -15,6 +16,9 @@ namespace {
 CGFloat const kHalfSheetCornerRadius = 20;
 
 }  // namespace
+
+@interface YoutubeIncognitoCoordinator () <YoutubeIncognitoSheetDelegate>
+@end
 
 @implementation YoutubeIncognitoCoordinator {
   YoutubeIncognitoSheet* _viewController;
@@ -37,6 +41,13 @@ CGFloat const kHalfSheetCornerRadius = 20;
 - (void)stop {
   [super stop];
   [self dismissViewController];
+}
+
+#pragma mark - YoutubeIncognitoSheetDelegate
+
+- (void)didTapPrimaryActionButton {
+  CHECK(_viewController);
+  [self.delegate shouldStopYoutubeIncognitoCoordinator:self];
 }
 
 #pragma mark - Private
