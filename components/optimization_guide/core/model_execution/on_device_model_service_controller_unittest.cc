@@ -3701,8 +3701,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationDelayed) {
       OnDeviceModelValidationResult::kSuccess, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
-  fake_settings_.set_execute_delay(base::Seconds(30));
+TEST_F(OnDeviceModelServiceControllerTest,
+       SessionDoesNotInterruptModelValidation) {
+  fake_settings_.set_execute_delay(base::Seconds(10));
 
   FakeBaseModelAsset base_model(WillPassValidationConfig());
   FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
@@ -3713,16 +3714,20 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationInterrupted) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
 
-  EXPECT_TRUE(CreateSession());
-
-  task_environment_.RunUntilIdle();
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
+  EXPECT_TRUE(response_.GetFinalStatus());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
-      OnDeviceModelValidationResult::kInterrupted, 1);
+      OnDeviceModelValidationResult::kSuccess, 1);
 
   // Session was created so the service should still be connected.
   EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  session.reset();
 
   // After idle timeout, service should be killed.
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +

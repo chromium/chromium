@@ -207,9 +207,6 @@ void FakeOnDeviceModel::StartSession(
 void FakeOnDeviceModel::AddSession(
     mojo::PendingReceiver<mojom::Session> receiver,
     std::unique_ptr<FakeOnDeviceSession> session) {
-  // Mirror what the real OnDeviceModel does, which is only allow a single
-  // Session.
-  receivers_.Clear();
   receivers_.Add(std::move(session), std::move(receiver));
 }
 
