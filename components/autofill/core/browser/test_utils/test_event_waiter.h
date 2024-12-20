@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_EVENT_WAITER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_EVENT_WAITER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_EVENT_WAITER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_EVENT_WAITER_H_
 
 #include <list>
 
@@ -74,8 +74,9 @@ EventWaiter<Event>::~EventWaiter() {}
 
 template <typename Event>
 testing::AssertionResult EventWaiter<Event>::Wait() {
-  if (expected_events_.empty())
+  if (expected_events_.empty()) {
     return testing::AssertionSuccess();
+  }
 
   DCHECK(!run_loop_.running());
   run_loop_.Run();
@@ -102,8 +103,9 @@ testing::AssertionResult EventWaiter<Event>::Wait() {
 
 template <typename Event>
 void EventWaiter<Event>::OnEvent(Event actual_event) {
-  if (expected_events_.empty())
+  if (expected_events_.empty()) {
     return;
+  }
 
   if (expected_events_.front() != actual_event) {
     failure_messages_.push_back(
@@ -114,10 +116,11 @@ void EventWaiter<Event>::OnEvent(Event actual_event) {
   }
   expected_events_.pop_front();
   // Only quit the loop if no other events are expected.
-  if (expected_events_.empty() && run_loop_.running())
+  if (expected_events_.empty() && run_loop_.running()) {
     run_loop_.Quit();
+  }
 }
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_EVENT_WAITER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_EVENT_WAITER_H_

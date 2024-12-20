@@ -17,7 +17,7 @@
 #include "chrome/test/payments/payment_request_test_controller.h"
 #include "chrome/test/payments/personal_data_manager_test_util.h"
 #include "chrome/test/payments/test_event_waiter.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"

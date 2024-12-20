@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

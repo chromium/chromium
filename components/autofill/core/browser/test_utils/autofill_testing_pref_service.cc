@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_testing_pref_service.h"
+#include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"

@@ -5,8 +5,8 @@
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

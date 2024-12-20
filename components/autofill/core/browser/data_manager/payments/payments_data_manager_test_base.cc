@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_base.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "testing/gtest/include/gtest/gtest.h"

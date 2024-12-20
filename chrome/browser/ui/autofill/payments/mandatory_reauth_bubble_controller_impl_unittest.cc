@@ -9,8 +9,8 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

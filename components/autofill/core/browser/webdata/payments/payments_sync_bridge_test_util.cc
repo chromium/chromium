@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 namespace autofill {
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 
 #include "base/containers/to_vector.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 
 namespace autofill::test {
@@ -196,19 +196,25 @@ void FormStructureTest::CheckFormStructureTestData(
 
     auto form_structure = std::make_unique<FormStructure>(form);
 
-    if (test_case.form_flags.determine_heuristic_type)
+    if (test_case.form_flags.determine_heuristic_type) {
       form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    }
 
-    if (test_case.form_flags.is_autofillable)
+    if (test_case.form_flags.is_autofillable) {
       EXPECT_TRUE(form_structure->IsAutofillable());
-    if (test_case.form_flags.should_be_parsed)
+    }
+    if (test_case.form_flags.should_be_parsed) {
       EXPECT_TRUE(form_structure->ShouldBeParsed());
-    if (test_case.form_flags.should_be_queried)
+    }
+    if (test_case.form_flags.should_be_queried) {
       EXPECT_TRUE(form_structure->ShouldBeQueried());
-    if (test_case.form_flags.should_be_uploaded)
+    }
+    if (test_case.form_flags.should_be_uploaded) {
       EXPECT_TRUE(form_structure->ShouldBeUploaded());
-    if (test_case.form_flags.has_author_specified_types)
+    }
+    if (test_case.form_flags.has_author_specified_types) {
       EXPECT_TRUE(form_structure->has_author_specified_types());
+    }
 
     if (test_case.form_flags.is_complete_credit_card_form.has_value()) {
       EXPECT_EQ(form_structure->IsCompleteCreditCardForm(),
@@ -224,8 +230,9 @@ void FormStructureTest::CheckFormStructureTestData(
     }
     if (test_case.form_flags.section_count) {
       std::set<Section> section_names;
-      for (const auto& field : *form_structure)
+      for (const auto& field : *form_structure) {
         section_names.insert(field->section());
+      }
       EXPECT_EQ(*test_case.form_flags.section_count,
                 static_cast<int>(section_names.size()));
     }

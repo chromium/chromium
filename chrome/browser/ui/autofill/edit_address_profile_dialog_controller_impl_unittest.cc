@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

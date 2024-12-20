@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TEST_UTILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TEST_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TEST_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TEST_UTILS_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_testing_pref_service.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -27,6 +26,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -422,4 +422,4 @@ CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id);
 }  // namespace test
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TEST_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TEST_UTILS_H_

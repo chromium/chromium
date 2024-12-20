@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TESTING_PREF_SERVICE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TESTING_PREF_SERVICE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TESTING_PREF_SERVICE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TESTING_PREF_SERVICE_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "components/prefs/testing_pref_service.h"
@@ -48,4 +48,4 @@ TestingPrefServiceBase<PrefService, user_prefs::PrefRegistrySyncable>::
         scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
         PrefNotifierImpl* pref_notifier);
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TESTING_PREF_SERVICE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_AUTOFILL_TESTING_PREF_SERVICE_H_

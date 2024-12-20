@@ -7,11 +7,11 @@
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/signin/public/identity_manager/account_info.h"
 
 MockAutofillSaveCardInfoBarDelegateMobile::

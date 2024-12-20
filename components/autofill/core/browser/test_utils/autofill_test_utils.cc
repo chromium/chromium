@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
 #include <cstdint>
 #include <iterator>
@@ -84,8 +84,9 @@ std::string GetRandomCardNumber() {
   const size_t length = 16;
   std::string value;
   value.reserve(length);
-  for (size_t i = 0; i < length; ++i)
+  for (size_t i = 0; i < length; ++i) {
     value.push_back(static_cast<char>(base::RandInt('0', '9')));
+  }
   return value;
 }
 
@@ -115,9 +116,8 @@ void VerifyFormGroupValues(const FormGroup& form_group,
                  << "Expected for type " << FieldTypeToStringView(value.type)
                  << "\n\t" << value.value << " with status "
                  << (ignore_status ? "(ignored)" : "")
-                 << value.verification_status << "\nFound:"
-                 << "\n\t" << form_group.GetRawInfo(value.type)
-                 << " with status "
+                 << value.verification_status << "\nFound:" << "\n\t"
+                 << form_group.GetRawInfo(value.type) << " with status "
                  << form_group.GetVerificationStatus(value.type));
 
     EXPECT_EQ(form_group.GetRawInfo(value.type),
@@ -733,8 +733,9 @@ void SetProfileInfo(AutofillProfile* profile,
   check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
   check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
   check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
-  if (finalize)
+  if (finalize) {
     profile->FinalizeAfterImport();
+  }
 }
 
 void SetProfileInfo(AutofillProfile* profile,
@@ -766,8 +767,9 @@ void SetProfileInfo(AutofillProfile* profile,
   check_and_set(profile, ADDRESS_HOME_STATE, state, status);
   check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
   check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
-  if (finalize)
+  if (finalize) {
     profile->FinalizeAfterImport();
+  }
 }
 
 void SetProfileInfoWithGuid(AutofillProfile* profile,
@@ -786,8 +788,9 @@ void SetProfileInfoWithGuid(AutofillProfile* profile,
                             const char* phone,
                             bool finalize,
                             VerificationStatus status) {
-  if (guid)
+  if (guid) {
     profile->set_guid(guid);
+  }
   SetProfileInfo(profile, first_name, middle_name, last_name, email, company,
                  address1, address2, city, state, zipcode, country, phone,
                  finalize, status);
@@ -914,8 +917,9 @@ std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form) {
 std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FormSignature> all_signatures;
-  for (const FormStructure* form : forms)
+  for (const FormStructure* form : forms) {
     all_signatures.push_back(form->form_signature());
+  }
   return all_signatures;
 }
 

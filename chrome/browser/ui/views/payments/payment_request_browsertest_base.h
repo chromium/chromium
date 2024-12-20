@@ -19,7 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/const_csp_checker.h"
 #include "components/sync/test/test_sync_service.h"
