@@ -638,6 +638,7 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
       COMPANY_NAME,
       ADDRESS_HOME_LINE1,
       ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE,
