@@ -115,12 +115,16 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_queried_region_bytes_;
   }
 
-  const base::span<const uint8_t>& last_sent_underlying_content_bytes() const {
+  base::span<const uint8_t> last_sent_underlying_content_bytes() const {
     return last_sent_underlying_content_bytes_;
   }
 
   const lens::MimeType& last_sent_underlying_content_type() const {
     return last_sent_underlying_content_type_;
+  }
+
+  base::span<const std::u16string> last_sent_partial_content() const {
+    return last_sent_partial_content_;
   }
 
   const GURL& last_sent_page_url() const { return last_sent_page_url_; }
@@ -187,6 +191,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   void SendPageContentUpdateRequest(base::span<const uint8_t> new_content_bytes,
                                     lens::MimeType new_content_type,
                                     GURL new_page_url) override;
+
+  void SendPartialPageContentRequest(
+      base::span<const std::u16string> partial_content) override;
 
   // Resets the test state.
   void ResetTestingState();
@@ -261,12 +268,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last region bytes sent by the query controller.
   std::optional<SkBitmap> last_queried_region_bytes_;
 
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const uint8_t>
-      last_sent_underlying_content_bytes_;
+  // The last underlying content bytes sent by the query controller.
+  base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.
   lens::MimeType last_sent_underlying_content_type_;
+
+  // The last partial content sent by the query controller.
+  base::raw_span<const std::u16string> last_sent_partial_content_;
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;

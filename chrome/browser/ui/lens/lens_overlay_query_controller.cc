@@ -382,14 +382,17 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
   PrepareAndFetchFullImageRequest();
 }
 
+void LensOverlayQueryController::ResetPageContentData() {
+  underlying_content_bytes_ = base::span<const uint8_t>();
+  underlying_content_type_ = lens::MimeType::kUnknown;
+  page_url_ = GURL();
+  partial_content_ = base::span<const std::u16string>();
+}
+
 void LensOverlayQueryController::SendPageContentUpdateRequest(
     base::span<const uint8_t> new_content_bytes,
     lens::MimeType new_content_type,
     GURL new_page_url) {
-  if (new_content_bytes == underlying_content_bytes_ &&
-      new_content_type == underlying_content_type_) {
-    return;
-  }
   underlying_content_bytes_ = new_content_bytes;
   underlying_content_type_ = new_content_type;
   page_url_ = new_page_url;
@@ -419,6 +422,13 @@ void LensOverlayQueryController::SendPageContentUpdateRequest(
   }
 
   PrepareAndFetchPageContentRequest();
+}
+
+void LensOverlayQueryController::SendPartialPageContentRequest(
+    base::span<const std::u16string> partial_content) {
+  partial_content_ = partial_content;
+
+  // TODO(379344946): Attach partial content to a new request and send.
 }
 
 void LensOverlayQueryController::SendRegionSearch(
