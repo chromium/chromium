@@ -266,6 +266,8 @@ BASE_DECLARE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)

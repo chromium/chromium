@@ -201,7 +201,9 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 
   // Assign the `match` and advance the cursor.
   if (match) {
-    *match = {field, {.matched_attribute = MatchAttribute::kLabel}};
+    *match = {
+        field,
+        {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
   }
   scanner->Advance();
   return true;

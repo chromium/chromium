@@ -347,10 +347,12 @@ void AddressFieldParserNG::AddClassifications(
     if (!field_ptr) {
       continue;
     }
-    // TODO(crbug.com/320965828): Support MatchInfo.
+    // TODO(crbug.com/320965828): Support MatchInfo. The NG parser doesn't track
+    // how matches are found. `kHighQualityLabel` is merely a placeholder.
     AddClassification(
         FieldAndMatchInfo{field_ptr,
-                          {.matched_attribute = MatchAttribute::kLabel}},
+                          {.matched_attribute =
+                               MatchInfo::MatchAttribute::kHighQualityLabel}},
         field_type, kBaseAddressParserScore, field_candidates);
   }
 }

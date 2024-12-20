@@ -747,6 +747,17 @@ BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
              "PlusAddressUserDidChoosePlusAddressOverEmailSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the placeholder is not considered a label fallback on the
+// renderer side anymore. Instead, local heuristic will match regexes against
+// either the label or the placeholder, depending on how high quality the label
+// is. If no matche is found, local heuristics fall back to the other value.
+// This feature can be thought of as "lightweight" multi-label support.
+// TODO(crbug.com/320965828): Remove when launched.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport,
+             "AutofillBetterLocalHeuristicPlaceholderSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

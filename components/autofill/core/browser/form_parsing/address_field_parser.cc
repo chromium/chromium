@@ -719,6 +719,10 @@ AddressFieldParser::ParseNameAndLabelSeparately(
                  [](const MatchParams& p) {
                    return WithoutAttribute(p, MatchAttribute::kName);
                  });
+  // Only consider high quality label matches to avoid false positives.
+  parsed_label =
+      parsed_label && cur_match->match_info.matched_attribute ==
+                          MatchInfo::MatchAttribute::kHighQualityLabel;
   if (parsed_name && parsed_label) {
     if (match) {
       *match = std::move(cur_match);
@@ -1189,10 +1193,12 @@ bool AddressFieldParser::SetFieldAndAdvanceCursor(
       case RESULT_MATCH_LABEL:
       // Since the parser matches against the label first, interpret
       // RESULT_MATCH_NAME_LABEL as a label match.
+      // `ParseNameAndLabelSeparately()` only allows for high quality label
+      // matches.
       case RESULT_MATCH_NAME_LABEL:
-        return MatchAttribute::kLabel;
+        return MatchInfo::MatchAttribute::kHighQualityLabel;
       case RESULT_MATCH_NAME:
-        return MatchAttribute::kName;
+        return MatchInfo::MatchAttribute::kName;
     }
   };
   *match = {scanner->Cursor(),

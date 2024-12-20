@@ -85,6 +85,35 @@ void MaybePrintMatchLogs(LogManager* log_manager,
                       << std::move(table_rows) << CTag{"table"};
 }
 
+// Prior to `AutofillBetterLocalHeuristicPlaceholderSupport`, the renderer
+// prioritized placeholders lower than labels assigned with the for-attribute
+// and labels inferred via `InferLabelFromSibling()`. This same prioritization
+// is used here. It's unclear whether this is the right prioritization.
+bool IsLabelHigherQualityThanPlaceholder(
+    FormFieldData::LabelSource label_source) {
+  switch (label_source) {
+    case FormFieldData::LabelSource::kCombined:
+    case FormFieldData::LabelSource::kForId:
+    case FormFieldData::LabelSource::kForName:
+    case FormFieldData::LabelSource::kForShadowHostId:
+    case FormFieldData::LabelSource::kForShadowHostName:
+    case FormFieldData::LabelSource::kLabelTag:
+    case FormFieldData::LabelSource::kPTag:
+      return true;
+    case FormFieldData::LabelSource::kAriaLabel:
+    case FormFieldData::LabelSource::kDefaultSelectText:
+    case FormFieldData::LabelSource::kDdTag:
+    case FormFieldData::LabelSource::kDivTable:
+    case FormFieldData::LabelSource::kLiTag:
+    case FormFieldData::LabelSource::kOverlayingLabel:
+    case FormFieldData::LabelSource::kPlaceHolder:
+    case FormFieldData::LabelSource::kTdTag:
+    case FormFieldData::LabelSource::kUnknown:
+    case FormFieldData::LabelSource::kValue:
+      return false;
+  }
+}
+
 }  // namespace
 
 RegexMatchesCache::RegexMatchesCache(int capacity) : cache_(capacity) {}
@@ -566,9 +595,31 @@ void FormFieldParser::AddClassification(
     return;
   }
 
+  // When `kAutofillBetterLocalHeuristicPlaceholderSupport` is enabled,
+  // different parsers might derive conflicting classifications based on
+  // different labels. In this case, the higher quality label match should win.
+  // Conceptually, this is achieved by having a composite score of the form
+  // (`is_name_or_high_quality_label_match`, `parser_score`). Practically, since
+  // all parser scores are less than 2, adding 2 suffices.
+  CHECK_LT(parser_score, 2);
+  float score = match->match_info.matched_attribute ==
+                        MatchInfo::MatchAttribute::kLowQualityLabel
+                    ? parser_score
+                    : parser_score + 2;
+
   FieldCandidates& candidates = field_candidates[match->field->global_id()];
-  candidates.AddFieldCandidate(type, match->match_info.matched_attribute,
-                               parser_score);
+  candidates.AddFieldCandidate(
+      type,
+      [&] {
+        switch (match->match_info.matched_attribute) {
+          case MatchInfo::MatchAttribute::kName:
+            return MatchAttribute::kName;
+          case MatchInfo::MatchAttribute::kHighQualityLabel:
+          case MatchInfo::MatchAttribute::kLowQualityLabel:
+            return MatchAttribute::kLabel;
+        }
+      }(),
+      score);
 }
 
 // static
@@ -599,12 +650,23 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
     std::u16string_view pattern,
     DenseSet<MatchAttribute> match_attributes,
     const char* regex_name) {
+  // Since `MatchAttribute::kLabel < MatchAttribute::kName`, the logic attempts
+  // matching `pattern` against the label first. However, when
+  // `kAutofillBetterLocalHeuristicPlaceholderSupport` is enabled, label
+  // matches distinguish between low and high quality. Since low quality label
+  // matches are scored lower, they should be prioritized lower than name
+  // matches. This is done via `low_quality_label_fallback`.
+  std::optional<FormFieldParser::MatchInfo> low_quality_label_fallback;
   for (MatchAttribute attribute : match_attributes) {
     switch (attribute) {
       case MatchAttribute::kLabel:
         if (std::optional<MatchInfo> match_info =
                 MatchInLabel(context, field, pattern, regex_name)) {
-          return match_info;
+          if (match_info->matched_attribute ==
+              MatchInfo::MatchAttribute::kHighQualityLabel) {
+            return match_info;
+          }
+          low_quality_label_fallback = std::move(match_info);
         }
         break;
       case MatchAttribute::kName:
@@ -615,7 +677,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
         break;
     }
   }
-  return std::nullopt;
+  return low_quality_label_fallback;
 }
 
 // static
@@ -631,13 +693,40 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
 
   // TODO(crbug.com/40741721): Remove once shared labels are launched.
   const std::u16string& label =
-      context.autofill_enable_support_for_parsing_with_shared_labels
+      context.enable_support_for_parsing_with_shared_labels
           ? field.parseable_label()
           : field.label();
-  if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {
-    MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
-                        matches);
-    return MatchInfo{.matched_attribute = MatchAttribute::kLabel};
+
+  if (!context.better_placeholder_support || field.placeholder().empty()) {
+    if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {
+      MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
+                          matches);
+      return MatchInfo{.matched_attribute =
+                           MatchInfo::MatchAttribute::kHighQualityLabel};
+    }
+    return std::nullopt;
+  }
+
+  bool is_label_high_quality =
+      IsLabelHigherQualityThanPlaceholder(field.label_source());
+  const std::u16string& high_quality_label =
+      is_label_high_quality ? label : field.placeholder();
+  const std::u16string& low_quality_label =
+      is_label_high_quality ? field.placeholder() : label;
+
+  if (MatchesRegexWithCache(context, high_quality_label, pattern,
+                            capture_destination)) {
+    MaybePrintMatchLogs(context.log_manager, regex_name, "high quality label",
+                        high_quality_label, matches);
+    return MatchInfo{.matched_attribute =
+                         MatchInfo::MatchAttribute::kHighQualityLabel};
+  }
+  if (MatchesRegexWithCache(context, low_quality_label, pattern,
+                            capture_destination)) {
+    MaybePrintMatchLogs(context.log_manager, regex_name, "low quality label",
+                        low_quality_label, matches);
+    return MatchInfo{.matched_attribute =
+                         MatchInfo::MatchAttribute::kLowQualityLabel};
   }
   return std::nullopt;
 }
@@ -656,7 +745,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
   const std::u16string& name = field.parseable_name();
   if (MatchesRegexWithCache(context, name, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches);
-    return MatchInfo{.matched_attribute = MatchAttribute::kName};
+    return MatchInfo{.matched_attribute = MatchInfo::MatchAttribute::kName};
   }
   return std::nullopt;
 }

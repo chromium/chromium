@@ -214,6 +214,10 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // changes default parsing behavior, so must be disabled to avoid
           // fieldtrial_testing_config interference.
           features::kAutofillEnableEmailHeuristicOnlyAddressForms,
+          // TODO(crbug.com/320965828): This feature is not supported on the iOS
+          // renderer side and disabled to avoid too many differences between
+          // the expectations.
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport,
       });
 }
 
