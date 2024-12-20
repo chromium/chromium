@@ -188,7 +188,9 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
                 return;
             }
             mSelectedTimePeriod = selectedTimePeriod;
-            mCounter.setSelectedTimePeriod(mSelectedTimePeriod);
+            if (mCounter != null) {
+                mCounter.setSelectedTimePeriod(mSelectedTimePeriod);
+            }
         }
     }
 
