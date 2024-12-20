@@ -304,7 +304,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // Force the initialisation of the OSCrypt library early in the application
   // startup sequence. See https://crbug.com/383661630 for why this is needed.
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&EnsureOSCryptInitialized));
 
   // ContentSettingsPattern need to be initialized before creating the
