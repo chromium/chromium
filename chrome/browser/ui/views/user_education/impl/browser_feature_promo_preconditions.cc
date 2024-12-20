@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -28,6 +32,8 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kBrowserNotClosingPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kNoCriticalNoticeShowingPrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -101,5 +107,39 @@ BrowserNotClosingPrecondition::CheckPrecondition(ComputedData&) const {
       browser_view_->GetWidget()->IsClosed()) {
     return user_education::FeaturePromoResult::kBlockedByUi;
   }
+  return user_education::FeaturePromoResult::Success();
+}
+
+NoCriticalNoticeShowingPrecondition::NoCriticalNoticeShowingPrecondition(
+    BrowserView& browser_view)
+    : FeaturePromoPreconditionBase(kNoCriticalNoticeShowingPrecondition,
+                                   "No critical notice is showing"),
+      browser_view_(browser_view) {}
+NoCriticalNoticeShowingPrecondition::~NoCriticalNoticeShowingPrecondition() =
+    default;
+
+user_education::FeaturePromoResult
+NoCriticalNoticeShowingPrecondition::CheckPrecondition(ComputedData&) const {
+  // Turn off IPH while a required privacy interstitial is visible or pending.
+  auto* const privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(browser_view_->GetProfile());
+  if (privacy_sandbox_service &&
+      privacy_sandbox_service->GetRequiredPromptType(
+          PrivacySandboxService::SurfaceType::kDesktop) !=
+          PrivacySandboxService::PromptType::kNone) {
+    return user_education::FeaturePromoResult::kBlockedByUi;
+  }
+
+  // Turn off IPH while a required search engine choice dialog is visible or
+  // pending.
+  SearchEngineChoiceDialogService* const search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser_view_->GetProfile());
+  if (search_engine_choice_dialog_service &&
+      search_engine_choice_dialog_service->HasPendingDialog(
+          *browser_view_->browser())) {
+    return user_education::FeaturePromoResult::kBlockedByUi;
+  }
+
   return user_education::FeaturePromoResult::Success();
 }

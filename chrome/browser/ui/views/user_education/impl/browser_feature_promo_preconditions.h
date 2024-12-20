@@ -17,6 +17,8 @@ DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kToolbarNotCollapsedPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kBrowserNotClosingPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kNoCriticalNoticeShowingPrecondition);
 
 // Requires that the window a promo will be shown in is active.
 class WindowActivePrecondition
@@ -68,6 +70,23 @@ class BrowserNotClosingPrecondition
  public:
   explicit BrowserNotClosingPrecondition(BrowserView& browser_view);
   ~BrowserNotClosingPrecondition() override;
+
+  // FeaturePromoPreconditionBase:
+  user_education::FeaturePromoResult CheckPrecondition(
+      ComputedData& data) const override;
+
+ private:
+  const raw_ref<BrowserView> browser_view_;
+};
+
+// Certain critical notices do not (yet) use the Product Messaging Service.
+// TODO(https://crbug.com/324785292): When the migration is done, remove this
+// precondition.
+class NoCriticalNoticeShowingPrecondition
+    : public user_education::FeaturePromoPreconditionBase {
+ public:
+  explicit NoCriticalNoticeShowingPrecondition(BrowserView& browser_view);
+  ~NoCriticalNoticeShowingPrecondition() override;
 
   // FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
