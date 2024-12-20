@@ -256,7 +256,7 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
-eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
+eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
 verify_channel
