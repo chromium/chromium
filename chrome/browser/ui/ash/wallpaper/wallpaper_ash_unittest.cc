@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 
 #include <memory>
 
@@ -10,11 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

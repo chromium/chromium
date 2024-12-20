@@ -125,7 +125,6 @@ class SuggestionServiceAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class VpnServiceAsh;
-class WallpaperAsh;
 class WebAppServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
@@ -549,8 +548,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
-  WallpaperAsh* wallpaper_ash() { return wallpaper_ash_.get(); }
-
   WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
 
   WebKioskServiceAsh* web_kiosk_service_ash() {
@@ -663,9 +660,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
-  // TODO(crbug.com/373972275): Move ownership of this object elsewhere. It is
-  // no longer a crosapi, but it is still used internally by ash-chrome.
-  std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 

@@ -16,12 +16,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/user_manager/user.h"
@@ -60,10 +58,6 @@ crosapi::mojom::WallpaperLayout GetMojoLayoutEnum(
     default:
       return crosapi::mojom::WallpaperLayout::kCenter;
   }
-}
-
-crosapi::WallpaperAsh* GetWallpaperAsh() {
-  return crosapi::CrosapiManager::Get()->crosapi_ash()->wallpaper_ash();
 }
 
 class WallpaperFetcher {
@@ -219,7 +213,7 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
   settings->layout = GetMojoLayoutEnum(params_->details.layout);
   settings->filename = params_->details.filename;
 
-  auto* wallpaper_ash = GetWallpaperAsh();
+  auto* wallpaper_ash = WallpaperAsh::Get();
   CHECK(wallpaper_ash);
   wallpaper_ash->SetWallpaper(
       std::move(settings), extension_id, extension_name,

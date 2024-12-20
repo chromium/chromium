@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 static_library("wallpaper") {
   sources = [
+    "wallpaper_ash.cc",
+    "wallpaper_ash.h",
     "wallpaper_controller_client_impl.cc",
     "wallpaper_controller_client_impl.h",
   ]
@@ -33,6 +35,7 @@ static_library("wallpaper") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/ash/wallpaper_handlers",
+    "//chrome/browser/chromeos/extensions/wallpaper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/login",
@@ -53,6 +56,7 @@ static_library("wallpaper") {
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/chromeos/extensions/wallpaper",
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/policy/external_data/handlers",
@@ -82,7 +86,10 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "wallpaper_controller_client_impl_unittest.cc" ]
+  sources = [
+    "wallpaper_ash_unittest.cc",
+    "wallpaper_controller_client_impl_unittest.cc",
+  ]
 
   deps = [
     ":test_support",
@@ -93,6 +100,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//components/user_manager",
     "//components/value_store:test_support",

@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/ash/wallpaper/wallpaper_ash.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/common",
 ]

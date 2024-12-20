@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 
 #include <string>
 #include <vector>
@@ -28,6 +28,9 @@
 using content::BrowserThread;
 
 namespace {
+
+WallpaperAsh* g_instance = nullptr;
+
 ash::WallpaperLayout GetLayoutEnum(crosapi::mojom::WallpaperLayout layout) {
   switch (layout) {
     case crosapi::mojom::WallpaperLayout::kStretch:
@@ -81,17 +84,26 @@ std::vector<uint8_t> GenerateThumbnail(const gfx::ImageSkia& image,
 
 }  // namespace
 
-namespace crosapi {
+// static
+WallpaperAsh* WallpaperAsh::Get() {
+  return g_instance;
+}
 
-WallpaperAsh::WallpaperAsh() = default;
+WallpaperAsh::WallpaperAsh() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-WallpaperAsh::~WallpaperAsh() = default;
+WallpaperAsh::~WallpaperAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void WallpaperAsh::SetWallpaper(
-    mojom::WallpaperSettingsPtr wallpaper_settings,
+    crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
     const std::string& extension_id,
     const std::string& extension_name,
-    base::OnceCallback<void(mojom::SetWallpaperResultPtr)> callback) {
+    base::OnceCallback<void(crosapi::mojom::SetWallpaperResultPtr)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(ash::LoginState::Get()->IsUserLoggedIn());
   // Prevent any in progress decodes from changing wallpaper.
@@ -116,7 +128,7 @@ void WallpaperAsh::SetWallpaper(
 }
 
 void WallpaperAsh::OnWallpaperDecoded(
-    mojom::WallpaperSettingsPtr wallpaper_settings,
+    crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
     const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (bitmap.isNull()) {
@@ -180,5 +192,3 @@ void WallpaperAsh::SendSuccessResult(
       extension_id_);
   extension_id_.clear();
 }
-
-}  // namespace crosapi

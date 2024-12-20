@@ -15,6 +15,7 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login",
+  "+chrome/browser/ash/profiles/profile_helper.h",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/wallpaper_handlers",
   "+chrome/browser/ash/wallpaper",

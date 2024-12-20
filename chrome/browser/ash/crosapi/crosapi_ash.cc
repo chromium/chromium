@@ -88,7 +88,6 @@
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
 #include "chrome/browser/ash/crosapi/volume_manager_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
-#include "chrome/browser/ash/crosapi/wallpaper_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_kiosk_service_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -280,7 +279,6 @@ CrosapiAsh::CrosapiAsh()
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
       volume_manager_ash_(std::make_unique<VolumeManagerAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
-      wallpaper_ash_(std::make_unique<WallpaperAsh>()),
       web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
       web_kiosk_service_ash_(std::make_unique<WebKioskServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(

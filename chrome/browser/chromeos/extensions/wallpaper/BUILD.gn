@@ -18,6 +18,7 @@ static_library("wallpaper") {
 
   public_deps = [
     "//chrome/common/extensions/api",
+    "//chromeos/crosapi/mojom",
     "//components/account_id",
     "//extensions/browser",
   ]
@@ -29,7 +30,6 @@ static_library("wallpaper") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//chrome/common/extensions",
-    "//chromeos/crosapi/mojom",
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/common",
