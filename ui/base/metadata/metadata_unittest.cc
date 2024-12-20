@@ -239,7 +239,8 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
     for (auto member = metadata->begin(); member != metadata->end(); member++) {
       std::string key = (*member)->member_name();
       if (expected_kv.count(key)) {
-        EXPECT_EQ((*member)->GetValueAsString(&test_class), expected_kv[key]);
+        EXPECT_EQ((*member)->GetValueAsString(&test_class), expected_kv[key])
+            << "Key: " << key;
         expected_kv.erase(key);
       }
     }
@@ -256,9 +257,9 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
 
   expected_kv = {{"kIntKey", u"1"},
                  {"kOwnedInsetsKey1", u"8,8,8,8"},
-                 {"kOwnedInsetsKey2", u"(assigned)"},
+                 {"kOwnedInsetsKey2", u"&{8,8,8,8}"},
                  {"kInsetsKey1", u"8,8,8,8"},
-                 {"kInsetsKey2", u"(assigned)"}};
+                 {"kInsetsKey2", u"&{8,8,8,8}"}};
 
   verify();
 }

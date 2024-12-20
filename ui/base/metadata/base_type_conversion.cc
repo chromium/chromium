@@ -9,35 +9,28 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time_delta_from_string.h"
+#include "components/url_formatter/url_fixer.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 namespace metadata {
-
-const char kNoPrefix[] = "";
-const char kSkColorPrefix[] = "--";
-
-std::u16string PointerToString(const void* pointer_val) {
-  return pointer_val ? u"(assigned)" : u"(not assigned)";
-}
-
-const std::u16string& GetNullOptStr() {
-  static const base::NoDestructor<std::u16string> kNullOptStr(u"<Empty>");
-  return *kNullOptStr;
-}
 
 /***** String Conversions *****/
 
@@ -61,10 +54,6 @@ std::u16string TypeConverter<bool>::ToString(bool source_value) {
   return source_value ? u"true" : u"false";
 }
 
-ValidStrings TypeConverter<bool>::GetValidStrings() {
-  return {u"false", u"true"};
-}
-
 std::u16string TypeConverter<const char*>::ToString(const char* source_value) {
   return base::UTF8ToUTF16(source_value);
 }
@@ -81,11 +70,6 @@ std::u16string TypeConverter<GURL>::ToString(const GURL& source_value) {
 std::u16string TypeConverter<base::FilePath>::ToString(
     const base::FilePath& source_value) {
   return source_value.AsUTF16Unsafe();
-}
-
-std::u16string TypeConverter<std::u16string>::ToString(
-    const std::u16string& source_value) {
-  return source_value;
 }
 
 std::u16string TypeConverter<base::TimeDelta>::ToString(
@@ -128,14 +112,12 @@ std::u16string TypeConverter<gfx::RectF>::ToString(
 
 std::u16string TypeConverter<gfx::ShadowValues>::ToString(
     const gfx::ShadowValues& source_value) {
-  std::u16string ret = u"[";
-  for (auto shadow_value : source_value) {
-    ret += u" " + base::ASCIIToUTF16(shadow_value.ToString()) + u";";
-  }
-
-  ret[ret.length() - 1] = ' ';
-  ret += u"]";
-  return ret;
+  std::vector<std::string> shadow_strings;
+  shadow_strings.reserve(source_value.size());
+  base::ranges::transform(source_value, std::back_inserter(shadow_strings),
+                          &gfx::ShadowValue::ToString);
+  return base::ASCIIToUTF16(
+      base::StrCat({"[", base::JoinString(shadow_strings, "; "), "]"}));
 }
 
 std::u16string TypeConverter<gfx::Size>::ToString(
@@ -153,10 +135,23 @@ std::u16string TypeConverter<std::string>::ToString(
   return base::UTF8ToUTF16(source_value);
 }
 
+std::u16string TypeConverter<std::u16string>::ToString(
+    const std::u16string& source_value) {
+  return source_value;
+}
+
 std::u16string TypeConverter<url::Component>::ToString(
     const url::Component& source_value) {
   return base::ASCIIToUTF16(
       base::StringPrintf("{%d,%d}", source_value.begin, source_value.len));
+}
+
+std::optional<bool> TypeConverter<bool>::FromString(
+    const std::u16string& source_value) {
+  if (source_value == u"true") {
+    return true;
+  }
+  return (source_value == u"false") ? std::make_optional(false) : std::nullopt;
 }
 
 std::optional<int8_t> TypeConverter<int8_t>::FromString(
@@ -244,12 +239,11 @@ std::optional<double> TypeConverter<double>::FromString(
              : std::nullopt;
 }
 
-std::optional<bool> TypeConverter<bool>::FromString(
+std::optional<GURL> ui::metadata::TypeConverter<GURL>::FromString(
     const std::u16string& source_value) {
-  const bool is_true = source_value == u"true";
-  if (is_true || source_value == u"false")
-    return is_true;
-  return std::nullopt;
+  const GURL url =
+      url_formatter::FixupURL(base::UTF16ToUTF8(source_value), std::string());
+  return url.is_valid() ? std::make_optional(url) : std::nullopt;
 }
 
 std::optional<std::u16string> TypeConverter<std::u16string>::FromString(
@@ -419,6 +413,10 @@ std::optional<url::Component> TypeConverter<url::Component>::FromString(
     return url::Component(begin, len);
   }
   return std::nullopt;
+}
+
+ValidStrings TypeConverter<bool>::GetValidStrings() {
+  return {u"false", u"true"};
 }
 
 std::u16string TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::ToString(
