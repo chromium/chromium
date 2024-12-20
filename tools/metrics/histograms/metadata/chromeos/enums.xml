@@ -1229,6 +1229,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Dictation"/>
   <int value="23" label="PrivacyScreenToggle"/>
   <int value="24" label="Accessibility"/>
+  <int value="25" label="DoNotDisturb"/>
 </enum>
 
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">

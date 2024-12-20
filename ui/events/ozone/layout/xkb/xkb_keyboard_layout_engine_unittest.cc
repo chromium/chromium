@@ -836,7 +836,6 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       {{DomCode::EMOJI_PICKER, EF_NONE}, VKEY_EMOJI_PICKER},
       {{DomCode::DICTATE, EF_NONE}, VKEY_DICTATE},
       {{DomCode::ALL_APPLICATIONS, EF_NONE}, VKEY_ALL_APPLICATIONS},
-      {{DomCode::ACCESSIBILITY, EF_NONE}, VKEY_ACCESSIBILITY},
       // Verify the AC Application keys.
       {{DomCode::NEW, EF_NONE}, VKEY_NEW},
       {{DomCode::CLOSE, EF_NONE}, VKEY_CLOSE},
@@ -847,6 +846,8 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       {{DomCode::US_W, EF_ALTGR_DOWN, XKB_KEY_BackSpace, 8}, VKEY_BACK},
       {{DomCode::US_V, EF_ALTGR_DOWN, XKB_KEY_Return, 13}, VKEY_RETURN},
 #if BUILDFLAG(IS_CHROMEOS)
+      {{DomCode::ACCESSIBILITY, EF_NONE}, VKEY_ACCESSIBILITY},
+      {{DomCode::DO_NOT_DISTURB, EF_NONE}, VKEY_DO_NOT_DISTURB},
       // Verify on ChromeOS PRINT maps to VKEY_PRINT not VKEY_SNAPSHOT.
       {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_PRINT},
       // On ChromeOS XKB_KEY_3270_PrintScreen is used for PRINT_SCREEN.

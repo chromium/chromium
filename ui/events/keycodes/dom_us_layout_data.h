@@ -423,10 +423,14 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::WAKE_UP                            0x010083 WakeUp
 #if BUILDFLAG(IS_CHROMEOS)
     {DomCode::FN, VKEY_FUNCTION},  // 0x010097 Fn
+    {DomCode::DO_NOT_DISTURB,
+     VKEY_DO_NOT_DISTURB},  // 0x01009B System Do Not Disturb
 #endif
 #if BUILDFLAG(IS_POSIX)
     {DomCode::MICROPHONE_MUTE_TOGGLE,
      VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x0100A9 MicrophoneMuteToggle
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
     {DomCode::ACCESSIBILITY,
      VKEY_ACCESSIBILITY},  // 0x0100AA System Accessibility Binding
 #endif

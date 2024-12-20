@@ -259,12 +259,13 @@ enum KeyboardCode : unsigned short {
 #if BUILDFLAG(IS_CHROMEOS)
   VKEY_FUNCTION = 0xFF,
   VKEY_QUICK_INSERT = 0x100,
-#endif
 
   // System Accessibility Binding.
   VKEY_ACCESSIBILITY = 0x101,
 
-#if BUILDFLAG(IS_CHROMEOS)
+  // System Do Not Disturb Toggle.
+  VKEY_DO_NOT_DISTURB = 0x102,
+
   // The following values are used to be able to recognize button events within
   // ChromeOS. They have no functionality by default.
   VKEY_BUTTON_0 = 0xFF00,

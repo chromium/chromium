@@ -117,6 +117,7 @@ enum TopRowActionKey {
   kDictation,
   kPrivacyScreenToggle,
   kAccessibility,
+  kDoNotDisturb,
 };
 
 // Specifies the current charging state of a battery-powered device.

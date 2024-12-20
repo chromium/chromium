@@ -35,7 +35,8 @@ namespace ui {
   TOP_ROW_ACTION_KEYS_ENTRY(EmojiPicker)             \
   TOP_ROW_ACTION_KEYS_ENTRY(Dictation)               \
   TOP_ROW_ACTION_KEYS_ENTRY(PrivacyScreenToggle)     \
-  TOP_ROW_ACTION_KEYS_LAST_ENTRY(Accessibility)
+  TOP_ROW_ACTION_KEYS_ENTRY(Accessibility)           \
+  TOP_ROW_ACTION_KEYS_LAST_ENTRY(DoNotDisturb)
 
 enum class TopRowActionKey {
 #define TOP_ROW_ACTION_KEYS_ENTRY(top_row_key) k##top_row_key,

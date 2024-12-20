@@ -24,6 +24,7 @@
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -1288,6 +1289,7 @@ class TopRowLayoutCustomTest
       case TopRowActionKey::kAllApplications:
       case TopRowActionKey::kEmojiPicker:
       case TopRowActionKey::kDictation:
+      case TopRowActionKey::kDoNotDisturb:
       case TopRowActionKey::kUnknown:
       case TopRowActionKey::kNone:
         return 0;

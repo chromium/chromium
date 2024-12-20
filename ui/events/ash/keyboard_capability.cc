@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -126,6 +127,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_DICTATE, TopRowActionKey::kDictation},
         {VKEY_PRIVACY_SCREEN_TOGGLE, TopRowActionKey::kPrivacyScreenToggle},
         {VKEY_ACCESSIBILITY, TopRowActionKey::kAccessibility},
+        {VKEY_DO_NOT_DISTURB, TopRowActionKey::kDoNotDisturb},
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.

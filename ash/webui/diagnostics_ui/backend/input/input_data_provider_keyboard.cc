@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/ash/top_row_action_keys.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -251,6 +252,7 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
     case ui::TopRowActionKey::kEmojiPicker:
     case ui::TopRowActionKey::kDictation:
     case ui::TopRowActionKey::kAccessibility:
+    case ui::TopRowActionKey::kDoNotDisturb:
     case ui::TopRowActionKey::kUnknown:
       return mojom::TopRowKey::kUnknown;
     case ui::TopRowActionKey::kNone:
