@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -21,6 +22,23 @@
 using testing::_;
 using testing::AtLeast;
 using testing::Return;
+
+using UiResult = AutoPipSettingView::UiResult;
+
+namespace {
+
+const char kVideoConferencingHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "VideoConferencing";
+const char kMediaPlaybackHistogram[] =
+    "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+    "MediaPlayback";
+
+struct TestParams {
+  std::string histogram_name;
+};
+
+}  // anonymous namespace
 
 class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
  public:
@@ -42,7 +60,9 @@ class MockAutoBlocker : public permissions::PermissionDecisionAutoBlockerBase {
               (override));
 };
 
-class AutoPipSettingHelperTest : public views::ViewsTestBase {
+class AutoPipSettingHelperTest
+    : public views::ViewsTestBase,
+      public testing::WithParamInterface<TestParams> {
  public:
   AutoPipSettingHelperTest() = default;
 
@@ -98,11 +118,13 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
 
   // Ask the helper for the overlay view, and return whatever it gives us.  This
   // may be null if it decides that one shouldn't be shown.
-  AutoPipSettingOverlayView* AttachOverlayView() {
+  AutoPipSettingOverlayView* AttachOverlayView(
+      std::string histogram_name_for_autopip_reason = "") {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
-        close_cb_.Get(), anchor_view, views::BubbleBorder::TOP_CENTER);
+        close_cb_.Get(), histogram_name_for_autopip_reason, anchor_view,
+        views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
           widget_->SetContentsView(std::move(setting_overlay)));
@@ -206,8 +228,7 @@ TEST_F(AutoPipSettingHelperTest, AllowOnceDoesNotCallCloseCb) {
 
   // Run result callback with "allow once" UiResult.  Nothing should happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
-  setting_view()->simulate_button_press_for_testing(
-      AutoPipSettingView::UiResult::kAllowOnce);
+  setting_view()->simulate_button_press_for_testing(UiResult::kAllowOnce);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
 
   // Also verify that asking again does not create the view again, since 'allow
@@ -225,7 +246,7 @@ TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
   // happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
   setting_view()->simulate_button_press_for_testing(
-      AutoPipSettingView::UiResult::kAllowOnEveryVisit);
+      UiResult::kAllowOnEveryVisit);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
@@ -237,8 +258,7 @@ TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
 
   // Run result callback with "block" UiResult.  The close cb should be called.
   EXPECT_CALL(close_cb(), Run()).Times(1);
-  setting_view()->simulate_button_press_for_testing(
-      AutoPipSettingView::UiResult::kBlock);
+  setting_view()->simulate_button_press_for_testing(UiResult::kBlock);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }
 
@@ -316,4 +336,46 @@ TEST_F(AutoPipSettingHelperTest,
   EXPECT_FALSE(setting_overlay());
   // Should not change the content setting as a result of the embargo.
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ASK);
+}
+
+const struct TestParams kTestHistogramNameParams[] = {
+    {""},
+    {kVideoConferencingHistogram},
+    {kMediaPlaybackHistogram}};
+
+INSTANTIATE_TEST_SUITE_P(AllHistogramNames,
+                         AutoPipSettingHelperTest,
+                         testing::ValuesIn(kTestHistogramNameParams));
+
+TEST_P(AutoPipSettingHelperTest, HistogramExpectedCounts) {
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView(GetParam().histogram_name));
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
+
+  // Run result callback with "block" UiResult.  The close cb should be called,
+  // and the corresponding histogram count recorded.
+  base::HistogramTester histograms;
+  EXPECT_CALL(close_cb(), Run()).Times(1);
+  setting_view()->simulate_button_press_for_testing(UiResult::kBlock);
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
+
+  auto video_conferencing_samples =
+      histograms.GetHistogramSamplesSinceCreation(kVideoConferencingHistogram);
+  auto media_playback_samples =
+      histograms.GetHistogramSamplesSinceCreation(kMediaPlaybackHistogram);
+
+  const auto histogram_name = GetParam().histogram_name;
+  if (histogram_name.empty()) {
+    EXPECT_EQ(0, video_conferencing_samples->TotalCount());
+    EXPECT_EQ(0, media_playback_samples->TotalCount());
+  } else if (histogram_name == kVideoConferencingHistogram) {
+    EXPECT_EQ(1, video_conferencing_samples->TotalCount());
+    EXPECT_EQ(0, media_playback_samples->TotalCount());
+  } else if (histogram_name == kMediaPlaybackHistogram) {
+    EXPECT_EQ(0, video_conferencing_samples->TotalCount());
+    EXPECT_EQ(1, media_playback_samples->TotalCount());
+  } else {
+    FAIL() << "Unknown histogram name: " << histogram_name;
+  }
 }

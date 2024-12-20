@@ -1833,6 +1833,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.{AutomaticReason}"
+    enum="MediaAutoPictureInPicturePromptResult" expires_after="2025-05-11">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the user selects an option from the Automatic
+    picture-in-picture permission prompt. This histogram shows the distribution
+    of MediaAutoPictureInPicturePromptResult for enter auto picture-in-picture
+    requests triggered due to {AutomaticReason}.
+  </summary>
+  <token key="AutomaticReason">
+    <variant name="MediaPlayback"/>
+    <variant name="VideoConferencing"/>
+  </token>
+</histogram>
+
 <histogram name="Media.AutoPictureInPicture.PromptResultV2"
     enum="MediaAutoPictureInPicturePromptResult" expires_after="2025-06-08">
   <owner>steimel@chromium.org</owner>

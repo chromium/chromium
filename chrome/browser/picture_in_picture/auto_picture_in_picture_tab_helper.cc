@@ -420,6 +420,20 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   return {rfh};
 }
 
+std::string AutoPictureInPictureTabHelper::GetHistogramNameForReason() const {
+  if (IsUsingCameraOrMicrophone()) {
+    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+           "VideoConferencing";
+  }
+
+  if (MeetsVideoPlaybackConditions()) {
+    return "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+           "MediaPlayback";
+  }
+
+  return "";
+}
+
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
   return is_in_auto_picture_in_picture_;
 }
@@ -450,7 +464,7 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
   EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
-      std::move(close_pip_cb), anchor_view, arrow);
+      std::move(close_pip_cb), GetHistogramNameForReason(), anchor_view, arrow);
 }
 
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {

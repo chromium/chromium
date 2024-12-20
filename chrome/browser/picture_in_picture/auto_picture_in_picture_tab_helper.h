@@ -216,6 +216,16 @@ class AutoPictureInPictureTabHelper
   // returned. Otherwise, an empty optional is returned.
   std::optional<content::RenderFrameHost*> GetPrimaryMainRoutedFrame() const;
 
+  // Returns the histogram name corresponding to the reason for entering auto
+  // picture in picture. Use caution when modifying this method since the
+  // returned value is used for logging.
+  //
+  // Note that a media element can meet both, the "video conferencing" and
+  // "media playback" conditions. If both conditions are met, this method will
+  // return the "video conferencing" histogram. On the other hand, if no
+  // conditions are met, an empty string will be returned.
+  std::string GetHistogramNameForReason() const;
+
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;

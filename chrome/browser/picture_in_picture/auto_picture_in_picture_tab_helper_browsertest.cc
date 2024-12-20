@@ -985,6 +985,41 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/true);
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       PromptResultRecorded_VideoConferencing) {
+  // Load a page that registers for autopip and start video playback.
+  LoadCameraMicrophonePage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "VideoConferencing");
+
+  // Verify that the "allow once" prompt result is recorded for the "video
+  // conferencing" metric.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+}
+
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWithoutPlayback) {
   // Load a page that registers for autopip but doesn't start playback.
@@ -1715,4 +1750,87 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   }
 
   SwitchBackToOpenerAndWaitForPipToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       PromptResultRecorded_VideoPlayback) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "MediaPlayback");
+
+  // Verify that the "allow once" prompt result is recorded for the "media
+  // playback" metric.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       PromptResultRecorded_VideoConferencingTakesPrecedence) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoDocumentPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+  WaitForWasRecentlyAudible(web_contents);
+
+  // Starts using camera/microphone.
+  GetUserMediaAndAccept(web_contents);
+
+  base::HistogramTester histograms;
+  {
+    content::MediaStartStopObserver enter_pip_observer(
+        web_contents,
+        content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+    OpenNewTab(browser());
+    enter_pip_observer.Wait();
+  }
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
+
+  auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
+      AutoPipSettingView::UiResult::kAllowOnce);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  auto samples = histograms.GetHistogramSamplesSinceCreation(
+      "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason."
+      "VideoConferencing");
+
+  // Verify that the "allow once" prompt result is recorded for the "video
+  // conferencing" metric, even though the site meets both enter auto picture in
+  // picture reasons: "video conferencing" and "media playback". This is because
+  // the video conferencing check is always performed first.
+  EXPECT_EQ(1, samples->TotalCount());
+  EXPECT_EQ(0, samples->GetCount(0));  // Ignored
+  EXPECT_EQ(0, samples->GetCount(1));  // Block
+  EXPECT_EQ(0, samples->GetCount(2));  // Allow on every visit
+  EXPECT_EQ(1, samples->GetCount(3));  // Allow this time
 }
