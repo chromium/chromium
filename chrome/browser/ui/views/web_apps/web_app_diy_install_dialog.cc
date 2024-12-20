@@ -161,11 +161,13 @@ void ShowDiyAppInstallDialog(
   views::Widget* diy_dialog_widget =
       constrained_window::ShowWebModalDialogViews(dialog.release(),
                                                   web_contents);
-  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(
-      diy_dialog_widget);
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(diy_dialog_widget)) {
+    delegate_weak_ptr->CloseDialogAsIgnored();
+    return;
+  }
+  delegate_weak_ptr->StartObservingWidgetForChanges(diy_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppDiyInstallShown"));
-
   if (g_auto_accept_diy_dialog_for_testing) {
     dialog_delegate->AcceptDialog();
   }

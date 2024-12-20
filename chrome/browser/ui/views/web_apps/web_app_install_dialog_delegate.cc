@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list_internal.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -65,6 +67,14 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   return normalized;
 }
 
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
+  const gfx::Size& current_size = widget->GetSize();
+  const gfx::Size& preferred_size =
+      widget->GetContentsView()->GetPreferredSize();
+  return current_size.width() < preferred_size.width() ||
+         current_size.height() < preferred_size.height();
+}
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
                                       kDiyAppsDialogOkButtonId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
@@ -115,9 +125,10 @@ WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() {
   }
 }
 
-void WebAppInstallDialogDelegate::StartObservingForPictureInPictureOcclusion(
+void WebAppInstallDialogDelegate::StartObservingWidgetForChanges(
     views::Widget* install_dialog_widget) {
   occlusion_observation_.Observe(install_dialog_widget);
+  widget_observation_.Observe(install_dialog_widget);
 }
 
 void WebAppInstallDialogDelegate::OnAccept() {
@@ -237,11 +248,26 @@ void WebAppInstallDialogDelegate::PrimaryPageChanged(content::Page& page) {
 }
 
 void WebAppInstallDialogDelegate::OnOcclusionStateChanged(bool occluded) {
-  // If a picture-in-picture window is occluding the dialog, froce it to close
+  // If a picture-in-picture window is occluding the dialog, force it to close
   // to prevent spoofing.
   if (occluded) {
     PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
   }
+}
+
+void WebAppInstallDialogDelegate::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(widget)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebAppInstallDialogDelegate::CloseDialogAsIgnored,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WebAppInstallDialogDelegate::OnWidgetDestroyed(views::Widget* widget) {
+  widget_observation_.Reset();
 }
 
 void WebAppInstallDialogDelegate::CloseDialogAsIgnored() {
