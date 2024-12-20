@@ -50,6 +50,11 @@ FrameSinkHolder::~FrameSinkHolder() {
 bool FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
     std::unique_ptr<FrameSinkHolder> frame_sink_holder,
     aura::Window* host_window) {
+  // Delete immediately if LayerTreeFrameSink was already lost.
+  if (frame_sink_holder->is_frame_sink_lost_) {
+    return true;
+  }
+
   UiResourceManager& resource_manager = frame_sink_holder->resource_manager();
   if (frame_sink_holder->last_frame_size_in_pixels_.IsEmpty()) {
     // Delete sink holder immediately if no frame has been submitted.
@@ -291,6 +296,8 @@ void FrameSinkHolder::DidPresentCompositorFrame(
 
 void FrameSinkHolder::DidLoseLayerTreeFrameSink() {
   resource_manager().LostExportedResources();
+  is_frame_sink_lost_ = true;
+
   if (WaitingToScheduleDelete()) {
     ScheduleDelete();
   } else {

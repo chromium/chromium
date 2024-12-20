@@ -210,6 +210,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
   // The callback invoked when the connection to `frame_sink_` is lost.
   OnFrameSinkLost on_frame_sink_lost_callback_;
+  bool is_frame_sink_lost_ = false;
 
   // Observation of the root window to which this holder becomes an observer to
   // extend its lifespan till all the in-flight resource to display compositor

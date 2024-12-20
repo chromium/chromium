@@ -614,5 +614,36 @@ TEST_F(FrameSinkHolderTest,
   EXPECT_FALSE(holder_weak_ptr_);
 }
 
+TEST_F(FrameSinkHolderTest, DeleteSinkHolderImmediatelyWhenFrameSinkIsLost) {
+  FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
+
+  viz::ResourceId id_1 =
+      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+
+  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
+
+  // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
+  // frames synchronously.
+  frame_sink_holder_->OnBeginFrame(CreateValidBeginFrameArgsForTesting());
+  frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
+
+  // Confirms that FrameSinkHolder has submitted a frame.
+  EXPECT_FALSE(test_api.LastSubmittedFrameSize().IsEmpty());
+  EXPECT_EQ(layer_tree_frame_sink_->num_of_frames_received(), 1);
+
+  ASSERT_EQ(GetResourceManager().exported_resources_count(), 1u);
+
+  frame_sink_holder_->DidLoseLayerTreeFrameSink();
+
+  // Since frame sink is lost, the exported resources cannot be reclaimed.
+  EXPECT_TRUE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
+      std::move(frame_sink_holder_), host_window_));
+
+  // Since FrameSinkHolder is deleted immediately, we expect the weak_ptr to be
+  // not valid.
+  EXPECT_FALSE(holder_weak_ptr_);
+}
+
 }  // namespace
 }  // namespace ash
