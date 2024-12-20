@@ -1236,6 +1236,12 @@
     // luminance
     "match-source",
 
+    // masonry-direction
+    // row
+    // row-reverse
+    // column
+    // column-reverse
+
     // masonry-fill
     // normal
     // reverse

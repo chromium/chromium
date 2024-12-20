@@ -3807,6 +3807,17 @@
       invalidate: ["paint"],
     },
     {
+      name: "masonry-direction",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      typedom_types: ["Keyword"],
+      keywords: ["row", "row-reverse", "column", "column-reverse"],
+      default_value: "column",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
       name: "masonry-fill",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
@@ -3814,7 +3825,7 @@
       keywords: ["normal", "reverse"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      invalidate: ["layout"],
+      invalidate: ["layout", "paint"],
       runtime_flag: "CSSMasonryLayout",
     },
     {

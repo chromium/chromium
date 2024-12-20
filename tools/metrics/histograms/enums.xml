@@ -26886,6 +26886,7 @@ Called by update_use_counter_css.py.-->
   <int value="810" label="view-transition-capture-mode"/>
   <int value="811" label="interactivity"/>
   <int value="812" label="masonry-fill"/>
+  <int value="813" label="masonry-direction"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

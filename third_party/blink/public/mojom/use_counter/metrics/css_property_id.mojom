@@ -869,6 +869,7 @@ enum CSSSampleId {
     kViewTransitionCaptureMode = 810,
     kInteractivity = 811,
     kMasonryFill = 812,
+    kMasonryDirection = 813,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
