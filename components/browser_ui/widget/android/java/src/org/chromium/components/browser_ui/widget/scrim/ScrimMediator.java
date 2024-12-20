@@ -82,6 +82,9 @@ class ScrimMediator implements ScrimCoordinator.TouchEventDelegate {
             mModel.removeObserver(mOnModelChange);
         }
         mModel = model;
+        if (mModel != null) {
+            mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
+        }
         mIsHidingOrHidden = false;
 
         // Pass the current scrim color to the SystemUiScrimDelegate.

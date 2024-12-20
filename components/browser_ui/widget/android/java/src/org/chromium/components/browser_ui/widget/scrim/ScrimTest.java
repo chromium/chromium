@@ -311,7 +311,9 @@ public class ScrimTest {
 
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.setAlpha(0.5f));
 
-        assertFalse("Animations should not be running.", mScrimCoordinator.areAnimationsRunning());
+        assertFalse(
+                "Animations should not be running.",
+                mScrimCoordinator.areAnimationsRunningForTesting());
     }
 
     @Test
@@ -596,11 +598,11 @@ public class ScrimTest {
                     if (animate) {
                         assertTrue(
                                 "Animations should be running.",
-                                mScrimCoordinator.areAnimationsRunning());
+                                mScrimCoordinator.areAnimationsRunningForTesting());
                     }
 
                     mScrimCoordinator.forceAnimationToFinish();
-                    assertFalse(mScrimCoordinator.areAnimationsRunning());
+                    assertFalse(mScrimCoordinator.areAnimationsRunningForTesting());
                     assertEquals(
                             "Scrim should be completely visible.",
                             1.0f,
