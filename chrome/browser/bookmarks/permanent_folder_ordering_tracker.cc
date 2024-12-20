@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -116,6 +117,51 @@ size_t PermanentFolderOrderingTracker::GetChildrenCount() const {
     CHECK_EQ(ordering_.size(), count);
   }
   return count;
+}
+
+void PermanentFolderOrderingTracker::MoveToIndex(
+    const bookmarks::BookmarkNode* node,
+    size_t index) {
+  CHECK(node);
+  std::optional<size_t> old_index_if_tracked =
+      IsTrackedPermanentNode(node->parent())
+          ? std::optional<size_t>(GetIndexOf(node))
+          : std::nullopt;
+  if (old_index_if_tracked && (index == old_index_if_tracked.value() ||
+                               index == old_index_if_tracked.value() + 1)) {
+    // Node is already in this position, nothing to do.
+    // This logic is similar to `BookmarkModel::Move()`.
+    return;
+  }
+
+  bool is_account_node = account_node_ && !model_->IsLocalOnlyNode(*node);
+  size_t in_storage_index =
+      GetInStorageBookmarkCountBeforeIndex(is_account_node, index);
+  // Move in storage first to `account_node_` if the `node` is an account node,
+  // otherwise move to `local_or_syncable_node_`.
+  model_->Move(node, is_account_node ? account_node_ : local_or_syncable_node_,
+               in_storage_index);
+
+  if (!ShouldTrackOrdering()) {
+    CHECK(ordering_.empty());
+    return;
+  }
+
+  if (old_index_if_tracked && index > old_index_if_tracked.value()) {
+    index--;
+  }
+
+  if (GetIndexOf(node) == index) {
+    return;
+  }
+
+  // Ensure the `index` with respect to account and local nodes is respected.
+  // std::erase is a no-op unless present.
+  std::erase(ordering_, node);
+  CHECK_LE(index, ordering_.size());
+  ordering_.insert(ordering_.cbegin() + index, node);
+
+  CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());
 }
 
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
@@ -304,4 +350,22 @@ void PermanentFolderOrderingTracker::AddBookmarkNodeIfTracked(
         GetIndexOf(parent->children()[index - 1].get());
     ordering_.insert(ordering_.cbegin() + previous_node_index + 1, new_node);
   }
+}
+
+size_t PermanentFolderOrderingTracker::GetInStorageBookmarkCountBeforeIndex(
+    bool account_node,
+    size_t index) const {
+  const BookmarkNode* parent =
+      account_node ? account_node_ : local_or_syncable_node_;
+  if (!ShouldTrackOrdering()) {
+    // - If `parent` has no children, the count is `0`.
+    // - The other tracked node (local_or_syncable/account) has no children,
+    //   the count of bookmarks before index is equal to index.
+    return parent->children().empty() ? 0u : index;
+  }
+
+  return std::count_if(
+      ordering_.begin(), ordering_.begin() + index,
+      [parent](const BookmarkNode* node) { return node->parent() == parent; });
+  ;
 }

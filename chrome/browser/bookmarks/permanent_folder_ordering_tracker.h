@@ -56,6 +56,15 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   // Returns children count for nodes tracked in this tracker.
   size_t GetChildrenCount() const;
 
+  // Moves node from an arbitrary parent to become a child of the permanent node
+  // tracked by this at `index`.
+  // If `node` is local or account bookmark, it will remain local/account after
+  // the move.
+  // Note that if node is already being tracked by this, there are two possible
+  // target indices (index) that result in a no-op. This is similar to what
+  // `BookmarkModel::Move()` does
+  void MoveToIndex(const bookmarks::BookmarkNode* node, size_t index);
+
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
@@ -96,6 +105,14 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
 
   void AddBookmarkNodeIfTracked(const bookmarks::BookmarkNode* parent,
                                 size_t index);
+
+  // This function counts bookmarks within the permanent bookmarks folder
+  // tracked by this. If account_storage is true, it counts bookmarks whose
+  // parent is account_node_. Otherwise, it counts bookmarks with a parent of
+  // local_or_syncable_node_, considering only children indexed from 0 to index
+  // - 1.
+  size_t GetInStorageBookmarkCountBeforeIndex(bool account_storage,
+                                              size_t index) const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const bookmarks::BookmarkNode::Type tracked_type_;

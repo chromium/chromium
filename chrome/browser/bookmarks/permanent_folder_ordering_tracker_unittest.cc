@@ -593,4 +593,220 @@ TEST_F(PermanentFolderOrderingTrackerTest, BookmarkMovedCustomOrder) {
   EXPECT_EQ(tracker.GetIndexOf(node_to_be_moved), 2u);
 }
 
+TEST_F(PermanentFolderOrderingTrackerTest, MoveToReorderTrackedNodes) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "A1 A2 ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  {
+    // Move node `3`
+    const BookmarkNode* node = model().bookmark_bar_node()->children()[2].get();
+    // {A1 A2 1 2 3 f1 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+    // Move to the end of the list.
+    tracker.MoveToIndex(node, 6u);
+    // {A1 A2 1 2 f1 3 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 5u);
+    EXPECT_EQ(node->parent(), model().bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 3u);
+  }
+
+  {
+    // Move `A1` to the end.
+    const BookmarkNode* node =
+        model().account_bookmark_bar_node()->children()[0].get();
+    // {A1 A2 1 2 f1 3 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+    // Move to the end of the list.
+    tracker.MoveToIndex(node, 6u);
+    // {A2 1 2 f1 3 A1 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 5u);
+    EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 1u);
+  }
+
+  {
+    // Move `f1` to the beginning of the list.
+    const BookmarkNode* node = model().bookmark_bar_node()->children()[2].get();
+    // {A2 1 2 f1 3 A1 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 3u);
+    tracker.MoveToIndex(node, 0u);
+    EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+    // {f1 A2 1 2 3 A1 }
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 0u);
+  }
+
+  {
+    // Move `2` in the middle to the right (only in storage move is required).
+    const BookmarkNode* node = model().bookmark_bar_node()->children()[2].get();
+    // {f1 A2 1 2 3 A1 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 3u);
+    tracker.MoveToIndex(node, 5u);
+    // {f1 A2 1 3 2 A1 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 3u);
+
+    // Move `2` to the right (in storage move not needed).
+    tracker.MoveToIndex(node, 6u);
+    // {f1 A2 1 3 A1 2}
+    EXPECT_EQ(tracker.GetIndexOf(node), 5u);
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 3u);
+  }
+
+  {
+    // Move `A1` to the left
+    const BookmarkNode* node =
+        model().account_bookmark_bar_node()->children()[1].get();
+    // {f1 A2 1 3 A1 2}
+    EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+    tracker.MoveToIndex(node, 1u);
+    // {f1 A1 A2 1 3 2}
+    EXPECT_EQ(tracker.GetIndexOf(node), 1u);
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 0u);
+  }
+
+  {
+    // No Reorder is needed.
+    const BookmarkNode* node =
+        model().account_bookmark_bar_node()->children()[1].get();
+    // {f1 A1 A2 1 3 2}
+    EXPECT_EQ(tracker.GetIndexOf(node), 2u);
+    tracker.MoveToIndex(node, 3u);
+    EXPECT_EQ(tracker.GetIndexOf(node), 2u);
+    tracker.MoveToIndex(node, 2u);
+    EXPECT_EQ(tracker.GetIndexOf(node), 2u);
+  }
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, MoveAddsNewAccountTrackedNodes) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  AddNodesFromModelString(&model(), model().account_other_node(), "X Y Z W ");
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
+  // AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+  //                         "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+  EXPECT_EQ(tracker.GetChildrenCount(), 2u);
+  {
+    const BookmarkNode* node =
+        model().account_other_node()->children()[0].get();
+    // {1 2 }
+    tracker.MoveToIndex(node, 1u);
+    // {1 X 2 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 1u);
+    EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 0u);
+  }
+
+  {
+    // Move `Y` to the beginning of the list.
+    const BookmarkNode* node =
+        model().account_other_node()->children()[0].get();
+    // {1 X 2 }
+    tracker.MoveToIndex(node, 0u);
+    // {Y 1 X 2 }
+    EXPECT_EQ(tracker.GetIndexOf(node), 0u);
+    EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 0u);
+  }
+
+  {
+    // Move `Z` to the end of the list.
+    const BookmarkNode* node =
+        model().account_other_node()->children()[0].get();
+    // {Y 1 X 2 }
+    tracker.MoveToIndex(node, 4u);
+    // {Y 1 X 2 Z }
+    EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+    EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 2u);
+  }
+
+  {
+    // Move `W` to be before `Z`.
+    const BookmarkNode* node =
+        model().account_other_node()->children()[0].get();
+    // {Y 1 X 2 Z }
+    tracker.MoveToIndex(node, 4u);
+    // {Y 1 X 2 W Z }
+    EXPECT_EQ(tracker.GetIndexOf(node), 4u);
+    EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+    EXPECT_EQ(node->parent()->GetIndexOf(node), 2u);
+  }
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, MoveAddsNewLocalTrackedNodes) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  AddNodesFromModelString(&model(), model().other_node(), "X Y Z ");
+  AddNodesFromModelString(&model(), model().account_bookmark_bar_node(),
+                          "A1 A2 ");
+  EXPECT_EQ(tracker.GetChildrenCount(), 2u);
+
+  const BookmarkNode* node = model().other_node()->children()[0].get();
+  // {A1 A2 }
+  tracker.MoveToIndex(node, 1u);
+  // {A1 X A2 }
+  EXPECT_EQ(tracker.GetIndexOf(node), 1u);
+  EXPECT_EQ(node->parent(), model().bookmark_bar_node());
+  EXPECT_EQ(node->parent()->GetIndexOf(node), 0u);
+
+  node = model().other_node()->children()[1].get();
+  // {1 X 2 }
+  tracker.MoveToIndex(node, 3u);
+  // {1 X 2 Z }
+  EXPECT_EQ(tracker.GetIndexOf(node), 3u);
+  EXPECT_EQ(node->parent(), model().bookmark_bar_node());
+  EXPECT_EQ(node->parent()->GetIndexOf(node), 1u);
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, MoveToLocalOrderingNotTracked) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  AddNodesFromModelString(&model(), model().other_node(),
+                          "1 2 3 f1:[ 4 5 f2:[ 6 ] ]");
+
+  EXPECT_EQ(tracker.GetChildrenCount(), 0u);
+  const BookmarkNode* node = model().other_node()->children()[0].get();
+  tracker.MoveToIndex(node, 0);
+  // { 1 }
+  EXPECT_EQ(tracker.GetChildrenCount(), 1u);
+  EXPECT_EQ(node->parent(), model().bookmark_bar_node());
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
+
+  node = model().other_node()->children()[0].get();
+  tracker.MoveToIndex(node, 0);
+  // { 2 1 }
+  EXPECT_EQ(tracker.GetChildrenCount(), 2u);
+  EXPECT_EQ(node->parent(), model().bookmark_bar_node());
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
+}
+
+TEST_F(PermanentFolderOrderingTrackerTest, MoveToAccountOrderingNotTracked) {
+  model().LoadEmptyForTest();
+  model().CreateAccountPermanentFolders();
+  PermanentFolderOrderingTracker tracker(&model(), BookmarkNode::BOOKMARK_BAR);
+  AddNodesFromModelString(&model(), model().account_other_node(), "A1 A2 ");
+
+  EXPECT_EQ(tracker.GetChildrenCount(), 0u);
+  const BookmarkNode* node = model().account_other_node()->children()[0].get();
+  tracker.MoveToIndex(node, 0);
+  // { A1 }
+  EXPECT_EQ(tracker.GetChildrenCount(), 1u);
+  EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+  EXPECT_EQ(tracker.GetNodeAtIndex(0), node);
+
+  node = model().account_other_node()->children()[0].get();
+  tracker.MoveToIndex(node, 1);
+  // { A1 A2 }
+  EXPECT_EQ(tracker.GetChildrenCount(), 2u);
+  EXPECT_EQ(node->parent(), model().account_bookmark_bar_node());
+  EXPECT_EQ(tracker.GetNodeAtIndex(1), node);
+}
+
 }  // namespace
