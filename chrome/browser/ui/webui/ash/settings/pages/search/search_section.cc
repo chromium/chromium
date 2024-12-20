@@ -51,7 +51,6 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kAssistantSubpagePath;
-using ::chromeos::settings::mojom::kSearchAndAssistantSectionPath;
 using ::chromeos::settings::mojom::kSearchSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;

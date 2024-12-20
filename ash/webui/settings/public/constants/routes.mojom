@@ -256,7 +256,6 @@ const string kCustomizePenButtonsSubpagePath =
 const string kPersonalizationSectionPath = "personalization";
 
 // Search and Assistant section.
-const string kSearchAndAssistantSectionPath = "osSearch";
 const string kAssistantSubpagePath = "googleAssistant";
 const string kSearchSubpagePath = "osSearch/search";
 
@@ -343,9 +342,6 @@ const string kFaceGazeSettingsSubpagePath =
     "manageAccessibility/faceGaze";
 const string kMouseKeysSettingsSubpagePath =
     "manageAccessibility/mouseKeys";
-
-// Reset section.
-const string kResetSectionPath = "osReset";
 
 // About Chrome OS section.
 const string kAboutChromeOsSectionPath = "help";

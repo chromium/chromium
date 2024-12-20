@@ -142,7 +142,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   ABOUT: Route;
   ABOUT_DETAILED_BUILD_INFO: Route;
   ACCOUNTS: Route;
-  ACCOUNT_MANAGER: Route;
   ADVANCED: Route;
   APN: Route;
   APP_NOTIFICATIONS: Route;
@@ -172,13 +171,10 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   BRUSCHETTA_DETAILS: Route;
   BRUSCHETTA_SHARED_USB_DEVICES: Route;
   BRUSCHETTA_SHARED_PATHS: Route;
-  CHANGE_PICTURE: Route;
   CUSTOMIZE_PEN_BUTTONS: Route;
   CUSTOMIZE_TABLET_BUTTONS: Route;
   CUPS_PRINTERS: Route;
   CUSTOMIZE_MOUSE_BUTTONS: Route;
-  DARK_MODE: Route;
-  DATETIME: Route;
   DATETIME_TIMEZONE_SUBPAGE: Route;
   DEVICE: Route;
   DISPLAY: Route;
@@ -206,7 +202,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   NEARBY_SHARE: Route;
   NETWORK_DETAIL: Route;
   OFFICE: Route;
-  ON_STARTUP: Route;
   ONE_DRIVE: Route;
   OS_ACCESSIBILITY: Route;
   OS_LANGUAGES: Route;
@@ -234,14 +229,12 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   PRIVACY_HUB_GEOLOCATION: Route;
   PRIVACY_HUB_GEOLOCATION_ADVANCED: Route;
   PRIVACY_HUB_MICROPHONE: Route;
-  SEARCH: Route;
   SEARCH_SUBPAGE: Route;
   SMART_PRIVACY: Route;
   SMB_SHARES: Route;
   STORAGE: Route;
   STYLUS: Route;
   SYNC: Route;
-  SYNC_ADVANCED: Route;
   SYSTEM_PREFERENCES: Route;
 
   // Internal routes
