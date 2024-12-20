@@ -175,6 +175,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 maybeCreateBrowserOptions(),
                 mOrigin,
                 mTopOrigin,
+                mPayment,
                 this::onRegisterResponse,
                 this::onError,
                 this::recordOutcomeEvent);

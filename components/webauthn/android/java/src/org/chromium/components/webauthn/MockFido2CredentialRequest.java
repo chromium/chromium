@@ -51,6 +51,7 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
             Bundle browserOptions,
             Origin origin,
             Origin topOrigin,
+            PaymentOptions paymentOptions,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback,
             RecordOutcomeCallback recordingCallback) {

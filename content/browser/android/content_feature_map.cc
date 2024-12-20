@@ -24,6 +24,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kCursorAnchorInfoMojoPipe,
     &blink::features::kDevicePosture,
+    &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
     &blink::features::kStylusRichGestures,
     &blink::features::kViewportSegments,
     &input::features::kInputOnViz,

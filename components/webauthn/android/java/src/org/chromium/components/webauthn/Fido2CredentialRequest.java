@@ -42,11 +42,13 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
@@ -188,11 +190,11 @@ public class Fido2CredentialRequest
     /**
      * Process a WebAuthn create() request.
      *
-     * @param context The context used for both Play Services and CredMan calls.
      * @param options The arguments to create()
      * @param maybeBrowserOptions Optional set of browser-specific data, like channel or incognito.
      * @param origin The origin that made the WebAuthn call.
      * @param topOrigin The origin of the main frame.
+     * @param paymentOptions The options set by Secure Payment Confirmation.
      * @param callback Success callback.
      * @param errorCallback Failure callback.
      * @param recordingCallback Called for reporting error metrics with detailed reasons. This
@@ -205,12 +207,17 @@ public class Fido2CredentialRequest
             Bundle maybeBrowserOptions,
             Origin origin,
             Origin topOrigin,
+            PaymentOptions paymentOptions,
             MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback,
             RecordOutcomeCallback recordingCallback) {
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
         assert mMakeCredentialCallback == null && mErrorCallback == null;
+        assert (paymentOptions != null)
+                == (options.isPaymentCredentialCreation
+                        && ContentFeatureMap.isEnabled(
+                                BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS));
         mMakeCredentialCallback = callback;
         mErrorCallback = errorCallback;
         mRecordingCallback = recordingCallback;
@@ -226,7 +233,12 @@ public class Fido2CredentialRequest
                         return;
                     }
                     continueMakeCredentialRequestAfterRpIdValidation(
-                            options, maybeBrowserOptions, origin, topOrigin, result.isCrossOrigin);
+                            options,
+                            maybeBrowserOptions,
+                            origin,
+                            topOrigin,
+                            paymentOptions,
+                            result.isCrossOrigin);
                 });
     }
 
@@ -236,6 +248,7 @@ public class Fido2CredentialRequest
             Bundle maybeBrowserOptions,
             Origin origin,
             Origin topOrigin,
+            PaymentOptions paymentOptions,
             boolean isCrossOrigin) {
         final boolean rkDiscouraged =
                 options.authenticatorSelection == null
@@ -253,7 +266,7 @@ public class Fido2CredentialRequest
                             callerOriginString,
                             options.challenge,
                             isCrossOrigin,
-                            /* paymentOptions= */ null,
+                            options.isPaymentCredentialCreation ? paymentOptions : null,
                             options.relyingParty.name,
                             topOrigin);
             if (clientDataHash == null) {

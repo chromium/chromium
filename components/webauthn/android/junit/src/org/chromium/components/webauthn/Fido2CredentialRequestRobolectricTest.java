@@ -50,6 +50,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.components.webauthn.cred_man.ShadowCredentialManager;
@@ -104,6 +105,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, "gpm_in_cred_man", "true");
         testValues.addFeatureFlagOverride(
                 DeviceFeatureList.WEBAUTHN_ANDROID_USE_PASSKEY_CACHE, true);
+        testValues.addFeatureFlagOverride(
+                BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS, false);
         FeatureList.setTestValues(testValues);
 
         MockitoAnnotations.initMocks(this);
@@ -197,6 +200,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 /* maybeBrowserOptions= */ null,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
@@ -217,6 +221,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
@@ -235,6 +240,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
@@ -257,6 +263,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
@@ -277,6 +284,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
@@ -297,6 +305,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 mBrowserOptions,
                 mOrigin,
                 mOrigin,
+                /* paymentOptions= */ null,
                 mCallback::onRegisterResponse,
                 mCallback::onError,
                 mCallback::onRequestOutcome);
