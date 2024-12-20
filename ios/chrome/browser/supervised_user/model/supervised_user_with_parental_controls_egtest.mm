@@ -60,6 +60,8 @@ static const char* kInterstitialDetails = "Details";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kIOSQuickDelete);
+  // Makes sure the MVT is the top ranking magic stack module.
+  config.additional_args.push_back("--test-ios-module-ranker=mvt");
   return config;
 }
 

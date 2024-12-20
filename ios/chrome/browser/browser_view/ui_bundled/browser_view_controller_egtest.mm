@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -36,6 +37,11 @@
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
+  // Put MVT as the top magic stack module for easier tapping.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back("--test-ios-module-ranker=mvt");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   // Ensures that the first favicon in Most Visited row is the test URL.
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
