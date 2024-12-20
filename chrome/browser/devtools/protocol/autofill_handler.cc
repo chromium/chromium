@@ -164,12 +164,6 @@ protocol::Response AutofillHandler::Trigger(
 void AutofillHandler::SetAddresses(
     std::unique_ptr<protocol::Array<protocol::Autofill::Address>> addresses,
     std::unique_ptr<SetAddressesCallback> callback) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillTestFormWithTestAddresses)) {
-    std::move(callback)->sendSuccess();
-    return;
-  }
-
   if (!content::DevToolsAgentHost::GetForId(target_id_)) {
     std::move(callback)->sendFailure(Response::ServerError("Target not found"));
     return;
