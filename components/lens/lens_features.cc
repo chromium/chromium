@@ -350,6 +350,9 @@ constexpr base::FeatureParam<bool> kUsePdfInteractionType{
 constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
     &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", false};
 
+constexpr base::FeatureParam<int> kScannedPdfCharacterPerPageHeuristic{
+    &kLensOverlayContextualSearchbox, "characters-per-page-heuristic", 200};
+
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
     "https://translate-pa.googleapis.com/v1/supportedLanguages"};
@@ -655,6 +658,10 @@ bool UsePdfInteractionType() {
 
 bool UseWebpageInteractionType() {
   return kUseWebpageInteractionType.Get();
+}
+
+int GetScannedPdfCharacterPerPageHeuristic() {
+  return kScannedPdfCharacterPerPageHeuristic.Get();
 }
 
 bool UsePdfsAsContext() {
