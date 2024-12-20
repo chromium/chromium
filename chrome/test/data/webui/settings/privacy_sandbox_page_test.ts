@@ -267,6 +267,7 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
   let page: SettingsPrivacySandboxFledgeSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -278,6 +279,8 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
   });
 
   setup(async function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
     testPrivacySandboxBrowserProxy.setFledgeState({
       joiningSites: ['test-site-one.com'],
@@ -316,6 +319,16 @@ suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
     await flushTasks();
     assertFalse(isVisible(page.shadowRoot!.querySelector('#body')));
     assertTrue(isVisible(page.shadowRoot!.querySelector('#bodyV2')));
+  });
+
+  test('privacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });
 
@@ -1041,6 +1054,16 @@ suite('TopicsSubpageAdsApiUxEnhancements', function() {
     const footerDisclaimer =
         page.shadowRoot!.querySelector('#footerDisclaimer');
     assertTrue(isVisible(footerDisclaimer));
+  });
+
+  test('privacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });
 
@@ -1997,6 +2020,7 @@ suite('AdMeasurementSubpageAdsApiUxEnhancementsDisabled', function() {
 suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
   let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -2008,6 +2032,9 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
   });
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(settingsPrefs);
     page = document.createElement(
@@ -2025,5 +2052,15 @@ suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
   test('contentV2', async function() {
     const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
     assertTrue(isVisible(disclaimer));
+  });
+
+  test('privacyPolicyLink', async function() {
+    const privacyPolicyLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyPolicyLink');
+    assertTrue(!!privacyPolicyLink);
+    privacyPolicyLink!.click();
+    assertEquals(
+        'Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked',
+        await metricsBrowserProxy.whenCalled('recordAction'));
   });
 });

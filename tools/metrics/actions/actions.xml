@@ -35050,6 +35050,14 @@ should be able to be added at any place in this file.
   <description>User opened Ad measurement subpage.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicked on the Privacy Policy link in the Ad Measurement setting page.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.AdPersonalization.LearnMoreClicked">
   <owner>dullweber@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -35087,6 +35095,14 @@ should be able to be added at any place in this file.
     User removed a topic that was previously in their allowed topics list.
     TODO(crbug.com/40244046): Deprecate this action in favor of
     Settings.PrivacySandbox.Topics.TopicRemoved after the feature is launched.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicked on the Privacy Policy link in the Ad Topics setting page.
   </description>
 </action>
 
@@ -35520,6 +35536,16 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
   <description>Restricted Privacy Sandbox notice is shown.</description>
+</action>
+
+<action
+    name="Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    User clicked on the Privacy Policy link in the Site Suggested Ads setting
+    page.
+  </description>
 </action>
 
 <action name="Settings.PrivacySandbox.SpamFraud.Opened">

@@ -37,6 +37,9 @@ PrivacySandboxService* GetPrivacySandboxService(Profile* profile) {
 // The name of the on-click function when the privacy policy link is pressed.
 constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
 
+// The id of the html element that opens the privacy policy link.
+inline constexpr char16_t kPrivacyPolicyId[] = u"privacyPolicyLink";
+
 void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                               Profile* profile) {
   // Strings used outside the privacy sandbox page. The i18n preprocessor might
@@ -311,7 +314,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
-          kPrivacyPolicyFunc));
+          kPrivacyPolicyFunc, kPrivacyPolicyId));
   // Ad Topics Page - Ads API UX Enhancements
   html_source->AddString(
       "adTopicsPageDisclaimer",
@@ -320,7 +323,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
-          kPrivacyPolicyFunc));
+          kPrivacyPolicyFunc, kPrivacyPolicyId));
   // Ad Measurement Page - Ads API UX Enhancements
   html_source->AddString(
       "adMeasurementPageDisclaimer",
@@ -329,7 +332,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
-          kPrivacyPolicyFunc));
+          kPrivacyPolicyFunc, kPrivacyPolicyId));
 }
 
 }  // namespace settings

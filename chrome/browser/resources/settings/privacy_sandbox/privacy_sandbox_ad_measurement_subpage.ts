@@ -69,7 +69,8 @@ export class SettingsPrivacySandboxAdMeasurementSubpageElement extends
   }
 
   private onPrivacyPolicyLinkClicked_() {
-    // TODO(crbug.com/377977605): Add metrics
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked');
   }
 }
 
