@@ -980,6 +980,6 @@ bool IsDefaultBrowserBannerPromoEnabled();
 BASE_DECLARE_FEATURE(kFRESignInSecondaryActionLabelUpdate);
 
 // Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled
-bool IsStaySignedOutFRESigninPromoEnabled();
+bool FRESignInSecondaryActionLabelUpdate();
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

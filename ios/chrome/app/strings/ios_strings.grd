@@ -2035,6 +2035,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="Button on the very first screen of Chrome to continue without signing into Chrome. [iOS only]">
         Don’t sign in
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT" desc="Button on the sign in screen of the FRE to stay signed out on Chrome. [iOS only]">
+        Stay signed out
+      </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
         Sign in…
       </message>

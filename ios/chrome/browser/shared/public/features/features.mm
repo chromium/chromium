@@ -1192,6 +1192,6 @@ BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
              "FRESignInSecondaryActionLabelUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsStaySignedOutFRESigninPromoEnabled() {
+bool FRESignInSecondaryActionLabelUpdate() {
   return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
 }
