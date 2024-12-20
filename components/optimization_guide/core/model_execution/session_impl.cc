@@ -501,8 +501,20 @@ void SessionImpl::BeginRequestExecution(
   GetOrCreateSession().Execute(
       std::move(options),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
-  on_device_state_->receiver.set_disconnect_handler(
-      base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
+  on_device_state_->receiver.set_disconnect_handler(base::BindOnce(
+      &SessionImpl::OnResponderDisconnect, base::Unretained(this)));
+}
+
+void SessionImpl::OnResponderDisconnect() {
+  // OnComplete resets the receiver, so this implies that the response is
+  // incomplete and there was either a service crash or model eviction.
+  on_device_state_->receiver.reset();
+  if (features::GetOnDeviceFallbackToServerOnDisconnect()) {
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kDisconnectAndMaybeFallback);
+  } else {
+    CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
+  }
 }
 
 // on_device_model::mojom::StreamingResponder:
@@ -557,6 +569,8 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
 void SessionImpl::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
+  on_device_state_->receiver.reset();  // Suppress expected disconnect
+
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
   LogResponseHasRepeats(feature_, logged_response->has_repeats());
@@ -616,33 +630,19 @@ on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
   if (!on_device_state_->session) {
     on_device_state_->opts.model_client->GetModelRemote()->StartSession(
         on_device_state_->session.BindNewPipeAndPassReceiver());
-    on_device_state_->session.set_disconnect_handler(
-        base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
+    on_device_state_->session.set_disconnect_handler(base::BindOnce(
+        &SessionImpl::OnSessionDisconnect, base::Unretained(this)));
   }
   return *on_device_state_->session;
 }
 
-void SessionImpl::OnDisconnect() {
-  if (on_device_state_->did_execute_and_waiting_for_on_complete() &&
-      features::GetOnDeviceFallbackToServerOnDisconnect()) {
-    DestroyOnDeviceStateAndFallbackToRemote(
-        ExecuteModelResult::kDisconnectAndMaybeFallback);
-    return;
-  }
-
+void SessionImpl::OnSessionDisconnect() {
   if (context_) {
     // Persist the current context, so that ExecuteModel() can be called
     // without adding the same context.
     on_device_state_->add_context_before_execute = true;
   }
   on_device_state_->session.reset();
-
-  if (on_device_state_->response_completeness ==
-      ResponseCompleteness::kPartial) {
-    // Only cancel the request if the model response is not complete yet. We can
-    // get in this state if there is an outstanding remote text safety request.
-    CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
-  }
 }
 
 void SessionImpl::CancelPendingResponse(ExecuteModelResult result,

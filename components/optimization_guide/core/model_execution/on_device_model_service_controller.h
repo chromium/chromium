@@ -95,10 +95,6 @@ class OnDeviceModelServiceController
       scoped_refptr<OnDeviceModelServiceController> controller,
       base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback);
 
-  bool IsConnectedForTesting() {
-    return base_model_remote_.is_bound() || service_client_.is_bound();
-  }
-
   // Sets the language detection model to be used by the ODM service when text
   // safety evaluation is restricted to a specific set of languages.
   void SetLanguageDetectionModel(

@@ -169,6 +169,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
+  // Called when the StreamingResponder remote is disconnected.
+  void OnResponderDisconnect();
 
   // Returns true if the on-device model should be used.
   bool ShouldUseOnDeviceModel() const;
@@ -266,15 +268,15 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Gets the active session or restarts a session if the session is reset.
   on_device_model::mojom::Session& GetOrCreateSession();
 
+  // Called when on-device session disconnects.
+  void OnSessionDisconnect();
+
   // Cancels any pending response and resets response state.
   void CancelPendingResponse(
       ExecuteModelResult result,
       OptimizationGuideModelExecutionError::ModelExecutionError error =
           OptimizationGuideModelExecutionError::ModelExecutionError::
               kCancelled);
-
-  // Called when the connection to the service is dropped.
-  void OnDisconnect();
 
   // Calls SendResponse(kComplete) if we've received the full response and have
   // finished checking raw output safety for it.

@@ -458,8 +458,10 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
       OnDeviceModelEligibilityReason::kSuccess, 1);
-  // If we wait long enough, everything should idle out and the service should
-  // get terminated.
+
+  // If we destroy all sessions and wait long enough, everything should idle out
+  // and the service should get terminated.
+  session.reset();
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
   task_environment_.RunUntilIdle();
@@ -484,8 +486,9 @@ TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(), "Adaptation model: 1015\nInput: execute:foo\n");
 
-  // If we wait long enough, everything should idle out and the service should
-  // get terminated.
+  // If we destroy all sessions and wait long enough, everything should idle out
+  // and the service should get terminated.
+  session.reset();
   task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
   task_environment_.RunUntilIdle();
@@ -2131,18 +2134,18 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   session.reset();
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_TRUE(fake_launcher_.is_service_running());
 
   task_environment_.FastForwardBy(idle_timeout / 2 + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
   // Should still be connected after half the idle time.
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_TRUE(fake_launcher_.is_service_running());
 
   // Fast forward by the amount of time that triggers a disconnect.
   task_environment_.FastForwardBy(idle_timeout / 2 + base::Milliseconds(1));
   // As there are no sessions and no traffic for GetOnDeviceModelIdleTimeout()
   // the connection should be dropped.
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -2153,7 +2156,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       test_controller_, result_future.GetCallback());
   EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
@@ -3339,7 +3342,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationSucceeds) {
   Initialize({.base_model = &base_model});
   task_environment_.RunUntilIdle();
   // Service should be immediately shut down.
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
@@ -3726,13 +3729,15 @@ TEST_F(OnDeviceModelServiceControllerTest,
       OnDeviceModelValidationResult::kSuccess, 1);
 
   // Session was created so the service should still be connected.
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
-  session.reset();
+  EXPECT_TRUE(fake_launcher_.is_service_running());
 
-  // After idle timeout, service should be killed.
-  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+  // If we destroy all sessions and wait long enough, everything should idle out
+  // and the service should get terminated.
+  session.reset();
+  task_environment_.FastForwardBy(2 * features::GetOnDeviceModelIdleTimeout() +
                                   base::Seconds(1));
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFails) {
@@ -3784,13 +3789,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.RunUntilIdle();
 
   // Performance check sh;ould not shut down service.
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_TRUE(fake_launcher_.is_service_running());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
 
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
@@ -3816,7 +3821,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
   task_environment_.RunUntilIdle();
   // Still connected since the performance estimator is running.
-  EXPECT_TRUE(test_controller_->IsConnectedForTesting());
+  EXPECT_TRUE(fake_launcher_.is_service_running());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
@@ -3825,7 +3830,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(result_future.IsReady());
   EXPECT_EQ(OnDeviceModelPerformanceClass::kVeryHigh, result_future.Get());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(test_controller_->IsConnectedForTesting());
+  EXPECT_FALSE(fake_launcher_.is_service_running());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, LoggingModeDefault) {
