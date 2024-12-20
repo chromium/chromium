@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.content.Context;
 
+import org.chromium.url.GURL;
+
 /** An interface to handle actions related to tab groups. */
 public interface DataSharingTabGroupsDelegate {
     /**
@@ -19,7 +21,7 @@ public interface DataSharingTabGroupsDelegate {
      * Open url in the Chrome Custom Tab.
      *
      * @param context The context of the current activity.
-     * @param url The URL of the page to be opened in CCT.
+     * @param gurl The GURL of the page to be opened in CCT.
      */
-    public void openLearnMoreSharedTabGroupsPage(Context context, String url);
+    public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl);
 }

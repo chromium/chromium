@@ -50,8 +50,8 @@ import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupsDelegate;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateImpl;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
@@ -172,6 +172,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -1310,8 +1311,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
 
             @Override
-            public void openLearnMoreSharedTabGroupsPage(Context context, String url) {
-                CustomTabActivity.showInfoPage(context, url);
+            public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl) {
+                CustomTabActivity.showInfoPage(context, gurl.getSpec());
             }
         };
     }

@@ -30,7 +30,7 @@ public class DataSharingUiConfig {
         // TODO (ritikagup) : Cleanup this method, once the overloaded method is fully integrated.
         default void onLearnMoreAboutSharedTabGroupsClicked(GURL url) {}
 
-        default void onLearnMoreAboutSharedTabGroupsClicked(Context context, String url) {}
+        default void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {}
     }
 
     private DataSharingUiConfig(Builder builder) {

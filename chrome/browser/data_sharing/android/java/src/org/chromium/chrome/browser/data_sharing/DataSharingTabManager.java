@@ -407,20 +407,18 @@ public class DataSharingTabManager {
     }
 
     private void fetchFavicons(Activity activity, String sessionId, List<TabPreview> tabs) {
-        // First fetch favicons for upto 4 tabs, then fetch favicons for the remaining tabs.
-        if (tabs.size() <= 4) {
-            fetchFaviconsInternal(activity, sessionId, tabs, /* maxTabs= */ 4, () -> {});
-        } else {
-            fetchFaviconsInternal(
-                    activity,
-                    sessionId,
-                    tabs,
-                    /* maxTabs= */ 4,
+        // First fetch favicons for up to 4 tabs, then fetch favicons for the remaining tabs.
+        Runnable onFetched = () -> {};
+        int previewImageSize = 4;
+        if (tabs.size() > previewImageSize) {
+            onFetched =
                     () -> {
                         fetchFaviconsInternal(
                                 activity, sessionId, tabs, /* maxTabs= */ tabs.size(), () -> {});
-                    });
+                    };
         }
+        fetchFaviconsInternal(
+                activity, sessionId, tabs, /* maxTabs= */ previewImageSize, onFetched);
     }
 
     private void fetchFaviconsInternal(
@@ -799,8 +797,7 @@ public class DataSharingTabManager {
         DataSharingUiConfig.DataSharingCallback dataSharingCallback =
                 new DataSharingUiConfig.DataSharingCallback() {
                     @Override
-                    public void onLearnMoreAboutSharedTabGroupsClicked(
-                            Context context, String url) {
+                    public void onLearnMoreAboutSharedTabGroupsClicked(Context context, GURL url) {
                         mDataSharingTabGroupsDelegate.openLearnMoreSharedTabGroupsPage(
                                 context, url);
                     }
