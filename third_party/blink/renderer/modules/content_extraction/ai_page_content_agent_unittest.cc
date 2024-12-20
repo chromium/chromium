@@ -1283,5 +1283,64 @@ TEST_F(AIPageContentAgentTest, TopLayerContainer) {
   CheckTextNode(dialog_text, "This is a dialog.");
 }
 
+namespace {
+const mojom::blink::AIPageContentNode& GetSingleTableCell(
+    const mojom::blink::AIPageContentNode& table) {
+  EXPECT_EQ(table.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kTable);
+  EXPECT_EQ(table.children_nodes.size(), 1u);
+
+  const auto& table_row = *table.children_nodes[0];
+  EXPECT_EQ(table_row.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kTableRow);
+  EXPECT_EQ(table_row.children_nodes.size(), 1u);
+
+  const auto& table_cell = *table_row.children_nodes[0];
+  EXPECT_EQ(table_cell.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kContainer);
+  return table_cell;
+}
+}  // namespace
+
+TEST_F(AIPageContentAgentTest, TableWithAnonymousCells) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<html>"
+      "  <style>"
+      "    #target {"
+      "      display: table;"
+      "    }"
+      ""
+      "    #target::before {"
+      "      content: 'BEFORE';"
+      "      display: table;"
+      "    }"
+      "  </style>"
+      "  <div id='target'></div>"
+      "</html>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& outer_table = *root.children_nodes[0];
+  const auto& outer_table_cell = GetSingleTableCell(outer_table);
+  ASSERT_EQ(outer_table_cell.children_nodes.size(), 1u);
+
+  const auto& inner_table = *outer_table_cell.children_nodes[0];
+  const auto& inner_table_cell = GetSingleTableCell(inner_table);
+
+  EXPECT_EQ(inner_table_cell.children_nodes.size(), 1u);
+  CheckTextNode(*inner_table_cell.children_nodes[0], "BEFORE");
+}
+
 }  // namespace
 }  // namespace blink
