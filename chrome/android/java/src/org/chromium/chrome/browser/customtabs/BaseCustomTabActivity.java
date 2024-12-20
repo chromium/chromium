@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -876,11 +875,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     protected boolean handleBackPressed() {
-        if (BackPressManager.correctTabNavigationOnFallback()) {
-            if (getToolbarManager() != null && getToolbarManager().back()) {
-                return true;
-            }
-        }
         return getCustomTabActivityNavigationController().navigateOnBack();
     }
 

@@ -590,11 +590,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         : null);
         mBackPressManager.setFallbackOnBackPressed(
                 () -> {
-                    if (BackPressManager.correctTabNavigationOnFallback()) {
-                        if (getToolbarManager() != null && getToolbarManager().back()) {
-                            return;
-                        }
-                    }
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
     }

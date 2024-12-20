@@ -168,13 +168,6 @@ public class BackPressManager implements Destroyable {
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
 
     /**
-     * @return True if the tab navigation should be corrected on fallback callback.
-     */
-    public static boolean correctTabNavigationOnFallback() {
-        return false;
-    }
-
-    /**
      * Record when the back press is consumed by a certain feature.
      *
      * @param type The {@link Type} which consumes the back press event.
