@@ -258,6 +258,11 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0x405e},
            {mojom::CustomizationRestriction::kAllowTabEventRewrites,
             mojom::MouseButtonConfig::kNoConfig, "M720 Triathlon"}},
+          // Logitech MX Anywhere 2
+          {{0x046d, 0x4063},
+           {mojom::CustomizationRestriction::
+                kAllowHorizontalScrollWheelRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // Logitech MX Anywhere 2S (USB Dongle)
           {{0x046d, 0x406a},
            {mojom::CustomizationRestriction::
@@ -496,10 +501,6 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
             mojom::MouseButtonConfig::kNoConfig}},
           // Logitech M557
           {{0x046d, 0xb010},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
-          // Logitech MX Anywhere 2
-          {{0x046d, 0xb018},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
           // Logitech G9 Laser Mouse
@@ -1497,6 +1498,8 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
       vid_pid_alias_list({
           // Logitech ERGO M575 (Bluetooth -> USB Dongle)
           {{0x46d, 0xb027}, {0x46d, 0x4096}},
+          // Logitech Mx Anywhere 2 (Bluetooth -> USB Dongle)
+          {{0x046d, 0xb018}, {0x046d, 0x4063}},
           // Logitech MX Master 2S (Bluetooth -> USB Dongle)
           {{0x046d, 0xb019}, {0x046d, 0x4069}},
           // Logitech MX Anywhere 2S (Bluetooth -> USB Dongle)
