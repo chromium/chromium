@@ -221,9 +221,14 @@ WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageApnPolicyIcon();
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsSubpageAutoConnectToggle();
 
-// The allow data roaming togle in cellular network details subpage.
+// The allow data roaming toggle in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery
 CellularDetailsAllowDataRoamingToggle();
+
+// The policy icon on allow data roaming toggle in cellular network details
+// subpage.
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingTogglePolicyIcon();
 
 // The network operator property in the cellular network details subpage. The
 // celluler network must be active for this to be shown.
