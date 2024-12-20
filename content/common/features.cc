@@ -220,14 +220,6 @@ BASE_FEATURE(kFontSrcLocalMatching,
              "FontSrcLocalMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature controlling whether or not memory pressure signals will be forwarded
-// to the GPU process.
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kForwardMemoryPressureEventsToGpuProcess,
-             "ForwardMemoryPressureEventsToGpuProcess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Whether to use the Frame Routing Cache to avoid synchronous IPCs from the
 // renderer side for iframe creation.
 BASE_FEATURE(kFrameRoutingCache,
