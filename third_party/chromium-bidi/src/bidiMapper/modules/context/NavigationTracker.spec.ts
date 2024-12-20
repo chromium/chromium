@@ -318,7 +318,7 @@ describe('NavigationTracker', () => {
         assertNoNavigationEvents();
       });
 
-      it('canceled by script-initiated navigation', async () => {
+      it('canceled by script-initiated navigation', () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
 
         assertNoNavigationEvents();
@@ -350,7 +350,7 @@ describe('NavigationTracker', () => {
         assert.equal(navigationTracker.url, INITIAL_URL);
       });
 
-      it('canceled by command navigation', async () => {
+      it('canceled by command navigation', () => {
         navigationTracker.frameRequestedNavigation(SOME_URL);
         navigationTracker.frameStartedNavigating(ANOTHER_URL, LOADER_ID);
 

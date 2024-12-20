@@ -23,27 +23,27 @@
 import type {Protocol} from 'devtools-protocol';
 
 import {
-  Network,
   type BrowsingContext,
   ChromiumBidi,
+  Network,
   type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
-import {LogType, type LoggerFn} from '../../../utils/log.js';
+import {type LoggerFn, LogType} from '../../../utils/log.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 import {
-  computeHeadersSize,
-  bidiNetworkHeadersFromCdpNetworkHeaders,
-  cdpToBiDiCookie,
-  cdpFetchHeadersFromBidiNetworkHeaders,
-  cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
   bidiBodySizeFromCdpPostDataEntries,
-  networkHeaderFromCookieHeaders,
+  bidiNetworkHeadersFromCdpNetworkHeaders,
+  cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
+  cdpFetchHeadersFromBidiNetworkHeaders,
+  cdpToBiDiCookie,
+  computeHeadersSize,
   getTiming,
+  networkHeaderFromCookieHeaders,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -304,26 +304,66 @@ export class NetworkRequest {
   }
 
   get #timings(): Network.FetchTimingInfo {
+    // The timing in the CDP events are provided relative to the event's baseline.
+    // However, the baseline can be different for different events, and the events have to
+    // be normalized throughout resource events. Normalize events timestamps  by the
+    // request.
+    // TODO: Verify this is correct.
+    const responseTimeOffset = getTiming(
+      getTiming(this.#response.info?.timing?.requestTime) -
+        getTiming(this.#request.info?.timestamp),
+    );
+
     return {
       // TODO: Verify this is correct
-      timeOrigin: getTiming(this.#response.info?.timing?.requestTime),
-      requestTime: getTiming(this.#response.info?.timing?.requestTime),
+      timeOrigin: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
+      // Timing baseline.
+      // TODO: Verify this is correct.
+      requestTime: 0,
+      // TODO: set if redirect detected.
       redirectStart: 0,
+      // TODO: set if redirect detected.
       redirectEnd: 0,
       // TODO: Verify this is correct
       // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
-      fetchStart: getTiming(this.#response.info?.timing?.requestTime),
-      dnsStart: getTiming(this.#response.info?.timing?.dnsStart),
-      dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd),
-      connectStart: getTiming(this.#response.info?.timing?.connectStart),
-      connectEnd: getTiming(this.#response.info?.timing?.connectEnd),
-      tlsStart: getTiming(this.#response.info?.timing?.sslStart),
-      requestStart: getTiming(this.#response.info?.timing?.sendStart),
+      fetchStart: getTiming(
+        this.#response.info?.timing?.workerFetchStart,
+        responseTimeOffset,
+      ),
+      // fetchStart: 0,
+      dnsStart: getTiming(
+        this.#response.info?.timing?.dnsStart,
+        responseTimeOffset,
+      ),
+      dnsEnd: getTiming(
+        this.#response.info?.timing?.dnsEnd,
+        responseTimeOffset,
+      ),
+      connectStart: getTiming(
+        this.#response.info?.timing?.connectStart,
+        responseTimeOffset,
+      ),
+      connectEnd: getTiming(
+        this.#response.info?.timing?.connectEnd,
+        responseTimeOffset,
+      ),
+      tlsStart: getTiming(
+        this.#response.info?.timing?.sslStart,
+        responseTimeOffset,
+      ),
+      requestStart: getTiming(
+        this.#response.info?.timing?.sendStart,
+        responseTimeOffset,
+      ),
       // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
       responseStart: getTiming(
         this.#response.info?.timing?.receiveHeadersStart,
+        responseTimeOffset,
       ),
-      responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd),
+      responseEnd: getTiming(
+        this.#response.info?.timing?.receiveHeadersEnd,
+        responseTimeOffset,
+      ),
     };
   }
 

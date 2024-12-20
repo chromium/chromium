@@ -422,10 +422,15 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}],
+                         indirect=True)
 async def test_network_sends_only_included_cookies(websocket, context_id,
-                                                   url_base):
+                                                   url_example_another_origin,
+                                                   url_bad_ssl):
 
-    await goto_url(websocket, context_id, "https://example.com")
+    await goto_url(websocket, context_id, url_bad_ssl)
 
     await execute_command(
         websocket, {
@@ -446,7 +451,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url_base,
+                "url": url_example_another_origin,
                 "wait": "complete",
                 "context": context_id
             }
@@ -463,7 +468,7 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": url_base,
+                "url": url_example_another_origin,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
