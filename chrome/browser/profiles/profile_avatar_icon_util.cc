@@ -43,14 +43,17 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/canvas.h"
@@ -281,12 +284,40 @@ gfx::Image GetLegacyPlaceholderAvatarIconWithColors(SkColor fill_color,
       size >= 40 ? kPersonFilledPaddedLargeIcon : kPersonFilledPaddedSmallIcon;
   const gfx::ImageSkia icon_without_background = gfx::CreateVectorIcon(
       gfx::IconDescription(person_icon, size, stroke_color));
-  const gfx::ImageSkia icon_with_background(
-      std::make_unique<ImageWithBackgroundSource>(icon_without_background,
-                                                  fill_color),
-      gfx::Size(size, size));
-  return gfx::Image(icon_with_background);
+  return gfx::Image(
+      profiles::AddBackgroundToImage(icon_without_background, fill_color));
 }
+
+class CircleImageSource : public gfx::CanvasImageSource {
+ public:
+  CircleImageSource(int size, SkColor color)
+      : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
+
+  CircleImageSource(const CircleImageSource&) = delete;
+  CircleImageSource& operator=(const CircleImageSource&) = delete;
+
+  ~CircleImageSource() override = default;
+
+  void Draw(gfx::Canvas* canvas) override {
+    float radius = size().width() / 2.0f;
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    flags.setColor(color_);
+    canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
+  }
+
+  static gfx::ImageSkia CropCircle(const gfx::ImageSkia& image) {
+    CHECK_EQ(image.width(), image.height());
+    // The color here is irrelevant as long as it's opaque; only alpha matters.
+    return gfx::ImageSkiaOperations::CreateMaskedImage(
+        image, gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
+                   image.width(), SK_ColorWHITE));
+  }
+
+ private:
+  const SkColor color_;
+};
 
 }  // namespace
 
@@ -353,6 +384,20 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
                               AvatarShape shape) {
   gfx::Size size(width, height);
 
+  // No need to resize.
+  if (image.Size() == size) {
+    switch (shape) {
+      case AvatarShape::SHAPE_CIRCLE:
+        if (width == height) {
+          return gfx::Image(
+              CircleImageSource::CropCircle(*image.ToImageSkia()));
+        }
+        break;
+      case AvatarShape::SHAPE_SQUARE:
+        return image;
+    }
+  }
+
   // Source for a centered, sized icon.
   std::unique_ptr<gfx::ImageSkiaSource> source(
       new AvatarImageSource(*image.ToImageSkia(), size, std::min(width, height),
@@ -363,6 +408,24 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height) {
   return GetSizedAvatarIcon(image, width, height, profiles::SHAPE_SQUARE);
+}
+
+ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
+  DCHECK(!image.IsImageGenerator());  // Not prepared to handle these.
+  if (image.IsImage()) {
+    gfx::ImageSkia image_skia = image.GetImage().AsImageSkia();
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            image_skia, skia::ImageOperations::RESIZE_BEST,
+            gfx::Size(size, size)));
+  }
+  const ui::VectorIconModel& model = image.GetVectorIcon();
+  if (model.has_color()) {
+    return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
+                                          size);
+  }
+  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color_id(),
+                                        size);
 }
 
 gfx::Image GetAvatarIconForWebUI(const gfx::Image& image) {
@@ -620,9 +683,7 @@ gfx::Image GetPlaceholderAvatarIconWithColors(
 
   if (icon_params.has_background) {
     return gfx::Image(
-        gfx::ImageSkia(std::make_unique<ImageWithBackgroundSource>(
-                           avatar_icon_without_background, fill_color),
-                       gfx::Size(size, size)));
+        AddBackgroundToImage(avatar_icon_without_background, fill_color));
   } else {
     return gfx::Image(avatar_icon_without_background);
   }
@@ -882,5 +943,12 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   return badged_bitmap;
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+gfx::ImageSkia AddBackgroundToImage(const gfx::ImageSkia& image,
+                                    SkColor background_color) {
+  return gfx::ImageSkia(
+      std::make_unique<ImageWithBackgroundSource>(image, background_color),
+      image.size());
+}
 
 }  // namespace profiles

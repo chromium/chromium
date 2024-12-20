@@ -112,7 +112,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     std::u16string header_string;
     ui::ImageModel header_image;
 
-    // Must not be empty.
+    // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
 
     // Must not be empty.
@@ -157,6 +157,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   virtual gfx::ImageSkia GetSyncIcon() const;
 
   // If |profile_name| is empty, no heading will be displayed.
+  // `management_badge` and `image_model` do not need to be circular.
   void SetProfileIdentityInfo(
       const std::u16string& profile_name,
       SkColor profile_background_color,

@@ -35,6 +35,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -133,53 +134,6 @@ gfx::ImageSkia ColorImage(const gfx::ImageSkia& image, SkColor color) {
   return gfx::ImageSkiaOperations::CreateColorMask(image, color);
 }
 
-class CircleImageSource : public gfx::CanvasImageSource {
- public:
-  CircleImageSource(int size, SkColor color)
-      : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
-
-  CircleImageSource(const CircleImageSource&) = delete;
-  CircleImageSource& operator=(const CircleImageSource&) = delete;
-
-  ~CircleImageSource() override = default;
-
-  void Draw(gfx::Canvas* canvas) override;
-
- private:
-  const SkColor color_;
-};
-
-void CircleImageSource::Draw(gfx::Canvas* canvas) {
-  float radius = size().width() / 2.0f;
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(color_);
-  canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
-}
-
-gfx::ImageSkia CreateCircle(int size, SkColor color) {
-  return gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(size, color);
-}
-
-gfx::ImageSkia CropCircle(const gfx::ImageSkia& image) {
-  DCHECK_EQ(image.width(), image.height());
-  // The color here is irrelevant as long as it's opaque; only alpha matters.
-  return gfx::ImageSkiaOperations::CreateMaskedImage(
-      image, CreateCircle(image.width(), SK_ColorWHITE));
-}
-
-gfx::ImageSkia AddCircularBackground(const gfx::ImageSkia& image,
-                                     SkColor bg_color,
-                                     int size) {
-  if (image.isNull()) {
-    return gfx::ImageSkia();
-  }
-
-  return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateCircle(size, bg_color), image);
-}
-
 std::unique_ptr<views::BoxLayout> CreateBoxLayout(
     views::BoxLayout::Orientation orientation,
     views::BoxLayout::CrossAxisAlignment cross_axis_alignment,
@@ -200,19 +154,23 @@ const gfx::ImageSkia ImageForMenu(const gfx::VectorIcon& icon,
   return gfx::CanvasImageSource::CreatePadded(sized_icon, gfx::Insets(padding));
 }
 
-ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
-  DCHECK(!image_model.IsImageGenerator());  // Not prepared to handle these.
-  if (image_model.IsImage()) {
-    return ui::ImageModel::FromImageSkia(
-        CropCircle(SizeImage(image_model.GetImage().AsImageSkia(), size)));
+// Resizes and crops `image_model` to a circular shape.
+// Note: if the image is backed by a vector icon, it is actually not cropped.
+// Cropping it would require theme colors which are not necessarily available,
+// and it is best to avoid cropping icons anyway -- icons naturally fitting in
+// the circle should be used instead.
+ui::ImageModel GetCircularSizedImage(const ui::ImageModel& image_model,
+                                     int size) {
+  // Resize.
+  ui::ImageModel resized =
+      profiles::GetSizedAvatarImageModel(image_model, size);
+  // It is assumed that vector icons are already fitting in a circle. Only crop
+  // images.
+  if (!resized.IsImage()) {
+    return resized;
   }
-  const ui::VectorIconModel& model = image_model.GetVectorIcon();
-  if (model.has_color()) {
-    return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color(),
-                                          size);
-  }
-  return ui::ImageModel::FromVectorIcon(*model.vector_icon(), model.color_id(),
-                                        size);
+  return ui::ImageModel::FromImage(GetSizedAvatarIcon(
+      resized.GetImage(), size, size, profiles::AvatarShape::SHAPE_CIRCLE));
 }
 
 // TODO(crbug.com/40156444): Adjust button size to be 16x16.
@@ -345,25 +303,50 @@ class AvatarImageView : public views::ImageView {
     ImageView::OnThemeChanged();
     constexpr int kBadgePadding = 2;
     DCHECK(!avatar_image_.IsEmpty());
-    gfx::ImageSkia sized_avatar_image =
-        SizeImageModel(avatar_image_, image_size_)
-            .Rasterize(GetColorProvider());
-    sized_avatar_image =
-        AddCircularBackground(sized_avatar_image, GetBackgroundColor(),
-                              image_size_ + 2 * border_size_);
+    gfx::ImageSkia sized_avatar_image;
+    if (border_size_ > 0) {
+      // Once `switches::IsImprovedSettingsUIOnDesktopEnabled()` is launched
+      // this code is be obsolete. It is only used by Guest and incognito
+      // profiles, which have outdated designs.
+      // TODO(crbug.com/385125246): Redesign incognito and guest menu, and
+      // cleanup code.
+      ui::ImageModel sized_avatar_image_without_border =
+          GetCircularSizedImage(avatar_image_, image_size_);
+      sized_avatar_image = gfx::CanvasImageSource::CreatePadded(
+          sized_avatar_image_without_border.Rasterize(GetColorProvider()),
+          gfx::Insets(border_size_));
+    } else {
+      sized_avatar_image =
+          profiles::GetSizedAvatarImageModel(avatar_image_, image_size_)
+              .Rasterize(GetColorProvider());
+    }
+    sized_avatar_image = profiles::AddBackgroundToImage(sized_avatar_image,
+                                                        GetBackgroundColor());
+    gfx::Image circular_sized_avatar_image = profiles::GetSizedAvatarIcon(
+        gfx::Image(sized_avatar_image), sized_avatar_image.size().width(),
+        sized_avatar_image.size().height(),
+        profiles::AvatarShape::SHAPE_CIRCLE);
 
-    gfx::ImageSkia sized_badge =
-        management_badge_.IsEmpty()
-            ? gfx::ImageSkia()
-            : AddCircularBackground(
-                  SizeImageModel(management_badge_,
-                                 ProfileMenuViewBase::kManagementBadgeSize)
-                      .Rasterize(GetColorProvider()),
-                  GetBackgroundColor(),
-                  ProfileMenuViewBase::kManagementBadgeSize +
-                      2 * kBadgePadding);
+    gfx::ImageSkia badge;
+    if (!management_badge_.IsEmpty()) {
+      // Delete this code once the improved UI is launched.
+      CHECK(!switches::IsImprovedSettingsUIOnDesktopEnabled());
+      ui::ImageModel sized_badge = profiles::GetSizedAvatarImageModel(
+          management_badge_, ProfileMenuViewBase::kManagementBadgeSize);
+      gfx::ImageSkia padded_badge = gfx::CanvasImageSource::CreatePadded(
+          sized_badge.Rasterize(GetColorProvider()),
+          gfx::Insets(kBadgePadding));
+      padded_badge =
+          profiles::AddBackgroundToImage(padded_badge, GetBackgroundColor());
+      // Crop to circle.
+      badge = *profiles::GetSizedAvatarIcon(gfx::Image(padded_badge),
+                                            padded_badge.size().width(),
+                                            padded_badge.size().height(),
+                                            profiles::AvatarShape::SHAPE_CIRCLE)
+                   .ToImageSkia();
+    }
     gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
-        sized_avatar_image, sized_badge);
+        *circular_sized_avatar_image.ToImageSkia(), badge);
     SetImage(ui::ImageModel::FromImageSkia(badged_image));
   }
 
@@ -753,15 +736,15 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
             .SetInsideBorderInsets(gfx::Insets::TLBR(
                 kHeaderVerticalMargin, kIdentityContainerHorizontalPadding,
                 kHeaderVerticalMargin, kIdentityContainerHorizontalPadding))
-            .AddChildren(
-                views::Builder<views::ImageView>().SetImage(
-                    SizeImageModel(params.header_image, kHeaderImageSize)),
-                views::Builder<views::Label>()
-                    .SetText(params.header_string)
-                    .CopyAddressTo(&heading_label_)
-                    .SetTextContext(views::style::CONTEXT_LABEL)
-                    .SetTextStyle(views::style::STYLE_BODY_5)
-                    .SetElideBehavior(gfx::ELIDE_TAIL))
+            .AddChildren(views::Builder<views::ImageView>().SetImage(
+                             GetCircularSizedImage(params.header_image,
+                                                   kHeaderImageSize)),
+                         views::Builder<views::Label>()
+                             .SetText(params.header_string)
+                             .CopyAddressTo(&heading_label_)
+                             .SetTextContext(views::style::CONTEXT_LABEL)
+                             .SetTextStyle(views::style::STYLE_BODY_5)
+                             .SetElideBehavior(gfx::ELIDE_TAIL))
             .Build());
     // Separator.
     identity_info_container_->AddChildView(
@@ -776,7 +759,8 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
   identity_info_container_->AddChildView(
       views::Builder<views::View>(std::make_unique<AvatarImageView>(
                                       params.profile_image, ui::ImageModel(),
-                                      this, kIdentityInfoImageSize, 0))
+                                      this, kIdentityInfoImageSize,
+                                      /*border_size=*/0))
           .SetProperty(views::kMarginsKey,
                        gfx::Insets().set_top(kAvatarTopMargin))
           .Build());
@@ -1107,7 +1091,7 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
 
   DCHECK(!image_model.IsEmpty());
   ui::ImageModel sized_image =
-      SizeImageModel(image_model, profiles::kMenuAvatarIconSize);
+      GetCircularSizedImage(image_model, profiles::kMenuAvatarIconSize);
   views::Button* button = selectable_profiles_container_->AddChildView(
       std::make_unique<HoverButton>(
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
