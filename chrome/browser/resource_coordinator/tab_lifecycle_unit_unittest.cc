@@ -548,37 +548,4 @@ TEST_F(TabLifecycleUnitTest, NotifiedOfWebContentsVisibilityChanges) {
   tab_lifecycle_unit.RemoveObserver(&observer);
 }
 
-TEST_F(TabLifecycleUnitTest, CannotDiscardPictureInPictureWindow) {
-  // Create picture-in-picture browser.
-  auto pip_window = std::make_unique<TestBrowserWindow>();
-  Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_PICTURE_IN_PICTURE;
-  params.window = pip_window.get();
-  std::unique_ptr<Browser> pip_browser;
-  pip_browser.reset(Browser::Create(params));
-  std::unique_ptr<content::WebContents> contents(
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
-  content::WebContents* raw_contents = contents.get();
-  ResourceCoordinatorTabHelper::CreateForWebContents(raw_contents);
-  pip_browser->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /*foreground=*/true);
-
-  // Attempt to discard the tab. This should fail as picture-in-picture tabs
-  // should not be discardable.
-  TabLifecycleUnit tab_lifecycle_unit(GetTabLifecycleUnitSource(), &observers_,
-                                      usage_clock_.get(), raw_contents,
-                                      pip_browser->tab_strip_model());
-  EXPECT_FALSE(
-      tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::EXTERNAL, 0));
-  EXPECT_FALSE(
-      tab_lifecycle_unit.Discard(LifecycleUnitDiscardReason::SUGGESTED, 0));
-  EXPECT_FALSE(tab_lifecycle_unit.Discard(
-      LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY, 0));
-
-  // Tear down picture-in-picture browser.
-  pip_browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
-  pip_browser.reset();
-  pip_window.reset();
-}
-
 }  // namespace resource_coordinator

@@ -582,15 +582,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     return false;
   }
 
-  // Can't discard a tab displayed in a picture-in-picture window. We check this
-  // here instead of in `CanDiscard` as not all calls to `Discard` check
-  // `CanDiscard` and discarding a picture-in-picture WebContents leaves the
-  // window in a bad state.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && browser->is_type_picture_in_picture()) {
-    return false;
-  }
-
   discard_reason_ = reason;
 
   if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
