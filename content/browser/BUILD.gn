@@ -259,6 +259,7 @@ source_set("browser") {
     "//services/webnn/public/mojom",
     "//skia",
     "//skia/public/mojom",
+    "//sql",
     "//storage/browser",
     "//storage/browser/quota:mojo_bindings",
     "//storage/common",
