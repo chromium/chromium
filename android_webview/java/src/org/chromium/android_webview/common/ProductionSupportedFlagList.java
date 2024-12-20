@@ -1015,6 +1015,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),
+        Flag.baseFeature(
+                 "CSSReadingFlow",
+                 "Enables new CSS reading-flow property for focus navigation in visual order."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
