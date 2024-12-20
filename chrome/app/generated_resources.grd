@@ -564,9 +564,6 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS" desc="This is a context menu entry. Upon clicking, it triggers the password selection bubble (for non-syncing users) or a submenu with more entries (for syncing users).">
-          Passwords
-        </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
             &amp;Back
@@ -864,15 +861,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
@@ -882,9 +873,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No saved passwords
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1192,15 +1180,9 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="In Title Case: The name of the Autofill Feedback command in the content area context menu">
             Help Improve Autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="In Title Case: The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in Form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and Passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select Password
@@ -1210,9 +1192,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest Password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="In Title Case: This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No Saved Passwords
           </message>
         </if>
 

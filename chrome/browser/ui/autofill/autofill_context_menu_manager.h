@@ -89,28 +89,17 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
 
   // Adds the passwords manual fallback context menu entries.
   //
-  // Regardless of the state of the user, only one entry is displayed in the
-  // top-level context menu: "Passwords".
+  // The entries are displayed in the following order:
+  // - "Select password" iff the user has passwords saved. This entry triggers
+  // password suggestions.
+  // - "Suggest password..." iff the user can generate passwords for the current
+  // field.
+  // - "Use passkey from another device" iff the field suppors passkeys.
+  // - "Import passwords" iff the user does not have password saves. This entry
+  // opens chrome://password-manager.
   //
-  // If the user has passwords saved and cannot generate passwords, clicking on
-  // the "Passwords" entry behaves exactly like "Select password" (it will
-  // trigger password suggestions).
-  //
-  // In all the other cases, the "Passwords" entry doesn't do anything upon
-  // clicking, but hovering on it opens a sub-menu.
-  //
-  // In the sub-menu, if the user doesn't have passwords saved, the first entry
-  // is "No saved passwords". This entry is greyed out and doesn't do anything
-  // upon clicking. It is just informative. If the user has passwords saved,
-  // this entry is missing.
-  //
-  // The next entry in the sub-menu is either "Select password" (which triggers
-  // password suggestions) or "Import passwords" (which opens
-  // chrome://password-manager), depending on whether the user has passwords
-  // saved or not.
-  //
-  // If the user can also generate passwords for the current field, the final
-  // entry is "Suggest password...". Otherwise, this entry is missing.
+  // Not all 4 entries have to be displayed. If an entry does not meet its
+  // criterion to be displayed, the entry will be skipped.
   void AddPasswordsManualFallbackItems(
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
@@ -145,7 +134,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
 
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
-  ui::SimpleMenuModel passwords_submenu_model_;
   content::ContextMenuParams params_;
 };
 

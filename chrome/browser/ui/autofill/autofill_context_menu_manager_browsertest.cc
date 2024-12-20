@@ -111,13 +111,9 @@ MATCHER(ContainsAutofillAiEntry, "") {
 // Checks if the context menu model contains the plus address manual fallback
 // entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
 MATCHER(PlusAddressFallbackAdded, "") {
-  // TODO(crbug.com/40285811): Remove "if feature enabled" from the comment,
-  // once the feature is rolled out.
-  // There can be more than 3 entries, because the address manual fallback is
-  // always present, on any field, if the autofill for unclassified fields
-  // feature is enabled.
-  EXPECT_GE(arg->GetItemCount(), 3u);
-  EXPECT_EQ(arg->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_TITLE);
+  // There can be more than 2 entries, if other manual fallbacks are present
+  // too.
+  EXPECT_GE(arg->GetItemCount(), 2u);
   EXPECT_EQ(arg->GetTypeAt(arg->GetItemCount() - 1),
             ui::MenuModel::ItemType::TYPE_SEPARATOR);
 
@@ -133,8 +129,8 @@ MATCHER(PlusAddressFallbackAdded, "") {
 
 // Checks if the context menu model contains the passwords manual fallback
 // entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`,
-// `has_passwords_saved`, `is_password_generation_enabled_for_current_field` and
-// `is_passkey_from_another_device_in_context_menu` must be bool.
+// `has_passwords_saved`, `is_password_generation_enabled_for_current_field`
+// must be bool.
 //
 // `has_passwords_saved` is true if the user has any account or
 // profile passwords stored.
@@ -143,104 +139,41 @@ MATCHER(PlusAddressFallbackAdded, "") {
 // generation feature is enabled for this user (note that some non-syncing users
 // can also generate passwords, in special conditions) and for the current
 // field.
-//
-// `is_passkey_from_another_device_in_context_menu` is true if passkey
-// fallback entry is supposed to be in context menu.
-MATCHER_P3(OnlyPasswordsFallbackAdded,
+// TODO(crbug.com/383040618): Add tests for passkeys.
+MATCHER_P2(OnlyPasswordsFallbackAdded,
            has_passwords_saved,
            is_password_generation_enabled_for_current_field,
-           is_passkey_from_another_device_in_context_menu,
            "") {
-  EXPECT_EQ(arg->GetItemCount(), 3u);
-  EXPECT_EQ(arg->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_TITLE);
-  EXPECT_EQ(
-      arg->GetLabelAt(0),
-      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
-  EXPECT_EQ(
-      arg->GetLabelAt(1),
-      l10n_util::GetStringUTF16(
-          is_passkey_from_another_device_in_context_menu
-              ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS
-              : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS));
-  EXPECT_EQ(arg->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  const bool add_select_password_option = has_passwords_saved;
+  const bool add_import_passwords_option = !has_passwords_saved;
 
-  const bool add_select_password_submenu_option =
-      (is_password_generation_enabled_for_current_field &&
-       has_passwords_saved) ||
-      is_passkey_from_another_device_in_context_menu;
-  const bool add_import_passwords_submenu_option = !has_passwords_saved;
-  const bool add_submenu =
-      add_select_password_submenu_option || add_import_passwords_submenu_option;
-
-  if (!add_submenu) {
-    return arg->GetTypeAt(1) == ui::MenuModel::ItemType::TYPE_COMMAND;
-  }
-
-  EXPECT_EQ(arg->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SUBMENU);
-  ui::MenuModel* submenu = arg->GetSubmenuModelAt(1);
-
-  if (is_password_generation_enabled_for_current_field && has_passwords_saved) {
-    EXPECT_EQ(submenu->GetItemCount(),
-              is_passkey_from_another_device_in_context_menu ? 3u : 2u);
+  size_t current_context_menu_position = 0;
+  if (add_select_password_option) {
     EXPECT_EQ(
-        submenu->GetLabelAt(0),
+        arg->GetLabelAt(current_context_menu_position),
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD));
+    ++current_context_menu_position;
+  }
+  if (is_password_generation_enabled_for_current_field) {
     EXPECT_EQ(
-        submenu->GetLabelAt(1),
+        arg->GetLabelAt(current_context_menu_position),
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
-    EXPECT_EQ(submenu->GetItemCount(),
-              is_passkey_from_another_device_in_context_menu ? 3u : 2u);
-    if (is_passkey_from_another_device_in_context_menu) {
-      EXPECT_EQ(
-          submenu->GetLabelAt(2),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-    }
-  } else if (add_import_passwords_submenu_option) {
-    size_t expected_count = 2;
-    if (is_password_generation_enabled_for_current_field) {
-      expected_count += 1;
-      EXPECT_EQ(
-          submenu->GetLabelAt(0),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
-    }
-    if (is_passkey_from_another_device_in_context_menu) {
-      EXPECT_EQ(
-          submenu->GetLabelAt(expected_count - 1),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-    }
-    EXPECT_EQ(submenu->GetItemCount(), expected_count);
-
-    size_t import_index = is_password_generation_enabled_for_current_field +
-                          !is_passkey_from_another_device_in_context_menu;
-    if (!is_passkey_from_another_device_in_context_menu) {
-      EXPECT_EQ(
-          submenu->GetLabelAt(is_password_generation_enabled_for_current_field),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS));
-      EXPECT_FALSE(submenu->IsEnabledAt(
-          is_password_generation_enabled_for_current_field));
-    }
+    ++current_context_menu_position;
+  }
+  if (add_import_passwords_option) {
     EXPECT_EQ(
-        submenu->GetLabelAt(import_index),
+        arg->GetLabelAt(current_context_menu_position),
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS));
-  } else {
-    EXPECT_EQ(submenu->GetItemCount(), 2u);
-    EXPECT_EQ(
-        submenu->GetLabelAt(0),
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD));
-    EXPECT_EQ(
-        submenu->GetLabelAt(1),
-        l10n_util::GetStringUTF16(
-            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+    ++current_context_menu_position;
   }
-  return true;
+
+  EXPECT_EQ(arg->GetTypeAt(current_context_menu_position),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  ++current_context_menu_position;
+  return arg->GetItemCount() == current_context_menu_position;
 }
 
 // Generates a ContextMenuParams for the Autofill context menu options.
@@ -491,10 +424,7 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
  public:
   PasswordsFallbackTest() {
     feature_list_.InitWithFeatures(
-        {password_manager::features::
-             kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
-         password_manager::features::kPasswordManualFallbackAvailable},
-        {});
+        {password_manager::features::kPasswordManualFallbackAvailable}, {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -557,8 +487,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/true,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -569,8 +498,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -588,8 +516,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
@@ -802,8 +729,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/true,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -816,8 +742,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -836,8 +761,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_in_context_menu=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -475,16 +475,12 @@
   /* Autofill context menu commands */ \
   E(kActionContentContextAutofillImprovedSuggestions, \
     IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) \
-  E(kActionContentContextAutofillFallbackPassowords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSelectPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) \
   E(kActionContentContextAutofillFallbackPasswordsImportPasswords, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSuggestPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
-  E(kActionContentContextAutofillFallbackPasswordsNoSavedPasswords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS) \
   E(kActionContentContextUsePasskeyFromAnotherDevice, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   /* Live Caption */ \
