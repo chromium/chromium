@@ -83,6 +83,7 @@ if (is_android) {
 
   android_library("core_java") {
     sources = [
+      "android/java/src/org/chromium/components/collaboration/CollaborationControllerDelegate.java",
       "android/java/src/org/chromium/components/collaboration/CollaborationService.java",
       "android/java/src/org/chromium/components/collaboration/ServiceStatus.java",
     ]
@@ -103,7 +104,10 @@ if (is_android) {
   }
 
   java_cpp_enum("core_enums_java") {
-    sources = [ "service_status.h" ]
+    sources = [
+      "collaboration_controller_delegate.h",
+      "service_status.h",
+    ]
   }
 
   generate_jni("core_jni_headers") {

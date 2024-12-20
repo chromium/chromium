@@ -9,6 +9,19 @@ if (is_android) {
 }
 
 if (is_android) {
+  android_library("internal_java") {
+    srcjar_deps = [ ":internal_jni_headers" ]
+    resources_package = "org.chromium.chrome.browser.collaboration"
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   android_library("factory_java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
@@ -25,6 +38,10 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
+  }
+
+  generate_jni("internal_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
   }
 
   android_library("javatests") {

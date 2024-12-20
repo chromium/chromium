@@ -8,6 +8,10 @@
 #include "base/functional/callback.h"
 #include "components/data_sharing/public/group_data.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace collaboration {
 
 // The class responsible for controlling actions on platform specific UI
@@ -15,10 +19,12 @@ namespace collaboration {
 class CollaborationControllerDelegate {
  public:
   struct ErrorInfo {
+    // GENERATED_JAVA_ENUM_PACKAGE: (
+    //   org.chromium.components.collaboration)
     enum class Type {
-      kUnknown,
+      kUnknown = 0,
       // Show the generic error dialog.
-      kGenericError,
+      kGenericError = 1,
     };
 
     explicit ErrorInfo(Type type) : type(type) {}
@@ -28,10 +34,12 @@ class CollaborationControllerDelegate {
     bool operator==(const ErrorInfo& other) const { return type == other.type; }
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.collaboration)
   enum class Outcome {
-    kSuccess,
-    kFailure,
-    kCancel,
+    kSuccess = 0,
+    kFailure = 1,
+    kCancel = 2,
   };
 
   CollaborationControllerDelegate() = default;
@@ -81,6 +89,11 @@ class CollaborationControllerDelegate {
 
   // Focus the UI screen associated with the current delegate instance.
   virtual void PromoteCurrentScreen() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the Java object of the CollaborationControllerDelegate.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace collaboration

@@ -37,6 +37,12 @@ class MockCollaborationControllerDelegate
               (const data_sharing::GroupId& group_id, ResultCallback result),
               (override));
   MOCK_METHOD(void, PromoteCurrentScreen, (), (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
+              GetJavaObject,
+              (),
+              (override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace collaboration
