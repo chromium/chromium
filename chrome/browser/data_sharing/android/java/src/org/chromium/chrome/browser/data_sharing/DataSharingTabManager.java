@@ -45,16 +45,17 @@ import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.TabPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
-import org.chromium.components.data_sharing.configs.DataSharingPreviewDataConfig;
 import org.chromium.components.data_sharing.configs.DataSharingPreviewDetailsConfig;
 import org.chromium.components.data_sharing.configs.DataSharingRuntimeDataConfig;
 import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
@@ -402,28 +403,43 @@ public class DataSharingTabManager {
                                         .setSharedDataPreview(previewData.sharedDataPreview)
                                         .build()));
 
-        fetchFavicons(
-                activity,
-                joinFlowTracker,
-                preview,
-                /* fetchAll= */ false,
-                () -> {
-                    fetchFavicons(
-                            activity, joinFlowTracker, preview, /* fetchAll= */ true, () -> {});
-                });
+        fetchFavicons(activity, joinFlowTracker.getSessionId(), preview.tabs);
     }
 
-    private void fetchFavicons(
+    private void fetchFavicons(Activity activity, String sessionId, List<TabPreview> tabs) {
+        // First fetch favicons for upto 4 tabs, then fetch favicons for the remaining tabs.
+        if (tabs.size() <= 4) {
+            fetchFaviconsInternal(activity, sessionId, tabs, /* maxTabs= */ 4, () -> {});
+        } else {
+            fetchFaviconsInternal(
+                    activity,
+                    sessionId,
+                    tabs,
+                    /* maxTabs= */ 4,
+                    () -> {
+                        fetchFaviconsInternal(
+                                activity, sessionId, tabs, /* maxTabs= */ tabs.size(), () -> {});
+                    });
+        }
+    }
+
+    private void fetchFaviconsInternal(
             Activity activity,
-            JoinFlowTracker joinFlowTracker,
-            SharedTabGroupPreview preview,
-            boolean fetchAll,
+            String sessionId,
+            List<TabPreview> tabs,
+            int maxTabs,
             Runnable doneCallback) {
-        int maxNumToFetch = fetchAll ? preview.tabs.size() : 4;
-        int numToFetch = Math.min(maxNumToFetch, preview.tabs.size());
         List<GURL> urls = new ArrayList<>();
-        for (int i = 0; i < numToFetch; ++i) {
-            urls.add(preview.tabs.get(i).url);
+        List<String> displayUrls = new ArrayList<>();
+
+        // Fetch URLs for favicons (up to maxTabs).
+        for (int i = 0; i < Math.min(maxTabs, tabs.size()); i++) {
+            urls.add(tabs.get(i).url);
+        }
+
+        // Always collect all display URLs.
+        for (TabPreview tab : tabs) {
+            displayUrls.add(tab.displayUrl);
         }
         mBulkFaviconUtil.fetchAsBitmap(
                 activity,
@@ -432,50 +448,39 @@ public class DataSharingTabManager {
                 // TODO(haileywang): add this to resources when using it in service.
                 /* size= */ 72,
                 (favicons) -> {
-                    if (fetchAll) {
-                        updateAllFavicons(joinFlowTracker, preview, favicons);
-                    } else {
-                        updatePreviewImage(joinFlowTracker, favicons);
-                    }
+                    updateFavicons(sessionId, displayUrls, favicons);
                     doneCallback.run();
                 });
     }
 
-    private void updateAllFavicons(
-            JoinFlowTracker joinFlowTracker, SharedTabGroupPreview preview, List<Bitmap> favicons) {
-        List<DataSharingPreviewDetailsConfig.TabPreview> tabPreviews = new ArrayList<>();
-        for (int i = 0; i < favicons.size(); ++i) {
-            tabPreviews.add(
+    private void updateFavicons(String sessionId, List<String> displayUrls, List<Bitmap> favicons) {
+        List<DataSharingPreviewDetailsConfig.TabPreview> tabsPreviewList = new ArrayList<>();
+        for (int i = 0; i < displayUrls.size(); i++) {
+            tabsPreviewList.add(
                     new DataSharingPreviewDetailsConfig.TabPreview(
-                            preview.tabs.get(i).displayUrl, favicons.get(i)));
+                            displayUrls.get(i), i < favicons.size() ? favicons.get(i) : null));
         }
         DataSharingRuntimeDataConfig runtimeConfig =
                 new DataSharingRuntimeDataConfig.Builder()
-                        .setSessionId(joinFlowTracker.getSessionId())
+                        .setSessionId(sessionId)
                         .setDataSharingPreviewDetailsConfig(
                                 new DataSharingPreviewDetailsConfig.Builder()
-                                        .setTabPreviews(tabPreviews)
+                                        .setTabPreviews(tabsPreviewList)
                                         .build())
                         .build();
-        mDataSharingService
-                .getUiDelegate()
-                .updateRuntimeData(joinFlowTracker.getSessionId(), runtimeConfig);
+        mDataSharingService.getUiDelegate().updateRuntimeData(sessionId, runtimeConfig);
     }
 
-    private void updatePreviewImage(JoinFlowTracker joinFlowTracker, List<Bitmap> favicons) {
-        // TODO(ssid): Make bitmap of the grid view.
-        Bitmap previewImage = favicons.get(0);
-        DataSharingRuntimeDataConfig runtimeConfig =
-                new DataSharingRuntimeDataConfig.Builder()
-                        .setSessionId(joinFlowTracker.getSessionId())
-                        .setDataSharingPreviewDataConfig(
-                                new DataSharingPreviewDataConfig.Builder()
-                                        .setTabGroupPreviewImage(previewImage)
-                                        .build())
-                        .build();
-        mDataSharingService
-                .getUiDelegate()
-                .updateRuntimeData(joinFlowTracker.getSessionId(), runtimeConfig);
+    private List<TabPreview> convertToTabsPreviewList(
+            List<SavedTabGroupTab> savedTabs, int maxTabs) {
+        int tabsCount = Math.min(maxTabs, savedTabs.size());
+        List<TabPreview> preview = new ArrayList<>();
+        for (int i = 0; i < tabsCount; ++i) {
+            // displayUrl field is not used in the create or manage UI where local tab group is
+            // available.
+            preview.add(new TabPreview(savedTabs.get(i).url, /* displayUrl= */ ""));
+        }
+        return preview;
     }
 
     private void showInvitationFailureDialog() {
@@ -637,13 +642,17 @@ public class DataSharingTabManager {
                         public void getDataSharingUrl(
                                 GroupToken tokenSecret, Callback<String> url) {}
                     };
-            uiDelegate.showCreateFlow(
-                    new DataSharingCreateUiConfig.Builder()
-                            .setCommonConfig(
-                                    getCommonConfig(activity, tabGroupDisplayName, stringConfig))
-                            .setCreateCallback(createCallback)
-                            .build());
 
+            String sessionId =
+                    uiDelegate.showCreateFlow(
+                            new DataSharingCreateUiConfig.Builder()
+                                    .setCommonConfig(
+                                            getCommonConfig(
+                                                    activity, tabGroupDisplayName, stringConfig))
+                                    .setCreateCallback(createCallback)
+                                    .build());
+            fetchFavicons(
+                    activity, sessionId, convertToTabsPreviewList(existingGroup.savedTabs, 4));
             return;
         }
 

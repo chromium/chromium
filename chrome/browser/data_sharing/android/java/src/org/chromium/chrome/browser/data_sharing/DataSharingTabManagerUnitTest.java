@@ -198,6 +198,7 @@ public class DataSharingTabManagerUnitTest {
         mSavedTabGroup.collaborationId = COLLABORATION_ID1;
         mSavedTabGroup.localId = LOCAL_ID;
         mSavedTabGroup.savedTabs = SyncedGroupTestHelper.tabsFromIds(TAB_ID);
+        mSavedTabGroup.savedTabs.get(0).url = new GURL("https://www.example.com/");
 
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -493,6 +494,9 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testCreateFlowWithNewTabGroup() {
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(null).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
@@ -533,6 +537,9 @@ public class DataSharingTabManagerUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID_V2})
     public void testCreateFlowCancelled() {
+        mDataSharingTabManager
+                .getBulkFaviconUtilForTesting()
+                .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(null).when(mTabGroupSyncService).getGroup(LOCAL_ID);
 
