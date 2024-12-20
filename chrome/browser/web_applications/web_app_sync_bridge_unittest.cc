@@ -1029,6 +1029,7 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_CreateSyncApp) {
 }
 
 TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
+  base::HistogramTester histogram_tester;
   AppsList sync_apps = CreateAppsList("https://example.com/", 10);
   Registry registry;
   InsertAppsListIntoRegistry(&registry, sync_apps);
@@ -1074,6 +1075,13 @@ TEST_F(WebAppSyncBridgeTest, CommitUpdate_UpdateSyncApp) {
                               /*exclude_current_os_integration=*/true));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar(
       /*exclude_current_os_integration=*/true));
+
+  // All 10 apps should be migrated, as they have an empty scope and are thus
+  // considered shortcuts.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Migrations.ShortcutAppsToDiy"),
+      base::BucketsAre(base::Bucket(/*min=*/10,
+                                    /*count=*/1)));
 }
 
 TEST_F(WebAppSyncBridgeTest, CommitUpdate_DeleteSyncApp) {

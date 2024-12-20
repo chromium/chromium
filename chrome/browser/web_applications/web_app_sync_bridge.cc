@@ -616,6 +616,7 @@ void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
 
 void WebAppSyncBridge::EnsureShortcutAppToDiyAppMigration() {
   web_app::ScopedRegistryUpdate update = BeginUpdate();
+  int shortcut_to_diy_apps = 0;
   for (const webapps::AppId& app_id : registrar().GetAppIds()) {
     WebApp* app_to_update = update->UpdateApp(app_id);
     bool is_shortcut = app_to_update->scope().is_empty() ||
@@ -627,15 +628,17 @@ void WebAppSyncBridge::EnsureShortcutAppToDiyAppMigration() {
       // Shortcut apps are separated from other web apps based on the fact that
       // they have an empty scope. DIY apps do not have that distinction, so
       // populate the scope from the start_url of the web app.
-      if (!app_to_update->scope().is_valid() ||
-          app_to_update->scope().is_empty()) {
+      if (!app_to_update->scope().is_valid()) {
         CHECK(app_to_update->start_url().is_valid());
         GURL scope(app_to_update->start_url().GetWithoutFilename());
         app_to_update->SetScope(scope);
       }
       app_to_update->SetWasShortcutApp(true);
+      shortcut_to_diy_apps++;
     }
   }
+  base::UmaHistogramCounts1000("WebApp.Migrations.ShortcutAppsToDiy",
+                               shortcut_to_diy_apps);
 }
 
 void WebAppSyncBridge::EnsurePartiallyInstalledAppsHaveCorrectStatus() {
