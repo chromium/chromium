@@ -48,10 +48,7 @@ namespace ash {
 
 class CoralControllerTest : public AshTestBase {
  public:
-  CoralControllerTest() {
-    feature_list_.InitWithFeatures(
-        {features::kCoralFeature, features::kCoralSavedDeskFeature}, {});
-  }
+  CoralControllerTest() = default;
 
   void ClickFirstCoralButton() {
     CoralChipButton* coral_button = GetFirstCoralButton();
@@ -87,7 +84,7 @@ class CoralControllerTest : public AshTestBase {
  private:
   std::unique_ptr<TestBirchClient> birch_client_;
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
 // Tests that clicking the in session coral button opens and activates a new

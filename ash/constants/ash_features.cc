@@ -417,13 +417,8 @@ BASE_FEATURE(kContinuousOverviewScrollAnimation,
              "ContinuousOverviewScrollAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling/disabling the coral feature. The coral saved desk feature
-// is a sub feature of coral. It is temporary until the feature is in a more
-// usable state so we don't show UI that does nothing.
+// Controls enabling/disabling the coral feature.
 BASE_FEATURE(kCoralFeature, "CoralFeature", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kCoralSavedDeskFeature,
-             "CoralSavedDeskFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables execution of routine for copying client keys and certs from NSS DB to
 // software backed Chaps slot. It's only respected if the
@@ -3417,11 +3412,6 @@ bool IsContinuousOverviewScrollAnimationEnabled() {
 
 bool IsCoralFeatureEnabled() {
   return base::FeatureList::IsEnabled(kCoralFeature);
-}
-
-bool IsCoralSavedDeskFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kCoralFeature) &&
-         base::FeatureList::IsEnabled(kCoralSavedDeskFeature);
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {
