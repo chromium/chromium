@@ -66,7 +66,7 @@ public class AccessibilityState {
             "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
     public static final String TALKBACK_SERVICE_ID =
-            "com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService";
+            "com.google.android.marvin.talkback/.TalkBackService";
 
     // Constant value to multiply animation timeouts by for pre-Q Android versions.
     private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
