@@ -60,8 +60,7 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sTabResumptionModuleAndroid,
                     ChromeFeatureList.sTabStateFlatBuffer,
                     ChromeFeatureList.sTraceBinderIpc,
-                    OmniboxFeatures.sAndroidHubSearch,
-                    OmniboxFeatures.sOmniboxAnswerActions);
+                    OmniboxFeatures.sAndroidHubSearch);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches

@@ -73,7 +73,7 @@ public class OmniboxFeatures {
     private static Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sOmniboxAnswerActions =
-            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sAnimateSuggestionsListAppearance =
             newFlag(
