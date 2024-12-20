@@ -317,9 +317,9 @@ source_set("unit_tests") {
     deps += [
       "//ash/components/arc",
       "//ash/components/arc:arc_test_support",
+      "//ash/components/arc/intent_helper",
       "//ash/components/arc/mojom",
       "//ash/public/cpp/external_arc:test_support",
-      "//components/arc",
     ]
   }
 

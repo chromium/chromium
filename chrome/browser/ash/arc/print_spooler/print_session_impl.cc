@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/intent_helper/custom_tab.h"
 #include "ash/components/arc/mojom/print_common.mojom.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
-#include "components/arc/intent_helper/custom_tab.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"

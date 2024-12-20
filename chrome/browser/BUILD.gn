@@ -4875,6 +4875,8 @@ static_library("browser") {
       "//ash/components/arc",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc/intent_helper",
+      "//ash/components/arc/intent_helper:arc_intent_helper_constants",
       "//ash/components/arc/mojom",
       "//ash/components/kcer",
       "//ash/constants",
@@ -5382,9 +5384,6 @@ static_library("browser") {
       "//components/account_manager_core",
       "//components/app_constants",
       "//components/app_restore",
-      "//components/arc",
-      "//components/arc/common",
-      "//components/arc/common:arc_intent_helper_constants",
       "//components/certificate_transparency",
       "//components/component_updater/ash",
       "//components/cross_device/nearby:nearby",
@@ -5959,6 +5958,7 @@ static_library("browser") {
       "ui/lacros/window_utility.h",
     ]
     deps += [
+      "//ash/components/arc/intent_helper",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/chromeos/drivefs",
@@ -5988,7 +5988,6 @@ static_library("browser") {
       "//chromeos/ui/clipboard_history",
       "//chromeos/ui/frame",
       "//chromeos/ui/wm",
-      "//components/arc/common",
       "//components/memory_pressure",
       "//components/policy/content:content",
       "//components/reporting/metrics:metrics_data_collection",
@@ -6090,6 +6089,8 @@ static_library("browser") {
     ]
 
     deps += [
+      "//ash/components/arc/intent_helper",
+      "//ash/components/arc/intent_helper:arc_intent_helper_constants",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/settings/public/constants",
       "//chrome/browser/apps/app_service/app_install:implementation",
@@ -6150,8 +6151,6 @@ static_library("browser") {
       "//chromeos/ui/wm",
       "//chromeos/version",
       "//components/app_constants",
-      "//components/arc/common",
-      "//components/arc/common:arc_intent_helper_constants",
       "//components/pref_registry:pref_registry",
       "//components/prefs:prefs",
       "//components/reporting/metrics:metrics_data_collection",

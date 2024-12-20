@@ -13,8 +13,8 @@ static_library("new_window") {
   ]
 
   public_deps = [
+    "//ash/components/arc/intent_helper",
     "//ash/public/cpp",
-    "//components/arc",
     "//url",
   ]
 

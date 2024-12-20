@@ -53,7 +53,7 @@ component("views") {
     deps += [
       "//ash",
       "//ash/components/arc",
-      "//components/arc",
+      "//ash/components/arc/intent_helper",
     ]
   }
 }

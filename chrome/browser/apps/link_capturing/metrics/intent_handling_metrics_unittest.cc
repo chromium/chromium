@@ -14,10 +14,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ui/display/test/test_screen.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -420,7 +420,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
-    "//components/arc",
+    "//ash/components/arc/intent_helper",
     "//media",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",

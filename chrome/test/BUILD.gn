@@ -5113,7 +5113,6 @@ if (!is_android) {
         "//components/access_code_cast/common:metrics",
         "//components/app_constants",
         "//components/app_restore",
-        "//components/arc:arc_test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/desks_storage:test_support",
         "//components/device_event_log",
@@ -8112,6 +8111,9 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//ash/components/arc:arc_test_support",
+      "//ash/components/arc/intent_helper",
+      "//ash/components/arc/intent_helper:arc_intent_helper_constants",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/smart_card:smart_card",
       "//chrome/browser/ui/ash/read_write_cards",
@@ -8120,9 +8122,6 @@ test("unit_tests") {
       "//chromeos/dbus/power",
       "//chromeos/dbus/regmon",
       "//chromeos/ui/frame:test_support",
-      "//components/arc/common",
-      "//components/arc/common:arc_intent_helper_constants",
-      "//components/arc/common:arc_test_support",
       "//ui/chromeos",
 
       # Unit tests from other build files.
@@ -8248,6 +8247,7 @@ test("unit_tests") {
       "//ash/components/arc",
       "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
+      "//ash/components/arc/intent_helper",
       "//ash/public/cpp:test_support",
       "//ash/public/cpp/assistant/test_support",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
@@ -8447,8 +8447,6 @@ test("unit_tests") {
       "//chromeos/ui/frame",
       "//chromeos/ui/wm",
       "//components/app_constants",
-      "//components/arc:arc_test_support",
-      "//components/arc/common",
       "//components/cross_device/nearby:nearby",
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_features",

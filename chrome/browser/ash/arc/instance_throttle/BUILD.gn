@@ -90,7 +90,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
-    "//components/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//services/device/public/cpp:test_support",

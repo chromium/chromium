@@ -9,6 +9,7 @@
 
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/system/camera/camera_app_prefs.h"
 #include "ash/webui/camera_app_ui/camera_app_helper_impl.h"
@@ -22,7 +23,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"

@@ -2084,6 +2084,7 @@ static_library("ui") {
       "//ash/assistant/util",
       "//ash/components/arc",
       "//ash/components/arc:arc_app_constants",
+      "//ash/components/arc/intent_helper",
       "//ash/components/arc/touch_selection_menu",
       "//ash/components/arc/vector_icons:vector_icons",
       "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
@@ -2599,7 +2600,6 @@ static_library("ui") {
       "//components/account_manager_core:account_manager_core",
       "//components/app_constants",
       "//components/app_restore",
-      "//components/arc",
       "//components/assist_ranker",
       "//components/assist_ranker/proto",
       "//components/captive_portal/core",
@@ -5097,9 +5097,9 @@ static_library("ui") {
         "views/status_icons/status_tray_chromeos.cc",
       ]
       deps += [
+        "//ash/components/arc/intent_helper:arc_intent_helper_constants",
         "//chromeos/components/kiosk",
         "//chromeos/components/mgs",
-        "//components/arc/common:arc_intent_helper_constants",
       ]
     }
 

@@ -20,13 +20,13 @@ static_library("print_spooler") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc/intent_helper",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/services/printing/public/mojom",
     "//chromeos/crosapi/mojom",
-    "//components/arc",
     "//components/keyed_service/core",
     "//components/prefs",
     "//content/public/browser",

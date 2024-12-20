@@ -185,7 +185,7 @@ static_library("exo") {
 
   assert_no_deps = [
     "//ash/components/arc",
-    "//components/arc",
+    "//ash/components/arc/intent_helper",
     "//content/public/browser",
     "//content/public/common",
   ]

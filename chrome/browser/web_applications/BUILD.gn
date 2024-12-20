@@ -992,7 +992,7 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos) {
     deps += [
-      "//ash/components/arc:arc",
+      "//ash/components/arc",
       "//ash/components/arc:arc_test_support",
       "//ash/components/arc/mojom",
       "//ash/constants",
@@ -1005,7 +1005,6 @@ source_set("web_applications_unit_tests") {
       "//chrome/common/chromeos/extensions",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/system",
-      "//components/arc:arc_test_support",
     ]
   }
 

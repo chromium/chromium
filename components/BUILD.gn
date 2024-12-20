@@ -747,8 +747,6 @@ test("components_unittests") {
   if (is_chromeos) {
     deps += [
       "//components/account_manager_core:unit_tests",
-      "//components/arc:unit_tests",
-      "//components/arc/common:unit_tests",
       "//components/cross_device/nearby:unit_tests",
       "//components/desks_storage:unit_tests",
       "//components/guest_os:unit_tests",

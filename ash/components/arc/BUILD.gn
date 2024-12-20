@@ -315,6 +315,10 @@ static_library("arc_test_support") {
     "test/fake_app_instance.h",
     "test/fake_arc_bridge_host.cc",
     "test/fake_arc_bridge_host.h",
+    "test/fake_arc_icon_cache.cc",
+    "test/fake_arc_icon_cache.h",
+    "test/fake_arc_intent_helper_mojo.cc",
+    "test/fake_arc_intent_helper_mojo.h",
     "test/fake_arc_session.cc",
     "test/fake_arc_session.h",
     "test/fake_backup_settings_instance.cc",
@@ -332,6 +336,10 @@ static_library("arc_test_support") {
     "test/fake_file_system_instance.h",
     "test/fake_iio_sensor_instance.cc",
     "test/fake_iio_sensor_instance.h",
+    "test/fake_intent_helper_host.cc",
+    "test/fake_intent_helper_host.h",
+    "test/fake_intent_helper_instance.cc",
+    "test/fake_intent_helper_instance.h",
     "test/fake_keymint_instance.cc",
     "test/fake_keymint_instance.h",
     "test/fake_memory_instance.cc",
@@ -378,11 +386,13 @@ static_library("arc_test_support") {
   public_deps = [
     ":notification_test_support",
     "//ash/components/arc:compat_mode_test_support",
-    "//components/arc:arc",
+    "//ash/components/arc/intent_helper",
   ]
 
   deps = [
     ":arc",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -395,6 +405,7 @@ static_library("arc_test_support") {
     "//content/test:test_support",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//ui/base",
     "//ui/views",
   ]
 }

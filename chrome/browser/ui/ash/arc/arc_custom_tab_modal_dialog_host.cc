@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/arc/intent_helper/custom_tab.h"
+#include "ash/components/arc/intent_helper/custom_tab.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"

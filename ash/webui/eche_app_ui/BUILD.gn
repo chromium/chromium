@@ -237,7 +237,6 @@ source_set("unit_tests") {
     "//chromeos/ash/services/secure_channel/public/cpp/client:client",
     "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
     "//chromeos/ash/services/secure_channel/public/cpp/shared:shared",
-    "//components/arc:arc",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//dbus",

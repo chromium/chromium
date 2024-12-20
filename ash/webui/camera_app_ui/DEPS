@@ -1,8 +1,8 @@
 include_rules = [
+  "+ash/components/arc/intent_helper",
   "+chromeos/ash/components/dbus/session_manager",
   "+chromeos/ash/components/mojo_service_manager",
   "+chromeos/utils/pdf_conversion.h",
-  "+components/arc/intent_helper",
   "+components/content_settings/core/common",
   "+components/device_event_log",
   "+components/keyed_service/content",

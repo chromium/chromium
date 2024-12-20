@@ -49,8 +49,6 @@ include_rules = [
   "+components/app_constants/constants.h",
   "+components/app_launch_prefetch",
   "+components/app_restore",
-  # TODO(b/129295708): Remove after move is complete.
-  "+components/arc",
   "+components/assist_ranker",
   "+components/autofill/android",
   "+components/autofill/content/browser",

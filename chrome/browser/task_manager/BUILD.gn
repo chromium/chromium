@@ -87,13 +87,13 @@ source_set("task_manager") {
       "sampling/arc_shared_sampler.h",
     ]
     public_deps += [
+      "//ash/components/arc/intent_helper",
       "//ash/components/arc/mojom",
       "//ash/components/arc/session:connection_holder",
       "//chrome/browser/ash/arc/process",
       "//chromeos/ash/components/dbus/concierge",
       "//chromeos/ash/components/process_snapshot",
       "//chromeos/crosapi/mojom",
-      "//components/arc",
     ]
   }
   if (is_chromeos_lacros) {
@@ -229,6 +229,7 @@ source_set("impl") {
     ]
     deps += [
       "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc/intent_helper",
       "//ash/components/arc/session",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/arc/process",
@@ -236,7 +237,6 @@ source_set("impl") {
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/plugin_vm",
       "//chromeos/ash/components/dbus/concierge",
-      "//components/arc",
     ]
   }
   if (is_chromeos_lacros) {
