@@ -1510,29 +1510,30 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
 // TODO(crbug.com/385129957): This only searches up to the nearest scroll
 // container. Ancestor scroll containers might also need to be notified.
 void Element::NotifyScrollMarkerGroupOfTargetedScroll() {
-  ScrollMarkerPseudoElement* marker = nullptr;
-  if (auto* this_marker = DynamicTo<ScrollMarkerPseudoElement>(this)) {
-    // This itself is a scroll-marker.
-    marker = this_marker;
-  } else if (PseudoElement* scroll_marker =
-                 GetPseudoElement(kPseudoIdScrollMarker)) {
-    // This itself has a scroll-marker.
-    marker = DynamicTo<ScrollMarkerPseudoElement>(scroll_marker);
-  }
-
-  if (marker) {
+  if (ScrollMarkerPseudoElement* marker = FindScrollMarkerForTargetedScroll()) {
     if (ScrollMarkerGroupPseudoElement* group = marker->ScrollMarkerGroup()) {
       group->PinSelectedMarker(marker);
     }
-    return;
+  }
+}
+
+ScrollMarkerPseudoElement* Element::FindScrollMarkerForTargetedScroll() {
+  if (auto* this_marker = DynamicTo<ScrollMarkerPseudoElement>(this)) {
+    // This itself is a scroll-marker.
+    return this_marker;
+  } else if (PseudoElement* scroll_marker =
+                 GetPseudoElement(kPseudoIdScrollMarker)) {
+    // This itself has a scroll-marker.
+    return DynamicTo<ScrollMarkerPseudoElement>(scroll_marker);
   }
 
   LayoutObject* target_obj = GetLayoutObject();
   if (!target_obj) {
-    return;
+    return nullptr;
   }
 
   // Search for the scroll-marker before |this| in pre-order.
+  ScrollMarkerPseudoElement* dom_marker = nullptr;
   for (LayoutObject* obj = target_obj->PreviousInPreOrder(); obj;
        obj = obj->PreviousInPreOrder()) {
     if (obj->IsScrollContainerWithScrollMarkerGroup()) {
@@ -1546,23 +1547,82 @@ void Element::NotifyScrollMarkerGroupOfTargetedScroll() {
     }
     if (ScrollMarkerPseudoElement* marker_node =
             DynamicTo<ScrollMarkerPseudoElement>(obj_node)) {
-      marker = marker_node;
+      dom_marker = marker_node;
       break;
     } else if (auto* obj_element = DynamicTo<Element>(obj_node)) {
       if (ScrollMarkerPseudoElement* previous_marker =
               DynamicTo<ScrollMarkerPseudoElement>(
                   obj_element->GetPseudoElement(kPseudoIdScrollMarker))) {
-        marker = previous_marker;
+        dom_marker = previous_marker;
         break;
       }
     }
   }
 
-  if (marker) {
-    if (ScrollMarkerGroupPseudoElement* group = marker->ScrollMarkerGroup()) {
-      group->PinSelectedMarker(marker);
+  // We might have found a marker before |this| in DOM-order, but we need to do
+  // one last check for whether the scroll target is within a
+  // scroll-marker-generating ::column which might be preferable to the
+  // already-found marker.
+  const LayoutBox* containing_box = target_obj->ContainingScrollContainer();
+  while (containing_box) {
+    if (containing_box->IsScrollContainerWithScrollMarkerGroup()) {
+      break;
+    }
+    containing_box = containing_box->ContainingScrollContainer();
+  }
+
+  if (!containing_box) {
+    return dom_marker;
+  }
+  const Element* containing_element =
+      DynamicTo<Element>(containing_box->GetNode());
+  if (!containing_element) {
+    return dom_marker;
+  }
+  const ColumnPseudoElementsVector* cols =
+      containing_element->GetColumnPseudoElements();
+  if (!cols) {
+    return dom_marker;
+  }
+  const LayoutBox* target_box = GetLayoutBox();
+  PhysicalRect scroll_target_rect = target_box->LocalToAncestorRect(
+      target_box->PhysicalBorderBoxRect(), containing_box);
+  ScrollableArea* current_scroll_area = containing_box->GetScrollableArea();
+  if (current_scroll_area) {
+    // Account for scroll translation.
+    scroll_target_rect.Move(current_scroll_area->LocalToScrollOriginOffset());
+  } else {
+    NOTREACHED();
+  }
+  for (const ColumnPseudoElement* column_pseudo : *cols) {
+    ScrollMarkerPseudoElement* column_marker =
+        DynamicTo<ScrollMarkerPseudoElement>(
+            column_pseudo->GetPseudoElement(kPseudoIdScrollMarker));
+    const PhysicalRect& column_rect = column_pseudo->ColumnRect();
+    if (column_marker && column_rect.Intersects(scroll_target_rect)) {
+      if (!dom_marker) {
+        // We didn't have a scroll-marker from the DOM search to begin, the
+        // ::column::scroll-marker we found will have to do.
+        return column_marker;
+      }
+      // If we already had a marker from the initial DOM search,
+      // we should figure out whether |dom_marker| belongs to an element that
+      // was flowed the scroll-marker-generating ::column, in which case
+      // |dom_marker| is the preferred scroll marker. Otherwise the
+      // scroll-marker belonging to the ::column is preferred.
+      LayoutBox* dom_marker_box =
+          dom_marker->UltimateOriginatingElement()->GetLayoutBox();
+      PhysicalRect dom_search_target_rect = dom_marker_box->LocalToAncestorRect(
+          dom_marker_box->PhysicalBorderBoxRect(), containing_box);
+      if (current_scroll_area) {
+        dom_search_target_rect.Move(
+            current_scroll_area->LocalToScrollOriginOffset());
+      }
+      return column_rect.Intersects(dom_search_target_rect) ? dom_marker
+                                                            : column_marker;
     }
   }
+  return dom_marker;
 }
 
 void Element::ScrollIntoViewNoVisualUpdate(
