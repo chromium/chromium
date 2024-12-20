@@ -16,6 +16,7 @@ class LocalFrame;
 class CSSProperty;
 class Element;
 
+// See README.md for how this class fits in to the overall design
 class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
  public:
   ~NativeCssPaintDefinition() override = default;
@@ -26,11 +27,16 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
                                const CSSValue* value,
                                const InterpolableValue* interpolable_value);
 
+  // Returns an animation for the given property, if it is compositable
+  // excepting additional checks in CheckCanStartAnimationOnCompositor. Used
+  // as a base for NativePaintImageGenerator::GetAnimationIfCompositable methods
+  // which are implemented in the different Native Paint Definitions
   static Animation* GetAnimationForProperty(
       const Element* element,
       const CSSProperty& property,
       ValueFilter filter = DefaultValueFilter);
 
+  // Used by GetAnimationForProperty to check the individual keyframe values.
   static bool CanGetValueFromKeyframe(const Element* element,
                                       const PropertySpecificKeyframe* frame,
                                       const KeyframeEffectModelBase* model,
@@ -66,6 +72,11 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
                            PaintWorkletInput::PaintWorkletInputType);
   NativeCssPaintDefinition() = default;
 
+  // TODO(crbug.com/381126162): Unify this with the implementation in composited
+  // clip path animations.
+  // Computes the correct keyframe index and intra-keyframe progress given the
+  // global progress. Used to ensure that custom timing functions are handled
+  // correctly.
   template <typename T>
   KeyframeIndexAndProgress ComputeKeyframeIndexAndProgress(
       const std::optional<double>& main_thread_progress,
