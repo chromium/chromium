@@ -148,6 +148,11 @@ const char kEnableCrashReporterForTesting[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// For testing, do not initialize child service process but also do not exit
+// (until requested by browser).
+const char kAndroidSkipChildServiceInitForTesting[] =
+    "android-skip-child-service-init-for-testing";
+
 // Default country code to be used for search engine localization.
 const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 

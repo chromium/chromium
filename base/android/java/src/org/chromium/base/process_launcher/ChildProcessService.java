@@ -293,6 +293,11 @@ public class ChildProcessService {
             assert mServiceBound;
             CommandLine.init(mCommandLineParams);
 
+            if (CommandLine.getInstance()
+                    .hasSwitch(BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING)) {
+                return;
+            }
+
             if (CommandLine.getInstance().hasSwitch(BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
                 android.os.Debug.waitForDebugger();
             }
