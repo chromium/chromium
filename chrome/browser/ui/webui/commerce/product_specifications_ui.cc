@@ -127,6 +127,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddInteger("maxNameLength", kMaxNameLength);
   source->AddInteger("maxTableSize", kMaxTableSize);
 
+  source->AddBoolean(
+      "comparisonTableListEnabled",
+      base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
+
   std::string email;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

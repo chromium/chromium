@@ -9,12 +9,14 @@
 html {
   --app-container-padding: 24px;
   --body-min-width: calc(var(--app-container-padding) * 2 + var(
-      --summary-container-padding) * 2 + var(--table-min-width));
+      --summary-container-padding) * 2 + var(--table-min-width) + var(
+      --comparison-table-list-width));
   --body-table-data-unavailable-height: calc(var(
       --app-container-padding) * 2 + var(--summary-container-padding) * 2 + var(
       --header-height) + var(--header-margin-bottom) + var(
       --table-data-unavailable-min-height));
   --column-hover-padding: 4px;
+  --comparison-table-list-width: 416px;
   --header-height: 38px;
   --header-margin-bottom: 24px;
   --summary-container-padding: 16px;

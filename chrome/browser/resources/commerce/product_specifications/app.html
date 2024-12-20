@@ -1,4 +1,8 @@
 <style include="cr-hidden-style shared-vars">
+  :host {
+    --management-container-min-height: 50px;
+  }
+
   :host([show-table-data-unavailable-container_]),
   :host([show-table-data-unavailable-container_]) #appContainer {
     height: 100%;
@@ -21,13 +25,24 @@
     width: 100%;
   }
 
+  #managementContainer {
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 16px;
+    min-height: var(--management-container-min-height);
+    width: 100%;
+  }
+
   #summaryContainer {
     box-sizing: border-box;
     background-color: var(--color-product-specifications-summary-background);
     border-radius: 12px;
     display: flex;
     max-width: 100%;
-    min-height: 50px;
+    min-height: inherit;
     min-width: var(--table-min-width);
     padding: var(--summary-container-padding);
     width: fit-content;
@@ -144,74 +159,82 @@
       on-see-all-click="seeAllSets_">
   </product-specifications-header>
 
-  <div id="summaryContainer" hidden="[[isAppStateNoContent_(appState_)]]">
-    <div id="tableDataUnavailable"
-        hidden="[[!showTableDataUnavailableContainer_]]">
-      <picture>
-        <source srcset="images/empty_state_dark.svg"
-            media="(prefers-color-scheme: dark)">
-        <img id="emptyImg" src="images/empty_state.svg">
-      </picture>
-      <div id="empty"
-          class="table-data-unavailable-container"
-          hidden$="[[!isAppStateTableEmpty_(appState_)]]">
-        <div class="table-data-unavailable-message">$i18n{emptyStateTitle}</div>
-        <div class="table-data-unavailable-description">
-          $i18n{emptyStateDescription}
-        </div>
-        <product-selector id="productSelector"
-            on-selected-url-change="onUrlAdd_">
-        </product-selector>
-      </div>
-      <div id="syncPromo"
-          class="table-data-unavailable-container"
-          hidden="[[!isAppStateSyncScreen_(appState_)]]">
-        <div class="table-data-unavailable-message">
-          $i18n{compareSyncMessage}
-        </div>
-        <div class="table-data-unavailable-description">
-          $i18n{compareSyncDescription}
-        </div>
-        <cr-button id="turnOnSyncButton" class="action-button"
-            on-click="showSyncSetupFlow_">
-          $i18n{compareSyncButton}
-        </cr-button>
-      </div>
-      <div id="error"
-          class="table-data-unavailable-container"
-          hidden="[[!isAppStateError_(appState_)]]">
-        <div class="table-data-unavailable-message">
-          $i18n{compareErrorMessage}
-        </div>
-        <div class="table-data-unavailable-description">
-          $i18n{compareErrorDescription}
-        </div>
-      </div>
-    </div>
-    <!-- TODO(b/357616541): Give loading state the same max-width as
-        the horizontal-carousel and restyle accordingly. -->
-    <loading-state id="loading" hidden$="[[!isAppStateLoading_(appState_)]]"
-        column-count="[[loadingState_.urlCount]]">
-    </loading-state>
-    <horizontal-carousel id="specs"
-        hidden$="[[!isAppStateTablePopulated_(appState_)]]">
-        <product-specifications-table slot="table"
-            id="summaryTable"
-            columns="[[tableColumns_]]"
-            on-url-change="onUrlChange_"
-            on-url-remove="onUrlRemove_"
-            on-url-order-update="onUrlOrderUpdate_"
-            on-unavailable-action-attempted="showOfflineToast_">
-          <div slot="selectorGradient" id="selectorGradient"></div>
-          <new-column-selector slot="newColumnSelector"
-              id="newColumnSelector"
-              excluded-urls="[[getTableUrls_(tableColumns_)]]"
-              is-table-full="[[isTableFull_(tableColumns_.length)]]"
+  <div id="managementContainer" hidden="[[isAppStateNoContent_(appState_)]]">
+    <div id="summaryContainer">
+      <div id="tableDataUnavailable"
+          hidden="[[!showTableDataUnavailableContainer_]]">
+        <picture>
+          <source srcset="images/empty_state_dark.svg"
+              media="(prefers-color-scheme: dark)">
+          <img id="emptyImg" src="images/empty_state.svg">
+        </picture>
+        <div id="empty"
+            class="table-data-unavailable-container"
+            hidden$="[[!isAppStateTableEmpty_(appState_)]]">
+          <div class="table-data-unavailable-message">
+            $i18n{emptyStateTitle}
+          </div>
+          <div class="table-data-unavailable-description">
+            $i18n{emptyStateDescription}
+          </div>
+          <product-selector id="productSelector"
               on-selected-url-change="onUrlAdd_">
-          </new-column-selector>
-        </product-specifications-table>
-    </horizontal-carousel>
+          </product-selector>
+        </div>
+        <div id="syncPromo"
+            class="table-data-unavailable-container"
+            hidden="[[!isAppStateSyncScreen_(appState_)]]">
+          <div class="table-data-unavailable-message">
+            $i18n{compareSyncMessage}
+          </div>
+          <div class="table-data-unavailable-description">
+            $i18n{compareSyncDescription}
+          </div>
+          <cr-button id="turnOnSyncButton" class="action-button"
+              on-click="showSyncSetupFlow_">
+            $i18n{compareSyncButton}
+          </cr-button>
+        </div>
+        <div id="error"
+            class="table-data-unavailable-container"
+            hidden="[[!isAppStateError_(appState_)]]">
+          <div class="table-data-unavailable-message">
+            $i18n{compareErrorMessage}
+          </div>
+          <div class="table-data-unavailable-description">
+            $i18n{compareErrorDescription}
+          </div>
+        </div>
+      </div>
+      <loading-state id="loading" hidden$="[[!isAppStateLoading_(appState_)]]"
+          column-count="[[loadingState_.urlCount]]">
+      </loading-state>
+      <horizontal-carousel id="specs"
+          hidden$="[[!isAppStateTablePopulated_(appState_)]]">
+          <product-specifications-table slot="table"
+              id="summaryTable"
+              columns="[[tableColumns_]]"
+              on-url-change="onUrlChange_"
+              on-url-remove="onUrlRemove_"
+              on-url-order-update="onUrlOrderUpdate_"
+              on-unavailable-action-attempted="showOfflineToast_">
+            <div slot="selectorGradient" id="selectorGradient"></div>
+            <new-column-selector slot="newColumnSelector"
+                id="newColumnSelector"
+                excluded-urls="[[getTableUrls_(tableColumns_)]]"
+                is-table-full="[[isTableFull_(tableColumns_.length)]]"
+                on-selected-url-change="onUrlAdd_">
+            </new-column-selector>
+          </product-specifications-table>
+      </horizontal-carousel>
+    </div>
+
+    <comparison-table-list id="comparisonTableList"
+        tables="[[comparisonTableDetails_]]"
+        hidden$="[[!showComparisonTableList_]]">
+    </comparison-table-list>
   </div>
+
   <div id="footer"
       hidden="[[!canShowFooter_(showTableDataUnavailableContainer_,
           appState_)]]">

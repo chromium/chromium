@@ -47,6 +47,7 @@
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/shopping_service.h"
@@ -248,9 +249,13 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   // Used to determine when the compare tab on history sidepanel is shown.
-  source->AddBoolean("compareHistoryEnabled",
-                     commerce::CanLoadProductSpecificationsFullPageUi(
-                         service->GetAccountChecker()));
+  // Hide the compare tab when the new management interface is enabled, since
+  // this interface provides the same functionality.
+  source->AddBoolean(
+      "compareHistoryEnabled",
+      commerce::CanLoadProductSpecificationsFullPageUi(
+          service->GetAccountChecker()) &&
+          !base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
   return source;
 }
 

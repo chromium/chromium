@@ -5,6 +5,7 @@
 import 'chrome://compare/app.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {COLUMN_MODIFICATION_HISTOGRAM_NAME, CompareTableColumnAction, CompareTableLoadStatus, LOADING_END_EVENT_TYPE, LOADING_START_EVENT_TYPE, TABLE_LOAD_HISTOGRAM_NAME} from 'chrome://compare/app.js';
 import type {ProductSpecificationsElement} from 'chrome://compare/app.js';
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
@@ -19,12 +20,14 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, installMock} from './test_support.js';
@@ -2290,6 +2293,184 @@ suite('AppTest', () => {
 
       const arg = await mockOpenWindowProxy.whenCalled('openUrl');
       assertEquals('chrome://settings/syncSetup/advanced', arg);
+    });
+  });
+
+  suite('Comparison table list', () => {
+    setup(() => {
+      // Used by the item elements in the list.
+      const pluralStringProxy = new TestPluralStringProxy();
+      PluralStringProxyImpl.setInstance(pluralStringProxy);
+
+      loadTimeData.overrideValues({
+        'comparisonTableListEnabled': true,
+      });
+
+      shoppingServiceApi.setResultFor(
+          'getAllProductSpecificationsSets', Promise.resolve({
+            sets: [
+              {
+                name: 'abc',
+                uuid: {value: '123'},
+                urls: [
+                  {url: 'http://example1.com'},
+                  {url: 'http://example2.com'},
+                ],
+              },
+              {
+                name: 'xyz',
+                uuid: {value: '456'},
+                urls: [{url: 'http://example3.com'}],
+              },
+            ],
+          }));
+      shoppingServiceApi.setResultMapperFor(
+          'getProductInfoForUrl', (url: Url) => {
+            return Promise.resolve({
+              productInfo: {
+                imageUrl: {url: `${url.url}/image.png`},
+              },
+            });
+          });
+
+      productSpecificationsProxy.setResultMapperFor(
+          'getComparisonTableUrlForUuid', (uuid: Uuid) => {
+            return Promise.resolve(`chrome://compare/?id=${uuid.value}`);
+          });
+    });
+
+    test('list does not appear when the feature is off', async () => {
+      loadTimeData.overrideValues({
+        'comparisonTableListEnabled': false,
+      });
+
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertFalse(isVisible(listElement));
+    });
+
+    test('list is hidden if there are no comparison tables', async () => {
+      shoppingServiceApi.setResultFor(
+          'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
+
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertFalse(isVisible(listElement));
+    });
+
+    test(
+        'list displays available tables and uses first product image',
+        async () => {
+          const appElement = await createAppElement();
+          await flushTasks();
+
+          const listElement = appElement.$.comparisonTableList;
+          assertArrayEquals(
+              [
+                {
+                  name: 'abc',
+                  uuid: {value: '123'},
+                  numUrls: 2,
+                  imageUrl: {url: 'http://example1.com/image.png'},
+                },
+                {
+                  name: 'xyz',
+                  uuid: {value: '456'},
+                  numUrls: 1,
+                  imageUrl: {url: 'http://example3.com/image.png'},
+                },
+              ],
+              listElement.tables);
+        });
+
+    test('list updates on set updated', async () => {
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      callbackRouterRemote.onProductSpecificationsSetUpdated({
+        name: 'def',
+        uuid: {value: '123'},
+        urls: [{url: 'http://example2.com'}],
+      });
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertArrayEquals(
+          [
+            {
+              name: 'def',
+              uuid: {value: '123'},
+              numUrls: 1,
+              imageUrl: {url: 'http://example2.com/image.png'},
+            },
+            {
+              name: 'xyz',
+              uuid: {value: '456'},
+              numUrls: 1,
+              imageUrl: {url: 'http://example3.com/image.png'},
+            },
+          ],
+          listElement.tables);
+    });
+
+    test('list updates on set added', async () => {
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      callbackRouterRemote.onProductSpecificationsSetAdded({
+        name: 'def',
+        uuid: {value: '789'},
+        urls: [{url: 'http://example5.com'}],
+      });
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertArrayEquals(
+          [
+            {
+              name: 'def',
+              uuid: {value: '789'},
+              numUrls: 1,
+              imageUrl: {url: 'http://example5.com/image.png'},
+            },
+            {
+              name: 'abc',
+              uuid: {value: '123'},
+              numUrls: 2,
+              imageUrl: {url: 'http://example1.com/image.png'},
+            },
+            {
+              name: 'xyz',
+              uuid: {value: '456'},
+              numUrls: 1,
+              imageUrl: {url: 'http://example3.com/image.png'},
+            },
+          ],
+          listElement.tables);
+    });
+
+    test('list updates on set removed', async () => {
+      const appElement = await createAppElement();
+      await flushTasks();
+
+      callbackRouterRemote.onProductSpecificationsSetRemoved({value: '123'});
+      await flushTasks();
+
+      const listElement = appElement.$.comparisonTableList;
+      assertArrayEquals(
+          [
+            {
+              name: 'xyz',
+              uuid: {value: '456'},
+              numUrls: 1,
+              imageUrl: {url: 'http://example3.com/image.png'},
+            },
+          ],
+          listElement.tables);
     });
   });
 });
