@@ -9,6 +9,7 @@
 
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -347,14 +348,20 @@ std::u16string GetAlternativeNameForInput(
     const std::u16string& value,
     const AddressCountryCode& country_code,
     const FormFieldData& field_data) {
-  if (country_code == AddressCountryCode("JP") &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillSupportPhoneticNameForJP) &&
-      AreKatakanaCharactersPresent(field_data.label())) {
-    return TransliterateAlternativeName(value,
-                                        TransliterationId::kHiraganaToKatakana);
+  if (country_code != AddressCountryCode("JP") ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return value;
   }
-  return value;
+  bool requires_conversion = AreKatakanaCharactersPresent(field_data.label());
+  // TODO(crbug.com/359768803): Remove this metric once the feature is launched.
+  base::UmaHistogramBoolean(
+      "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
+      requires_conversion);
+  return requires_conversion
+             ? TransliterateAlternativeName(
+                   value, TransliterationId::kHiraganaToKatakana)
+             : value;
 }
 
 // Finds the best suitable option in the `field` that corresponds to the

@@ -10,6 +10,7 @@
 
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -866,16 +867,25 @@ TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
   const AlternativeNameFillingTestCase& test_case = std::get<1>(GetParam());
 
   FormFieldData field = test::CreateTestFormField(test_case.field_label,
-                                                /*name=*/"", /*value=*/"",
-                                                FormControlType::kInputText);
+                                                  /*name=*/"", /*value=*/"",
+                                                  FormControlType::kInputText);
 
   AutofillProfile profile(AddressCountryCode(test_case.country_code));
   profile.SetRawInfo(field_type, test_case.value_to_fill);
 
-  EXPECT_EQ(
-      test_case.expected_value,
+  base::HistogramTester histogram_tester;
+
+  std::u16string actual_value =
       GetValueForProfile(profile, kAppLocale, AutofillType(field_type), field,
-                         /*address_normalizer=*/nullptr));
+                         /*address_normalizer=*/nullptr);
+
+  EXPECT_EQ(test_case.expected_value, actual_value);
+
+  if (test_case.country_code == "JP") {
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Filling.DidAlternativeNameFieldRequireConversion",
+        actual_value != test_case.value_to_fill, 1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

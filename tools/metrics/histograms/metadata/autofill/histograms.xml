@@ -2767,6 +2767,18 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Filling.DidAlternativeNameFieldRequireConversion"
+    enum="BooleanYesNo" expires_after="2025-12-17">
+  <owner>aayazhan@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the alternative name field requires transliteration from
+    Hiragana to Katakana. It will be true if conversion is required and false
+    otherwise. Recorded during the preview and field filling moment.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
     enum="AutofillFormEvent" expires_after="2025-07-01">
   <owner>alexandertekle@google.com</owner>
