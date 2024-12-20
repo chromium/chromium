@@ -32,7 +32,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
 }  // namespace
 
 @interface LensViewFinderCoordinator () <LensCommands,
-                                         ChromeLensViewFinderDelegate>
+                                         ChromeLensControllerDelegate>
 @end
 
 @implementation LensViewFinderCoordinator {
@@ -40,7 +40,7 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   id<ChromeLensController> _lensController;
 
   // The user interface to be presented.
-  UIViewController<ChromeLensViewFinderController>* _lensViewController;
+  __weak UIViewController* _lensViewController;
 
   // Manages the presenting & dismissal of the LVF user interface.
   LensViewFinderTransitionManager* _transitionManager;
@@ -87,9 +87,10 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       initWithLVFTransitionType:TransitionFromPresentationStyle(
                                     command.presentationStyle)];
 
-  _lensViewController =
-      ios::provider::NewChromeLensViewFinderController(configuration);
-  [_lensViewController setLensViewFinderDelegate:self];
+  _lensController = ios::provider::NewChromeLensController(configuration);
+  _lensController.delegate = self;
+
+  _lensViewController = _lensController.inputSelectionViewController;
   _lensViewController.transitioningDelegate = _transitionManager;
   _lensViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
@@ -100,23 +101,26 @@ LensViewFinderTransition TransitionFromPresentationStyle(
                                       completion:nil];
 }
 
-#pragma mark - ChromeLensViewFinderDelegate
+#pragma mark - ChromeLensControllerDelegate
 
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
-             didSelectImage:(UIImage*)image
-    serializedViewportState:(NSString*)viewportState
-              isCameraImage:(BOOL)isCameraImage {
+- (void)lensControllerDidGenerateImage:(UIImage*)image {
 }
 
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
-          didSelectURL:(GURL)url {
+- (void)lensControllerDidGenerateLoadParams:
+    (const web::NavigationManager::WebLoadParams&)params {
 }
 
-- (void)lensControllerDidTapDismissButton:
-    (id<ChromeLensViewFinderController>)lensController {
+- (void)lensControllerDidSelectURL:(NSURL*)url {
+}
+
+- (void)lensControllerDidTapDismissButton {
   if (self.baseViewController.presentedViewController == _lensViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   }
+}
+
+- (CGRect)webContentFrame {
+  return [UIScreen mainScreen].bounds;
 }
 
 @end

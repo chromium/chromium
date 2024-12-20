@@ -36,12 +36,6 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
   return nil;
 }
 
-UIViewController<ChromeLensViewFinderController>*
-NewChromeLensViewFinderController(LensConfiguration* config) {
-  // Lens is not supported in Chromium.
-  return nil;
-}
-
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     UIImage* snapshot,
     LensConfiguration* config,
