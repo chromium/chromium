@@ -271,6 +271,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
                                       kHomePageMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
                                       kToggleVisibilityMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kPageAccessMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kPageAccessRunOnClickSubmenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kPageAccessRunOnSiteSubmenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kPageAccessRunOnAllSitesSubmenuItem);
 
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
@@ -647,6 +655,22 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
       AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
                              IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS,
                              page_access_submenu_.get());
+
+      SetElementIdentifierAt(GetIndexOfCommandId(PAGE_ACCESS_SUBMENU).value(),
+                             kPageAccessMenuItem);
+      page_access_submenu_->SetElementIdentifierAt(
+          page_access_submenu_->GetIndexOfCommandId(PAGE_ACCESS_RUN_ON_CLICK)
+              .value(),
+          kPageAccessRunOnClickSubmenuItem);
+      page_access_submenu_->SetElementIdentifierAt(
+          page_access_submenu_->GetIndexOfCommandId(PAGE_ACCESS_RUN_ON_SITE)
+              .value(),
+          kPageAccessRunOnSiteSubmenuItem);
+      page_access_submenu_->SetElementIdentifierAt(
+          page_access_submenu_
+              ->GetIndexOfCommandId(PAGE_ACCESS_RUN_ON_ALL_SITES)
+              .value(),
+          kPageAccessRunOnAllSitesSubmenuItem);
     }
 
     // Permissions page is always visible when the extension requests host

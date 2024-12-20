@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -30,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -89,6 +91,57 @@ class ExtensionHostObserver : public ui::test::ObservationStateObserver<
   extensions::ExtensionId extension_id_;
   ExtensionHostState host_state_;
 };
+
+class PermissionsUpdatesObserver
+    : public ui::test::ObservationStateObserver<
+          extensions::PermissionsManager::UserSiteAccess,
+          extensions::PermissionsManager,
+          extensions::PermissionsManager::Observer> {
+ public:
+  explicit PermissionsUpdatesObserver(
+      extensions::PermissionsManager* permissions_manager,
+      const extensions::ExtensionId& extension_id,
+      const GURL& url)
+      : ObservationStateObserver(permissions_manager),
+        permissions_manager_(permissions_manager),
+        extension_id_(extension_id),
+        url_(url) {}
+  ~PermissionsUpdatesObserver() override = default;
+
+ protected:
+  // PermissionsManager::Observer
+  void OnExtensionPermissionsUpdated(
+      const extensions::Extension& extension,
+      const extensions::PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override {
+    if (extension.id() == extension_id_) {
+      extensions::PermissionsManager::UserSiteAccess site_access =
+          permissions_manager_->GetUserSiteAccess(extension, url_);
+      OnStateObserverStateChanged(site_access);
+    }
+  }
+
+ private:
+  raw_ptr<extensions::PermissionsManager> permissions_manager_;
+  const extensions::ExtensionId extension_id_;
+  const GURL url_;
+};
+
+// Returns the command id in the context menu corresponding to `site_access`.
+ui::ElementIdentifier GetSiteAccessCommandId(
+    extensions::PermissionsManager::UserSiteAccess site_access) {
+  switch (site_access) {
+    case extensions::PermissionsManager::UserSiteAccess::kOnClick:
+      return extensions::ExtensionContextMenuModel::
+          kPageAccessRunOnClickSubmenuItem;
+    case extensions::PermissionsManager::UserSiteAccess::kOnSite:
+      return extensions::ExtensionContextMenuModel::
+          kPageAccessRunOnSiteSubmenuItem;
+    case extensions::PermissionsManager::UserSiteAccess::kOnAllSites:
+      return extensions::ExtensionContextMenuModel::
+          kPageAccessRunOnAllSitesSubmenuItem;
+  }
+}
 
 }  // namespace
 
@@ -533,6 +586,26 @@ class ExtensionsMenuMainPageViewInteractiveTest
   ExtensionsMenuMainPageViewInteractiveTest& operator=(
       const ExtensionsMenuMainPageViewInteractiveTest&) = delete;
 
+  // Installs extension with `name` and `host_permission`.
+  scoped_refptr<const extensions::Extension>
+  InstallExtensionWithHostPermissions(const std::string& name,
+                                      const std::string& host_permission) {
+    extensions::TestExtensionDir extension_dir;
+
+    extension_dir.WriteManifest(base::StringPrintf(
+        R"({
+            "name": "%s",
+            "manifest_version": 3,
+            "host_permissions": ["%s"],
+            "version": "0.1"
+          })",
+        name.c_str(), host_permission.c_str()));
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
+            extension_dir.UnpackedPath());
+    return extension;
+  }
+
   ExtensionsToolbarContainer* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
@@ -546,9 +619,32 @@ class ExtensionsMenuMainPageViewInteractiveTest
         active_web_contents());
   }
 
+  // Opens the extensions menu and waits it is visible.
   auto OpenExtensionsMenu() {
     return Steps(PressButton(kExtensionsMenuButtonElementId),
                  WaitForShow(kExtensionsMenuMainPageElementId));
+  }
+
+  // Opens the context menu for `extension_id` by pressing the context menu
+  // button on `menu_item_element_id` corresponding to the given extension.
+  auto OpenContextMenu(const extensions::ExtensionId& extension_id,
+                       ui::ElementIdentifier menu_item_element_id) {
+    constexpr char kExtensionContextMenuButton[] =
+        "extension_context_menu_button";
+    return Steps(
+        // Open the extension's context menu from its menu item.
+        NameDescendantViewByType<HoverButton>(menu_item_element_id,
+                                              kExtensionContextMenuButton, 1u),
+        PressButton(kExtensionContextMenuButton),
+
+        // Verify context menu is opened.
+        WaitForShow(extensions::ExtensionContextMenuModel::kHomePageMenuItem),
+        CheckResult(
+            [&]() {
+              return GetMenuItemViewFor(extension_id)
+                  ->IsContextMenuRunningForTesting();
+            },
+            true));
   }
 
   // Clicks on the menu item button corresponding to `extension`.
@@ -565,6 +661,21 @@ class ExtensionsMenuMainPageViewInteractiveTest
         NameDescendantViewByType<ExtensionsMenuButton>(
             kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
         PressButton(kExtensionMenuItemActionButton));
+  }
+
+  // Selects the `page_access_command_id` in the extension's context menu opened
+  // from `menu_item_element_id` corresponding to the given extension.
+  auto SelectSiteAccessUsingContextMenu(
+      const extensions::ExtensionId& extension_id,
+      ui::ElementIdentifier menu_item_element_id,
+      extensions::PermissionsManager::UserSiteAccess site_access,
+      ui::test::StateIdentifier<PermissionsUpdatesObserver> state_identifier) {
+    return Steps(
+        OpenContextMenu(extension_id, menu_item_element_id),
+        SelectMenuItem(
+            extensions::ExtensionContextMenuModel::kPageAccessMenuItem),
+        SelectMenuItem(GetSiteAccessCommandId(site_access)),
+        WaitForState(state_identifier, site_access));
   }
 
   // Verifies whether the context menu for `extension_id` opened from
@@ -690,9 +801,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        ContextMenuButtonOpensContextMenu) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionContextMenuButton[] =
-      "extension_context_menu_button";
-
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
 
@@ -711,9 +819,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                   return menu_item->view_controller()->GetId() ==
                          extension->id();
                 }),
-      NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,
-                                            kExtensionContextMenuButton, 1u),
-      PressButton(kExtensionContextMenuButton),
+      OpenContextMenu(extension->id(), kExtensionMenuItemViewElementId),
 
       // Verify context menu is opened.
       CheckResult(
@@ -1000,9 +1106,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                        PinnedExtensionShowsCorrectContextMenuPinOption) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
-  constexpr char kExtensionContextMenuButton[] =
-      "extension_context_menu_button";
-
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
 
@@ -1014,10 +1117,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                   return menu_item->view_controller()->GetId() ==
                          extension->id();
                 }),
-      NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,
-                                            kExtensionContextMenuButton,
-                                            /*index=*/1u),
-      PressButton(kExtensionContextMenuButton),
+      OpenContextMenu(extension->id(), kExtensionMenuItemViewElementId),
 
       // Verify the toggle visibility entry has "pin to toolbar" label and
       // select it.
@@ -1284,4 +1384,95 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
           },
           true),
       CheckActionWantsToRun(*extension, false));
+}
+
+// Tests that the extension entry in the extensions menu gets updated after
+// site access changes.
+// TODO(crbug.com/384759463): Disabled on mac because context menus on Mac take
+// over the main message loop, which causes the test to be flaky when waiting
+// for other events.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MenuGetsUpdatedAfterSiteAccessChanges \
+  DISABLED_MenuGetsUpdatedAfterSiteAccessChanges
+#else
+#define MAYBE_MenuGetsUpdatedAfterSiteAccessChanges \
+  MenuGetsUpdatedAfterSiteAccessChanges
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       MAYBE_MenuGetsUpdatedAfterSiteAccessChanges) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PermissionsUpdatesObserver,
+                                      kPermissionsUpdates);
+  constexpr char kExtensionSitePermissionsButton[] =
+      "extension_site_permissions_button";
+
+  auto extension =
+      InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
+
+  RunTestSequence(
+      InstrumentTab(kTab),
+      NavigateWebContents(
+          kTab, embedded_test_server()->GetURL("example.com", "/title1.html")),
+      // Automatically accept the reload page dialog that appears when
+      // changing site access.
+      Do([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents)
+            ->accept_bubble_for_testing(true);
+      }),
+
+      OpenExtensionsMenu(),
+      CheckView(
+          kExtensionMenuItemViewElementId,
+          [extension](ExtensionMenuItemView* menu_item) {
+            return menu_item->view_controller()->GetId();
+          },
+          extension->id()),
+      NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,
+                                            kExtensionSitePermissionsButton,
+                                            /*index=*/2u),
+
+      // Add observer for permissions updates.
+      ObserveState(
+          kPermissionsUpdates, extensions::PermissionsManager::Get(profile()),
+          extension->id(),
+          embedded_test_server()->GetURL("example.com", "/title1.html")),
+
+      // Verify extension has "on all sites" site permissions label.
+      CheckView(
+          kExtensionSitePermissionsButton,
+          [](HoverButton* site_permissions_button) {
+            return site_permissions_button->GetText();
+          },
+          u"Always on all sites"),
+
+      // Change site access to run "on site" using the context menu.
+      SelectSiteAccessUsingContextMenu(
+          extension->id(), kExtensionMenuItemViewElementId,
+          extensions::PermissionsManager::UserSiteAccess::kOnSite,
+          kPermissionsUpdates),
+
+      // Verify extension has "on site" site permissions label.
+      CheckView(
+          kExtensionSitePermissionsButton,
+          [](HoverButton* site_permissions_button) {
+            return site_permissions_button->GetText();
+          },
+          u"Always on this site"),
+
+      // Change extension's site access to run "on click" using the context
+      // menu.
+      SelectSiteAccessUsingContextMenu(
+          extension->id(), kExtensionMenuItemViewElementId,
+          extensions::PermissionsManager::UserSiteAccess::kOnClick,
+          kPermissionsUpdates),
+
+      // Verify extension has "on click" site permissions label.
+      CheckView(
+          kExtensionSitePermissionsButton,
+          [](HoverButton* site_permissions_button) {
+            return site_permissions_button->GetText();
+          },
+          u"Ask on every visit"));
 }
