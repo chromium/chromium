@@ -216,6 +216,12 @@ std::unique_ptr<ActionViewInterface> Checkbox::GetActionViewInterface() {
   return std::make_unique<CheckboxActionViewInterface>(this);
 }
 
+void Checkbox::UpdateAccessibleCheckedState() {
+  GetViewAccessibility().SetCheckedState(GetChecked()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
+}
+
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
 }
@@ -270,12 +276,6 @@ int Checkbox::GetIconState(ButtonState for_state) const {
 void Checkbox::NotifyClick(const ui::Event& event) {
   SetChecked(!GetChecked());
   LabelButton::NotifyClick(event);
-}
-
-void Checkbox::UpdateAccessibleCheckedState() {
-  GetViewAccessibility().SetCheckedState(GetChecked()
-                                             ? ax::mojom::CheckedState::kTrue
-                                             : ax::mojom::CheckedState::kFalse);
 }
 
 ui::NativeTheme::Part Checkbox::GetThemePart() const {

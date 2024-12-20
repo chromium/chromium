@@ -496,6 +496,12 @@ void ToggleButton::StateChanged(ButtonState old_state) {
   }
 }
 
+void ToggleButton::UpdateAccessibleCheckedState() {
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
+}
+
 SkPath ToggleButton::GetFocusRingPath() const {
   SkPath path;
   gfx::RectF bounds(GetTrackBounds());

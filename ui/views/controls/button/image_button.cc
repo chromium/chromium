@@ -47,6 +47,19 @@ ImageButton::ImageButton(PressedCallback callback)
 
 ImageButton::~ImageButton() = default;
 
+void ToggleImageButton::UpdateAccessibleCheckedState() {
+  // Use the visual pressed image as a cue for making this control into an
+  // accessible toggle button.
+  if ((toggled_ && !images_[ButtonState::STATE_NORMAL].IsEmpty()) ||
+      (!toggled_ && !alternate_images_[ButtonState::STATE_NORMAL].IsEmpty())) {
+    GetViewAccessibility().SetCheckedState(
+        toggled_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
 gfx::ImageSkia ImageButton::GetImage(ButtonState state) const {
   return images_[state].Rasterize(GetColorProvider());
 }
@@ -305,19 +318,6 @@ ToggleImageButton::~ToggleImageButton() = default;
 
 bool ToggleImageButton::GetToggled() const {
   return toggled_;
-}
-
-void ToggleImageButton::UpdateAccessibleCheckedState() {
-  // Use the visual pressed image as a cue for making this control into an
-  // accessible toggle button.
-  if ((toggled_ && !images_[ButtonState::STATE_NORMAL].IsEmpty()) ||
-      (!toggled_ && !alternate_images_[ButtonState::STATE_NORMAL].IsEmpty())) {
-    GetViewAccessibility().SetCheckedState(
-        toggled_ ? ax::mojom::CheckedState::kTrue
-                 : ax::mojom::CheckedState::kFalse);
-  } else {
-    GetViewAccessibility().RemoveCheckedState();
-  }
 }
 
 void ToggleImageButton::SetToggled(bool toggled) {

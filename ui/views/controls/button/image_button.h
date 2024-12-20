@@ -149,7 +149,6 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Change the toggled state.
   bool GetToggled() const;
   void SetToggled(bool toggled);
-  void UpdateAccessibleCheckedState();
 
   // Like ImageButton::SetImage(), but to set the graphics used for the
   // "has been toggled" state.  Must be called for each button state
@@ -170,6 +169,9 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   // Get/Set the accessible text used when the button is toggled.
   std::u16string GetToggledAccessibleName() const;
   void SetToggledAccessibleName(const std::u16string& name);
+
+  // Overridden from Button:
+  void UpdateAccessibleCheckedState() override;
 
   // Overridden from ImageButton:
   gfx::ImageSkia GetImage(ButtonState state) const override;

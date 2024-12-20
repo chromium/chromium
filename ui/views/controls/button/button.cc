@@ -800,13 +800,6 @@ void Button::OnEnabledChanged() {
   UpdateAccessibleDefaultActionVerb();
 }
 
-void Button::ReleaseAnchorHighlight() {
-  if (0 == --anchor_count_) {
-    SetHighlighted(false);
-  }
-  anchor_count_changed_callbacks_.Notify(anchor_count_);
-}
-
 void Button::UpdateAccessibleCheckedState() {
   switch (state_) {
     case STATE_PRESSED:
@@ -816,6 +809,13 @@ void Button::UpdateAccessibleCheckedState() {
       GetViewAccessibility().RemoveCheckedState();
       break;
   }
+}
+
+void Button::ReleaseAnchorHighlight() {
+  if (0 == --anchor_count_) {
+    SetHighlighted(false);
+  }
+  anchor_count_changed_callbacks_.Notify(anchor_count_);
 }
 
 void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {
