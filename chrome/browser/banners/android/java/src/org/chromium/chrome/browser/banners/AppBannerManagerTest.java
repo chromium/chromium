@@ -375,7 +375,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledEventModalWebAppBannerBrowserTab() throws Exception {
         triggerModalWebAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithAction(
+                WebappTestPage.getTestUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click_verify_appinstalled"),
                 true);
 
@@ -409,7 +409,7 @@ public class AppBannerManagerTest {
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         triggerModalWebAppBanner(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithAction(
+                WebappTestPage.getTestUrlWithAction(
                         mTestServer, "call_stashed_prompt_on_click_verify_appinstalled"),
                 true);
 
@@ -439,7 +439,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledModalNativeAppBannerBrowserTab() throws Exception {
         triggerModalNativeAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         NATIVE_APP_MANIFEST_WITH_ID,
                         "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -463,7 +463,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledModalNativeAppBannerBrowserTabWithUrl() throws Exception {
         triggerModalNativeAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         NATIVE_APP_MANIFEST_WITH_URL,
                         "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -492,7 +492,7 @@ public class AppBannerManagerTest {
 
         triggerModalNativeAppBanner(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         NATIVE_APP_MANIFEST_WITH_ID,
                         "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -515,8 +515,7 @@ public class AppBannerManagerTest {
     public void testBlockedModalWebAppBannerResolvesUserChoice() throws Exception {
         triggerModalWebAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithAction(
-                        mTestServer, "call_stashed_prompt_on_click"),
+                WebappTestPage.getTestUrlWithAction(mTestServer, "call_stashed_prompt_on_click"),
                 false);
 
         // Explicitly dismiss the banner.
@@ -537,7 +536,7 @@ public class AppBannerManagerTest {
     public void testBlockedModalNativeAppBannerResolveUserChoice() throws Exception {
         triggerModalNativeAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 NATIVE_APP_BLANK_REFERRER,
                 false);
@@ -560,7 +559,7 @@ public class AppBannerManagerTest {
     public void testModalNativeAppBannerCanBeTriggeredMultipleTimesBrowserTab() throws Exception {
         triggerModalBannerMultipleTimes(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
 
@@ -579,7 +578,7 @@ public class AppBannerManagerTest {
 
         triggerModalBannerMultipleTimes(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer, NATIVE_APP_MANIFEST_WITH_ID, "call_stashed_prompt_on_click"),
                 true);
 
@@ -593,8 +592,7 @@ public class AppBannerManagerTest {
     public void testModalWebAppBannerCanBeTriggeredMultipleTimesBrowserTab() throws Exception {
         triggerModalBannerMultipleTimes(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithAction(
-                        mTestServer, "call_stashed_prompt_on_click"),
+                WebappTestPage.getTestUrlWithAction(mTestServer, "call_stashed_prompt_on_click"),
                 false);
 
         Assert.assertEquals(
@@ -612,8 +610,7 @@ public class AppBannerManagerTest {
 
         triggerModalBannerMultipleTimes(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithAction(
-                        mTestServer, "call_stashed_prompt_on_click"),
+                WebappTestPage.getTestUrlWithAction(mTestServer, "call_stashed_prompt_on_click"),
                 false);
 
         Assert.assertEquals(
@@ -628,7 +625,7 @@ public class AppBannerManagerTest {
         // supported application platform specified in the related applications list.
         triggerModalWebAppBanner(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM,
                         "call_stashed_prompt_on_click"),
@@ -644,7 +641,7 @@ public class AppBannerManagerTest {
     public void testBottomSheet() throws Exception {
         triggerBottomSheet(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithManifest(
+                WebappTestPage.getTestUrlWithManifest(
                         mTestServer, WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL),
                 /* click= */ false);
 
@@ -702,7 +699,7 @@ public class AppBannerManagerTest {
     public void testAppInstalledEventBottomSheet() throws Exception {
         triggerBottomSheet(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click_verify_appinstalled"),
@@ -748,7 +745,7 @@ public class AppBannerManagerTest {
     public void testDismissBottomSheetResolvesUserChoice() throws Exception {
         triggerBottomSheet(
                 mTabbedActivityTestRule,
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click"),
@@ -779,7 +776,7 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     public void testBlockedBottomSheetDoesNotAppearAgainForMonths() throws Exception {
         String url =
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click");
@@ -816,7 +813,7 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     public void testBottomSheetSkipsHiddenWebContents() throws Exception {
         String url =
-                WebappTestPage.getServiceWorkerUrlWithManifestAndAction(
+                WebappTestPage.getTestUrlWithManifestAndAction(
                         mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
                         "call_stashed_prompt_on_click");
@@ -854,8 +851,7 @@ public class AppBannerManagerTest {
     @Feature({"AppBanners"})
     public void testAppBannerDismissedAfterNavigation() throws Exception {
         String url =
-                WebappTestPage.getServiceWorkerUrlWithAction(
-                        mTestServer, "call_stashed_prompt_on_click");
+                WebappTestPage.getTestUrlWithAction(mTestServer, "call_stashed_prompt_on_click");
 
         mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);

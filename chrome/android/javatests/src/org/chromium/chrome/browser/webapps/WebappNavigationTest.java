@@ -169,7 +169,7 @@ public class WebappNavigationTest {
                         .createIntent()
                         .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN);
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
-        String url = WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer());
+        String url = WebappTestPage.getTestUrl(mActivityTestRule.getTestServer());
         CommandLine.getInstance()
                 .appendSwitchWithValue(ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION, url);
         mActivityTestRule.startWebappActivity(
@@ -247,8 +247,7 @@ public class WebappNavigationTest {
     @Feature({"Webapps"})
     @DisabledTest(message = "Flaky, see crbug.com/352075550")
     public void testInScopeNewTabLinkShowsToolbar() throws Exception {
-        String inScopeUrl =
-                WebappTestPage.getNonServiceWorkerUrl(mActivityTestRule.getTestServer());
+        String inScopeUrl = WebappTestPage.getTestUrl(mActivityTestRule.getTestServer());
         runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
         addAnchorAndClick(inScopeUrl, "_blank");
         ChromeActivity activity = mActivityTestRule.getActivity();
@@ -273,8 +272,7 @@ public class WebappNavigationTest {
     @Restriction(DeviceFormFactor.PHONE)
     public void testInScopeNavigationStaysInWebapp() throws Exception {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
-        String otherPageUrl =
-                WebappTestPage.getNonServiceWorkerUrl(mActivityTestRule.getTestServer());
+        String otherPageUrl = WebappTestPage.getTestUrl(mActivityTestRule.getTestServer());
         addAnchorAndClick(otherPageUrl, "_self");
         ChromeTabUtils.waitForTabPageLoaded(activity.getActivityTab(), otherPageUrl);
 
@@ -331,7 +329,7 @@ public class WebappNavigationTest {
                 ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
         ChromeTabUtils.waitForTabPageLoaded(
                 tabbedChrome.getActivityTab(),
-                WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
+                WebappTestPage.getTestUrl(mActivityTestRule.getTestServer()));
     }
 
     @Test
@@ -341,8 +339,7 @@ public class WebappNavigationTest {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
         Tab tab = activity.getActivityTab();
 
-        String otherInScopeUrl =
-                WebappTestPage.getNonServiceWorkerUrl(mActivityTestRule.getTestServer());
+        String otherInScopeUrl = WebappTestPage.getTestUrl(mActivityTestRule.getTestServer());
         mActivityTestRule.loadUrlInTab(otherInScopeUrl, PageTransition.LINK, tab);
         assertEquals(otherInScopeUrl, ChromeTabUtils.getUrlStringOnUiThread(tab));
 
@@ -383,7 +380,7 @@ public class WebappNavigationTest {
         WebappActivity activity = runWebappActivityAndWaitForIdle(launchIntent);
 
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        String initialInScopeUrl = WebappTestPage.getServiceWorkerUrl(testServer);
+        String initialInScopeUrl = WebappTestPage.getTestUrl(testServer);
         ChromeTabUtils.waitForTabPageLoaded(activity.getActivityTab(), initialInScopeUrl);
 
         final String redirectingUrl =
@@ -460,7 +457,7 @@ public class WebappNavigationTest {
 
     private WebappActivity runWebappActivityAndWaitForIdle(Intent intent) {
         return runWebappActivityAndWaitForIdleWithUrl(
-                intent, WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer()));
+                intent, WebappTestPage.getTestUrl(mActivityTestRule.getTestServer()));
     }
 
     private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url) {

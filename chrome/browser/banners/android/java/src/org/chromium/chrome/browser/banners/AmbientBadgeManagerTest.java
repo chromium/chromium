@@ -374,8 +374,7 @@ public class AmbientBadgeManagerTest {
 
         triggerInstallWebApp(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithAction(
-                        mTestServer, "verify_appinstalled"));
+                WebappTestPage.getTestUrlWithAction(mTestServer, "verify_appinstalled"));
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
@@ -403,8 +402,7 @@ public class AmbientBadgeManagerTest {
                         ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL));
         triggerInstallWebApp(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithAction(
-                        mTestServer, "verify_appinstalled"));
+                WebappTestPage.getTestUrlWithAction(mTestServer, "verify_appinstalled"));
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
@@ -423,8 +421,7 @@ public class AmbientBadgeManagerTest {
 
         triggerInstallNative(
                 mTabbedActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifest(
-                        mTestServer, NATIVE_APP_MANIFEST_WITH_ID),
+                WebappTestPage.getTestUrlWithManifest(mTestServer, NATIVE_APP_MANIFEST_WITH_ID),
                 NATIVE_APP_BLANK_REFERRER);
 
         watcher.assertExpected();
@@ -443,8 +440,7 @@ public class AmbientBadgeManagerTest {
 
         triggerInstallNative(
                 mCustomTabActivityTestRule,
-                WebappTestPage.getNonServiceWorkerUrlWithManifest(
-                        mTestServer, NATIVE_APP_MANIFEST_WITH_ID),
+                WebappTestPage.getTestUrlWithManifest(mTestServer, NATIVE_APP_MANIFEST_WITH_ID),
                 NATIVE_APP_BLANK_REFERRER);
 
         watcher.assertExpected();
@@ -458,7 +454,7 @@ public class AmbientBadgeManagerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(INSTALL_PATH_HISTOGRAM_NAME).build();
 
         // Visit a site that is a PWA. The ambient badge should show.
-        String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
+        String webBannerUrl = WebappTestPage.getTestUrl(mTestServer);
         Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
@@ -518,22 +514,11 @@ public class AmbientBadgeManagerTest {
     }
 
     @Test
-    @MediumTest
-    public void testAmbientBadgeAppearWithServiceWorkerPage() throws Exception {
-        String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
-
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
-        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
-    }
-
-    @Test
     @SmallTest
     public void testAmbientBadgeTriggeredWithListedRelatedApp() throws Exception {
         // The ambient badge should show if there is play app in related applications list but
         // preferred_related_applications is false.
-        String webBannerUrl = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
+        String webBannerUrl = WebappTestPage.getTestUrl(mTestServer);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
 
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
@@ -566,7 +551,7 @@ public class AmbientBadgeManagerTest {
     @SmallTest
     public void testAmbientBadgeDoesNotAppearWhenRelatedAppInstalled() throws Exception {
         String url =
-                WebappTestPage.getNonServiceWorkerUrlWithManifest(
+                WebappTestPage.getTestUrlWithManifest(
                         mTestServer, WEB_APP_MANIFEST_WITH_RELATED_APP_LIST);
 
         final Context contextToRestore = ContextUtils.getApplicationContext();
@@ -585,7 +570,7 @@ public class AmbientBadgeManagerTest {
     @Test
     @SmallTest
     public void testMlShowAmbientBadge() throws Exception {
-        String url = WebappTestPage.getNonServiceWorkerUrl(mTestServer);
+        String url = WebappTestPage.getTestUrl(mTestServer);
         AppBannerManager.setOverrideSegmentationResultForTesting(false);
 
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
