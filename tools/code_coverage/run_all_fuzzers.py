@@ -257,7 +257,7 @@ if not (os.path.isfile(llvm_profdata)):
   exit(2)
 
 if not (os.path.isdir(args.profdata_outdir)):
-  print('%s does not exist or is not a directory' % args.profdata_oudir)
+  print('%s does not exist or is not a directory' % args.profdata_outdir)
   exit(2)
 
 for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
