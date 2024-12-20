@@ -100,13 +100,13 @@ include_rules = [
   "+ui/latency",
   "+ui/native_theme",
   "+ui/resources/grit/ui_resources.h",
-  "+ui/resources/grit/webui_resources.h",
-  "+ui/resources/grit/webui_resources_map.h",
   "+ui/shell_dialogs",
   "+ui/snapshot",
   "+ui/strings/grit/ui_strings.h",
   "+ui/surface",
   "+ui/touch_selection",
+  "+ui/webui/resources/grit/webui_resources.h",
+  "+ui/webui/resources/grit/webui_resources_map.h",
   "+ui/wm",
   # Content knows about grd files, but the specifics of how to get a resource
   # given its id is left to the embedder.

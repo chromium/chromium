@@ -31,7 +31,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 

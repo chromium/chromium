@@ -552,10 +552,10 @@ if (!is_fuchsia) {
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
       "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-      "$root_gen_dir/ui/resources/webui_resources.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
       "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
       "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+      "$root_gen_dir/ui/webui/resources/webui_resources.pak",
     ]
 
     output = "$root_out_dir/assets/cast_shell.pak"
@@ -573,6 +573,7 @@ if (!is_fuchsia) {
       "//third_party/blink/public/strings",
       "//ui/resources",
       "//ui/strings",
+      "//ui/webui/resources",
     ]
   }
 

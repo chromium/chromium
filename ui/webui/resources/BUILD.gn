@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//crypto/features.gni")
+import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 if (use_blink) {
@@ -139,4 +140,17 @@ if (is_chromeos) {
     resource_path_rewrites =
         [ "ui/chromeos/styles/cros_styles.css|chromeos/colors/cros_styles.css" ]
   }
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/webui_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/webui_resources.h",
+    "grit/webui_resources_map.cc",
+    "grit/webui_resources_map.h",
+    "webui_resources.pak",
+  ]
 }

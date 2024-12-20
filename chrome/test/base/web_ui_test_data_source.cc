@@ -18,7 +18,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

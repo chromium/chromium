@@ -325,6 +325,7 @@ source_set("browser") {
     "//ui/strings:auto_image_annotation_strings",
     "//ui/strings:ax_strings",
     "//ui/touch_selection",
+    "//ui/webui/resources",
     "//v8:v8_version",
   ]
 

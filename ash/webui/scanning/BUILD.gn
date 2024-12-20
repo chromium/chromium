@@ -34,9 +34,9 @@ static_library("scanning") {
     "//content/public/browser",
     "//ui/base",
     "//ui/gfx",
-    "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

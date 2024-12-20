@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace {
 

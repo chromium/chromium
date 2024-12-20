@@ -29,9 +29,9 @@ static_library("sanitize_ui") {
     "//chromeos/strings/",
     "//content/public/browser:browser",
     "//ui/base",
-    "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

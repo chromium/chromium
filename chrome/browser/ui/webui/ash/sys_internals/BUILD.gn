@@ -23,6 +23,6 @@ static_library("sys_internals") {
     "//content/public/browser",
     "//content/public/common",
     "//services/network/public/mojom:url_loader_base",
-    "//ui/resources:webui_resources_grd",
+    "//ui/webui/resources:resources_grit",
   ]
 }

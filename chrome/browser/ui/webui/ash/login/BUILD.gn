@@ -333,8 +333,8 @@ static_library("login") {
     "//ui/chromeos/strings:strings_provider",
     "//ui/display",
     "//ui/display/manager",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings:ui_strings",
+    "//ui/webui/resources:resources_grit",
   ]
 
   allow_circular_includes_from = [

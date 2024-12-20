@@ -22,7 +22,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 

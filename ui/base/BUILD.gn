@@ -507,8 +507,8 @@ component("base") {
     "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings",
+    "//ui/webui/resources:resources_grit",
     "//url",
   ]
 

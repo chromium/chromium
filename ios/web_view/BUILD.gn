@@ -617,13 +617,13 @@ repack("repack_resources") {
     "//components/resources:components_resources",
     "//components/sync/service/resources",
     "//ios/web:resources",
-    "//ui/resources",
+    "//ui/webui/resources",
   ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
   output = "$target_gen_dir/web_view_resources.pak"
   copy_data_to_bundle = true

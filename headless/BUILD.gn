@@ -83,7 +83,7 @@ repack("resource_pack_data") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
 
   deps = [
@@ -93,6 +93,7 @@ repack("resource_pack_data") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//ui/resources",
+    "//ui/webui/resources",
   ]
 
   output = "$root_out_dir/headless_lib_data.pak"

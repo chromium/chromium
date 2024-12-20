@@ -50,8 +50,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 

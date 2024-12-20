@@ -36,7 +36,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

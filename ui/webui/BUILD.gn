@@ -23,7 +23,7 @@ static_library("webui") {
     "//components/content_settings/core/browser",
     "//content/public/browser",
     "//services/service_manager/public/cpp",
-    "//ui/resources:webui_resources_grd_grit",
+    "//ui/webui/resources:resources_grit",
   ]
 
   public_deps = [

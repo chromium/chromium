@@ -5714,6 +5714,7 @@ static_library("ui_public_dependencies") {
     "//components/translate/content/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//ui/webui/resources",
   ]
   if (!is_android) {
     public_deps += [

@@ -25,9 +25,9 @@ static_library("print_preview_cros") {
     "//content/public/browser",
     "//printing/mojom:mojom",
     "//ui/base",
-    "//ui/resources",
     "//ui/web_dialogs:web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

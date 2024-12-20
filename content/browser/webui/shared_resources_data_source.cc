@@ -14,8 +14,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
-#include "ui/resources/grit/webui_resources_map.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/grit/ash_webui_common_resources_map.h"

@@ -46,9 +46,9 @@
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash::personalization_app {
 
