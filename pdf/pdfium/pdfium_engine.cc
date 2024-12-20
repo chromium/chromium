@@ -4449,7 +4449,7 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   ink_stroke_objects_map_.erase(it);
 }
 
-std::map<InkModeledShapeId, ink::ModeledShape>
+std::map<InkModeledShapeId, ink::PartitionedMesh>
 PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   CHECK(PageIndexInBounds(page_index));
 
@@ -4459,7 +4459,7 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   CHECK(inserted);
 #endif  // DCHECK_IS_ON()
 
-  std::map<InkModeledShapeId, ink::ModeledShape> page_shape_map;
+  std::map<InkModeledShapeId, ink::PartitionedMesh> page_shape_map;
 
   std::vector<ReadV2InkPathResult> read_results =
       ReadV2InkPathsFromPageAsModeledShapes(pages_[page_index]->GetPage());

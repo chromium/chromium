@@ -2054,7 +2054,7 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
   EXPECT_TRUE(engine->ink_modeled_shape_map_for_testing().empty());
 
-  std::map<InkModeledShapeId, ink::ModeledShape> ink_shapes =
+  std::map<InkModeledShapeId, ink::PartitionedMesh> ink_shapes =
       engine->LoadV2InkPathsForPage(/*page_index=*/0);
   ASSERT_EQ(1u, ink_shapes.size());
   const auto ink_shapes_it = ink_shapes.begin();
@@ -2275,7 +2275,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
             1);
 
   // Check the LoadV2InkPathsForPage() call does not change the rendering.
-  std::map<InkModeledShapeId, ink::ModeledShape> ink_shapes =
+  std::map<InkModeledShapeId, ink::PartitionedMesh> ink_shapes =
       engine->LoadV2InkPathsForPage(kPageIndex);
   ASSERT_EQ(1u, ink_shapes.size());
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kInkV2PngPath);

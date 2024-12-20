@@ -40,7 +40,7 @@
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/rect.h"
 #include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
@@ -689,7 +689,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
       // No transform needed, as `eraser_rect` is already using transformed
       // coordinates from `canonical_position`.
-      const ink::ModeledShape& shape = stroke.stroke.GetShape();
+      const ink::PartitionedMesh& shape = stroke.stroke.GetShape();
       if (!ink::Intersects(eraser_rect, shape, kIdentityTransform)) {
         continue;
       }
@@ -1209,7 +1209,7 @@ PdfInkModule::FinishedStrokeState& PdfInkModule::FinishedStrokeState::operator=(
 
 PdfInkModule::FinishedStrokeState::~FinishedStrokeState() = default;
 
-PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(ink::ModeledShape shape,
+PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(ink::PartitionedMesh shape,
                                                      InkModeledShapeId id)
     : shape(std::move(shape)), id(id) {}
 

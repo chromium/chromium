@@ -2619,18 +2619,18 @@ TEST_F(PdfViewWebPluginInkTest, Invalidate) {
 }
 
 TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPageAndUpdateShapeActive) {
-  const std::map<InkModeledShapeId, ink::ModeledShape> kEmptyMap;
-  const std::map<InkModeledShapeId, ink::ModeledShape> kMap0{
-      {InkModeledShapeId(0), ink::ModeledShape()},
+  const std::map<InkModeledShapeId, ink::PartitionedMesh> kEmptyMap;
+  const std::map<InkModeledShapeId, ink::PartitionedMesh> kMap0{
+      {InkModeledShapeId(0), ink::PartitionedMesh()},
   };
-  const std::map<InkModeledShapeId, ink::ModeledShape> kMap1{
-      {InkModeledShapeId(1), ink::ModeledShape()},
-      {InkModeledShapeId(2), ink::ModeledShape()},
+  const std::map<InkModeledShapeId, ink::PartitionedMesh> kMap1{
+      {InkModeledShapeId(1), ink::PartitionedMesh()},
+      {InkModeledShapeId(2), ink::PartitionedMesh()},
   };
-  const std::map<InkModeledShapeId, ink::ModeledShape> kMap2{
-      {InkModeledShapeId(3), ink::ModeledShape()},
-      {InkModeledShapeId(4), ink::ModeledShape()},
-      {InkModeledShapeId(5), ink::ModeledShape()},
+  const std::map<InkModeledShapeId, ink::PartitionedMesh> kMap2{
+      {InkModeledShapeId(3), ink::PartitionedMesh()},
+      {InkModeledShapeId(4), ink::PartitionedMesh()},
+      {InkModeledShapeId(5), ink::PartitionedMesh()},
   };
 
   EXPECT_CALL(*engine_ptr_, LoadV2InkPathsForPage(testing::Lt(12)))

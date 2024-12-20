@@ -18,7 +18,7 @@
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
 #include "third_party/ink/src/ink/geometry/tessellator.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
@@ -89,7 +89,7 @@ std::optional<ink::Mesh> CreateInkMeshFromPolyline(
   return *mesh;
 }
 
-std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
+std::optional<ink::PartitionedMesh> ReadV2InkModeledShapeFromPath(
     FPDF_PAGEOBJECT path,
     const gfx::AxisTransform2d& transform) {
   CHECK_EQ(FPDFPageObj_GetType(path), FPDF_PAGEOBJ_PATH);
@@ -138,8 +138,9 @@ std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
 
   // Note that `shape` only has enough data for use with ink::Intersects(). It
   // has no outline.
-  auto shape = ink::ModeledShape::FromMeshes(base::span_from_ref(mesh.value()),
-                                             /*outlines=*/{});
+  auto shape =
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh.value()),
+                                       /*outlines=*/{});
   if (!shape.ok()) {
     return std::nullopt;
   }
@@ -167,7 +168,7 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
       continue;
     }
 
-    std::optional<ink::ModeledShape> shape =
+    std::optional<ink::PartitionedMesh> shape =
         ReadV2InkModeledShapeFromPath(page_object, transform);
     if (!shape.has_value()) {
       continue;

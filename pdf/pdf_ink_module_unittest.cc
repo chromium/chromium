@@ -578,11 +578,11 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
       .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
           {0,
            PdfInkModuleClient::PageV2InkPathShapesMap{
-               {InkModeledShapeId(0), ink::ModeledShape()},
-               {InkModeledShapeId(1), ink::ModeledShape()}}},
+               {InkModeledShapeId(0), ink::PartitionedMesh()},
+               {InkModeledShapeId(1), ink::PartitionedMesh()}}},
           {3,
            PdfInkModuleClient::PageV2InkPathShapesMap{
-               {InkModeledShapeId(2), ink::ModeledShape()}}},
+               {InkModeledShapeId(2), ink::PartitionedMesh()}}},
       }));
 
   const auto kShapeMapMatcher = ElementsAre(
@@ -2253,7 +2253,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
       CreateInkMeshFromPolylineForTesting(ink_points);
   ASSERT_TRUE(mesh0.has_value());
   auto shape0 =
-      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh0.value()));
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh0.value()));
   ASSERT_TRUE(shape0.ok());
 
   constexpr ink::Point kCornerPoints[] = {
@@ -2265,7 +2265,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
       CreateInkMeshFromPolylineForTesting(kCornerPoints);
   ASSERT_TRUE(mesh1.has_value());
   auto shape1 =
-      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh1.value()));
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh1.value()));
   ASSERT_TRUE(shape1.ok());
 
   EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
