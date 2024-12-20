@@ -75,8 +75,9 @@ class CollaborationControllerDelegate {
   // Request to show the manage dialog.
   virtual void ShowManageDialog(ResultCallback result) = 0;
 
-  // Open the local tab group in UI.
-  virtual void PromoteTabGroup(ResultCallback result) = 0;
+  // Open the local tab group associated with `group_id` in UI.
+  virtual void PromoteTabGroup(const data_sharing::GroupId& group_id,
+                               ResultCallback result) = 0;
 
   // Focus the UI screen associated with the current delegate instance.
   virtual void PromoteCurrentScreen() = 0;

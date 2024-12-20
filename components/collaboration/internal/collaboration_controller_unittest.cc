@@ -194,8 +194,9 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   base::OnceCallback<void(Outcome)> promote_ui_callback;
   EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
       .WillOnce(Return(data_sharing::MemberRole::kMember));
-  EXPECT_CALL(*delegate_, PromoteTabGroup(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&promote_ui_callback));
+  EXPECT_CALL(*delegate_, PromoteTabGroup(data_sharing::GroupId(kGroupId),
+                                          IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&promote_ui_callback));
   EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
   EXPECT_CALL(*data_sharing_service_, RemoveObserver(data_sharing_observer));
 

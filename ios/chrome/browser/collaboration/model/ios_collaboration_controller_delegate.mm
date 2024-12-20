@@ -8,9 +8,11 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
@@ -194,8 +196,32 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
 }
 
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
+    const data_sharing::GroupId& group_id,
     ResultCallback result) {
-  // TODO(crbug.com/377306986): Implement this.
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  base::Uuid sync_id;
+  for (const tab_groups::SavedTabGroup& group :
+       tab_group_sync_service->GetAllGroups()) {
+    if (!group.collaboration_id().has_value()) {
+      continue;
+    }
+    if (group.collaboration_id().value().value() == group_id.value()) {
+      sync_id = group.saved_guid();
+      if (sync_id.is_valid()) {
+        break;
+      }
+    }
+  }
+
+  if (!sync_id.is_valid()) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+  }
+  tab_group_sync_service->OpenTabGroup(
+      sync_id,
+      std::make_unique<tab_groups::IOSTabGroupActionContext>(browser_));
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 
 void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {

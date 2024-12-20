@@ -42,7 +42,8 @@ class IOSCollaborationControllerDelegate
                       ResultCallback result) override;
   void ShowShareDialog(ResultCallback result) override;
   void ShowManageDialog(ResultCallback result) override;
-  void PromoteTabGroup(ResultCallback result) override;
+  void PromoteTabGroup(const data_sharing::GroupId& group_id,
+                       ResultCallback result) override;
   void PromoteCurrentScreen() override;
 
  private:

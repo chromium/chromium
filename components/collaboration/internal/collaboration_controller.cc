@@ -323,7 +323,11 @@ class OpeningLocalTabGroupState : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    // Only the join flow has a valid `group_id`.
+    CHECK_EQ(controller->flow().type, Flow::Type::kJoin);
+
     controller->delegate()->PromoteTabGroup(
+        controller->flow().join_token().group_id,
         base::BindOnce(&OpeningLocalTabGroupState::ProcessOutcome,
                        weak_ptr_factory_.GetWeakPtr()));
   }
