@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/views/glic/glic_web_view.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -56,6 +57,10 @@ class GlicView : public views::View {
   // Animates programmatic changes to bounds (e.g. via `resizeTo()`
   // `resizeBy()` and `setContentsSize()` calls).
   std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
+
+  // Ensures that the profile associated with this view isn't destroyed while
+  // it is visible.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 }  // namespace glic

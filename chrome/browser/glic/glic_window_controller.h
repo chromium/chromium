@@ -11,7 +11,6 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 class Browser;
@@ -21,7 +20,6 @@ class Point;
 }  // namespace gfx
 
 namespace {
-class ContentsAndProfileKeepAlive;
 class GlicWidgetObserver;
 class WindowEventObserver;
 }  // namespace
@@ -49,9 +47,6 @@ class GlicWindowController : public views::WidgetObserver {
   // Shows the glic window.
   void Show(views::View* glic_button_view);
 
-  // Destroy the glic panel and its web contents.
-  void Shutdown();
-
   // Sets the size of the glic window to the specified dimensions. Returns true
   // if the operation succeeded.
   bool Resize(const gfx::Size& size);
@@ -62,7 +57,7 @@ class GlicWindowController : public views::WidgetObserver {
   // Sets the areas of the view from which it should be draggable.
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
-  // Close the panel but keep the glic WebContents alive in the background.
+  // Called to notify the controller that the window was requested to be closed.
   void Close();
 
   // Drags the glic window following the current mouse location with a given
@@ -169,11 +164,6 @@ class GlicWindowController : public views::WidgetObserver {
   std::unique_ptr<views::Widget> holder_widget_;
 
   const raw_ptr<Profile> profile_;
-
-  // Keep profile alive as long as the glic web contents. This object should be
-  // destroyed when the profile needs to be destroyed.
-  std::unique_ptr<ContentsAndProfileKeepAlive> contents_;
-
   views::UniqueWidgetPtr widget_;
   bool widget_visible_ = false;
 

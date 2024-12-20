@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "extensions/browser/api/declarative/rules_registry_service.h"
 
 namespace glic {
 
@@ -24,12 +23,7 @@ GlicKeyedServiceFactory* GlicKeyedServiceFactory::GetInstance() {
 
 GlicKeyedServiceFactory::GlicKeyedServiceFactory()
     : ProfileKeyedServiceFactory("GlicKeyedService",
-                                 ProfileSelections::BuildForRegularProfile()) {
-  // GlicKeyedService has an indirect dependency on the
-  // RulesRegistryService through extensions::TabHelper::WebContentsDestroyed
-  // when the glic web contents is destroyed.
-  DependsOn(extensions::RulesRegistryService::GetFactoryInstance());
-}
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 GlicKeyedServiceFactory::~GlicKeyedServiceFactory() = default;
 
