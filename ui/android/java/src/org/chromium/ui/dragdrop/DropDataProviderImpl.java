@@ -301,15 +301,11 @@ public class DropDataProviderImpl {
         long elapsedRealtime = SystemClock.elapsedRealtime();
         synchronized (LOCK) {
             if (!uri.equals(mContentProviderUri)) {
-                if (uri.equals(mLastUri)) {
+                if (uri.equals(mLastUri) && !mLastUriRecorded) {
                     long duration = elapsedRealtime - mLastUriClearedTimestamp;
                     RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                            "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
-                    if (!mLastUriRecorded) {
-                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
-                        mLastUriRecorded = true;
-                    }
+                            "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
+                    mLastUriRecorded = true;
                 }
                 return null;
             }

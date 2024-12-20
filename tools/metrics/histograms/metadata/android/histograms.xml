@@ -1460,28 +1460,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DragDrop.Image.OpenFileTime.AllExpired" units="ms"
-    expires_after="2025-01-05">
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the duration between the URI being cleared and
-    ContentProvider#openFile attempts with that expired URI. This is used to
-    evaluate how long we should keep the image data. Because drop target app
-    could request data multiple times with the same URI, this metric could
-    record multiple times per URI, which gives us the holistic view about the
-    timing when the image data associated with the URI is needed. Another metric
-    Android.DragDrop.Image.OpenFileTime.FirstExpired only records at most once
-    per URI, to avoid counting in retries from drop target app when Chrome
-    rejects the expired URI. This metric is recorded when Chrome receives an
-    expired URI to retrieve data. If the URI is not the latest expired one, the
-    metric will not be recorded because we do not calculate the elapsed time for
-    older URIs. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Android.DragDrop.Image.OpenFileTime.FirstAttempt" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-05-11">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1504,12 +1484,10 @@ chromium-metrics-reviews@google.com.
     evaluate how long we should keep the image data. Because drop target app may
     retry after Chrome rejects the expired URI; and the retries are not helpful
     to evaluate how long the data is needed; this metric records at most once
-    per URI. Another metric Android.DragDrop.Image.OpenFileTime.AllExpired
-    records multiple times per URI, to gives us the holistic view about the
-    timing when the image data associated with the URI is needed. This metric is
-    recorded when Chrome receives an expired URI to retrieve data. If the URI is
-    not the latest expired one, the metric will not be recorded because we do
-    not calculate the elapsed time for older URIs. Android only.
+    per URI. This metric is recorded when Chrome receives an expired URI to
+    retrieve data. If the URI is not the latest expired one, the metric will not
+    be recorded because we do not calculate the elapsed time for older URIs.
+    Android only.
   </summary>
 </histogram>
 
@@ -1530,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.Size" units="KB"
-    expires_after="2025-04-27">
+    expires_after="2025-05-11">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -1541,7 +1519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DragDrop.Image.UriCreatedInterval" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-05-11">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
