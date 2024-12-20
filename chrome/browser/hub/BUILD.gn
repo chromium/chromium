@@ -16,7 +16,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubColorScheme.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubContainerView.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubController.java",
-    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationListener.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunner.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
@@ -92,7 +91,6 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/DrawableButtonDataUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrialTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimControllerUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubShowPaneHelperUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java",

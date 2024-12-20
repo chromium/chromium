@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
@@ -81,8 +80,6 @@ public class HubCoordinatorUnitTest {
             new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
@@ -143,7 +140,6 @@ public class HubCoordinatorUnitTest {
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();

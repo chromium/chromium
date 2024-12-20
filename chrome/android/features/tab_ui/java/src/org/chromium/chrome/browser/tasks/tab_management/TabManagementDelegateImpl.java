@@ -141,7 +141,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
-                            profileProviderSupplier,
                             factory,
                             incongitorTabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,

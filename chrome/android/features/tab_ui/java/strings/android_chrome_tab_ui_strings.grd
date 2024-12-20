@@ -172,11 +172,6 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- In-Product Help strings -->
-      <message name="IDS_IPH_TAB_SWITCHER_FLOATING_ACTION_BUTTON" desc="This in-product help points to the new location of the new tab button which floats atop the tabs rather than being located in the toolbar. The text informs users they can use the button to open new tabs.">
-        You can now open a new tab here
-      </message>
-
       <!-- Undo Bar -->
       <message name="IDS_UNDO_BAR_GROUP_TAB_MESSAGE" desc="Message shown or announced when a group has been created with a single tab.">
         <ph name="TABS_COUNT_ONE">%1$s<ex>1</ex></ph> tab grouped

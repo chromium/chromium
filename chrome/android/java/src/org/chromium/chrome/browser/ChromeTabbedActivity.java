@@ -898,7 +898,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         this::getSnackbarManager,
                         getTabModelSelectorSupplier(),
                         () -> getToolbarManager().getOverviewModeMenuButtonCoordinator(),
-                        mEdgeToEdgeControllerSupplier,
                         mHubSearchClient);
         var builder = mHubProvider.getPaneListBuilder();
         builder.registerPane(

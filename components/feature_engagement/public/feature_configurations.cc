@@ -1106,26 +1106,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->snooze_params.max_limit = 3;
     return config;
   }
-  if (kIPHTabSwitcherFloatingActionButtonFeature.name == feature->name) {
-    // Allows an IPH for the tab groups surface through hub toolbar when:
-    // * Only once per week.
-    // * Up to 3 times per year.
-    // * And only as long as the user has never manually pressed the
-    // floating new tab button.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(LESS_THAN, 1);
-    config->trigger =
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(EQUAL, 0), 7, 7);
-    config->event_configs.insert(
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(LESS_THAN, 3), 360, 360));
-    config->used = EventConfig("tab_switcher_floating_action_button_clicked",
-                               Comparator(EQUAL, 0), 360, 360);
-    return config;
-  }
   if (kIPHWebFeedFollowFeature.name == feature->name) {
     // A config that allows the WebFeed follow intro to be shown up to 5x per
     // week.

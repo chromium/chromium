@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.invitation_dialog.DataSharingInvitationDialogCoordinator;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -134,7 +133,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final ModalDialogManager mModalDialogManager;
     private final Runnable mOnDestroyed;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
-    private final int mFloatingButtonSpace;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
     private final OneshotSupplierImpl<ObservableSupplier<Boolean>> mIsScrollingSupplier =
             new OneshotSupplierImpl<>();
@@ -211,10 +209,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mParentView = parentView;
             mOnDestroyed = onDestroyed;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-            mFloatingButtonSpace =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.floating_action_button_space);
 
             assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
@@ -696,9 +690,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             bottomPadding = mEdgeToEdgeBottomInsets;
             mContainerViewModel.set(
                     TabListContainerProperties.IS_CLIP_TO_PADDING, bottomPadding == 0);
-        }
-        if (HubFieldTrial.usesFloatActionButton() && mTabListCoordinator.isLastItemMessage()) {
-            bottomPadding += mFloatingButtonSpace;
         }
         mContainerViewModel.set(TabListContainerProperties.BOTTOM_PADDING, bottomPadding);
     }

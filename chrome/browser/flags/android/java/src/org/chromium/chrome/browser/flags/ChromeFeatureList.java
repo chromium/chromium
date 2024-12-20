@@ -169,8 +169,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
-    public static final String ANDROID_HUB_FLOATING_ACTION_BUTTON =
-            "AndroidHubFloatingActionButton";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
@@ -598,8 +596,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, false, true);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
-    public static final CachedFlag sAndroidHubFloatingActionButton =
-            newCachedFlag(ANDROID_HUB_FLOATING_ACTION_BUTTON, false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
@@ -808,7 +804,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFavicon,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
-                    sAndroidHubFloatingActionButton,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAppSpecificHistory,
                     sAsyncNotificationManager,
@@ -1005,10 +1000,6 @@ public abstract class ChromeFeatureList {
             sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber =
                     newIntCachedFeatureParam(
                             ANDROID_APP_INTEGRATION_WITH_FAVICON, "zero_state_favicon_number", 5);
-    public static final BooleanCachedFeatureParam
-            sAndroidHubFloatingActionButtonAlternativeFabColor =
-                    newBooleanCachedFeatureParam(
-                            ANDROID_HUB_FLOATING_ACTION_BUTTON, "hub_alternative_fab_color", false);
     public static final IntCachedFeatureParam sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs =
             newIntCachedFeatureParam(
                     CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, "verification_timeout_ms", 10_000);
@@ -1275,7 +1266,6 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
-                    sAndroidHubFloatingActionButtonAlternativeFabColor,
                     sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs,
                     sCctAutoTranslatePackageNamesAllowlist,
                     sCctAutoTranslateAllowAllFirstParties,

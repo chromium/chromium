@@ -66,7 +66,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
-    FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
@@ -231,9 +230,6 @@ public @interface FeatureConstants {
      * tabs are present.
      */
     String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
-
-    /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
-    String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
 
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";

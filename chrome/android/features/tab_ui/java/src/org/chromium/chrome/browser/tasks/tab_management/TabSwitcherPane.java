@@ -130,7 +130,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
-                profileProviderSupplier,
                 factory,
                 /* isIncognito= */ false,
                 onToolbarAlphaChange,
@@ -152,7 +151,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                                 R.string.button_new_tab,
                                 R.drawable.new_tab_icon),
                         () -> {
-                            notifyNewTabButtonClick();
                             newTabButtonClickListener.onClick(null);
                         }));
 

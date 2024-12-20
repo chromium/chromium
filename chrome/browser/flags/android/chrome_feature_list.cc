@@ -189,7 +189,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
     &kAndroidElegantTextHeight,
-    &kAndroidHubFloatingActionButton,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOpenPdfInlineBackport,
     &kAndroidPdfAssistContent,
@@ -480,10 +479,6 @@ BASE_FEATURE(kAndroidBottomToolbar,
 
 BASE_FEATURE(kAndroidElegantTextHeight,
              "AndroidElegantTextHeight",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidHubFloatingActionButton,
-             "AndroidHubFloatingActionButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,

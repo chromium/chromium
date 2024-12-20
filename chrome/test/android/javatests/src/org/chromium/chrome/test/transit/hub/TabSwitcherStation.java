@@ -26,7 +26,6 @@ import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -52,12 +51,6 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                     allOf(
                             withId(R.id.toolbar_action_button),
                             isDescendantOfA(instanceOf(HubToolbarView.class))));
-
-    public static final ViewSpec FLOATING_NEW_TAB_BUTTON =
-            viewSpec(
-                    allOf(
-                            withId(R.id.host_action_button),
-                            isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher())));
 
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
@@ -185,11 +178,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
     }
 
     protected ViewSpec getNewTabButtonViewSpec() {
-        if (HubFieldTrial.usesFloatActionButton()) {
-            return FLOATING_NEW_TAB_BUTTON;
-        } else {
-            return TOOLBAR_NEW_TAB_BUTTON;
-        }
+        return TOOLBAR_NEW_TAB_BUTTON;
     }
 
     /**

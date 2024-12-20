@@ -164,8 +164,6 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceOnHideFeature,
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonSwitchIncognitoFeature,
                        "IPH_TabSwitcherButtonSwitchIncognito");
-DEFINE_VARIATION_PARAM(kIPHTabSwitcherFloatingActionButtonFeature,
-                       "IPH_TabSwitcherFloatingActionButton");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
 DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPChromeIntroFeature,
@@ -578,7 +576,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsSurfaceOnHideFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonSwitchIncognitoFeature),
-        VARIATION_ENTRY(kIPHTabSwitcherFloatingActionButtonFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPChromeIntroFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPDownloadFeature),

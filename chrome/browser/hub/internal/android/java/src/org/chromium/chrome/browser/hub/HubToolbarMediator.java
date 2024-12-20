@@ -155,12 +155,10 @@ public class HubToolbarMediator {
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
         rebuildPaneSwitcherButtonData();
 
-        if (!HubFieldTrial.usesFloatActionButton()) {
-            mActionButtonDataSupplier =
-                    new TransitiveObservableSupplier<>(
-                            focusedPaneSupplier, p -> p.getActionButtonDataSupplier());
-            mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
-        }
+        mActionButtonDataSupplier =
+                new TransitiveObservableSupplier<>(
+                        focusedPaneSupplier, p -> p.getActionButtonDataSupplier());
+        mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
 
         mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
 

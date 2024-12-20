@@ -76,7 +76,6 @@ import java.util.List;
 /** Tests for {@link HubToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_FULL_NEW_TAB_BUTTON})
-@DisableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
 public class HubToolbarMediatorUnitTest {
     private static final int NARROW_SCREEN_WIDTH_DP = 300;
     private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
@@ -191,16 +190,6 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier.set(mTabSwitcherPane);
         mActionButtonSupplier.set(mFullButtonData);
         assertEquals(mFullButtonData, mModel.get(ACTION_BUTTON_DATA));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
-    public void testNoActionButtonData() {
-        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
-        mFocusedPaneSupplier.set(mTabSwitcherPane);
-        mActionButtonSupplier.set(mFullButtonData);
-        assertEquals(null, mModel.get(ACTION_BUTTON_DATA));
     }
 
     @Test

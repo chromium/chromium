@@ -43,15 +43,6 @@ public interface PaneHubController {
     View getPaneButton(@PaneId int paneId);
 
     /**
-     * Allows retrieval of the View object for the floating action button. Should never be used to
-     * perform click operations. Instead this is for purposes such as rooting IPHs.
-     *
-     * @return The view if currently visible atop the pane.
-     */
-    @Nullable
-    View getFloatingActionButton();
-
-    /**
      * Set whether the search box background should show in the hub toolbar. The visibility for this
      * component is defaulted to gone and should only be shown for the shrink and expand animations
      * when transiting between a tab view and hub to prevent ghosting behind the hub search box.

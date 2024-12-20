@@ -98,10 +98,7 @@ android_resources("java_resources") {
 android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.hub"
   testonly = true
-  sources = [
-    "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostViewRenderTest.java",
-    "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewRenderTest.java",
-  ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/hub/HubToolbarViewRenderTest.java" ]
   deps = [
     ":java",
     ":java_resources",
