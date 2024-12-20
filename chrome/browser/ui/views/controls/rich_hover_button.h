@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
+#include "base/containers/extend.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "ui/views/layout/table_layout.h"
@@ -24,22 +27,23 @@ class Label;
 class View;
 }  // namespace views
 
-// Hoverable button containing icon, styled title, and (multi-line) subtitle.
+// Hoverable button containing various components:
+// *-------------------------------------------------------------------------*
+// | Icon | Title               | Secondary text | State image | Action icon |
+// |-------------------------------------------------------------------------|
+// |      | Custom view         |                                            |
+// |-------------------------------------------------------------------------|
+// |      | Subtitle            |                                            |
+// |      | (multiline)         |                                            |
+// *-------------------------------------------------------------------------*
+//
 // 'RichHoverButton' inherits the interaction behavior from 'HoverButton'
 // but sets up its own layout and content.
+// TODO(pkasting): This class should subclass Button, not HoverButton.
 class RichHoverButton : public HoverButton {
   METADATA_HEADER(RichHoverButton, HoverButton)
 
  public:
-  // Creates a hoverable button that has an icon on the left side, followed by
-  // |title_text| label. Optional |action_image_icon| and |state_icon| are shown
-  // on right side. |subtile_text| is positioned directly under the
-  // |title_text|.
-  // *-------------------------------------------------------------------------*
-  // | Icon | |title_text|                         | State image | Action icon |
-  // |-------------------------------------------------------------------------|
-  // |      | |subtitle_text|                                                  |
-  // *-------------------------------------------------------------------------*
   RichHoverButton(
       views::Button::PressedCallback callback,
       const ui::ImageModel& main_image_icon,
@@ -51,7 +55,7 @@ class RichHoverButton : public HoverButton {
   RichHoverButton(const RichHoverButton&) = delete;
   RichHoverButton& operator=(const RichHoverButton&) = delete;
 
-  ~RichHoverButton() override = default;
+  ~RichHoverButton() override;
 
   void SetTitleText(const std::u16string& title_text);
 
@@ -65,18 +69,32 @@ class RichHoverButton : public HoverButton {
   void SetTitleTextStyleAndColor(int style, ui::ColorId);
   void SetSubtitleTextStyleAndColor(int style, ui::ColorId);
 
-  // Add custom view under the |title_text|.
-  // ...
-  // |-------------------------------------------------------------------------|
-  // |      | |custom_view|                                                    |
-  // *-------------------------------------------------------------------------*
+  // Sets the custom view. Pass an empty `std::unique_ptr<views::View>` to
+  // reset.
   template <typename T>
-  T* AddCustomSubtitle(std::unique_ptr<T> custom_view) {
-    static_cast<views::TableLayout*>(GetLayoutManager())
-        ->AddRows(1, views::TableLayout::kFixedSize);
-    AddChildView(std::make_unique<views::View>());  // main icon column
-    auto* view = AddChildView(std::move(custom_view));
-    AddFillerViews();
+  T* SetCustomView(std::unique_ptr<T> custom_view) {
+    T* view = nullptr;
+    if (!custom_view) {
+      for (const auto& v : custom_view_row_views_) {
+        RemoveChildViewT(v);
+      }
+      custom_view_row_views_.clear();
+    } else if (custom_view_row_views_.empty()) {
+      // TODO(pkasting): Should add above subtitle if that exists.
+      custom_view_row_views_.push_back(
+          AddChildView(std::make_unique<views::View>()));  // main icon column
+      view = AddChildView(std::move(custom_view));
+      custom_view_row_views_.push_back(view);
+      base::Extend(custom_view_row_views_, AddFillerViews());
+    } else {
+      CHECK_GT(custom_view_row_views_.size(), 1u);
+      const size_t index = *GetIndexOf(custom_view_row_views_[1]);
+      RemoveChildViewT(custom_view_row_views_[1]);
+      view = AddChildViewAt(std::move(custom_view), index);
+      custom_view_row_views_[1] = view;
+    }
+
+    RecreateLayout();
     return view;
   }
 
@@ -91,16 +109,25 @@ class RichHoverButton : public HoverButton {
       const views::SizeBounds& available_size) const override;
 
  private:
+  // Recreates the table layout, which must be done any time the custom view
+  // changes between empty and non-empty (since its row is not filled with
+  // placeholder `View`s when absent).
+  // TODO(pkasting): This class should lay out using box, not table, with
+  // top-aligned children, and add enough padding to the
+  // icons/custom view/subtitle to properly align with the title. That would
+  // obviate the need to recreate the layout after construction.
+  void RecreateLayout();
+
   void UpdateAccessibleName();
 
   // Add filler views for state icon (if set) and action icon columns. Used for
   // the table rows after the first one.
-  void AddFillerViews();
+  std::vector<raw_ptr<views::View>> AddFillerViews();
 
   raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::ImageView> state_icon_ = nullptr;
+  std::vector<raw_ptr<views::View>> custom_view_row_views_;
   raw_ptr<views::Label> subtitle_ = nullptr;
-
-  bool has_state_icon_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_

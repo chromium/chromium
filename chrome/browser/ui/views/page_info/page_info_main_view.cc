@@ -696,8 +696,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   merchant_trust_button->SetProperty(views::kElementIdentifierKey,
                                      kMerchantTrustElementId);
-  auto* star_rating_view = merchant_trust_button->AddCustomSubtitle(
-      std::make_unique<StarRatingView>());
+  auto* star_rating_view =
+      merchant_trust_button->SetCustomView(std::make_unique<StarRatingView>());
   star_rating_view->SetRating(value.star_rating);
   return merchant_trust_button;
 }

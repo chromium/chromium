@@ -24,7 +24,8 @@
 
 namespace {
 
-std::unique_ptr<views::View> CreateIconView(const ui::ImageModel& icon_image) {
+std::unique_ptr<views::ImageView> CreateIconView(
+    const ui::ImageModel& icon_image) {
   auto icon = std::make_unique<NonAccessibleImageView>();
   icon->SetImage(icon_image);
   // Make sure hovering over the icon also hovers the `RichHoverButton`.
@@ -73,49 +74,6 @@ RichHoverButton::RichHoverButton(
     : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int icon_label_spacing = layout_provider->GetDistanceMetric(
-      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
-  views::style::TextContext text_context =
-      views::style::CONTEXT_DIALOG_BODY_TEXT;
-
-  views::TableLayout* table_layout =
-      SetLayoutManager(std::make_unique<views::TableLayout>());
-  table_layout
-      // Column for |main_image_icon|.
-      ->AddColumn(views::LayoutAlignment::kCenter,
-                  views::LayoutAlignment::kCenter,
-                  views::TableLayout::kFixedSize,
-                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
-      // Column for title.
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kCenter, 1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  if (state_icon.has_value()) {
-    has_state_icon_ = true;
-    table_layout
-        // Column for |state_icon|.
-        ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
-        .AddColumn(views::LayoutAlignment::kCenter,
-                   views::LayoutAlignment::kCenter,
-                   views::TableLayout::kFixedSize,
-                   views::TableLayout::ColumnSize::kFixed, 16, 0);
-  }
-  table_layout
-      // Column for |action_icon|.
-      ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
-      .AddColumn(views::LayoutAlignment::kCenter,
-                 views::LayoutAlignment::kCenter,
-                 views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kFixed, 16, 0)
-      .AddRows(1, views::TableLayout::kFixedSize,
-               // Force row to have sufficient height for full line-height of
-               // the title.
-               views::TypographyProvider::Get().GetLineHeight(
-                   text_context, views::style::STYLE_PRIMARY));
-
   // TODO(pkasting): This class should subclass Button, not HoverButton.
   image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
   label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -123,7 +81,7 @@ RichHoverButton::RichHoverButton(
 
   AddChildView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::Label>();
-  title_label->SetTextContext(text_context);
+  title_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   title_ = AddChildView(std::move(title_label));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -132,7 +90,7 @@ RichHoverButton::RichHoverButton(
 
   // State icon is optional and column is created only when it is set.
   if (state_icon.has_value()) {
-    AddChildView(CreateIconView(state_icon.value()));
+    state_icon_ = AddChildView(CreateIconView(state_icon.value()));
   }
 
   if (action_image_icon.has_value()) {
@@ -147,7 +105,6 @@ RichHoverButton::RichHoverButton(
   }
 
   if (!subtitle_text.empty()) {
-    table_layout->AddRows(1, views::TableLayout::kFixedSize);
     AddChildView(std::make_unique<views::View>());  // main icon column
     auto subtitle = std::make_unique<views::Label>(
         subtitle_text, views::style::CONTEXT_LABEL,
@@ -163,13 +120,18 @@ RichHoverButton::RichHoverButton(
     AddFillerViews();
   }
 
-  SetBorder(views::CreateEmptyBorder(layout_provider->GetInsetsMetric(
-      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+  SetBorder(
+      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
 
   UpdateAccessibleName();
 
+  RecreateLayout();
+
   DeprecatedLayoutImmediately();
 }
+
+RichHoverButton::~RichHoverButton() = default;
 
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
   DCHECK(title_);
@@ -209,6 +171,68 @@ const views::Label* RichHoverButton::GetSubTitleViewForTesting() const {
   return subtitle_;
 }
 
+void RichHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  return Button::OnBoundsChanged(previous_bounds);
+}
+
+views::View* RichHoverButton::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  return Button::GetTooltipHandlerForPoint(point);
+}
+
+gfx::Size RichHoverButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return Button::CalculatePreferredSize(available_size);
+}
+
+void RichHoverButton::RecreateLayout() {
+  const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL);
+  views::TableLayout* table_layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  table_layout
+      // Column for main image.
+      ->AddColumn(views::LayoutAlignment::kCenter,
+                  views::LayoutAlignment::kCenter,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      // Column for title.
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  if (state_icon_) {
+    table_layout
+        // Column for state icon.
+        ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+        .AddColumn(views::LayoutAlignment::kCenter,
+                   views::LayoutAlignment::kCenter,
+                   views::TableLayout::kFixedSize,
+                   views::TableLayout::ColumnSize::kFixed, 16, 0);
+  }
+  table_layout
+      // Column for action icon.
+      ->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kFixed, 16, 0)
+      .AddRows(1, views::TableLayout::kFixedSize,
+               // Force row to have sufficient height for full line-height of
+               // the title.
+               views::TypographyProvider::Get().GetLineHeight(
+                   views::style::CONTEXT_DIALOG_BODY_TEXT,
+                   views::style::STYLE_PRIMARY));
+  if (!custom_view_row_views_.empty()) {
+    // Row for custom view.
+    table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  }
+  if (subtitle_) {
+    // Row for subtitle.
+    table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  }
+}
+
 void RichHoverButton::UpdateAccessibleName() {
   const std::u16string title_text = title_->GetText();
   const std::u16string accessible_name =
@@ -218,25 +242,13 @@ void RichHoverButton::UpdateAccessibleName() {
   HoverButton::GetViewAccessibility().SetName(accessible_name);
 }
 
-void RichHoverButton::AddFillerViews() {
-  if (has_state_icon_) {
-    AddChildView(std::make_unique<views::View>());
+std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews() {
+  std::vector<raw_ptr<views::View>> vec;
+  if (state_icon_) {
+    vec.push_back(AddChildView(std::make_unique<views::View>()));
   }
-  AddChildView(std::make_unique<views::View>());
-}
-
-gfx::Size RichHoverButton::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  return Button::CalculatePreferredSize(available_size);
-}
-
-void RichHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  return Button::OnBoundsChanged(previous_bounds);
-}
-
-views::View* RichHoverButton::GetTooltipHandlerForPoint(
-    const gfx::Point& point) {
-  return Button::GetTooltipHandlerForPoint(point);
+  vec.push_back(AddChildView(std::make_unique<views::View>()));
+  return vec;
 }
 
 BEGIN_METADATA(RichHoverButton)
