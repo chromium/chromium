@@ -131,12 +131,11 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   const raw_ptr<Delegate> delegate_;
   const std::u16string text_;
-  const std::u16string dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<SystemToastView> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   raw_ptr<aura::Window> root_window_;
-  base::RepeatingClosure dismiss_callback_;
+  base::RepeatingClosure button_callback_;
 
   // Used to pause and resume the `ToastManagerImpl`'s
   // `current_toast_expiration_timer_` if we are allowing for the toast to

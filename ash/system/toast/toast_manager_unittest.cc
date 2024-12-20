@@ -169,12 +169,13 @@ class ToastManagerImplTest : public AshTestBase,
   std::string ShowToastWithDismiss(
       const std::string& text,
       base::TimeDelta duration,
-      const std::u16string& dismiss_text = std::u16string()) {
+      const std::u16string& dismiss_text = u"Dismiss") {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(ToastData(id, ToastCatalogName::kTestCatalogName,
-                              base::ASCIIToUTF16(text), duration,
-                              /*visible_on_lock_screen=*/false,
-                              /*has_dismiss_button=*/true, dismiss_text));
+    ToastData toast_data(id, ToastCatalogName::kTestCatalogName,
+                         base::ASCIIToUTF16(text), duration);
+    toast_data.button_type = ToastData::ButtonType::kTextButton;
+    toast_data.button_text = dismiss_text;
+    manager()->Show(std::move(toast_data));
     return id;
   }
 

@@ -74,6 +74,20 @@ void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
     bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
 }
 
+// Gets the `SystemToastView::ButtonType` corresponding to the provided
+// `ToastData::ButtonType`.
+SystemToastView::ButtonType GetToastViewButtonType(
+    ToastData::ButtonType button_type) {
+  switch (button_type) {
+    case ToastData::ButtonType::kNone:
+      return SystemToastView::ButtonType::kNone;
+    case ToastData::ButtonType::kTextButton:
+      return SystemToastView::ButtonType::kTextButton;
+    case ToastData::ButtonType::kIconButton:
+      return SystemToastView::ButtonType::kIconButton;
+  }
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,17 +164,14 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            aura::Window* root_window)
     : delegate_(delegate),
       text_(toast_data.text),
-      dismiss_text_(toast_data.dismiss_text),
       overlay_widget_(new views::Widget),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       root_window_(root_window),
-      dismiss_callback_(std::move(toast_data.dismiss_callback)) {
-  // The provided callback is stored in the overlay's `dismiss_callback_`.
+      button_callback_(std::move(toast_data.button_callback)) {
+  // The provided callback is stored in the overlay's `button_callback_`.
   overlay_view_ = std::make_unique<SystemToastView>(
-      toast_data.text,
-      dismiss_text_.empty() ? SystemToastView::ButtonType::kNone
-                            : SystemToastView::ButtonType::kTextButton,
-      dismiss_text_, /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/
+      toast_data.text, GetToastViewButtonType(toast_data.button_type),
+      toast_data.button_text, toast_data.button_icon, /*button_callback=*/
       base::BindRepeating(
           &ToastOverlay::OnButtonClicked,
           // Unretained is safe because `this` owns `overlay_view_`.
@@ -357,8 +368,8 @@ int ToastOverlay::CalculateSliderBubbleOffset() {
 }
 
 void ToastOverlay::OnButtonClicked() {
-  if (dismiss_callback_) {
-    dismiss_callback_.Run();
+  if (button_callback_) {
+    button_callback_.Run();
   }
   Show(/*visible=*/false);
 }
