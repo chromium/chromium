@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+
 #include <cstdlib>
 #include <memory>
 #include <utility>
@@ -398,6 +400,13 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         install_future;
     ASSERT_TRUE(active_web_contents);
+    // Ensure the web contents is visible & focused. This can be flaky, so
+    // bypass visibility checks. See Mac flakiness example at
+    // https://bit.ly/4gL5Eks.
+    active_web_contents->Focus();
+    auto bypass_visibility_check =
+        FetchManifestAndInstallCommand::BypassVisibilityCheckForTesting();
+
     provider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, active_web_contents,
         CreateDialogCallback(), install_future.GetCallback(),

@@ -47,6 +47,10 @@ class FetchManifestAndInstallCommand
                            webapps::InstallResultCode>,
       public content::WebContentsObserver {
  public:
+  // Some platforms like Mac struggle with visibility of WebContents. Tests can
+  // use this to ensure that the web contents visibility checks are skipped.
+  static base::AutoReset<bool> BypassVisibilityCheckForTesting();
+
   // `use_fallback` allows getting fallback information from current document
   // to enable installing a non-promotable site.
   FetchManifestAndInstallCommand(webapps::WebappInstallSource install_surface,

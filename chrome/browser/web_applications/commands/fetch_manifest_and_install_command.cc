@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -164,7 +166,19 @@ bool IsShortcutCreated(WebAppRegistrar& registrar,
   return os_state->has_shortcut();
 }
 
+static bool& ShouldBypassVisibilityChecks() {
+  static bool g_bypass_visibility_checking = false;
+  return g_bypass_visibility_checking;
+}
+
 }  // namespace
+
+// static
+base::AutoReset<bool>
+FetchManifestAndInstallCommand::BypassVisibilityCheckForTesting() {
+  CHECK_IS_TEST();
+  return base::AutoReset<bool>(&ShouldBypassVisibilityChecks(), true);
+}
 
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     webapps::WebappInstallSource install_surface,
@@ -223,7 +237,8 @@ void FetchManifestAndInstallCommand::StartWithLock(
     return;
   }
 
-  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE &&
+      !ShouldBypassVisibilityChecks()) {
     Abort(webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
     return;
   }
@@ -285,6 +300,9 @@ void FetchManifestAndInstallCommand::DidFinishNavigation(
 
 void FetchManifestAndInstallCommand::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (ShouldBypassVisibilityChecks()) {
+    return;
+  }
   if (visibility == content::Visibility::VISIBLE) {
     return;
   }
