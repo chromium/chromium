@@ -155,6 +155,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -204,6 +209,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -253,6 +263,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -302,6 +317,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -567,6 +587,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -616,6 +641,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -665,6 +695,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -714,6 +749,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -979,6 +1019,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -1028,6 +1073,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -1077,6 +1127,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -1126,6 +1181,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -2633,6 +2693,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_unittests",
@@ -2682,6 +2747,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_unittests",
@@ -2731,6 +2801,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_unittests",
@@ -2780,6 +2855,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_unittests",
@@ -3359,6 +3439,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_inttests",
@@ -3408,6 +3493,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_inttests",
@@ -3457,6 +3547,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_inttests",
@@ -3506,6 +3601,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_inttests",
@@ -3855,6 +3955,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_unittests",
@@ -3904,6 +4009,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_unittests",
@@ -3953,6 +4063,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_unittests",
@@ -4002,6 +4117,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_unittests",
@@ -4051,6 +4171,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
@@ -4100,6 +4225,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
@@ -4149,6 +4279,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
@@ -4198,6 +4333,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
@@ -4247,6 +4387,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
@@ -4296,6 +4441,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
@@ -4345,6 +4495,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
@@ -4394,6 +4549,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
@@ -4659,6 +4819,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -4708,6 +4873,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -4757,6 +4927,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -4806,6 +4981,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -4963,6 +5143,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -5012,6 +5197,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -5061,6 +5251,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -5110,6 +5305,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
