@@ -1866,7 +1866,8 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   if (IsWebGL())
     non_gpu_buffer_count += context_->ExternallyAllocatedBufferCountPerPixel();
 
-  const int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
+  const int bytes_per_pixel =
+      SkColorTypeBytesPerPixel(GetRenderingContextSkColorType());
 
   intptr_t gpu_memory_usage = 0;
   uint32_t canvas_width = std::min(kMaximumCanvasSize, width());

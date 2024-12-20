@@ -698,7 +698,8 @@ FontSelector* OffscreenCanvas::GetFontSelector() {
 }
 
 void OffscreenCanvas::UpdateMemoryUsage() {
-  int bytes_per_pixel = GetRenderingContextSkColorInfo().bytesPerPixel();
+  int bytes_per_pixel =
+      SkColorTypeBytesPerPixel(GetRenderingContextSkColorType());
 
   base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
   memory_usage_checked *= Size().width();
