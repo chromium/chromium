@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 
 #import "components/autofill/core/browser/field_types.h"
-#import "components/autofill/core/browser/ui/suggestion.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 
 @protocol FormSuggestionProvider;

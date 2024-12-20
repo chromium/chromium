@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/image_fetcher/core/image_fetcher.h"

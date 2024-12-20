@@ -7,7 +7,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

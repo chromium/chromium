@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 #include <type_traits>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
 namespace autofill {
 
 namespace {
 
 std::string_view ConvertAcceptabilityToPrintableString(
-  Suggestion::Acceptability acceptability) {
+    Suggestion::Acceptability acceptability) {
   switch (acceptability) {
     case Suggestion::Acceptability::kAcceptable:
       return "kAcceptable";
@@ -122,7 +122,7 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
   NOTREACHED();
 }
 
-} // namespace
+}  // namespace
 
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
@@ -282,8 +282,9 @@ Suggestion::Suggestion(std::string_view main_text,
     : type(type),
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
       icon(icon) {
-  if (!label.empty())
+  if (!label.empty()) {
     this->labels = {{Text(base::UTF8ToUTF16(label))}};
+  }
 }
 
 Suggestion::Suggestion(std::string_view main_text,
@@ -304,8 +305,9 @@ Suggestion::Suggestion(std::string_view main_text,
       main_text(base::UTF8ToUTF16(main_text), Text::IsPrimary(true)),
       minor_text(base::UTF8ToUTF16(minor_text)),
       icon(icon) {
-  if (!label.empty())
+  if (!label.empty()) {
     this->labels = {{Text(base::UTF8ToUTF16(label))}};
+  }
 }
 
 Suggestion::Suggestion(const Suggestion& other) = default;

@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace url {
