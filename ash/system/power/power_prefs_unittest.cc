@@ -255,13 +255,12 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_pref_store_.get() /* managed_prefs */,
         nullptr /* supervised_user_prefs */, nullptr /* extension_prefs */,
-        nullptr /* standalone_browser_prefs */,
         nullptr /* command_line_prefs */, user_pref_store_.get(),
         nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
         pref_notifier.get());
     local_state_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
-        nullptr, pref_registry_, base::DoNothing(), false);
+        pref_registry_, base::DoNothing(), false);
 
     PowerPrefs::RegisterLocalStatePrefs(pref_registry_.get());
 

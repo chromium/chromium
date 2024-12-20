@@ -203,11 +203,6 @@ void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
     CHECK_IS_TEST();
     return;
   }
-  PrefService* pref_service = user_prefs::UserPrefs::Get(context);
-
-  // Clear prefs set by Lacros and stored in
-  // 'standalone_browser_preferences.json' if Lacros is disabled.
-  pref_service->RemoveAllStandaloneBrowserPrefs();
 
   // Do a one time clearing of `kUserUninstalledPreinstalledWebAppPref`. This is
   // because some users who had Lacros enabled before M114 had this pref set by
@@ -216,6 +211,7 @@ void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
   // uninstalled (and cannot easily be reinstalled). Note that this means that
   // some users who intentionally uninstalled these apps on Lacros will find
   // these apps reappear until they unistall them again.
+  PrefService* pref_service = user_prefs::UserPrefs::Get(context);
   web_app::UserUninstalledPreinstalledWebAppPrefs(pref_service).ClearAllApps();
 }
 

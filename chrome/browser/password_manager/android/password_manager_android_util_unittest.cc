@@ -1047,7 +1047,6 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
             base::MakeRefCounted<TestingPrefStore>(),
             base::MakeRefCounted<TestingPrefStore>(),
             base::MakeRefCounted<TestingPrefStore>(),
-            base::MakeRefCounted<TestingPrefStore>(),
             /*user_pref_store=*/user_pref_store_,
             base::MakeRefCounted<TestingPrefStore>(), pref_registry,
             std::make_unique<PrefNotifierImpl>()));

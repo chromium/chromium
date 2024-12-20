@@ -43,7 +43,6 @@ TestingPrefServiceBase<PrefService, user_prefs::PrefRegistrySyncable>::
         scoped_refptr<TestingPrefStore> managed_prefs,
         scoped_refptr<TestingPrefStore> supervised_user_prefs,
         scoped_refptr<TestingPrefStore> extension_prefs,
-        scoped_refptr<TestingPrefStore> standalone_browser_prefs,
         scoped_refptr<TestingPrefStore> user_prefs,
         scoped_refptr<TestingPrefStore> recommended_prefs,
         scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,

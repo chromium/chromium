@@ -72,7 +72,6 @@ PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
     scoped_refptr<PersistentPrefStore> user_prefs,
-    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
@@ -81,7 +80,6 @@ PrefServiceSyncable::PrefServiceSyncable(
     : PrefService(std::move(pref_notifier),
                   std::move(pref_value_store),
                   user_prefs,
-                  standalone_browser_prefs,
                   pref_registry,
                   std::move(read_error_callback),
                   async),
@@ -107,7 +105,6 @@ PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
     scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
-    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
@@ -116,7 +113,6 @@ PrefServiceSyncable::PrefServiceSyncable(
     : PrefService(std::move(pref_notifier),
                   std::move(pref_value_store),
                   dual_layer_user_prefs,
-                  standalone_browser_prefs,
                   pref_registry,
                   std::move(read_error_callback),
                   async),
@@ -185,13 +181,10 @@ PrefServiceSyncable::CreateIncognitoPrefService(
     incognito_pref_store->RegisterPersistentPref(persistent_pref_name);
   }
 
-  // Only the primary profile can configure the standalone_browser_store.
-  auto standalone_browser_store = base::MakeRefCounted<InMemoryPrefStore>();
-
   auto pref_value_store = pref_value_store_->CloneAndSpecialize(
       nullptr,  // managed
       nullptr,  // supervised_user
-      incognito_extension_pref_store, standalone_browser_store.get(),
+      incognito_extension_pref_store,
       nullptr,  // command_line_prefs
       incognito_pref_store.get(),
       nullptr,  // recommended
@@ -199,7 +192,6 @@ PrefServiceSyncable::CreateIncognitoPrefService(
   return std::make_unique<PrefServiceSyncable>(
       std::move(pref_notifier), std::move(pref_value_store),
       incognito_pref_store,
-      nullptr,  // standalone_browser_prefs
       std::move(forked_registry), pref_sync_associator_.client(),
       read_error_callback_, false);
 }

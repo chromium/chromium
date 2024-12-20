@@ -46,20 +46,10 @@ base::Value::List GetPrefsMetadata(
 #else
       NOTREACHED();
 #endif
-    case PrefValueStore::PrefStoreType::STANDALONE_BROWSER_STORE:
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_controlled");
-      metadata.Append("standalone_browser_modifiable");
-#endif
-      metadata.Append("extension_modifiable");
-      break;
     case PrefValueStore::PrefStoreType::COMMAND_LINE_STORE:
       metadata.Append("command_line_controlled");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::USER_STORE:
@@ -68,18 +58,12 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_modifiable");
-#endif
       break;
     case PrefValueStore::PrefStoreType::RECOMMENDED_STORE:
       metadata.Append("recommended");
       metadata.Append("user_modifiable");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_modifiable");
 #endif
       break;
     case PrefValueStore::PrefStoreType::DEFAULT_STORE:
@@ -88,17 +72,11 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_modifiable");
-#endif
       break;
     case PrefValueStore::PrefStoreType::INVALID_STORE:
       metadata.Append("user_modifiable");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_modifiable");
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-      metadata.Append("standalone_browser_modifiable");
 #endif
       break;
   }
