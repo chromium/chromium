@@ -183,9 +183,10 @@ export class SearchboxElement extends SearchboxElementBase {
         value: false,
       },
 
-      placeholderText_: {
+      placeholderText: {
         type: String,
-        computed: `computePlaceholderText_(showThumbnail)`,
+        reflectToAttribute: true,
+        notify: true,
       },
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
@@ -269,7 +270,7 @@ export class SearchboxElement extends SearchboxElementBase {
   private lastInput_: Input;
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
-  private placeholderText_: string;
+  private placeholderText: string;
   private searchboxIcon_: string;
   private searchboxVoiceSearchEnabled_: boolean;
   private searchboxLensSearchEnabled_: boolean;
@@ -802,6 +803,9 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private computePlaceholderText_(): string {
+    if (this.placeholderText) {
+      return this.placeholderText;
+    }
     return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
                                 this.i18n('searchBoxHint');
   }

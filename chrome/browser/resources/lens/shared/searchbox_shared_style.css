@@ -48,10 +48,11 @@
   --color-searchbox-ghost-loader-spinner: #DBDBDB;
   /* Variables used by cr-realbox */
   --cr-searchbox-height: 52px;
-  --cr-searchbox-icon-left-position: 10px;
+  --cr-searchbox-icon-left-position: 12px;
   --cr-searchbox-icon-top-position: 1px;
   --cr-searchbox-match-font-weight: 400;
   --cr-searchbox-match-padding: 8px;
   --cr-searchbox-font-size: 14px;
   --cr-searchbox-icon-size-in-searchbox: 24px;
+  --cr-searchbox-results-search-icon-size: 20px;
 }

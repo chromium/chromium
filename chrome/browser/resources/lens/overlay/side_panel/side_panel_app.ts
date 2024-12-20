@@ -11,6 +11,7 @@ import './side_panel_ghost_loader.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -38,7 +39,7 @@ export interface LensSidePanelAppElement {
   };
 }
 
-const LensSidePanelAppElementBase = HelpBubbleMixin(PolymerElement);
+const LensSidePanelAppElementBase = HelpBubbleMixin(I18nMixin(PolymerElement));
 export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   static get is() {
     return 'lens-side-panel-app';
@@ -104,6 +105,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         type: Boolean,
         value: false,
         notify: true,
+      },
+      /* TODO(385183449): Once WebUI preloading is implemented in the
+       * side panel, update the loadTimeData for searchBoxHint in the side
+       * panel WebUI constructor insteading of passing it to the searchbox. */
+      placeholderText: {
+        type: String,
+        computed: `computePlaceholderText(isContextualSearchbox)`,
       },
     };
   }
@@ -256,6 +264,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private computeShowGhostLoader(): boolean {
     return this.isSearchboxFocused && !this.suppressGhostLoader &&
         this.isContextualSearchbox;
+  }
+
+  private computePlaceholderText(): string {
+    return this.isContextualSearchbox ? this.i18n('searchBoxHintContextual') :
+                                        '';
   }
 
   private suppressGhostLoader_() {

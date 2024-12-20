@@ -146,7 +146,7 @@
     --color-searchbox-results-typed-prefix: #9DA3A9;
     --color-searchbox-results-url: #a8c7faff;
     --color-searchbox-results-url-selected: #a8c7faff;
-    --color-searchbox-search-icon-background: #70757A;
+    --color-searchbox-search-icon-background: #9DA3A9;
     --color-searchbox-thumbnail-overlay: #8CB7FA66;
     --color-searchbox-thumbnail-outline: #8CB7FA;
     /* Colors specific to the cr-searchbox input */
@@ -197,7 +197,7 @@
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-searchbox id="searchbox"></cr-searchbox>
+  <cr-searchbox id="searchbox" placeholder-text="{{placeholderText}}"></cr-searchbox>
   <cr-searchbox-ghost-loader show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
 </div>
 

@@ -21,7 +21,7 @@
   }
 
   :host([show-thumbnail]) {
-    --cr-searchbox-thumbnail-icon-offset: 50px;
+    --cr-searchbox-thumbnail-icon-offset: 54px;
   }
 
   :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
@@ -307,7 +307,7 @@
   #thumbnailContainer {
     align-content: center;
     inset-block-start: var(--cr-searchbox-icon-top-position);
-    inset-inline-start: 48px;
+    inset-inline-start: 52px;
     height: 100%;
     outline: none;
     position: absolute;
@@ -323,7 +323,8 @@
   <input id="input" class="truncate" type="search" autocomplete="off"
       spellcheck="false" aria-live="[[inputAriaLive_]]" role="combobox"
       aria-expanded="[[dropdownIsVisible]]" aria-controls="matches"
-      placeholder="[[placeholderText_]]" on-copy="onInputCutCopy_"
+      placeholder="[[computePlaceholderText_(placeholderText, showThumbnail)]]"
+      on-copy="onInputCutCopy_"
       on-cut="onInputCutCopy_" on-focus="onInputFocus_"
       on-input="onInputInput_" on-keydown="onInputKeydown_"
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
