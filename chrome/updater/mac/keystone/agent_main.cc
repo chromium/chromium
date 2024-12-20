@@ -183,7 +183,7 @@ void KSAgentApp::DoUpdate(const std::string& app_id, UpdaterScope scope) {
                                                    : user_service_proxy_;
   service_proxy->Update(
       app_id, "", UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, /*language=*/{},
       base::BindRepeating(&KSAgentApp::RecordUpdateResult, this),
       base::BindOnce(&KSAgentApp::PrintUpdateResultAndShutDown, this));
 }

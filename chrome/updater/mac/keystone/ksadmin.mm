@@ -567,7 +567,7 @@ void KSAdminApp::DoUpdateApp(UpdaterScope scope) {
       app_id, GetInstallDataIndexFromAppArgs(app_id),
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, /*language=*/{},
       base::BindRepeating([](const UpdateService::UpdateState& update_state) {
         if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
           printf("Finished updating (errors=%d reboot=%s)\n", 0, "YES");
@@ -602,7 +602,7 @@ void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
       app_id,
       HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
                                        : UpdateService::Priority::kBackground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, /*language=*/{},
       base::BindRepeating(
           [](scoped_refptr<UpdateCheckResult> update_check_result,
              const UpdateService::UpdateState& update_state) {

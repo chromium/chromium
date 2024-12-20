@@ -1213,7 +1213,8 @@ TEST_F(IntegrationTest, CheckForUpdate_UpdaterNotInstalled) {
   base::RunLoop loop;
   update_service->CheckForUpdate(
       "test", UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{}, base::DoNothing(),
       base::BindLambdaForTesting([&loop](UpdateService::Result result) {
         EXPECT_TRUE(result == UpdateService::Result::kServiceFailed ||
                     result == UpdateService::Result::kIPCConnectionFailed)
@@ -4888,6 +4889,7 @@ struct IntegrationInstallerResultsTestCase {
   const std::string installer_cmd_line;
   const std::string custom_app_response;
   const std::optional<bool> always_launch_cmd;
+  const std::optional<std::string> tag;
 };
 
 class IntegrationInstallerResultsTest
@@ -5053,7 +5055,8 @@ INSTANTIATE_TEST_SUITE_P(
                 true,
             },
 
-            // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
+            // Interactive install, InstallerResult::kMsiError,
+            // `ERROR_SUCCESS_REBOOT_REQUIRED`.
             {
                 true,
                 base::StrCat(
@@ -5068,18 +5071,20 @@ INSTANTIATE_TEST_SUITE_P(
             },
 
             // Interactive install via the command line,
-            // `update_client::ProtocolError::UNKNOWN_APPLICATION` error.
+            // `update_client::ProtocolError::UNKNOWN_APPLICATION` error,
+            // Afrikaans language.
             {
                 true,
                 "INSTALLER_RESULT=0",
                 UpdateService::ErrorCategory::kInstall,
                 static_cast<int>(
                     update_client::ProtocolError::UNKNOWN_APPLICATION),
-                base::WideToUTF8(
-                    GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE)),
+                "Kan nie installeer nie, die app is onbekend aan die bediener.",
                 {},
                 base::StrCat({"{\"appid\":\"", IntegrationTestMsi::kMsiAppId,
                               "\",\"status\":\"error-unknownApplication\"}"}),
+                {},
+                "lang=af&usagestats=1",
             },
 
             // Interactive install via the command line,
@@ -5185,9 +5190,10 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   if (GetTestCase().interactive_install || always_launch_cmd) {
-    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
-        kMsiAppId, !GetTestCase().interactive_install, "usagestats=1",
-        GetTestCase().installer_text, always_launch_cmd));
+    ASSERT_NO_FATAL_FAILURE(
+        InstallUpdaterAndApp(kMsiAppId, !GetTestCase().interactive_install,
+                             GetTestCase().tag.value_or("usagestats=1"),
+                             GetTestCase().installer_text, always_launch_cmd));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     std::optional<int64_t> crx_file_size;

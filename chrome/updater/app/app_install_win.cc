@@ -533,6 +533,7 @@ void AppInstallControllerImpl::InstallApp(
           GetDecodedInstallDataFromAppArgs(app_id_),
           GetInstallDataIndexFromAppArgs(app_id_),
           UpdateService::Priority::kForeground,
+          tag_args ? tag_args->language : "",
           base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
           base::BindOnce(&AppInstallControllerImpl::InstallComplete, this)));
 }
@@ -664,7 +665,8 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                  const base::FilePath& installer_path,
                  const std::string& install_args,
                  const std::string& install_data,
-                 const std::string& install_settings, int result) {
+                 const std::string& install_settings,
+                 const std::string& language, int result) {
                 if (result != kRegistrationSuccess) {
                   VLOG(1) << "Registration failed: " << result;
                   self->InstallComplete(UpdateService::Result::kServiceFailed);
@@ -672,14 +674,15 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                 }
                 self->update_service_->RunInstaller(
                     self->app_id_, installer_path, install_args, install_data,
-                    install_settings,
+                    install_settings, language,
                     base::BindRepeating(&AppInstallControllerImpl::StateChange,
                                         self),
                     base::BindOnce(&AppInstallControllerImpl::InstallComplete,
                                    self));
               },
               base::WrapRefCounted(this), installer_path, install_args,
-              install_data, install_settings)));
+              install_data, install_settings,
+              tag_args ? tag_args->language : "")));
 }
 
 void AppInstallControllerImpl::HandleOsNotSupported() {

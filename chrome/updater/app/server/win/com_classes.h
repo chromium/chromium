@@ -68,7 +68,8 @@ class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
   const std::wstring message_;
 };
 
-// This class implements the IUpdater interface and exposes it as a COM object.
+// This class implements the IUpdater interfaces and exposes them as a COM
+// object.
 class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
  public:
   UpdaterImpl();
@@ -132,6 +133,17 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
                               const wchar_t* existence_checker_path,
                               const wchar_t* install_id,
                               IUpdaterCallback* callback) override;
+  IFACEMETHODIMP CheckForUpdate2(const wchar_t* app_id,
+                                 LONG priority,
+                                 BOOL same_version_update_allowed,
+                                 const wchar_t* language,
+                                 IUpdaterObserver* observer) override;
+  IFACEMETHODIMP Update2(const wchar_t* app_id,
+                         const wchar_t* install_data_index,
+                         LONG priority,
+                         BOOL same_version_update_allowed,
+                         const wchar_t* language,
+                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP Install2(const wchar_t* app_id,
                           const wchar_t* brand_code,
                           const wchar_t* brand_path,
@@ -142,7 +154,15 @@ class UpdaterImpl : public DynamicIIDsMultImpl<IUpdater, IUpdater2> {
                           const wchar_t* install_data_index,
                           const wchar_t* install_id,
                           LONG priority,
+                          const wchar_t* language,
                           IUpdaterObserver* observer) override;
+  IFACEMETHODIMP RunInstaller2(const wchar_t* app_id,
+                               const wchar_t* installer_path,
+                               const wchar_t* install_args,
+                               const wchar_t* install_data,
+                               const wchar_t* install_settings,
+                               const wchar_t* language,
+                               IUpdaterObserver* observer) override;
 
  private:
   ~UpdaterImpl() override = default;

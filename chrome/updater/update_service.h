@@ -242,6 +242,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       const std::string& app_id,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) = 0;
 
@@ -252,6 +253,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //   `install_data_index`: Index of the server install data.
   //   `priority`: Priority for processing this update.
   //   `policy_same_version_update`: Whether a same-version update is allowed.
+  //   `language`: The UI language for the update.
   //   `state_update`: The callback will be invoked every time the update
   //     changes state when the engine starts. It will be called on the
   //     sequence used by the update service, so this callback must not block.
@@ -269,6 +271,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       const std::string& install_data_index,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) = 0;
 
@@ -287,6 +290,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //   `install_data_index`: Index of the server install data. Effective only
   //     when `client_install_data` is not set.
   //   `priority`: Priority for processing this update.
+  //   `language`: The UI language for the install.
   //   `state_update`: The callback will be invoked every time the update
   //     changes state when the engine starts. It will be called on the
   //     sequence used by the update service, so this callback must not block.
@@ -304,6 +308,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       const std::string& client_install_data,
       const std::string& install_data_index,
       Priority priority,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) = 0;
 
@@ -324,6 +329,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //   `install_data`: Server install data extracted from the offline manifest.
   //   `install_settings`: An optional serialized dictionary to customize the
   //       installation.
+  //   `language`: The UI language for the install.
   //   `state_update` arg:
   //     UpdateState: the new state of this install request.
   //
@@ -335,6 +341,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) = 0;
 

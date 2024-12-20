@@ -604,7 +604,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
       bundle_name = base::UTF8ToUTF16(tag_args.bundle_name);
     }
     CloseInstallCompleteDialog(bundle_name,
-                               base::ASCIIToWide(child_window_text_to_find),
+                               base::UTF8ToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
 #else
     ADD_FAILURE();
@@ -894,7 +894,8 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id) {
   base::RunLoop loop;
   update_service->CheckForUpdate(
       app_id, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{}, base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
@@ -907,7 +908,8 @@ void Update(UpdaterScope scope,
   base::RunLoop loop;
   update_service->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      /*language=*/{}, base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
@@ -936,6 +938,7 @@ void InstallAppViaService(UpdaterScope scope,
   update_service->Install(
       registration, /*client_install_data=*/"", /*install_data_index=*/"",
       UpdateService::Priority::kForeground,
+      /*language=*/{},
       base::BindLambdaForTesting(
           [&](const UpdateService::UpdateState& update_state) {
             final_update_state = update_state;
@@ -1504,6 +1507,7 @@ void CallServiceUpdate(UpdaterScope updater_scope,
   service_proxy->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       policy_same_version_update,
+      /*language=*/{},
       base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
       base::BindLambdaForTesting([&](UpdateService::Result result) {
         EXPECT_EQ(result, UpdateService::Result::kSuccess);

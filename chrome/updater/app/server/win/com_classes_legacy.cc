@@ -359,6 +359,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       const std::wstring& app_id,
       const std::wstring& brand_code,
       const std::wstring& ap,
+      const std::wstring& language,
       UpdateService::PolicySameVersionUpdate policy_same_version_update) {
     if (is_install && FAILED(IsCOMCallerAllowed())) {
       VLOG(1) << __func__ << ": admin rights required for installs";
@@ -369,6 +370,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     app_id_ = base::WideToUTF8(app_id);
     brand_code_ = base::WideToUTF8(brand_code);
     ap_ = base::WideToUTF8(ap);
+    language_ = base::WideToUTF8(language);
     policy_same_version_update_ = policy_same_version_update;
 
     if (!is_install_) {
@@ -462,7 +464,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           }
           update_service->CheckForUpdate(
               obj->app_id_, UpdateService::Priority::kForeground,
-              obj->policy_same_version_update_,
+              obj->policy_same_version_update_, obj->language_,
               std::move(state_change_callback), std::move(complete_callback));
         },
         std::move(state_change_callback), std::move(complete_callback), obj));
@@ -513,10 +515,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           request.brand_code = obj->brand_code_;
           request.ap = obj->ap_;
 
-          update_service->Install(request, {}, obj->install_data_index_,
-                                  UpdateService::Priority::kForeground,
-                                  std::move(state_change_callback),
-                                  std::move(complete_callback));
+          update_service->Install(
+              request, {}, obj->install_data_index_,
+              UpdateService::Priority::kForeground, obj->language_,
+              std::move(state_change_callback), std::move(complete_callback));
         },
         std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
@@ -553,11 +555,11 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
                 .Run(UpdateService::Result::kServiceStopped);
             return;
           }
-          update_service->Update(obj->app_id_, obj->install_data_index_,
-                                 UpdateService::Priority::kForeground,
-                                 obj->policy_same_version_update_,
-                                 std::move(state_change_callback),
-                                 std::move(complete_callback));
+          update_service->Update(
+              obj->app_id_, obj->install_data_index_,
+              UpdateService::Priority::kForeground,
+              obj->policy_same_version_update_, obj->language_,
+              std::move(state_change_callback), std::move(complete_callback));
         },
         std::move(state_change_callback), std::move(complete_callback), obj));
     return S_OK;
@@ -848,6 +850,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   std::string app_id_;
   std::string brand_code_;
   std::string ap_;
+  std::string language_;
   std::string install_data_index_;
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
@@ -877,7 +880,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   // Overrides for IAppBundleWeb.
   IFACEMETHODIMP createApp(BSTR app_id,
                            BSTR brand_code,
-                           BSTR /* language */,
+                           BSTR language,
                            BSTR ap) override {
     base::AutoLock lock{lock_};
 
@@ -886,7 +889,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, /*is_install=*/true, app_id, brand_code, ap,
+        app_web_, /*is_install=*/true, app_id, brand_code, ap, language,
         UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
@@ -898,7 +901,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     return MakeAndInitializeComObject<AppWebImpl>(
-        app_web_, /*is_install=*/false, app_id, L"", L"",
+        app_web_, /*is_install=*/false, app_id, L"", L"", /*language=*/L"",
         UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 

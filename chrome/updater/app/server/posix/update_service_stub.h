@@ -46,12 +46,14 @@ class UpdateServiceStub : public mojom::UpdateService {
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
               bool do_update_check_only,
+              const std::optional<std::string>& language,
               UpdateCallback callback) override;
   void UpdateAll(UpdateAllCallback callback) override;
   void Install(mojom::RegistrationRequestPtr registration,
                const std::string& client_install_data,
                const std::string& install_data_index,
                UpdateService::Priority priority,
+               const std::optional<std::string>& language,
                InstallCallback callback) override;
   void CancelInstalls(const std::string& app_id) override;
   void RunInstaller(const std::string& app_id,
@@ -59,11 +61,13 @@ class UpdateServiceStub : public mojom::UpdateService {
                     const std::string& install_args,
                     const std::string& install_data,
                     const std::string& install_settings,
+                    const std::optional<std::string>& language,
                     RunInstallerCallback callback) override;
   void CheckForUpdate(
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::optional<std::string>& language,
       UpdateCallback callback) override;
 
  private:

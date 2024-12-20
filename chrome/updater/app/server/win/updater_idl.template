@@ -246,6 +246,17 @@ interface IUpdater2 : IUpdater {
                        [in, string] const WCHAR* existence_checker_path,
                        [in, string] const WCHAR* install_id,
                        [in] IUpdaterCallback* callback);
+  HRESULT CheckForUpdate2([in, string] const WCHAR* app_id,
+                          [in] LONG priority,
+                          [in] BOOL same_version_update_allowed,
+                          [in, string] const WCHAR* language,
+                          [in] IUpdaterObserver* observer);
+  HRESULT Update2([in, string] const WCHAR* app_id,
+                  [in, string] const WCHAR* install_data_index,
+                  [in] LONG priority,
+                  [in] BOOL same_version_update_allowed,
+                  [in, string] const WCHAR* language,
+                  [in] IUpdaterObserver* observer);
   HRESULT Install2([in, string] const WCHAR* app_id,
                    [in, string] const WCHAR* brand_code,
                    [in, string] const WCHAR* brand_path,
@@ -256,7 +267,16 @@ interface IUpdater2 : IUpdater {
                    [in, string] const WCHAR* install_data_index,
                    [in, string] const WCHAR* install_id,
                    [in] LONG priority,
+                   [in, string] const WCHAR* language,
                    [in] IUpdaterObserver* observer);
+  HRESULT RunInstaller2(
+      [in, string] const WCHAR* app_id,
+      [in, string] const WCHAR* installer_path,
+      [in, string] const WCHAR* install_args,
+      [in, string] const WCHAR* install_data,
+      [in, string] const WCHAR* install_settings,
+      [in, string] const WCHAR* language,
+      [in] IUpdaterObserver* observer);
 };
 END_INTERFACE
 

@@ -49,8 +49,12 @@ std::wstring GetPreferredLanguage() {
 }
 
 std::wstring GetLocalizedString(unsigned int base_message_id,
-                                const std::wstring& lang) {
+                                std::wstring lang) {
   ::SetLastError(ERROR_SUCCESS);
+
+  if (lang.empty()) {
+    lang = GetPreferredLanguage();
+  }
 
   // Map `base_message_id` to the base id for the current install mode.
   const unsigned int message_id =

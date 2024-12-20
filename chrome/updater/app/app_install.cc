@@ -70,6 +70,7 @@ class AppInstallControllerImpl : public AppInstallController {
     update_service_->Install(request, GetDecodedInstallDataFromAppArgs(app_id),
                              GetInstallDataIndexFromAppArgs(app_id),
                              UpdateService::Priority::kForeground,
+                             tag_args ? tag_args->language : "",
                              base::DoNothing(),
                              base::BindOnce([](UpdateService::Result result) {
                                return static_cast<int>(result);

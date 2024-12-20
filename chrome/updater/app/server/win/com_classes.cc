@@ -435,6 +435,15 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
                                     LONG priority,
                                     BOOL same_version_update_allowed,
                                     IUpdaterObserver* observer) {
+  return CheckForUpdate2(app_id, priority, same_version_update_allowed,
+                         /*language=*/L"", observer);
+}
+
+HRESULT UpdaterImpl::CheckForUpdate2(const wchar_t* app_id,
+                                     LONG priority,
+                                     BOOL same_version_update_allowed,
+                                     const wchar_t* language,
+                                     IUpdaterObserver* observer) {
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -462,7 +471,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
 
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, UpdateService::Priority priority,
-         bool same_version_update_allowed,
+         bool same_version_update_allowed, const std::string& language,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              state_change_callback,
          base::OnceCallback<void(UpdateService::Result)> complete_callback) {
@@ -478,12 +487,22 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
             same_version_update_allowed
                 ? UpdateService::PolicySameVersionUpdate::kAllowed
                 : UpdateService::PolicySameVersionUpdate::kNotAllowed,
-            std::move(state_change_callback), std::move(complete_callback));
+            language, std::move(state_change_callback),
+            std::move(complete_callback));
       },
       base::WideToUTF8(app_id), static_cast<UpdateService::Priority>(priority),
-      same_version_update_allowed, std::move(state_change_callback),
-      std::move(complete_callback)));
+      same_version_update_allowed, base::WideToUTF8(language),
+      std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
+}
+
+HRESULT UpdaterImpl::Update(const wchar_t* app_id,
+                            const wchar_t* install_data_index,
+                            LONG priority,
+                            BOOL same_version_update_allowed,
+                            IUpdaterObserver* observer) {
+  return Update2(app_id, install_data_index, priority,
+                 same_version_update_allowed, /*language=*/L"", observer);
 }
 
 // Called by the COM RPC runtime on one of its threads. Invokes the in-process
@@ -492,11 +511,12 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
 // callbacks involves issuing outgoing COM RPC calls, which block, such COM
 // calls must be done through a task runner, bound to the closures provided
 // as parameters for the UpdateService::Update call.
-HRESULT UpdaterImpl::Update(const wchar_t* app_id,
-                            const wchar_t* install_data_index,
-                            LONG priority,
-                            BOOL same_version_update_allowed,
-                            IUpdaterObserver* observer) {
+HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
+                             const wchar_t* install_data_index,
+                             LONG priority,
+                             BOOL same_version_update_allowed,
+                             const wchar_t* language,
+                             IUpdaterObserver* observer) {
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -525,6 +545,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, const std::string& install_data_index,
          UpdateService::Priority priority, bool same_version_update_allowed,
+         const std::string& language,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              state_change_callback,
          base::OnceCallback<void(UpdateService::Result)> complete_callback) {
@@ -540,12 +561,13 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
             same_version_update_allowed
                 ? UpdateService::PolicySameVersionUpdate::kAllowed
                 : UpdateService::PolicySameVersionUpdate::kNotAllowed,
-            std::move(state_change_callback), std::move(complete_callback));
+            language, std::move(state_change_callback),
+            std::move(complete_callback));
       },
       base::WideToUTF8(app_id), base::WideToUTF8(install_data_index),
       static_cast<UpdateService::Priority>(priority),
-      same_version_update_allowed, std::move(state_change_callback),
-      std::move(complete_callback)));
+      same_version_update_allowed, base::WideToUTF8(language),
+      std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
 
@@ -599,7 +621,8 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              IUpdaterObserver* observer) {
   return Install2(app_id, brand_code, brand_path, ap, version,
                   existence_checker_path, client_install_data,
-                  install_data_index, nullptr, priority, observer);
+                  install_data_index, /*install_id=*/L"", priority,
+                  /*language=*/L"", observer);
 }
 
 HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
@@ -612,6 +635,7 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
                               const wchar_t* install_data_index,
                               const wchar_t* install_id,
                               LONG priority,
+                              const wchar_t* language,
                               IUpdaterObserver* observer) {
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
@@ -624,11 +648,11 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
   // Validates that string parameters are not longer than 16K characters.
   std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
-       client_install_data, install_data_index,
-       install_id]() -> decltype(request) {
+       client_install_data, install_data_index, install_id,
+       language]() -> decltype(request) {
     for (const auto& str :
          {app_id, brand_code, brand_path, ap, version, existence_checker_path,
-          client_install_data, install_data_index, install_id}) {
+          client_install_data, install_data_index, install_id, language}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return std::nullopt;
       }
@@ -692,7 +716,7 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
       [](const RegistrationRequest& request,
          const std::string& client_install_data,
          const std::string& install_data_index,
-         UpdateService::Priority priority,
+         UpdateService::Priority priority, const std::string& language,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              state_change_callback,
          base::OnceCallback<void(UpdateService::Result)> complete_callback) {
@@ -703,14 +727,16 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
               .Run(UpdateService::Result::kServiceStopped);
           return;
         }
-        update_service->Install(
-            request, client_install_data, install_data_index, priority,
-            std::move(state_change_callback), std::move(complete_callback));
+        update_service->Install(request, client_install_data,
+                                install_data_index, priority, language,
+                                std::move(state_change_callback),
+                                std::move(complete_callback));
       },
       *request, base::WideToUTF8(client_install_data),
       base::WideToUTF8(install_data_index),
       static_cast<UpdateService::Priority>(priority),
-      std::move(state_change_callback), std::move(complete_callback)));
+      base::WideToUTF8(language), std::move(state_change_callback),
+      std::move(complete_callback)));
   return S_OK;
 }
 
@@ -739,6 +765,17 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_data,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
+  return RunInstaller2(app_id, installer_path, install_args, install_data,
+                       install_settings, /*language=*/L"", observer);
+}
+
+HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
+                                   const wchar_t* installer_path,
+                                   const wchar_t* install_args,
+                                   const wchar_t* install_data,
+                                   const wchar_t* install_settings,
+                                   const wchar_t* language,
+                                   IUpdaterObserver* observer) {
   if (FAILED(IsCOMCallerAllowed())) {
     return E_ACCESSDENIED;
   }
@@ -749,8 +786,8 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  for (const wchar_t* str :
-       {app_id, installer_path, install_args, install_data, install_settings}) {
+  for (const wchar_t* str : {app_id, installer_path, install_args, install_data,
+                             install_settings, language}) {
     if (wcsnlen_s(str, kMaxStringLen) >= kMaxStringLen) {
       return E_INVALIDARG;
     }
@@ -784,6 +821,12 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
+  std::string language_str;
+  if (language &&
+      !base::WideToUTF8(language, wcslen(language), &language_str)) {
+    return E_INVALIDARG;
+  }
+
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   base::RepeatingCallback<void(const UpdateService::UpdateState&)>
@@ -808,7 +851,7 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, const base::FilePath& installer_path,
          const std::string& install_args, const std::string& install_data,
-         const std::string& install_settings,
+         const std::string& install_settings, const std::string& language,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              state_change_callback,
          base::OnceCallback<void(UpdateService::Result)> complete_callback) {
@@ -820,13 +863,13 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
           return;
         }
         update_service->RunInstaller(app_id, installer_path, install_args,
-                                     install_data, install_settings,
+                                     install_data, install_settings, language,
                                      std::move(state_change_callback),
                                      std::move(complete_callback));
       },
       app_id_str, base::FilePath(installer_path), install_args_str,
-      install_data_str, install_settings_str, std::move(state_change_callback),
-      std::move(complete_callback)));
+      install_data_str, install_settings_str, language_str,
+      std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
 
