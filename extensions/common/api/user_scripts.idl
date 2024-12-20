@@ -72,8 +72,7 @@ namespace userScripts {
     // Only valid if `world` is omitted or is `USER_SCRIPT`. If omitted, the
     // script will execute in the default user script world.
     // Values with leading underscores (`_`) are reserved.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] DOMString? worldId;
+    DOMString? worldId;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.
@@ -90,8 +89,7 @@ namespace userScripts {
     // Specifies the ID of the specific user script world to update.
     // If not provided, updates the properties of the default user script world.
     // Values with leading underscores (`_`) are reserved.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] DOMString? worldId;
+    DOMString? worldId;
 
     // Specifies the world csp. The default is the <code>`ISOLATED`</code>
     // world csp.
@@ -164,8 +162,7 @@ namespace userScripts {
 
     // Retrieves all registered world configurations.
     // |callback|: Called with the registered world configurations.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] static void getWorldConfigurations(
+    static void getWorldConfigurations(
         GetAllWorldConfigurationsCallback callback);
 
     // Resets the configuration for a user script world. Any scripts that inject
@@ -174,8 +171,7 @@ namespace userScripts {
     // |worldId|: The ID of the user script world to reset. If omitted, resets
     // the default world's configuration.
     // |callback|: Called when the configuration is reset.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] static void resetWorldConfiguration(
+    static void resetWorldConfiguration(
         optional DOMString worldId,
         ResetWorldConfigurationCallback callback);
   };
