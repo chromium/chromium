@@ -19,6 +19,8 @@ import java.util.Objects;
  */
 public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
 
+    public static final int NO_ID = -1;
+
     /**
      * An observer to which events are propagated if and only if they involve the supplied bookmark
      * folder's direct descendants.
@@ -27,55 +29,49 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is added.
          *
-         * @param source the observation that propagated the event.
+         * @param observationId the ID for the observation that propagated the event.
          * @param item the direct descendant that was added.
          * @param index the index at which the direct descendant was added.
          */
-        public void onBookmarkItemAdded(
-                @NonNull ScopedBookmarkModelObservation source,
-                @NonNull BookmarkItem item,
-                int index);
+        public void onBookmarkItemAdded(int observationId, @NonNull BookmarkItem item, int index);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is moved.
          *
-         * @param source the observation that propagated the event.
+         * @param observationId the ID for the observation that propagated the event.
          * @param index the index to which the direct descendant was moved.
          * @param oldIndex the index from which the direct descendant was moved.
          */
-        public void onBookmarkItemMoved(
-                @NonNull ScopedBookmarkModelObservation source, int index, int oldIndex);
+        public void onBookmarkItemMoved(int observationId, int index, int oldIndex);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is removed.
          *
-         * @param source the observation that propagated the event.
+         * @param observationId the ID for the observation that propagated the event.
          * @param index the index at which the direct descendant was removed.
          */
-        public void onBookmarkItemRemoved(
-                @NonNull ScopedBookmarkModelObservation source, int index);
+        public void onBookmarkItemRemoved(int observationId, int index);
 
         /**
          * Invoked when a direct descendant of the supplied bookmark folder is updated.
          *
-         * @param source the observation that propagated the event.
+         * @param observationId the ID for the observation that propagated the event.
          * @param index the direct descendant that was updated.
          */
-        public void onBookmarkItemUpdated(
-                @NonNull ScopedBookmarkModelObservation source, @NonNull BookmarkItem item);
+        public void onBookmarkItemUpdated(int observationId, @NonNull BookmarkItem item);
 
         /**
          * Invoked when the direct descendants of the supplied bookmark folder have changed. Note
          * that this event is only propagated when a more specific event cannot be, e.g. when the
          * bookmark model has undergone extensive batched changes.
          *
-         * @param source the observation that propagated the event.
+         * @param observationId the ID for the observation that propagated the event.
          * @param items the direct descendants that changed.
          */
-        public void onBookmarkItemsChanged(
-                @NonNull ScopedBookmarkModelObservation source, @NonNull List<BookmarkItem> items);
+        public void onBookmarkItemsChanged(int observationId, @NonNull List<BookmarkItem> items);
     }
 
+    private final int mId;
     private final BookmarkId mFolderId;
     private final BookmarkModel mModel;
     private final Observer mObserver;
@@ -91,8 +87,25 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
             @NonNull BookmarkId folderId,
             @NonNull BookmarkModel model,
             @NonNull Observer observer) {
+        this(NO_ID, folderId, model, observer);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param id the ID for this observation.
+     * @param folderId the ID for the folder to observe.
+     * @param model the model to observe.
+     * @param observer the observer to which events are propagated.
+     */
+    public ScopedBookmarkModelObservation(
+            int id,
+            @NonNull BookmarkId folderId,
+            @NonNull BookmarkModel model,
+            @NonNull Observer observer) {
         assert model.isBookmarkModelLoaded();
 
+        mId = id;
         mFolderId = folderId;
         mModel = model;
         mObserver = observer;
@@ -108,26 +121,25 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
 
     @Override
     public void bookmarkAllUserNodesRemoved() {
-        mObserver.onBookmarkItemsChanged(/* source= */ this, Collections.emptyList());
+        mObserver.onBookmarkItemsChanged(mId, Collections.emptyList());
     }
 
     @Override
     public void bookmarkModelChanged() {
-        mObserver.onBookmarkItemsChanged(
-                /* source= */ this, mModel.getBookmarksForFolder(mFolderId));
+        mObserver.onBookmarkItemsChanged(mId, mModel.getBookmarksForFolder(mFolderId));
     }
 
     @Override
     public void bookmarkNodeAdded(BookmarkItem parent, int index) {
         if (Objects.equals(mFolderId, parent.getId())) {
-            mObserver.onBookmarkItemAdded(/* source= */ this, getBookmarkByIndex(index), index);
+            mObserver.onBookmarkItemAdded(mId, getBookmarkByIndex(index), index);
         }
     }
 
     @Override
     public void bookmarkNodeChanged(BookmarkItem node) {
         if (Objects.equals(mFolderId, node.getParentId())) {
-            mObserver.onBookmarkItemUpdated(/* source= */ this, node);
+            mObserver.onBookmarkItemUpdated(mId, node);
         }
     }
 
@@ -146,18 +158,18 @@ public class ScopedBookmarkModelObservation extends BookmarkModelObserver {
         final boolean isMoveWithinFolder = isMoveFromFolder && isMoveToFolder;
 
         if (isMoveWithinFolder) {
-            mObserver.onBookmarkItemMoved(this, index, oldIndex);
+            mObserver.onBookmarkItemMoved(mId, index, oldIndex);
         } else if (isMoveFromFolder) {
-            mObserver.onBookmarkItemRemoved(this, oldIndex);
+            mObserver.onBookmarkItemRemoved(mId, oldIndex);
         } else if (isMoveToFolder) {
-            mObserver.onBookmarkItemAdded(/* source= */ this, getBookmarkByIndex(index), index);
+            mObserver.onBookmarkItemAdded(mId, getBookmarkByIndex(index), index);
         }
     }
 
     @Override
     public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node) {
         if (Objects.equals(mFolderId, parent.getId())) {
-            mObserver.onBookmarkItemRemoved(/* source= */ this, oldIndex);
+            mObserver.onBookmarkItemRemoved(mId, oldIndex);
         }
     }
 

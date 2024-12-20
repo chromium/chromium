@@ -237,6 +237,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/TestingDelegate.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBar.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinator.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",

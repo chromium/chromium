@@ -104,6 +104,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/bookmarks/ScopedBookmarkModelObservationTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
+  "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ClearDataDialogResultRecorderTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiverTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRegisterTest.java",
