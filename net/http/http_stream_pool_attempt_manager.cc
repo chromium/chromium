@@ -109,7 +109,9 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     CHECK(!attempt_);
     attempt_ = std::move(attempt);
     start_time_ = base::TimeTicks::Now();
-    // SAFETY: `manager_` owns `this` so using base::Unretained() is safe.
+    // SAFETY: Callback is only invoked when Start() returns ERR_IO_PENDING.
+    // In that case `manager_` outlives the callback since `manager_` owns
+    // `this`.
     return attempt_->Start(
         base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
                        base::Unretained(manager_), this));
@@ -1179,9 +1181,11 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
     raw_attempt->attempt()->net_log().AddEventReferencingSource(
         NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
     if (rv != ERR_IO_PENDING) {
+      // SAFETY: `this` may be deleted before the attempt completes.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
-                                    base::Unretained(this), raw_attempt, rv));
+          FROM_HERE,
+          base::BindOnce(&AttemptManager::OnInFlightAttemptComplete,
+                         weak_ptr_factory_.GetWeakPtr(), raw_attempt, rv));
     } else {
       raw_attempt->slow_timer().Start(
           FROM_HERE, HttpStreamPool::GetConnectionAttemptDelay(),

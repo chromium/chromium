@@ -6483,4 +6483,28 @@ TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringPreconnect) {
   FastForwardUntilNoTasksRemain();
 }
 
+// Regression test for crbug.com/384759836.
+TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringStreamRequest) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test");
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Cancel request before destroy the pool. This behavior matches the
+  // production code.
+  requester.ResetRequest();
+  // Destroy the pool.
+  InitializeSession();
+  FastForwardUntilNoTasksRemain();
+}
+
 }  // namespace net
