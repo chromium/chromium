@@ -5,9 +5,12 @@
 package org.chromium.components.omnibox;
 
 import android.content.SharedPreferences;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+
+import com.google.android.gms.location.Priority;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
@@ -127,6 +130,24 @@ public class OmniboxFeatures {
                     sUseFusedLocationProvider,
                     "geolocation_request_timeout_minutes",
                     DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN);
+
+    public static final IntCachedFeatureParam sGeolocationRequestMaxLocationAge =
+            newIntParam(
+                    sUseFusedLocationProvider,
+                    "geolocation_request_max_location_age_millis",
+                    (int) (5 * DateUtils.MINUTE_IN_MILLIS));
+
+    public static final IntCachedFeatureParam sGeolocationRequestUpdateInterval =
+            newIntParam(
+                    sUseFusedLocationProvider,
+                    "geolocation_request_min_update_interval_millis",
+                    (int) (9 * DateUtils.MINUTE_IN_MILLIS));
+
+    public static final IntCachedFeatureParam sGeolocationRequestPriority =
+            newIntParam(
+                    sUseFusedLocationProvider,
+                    "geolocation_request_priority",
+                    Priority.PRIORITY_BALANCED_POWER_ACCURACY);
 
     public static final IntCachedFeatureParam sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(

@@ -20,7 +20,6 @@ import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.Priority;
 
 import org.jni_zero.CalledByNative;
 
@@ -73,10 +72,6 @@ public class GeolocationHeader {
     /** The maximum age in milliseconds of a location before we'll request a refresh. */
     @VisibleForTesting static final int REFRESH_LOCATION_AGE = 5 * 60 * 1000; // 5 minutes
 
-    // 9 minutes is just below the 10 minute threshold to be considered fresh by the search backend.
-    @VisibleForTesting
-    static final long LOCATION_REQUEST_UPDATE_INTERVAL = Duration.ofMinutes(9).toMillis();
-
     /** The X-Geo header prefix, preceding any location descriptors */
     private static final String XGEO_HEADER_PREFIX = "X-Geo:";
 
@@ -123,8 +118,7 @@ public class GeolocationHeader {
     }
 
     /**
-     * Start listening for location updates on a LOCATION_REQUEST_UPDATE_INTERVAL interval,
-     * returning true if the request to listen succeeded.
+     * Start listening for location updates returning true if the request to listen succeeded.
      *
      * <p>Locations are requested to be less than REFRESH_LOCATION_AGE minutes old and have a
      * granularity matching the app's permission level.
@@ -147,10 +141,12 @@ public class GeolocationHeader {
                     },
                     updateDuration);
             var locationRequest =
-                    new LocationRequest.Builder(LOCATION_REQUEST_UPDATE_INTERVAL)
+                    new LocationRequest.Builder(
+                                    OmniboxFeatures.sGeolocationRequestUpdateInterval.getValue())
                             .setDurationMillis(updateDuration)
-                            .setMaxUpdateAgeMillis(REFRESH_LOCATION_AGE)
-                            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+                            .setMaxUpdateAgeMillis(
+                                    OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue())
+                            .setPriority(OmniboxFeatures.sGeolocationRequestPriority.getValue())
                             .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
                             .build();
             fusedLocationClient.requestLocationUpdates(locationRequest, sLocationListener, null);
