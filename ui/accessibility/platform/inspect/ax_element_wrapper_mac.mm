@@ -211,6 +211,13 @@ NSArray* AXElementWrapper::AttributeNames() const {
 
 NSArray* AXElementWrapper::ParameterizedAttributeNames() const {
   if (IsNSAccessibilityElement()) {
+    // The NSAccessibility protocol implementation in AXPlatformNodeCocoa no
+    // longer exposes old-style parameterized attributes. Instead, it provides
+    // the internalAccessibilityParameterizedAttributeNames method for backward
+    // compatibility in testing.
+    if ([node_ isKindOfClass:[AXPlatformNodeCocoa class]]) {
+      return [node_ internalAccessibilityParameterizedAttributeNames];
+    }
     return [node_ accessibilityParameterizedAttributeNames];
   }
 
@@ -448,10 +455,14 @@ AXOptionalNSObject AXElementWrapper::ToOptional(
     id value,
     AXError result,
     const std::string& message) const {
-  if (result == kAXErrorSuccess)
-    return AXOptionalNSObject(value);
-
-  return AXOptionalNSObject::Error(AXErrorMessage(result, message));
+  switch (result) {
+    case kAXErrorSuccess:
+      return AXOptionalNSObject(value);
+    case kAXErrorNoValue:
+      return AXOptionalNSObject(nil);
+    default:
+      return AXOptionalNSObject::Error(AXErrorMessage(result, message));
+  }
 }
 
 }  // namespace ui

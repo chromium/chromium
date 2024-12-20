@@ -86,9 +86,21 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // essentially tests the deprecated API.
 - (NSMutableArray*)internalAccessibilityAttributeNames;
 
+// Returns all accessibility parameterized attribute names, similar to
+// internalAccessibilityAttributeNames.
+- (NSMutableArray*)internalAccessibilityParameterizedAttributeNames;
+
 // Returns YES if `method` has been implemented in the transition to the new
 // accessibility API, and is supported by this node (based on its role).
 - (BOOL)supportsNewAccessibilityAPIMethod:(NSString*)method;
+
+// Returns YES if the node responds to the method identified by the given
+// given selector. This is not the same as implementing the method; rather, it
+// checks whether the given method is supported by the specific AX element.
+// If the method is not supported, it returns NO.
+// For example, a node that is not an AXTitleUIElement will not respond to
+// the accessibilityTitleUIElement method.
+- (BOOL)conditionallyRespondsToSelector:(SEL)selector;
 
 // The new NSAccessibility API is method-based, but the old NSAccessibility
 // is attribute-based. For every method, there is a corresponding attribute.

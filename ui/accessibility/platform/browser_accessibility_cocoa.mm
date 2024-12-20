@@ -1804,6 +1804,13 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
+  }
+
   if ([attribute isEqualToString:
                      NSAccessibilityStringForRangeParameterizedAttribute]) {
     return [self AXStringForRange:parameter];
@@ -1819,6 +1826,7 @@ bool ui::IsNSRange(id value) {
     return [self AXRangeForLine:parameter];
   }
 
+  // LINT.IfChange(accessibilityCellForColumn)
   if ([attribute
           isEqualToString:
               NSAccessibilityCellForColumnAndRowParameterizedAttribute]) {
@@ -1840,6 +1848,7 @@ bool ui::IsNSRange(id value) {
     if (cell)
       return cell->GetNativeViewAccessible();
   }
+  // LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityCellForColumn)
 
   if ([attribute
           isEqualToString:
@@ -2338,16 +2347,12 @@ bool ui::IsNSRange(id value) {
 
 // Returns an array of parameterized attributes names that this object will
 // respond to.
-- (NSArray*)accessibilityParameterizedAttributeNames {
-  TRACE_EVENT1(
-      "accessibility",
-      "BrowserAccessibilityCocoa::accessibilityParameterizedAttributeNames",
-      "role=", ui::ToString([self internalRole]));
+- (NSArray*)internalAccessibilityParameterizedAttributeNames {
   if (![self instanceActive])
     return nil;
 
   // General attributes.
-  NSMutableArray* ret = [@[
+  NSMutableArray* attributeNames = [@[
     NSAccessibilityUIElementForTextMarkerParameterizedAttribute,
     NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute,
     NSAccessibilityLineForTextMarkerParameterizedAttribute,
@@ -2388,11 +2393,12 @@ bool ui::IsNSRange(id value) {
 
   if ([[self role] isEqualToString:NSAccessibilityTableRole] ||
       [[self role] isEqualToString:NSAccessibilityGridRole]) {
-    [ret addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
   }
 
   if (_owner->HasState(ax::mojom::State::kEditable)) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityLineForIndexParameterizedAttribute,
       NSAccessibilityRangeForLineParameterizedAttribute,
       NSAccessibilityStringForRangeParameterizedAttribute,
@@ -2405,19 +2411,21 @@ bool ui::IsNSRange(id value) {
   }
 
   if ([self internalRole] == ax::mojom::Role::kStaticText)
-    [ret addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
 
   if (ui::IsPlatformDocument(_owner->GetRole())) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityTextMarkerIsValidParameterizedAttribute,
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
       NSAccessibilityTextMarkerForIndexParameterizedAttribute
     ]];
   }
 
-  NSArray* super_ret = [super accessibilityParameterizedAttributeNames];
-  [ret addObjectsFromArray:super_ret];
-  return ret;
+  NSArray* superclassAttributeNames =
+      [super internalAccessibilityParameterizedAttributeNames];
+  [attributeNames addObjectsFromArray:superclassAttributeNames];
+  return attributeNames;
 }
 
 // Returns an array of action names that this object will respond to.

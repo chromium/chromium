@@ -469,6 +469,21 @@ TEST_P(AXPlatformNodeCocoaTestNewAPI,
   }
 }
 
+// accessibilityCellForColumn.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityCellForColumn) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* cell = GetCocoaNode(3);
+  EXPECT_EQ([[table accessibilityCellForColumn:0 row:0] node]->GetUniqueId(),
+            [cell node]->GetUniqueId());
+}
+
 // accessibilityColumns on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityColumns) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(
@@ -1050,8 +1065,16 @@ TEST_P(AXPlatformNodeCocoaTestNewAPI,
       [AXPlatformNodeCocoa newAccessibilityAPIMethodToAttributeMap];
   AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
   for (NSString* selector_string in map) {
-    EXPECT_TRUE(
-        [node respondsToSelector:NSSelectorFromString(selector_string)]);
+    SEL selector = NSSelectorFromString(selector_string);
+    if ([node conditionallyRespondsToSelector:selector]) {
+      EXPECT_TRUE([node respondsToSelector:selector])
+          << "Selector '" << base::SysNSStringToUTF8(selector_string)
+          << "' was not found.";
+    } else {
+      EXPECT_FALSE([node respondsToSelector:selector])
+          << "Selector '" << base::SysNSStringToUTF8(selector_string)
+          << "' was unexpectedly found.";
+    }
   }
 }
 
