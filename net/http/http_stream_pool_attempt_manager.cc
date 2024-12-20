@@ -170,6 +170,9 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     if (attempt_) {
       dict.Set("attempt_state", attempt_->GetInfoAsValue());
       dict.Set("ip_endpoint", attempt_->ip_endpoint().ToString());
+      if (attempt_->stream_socket()) {
+        attempt_->stream_socket()->NetLog().source().AddToEventParameters(dict);
+      }
     }
     dict.Set("is_slow", is_slow_);
     dict.Set("is_aborted", is_aborted_);
@@ -184,6 +187,7 @@ class HttpStreamPool::AttemptManager::InFlightAttempt
     if (cancel_reason_.has_value()) {
       dict.Set("cancel_reason", static_cast<int>(*cancel_reason_));
     }
+    manager_->net_log().source().AddToEventParameters(dict);
     return dict;
   }
 
