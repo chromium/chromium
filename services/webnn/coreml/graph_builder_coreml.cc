@@ -3347,7 +3347,7 @@ GraphBuilderCoreml::AddOperationForLstm(
 
   static constexpr char kForwardDirection[] = "forward";
   static constexpr char kBackwardDirection[] = "reverse";
-  static constexpr char kBothDirection[] = "both";
+  static constexpr char kBiDirectional[] = "bidirectional";
 
   uint32_t num_of_directions =
       direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
@@ -3439,7 +3439,7 @@ GraphBuilderCoreml::AddOperationForLstm(
       direction_param_value = kBackwardDirection;
       break;
     case mojom::RecurrentNetworkDirection::kBoth:
-      direction_param_value = kBothDirection;
+      direction_param_value = kBiDirectional;
       break;
   }
 
@@ -3612,10 +3612,11 @@ GraphBuilderCoreml::AddOperationForLstm(
   } else {
     // Else, the first output of CoreML lstm is the output of the last step with
     // shape [1, batchSize, hiddenSize].
-    ASSIGN_OR_RETURN(uint64_t unused_second_output,
-                     GenerateInternalOperandInfo(
-                         data_type, base::span<const uint32_t>(
-                                        {1, batch_size, hidden_size})));
+    ASSIGN_OR_RETURN(
+        uint64_t unused_second_output,
+        GenerateInternalOperandInfo(
+            data_type, base::span<const uint32_t>(
+                           {1, batch_size, num_of_directions * hidden_size})));
     PopulateNamedValueType(unused_second_output, *op->add_outputs());
   }
 
