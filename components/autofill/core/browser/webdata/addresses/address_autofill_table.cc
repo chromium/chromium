@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
@@ -383,21 +385,29 @@ bool AddProfileMetadataToTable(sql::Database* db,
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+    std::u16string value = profile.GetRawInfo(type);
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;
     }
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillSupportPhoneticNameForJP) &&
-        IsAlternativeNameType(type)) {
-      continue;
+    // Alternative names should always be converted to Hiragana for
+    // storage.
+    if (IsAlternativeNameType(type)) {
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillSupportPhoneticNameForJP)) {
+        value = TransliterateAlternativeName(
+            value, TransliterationId::kKatakanaToHiragana);
+      } else {
+        continue;
+      }
     }
+
     sql::Statement s;
     InsertBuilder(db, s, kAddressTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
-    s.BindString16(2, Truncate(profile.GetRawInfo(type)));
+    s.BindString16(2, Truncate(value));
     s.BindInt(3, profile.GetVerificationStatusInt(type));
     s.BindBlob(
         4, profile.token_quality().SerializeObservationsForStoredType(type));
