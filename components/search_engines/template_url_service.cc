@@ -63,6 +63,7 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -195,6 +196,18 @@ TemplateURL MergeEnterpriseSearchEngines(const TemplateURL& existing_turl,
   merged_data.SetURL(new_values.url());
   merged_data.featured_by_policy = new_values.featured_by_policy();
   return TemplateURL(merged_data);
+}
+
+std::unique_ptr<TemplateURL> UpdateExistingURLWithAccountData(
+    const TemplateURL* existing_turl,
+    const TemplateURLData& account_data) {
+  std::optional<TemplateURLData> local_data;
+  if (existing_turl && existing_turl->GetLocalData()) {
+    local_data = existing_turl->GetLocalData();
+    local_data->sync_guid = account_data.sync_guid;
+  }
+  return std::make_unique<TemplateURL>(std::move(local_data),
+                                       std::move(account_data));
 }
 
 }  // namespace
@@ -1729,6 +1742,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
   for (SyncDataMap::const_iterator iter = sync_data_map.begin();
        iter != sync_data_map.end(); ++iter) {
+    // TODO(crbug.com/374903497): Revisit `local_turl` naming.
     TemplateURL* local_turl = GetTemplateURLForGUID(iter->first);
     std::unique_ptr<TemplateURL> sync_turl(
         CreateTemplateURLFromTemplateURLAndSyncData(
@@ -1738,8 +1752,7 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
       continue;
     }
 
-    if (pre_sync_deletes_.find(sync_turl->sync_guid()) !=
-        pre_sync_deletes_.end()) {
+    if (base::Contains(pre_sync_deletes_, sync_turl->sync_guid())) {
       // This entry was deleted before the initial sync began (possibly through
       // preprocessing in TemplateURLService's loading code). Ignore it and send
       // an ACTION_DELETE up to the server.
@@ -1752,6 +1765,13 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
 
     if (local_turl) {
       DCHECK(IsFromSync(local_turl, sync_data_map));
+      if (base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines)) {
+        // `sync_turl` holds both the local data and the account data. Update
+        // the saved entry.
+        Update(local_turl, *sync_turl);
+        continue;
+      }
       // This local search engine is already synced. If the timestamp differs
       // from Sync, we need to update locally or to the cloud. Note that if the
       // timestamps are equal, we touch neither.
@@ -1779,12 +1799,16 @@ std::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     }
   }
 
-  // The remaining SyncData in local_data_map should be everything that needs to
-  // be pushed as ADDs to sync.
-  for (SyncDataMap::const_iterator iter = local_data_map.begin();
-       iter != local_data_map.end(); ++iter) {
-    new_changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD,
-                             iter->second);
+  // Avoid committing local data if the flag is enabled.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)) {
+    // The remaining SyncData in local_data_map should be everything that needs
+    // to be pushed as ADDs to sync.
+    for (SyncDataMap::const_iterator iter = local_data_map.begin();
+         iter != local_data_map.end(); ++iter) {
+      new_changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD,
+                               iter->second);
+    }
   }
 
   // Do some post-processing on the change list to ensure that we are sending
@@ -1975,8 +1999,14 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
     return nullptr;
   }
 
-  TemplateURLData data(existing_turl ? existing_turl->data()
-                                     : TemplateURLData());
+  TemplateURLData data;
+  // If flag is enabled, `data` will be added to a separate account data member.
+  // Thus avoid copying from `existing_turl` in this case.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines) &&
+      existing_turl) {
+    data = existing_turl->data();
+  }
   data.SetShortName(base::UTF8ToUTF16(specifics.short_name()));
   data.originating_url = GURL(specifics.originating_url());
   std::u16string keyword(base::UTF8ToUTF16(specifics.keyword()));
@@ -2010,7 +2040,13 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   data.is_active = ActiveStatusFromSync(specifics.is_active());
   data.starter_pack_id = specifics.starter_pack_id();
 
-  std::unique_ptr<TemplateURL> turl(new TemplateURL(data));
+  // If the flag is set, `data` is written to a separate account data. Else it
+  // is written to the local data.
+  std::unique_ptr<TemplateURL> turl =
+      base::FeatureList::IsEnabled(
+          syncer::kSeparateLocalAndAccountSearchEngines)
+          ? UpdateExistingURLWithAccountData(existing_turl, data)
+          : std::make_unique<TemplateURL>(data);
   // If this TemplateURL matches a built-in prepopulated template URL, it's
   // possible that sync is trying to modify fields that should not be touched.
   // Revert these fields to the built-in values.
@@ -2804,6 +2840,18 @@ void TemplateURLService::MergeInSyncTemplateURL(
       continue;
     }
 
+    // `conflicting_turl` is not yet known to Sync. Merge only with the best
+    // match.
+    // TODO(crbug.com/374903497): Take into account the below conflict
+    // resolution.
+    if (base::FeatureList::IsEnabled(
+            syncer::kSeparateLocalAndAccountSearchEngines)) {
+      Update(conflicting_turl, *UpdateExistingURLWithAccountData(
+                                   conflicting_turl, sync_turl->data()));
+      should_add_sync_turl = false;
+      break;
+    }
+
     // |conflicting_turl| is not yet known to Sync. If it is better, then we
     // want to transfer its values up to sync. Otherwise, we remove it and
     // allow the entry from Sync to overtake it in the model.
@@ -2811,10 +2859,13 @@ void TemplateURLService::MergeInSyncTemplateURL(
     if (conflicting_turl == GetDefaultSearchProvider() ||
         conflicting_turl->IsBetterThanConflictingEngine(sync_turl)) {
       ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
+
       syncer::SyncData updated_sync_data =
           CreateSyncDataFromTemplateURL(*conflicting_turl);
-      change_list->push_back(syncer::SyncChange(
-          FROM_HERE, syncer::SyncChange::ACTION_UPDATE, updated_sync_data));
+      change_list->push_back(
+          syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+                             std::move(updated_sync_data)));
+
       // Note that in this case we do not add the Sync TemplateURL to the
       // local model, since we've effectively "merged" it in by updating the
       // local conflicting entry with its sync_guid.
@@ -2857,29 +2908,47 @@ void TemplateURLService::MergeInSyncTemplateURL(
     if (conflicting_built_in_turl &&
         !IsFromSync(conflicting_built_in_turl, sync_data) &&
         sync_turl->IsBetterThanConflictingEngine(conflicting_built_in_turl)) {
-      std::string guid = conflicting_built_in_turl->sync_guid();
-      if (conflicting_built_in_turl == default_search_provider_) {
-        bool pref_matched =
+      // If flag is enabled, keep account data alongside the conflicting local
+      // data.
+      if (base::FeatureList::IsEnabled(
+              syncer::kSeparateLocalAndAccountSearchEngines)) {
+        // Update default search provider guid if the conflicting turl is the
+        // default search provider.
+        if (conflicting_built_in_turl == default_search_provider_ &&
             GetDefaultSearchProviderGuidFromPrefs(prefs_.get()) ==
-            default_search_provider_->sync_guid();
-        // Update the existing engine in-place.
-        Update(default_search_provider_, TemplateURL(sync_turl->data()));
-        // If prefs::kSyncedDefaultSearchProviderGUID matched
-        // |default_search_provider_|'s GUID before, then update it to match its
-        // new GUID. If the pref didn't match before, then it probably refers to
-        // a new search engine from Sync which just hasn't been added locally
-        // yet, so leave it alone in that case.
-        if (pref_matched) {
-          SetDefaultSearchProviderGuidToPrefs(
-              prefs_.get(), default_search_provider_->sync_guid());
+                default_search_provider_->sync_guid()) {
+          SetDefaultSearchProviderGuidToPrefs(prefs_.get(),
+                                              sync_turl->sync_guid());
         }
-
+        Update(conflicting_built_in_turl,
+               *UpdateExistingURLWithAccountData(conflicting_built_in_turl,
+                                                 sync_turl->data()));
         should_add_sync_turl = false;
       } else {
-        Remove(conflicting_built_in_turl);
+        std::string guid = conflicting_built_in_turl->sync_guid();
+        if (conflicting_built_in_turl == default_search_provider_) {
+          bool pref_matched =
+              GetDefaultSearchProviderGuidFromPrefs(prefs_.get()) ==
+              default_search_provider_->sync_guid();
+          // Update the existing engine in-place.
+          Update(default_search_provider_, TemplateURL(sync_turl->data()));
+          // If prefs::kSyncedDefaultSearchProviderGUID matched
+          // |default_search_provider_|'s GUID before, then update it to match
+          // its new GUID. If the pref didn't match before, then it probably
+          // refers to a new search engine from Sync which just hasn't been
+          // added locally yet, so leave it alone in that case.
+          if (pref_matched) {
+            SetDefaultSearchProviderGuidToPrefs(
+                prefs_.get(), default_search_provider_->sync_guid());
+          }
+
+          should_add_sync_turl = false;
+        } else {
+          Remove(conflicting_built_in_turl);
+        }
+        // Remove the local data so it isn't written to sync.
+        local_data->erase(guid);
       }
-      // Remove the local data so it isn't written to sync.
-      local_data->erase(guid);
     }
   }
 
@@ -2887,8 +2956,13 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // Force the local ID to kInvalidTemplateURLID so we can add it.
     TemplateURLData data(sync_turl->data());
     data.id = kInvalidTemplateURLID;
+    // If flag is enabled, `data` is added as account data. Else it is set as
+    // local data in the new TemplateURL.
     std::unique_ptr<TemplateURL> added_ptr =
-        std::make_unique<TemplateURL>(data);
+        base::FeatureList::IsEnabled(
+            syncer::kSeparateLocalAndAccountSearchEngines)
+            ? std::make_unique<TemplateURL>(std::nullopt, data)
+            : std::make_unique<TemplateURL>(data);
     TemplateURL* added = added_ptr.get();
     base::AutoReset<DefaultSearchChangeOrigin> change_origin(
         &dsp_change_origin_, DSP_CHANGE_SYNC_ADD);

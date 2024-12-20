@@ -42,6 +42,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/mime_util.h"
@@ -2202,8 +2203,10 @@ const TemplateURLData& TemplateURL::data() const {
 }
 
 TemplateURLData& TemplateURL::active_data() {
-  CHECK(local_data_);
-  return *local_data_;
+  CHECK(local_data_ || base::FeatureList::IsEnabled(
+                           syncer::kSeparateLocalAndAccountSearchEngines));
+  // TODO(crbug.com/374903497): Implement conflict resolution.
+  return local_data_ ? *local_data_ : *account_data_;
 }
 
 void TemplateURL::set_short_name(const std::u16string& short_name) {
