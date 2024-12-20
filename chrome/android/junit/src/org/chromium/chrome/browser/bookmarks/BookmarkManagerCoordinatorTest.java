@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
@@ -41,11 +40,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
@@ -72,6 +70,8 @@ public class BookmarkManagerCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
     @Mock private FaviconHelperJni mFaviconHelperJni;
@@ -79,7 +79,6 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
-    @Mock private AccountManagerFacade mAccountManagerFacade;
     @Mock private IdentityManager mIdentityManager;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
@@ -104,8 +103,6 @@ public class BookmarkManagerCoordinatorTest {
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
-        doReturn(new Promise<>()).when(mAccountManagerFacade).getCoreAccountInfos();
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
