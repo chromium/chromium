@@ -43,10 +43,10 @@ class BocaSessionManager
       public user_manager::UserManager::UserSessionStateObserver {
  public:
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
-
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
-
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
+  inline static constexpr char kPollingResultHistName[] =
+      "Ash.Boca.PollingResult";
 
   enum class BocaAction {
     kDefault = 0,
@@ -60,6 +60,17 @@ class BocaSessionManager
     kInfo = 0,
     kWarn = 1,
     kFatal = 2,
+  };
+
+  // These values are logged to UMA. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep in sync with
+  // `BocaPollingResult` in src/tools/metrics/histograms/metadata/ash/enums.xml.
+  enum class BocaPollingResult {
+    kNoUpdate = 0,
+    kSessionStart = 1,
+    kSessionEnd = 2,
+    kInSessionUpdate = 3,
+    kMaxValue = kInSessionUpdate,
   };
 
   struct BocaError {
@@ -141,8 +152,9 @@ class BocaSessionManager
 
   void StartSessionPolling(bool in_session);
   void MaybeLoadCurrentSession();
-  virtual void LoadCurrentSession();
-  void ParseSessionResponse(base::expected<std::unique_ptr<::boca::Session>,
+  virtual void LoadCurrentSession(bool from_polling);
+  void ParseSessionResponse(bool from_polling,
+                            base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result);
 
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
@@ -177,6 +189,8 @@ class BocaSessionManager
   bool IsSessionActive(const ::boca::Session* session);
   bool IsSessionTakeOver(const ::boca::Session* previous_session,
                          const ::boca::Session* current_session);
+  void RecordPollingResult(const ::boca::Session* previous_session,
+                           const ::boca::Session* current_session);
   void HandleTakeOver(bool dispatch_event,
                       std::unique_ptr<::boca::Session> session);
   void DispatchEvent();
