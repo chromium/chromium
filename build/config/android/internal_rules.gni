@@ -1889,21 +1889,24 @@ if (enable_java_templates) {
     }
   }
 
-  template("bytecode_processor") {
+  template("check_for_missing_direct_deps") {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
                                    "data_deps",
                                    "deps",
                                  ])
-      script = "//build/android/gyp/bytecode_processor.py"
+      script = "//build/android/gyp/check_for_missing_direct_deps.py"
       inputs = java_paths_for_inputs + [
                  invoker.build_config,
                  invoker.input_jar,
                ]
+      depfile = "$target_gen_dir/$target_name.d"
       outputs = [ "$target_out_dir/$target_name.bytecode.stamp" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
         "--target-name",
         get_label_info(":${target_name}", "label_no_toolchain"),
         "--gn-target=${invoker.target_label}",
@@ -4134,7 +4137,7 @@ if (enable_java_templates) {
           android_static_analysis != "off"
       if (_enable_bytecode_checks) {
         _validate_target_name = "${target_name}__validate"
-        bytecode_processor(_validate_target_name) {
+        check_for_missing_direct_deps(_validate_target_name) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
           deps = _unprocessed_jar_deps + _javac_classpath_deps +
                  [ ":$_build_config_target_name" ]

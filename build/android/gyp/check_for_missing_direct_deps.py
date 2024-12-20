@@ -2,8 +2,7 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-"""Wraps bin/helper/bytecode_processor and expands @FileArgs."""
+"""Checks for incomplete direct deps."""
 
 import argparse
 import collections
@@ -237,7 +236,7 @@ def _PrintAndMaybeExit(
 
 
 def main(argv):
-  build_utils.InitLogging('BYTECODE_PROCESSOR_DEBUG')
+  build_utils.InitLogging('MISSING_DEPS_DEBUG')
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
   parser.add_argument('--target-name', help='Fully qualified GN target name.')
@@ -251,6 +250,7 @@ def main(argv):
   parser.add_argument('--full-classpath-jars')
   parser.add_argument('--full-classpath-gn-targets')
   parser.add_argument('--chromium-output-dir')
+  parser.add_argument('--depfile')
   parser.add_argument('--stamp')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
@@ -262,12 +262,6 @@ def main(argv):
       'BUILD.gn file.')
   args = parser.parse_args(argv)
 
-  if server_utils.MaybeRunCommand(name=args.target_name,
-                                  argv=sys.argv,
-                                  stamp_file=args.stamp,
-                                  use_build_server=args.use_build_server):
-    return
-
   args.sdk_classpath_jars = action_helpers.parse_gn_list(
       args.sdk_classpath_jars)
   args.direct_classpath_jars = action_helpers.parse_gn_list(
@@ -278,6 +272,17 @@ def main(argv):
       dep_utils.ReplaceGmsPackageIfNeeded(t)
       for t in action_helpers.parse_gn_list(args.full_classpath_gn_targets)
   ]
+
+  # No need to rebuild if full_classpath_jars change and direct_classpath_jars
+  # do not.
+  depfile_deps = args.direct_classpath_jars + args.sdk_classpath_jars
+  action_helpers.write_depfile(args.depfile, args.stamp, depfile_deps)
+
+  if server_utils.MaybeRunCommand(name=args.target_name,
+                                  argv=sys.argv,
+                                  stamp_file=args.stamp,
+                                  use_build_server=args.use_build_server):
+    return
 
   logging.info('Processed args for %s, starting direct classpath check.',
                args.target_name)
@@ -293,8 +298,7 @@ def main(argv):
       auto_add_deps=args.auto_add_deps)
   logging.info('Check completed.')
 
-  if args.stamp:
-    build_utils.Touch(args.stamp)
+  build_utils.Touch(args.stamp)
 
 
 if __name__ == '__main__':
