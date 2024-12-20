@@ -797,3 +797,21 @@ TEST_F(BookmarkMenuDelegateTest, MovingBookmarkRespectsStartIndex) {
   model()->Move(f2_node, bookmark_bar_node, 2);
   EXPECT_EQ(2u, root_menu->GetSubmenu()->GetMenuItems().size());
 }
+
+// Tests that moving a bookmark into the hidden section of a menu does nothing.
+TEST_F(BookmarkMenuDelegateTest, MovingBookmarkBeforeStartIndexDoesNothing) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  ASSERT_EQ(3u, bookmark_bar_node->children().size());
+
+  NewDelegate();
+  bookmark_menu_delegate_->SetActiveMenu(bookmark_bar_node, 1);
+
+  views::MenuItemView* root_menu = menu();
+  // The menu has items for nodes F1 and F2.
+  EXPECT_EQ(2u, root_menu->GetSubmenu()->GetMenuItems().size());
+
+  // Moving another node to the first index should do nothing.
+  model()->Move(model()->other_node()->children()[0].get(), bookmark_bar_node,
+                0);
+  EXPECT_EQ(2u, root_menu->GetSubmenu()->GetMenuItems().size());
+}

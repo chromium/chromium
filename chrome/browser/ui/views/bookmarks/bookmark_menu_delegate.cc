@@ -645,11 +645,20 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
   const bookmarks::BookmarkNode* new_parent_node = node->parent();
   size_t insertion_idx = new_index;
 
-  // Menus created by `CreateMenu` might not display some nodes.
+  // The bookmark bar view creates individual menus for bookmarks in the
+  // bookmarks bar. Bookmarks that overflow from the bar belong to a
+  // single menu, which uses a node offset. This offset should be applied to
+  // `new_index` to ensure the moved node's menu item appears in the right
+  // spot in the overflow menu.
   if (auto node_to_start_child_idx =
           node_start_child_idx_map_.find(new_parent_node);
       node_to_start_child_idx != node_start_child_idx_map_.end()) {
-    CHECK_LE(node_to_start_child_idx->second, new_index);
+    // If `new_index` is less than the menu's start index, this means that
+    // the moved bookmark isn't in its parent's menu. The client will reorder
+    // the menu in the bookmarks bar. Therefore, we skip the update.
+    if (new_index < node_to_start_child_idx->second) {
+      return;
+    }
     insertion_idx -= node_to_start_child_idx->second;
   }
 
