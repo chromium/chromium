@@ -45,6 +45,7 @@ bool IsYouTubeInfrastructureSubframe(content::NavigationHandle* handle) {
   if (handle->GetNavigatingFrameType() != content::FrameType::kSubframe) {
     return false;
   }
+  // TODO(crbug.com/385299439): Consider extracting to common URL manipulations.
   return handle->GetURL().DomainIs("accounts.youtube.com");
 }
 }  // namespace

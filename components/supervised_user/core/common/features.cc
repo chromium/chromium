@@ -194,6 +194,10 @@ BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
 #endif
 );
 
+BASE_FEATURE(kExemptGuardianApprovalOnGwsRedirector,
+             "ExemptGuardianApprovalOnGwsRedirector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }

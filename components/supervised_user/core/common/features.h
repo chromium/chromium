@@ -129,6 +129,9 @@ BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
 // issued.
 BASE_DECLARE_FEATURE(kClassifyUrlOnProcessResponseEvent);
 
+// Throttle will unconditionally allow requests to GWS redirector.
+BASE_DECLARE_FEATURE(kExemptGuardianApprovalOnGwsRedirector);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web
