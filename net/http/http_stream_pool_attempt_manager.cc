@@ -295,6 +295,8 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED,
       net_log_.source());
+  base::UmaHistogramTimes("Net.HttpStreamPool.StreamAttemptDelay",
+                          stream_attempt_delay_);
 }
 
 HttpStreamPool::AttemptManager::~AttemptManager() {
@@ -548,12 +550,18 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
 void HttpStreamPool::AttemptManager::CancelInFlightAttempts(
     StreamSocketCloseReason reason) {
+  const size_t num_cancel_attempts = in_flight_attempts_.size();
   for (auto& attempt : in_flight_attempts_) {
     attempt->SetCancelReason(reason);
   }
   pool()->DecrementTotalConnectingStreamCount(in_flight_attempts_.size());
   in_flight_attempts_.clear();
   slow_attempt_count_ = 0;
+
+  base::UmaHistogramCounts100(
+      base::StrCat({"Net.HttpStreamPool.AttemptCancelCount.",
+                    StreamSocketCloseReasonToString(reason)}),
+      num_cancel_attempts);
 
   std::erase_if(ip_endpoint_states_, [](const auto& it) {
     return it.second == IPEndPointState::kSlowAttempting;

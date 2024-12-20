@@ -2495,6 +2495,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.StreamAttemptCancelCount.{Reason}"
+    units="attempts" expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of in-flight stream attempts when canceling them. Recorded when
+    an HttpStreamPool::AttemptManager cancels in-flight stream attempts.
+  </summary>
+  <token key="Reason">
+    <variant name="CannotUseTcpBasedProtocols"/>
+    <variant name="CloseAllConnections"/>
+    <variant name="IpAddressChanged"/>
+    <variant name="QuicSessionCreated"/>
+    <variant name="SpdySessionCreated"/>
+    <variant name="SslConfigChanged"/>
+    <variant name="Unspecified"/>
+    <variant name="UsingExistingQuicSession"/>
+    <variant name="UsingExistingSpdySession"/>
+  </token>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.StreamAttemptCancelReason"
     enum="StreamSocketCloseReason" expires_after="2025-02-27">
   <owner>bashi@chromium.org</owner>
@@ -2502,6 +2523,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The reason why a stream attempt is canceled. Recorded when a stream attempt
     is destroyed after being canceled.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpStreamPool.StreamAttemptDelay" units="ms"
+    expires_after="2025-02-27">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time to block TCP-based stream attempts. Recorded when an
+    HttpStreamPool::AttemptManager is created.
   </summary>
 </histogram>
 
