@@ -322,10 +322,8 @@ ModelExecutionManager::StartSession(
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(
-      feature, std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_->GetWeakPtr(), model_quality_uploader_service_,
-      config_params);
+  return std::make_unique<SessionImpl>(feature, std::nullopt,
+                                       std::move(execute_fn), config_params);
 }
 
 // Whether the supplementary on-device models are registered.

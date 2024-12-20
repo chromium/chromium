@@ -191,15 +191,15 @@ OnDeviceModelServiceController::CreateSession(
   opts.token_limits = adaptation_metadata->adapter()->GetTokenLimits();
   opts.adapter = adaptation_metadata->adapter();
 
-  base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
+  opts.logger = optimization_guide_logger;
+  opts.log_uploader =
       (config_params && config_params->logging_mode ==
                             SessionConfigParams::LoggingMode::kAlwaysDisable
            ? nullptr
            : model_quality_uploader_service);
 
   return std::make_unique<SessionImpl>(
-      feature, std::move(opts), std::move(execute_remote_fn),
-      optimization_guide_logger, log_uploader, config_params);
+      feature, std::move(opts), std::move(execute_remote_fn), config_params);
 }
 
 // static

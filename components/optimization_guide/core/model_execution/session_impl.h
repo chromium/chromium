@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -68,6 +69,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
     std::unique_ptr<SafetyChecker> safety_checker;
     TokenLimits token_limits;
+
+    base::WeakPtr<OptimizationGuideLogger> logger;
+    base::WeakPtr<ModelQualityLogsUploaderService> log_uploader;
 
     // Returns true if the on-device model may be used.
     bool ShouldUse() const;
@@ -138,9 +142,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   SessionImpl(ModelBasedCapabilityKey feature,
               std::optional<OnDeviceOptions> on_device_opts,
               ExecuteRemoteFn execute_remote_fn,
-              base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-              base::WeakPtr<ModelQualityLogsUploaderService>
-                  model_quality_uploader_service,
               const std::optional<SessionConfigParams>& config_params);
   ~SessionImpl() override;
 
@@ -355,15 +356,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Has a value when using the on device model.
   std::optional<OnDeviceState> on_device_state_;
-
-  // Logger is owned by the Optimization Guide Keyed Service.
-  base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger_;
-
-  // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
-  // passed through the ModelQualityLogEntry to invoke upload during log
-  // destruction.
-  base::WeakPtr<ModelQualityLogsUploaderService>
-      model_quality_uploader_service_;
 
   // Params used to control output sampling for the on device model.
   const SamplingParams sampling_params_;

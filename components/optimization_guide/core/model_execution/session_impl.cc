@@ -42,6 +42,33 @@ using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
+void LogSessionCreation(OptimizationGuideLogger* logger,
+                        ModelBasedCapabilityKey feature) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Starting on-device session for "
+        << std::string(GetStringNameForModelExecutionFeature(feature));
+  }
+}
+
+void LogRequest(OptimizationGuideLogger* logger,
+                const proto::OnDeviceModelServiceRequest& logged_request) {
+  if (logger && logger->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+        << "Executing model "
+        << (logged_request.input_context_string().empty()
+                ? ""
+                : base::StringPrintf(
+                      "with input context of %d tokens:\n%s\n",
+                      logged_request.input_context_num_tokens_processed(),
+                      logged_request.input_context_string().c_str()))
+        << "with string:\n"
+        << logged_request.execution_string();
+  }
+}
+
 void LogResponseHasRepeats(ModelBasedCapabilityKey feature, bool has_repeats) {
   base::UmaHistogramBoolean(
       base::StrCat(
@@ -206,7 +233,9 @@ SessionImpl::OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
       model_versions(orig.model_versions),
       adapter(orig.adapter),
       safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
-      token_limits(orig.token_limits) {}
+      token_limits(orig.token_limits),
+      logger(orig.logger),
+      log_uploader(orig.log_uploader) {}
 
 bool SessionImpl::OnDeviceOptions::ShouldUse() const {
   return model_client->ShouldUse();
@@ -216,27 +245,15 @@ SessionImpl::SessionImpl(
     ModelBasedCapabilityKey feature,
     std::optional<OnDeviceOptions> on_device_opts,
     ExecuteRemoteFn execute_remote_fn,
-    base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-    base::WeakPtr<ModelQualityLogsUploaderService>
-        model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params)
     : feature_(feature),
       execute_remote_fn_(std::move(execute_remote_fn)),
-      optimization_guide_logger_(optimization_guide_logger),
-      model_quality_uploader_service_(model_quality_uploader_service),
       sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
   if (on_device_opts && on_device_opts->ShouldUse()) {
     on_device_state_.emplace(std::move(*on_device_opts), this);
     // Prewarm the initial session to make sure the service is started.
     GetOrCreateSession();
-  }
-  if (optimization_guide_logger_ &&
-      optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_logger_.get())
-        << "Starting on-device session for "
-        << std::string(GetStringNameForModelExecutionFeature(feature_));
+    LogSessionCreation(on_device_state_->opts.logger.get(), feature_);
   }
 }
 
@@ -430,22 +447,7 @@ void SessionImpl::ExecuteModel(
   // TODO(b/302327957): Probably do some math to get the accurate number here.
   logged_request->set_execution_num_tokens_processed(
       on_device_state_->opts.token_limits.max_execute_tokens);
-
-  if (optimization_guide_logger_ &&
-      optimization_guide_logger_->ShouldEnableDebugLogs()) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_logger_.get())
-        << "Executing model "
-        << (input->should_ignore_input_context
-                ? ""
-                : base::StringPrintf(
-                      "with input context of %d tokens:\n%s\n",
-                      logged_request->input_context_num_tokens_processed(),
-                      logged_request->input_context_string().c_str()))
-        << "with string:\n"
-        << logged_request->execution_string();
-  }
+  LogRequest(on_device_state_->opts.logger.get(), *logged_request);
 
   on_device_state_->log_ai_data_request = std::move(log_ai_data_request);
   on_device_state_->start = base::TimeTicks::Now();
@@ -661,7 +663,7 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
     std::unique_ptr<proto::ModelExecutionInfo> model_execution_info;
     if (og_error.ShouldLogModelQuality()) {
       log_entry = std::make_unique<ModelQualityLogEntry>(
-          model_quality_uploader_service_);
+          on_device_state_->opts.log_uploader);
       log_entry->log_ai_data_request()->MergeFrom(*log_ai_data_request);
       std::string model_execution_id = GenerateExecutionId();
       log_entry->set_model_execution_id(model_execution_id);
@@ -783,8 +785,8 @@ void SessionImpl::SendSuccessCompletionCallback(
                          success_response_metadata);
     on_device_state_->MutableLoggedResponse()->set_status(
         proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
-    log_entry =
-        std::make_unique<ModelQualityLogEntry>(model_quality_uploader_service_);
+    log_entry = std::make_unique<ModelQualityLogEntry>(
+        on_device_state_->opts.log_uploader);
     log_entry->log_ai_data_request()->MergeFrom(
         *on_device_state_->log_ai_data_request);
     std::string model_execution_id = GenerateExecutionId();
