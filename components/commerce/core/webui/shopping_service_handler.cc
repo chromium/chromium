@@ -543,12 +543,6 @@ void ShoppingServiceHandler::OnFetchPriceInsightsInfoForCurrentUrl(
   std::move(callback).Run(PriceInsightsInfoToMojoObject(info, locale_));
 }
 
-void ShoppingServiceHandler::ShowInsightsSidePanelUI() {
-  if (delegate_) {
-    delegate_->ShowInsightsSidePanelUI();
-  }
-}
-
 void ShoppingServiceHandler::OnGetPriceTrackingStatusForCurrentUrl(
     GetPriceTrackingStatusForCurrentUrlCallback callback,
     bool tracked) {
@@ -564,12 +558,6 @@ void ShoppingServiceHandler::OpenUrlInNewTab(const GURL& url) {
 void ShoppingServiceHandler::SwitchToOrOpenTab(const GURL& url) {
   if (delegate_) {
     delegate_->SwitchToOrOpenTab(url);
-  }
-}
-
-void ShoppingServiceHandler::ShowFeedbackForPriceInsights() {
-  if (delegate_) {
-    delegate_->ShowFeedbackForPriceInsights();
   }
 }
 

@@ -23,6 +23,7 @@ import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {PriceInsightsBrowserProxyImpl} from './price_insights_browser_proxy.js';
 
 export interface ShoppingInsightsAppElement {
   $: {
@@ -90,7 +91,9 @@ export class ShoppingInsightsAppElement extends PolymerElement {
     // Push showInsightsSidePanelUI() callback to the event queue to allow
     // deferred rendering to take place.
     listenOnce(this.$.insightsContainer, 'dom-change', () => {
-      setTimeout(() => this.shoppingApi_.showInsightsSidePanelUi(), 0);
+      setTimeout(() => {
+        PriceInsightsBrowserProxyImpl.getInstance().showSidePanelUi();
+      }, 0);
     });
   }
 

@@ -370,8 +370,7 @@ void HistoryUI::CreateShoppingServiceHandler(
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(receiver), bookmark_model, shopping_service,
           profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           nullptr);
 }
 

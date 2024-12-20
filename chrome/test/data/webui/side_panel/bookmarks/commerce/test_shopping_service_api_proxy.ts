@@ -47,10 +47,8 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'getPriceInsightsInfoForCurrentUrl',
       'getUrlInfosForProductTabs',
       'getUrlInfosForRecentlyViewedTabs',
-      'showInsightsSidePanelUi',
       'openUrlInNewTab',
       'switchToOrOpenTab',
-      'showFeedbackForPriceInsights',
       'isShoppingListEligible',
       'getPriceTrackingStatusForCurrentUrl',
       'getPriceInsightsInfoForUrl',
@@ -102,20 +100,12 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     return Promise.resolve({urlInfos: []});
   }
 
-  showInsightsSidePanelUi() {
-    this.methodCalled('showInsightsSidePanelUi');
-  }
-
   openUrlInNewTab() {
     this.methodCalled('openUrlInNewTab');
   }
 
   switchToOrOpenTab() {
     this.methodCalled('switchToOrOpenTab');
-  }
-
-  showFeedbackForPriceInsights() {
-    this.methodCalled('showFeedbackForPriceInsights');
   }
 
   isShoppingListEligible() {

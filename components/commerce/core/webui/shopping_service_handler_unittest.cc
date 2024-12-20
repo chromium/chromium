@@ -59,10 +59,8 @@ class MockDelegate : public ShoppingServiceHandler::Delegate {
   ~MockDelegate() override = default;
 
   MOCK_METHOD(std::optional<GURL>, GetCurrentTabUrl, (), (override));
-  MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
   MOCK_METHOD(void, OpenUrlInNewTab, (const GURL& url), (override));
   MOCK_METHOD(void, SwitchToOrOpenTab, (const GURL& url), (override));
-  MOCK_METHOD(void, ShowFeedbackForPriceInsights, (), (override));
   MOCK_METHOD(const bookmarks::BookmarkNode*,
               GetOrAddBookmarkForCurrentUrl,
               (),
@@ -398,12 +396,6 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForRecentlyViewedTabs) {
   run_loop.Run();
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestShowInsightsSidePanelUI) {
-  EXPECT_CALL(*delegate_, ShowInsightsSidePanelUI).Times(1);
-
-  handler_->ShowInsightsSidePanelUI();
-}
-
 TEST_F(ShoppingServiceHandlerTest, TestOpenUrlInNewTab) {
   const GURL url = GURL("http://example.com/");
   EXPECT_CALL(*delegate_, OpenUrlInNewTab(url)).Times(1);
@@ -416,12 +408,6 @@ TEST_F(ShoppingServiceHandlerTest, TestSwitchToOrOpenTab) {
   EXPECT_CALL(*delegate_, SwitchToOrOpenTab(url)).Times(1);
 
   handler_->SwitchToOrOpenTab(url);
-}
-
-TEST_F(ShoppingServiceHandlerTest, TestShowFeedbackForPriceInsights) {
-  EXPECT_CALL(*delegate_, ShowFeedbackForPriceInsights).Times(1);
-
-  handler_->ShowFeedbackForPriceInsights();
 }
 
 TEST_F(ShoppingServiceHandlerTest,

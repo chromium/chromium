@@ -13,6 +13,7 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {ShoppingInsightsAppElement} from 'chrome://shopping-insights-side-panel.top-chrome/app.js';
+import {PriceInsightsBrowserProxyImpl} from 'chrome://shopping-insights-side-panel.top-chrome/price_insights_browser_proxy.js';
 import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -26,6 +27,7 @@ suite('ShoppingInsightsAppTest', () => {
   const shoppingServiceApi =
       TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
+  const priceInsightsProxy = TestMock.fromClass(PriceInsightsBrowserProxyImpl);
   let metrics: MetricsTracker;
 
   const productInfo: ProductInfo = {
@@ -120,6 +122,9 @@ suite('ShoppingInsightsAppTest', () => {
         'getCallbackRouter', new PageCallbackRouter());
     PriceTrackingBrowserProxyImpl.setInstance(priceTrackingProxy);
 
+    priceInsightsProxy.reset();
+    PriceInsightsBrowserProxyImpl.setInstance(priceInsightsProxy);
+
     shoppingInsightsApp = document.createElement('shopping-insights-app');
 
     metrics = fakeMetricsPrivate();
@@ -206,8 +211,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
     feedbackButton.click();
-    assertEquals(
-        1, shoppingServiceApi.getCallCount('showFeedbackForPriceInsights'));
+    assertEquals(1, priceInsightsProxy.getCallCount('showFeedback'));
     assertEquals(
         1, metrics.count('Commerce.PriceInsights.InlineFeedbackLinkClicked'));
 

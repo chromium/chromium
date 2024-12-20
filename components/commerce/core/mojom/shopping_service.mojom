@@ -192,9 +192,6 @@ interface ShoppingServiceHandler {
   // not necessarily represent an open tab.
   GetUrlInfosForRecentlyViewedTabs() => (array<UrlInfo> url_infos);
 
-  // Notify the backend that the UI is ready to be shown.
-  ShowInsightsSidePanelUI();
-
   // Returns if the user is eligible for price tracking.
   IsShoppingListEligible() => (bool eligible);
 
@@ -206,9 +203,6 @@ interface ShoppingServiceHandler {
 
   // Opens |url| in an existing or new tab.
   SwitchToOrOpenTab(url.mojom.Url url);
-
-  // Show feedback form for price insights.
-  ShowFeedbackForPriceInsights();
 
   // Get all of a user's product specifications sets.
   GetAllProductSpecificationsSets() => (

@@ -6,6 +6,7 @@ assert(!is_android)
 
 source_set("commerce") {
   sources = [
+    "price_insights_handler.h",
     "price_tracking_handler.h",
     "product_specifications_disclosure_dialog.h",
     "product_specifications_ui.h",
@@ -31,6 +32,7 @@ source_set("commerce") {
 
 source_set("impl") {
   sources = [
+    "price_insights_handler.cc",
     "price_tracking_handler.cc",
     "product_specifications_disclosure_dialog.cc",
     "product_specifications_ui.cc",

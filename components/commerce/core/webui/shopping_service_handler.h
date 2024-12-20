@@ -61,15 +61,11 @@ class ShoppingServiceHandler
 
     virtual std::optional<GURL> GetCurrentTabUrl() = 0;
 
-    virtual void ShowInsightsSidePanelUI() = 0;
-
     virtual const bookmarks::BookmarkNode* GetOrAddBookmarkForCurrentUrl() = 0;
 
     virtual void OpenUrlInNewTab(const GURL& url) = 0;
 
     virtual void SwitchToOrOpenTab(const GURL& url) = 0;
-
-    virtual void ShowFeedbackForPriceInsights() = 0;
 
     virtual void ShowFeedbackForProductSpecifications(
         const std::string& log_id) = 0;
@@ -108,13 +104,11 @@ class ShoppingServiceHandler
       GetUrlInfosForProductTabsCallback callback) override;
   void GetUrlInfosForRecentlyViewedTabs(
       GetUrlInfosForRecentlyViewedTabsCallback callback) override;
-  void ShowInsightsSidePanelUI() override;
   void IsShoppingListEligible(IsShoppingListEligibleCallback callback) override;
   void GetPriceTrackingStatusForCurrentUrl(
       GetPriceTrackingStatusForCurrentUrlCallback callback) override;
   void SwitchToOrOpenTab(const GURL& url) override;
   void OpenUrlInNewTab(const GURL& url) override;
-  void ShowFeedbackForPriceInsights() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
   void GetProductSpecificationsSetByUuid(

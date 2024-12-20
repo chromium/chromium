@@ -3260,6 +3260,7 @@ if (!is_android) {
       "../browser/ui/webui/chrome_urls/chrome_urls_ui_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
+      "../browser/ui/webui/commerce/price_insights_handler_browsertest.cc",
       "../browser/ui/webui/commerce/price_tracking_handler_browsertest.cc",
       "../browser/ui/webui/commerce/product_specifications_disclosure_dialog_browsertest.cc",
       "../browser/ui/webui/commerce/product_specifications_ui_handler_delegate_browsertest.cc",
