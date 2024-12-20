@@ -18,10 +18,6 @@ namespace blink {
 class Document;
 class LayoutIFrame;
 class LayoutObject;
-class LayoutTable;
-class LayoutTableCaption;
-class LayoutTableSection;
-class LayoutTableRow;
 class LocalFrame;
 
 // AIPageContent is responsible for handling requests for inner-text. It calls
@@ -54,32 +50,19 @@ class MODULES_EXPORT AIPageContentAgent final
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::AIPageContentAgent> receiver);
 
-  void ProcessNode(const LayoutObject& object,
-                   mojom::blink::AIPageContentNode& content_node,
-                   const ComputedStyle& document_style) const;
+  void WalkChildren(const LayoutObject& object,
+                    mojom::blink::AIPageContentNode& content_node,
+                    const ComputedStyle& document_style) const;
   void ProcessIframe(const LayoutIFrame& object,
                      mojom::blink::AIPageContentNode& content_node) const;
   mojom::blink::AIPageContentNodePtr MaybeGenerateContentNode(
-      const LayoutObject& object) const;
-  void MaybeAddNodeContent(const LayoutObject& object,
-                           mojom::blink::AIPageContentAttributes& attributes,
-                           const ComputedStyle& document_style) const;
-  void AddNodeId(const LayoutObject& object,
-                 mojom::blink::AIPageContentAttributes& attributes) const;
+      const LayoutObject& object,
+      const ComputedStyle& document_style) const;
+  std::optional<DOMNodeId> AddNodeId(
+      const LayoutObject& object,
+      mojom::blink::AIPageContentAttributes& attributes) const;
   void AddNodeGeometry(const LayoutObject& object,
                        mojom::blink::AIPageContentGeometry& geometry) const;
-  void ProcessTable(const LayoutTable& object,
-                    mojom::blink::AIPageContentNode& content_node,
-                    const ComputedStyle& document_style) const;
-  void ProcessTableCaption(
-      const LayoutTableCaption& object,
-      mojom::blink::AIPageContentTableData& table_data) const;
-  void ProcessTableSection(const LayoutTableSection& object,
-                           mojom::blink::AIPageContentTableData& table_data,
-                           const ComputedStyle& document_style) const;
-  void ProcessTableRow(const LayoutTableRow& object,
-                       mojom::blink::AIPageContentTableRow& table_row,
-                       const ComputedStyle& document_style) const;
 
   HeapMojoReceiverSet<mojom::blink::AIPageContentAgent, AIPageContentAgent>
       receiver_set_;

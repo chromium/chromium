@@ -48,8 +48,7 @@ bool IsHeadingTag(const HTMLElement& element) {
          element.HasTagName(html_names::kH6Tag);
 }
 
-mojom::blink::AIPageContentAnchorRel GetAnchorRel(
-    const AtomicString& rel) {
+mojom::blink::AIPageContentAnchorRel GetAnchorRel(const AtomicString& rel) {
   if (rel == "noopener") {
     return mojom::blink::AIPageContentAnchorRel::kRelationNoOpener;
   } else if (rel == "noreferrer") {
@@ -109,7 +108,9 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
   return DynamicTo<LayoutIFrame>(object);
 }
 
-bool IsGenericContainer(const LayoutObject& object) {
+bool IsGenericContainer(
+    const LayoutObject& object,
+    const Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
   if (object.Style()->GetPosition() == EPosition::kFixed) {
     return true;
   }
@@ -126,105 +127,88 @@ bool IsGenericContainer(const LayoutObject& object) {
     return true;
   }
 
+  if (object.IsTableCell()) {
+    return true;
+  }
+
+  if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
+    if (element->HasTagName(html_names::kFigureTag)) {
+      return true;
+    }
+  }
+
+  if (!annotated_roles.empty()) {
+    return true;
+  }
+
   return false;
 }
 
-std::optional<mojom::blink::AIPageContentAttributeType> GetAttributeType(
-    const LayoutObject& object) {
-  if (GetIFrame(object)) {
-    return mojom::blink::AIPageContentAttributeType::kIframe;
-  }
-
-  if (object.IsLayoutView()) {
-    return mojom::blink::AIPageContentAttributeType::kRoot;
-  }
-
-  auto* element = DynamicTo<HTMLElement>(object.GetNode());
+void AddAnnotatedRoles(
+    const LayoutObject& object,
+    Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
+  const auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (!element) {
-    return std::nullopt;
+    return;
   }
-
-  if (element->HasTagName(html_names::kPTag)) {
-    return mojom::blink::AIPageContentAttributeType::kParagraph;
-  }
-
   if (IsHeadingTag(*element)) {
-    return mojom::blink::AIPageContentAttributeType::kHeading;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kHeading);
   }
-
-  if (element->HasTagName(html_names::kATag)) {
-    return mojom::blink::AIPageContentAttributeType::kAnchor;
+  if (element->HasTagName(html_names::kPTag)) {
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kParagraph);
   }
-
   if (element->HasTagName(html_names::kOlTag)) {
-    return mojom::blink::AIPageContentAttributeType::kOrderedList;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kOrderedList);
   }
-
   if (element->HasTagName(html_names::kUlTag) ||
       element->HasTagName(html_names::kDlTag)) {
-    return mojom::blink::AIPageContentAttributeType::kUnorderedList;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kUnorderedList);
   }
-
-  if (element->HasTagName(html_names::kFigureTag)) {
-    return mojom::blink::AIPageContentAttributeType::kFigure;
-  }
-
-  if (object.IsTable()) {
-    return mojom::blink::AIPageContentAttributeType::kTable;
-  }
-
   if (object.IsTableCell()) {
-    return mojom::blink::AIPageContentAttributeType::kTableCell;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kTableCell);
   }
-
   if (element->HasTagName(html_names::kHeaderTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
-    return mojom::blink::AIPageContentAttributeType::kHeader;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kHeader);
   }
-
   if (element->HasTagName(html_names::kNavTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "navigation") {
-    return mojom::blink::AIPageContentAttributeType::kNav;
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kNav);
   }
-
   if (element->HasTagName(html_names::kSearchTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "search") {
-    return mojom::blink::AIPageContentAttributeType::kSearch;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSearch);
   }
-
   if (element->HasTagName(html_names::kMainTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "main") {
-    return mojom::blink::AIPageContentAttributeType::kMain;
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kMain);
   }
-
   if (element->HasTagName(html_names::kArticleTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "article") {
-    return mojom::blink::AIPageContentAttributeType::kArticle;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kArticle);
   }
-
   if (element->HasTagName(html_names::kSectionTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "region") {
-    return mojom::blink::AIPageContentAttributeType::kSection;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kSection);
   }
-
   if (element->HasTagName(html_names::kAsideTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "complementary") {
-    return mojom::blink::AIPageContentAttributeType::kAside;
+    annotated_roles.push_back(mojom::blink::AIPageContentAnnotatedRole::kAside);
   }
-
   if (element->HasTagName(html_names::kFooterTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "contentinfo") {
-    return mojom::blink::AIPageContentAttributeType::kFooter;
+    annotated_roles.push_back(
+        mojom::blink::AIPageContentAnnotatedRole::kFooter);
   }
-
-  // TODO: Add FormData for attribute_type = FORM.
-
-  // Keep container at the bottom of the list as it is the least specific.
-  if (IsGenericContainer(object)) {
-    return mojom::blink::AIPageContentAttributeType::kContainer;
-  }
-
-  return std::nullopt;
 }
 
 std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
@@ -239,10 +223,155 @@ std::optional<DOMNodeId> GetNodeId(const LayoutObject& object) {
   return DOMNodeIds::IdForNode(node);
 }
 
-// TODO(crbug.com/381273397): Add content for embed and object.
-bool ShouldSkipEmbeddedContent(const LayoutObject& object) {
+bool ShouldSkipContent(const LayoutObject& object) {
+  // Don't add content when node is invisible.
+  return object.Style()->Visibility() != EVisibility::kVisible;
+}
+
+bool ShouldSkipSubtree(const LayoutObject& object) {
+  // Skip embedded content that is not an iframe.
+  // TODO(crbug.com/381273397): Add content for embed and object.
   auto* layout_embedded_content = DynamicTo<LayoutEmbeddedContent>(object);
-  return layout_embedded_content && !GetIFrame(object);
+  if (layout_embedded_content && !GetIFrame(object)) {
+    return true;
+  }
+
+  // List markers are communicated by the kOrderedList and kUnorderedList
+  // annotated roles.
+  if (object.IsListMarker()) {
+    return true;
+  }
+
+  // Table caption is communicated by the table name.
+  if (object.IsTableCaption()) {
+    return true;
+  }
+
+  // Skip empty text.
+  auto* layout_text = DynamicTo<LayoutText>(object);
+  if (layout_text && layout_text->IsAllCollapsibleWhitespace()) {
+    return true;
+  }
+
+  if (DynamicTo<LayoutHTMLCanvas>(object)) {
+    return true;
+  }
+
+  if (DynamicTo<LayoutSVGRoot>(object)) {
+    return true;
+  }
+
+  return false;
+}
+
+void ProcessTextNode(const LayoutText& layout_text,
+                     mojom::blink::AIPageContentAttributes& attributes,
+                     const ComputedStyle& document_style) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kText;
+  CHECK(!ShouldSkipContent(layout_text));
+
+  auto text_style = mojom::blink::AIPageContentTextStyle::New();
+  text_style->text_size = GetTextSize(*layout_text.Style(), document_style);
+  text_style->has_emphasis = HasEmphasis(*layout_text.Style());
+
+  auto text_info = mojom::blink::AIPageContentTextInfo::New();
+  text_info->text_content = layout_text.TransformedText();
+  text_info->text_style = std::move(text_style);
+  attributes.text_info = std::move(text_info);
+}
+
+void ProcessImageNode(const LayoutImage& layout_image,
+                      mojom::blink::AIPageContentAttributes& attributes,
+                      const ComputedStyle& document_style) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kImage;
+  CHECK(!ShouldSkipContent(layout_image));
+
+  if (DynamicTo<LayoutMedia>(layout_image)) {
+    return;
+  }
+
+  auto image_info = mojom::blink::AIPageContentImageInfo::New();
+
+  if (auto* image_element =
+          DynamicTo<HTMLImageElement>(layout_image.GetNode())) {
+    // TODO(crbug.com/383127202): A11y stack generates alt text using image
+    // data which could be reused for this.
+    image_info->image_caption = image_element->AltText();
+  }
+
+  // TODO(crbug.com/382558422): Include image source origin.
+  attributes.image_info = std::move(image_info);
+}
+
+void ProcessAnchorNode(const HTMLAnchorElement& anchor_element,
+                       mojom::blink::AIPageContentAttributes& attributes,
+                       const ComputedStyle& document_style) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kAnchor;
+  if (ShouldSkipContent(*anchor_element.GetLayoutObject())) {
+    return;
+  }
+
+  auto anchor_data = mojom::blink::AIPageContentAnchorData::New();
+  anchor_data->url = anchor_element.Url();
+  for (unsigned i = 0; i < anchor_element.relList().length(); ++i) {
+    anchor_data->rel.push_back(GetAnchorRel(anchor_element.relList().item(i)));
+  }
+  attributes.anchor_data = std::move(anchor_data);
+}
+
+void ProcessTableNode(const LayoutTable& layout_table,
+                      mojom::blink::AIPageContentAttributes& attributes,
+                      const ComputedStyle& document_style) {
+  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kTable;
+  if (ShouldSkipContent(layout_table)) {
+    return;
+  }
+
+  auto table_data = mojom::blink::AIPageContentTableData::New();
+  for (auto* section = layout_table.FirstChild(); section;
+       section = section->NextSibling()) {
+    if (section->IsTableCaption()) {
+      StringBuilder table_name;
+      auto* caption = To<LayoutTableCaption>(section);
+      for (auto* child = caption->FirstChild(); child;
+           child = child->NextSibling()) {
+        if (const auto* layout_text = DynamicTo<LayoutText>(*child)) {
+          table_name.Append(layout_text->TransformedText());
+        }
+      }
+      table_data->table_name = table_name.ToString();
+    }
+  }
+  attributes.table_data = std::move(table_data);
+}
+
+mojom::blink::AIPageContentTableRowType GetTableRowType(
+    const LayoutTableRow& layout_table_row) {
+  if (auto* section = layout_table_row.Section()) {
+    if (auto* table_section_element =
+            DynamicTo<HTMLElement>(section->GetNode())) {
+      if (table_section_element->HasTagName(html_names::kTheadTag)) {
+        return mojom::blink::AIPageContentTableRowType::kHeader;
+      } else if (table_section_element->HasTagName(html_names::kTfootTag)) {
+        return mojom::blink::AIPageContentTableRowType::kFooter;
+      }
+    }
+  }
+  return mojom::blink::AIPageContentTableRowType::kBody;
+}
+
+void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
+                         mojom::blink::AIPageContentAttributes& attributes,
+                         const ComputedStyle& document_style) {
+  attributes.attribute_type =
+      mojom::blink::AIPageContentAttributeType::kTableRow;
+  if (ShouldSkipContent(layout_table_row)) {
+    return;
+  }
+
+  auto table_row_data = mojom::blink::AIPageContentTableRowData::New();
+  table_row_data->row_type = GetTableRowType(layout_table_row);
+  attributes.table_row_data = std::move(table_row_data);
 }
 
 }  // namespace
@@ -322,15 +451,15 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
-  auto root_node = MaybeGenerateContentNode(*layout_view);
+  auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
   CHECK(root_node);
 
-  ProcessNode(*layout_view, *root_node, *document_style);
+  WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
   return page_content;
 }
 
-void AIPageContentAgent::ProcessNode(
+void AIPageContentAgent::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
     const ComputedStyle& document_style) const {
@@ -340,30 +469,19 @@ void AIPageContentAgent::ProcessNode(
 
   for (auto* child = object.SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (ShouldSkipEmbeddedContent(*child)) {
+    if (ShouldSkipSubtree(*child)) {
       continue;
     }
 
-    if (child->IsListMarker()) {
-      continue;
-    }
-
-    auto child_content_node = MaybeGenerateContentNode(*child);
+    auto child_content_node = MaybeGenerateContentNode(*child, document_style);
     if (child_content_node &&
         child_content_node->content_attributes->attribute_type ==
             mojom::blink::AIPageContentAttributeType::kIframe) {
-      ProcessIframe(*GetIFrame(*child), *child_content_node);
-    } else if (child_content_node &&
-               child_content_node->content_attributes->attribute_type ==
-                   mojom::blink::AIPageContentAttributeType::kTable) {
-      ProcessTable(To<LayoutTable>(*child), *child_content_node,
-                   document_style);
+      // If the child is an iframe, it does its own tree walk.
     } else {
       auto& node_for_child =
           child_content_node ? *child_content_node : content_node;
-      MaybeAddNodeContent(*child, *node_for_child.content_attributes,
-                          document_style);
-      ProcessNode(*child, node_for_child, document_style);
+      WalkChildren(*child, node_for_child, document_style);
     }
 
     if (child_content_node) {
@@ -375,6 +493,9 @@ void AIPageContentAgent::ProcessNode(
 void AIPageContentAgent::ProcessIframe(
     const LayoutIFrame& object,
     mojom::blink::AIPageContentNode& content_node) const {
+  content_node.content_attributes->attribute_type =
+      mojom::blink::AIPageContentAttributeType::kIframe;
+
   auto& frame = object.ChildFrameView()->GetFrame();
 
   auto iframe_data = mojom::blink::AIPageContentIframeData::New();
@@ -388,31 +509,64 @@ void AIPageContentAgent::ProcessIframe(
   if (child_layout_view) {
     // Add a node for the iframe's LayoutView for consistency with remote
     // frames.
-    auto child_content_node = MaybeGenerateContentNode(*child_layout_view);
-    MaybeAddNodeContent(*child_layout_view,
-                        *child_content_node->content_attributes,
-                        *child_layout_view->Style());
-    ProcessNode(*child_layout_view, *child_content_node,
-                *child_layout_view->Style());
+    auto child_content_node = MaybeGenerateContentNode(
+        *child_layout_view, *child_layout_view->Style());
+    WalkChildren(*child_layout_view, *child_content_node,
+                 *child_layout_view->Style());
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
 }
 
 mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
-    const LayoutObject& object) const {
-  const auto attribute_type = GetAttributeType(object);
-  if (!attribute_type) {
-    return nullptr;
-  }
-
+    const LayoutObject& object,
+    const ComputedStyle& document_style) const {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
   auto& attributes = *content_node->content_attributes;
-  AddNodeId(object, attributes);
-  attributes.common_ancestor_dom_node_id = attributes.dom_node_ids.back();
+  AddAnnotatedRoles(object, attributes.annotated_roles);
 
-  attributes.attribute_type = *attribute_type;
+  // Set the attribute type and add any special attributes if the attribute type
+  // requires it.
+  if (const auto* iframe = GetIFrame(object)) {
+    ProcessIframe(*iframe, *content_node);
+  } else if (object.IsLayoutView()) {
+    attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kRoot;
+  } else if (object.IsText()) {
+    // Since text is a leaf node, do not create a content node if should skip
+    // content.
+    if (ShouldSkipContent(object)) {
+      return nullptr;
+    }
+    ProcessTextNode(To<LayoutText>(object), attributes, document_style);
+  } else if (object.IsLayoutImage()) {
+    // Since image is a leaf node, do not create a content node if should skip
+    // content.
+    if (ShouldSkipContent(object)) {
+      return nullptr;
+    }
+    ProcessImageNode(To<LayoutImage>(object), attributes, document_style);
+  } else if (const auto* anchor_element =
+                 DynamicTo<HTMLAnchorElement>(object.GetNode())) {
+    ProcessAnchorNode(*anchor_element, attributes, document_style);
+  } else if (object.IsTable()) {
+    ProcessTableNode(To<LayoutTable>(object), attributes, document_style);
+  } else if (object.IsTableRow()) {
+    ProcessTableRowNode(To<LayoutTableRow>(object), attributes, document_style);
+  } else if (IsGenericContainer(object, attributes.annotated_roles)) {
+    // Be sure to set annotated roles before calling IsGenericContainer, as
+    // IsGenericContainer will check for annotated roles.
+    // Keep container at the bottom of the list as it is the least specific.
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kContainer;
+  } else {
+    // If no attribute type was set, do not generate a content node.
+    return nullptr;
+  }
+
+  if (auto node_id = AddNodeId(object, attributes)) {
+    attributes.common_ancestor_dom_node_id = *node_id;
+  }
 
   attributes.geometry = mojom::blink::AIPageContentGeometry::New();
   AddNodeGeometry(object, *attributes.geometry);
@@ -420,76 +574,15 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
   return content_node;
 }
 
-void AIPageContentAgent::MaybeAddNodeContent(
-    const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes,
-    const ComputedStyle& document_style) const {
-  if (object.Style()->Visibility() != EVisibility::kVisible) {
-    return;
-  }
-
-  if (const auto* layout_text = DynamicTo<LayoutText>(object)) {
-    AddNodeId(object, attributes);
-
-    auto text_style = mojom::blink::AIPageContentTextStyle::New();
-    text_style->text_size = GetTextSize(*layout_text->Style(), document_style);
-    text_style->has_emphasis = HasEmphasis(*layout_text->Style());
-
-    auto text_info = mojom::blink::AIPageContentTextInfo::New();
-    text_info->text_content = layout_text->TransformedText();
-    text_info->text_bounding_box =
-        layout_text->AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
-    text_info->text_style = std::move(text_style);
-    attributes.text_info.emplace_back(std::move(text_info));
-    return;
-  }
-
-  if (DynamicTo<LayoutHTMLCanvas>(object)) {
-    return;
-  }
-
-  if (DynamicTo<LayoutSVGRoot>(object)) {
-    return;
-  }
-
-  if (const auto* image = DynamicTo<LayoutImage>(object)) {
-    if (DynamicTo<LayoutMedia>(image)) {
-      return;
-    }
-
-    AddNodeId(object, attributes);
-
-    auto image_info = mojom::blink::AIPageContentImageInfo::New();
-    image_info->image_bounding_box =
-        image->AbsoluteBoundingBoxRect(kMapCoordinatesFlags);
-    if (auto* image_element = DynamicTo<HTMLImageElement>(image->GetNode())) {
-      // TODO(crbug.com/383127202): A11y stack generates alt text using image
-      // data which could be reused for this.
-      image_info->image_caption = image_element->AltText();
-    }
-    // TODO(crbug.com/382558422): Include image source origin.
-    attributes.image_info.emplace_back(std::move(image_info));
-    return;
-  }
-
-  if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(object.GetNode())) {
-    auto anchor_data = mojom::blink::AIPageContentAnchorData::New();
-    anchor_data->url = anchor_element->Url();
-    for (unsigned i = 0; i < anchor_element->relList().length(); ++i) {
-      anchor_data->rel.push_back(
-          GetAnchorRel(anchor_element->relList().item(i)));
-    }
-    attributes.anchor_data = std::move(anchor_data);
-    return;
-  }
-}
-
-void AIPageContentAgent::AddNodeId(
+std::optional<DOMNodeId> AIPageContentAgent::AddNodeId(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
   if (auto node_id = GetNodeId(object)) {
     attributes.dom_node_ids.push_back(*node_id);
+    return node_id;
   }
+
+  return std::nullopt;
 }
 
 void AIPageContentAgent::AddNodeGeometry(
@@ -513,69 +606,6 @@ void AIPageContentAgent::AddNodeGeometry(
       object.Style()->GetPosition() == EPosition::kSticky;
   geometry.scrolls_overflow_x = object.Style()->ScrollsOverflowX();
   geometry.scrolls_overflow_y = object.Style()->ScrollsOverflowY();
-}
-
-void AIPageContentAgent::ProcessTable(
-    const LayoutTable& object,
-    mojom::blink::AIPageContentNode& content_node,
-    const ComputedStyle& document_style) const {
-  auto table_data = mojom::blink::AIPageContentTableData::New();
-  for (auto* child = object.FirstChild(); child; child = child->NextSibling()) {
-    if (child->IsTableCaption()) {
-      ProcessTableCaption(To<LayoutTableCaption>(*child), *table_data);
-    }
-    if (child->IsTableSection()) {
-      ProcessTableSection(To<LayoutTableSection>(*child), *table_data,
-                          document_style);
-    }
-  }
-  content_node.content_attributes->table_data = std::move(table_data);
-}
-
-void AIPageContentAgent::ProcessTableCaption(
-    const LayoutTableCaption& object,
-    mojom::blink::AIPageContentTableData& table_data) const {
-  StringBuilder table_name;
-  for (auto* child = object.FirstChild(); child; child = child->NextSibling()) {
-    if (const auto* layout_text = DynamicTo<LayoutText>(*child)) {
-      table_name.Append(layout_text->TransformedText());
-    }
-  }
-  table_data.table_name = table_name.ToString();
-}
-
-void AIPageContentAgent::ProcessTableSection(
-    const LayoutTableSection& object,
-    mojom::blink::AIPageContentTableData& table_data,
-    const ComputedStyle& document_style) const {
-  auto* element = DynamicTo<HTMLElement>(object.GetNode());
-  for (auto* child = object.FirstChild(); child; child = child->NextSibling()) {
-    auto row = mojom::blink::AIPageContentTableRow::New();
-    ProcessTableRow(To<LayoutTableRow>(*child), *row, document_style);
-    if (element && element->HasTagName(html_names::kTheadTag)) {
-      table_data.header_rows.emplace_back(std::move(row));
-    } else if (element && element->HasTagName(html_names::kTfootTag)) {
-      table_data.footer_rows.emplace_back(std::move(row));
-    } else {
-      table_data.body_rows.emplace_back(std::move(row));
-    }
-  }
-}
-
-void AIPageContentAgent::ProcessTableRow(
-    const LayoutTableRow& object,
-    mojom::blink::AIPageContentTableRow& table_row,
-    const ComputedStyle& document_style) const {
-  for (auto* child = object.FirstChild(); child; child = child->NextSibling()) {
-    // Add the cell contents as a ContentNode.
-    // TODO(crbug.com/383127685): Consider adding additional information as
-    // CellContentData, such as the cell's column span.
-    auto child_content_node = MaybeGenerateContentNode(*child);
-    MaybeAddNodeContent(*child, *child_content_node->content_attributes,
-                        document_style);
-    ProcessNode(*child, *child_content_node, document_style);
-    table_row.cells.emplace_back(std::move(child_content_node));
-  }
 }
 
 }  // namespace blink

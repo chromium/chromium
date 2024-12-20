@@ -33,11 +33,11 @@ base::FilePath GetTestDataDir() {
 
 void AssertHasText(const optimization_guide::proto::ContentNode& node,
                    std::string text) {
-  const auto& content_attributes = node.content_attributes();
-  EXPECT_EQ(content_attributes.attribute_type(),
+  EXPECT_EQ(node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
-  EXPECT_EQ(content_attributes.text_info().size(), 1);
-  EXPECT_EQ(content_attributes.text_info().at(0).text_content(), text);
+  EXPECT_EQ(node.children_nodes().size(), 1);
+  const auto& text_node = node.children_nodes().at(0);
+  EXPECT_EQ(text_node.content_attributes().text_data().text_content(), text);
 }
 
 void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
   const gfx::Size window_bounds(web_contents()->GetSize());
   LoadPage(https_server()->GetURL("/simple.html"));
 
-  EXPECT_TRUE(page_content().root_node().children_nodes().empty());
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
 
   const auto& root_geometry =
@@ -166,15 +166,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        AIPageContentImageDataURL) {
   LoadPage(https_server()->GetURL("a.com", "/data_image.html"));
 
-  EXPECT_TRUE(page_content().root_node().children_nodes().empty());
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  const auto& image_node = page_content().root_node().children_nodes().at(0);
 
-  ASSERT_EQ(page_content().root_node().content_attributes().image_info().size(),
-            1);
-  const auto& image_info =
-      page_content().root_node().content_attributes().image_info()[0];
+  ASSERT_TRUE(image_node.content_attributes().has_image_data());
+  const auto& image_data = image_node.content_attributes().image_data();
   // TODO(crbug.com/382558422): Propagate image source URLs, this should be
   // a.com.
-  EXPECT_FALSE(GURL(image_info.source_url()).is_valid());
+  EXPECT_TRUE(image_data.source_url().empty());
 }
 
 namespace {
@@ -202,15 +201,14 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   LoadPage(https_server()->GetURL("a.com", replacement_path));
 
-  EXPECT_TRUE(page_content().root_node().children_nodes().empty());
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  const auto& image_node = page_content().root_node().children_nodes().at(0);
 
-  ASSERT_EQ(page_content().root_node().content_attributes().image_info().size(),
-            1);
-  const auto& image_info =
-      page_content().root_node().content_attributes().image_info()[0];
+  ASSERT_TRUE(image_node.content_attributes().has_image_data());
+  const auto& image_data = image_node.content_attributes().image_data();
   // TODO(crbug.com/382558422): Propagate image source URLs, this should be
   // b.com.
-  EXPECT_FALSE(GURL(image_info.source_url()).is_valid());
+  EXPECT_TRUE(image_data.source_url().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -278,7 +276,10 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   ASSERT_EQ(iframe_root.children_nodes().size(), 1);
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
+  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
+            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
   const auto& geometry = p.content_attributes().geometry();
   AssertRectsEqual(geometry.outer_bounding_box(),
                    gfx::Rect(-20, -10, 100, 200));
@@ -308,7 +309,10 @@ IN_PROC_BROWSER_TEST_P(
 
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
+  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
+            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
 
 // TODO(khushalsagar): This is an existing bug where the scroll offset of the
 // root scroller in the ancestor remote frame is not applied.
