@@ -281,7 +281,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
   EXPECT_EQ(request_details.instrument_id,
             state->virtual_card_enrollment_fields.credit_card.instrument_id());
   EXPECT_EQ(request_details.billing_customer_number,
-            payments::GetBillingCustomerId(&payments_data_manager()));
+            payments::GetBillingCustomerId(payments_data_manager()));
   EXPECT_EQ(
       request_details.source,
       state->virtual_card_enrollment_fields.virtual_card_enrollment_source);

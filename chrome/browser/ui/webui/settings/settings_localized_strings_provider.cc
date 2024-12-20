@@ -1361,21 +1361,21 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  autofill::PersonalDataManager& personal_data =
-      *autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
+  autofill::PaymentsDataManager& payments_data =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
+          ->payments_data_manager();
   html_source->AddBoolean(
       "migrationEnabled",
       !is_guest_mode &&
           autofill::IsCreditCardMigrationEnabled(
-              personal_data, SyncServiceFactory::GetForProfile(profile),
+              payments_data, SyncServiceFactory::GetForProfile(profile),
               *profile->GetPrefs(),
               /*is_test_mode=*/false,
               /*log_manager=*/nullptr));
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(
-                              personal_data.payments_data_manager()
-                                  .GetCountryCodeForExperimentGroup(),
+                              payments_data.GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
 
   html_source->AddBoolean("deviceAuthAvailable",

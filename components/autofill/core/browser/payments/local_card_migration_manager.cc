@@ -161,7 +161,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
-      payments::GetBillingCustomerId(&payments_data_manager()),
+      payments::GetBillingCustomerId(payments_data_manager()),
       is_from_settings_page
           ? payments::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE
           : payments::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
@@ -211,8 +211,7 @@ void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
   return ::autofill::IsCreditCardMigrationEnabled(
-      client_->GetPersonalDataManager(), client_->GetSyncService(),
-      *client_->GetPrefs(),
+      payments_data_manager(), client_->GetSyncService(), *client_->GetPrefs(),
       /*is_test_mode=*/observer_for_testing_, client_->GetCurrentLogManager());
 }
 
@@ -370,7 +369,7 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
 
   migration_request_.app_locale = client_->GetAppLocale();
   migration_request_.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
+      payments::GetBillingCustomerId(payments_data_manager());
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->MigrateCards(
@@ -424,7 +423,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 
   // Local card migration should ONLY be offered when the user already has a
   // Google Payments account.
-  DCHECK_NE(0, payments::GetBillingCustomerId(&payments_data_manager()));
+  DCHECK(payments::HasGooglePaymentsAccount(payments_data_manager()));
   detected_values |=
       CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
 

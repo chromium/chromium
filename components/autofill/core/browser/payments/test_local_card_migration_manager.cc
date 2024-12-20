@@ -14,7 +14,7 @@ namespace autofill {
 TestLocalCardMigrationManager::~TestLocalCardMigrationManager() = default;
 
 bool TestLocalCardMigrationManager::IsCreditCardMigrationEnabled() {
-  return payments::GetBillingCustomerId(&payments_data_manager()) != 0;
+  return payments::HasGooglePaymentsAccount(payments_data_manager());
 }
 
 bool TestLocalCardMigrationManager::LocalCardMigrationWasTriggered() {

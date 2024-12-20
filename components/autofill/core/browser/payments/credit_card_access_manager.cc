@@ -611,7 +611,7 @@ void CreditCardAccessManager::Authenticate(
           ->OnChallengeOptionSelected(
               card_.get(), *selected_challenge_option_, GetWeakPtr(),
               risk_based_authentication_response_.context_token,
-              payments::GetBillingCustomerId(&payments_data_manager()));
+              payments::GetBillingCustomerId(payments_data_manager()));
       break;
     }
     case UnmaskAuthFlowType::kThreeDomainSecure:

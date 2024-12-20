@@ -81,7 +81,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
 
   unmask_request_details_->billing_customer_number =
       payments::GetBillingCustomerId(
-          &autofill_client_->GetPersonalDataManager().payments_data_manager());
+          autofill_client_->GetPersonalDataManager().payments_data_manager());
 
   autofill_client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()

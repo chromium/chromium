@@ -425,7 +425,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,
-      payments::GetBillingCustomerId(&payments_data_manager()),
+      payments::GetBillingCustomerId(payments_data_manager()),
       payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }
 
@@ -1061,7 +1061,7 @@ int CreditCardSaveManager::GetDetectedValues() const {
   // Payments account. Include a bit for existence of this account (NOT the id
   // itself), as it will help determine if a new Payments customer might need to
   // be created when save is accepted.
-  if (payments::GetBillingCustomerId(&payments_data_manager()) != 0) {
+  if (payments::HasGooglePaymentsAccount(payments_data_manager())) {
     detected_values |= DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
   }
 
@@ -1296,7 +1296,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
   }
   upload_request_.app_locale = client_->GetAppLocale();
   upload_request_.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
+      payments::GetBillingCustomerId(payments_data_manager());
 
   AutofillMetrics::LogUploadAcceptedCardOriginMetric(
       uploading_local_card_

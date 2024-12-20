@@ -134,7 +134,7 @@ void FullCardRequest::GetFullCardImpl(
   if (should_unmask_card_) {
     GetPaymentsNetworkInterface()->Prepare();
     request_->billing_customer_number =
-        GetBillingCustomerId(&GetPaymentsDataManager());
+        GetBillingCustomerId(GetPaymentsDataManager());
   }
 
   request_->fido_assertion_info = std::move(fido_assertion_info);

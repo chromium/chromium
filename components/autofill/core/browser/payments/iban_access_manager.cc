@@ -85,7 +85,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   GetPaymentsDataManager().RecordUseOfIban(iban_copy);
   payments::UnmaskIbanRequestDetails request_details;
   request_details.billing_customer_number =
-      payments::GetBillingCustomerId(&GetPaymentsDataManager());
+      payments::GetBillingCustomerId(GetPaymentsDataManager());
   request_details.instrument_id = instrument_id;
   base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
   GetPaymentsAutofillClient().GetPaymentsNetworkInterface()->UnmaskIban(

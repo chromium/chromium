@@ -23,7 +23,7 @@ class DeviceAuthenticator;
 namespace autofill {
 
 class LogManager;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Returns true if uploading credit cards to Wallet servers is enabled. This
 // requires the appropriate flags and user settings to be true and the user to
@@ -36,11 +36,12 @@ bool IsCreditCardUploadEnabled(
     LogManager* log_manager);
 
 // Returns true if autofill local card migration flow is enabled.
-bool IsCreditCardMigrationEnabled(PersonalDataManager& personal_data_manager,
-                                  syncer::SyncService* sync_service,
-                                  const PrefService& pref_service,
-                                  bool is_test_mode,
-                                  LogManager* log_manager);
+bool IsCreditCardMigrationEnabled(
+    const PaymentsDataManager& payments_data_manager,
+    const syncer::SyncService* sync_service,
+    const PrefService& pref_service,
+    bool is_test_mode,
+    LogManager* log_manager);
 
 // Returns true if autofill suggestions are disabled via experiment. The
 // disabled experiment isn't the same as disabling autofill completely since we

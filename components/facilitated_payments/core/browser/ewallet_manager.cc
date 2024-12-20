@@ -142,7 +142,7 @@ void EwalletManager::OnApiAvailabilityReceived(base::TimeTicks start_time,
 
   initiate_payment_request_details_->billing_customer_number_ =
       autofill::payments::GetBillingCustomerId(
-          client_->GetPaymentsDataManager());
+          *client_->GetPaymentsDataManager());
 
   client_->ShowEwalletPaymentPrompt(
       supported_ewallets_,

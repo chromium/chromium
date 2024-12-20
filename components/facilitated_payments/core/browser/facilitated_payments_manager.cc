@@ -181,10 +181,9 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     return;
   }
 
-  CHECK(client_->GetPaymentsDataManager());
   initiate_payment_request_details_->billing_customer_number_ =
       autofill::payments::GetBillingCustomerId(
-          client_->GetPaymentsDataManager());
+          CHECK_DEREF(client_->GetPaymentsDataManager()));
 
   ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),

@@ -127,7 +127,7 @@ void VirtualCardEnrollmentManager::Enroll(
   request_details.virtual_card_enrollment_request_type =
       VirtualCardEnrollmentRequestType::kEnroll;
   request_details.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager_.get());
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id =
       state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.vcn_context_token = state_.vcn_context_token;
@@ -164,7 +164,7 @@ void VirtualCardEnrollmentManager::Unenroll(
   request_details.virtual_card_enrollment_request_type =
       VirtualCardEnrollmentRequestType::kUnenroll;
   request_details.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager_.get());
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id = instrument_id;
 
   virtual_card_enrollment_update_response_callback_ =
@@ -390,7 +390,7 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   request_details.app_locale = payments_data_manager_->app_locale();
   request_details.risk_data = state_.risk_data.value_or("");
   request_details.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager_.get());
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id =
       state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.source =

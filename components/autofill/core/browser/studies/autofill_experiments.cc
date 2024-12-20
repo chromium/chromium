@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -236,19 +235,18 @@ bool IsCreditCardUploadEnabled(
   return true;
 }
 
-bool IsCreditCardMigrationEnabled(PersonalDataManager& personal_data_manager,
-                                  syncer::SyncService* sync_service,
-                                  const PrefService& pref_service,
-                                  bool is_test_mode,
-                                  LogManager* log_manager) {
+bool IsCreditCardMigrationEnabled(
+    const PaymentsDataManager& payments_data_manager,
+    const syncer::SyncService* sync_service,
+    const PrefService& pref_service,
+    bool is_test_mode,
+    LogManager* log_manager) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillDisableLocalCardMigration)) {
     // Feature is being turned down.
     return false;
   }
 
-  PaymentsDataManager& payments_data_manager =
-      personal_data_manager.payments_data_manager();
   // If |is_test_mode| is set, assume we are in a browsertest and
   // credit card upload should be enabled by default to fix flaky
   // local card migration browsertests.
@@ -261,7 +259,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager& personal_data_manager,
     return false;
   }
 
-  if (!payments::HasGooglePaymentsAccount(&payments_data_manager)) {
+  if (!payments::HasGooglePaymentsAccount(payments_data_manager)) {
     return false;
   }
 
