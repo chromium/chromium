@@ -4,10 +4,6 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import static org.mockito.Mockito.doReturn;
-
-import android.accounts.Account;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,40 +12,28 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-
-import java.util.List;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /** Tests for {@link ProfileOAuth2TokenServiceDelegate}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ProfileOAuth2TokenServiceDelegateTest {
     private static final long NATIVE_DELEGATE = 1000L;
-    private static final String EMAIL = "test@gmail.com";
-    private static final CoreAccountInfo CORE_ACCOUNT_INFO =
-            CoreAccountInfo.createFromEmailAndGaiaId(
-                    EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL));
-    private static final Account ACCOUNT =
-            AccountUtils.createAccountFromName(CORE_ACCOUNT_INFO.getEmail());
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
 
-    @Spy
     private final FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
 
     private ProfileOAuth2TokenServiceDelegate mDelegate;
@@ -64,7 +48,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
+        mAccountManagerFacade.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
@@ -74,23 +58,25 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
+        mAccountManagerFacade.addAccount(TestAccounts.ACCOUNT1);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
+                    Assert.assertTrue(
+                            mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getEmail()));
                 });
     }
 
     @Test
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
-        mAccountManagerFacade.addAccount(ACCOUNT);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    doReturn(new Promise<List<CoreAccountInfo>>())
-                            .when(mAccountManagerFacade)
-                            .getCoreAccountInfos();
-                    Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
-                });
+        try (var block =
+                mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false)) {
+            mAccountManagerFacade.addAccount(TestAccounts.ACCOUNT1);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Assert.assertFalse(
+                                mDelegate.hasOAuth2RefreshToken(TestAccounts.ACCOUNT1.getEmail()));
+                    });
+        }
     }
 }
