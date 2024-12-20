@@ -4150,6 +4150,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ResourceRequest.CodeFetchLatency" units="ms"
+    expires_after="2025-12-06">
+  <owner>olivierli@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Measures the time from when a code fetch is initiated to when the renderer
+    starts processesing the result. Logged for every code fetch when the
+    response is received.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ResourceRequest.CompletionDelay2" units="ms"
     expires_after="2025-05-11">
   <owner>horo@chromium.org</owner>
