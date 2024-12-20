@@ -563,6 +563,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
+  html_source->AddBoolean("showGlicSettings",
+                          base::FeatureList::IsEnabled(features::kGlic));
+
   // AI
   const bool ai_settings_refresh_enabled =
       optimization_guide::features::IsAiSettingsPageRefreshEnabled();

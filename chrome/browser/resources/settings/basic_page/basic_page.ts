@@ -343,6 +343,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return this.inSearchMode || routes.BASIC.contains(this.currentRoute_);
   }
 
+  private showGlicPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('showGlicSettings') &&
+        this.showPage_(visibility);
+  }
+
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return this.showPage_(visibility);
   }

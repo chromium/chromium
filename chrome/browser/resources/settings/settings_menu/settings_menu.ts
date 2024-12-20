@@ -75,6 +75,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         type: String,
         computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
       },
+
+      glicEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGlicSettings'),
+      },
     };
   }
 
@@ -86,6 +91,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private aiPageTitle_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private glicEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -95,6 +101,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private showExperimentalMenuItem_(): boolean {
     return this.showAdvancedFeaturesMainControl_ &&
         (!this.pageVisibility || this.pageVisibility.ai !== false);
+  }
+
+  private showGlicMenuItem_(): boolean {
+    return this.glicEnabled_ &&
+        (!this.pageVisibility || this.pageVisibility.glic !== false);
   }
 
   private computeAiPageIcon_(): string {

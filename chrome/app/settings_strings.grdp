@@ -4617,6 +4617,12 @@
     Comparison tables are saved in your Google Account
   </message>
 
+  <!-- Experimental Glic settings -->
+  <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Name of the Glic settings page.">
+    Glic
+  </message>
+
+
   <!-- Security settings toast confirmation -->
   <message name="IDS_SETTINGS_SAFEBROWSING_TURN_ON_ENHANCED_TOAST_BUTTON" desc="When Chrome shows a toast notification after the user turned off the Enhanced Protection setting, there's a button the user can click to turn on the Enhanced Protection setting.">
     Turn on

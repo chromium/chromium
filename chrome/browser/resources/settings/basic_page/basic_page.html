@@ -83,6 +83,14 @@
           </settings-section>
         </template>
         <template is="dom-if"
+            if="[[showGlicPage_(pageVisibility.glic)]]"
+            restamp>
+          <settings-section page-title="$i18n{glicPageTitle}" section="glic">
+            <!-- TODO(crbug.com/379166610): Fill out page in follow up -->
+            <p>Glic</p>
+          </settings-section>
+        </template>
+        <template is="dom-if"
             if="[[showPage_(pageVisibility.performance)]]"
             restamp>
           <settings-section page-title="$i18n{generalPageTitle}"
