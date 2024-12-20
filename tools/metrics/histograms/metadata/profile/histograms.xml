@@ -288,18 +288,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Profile.LacrosFre.WelcomeHasGivenName" enum="Boolean"
-    expires_after="2024-12-15">
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Tracks how often we have to render Lacros FRE whose welcome pages don't have
-    a given name to display. We expect that it's very rare, if we have a
-    non-trivial number of these without a given name, we will have to redesign
-    the experience to nicely accomodate for it.
-  </summary>
-</histogram>
-
 <histogram name="Profile.LiveProfileCount" units="profiles"
     expires_after="2025-12-30">
   <owner>nicolaso@chromium.org</owner>
