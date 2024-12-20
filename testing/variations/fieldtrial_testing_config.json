@@ -22690,6 +22690,21 @@
             ]
         }
     ],
+    "TabSwitcherFullNewTabButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSwitcherFullNewTabButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabstripDeclutter": [
         {
             "platforms": [

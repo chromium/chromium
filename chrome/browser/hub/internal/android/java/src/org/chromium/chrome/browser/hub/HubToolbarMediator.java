@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
@@ -90,6 +91,8 @@ public class HubToolbarMediator {
                                             == Configuration.ORIENTATION_LANDSCAPE;
                     mPropertyModel.set(SEARCH_BOX_VISIBLE, !showLoupe);
                     mPropertyModel.set(SEARCH_LOUPE_VISIBLE, showLoupe);
+
+                    updateShowActionButtonText();
                 }
 
                 @Override
@@ -246,7 +249,26 @@ public class HubToolbarMediator {
         }
         mPropertyModel.set(PANE_SWITCHER_INDEX, selectedIndex);
         mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, buttonDataList);
-        mPropertyModel.set(SHOW_ACTION_BUTTON_TEXT, buttonDataList.size() <= 1);
+        updateShowActionButtonText();
+    }
+
+    private void updateShowActionButtonText() {
+        @Nullable List<FullButtonData> buttonData = mPropertyModel.get(PANE_SWITCHER_BUTTON_DATA);
+        if (buttonData == null) return;
+
+        int screenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
+        boolean showText = shouldShowActionButtonText(buttonData.size(), screenWidthDp);
+
+        mPropertyModel.set(SHOW_ACTION_BUTTON_TEXT, showText);
+    }
+
+    private static boolean shouldShowActionButtonText(int buttonCount, int screenWidthDp) {
+        if (ChromeFeatureList.sTabSwitcherFullNewTabButton.isEnabled()) {
+            return buttonCount
+                    <= (screenWidthDp < DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP ? 2 : 3);
+        } else {
+            return buttonCount <= 1;
+        }
     }
 
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {

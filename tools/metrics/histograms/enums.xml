@@ -15990,6 +15990,7 @@ from previous Chrome versions.
   <int value="-1778760568"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
   <int value="-1778202807" label="DelayAsyncScriptExecution:enabled"/>
+  <int value="-1777922746" label="TabSwitcherFullNewTabButton:enabled"/>
   <int value="-1777903087" label="PartitionAllocWithAdvancedChecks:enabled"/>
   <int value="-1777820415" label="WebAssemblyStringref:disabled"/>
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
@@ -23057,6 +23058,7 @@ from previous Chrome versions.
   <int value="1059283439"
       label="OmniboxClobberTriggersContextualWebZeroSuggest:disabled"/>
   <int value="1059698271" label="EnableZeroStateSuggestions:disabled"/>
+  <int value="1060127537" label="TabSwitcherFullNewTabButton:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
   <int value="1060780557" label="DynamicColorGamut:disabled"/>
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>

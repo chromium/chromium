@@ -17,7 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -59,7 +58,6 @@ public class HubCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
@@ -138,7 +136,7 @@ public class HubCoordinatorUnitTest {
 
         mHubCoordinator =
                 new HubCoordinator(
-                        mActivity,
+                        activity,
                         mProfileProviderSupplier,
                         mRootView,
                         mPaneManager,

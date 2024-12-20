@@ -34,6 +34,8 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_B
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -63,6 +65,7 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentBuilder;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
@@ -72,15 +75,22 @@ import java.util.List;
 
 /** Tests for {@link HubToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
+@EnableFeatures({ChromeFeatureList.TAB_SWITCHER_FULL_NEW_TAB_BUTTON})
+@DisableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
 public class HubToolbarMediatorUnitTest {
+    private static final int NARROW_SCREEN_WIDTH_DP = 300;
+    private static final int WIDE_SCREEN_WIDTH_DP = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;
+    @Mock private Resources mResources;
+    @Mock private Configuration mConfiguration;
     @Mock private PaneManager mPaneManager;
     @Mock private Pane mTabSwitcherPane;
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Pane mTabGroupsPane;
+    @Mock private Pane mBookmarksPane;
     @Mock private FullButtonData mFullButtonData;
     @Mock private PaneOrderController mPaneOrderController;
     @Mock private DisplayButtonData mDisplayButtonData;
@@ -97,6 +107,8 @@ public class HubToolbarMediatorUnitTest {
     private ObservableSupplierImpl<DisplayButtonData> mTabSwitcherReferenceButtonDataSupplier1;
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
+    private ObservableSupplierImpl<DisplayButtonData> mTabGroupsPaneReferenceButtonDataSupplier3;
+    private ObservableSupplierImpl<DisplayButtonData> mBookmarksPaneReferenceButtonDataSupplier4;
     private PropertyModel mModel;
 
     @Before
@@ -105,6 +117,8 @@ public class HubToolbarMediatorUnitTest {
         mFocusedPaneSupplier = new ObservableSupplierImpl<>();
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
+        mTabGroupsPaneReferenceButtonDataSupplier3 = new ObservableSupplierImpl<>();
+        mBookmarksPaneReferenceButtonDataSupplier4 = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         mModel.addObserver(mPropertyObserver);
 
@@ -113,12 +127,14 @@ public class HubToolbarMediatorUnitTest {
                         ImmutableSet.of(
                                 PaneId.TAB_SWITCHER,
                                 PaneId.INCOGNITO_TAB_SWITCHER,
-                                PaneId.BOOKMARKS));
+                                PaneId.CROSS_DEVICE));
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPane);
         when(mPaneManager.getPaneForId(PaneId.INCOGNITO_TAB_SWITCHER))
                 .thenReturn(mIncognitoTabSwitcherPane);
+        when(mPaneManager.getPaneForId(PaneId.TAB_GROUPS)).thenReturn(mTabGroupsPane);
+        when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
@@ -131,8 +147,24 @@ public class HubToolbarMediatorUnitTest {
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
 
+        when(mTabGroupsPane.getReferenceButtonDataSupplier())
+                .thenReturn(mTabGroupsPaneReferenceButtonDataSupplier3);
+        when(mTabGroupsPane.getPaneId()).thenReturn(PaneId.TAB_GROUPS);
+        when(mTabGroupsPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+
+        when(mBookmarksPane.getReferenceButtonDataSupplier())
+                .thenReturn(mBookmarksPaneReferenceButtonDataSupplier4);
+        when(mBookmarksPane.getPaneId()).thenReturn(PaneId.BOOKMARKS);
+        when(mBookmarksPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+
         mTabSwitcherReferenceButtonDataSupplier1.set(mDisplayButtonData);
         mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(mDisplayButtonData);
+        mTabGroupsPaneReferenceButtonDataSupplier3.set(mDisplayButtonData);
+        mBookmarksPaneReferenceButtonDataSupplier4.set(mDisplayButtonData);
+
+        mConfiguration.screenWidthDp = NARROW_SCREEN_WIDTH_DP;
+        when(mActivity.getResources()).thenReturn(mResources);
+        when(mResources.getConfiguration()).thenReturn(mConfiguration);
     }
 
     @Test
@@ -218,6 +250,7 @@ public class HubToolbarMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_SWITCHER_FULL_NEW_TAB_BUTTON})
     public void testActionButtonHasText() {
         new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
         assertFalse(mModel.get(SHOW_ACTION_BUTTON_TEXT));
@@ -226,6 +259,72 @@ public class HubToolbarMediatorUnitTest {
         assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
 
         mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testActionButtonHasText_FullNewTabButton_Narrow() {
+        when(mPaneOrderController.getPaneOrder())
+                .thenReturn(
+                        ImmutableSet.of(
+                                PaneId.TAB_SWITCHER,
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                PaneId.TAB_GROUPS,
+                                PaneId.BOOKMARKS));
+
+        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
+        // 4 buttons.
+        assertFalse(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 3 buttons.
+        mTabSwitcherReferenceButtonDataSupplier1.set(null);
+        assertFalse(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 2 buttons.
+        mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 1 button -> 0 buttons visible.
+        mTabGroupsPaneReferenceButtonDataSupplier3.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 0 buttons.
+        mBookmarksPaneReferenceButtonDataSupplier4.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testActionButtonHasText_FullNewTabButton_Wide() {
+        when(mPaneOrderController.getPaneOrder())
+                .thenReturn(
+                        ImmutableSet.of(
+                                PaneId.TAB_SWITCHER,
+                                PaneId.INCOGNITO_TAB_SWITCHER,
+                                PaneId.TAB_GROUPS,
+                                PaneId.BOOKMARKS));
+
+        mConfiguration.screenWidthDp = WIDE_SCREEN_WIDTH_DP;
+
+        new HubToolbarMediator(mActivity, mModel, mPaneManager, mTracker, mSearchActivityClient);
+        // 4 buttons.
+        assertFalse(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 3 buttons.
+        mTabSwitcherReferenceButtonDataSupplier1.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 2 buttons.
+        mIncognitoTabSwitcherReferenceButtonDataSupplier2.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 1 button -> 0 buttons visible.
+        mTabGroupsPaneReferenceButtonDataSupplier3.set(null);
+        assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
+
+        // 0 buttons.
+        mBookmarksPaneReferenceButtonDataSupplier4.set(null);
         assertTrue(mModel.get(SHOW_ACTION_BUTTON_TEXT));
     }
 

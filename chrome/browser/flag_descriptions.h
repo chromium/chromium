@@ -2870,6 +2870,9 @@ extern const char kTabStripLayoutOptimizationDescription[];
 extern const char kTabStripTransitionInDesktopWindowName[];
 extern const char kTabStripTransitionInDesktopWindowDescription[];
 
+extern const char kTabSwitcherFullNewTabButtonName[];
+extern const char kTabSwitcherFullNewTabButtonDescription[];
+
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];
 

@@ -239,6 +239,7 @@ public class HubToolbarView extends LinearLayout {
     private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
         ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
         TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
+        mActionButton.setTextColor(actionButtonColor);
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {

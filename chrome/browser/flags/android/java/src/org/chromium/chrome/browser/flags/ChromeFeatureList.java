@@ -535,6 +535,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_STRIP_TRANSITION_IN_DESKTOP_WINDOW =
             "TabStripTransitionInDesktopWindow";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
+    public static final String TAB_SWITCHER_FULL_NEW_TAB_BUTTON = "TabSwitcherFullNewTabButton";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING =
             "TabWindowManagerIndexReassignmentActivityFinishing";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK =
@@ -973,6 +974,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
+    public static final MutableFlagWithSafeDefault sTabSwitcherFullNewTabButton =
+            newMutableFlagWithSafeDefault(TAB_SWITCHER_FULL_NEW_TAB_BUTTON, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =

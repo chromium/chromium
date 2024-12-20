@@ -63,7 +63,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(7)
+                    .setRevision(8)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 

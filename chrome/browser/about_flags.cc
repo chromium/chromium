@@ -2626,22 +2626,23 @@ const FeatureEntry::FeatureParam
         {"schedule_delay_time_ms", "200"},
         {"use_large_favicon", "true"}};
 
-const FeatureEntry::FeatureVariation kAndroidAppIntegrationWithFaviconVariations[] = {
-    {"Use large favicon (no delay)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
-     std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
-    {"Skip device check + use large favicon (no delay)",
-     kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
-     nullptr},
-    {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
-     std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
-    {"200ms delay with large favicon",
-     kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
-     std::size(
-         kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
-     nullptr}};
+const FeatureEntry::FeatureVariation
+    kAndroidAppIntegrationWithFaviconVariations[] = {
+        {"Use large favicon (no delay)",
+         kAndroidAppIntegrationWithFavicon_UseLargeFavicon,
+         std::size(kAndroidAppIntegrationWithFavicon_UseLargeFavicon), nullptr},
+        {"Skip device check + use large favicon (no delay)",
+         kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck,
+         std::size(
+             kAndroidAppIntegrationWithFavicon_UseLargeFavicon_SkipDeviceCheck),
+         nullptr},
+        {"200ms delay", kAndroidAppIntegrationWithFavicon_DelayTime200Ms,
+         std::size(kAndroidAppIntegrationWithFavicon_DelayTime200Ms), nullptr},
+        {"200ms delay with large favicon",
+         kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon,
+         std::size(
+             kAndroidAppIntegrationWithFavicon_DelayTime200Ms_UseLargeFavicon),
+         nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
@@ -10600,6 +10601,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"force-list-tab-switcher", flag_descriptions::kForceListTabSwitcherName,
      flag_descriptions::kForceListTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kForceListTabSwitcher)},
+
+    {"tab-switcher-full-new-tab-button",
+     flag_descriptions::kTabSwitcherFullNewTabButtonName,
+     flag_descriptions::kTabSwitcherFullNewTabButtonDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherFullNewTabButton)},
 
     {"tab-group-sync-android", flag_descriptions::kTabGroupSyncAndroidName,
      flag_descriptions::kTabGroupSyncAndroidDescription, kOsAndroid,
