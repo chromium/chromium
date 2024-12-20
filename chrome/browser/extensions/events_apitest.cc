@@ -935,11 +935,19 @@ INSTANTIATE_TEST_SUITE_P(EventPage,
 
 using ServiceWorkerEventAckBrowserTest = EventDispatchingApiTest;
 
+// TODO(crbug.com/383086263): Flaky on Mac and Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_RendererProcessGoesAway_ClearsUnackedEventData \
+  DISABLED_RendererProcessGoesAway_ClearsUnackedEventData
+#else
+#define MAYBE_RendererProcessGoesAway_ClearsUnackedEventData \
+  RendererProcessGoesAway_ClearsUnackedEventData
+#endif
 // Tests that when a renderer process is no longer available that we clear any
 // unacked events from EventAckData for that render process. Otherwise we would
 // leak these unacked events and never remove them.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
-                       RendererProcessGoesAway_ClearsUnackedEventData) {
+                       MAYBE_RendererProcessGoesAway_ClearsUnackedEventData) {
   // TODO(crbug.com/331358155): This currently tests
   // EventRouter::RenderProcessExited(), but it does not test the case of
   // EventRouter::RenderProcessHostDestroyed(). It can be simulated with a
