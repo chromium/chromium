@@ -247,11 +247,6 @@ struct Config {
 
   // WebUI features and params.
 
-  // Whether new tab groups created by "Open all in new tab group" should be
-  // named after the cluster title. If false, the new tab group is anonymous,
-  // which is the pre-M115 behavior.
-  bool named_new_tab_groups = true;
-
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.

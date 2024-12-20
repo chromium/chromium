@@ -262,12 +262,6 @@ Config::Config() {
             cluster_triggerability_cutoff_duration.InMinutes()));
   }
 
-  // WebUI features and params.
-  {
-    named_new_tab_groups =
-        base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =

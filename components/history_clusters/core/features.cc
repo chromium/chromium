@@ -71,11 +71,6 @@ BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Killswitch only.
-BASE_FEATURE(kJourneysNamedNewTabGroups,
-             "JourneysNamedNewTabGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace internal
 
 // Intended to be Enabled by default on Desktop and the flag left here as a

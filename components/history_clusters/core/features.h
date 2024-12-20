@@ -62,10 +62,6 @@ BASE_DECLARE_FEATURE(kHistoryClustersVisitDeduping);
 // batches.
 BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
 
-// Enables Journeys creating new tab groups that have names derived from the
-// cluster title. If disabled, new tab groups are anonymous.
-BASE_DECLARE_FEATURE(kJourneysNamedNewTabGroups);
-
 // Order consistently with config.h.
 
 }  // namespace internal
