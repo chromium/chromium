@@ -34,6 +34,7 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -1784,18 +1785,35 @@ TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(profile_params2));
 
+  // All asynchronous profile loading must complete to prevent accidental
+  // reconstruction of profile2's path. This happens because
+  // SimpleBackendImpl::InitializeIndex() is performed async which, if not
+  // allowed to complete, may be performed after browser2.reset() and profile
+  // path deletion.
+  content::RunAllTasksUntilIdle();
+
   ProfileDeletionWaiter waiter(profile2);
-  // Close the browser for profile2.
+
+  // Confirm that we are not currently waiting for the profile to be destroyed.
+  ASSERT_FALSE(IsProfileDirectoryMarkedForDeletion(dest_path2));
+
+  // Destroy the browser and let browser close tasks run.
   browser2.reset();
+  content::RunAllTasksUntilIdle();
+
+  // Confirm that either we have marked profile2's path for deletion or the path
+  // has been deleted.
+  ASSERT_TRUE(IsProfileDirectoryMarkedForDeletion(dest_path2) ||
+              !base::PathExists(dest_path2));
+
   waiter.Wait();
+  EXPECT_FALSE(base::PathExists(dest_path2));
 
   last_used_profile = profile_manager->GetLastUsedProfile();
   EXPECT_NE(profile1, last_used_profile);
   EXPECT_NE(profile2, last_used_profile);
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
   EXPECT_TRUE(base::PathExists(dest_path1));
-  // |dest_path2| should've been cleaned up from disk.
-  EXPECT_FALSE(base::PathExists(dest_path2));
 }
 
 TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
