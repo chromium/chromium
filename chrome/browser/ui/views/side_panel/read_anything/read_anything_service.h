@@ -31,6 +31,7 @@ class ReadAnythingService : public KeyedService, public BrowserListObserver {
   void InstallGDocsHelperExtension();
   void RemoveGDocsHelperExtension();
   void InstallTtsDownloadExtension();
+  void RemoveTtsDownloadExtension();
   void OnLocalSidePanelSwitchDelayTimeout();
 
   // BrowserListObserver:
