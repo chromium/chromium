@@ -167,6 +167,8 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
     std::optional<int> index = menu_model->GetIndexOfCommandId(command_id);
     CHECK(index);
 
+    menu_model->SetMayHaveMnemonicsAt(index.value(), false);
+
     if (tab_group->is_shared_tab_group()) {
       menu_model->SetMinorIcon(index.value(),
                                ui::ImageModel::FromVectorIcon(
