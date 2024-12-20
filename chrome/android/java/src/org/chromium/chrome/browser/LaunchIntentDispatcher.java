@@ -155,9 +155,9 @@ public class LaunchIntentDispatcher {
     }
 
     /**
-     * Figure out how to route the Intent.  Because this is on the critical path to startup, please
-     * avoid making the pathway any more complicated than it already is.  Make sure that anything
-     * you add _absolutely has_ to be here.
+     * Figure out how to route the Intent. Because this is on the critical path to startup, please
+     * avoid making the pathway any more complicated than it already is. Make sure that anything you
+     * add _absolutely has_ to be here.
      */
     private @Action int dispatch() {
         // Read partner browser customizations information asynchronously.
@@ -199,7 +199,7 @@ public class LaunchIntentDispatcher {
         }
 
         // Check if we should push the user through First Run.
-        if (FirstRunFlowSequencer.launch(mActivity, mIntent, /* preferLightweightFre= */ false)) {
+        if (FirstRunFlowSequencer.launch(mActivity, mIntent)) {
             return Action.FINISH_ACTIVITY;
         }
 

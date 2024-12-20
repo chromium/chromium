@@ -221,6 +221,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTEarlyNav,
     &kCCTExtendTrustedCdnPublisher,
     &kCCTEphemeralMode,
+    &kCCTFreInSameTask,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
     &kCCTMinimized,
@@ -601,6 +602,10 @@ BASE_FEATURE(kCCTEphemeralMode,
 
 BASE_FEATURE(kCCTExtendTrustedCdnPublisher,
              "CCTExtendTrustedCdnPublisher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTFreInSameTask,
+             "CCTFreInSameTask",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTIncognitoAvailableToThirdParty,

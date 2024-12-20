@@ -259,6 +259,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_EARLY_NAV = "CCTEarlyNav";
     public static final String CCT_EPHEMERAL_MODE = "CCTEphemeralMode";
     public static final String CCT_EXTEND_TRUSTED_CDN_PUBLISHER = "CCTExtendTrustedCdnPublisher";
+    public static final String CCT_FRE_IN_SAME_TASK = "CCTFreInSameTask";
     public static final String CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY =
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_MINIMIZED = "CCTMinimized";
@@ -614,6 +615,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS, true);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctEphemeralMode = newCachedFlag(CCT_EPHEMERAL_MODE, true);
+    public static final CachedFlag sCctFreInSameTask = newCachedFlag(CCT_FRE_IN_SAME_TASK, true);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
             newCachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
     public static final CachedFlag sCctIntentFeatureOverrides =
@@ -819,6 +821,7 @@ public abstract class ChromeFeatureList {
                     sCctAuthTabEnableHttpsRedirects,
                     sCctAutoTranslate,
                     sCctEphemeralMode,
+                    sCctFreInSameTask,
                     sCctIncognitoAvailableToThirdParty,
                     sCctIntentFeatureOverrides,
                     sCctMinimized,

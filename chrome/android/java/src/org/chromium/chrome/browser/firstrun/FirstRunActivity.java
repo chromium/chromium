@@ -603,7 +603,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void launchPendingIntentAndFinish() {
-        if (!sendFirstRunCompletePendingIntent()) {
+        if (!sendFirstRunCompleteIntent()) {
             finish();
         } else {
             ApplicationStatus.registerStateListenerForAllActivities(
