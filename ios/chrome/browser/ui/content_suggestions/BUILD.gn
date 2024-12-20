@@ -431,7 +431,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/home_customization/utils",
-    "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:earl_grey_ui_test_util",
