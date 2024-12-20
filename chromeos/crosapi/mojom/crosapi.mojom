@@ -83,7 +83,6 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
-import "chromeos/crosapi/mojom/sharesheet.mojom";
 import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
@@ -538,11 +537,7 @@ interface Crosapi {
   BindSensorHalClient@19(
       pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
 
-  // Binds the Sharesheet interface.
-  // Added in M99.
-  [MinVersion=66]
-  BindSharesheet@70(
-      pending_receiver<Sharesheet> receiver);
+  // BindSharesheet@70 was removed.
 
   // Binds the Smart Reader manager to the Smart Reader client.
   [MinVersion=103]

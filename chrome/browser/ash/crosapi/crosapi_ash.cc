@@ -81,7 +81,6 @@
 #include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
-#include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
@@ -270,7 +269,6 @@ CrosapiAsh::CrosapiAsh()
       screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
-      sharesheet_ash_(std::make_unique<SharesheetAsh>()),
       smart_reader_manager_ash_(std::make_unique<ash::SmartReaderManagerAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
@@ -795,13 +793,6 @@ void CrosapiAsh::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       std::move(remote));
-}
-
-void CrosapiAsh::BindSharesheet(
-    mojo::PendingReceiver<mojom::Sharesheet> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  sharesheet_ash_->MaybeSetProfile(profile);
-  sharesheet_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSmartReaderClient(

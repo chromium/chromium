@@ -120,7 +120,6 @@ class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
 class SearchProviderAsh;
-class SharesheetAsh;
 class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
 class TaskManagerAsh;
@@ -332,8 +331,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
-  void BindSharesheet(
-      mojo::PendingReceiver<mojom::Sharesheet> receiver) override;
   void BindSmartReaderClient(
       mojo::PendingRemote<mojom::SmartReaderClient> remote) override;
   void BindStableVideoDecoderFactory(
@@ -540,8 +537,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return search_provider_ash_.get();
   }
 
-  SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
-
   ash::SmartReaderManagerAsh* smart_reader_manager_ash() {
     return smart_reader_manager_ash_.get();
   }
@@ -661,7 +656,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
-  std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
