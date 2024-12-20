@@ -91,10 +91,9 @@ found in the LICENSE file.
       android:visibility="gone"
       android:layout_width="match_parent"
       android:layout_height="@dimen/hub_search_box_height"
-      android:layout_marginHorizontal="12dp"
+      android:layout_marginHorizontal="16dp"
       android:layout_marginVertical="8dp"
-      android:paddingStart="24dp"
-      android:paddingEnd="12dp"
+      android:paddingHorizontal="16dp"
       android:orientation="horizontal"
       android:gravity="center_vertical"
       android:background="@drawable/hub_search_box_background">
