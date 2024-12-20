@@ -4,15 +4,15 @@
 
 package org.chromium.base.shared_preferences;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
 @CheckDiscard("Preference key checking should only happen on build with asserts")
+@NullMarked
 public class PreferenceKeyRegistry {
     private final String mModule;
     public final HashSet<String> mKeysInUse;
@@ -30,7 +30,6 @@ public class PreferenceKeyRegistry {
         mLegacyPrefixes = legacyPrefixes;
     }
 
-    @NonNull
     public String toDebugString() {
         return String.format(
                 Locale.getDefault(),

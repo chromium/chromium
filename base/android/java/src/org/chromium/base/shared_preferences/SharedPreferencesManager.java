@@ -4,10 +4,11 @@
 
 package org.chromium.base.shared_preferences;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.SharedPreferences;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -17,6 +18,9 @@ import org.jni_zero.JniType;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,15 +31,16 @@ import java.util.Set;
 /** Layer over android {@link SharedPreferences}. */
 @JNINamespace("base::android")
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
+@NullMarked
 public class SharedPreferencesManager {
     // Without asserts, this is a singleton (because no key names are checked).
     // With asserts, there is one manager per-registry in order to not have to consult
     // all registries each time a key name is checked.
     @GuardedBy("sInstances")
-    private static final Map<PreferenceKeyRegistry, SharedPreferencesManager> sInstances =
+    private static final @Nullable Map<PreferenceKeyRegistry, SharedPreferencesManager> sInstances =
             BuildConfig.ENABLE_ASSERTS ? new HashMap<>() : null;
 
-    private static final SharedPreferencesManager sInstance =
+    private static final @Nullable SharedPreferencesManager sInstance =
             BuildConfig.ENABLE_ASSERTS
                     ? null
                     : new SharedPreferencesManager((PreferenceKeyRegistry) null);
@@ -114,7 +119,7 @@ public class SharedPreferencesManager {
         }
     }
 
-    private PreferenceKeyChecker mKeyChecker;
+    private @Nullable PreferenceKeyChecker mKeyChecker;
 
     protected SharedPreferencesManager(@Nullable PreferenceKeyRegistry registry) {
         mKeyChecker = BuildConfig.ENABLE_ASSERTS ? new StrictPreferenceKeyChecker(registry) : null;
@@ -134,10 +139,11 @@ public class SharedPreferencesManager {
     public static SharedPreferencesManager getInstanceForRegistry(
             @Nullable PreferenceKeyRegistry registry) {
         if (!BuildConfig.ENABLE_ASSERTS) {
-            return sInstance;
+            return assumeNonNull(sInstance);
         }
         SharedPreferencesManager manager;
         synchronized (sInstances) {
+            assumeNonNull(sInstances);
             manager = sInstances.get(registry);
             if (manager == null) {
                 manager = new SharedPreferencesManager(registry);
@@ -190,11 +196,15 @@ public class SharedPreferencesManager {
      *
      * @return unmodifiable Set with the values
      */
-    @Nullable
-    public Set<String> readStringSet(String key, @Nullable Set<String> defaultValue) {
+    @Contract("_, !null -> !null")
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1104
+    public @Nullable Set<String> readStringSet(String key, @Nullable Set<String> defaultValue) {
         checkIsKeyInUse(key);
         Set<String> values = ContextUtils.getAppSharedPreferences().getStringSet(key, defaultValue);
-        return (values != null) ? Collections.unmodifiableSet(values) : null;
+        if (values != null) {
+            return Collections.unmodifiableSet(values);
+        }
+        return null;
     }
 
     /** Adds a value to string set in shared preferences. */
@@ -558,10 +568,10 @@ public class SharedPreferencesManager {
      * @return The value of the preference if stored; defaultValue otherwise.
      */
     @CalledByNative
-    @Nullable
-    public @JniType("std::string") String readString(
+    @Contract("_, !null -> !null")
+    public @Nullable @JniType("std::string") String readString(
             @JniType("std::string") String key,
-            @Nullable @JniType("std::string") String defaultValue) {
+            @JniType("std::string") @Nullable String defaultValue) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().getString(key, defaultValue);
     }
