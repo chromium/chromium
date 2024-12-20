@@ -3387,8 +3387,15 @@ static inline TextDirection ToTextDirection(
     *computed_style = style;
   }
   switch (direction) {
-    case CanvasRenderingContext2DState::kDirectionInherit:
+    case CanvasRenderingContext2DState::kDirectionInherit: {
+      if (canvas && style) {
+        if (canvas->CachedDirectionality() != style->Direction()) {
+          UseCounter::Count(canvas->GetDocument(),
+                            WebFeature::kCanvasTextDirectionConflict);
+        }
+      }
       return style ? style->Direction() : TextDirection::kLtr;
+    }
     case CanvasRenderingContext2DState::kDirectionRTL:
       return TextDirection::kRtl;
     case CanvasRenderingContext2DState::kDirectionLTR:

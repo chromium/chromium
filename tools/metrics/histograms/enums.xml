@@ -10951,6 +10951,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5232" label="LocaleInfoObsoletedGetters"/>
   <int value="5233" label="InjectionMitigatedContextSubFrame"/>
   <int value="5234" label="InjectionMitigatedContextMainFrame"/>
+  <int value="5235" label="CanvasTextDirectionConflict"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
