@@ -1837,8 +1837,14 @@ void LensOverlayController::ShowOverlay() {
   // Ensure our view starts with the correct bounds.
   host_view->SetBoundsRect(contents_web_view->GetLocalBounds());
 
-  // Add the view as a child of the view housing the tab contents.
-  overlay_view_ = contents_web_view->AddChildView(std::move(host_view));
+  auto* parent_view = contents_web_view->parent();
+  // Add the view as a sibling of the view housing the tab contents. The
+  // overlay_view_ should be stacked on top of the contents_web_view.
+  overlay_view_ = parent_view->AddChildView(std::move(host_view));
+  CHECK(parent_view->GetIndexOf(overlay_view_) >
+        parent_view->GetIndexOf(contents_web_view));
+
+  // Observe the contents web view to handle resizing the overlay view.
   tab_contents_view_observer_.Observe(contents_web_view);
 
   // The overlay needs to be focused on show to immediately begin
@@ -1954,7 +1960,8 @@ void LensOverlayController::CloseUIPart2(
     // contents_web_view, we need to release our reference using std::exchange
     // to avoid a dangling pointer which throws an error when DCHECK is on.
     overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
-    contents_web_view->RemoveChildViewT(std::exchange(overlay_view_, nullptr));
+    overlay_view_->parent()->RemoveChildViewT(
+        std::exchange(overlay_view_, nullptr));
   }
   overlay_web_view_ = nullptr;
   overlay_view_ = nullptr;
@@ -2180,7 +2187,7 @@ void LensOverlayController::OnFullscreenStateChanged() {
 }
 
 void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
-  CHECK(observed_view == overlay_view_->parent());
+  CHECK(observed_view == tab_->GetBrowserWindowInterface()->GetWebView());
 
   // We now want to start the live blur since the screenshot has resized to
   // allow the blur to peek through.
