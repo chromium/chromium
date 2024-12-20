@@ -217,6 +217,9 @@ END_METADATA
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarView, public:
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolbarView, kToolbarElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolbarView, kToolbarContainerElementId);
+
 ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
     : AnimationDelegateViews(this),
       browser_(browser),
@@ -224,8 +227,11 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
       app_menu_icon_controller_(browser->profile(), this),
       display_mode_(GetDisplayMode(browser)) {
   SetID(VIEW_ID_TOOLBAR);
+  SetProperty(views::kElementIdentifierKey, kToolbarElementId);
 
   container_view_ = AddChildView(std::make_unique<ContainerView>());
+  container_view_->SetProperty(views::kElementIdentifierKey,
+                               kToolbarContainerElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
 

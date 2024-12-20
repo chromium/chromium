@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
@@ -91,6 +92,9 @@ class ToolbarView : public views::AccessiblePaneView,
     CUSTOM_TAB  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
   };
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarContainerElementId);
 
   ToolbarView(Browser* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;

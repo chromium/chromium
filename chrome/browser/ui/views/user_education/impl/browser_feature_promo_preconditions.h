@@ -13,6 +13,8 @@
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kOmniboxNotOpenPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kToolbarNotCollapsedPrecondition);
 
 // Requires that the window a promo will be shown in is active.
 class WindowActivePrecondition
@@ -39,6 +41,20 @@ class OmniboxNotOpenPrecondition
 
  private:
   const raw_ref<const BrowserView> browser_view_;
+};
+
+class ToolbarNotCollapsedPrecondition
+    : public user_education::FeaturePromoPreconditionBase {
+ public:
+  explicit ToolbarNotCollapsedPrecondition(BrowserView& browser_view);
+  ~ToolbarNotCollapsedPrecondition() override;
+
+  // FeaturePromoPreconditionBase:
+  user_education::FeaturePromoResult CheckPrecondition(
+      ComputedData& data) const override;
+
+ private:
+  const raw_ref<BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_PRECONDITIONS_H_

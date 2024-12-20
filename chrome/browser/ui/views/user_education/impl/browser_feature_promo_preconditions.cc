@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -22,6 +24,8 @@
 
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kWindowActivePrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kOmniboxNotOpenPrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kToolbarNotCollapsedPrecondition);
 
 WindowActivePrecondition::WindowActivePrecondition()
     : FeaturePromoPreconditionBase(kWindowActivePrecondition,
@@ -62,4 +66,22 @@ OmniboxNotOpenPrecondition::CheckPrecondition(ComputedData&) const {
   return popup && popup->IsOpen()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
+}
+
+ToolbarNotCollapsedPrecondition::ToolbarNotCollapsedPrecondition(
+    BrowserView& browser_view)
+    : FeaturePromoPreconditionBase(kToolbarNotCollapsedPrecondition,
+                                   "Toolbar is not collapsed"),
+      browser_view_(browser_view) {}
+ToolbarNotCollapsedPrecondition::~ToolbarNotCollapsedPrecondition() = default;
+
+user_education::FeaturePromoResult
+ToolbarNotCollapsedPrecondition::CheckPrecondition(ComputedData&) const {
+  if (const auto* const controller =
+          browser_view_->toolbar()->toolbar_controller()) {
+    if (controller->InOverflowMode()) {
+      return user_education::FeaturePromoResult::kBlockedByUi;
+    }
+  }
+  return user_education::FeaturePromoResult::Success();
 }

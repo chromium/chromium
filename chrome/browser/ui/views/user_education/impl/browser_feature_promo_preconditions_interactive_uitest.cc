@@ -4,9 +4,13 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -19,6 +23,11 @@
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -59,8 +68,9 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
   std::unique_ptr<TestAnchorProvider> anchor_element_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
-                       WindowActivePrecondition_ElementInActiveBrowser) {
+using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
+
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, ElementInActiveBrowser) {
   RunTestSequence(
       WaitForShow(kToolbarAppMenuButtonElementId),
       CheckResult(
@@ -76,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
           user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
-                       WindowActivePrecondition_ElementInInactiveBrowser) {
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
+                       ElementInInactiveBrowser) {
   auto* const incog = CreateIncognitoBrowser();
   RunTestSequence(
       WaitForShow(kToolbarAppMenuButtonElementId),
@@ -102,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
           user_education::FeaturePromoResult::kBlockedByUi));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
-                       WindowActivePrecondition_PageInActiveTab) {
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInActiveTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   RunTestSequence(
       InstrumentTab(kTabId),
@@ -123,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
           user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
-                       WindowActivePrecondition_PageInInactiveTab) {
+IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest, PageInInactiveTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId1);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId2);
   RunTestSequence(
@@ -167,8 +175,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
           user_education::FeaturePromoResult::Success()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
-                       OmniboxNotOpenPrecondition) {
+using OmniboxNotOpenPreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;
+
+IN_PROC_BROWSER_TEST_F(OmniboxNotOpenPreconditionUiTest,
+                       CheckOmniboxClosedAndOpen) {
   RunTestSequence(
       CheckView(
           kBrowserViewElementId,
@@ -194,6 +204,68 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoPreconditionsUiTest,
           kBrowserViewElementId,
           [](BrowserView* browser_view) {
             OmniboxNotOpenPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::kBlockedByUi));
+}
+
+class ToolbarNotCollapsedPreconditionUiTest
+    : public BrowserFeaturePromoPreconditionsUiTest {
+ public:
+  ToolbarNotCollapsedPreconditionUiTest() {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+  }
+  ~ToolbarNotCollapsedPreconditionUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolbarNotCollapsedPreconditionUiTest,
+                       ToolbarExpandedAndCollapsed) {
+  RunTestSequence(
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            ToolbarNotCollapsedPrecondition precond(*browser_view);
+            user_education::FeaturePromoPrecondition::ComputedData data;
+            return precond.CheckPrecondition(data);
+          },
+          user_education::FeaturePromoResult::Success()),
+
+      // Add elements to the toolbar until something collapses.
+      WithView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            const ToolbarController* const controller =
+                browser_view->toolbar()->toolbar_controller();
+            CHECK(controller);
+            auto* const forward_button =
+                views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                    kToolbarForwardButtonElementId,
+                    browser_view->GetElementContext());
+            auto* const container_view =
+                views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                    ToolbarView::kToolbarContainerElementId,
+                    browser_view->GetElementContext());
+            constexpr gfx::Size kButtonSize{16, 16};
+            while (forward_button->GetVisible()) {
+              auto* const button = container_view->AddChildView(
+                  std::make_unique<ToolbarButton>());
+              button->SetPreferredSize(kButtonSize);
+              button->SetMinSize(kButtonSize);
+              button->GetViewAccessibility().SetName(u"dummy");
+              button->SetVisible(true);
+              views::test::RunScheduledLayout(browser_view);
+            }
+          }),
+      WaitForShow(kToolbarOverflowButtonElementId),
+
+      CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            ToolbarNotCollapsedPrecondition precond(*browser_view);
             user_education::FeaturePromoPrecondition::ComputedData data;
             return precond.CheckPrecondition(data);
           },
