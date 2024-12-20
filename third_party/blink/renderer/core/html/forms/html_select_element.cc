@@ -133,13 +133,6 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
           if (IsWhitespaceOrEmpty(*descendant)) {
             continue;
           }
-#if DCHECK_IS_ON()
-          if (!descendant->parentNode()) {
-            // If the descendant doesn't have a parent node, verify that the
-            // target is `HTMLSelectedContentElement`.
-            DCHECK(IsA<HTMLSelectedContentElement>(*record->target()));
-          }
-#endif
           AddDescendantDisallowedErrorToNode(*descendant);
         }
       } else if ((record->type() == "attributes") &&
@@ -1992,14 +1985,24 @@ bool HTMLSelectElement::IsAppearanceBasePicker() const {
 
 void HTMLSelectElement::SelectedContentElementInserted(
     HTMLSelectedContentElement* selectedcontent) {
-  descendant_selectedcontents_.insert(selectedcontent);
-  selectedcontent->CloneContentsFromOptionElement(SelectedOption());
+  descendant_selectedcontents_.Add(selectedcontent);
+  auto iter = descendant_selectedcontents_.begin();
+  if (*iter == selectedcontent) {
+    selectedcontent->CloneContentsFromOptionElement(SelectedOption());
+    if (++iter != descendant_selectedcontents_.end()) {
+      (*iter)->CloneContentsFromOptionElement(nullptr);
+    }
+  }
 }
 
 void HTMLSelectElement::SelectedContentElementRemoved(
     HTMLSelectedContentElement* selectedcontent) {
-  descendant_selectedcontents_.erase(selectedcontent);
-  selectedcontent->CloneContentsFromOptionElement(nullptr);
+  bool was_first = *descendant_selectedcontents_.begin() == selectedcontent;
+  descendant_selectedcontents_.Remove(selectedcontent);
+  if (was_first && !descendant_selectedcontents_.IsEmpty()) {
+    (*descendant_selectedcontents_.begin())
+        ->CloneContentsFromOptionElement(SelectedOption());
+  }
 }
 
 HTMLSelectElement::SelectAutofillPreviewElement*
@@ -2104,11 +2107,9 @@ void HTMLSelectElement::UpdateAllSelectedcontents() {
     return;
   }
   auto* option = SelectedOption();
-  // Create a copy of descendant_selectedcontents_ because it may be modified
-  // while iterating.
-  for (auto& selectedcontent :
-       VectorOf<HTMLSelectedContentElement>(descendant_selectedcontents_)) {
-    selectedcontent->CloneContentsFromOptionElement(option);
+  if (!descendant_selectedcontents_.IsEmpty()) {
+    (*descendant_selectedcontents_.begin())
+        ->CloneContentsFromOptionElement(option);
   }
   if (RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled()) {
     if (auto* attr_selectedcontent = selectedContentElement()) {
