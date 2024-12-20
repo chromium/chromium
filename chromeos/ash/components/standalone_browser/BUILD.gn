@@ -13,8 +13,6 @@ component("standalone_browser") {
   sources = [
     "channel_util.cc",
     "channel_util.h",
-    "standalone_browser_features.cc",
-    "standalone_browser_features.h",
   ]
 
   deps = [

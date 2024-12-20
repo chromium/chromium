@@ -60,7 +60,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/user_manager/fake_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

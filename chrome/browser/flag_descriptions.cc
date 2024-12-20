@@ -6951,17 +6951,6 @@ const char kLacrosWaylandLoggingDescription[] =
     "Enables Wayland logging for Lacros. This generates a significant amount "
     "of logs on disk. Logs are cleared after two restarts.";
 
-const char kLacrosProfileMigrationForceOffName[] = "Disable profile migration";
-const char kLacrosProfileMigrationForceOffDescription[] =
-    "Disables lacros profile migration. Lacros profile migration is being "
-    "rolled out to internal users first. Once lacros profile migration becomes "
-    "available to the user, the completion of profile migration becomes a "
-    "requirement to use lacros i.e. if profile migration gets rolled out to "
-    "the user and the migration fails, then lacros becomes unavailable until "
-    "the migration is completed. By enabling this flag, even if profile "
-    "migration is rolled out to the user, the migration will not run and the "
-    "user can continue to use lacros without profile migration.";
-
 const char kLacrosProfileBackwardMigrationName[] =
     "Trigger Lacros profile backward migration";
 const char kLacrosProfileBackwardMigrationDescription[] =

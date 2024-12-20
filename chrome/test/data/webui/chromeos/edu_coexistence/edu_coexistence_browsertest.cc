@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "content/public/test/browser_test.h"
 
 class EduCoexistenceMochaTest : public WebUIMochaBrowserTest {

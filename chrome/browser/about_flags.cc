@@ -307,7 +307,6 @@
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_restore/features.h"
@@ -4731,11 +4730,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosWaylandLoggingName,
      flag_descriptions::kLacrosWaylandLoggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosWaylandLogging)},
-    {"lacros-profile-migration-force-off",
-     flag_descriptions::kLacrosProfileMigrationForceOffName,
-     flag_descriptions::kLacrosProfileMigrationForceOffDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::standalone_browser::features::kLacrosProfileMigrationForceOff)},
     {"lacros-trigger-profile-backward-migration",
      flag_descriptions::kLacrosProfileBackwardMigrationName,
      flag_descriptions::kLacrosProfileBackwardMigrationDescription, kOsCrOS,

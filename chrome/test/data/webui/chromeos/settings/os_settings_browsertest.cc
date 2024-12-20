@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"

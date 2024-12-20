@@ -36,7 +36,6 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_switches.h"

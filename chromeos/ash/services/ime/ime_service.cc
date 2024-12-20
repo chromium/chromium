@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
