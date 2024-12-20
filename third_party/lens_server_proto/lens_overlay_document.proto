@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Top-level PDF representation extracted using Pdfium.
+// Next ID: 6
+message LensOverlayDocument {
+  // Ordered pdf pages.
+  repeated Page pages = 1;
+}
+
+// Represents a single page of the PDF.
+// Next ID: 10
+message Page {
+  // Page number in the pdf (indexed starting at 1).
+  int32 page_number = 1;
+  // List of text segments of the page.
+  repeated string text_segments = 4;
+}

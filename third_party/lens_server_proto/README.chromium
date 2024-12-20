@@ -1,9 +1,9 @@
 Name: Lens Protos
 Short Name: lens_overlay_proto
 URL: This is the canonical public repository
-Version: 700022764
-Date: 2024-11-25
-License: BSD-3-Clause
+Version: 705622260
+Date: 2024-12-12
+License: BSD
 License File: LICENSE
 Shipped: yes
 Security Critical: Yes
