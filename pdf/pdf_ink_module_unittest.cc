@@ -63,6 +63,8 @@ namespace {
 // Some commonly used points with InitializeSimpleSinglePageBasicLayout().
 constexpr gfx::PointF kLeftVerticalStrokePoint1(10.0f, 15.0f);
 constexpr gfx::PointF kLeftVerticalStrokePoint2(10.0f, 35.0f);
+constexpr gfx::PointF kMiddleVerticalStrokePoint1(25.0f, 15.0f);
+constexpr gfx::PointF kMiddleVerticalStrokePoint2(25.0f, 35.0f);
 constexpr gfx::PointF kRightVerticalStrokePoint1(40.0f, 15.0f);
 constexpr gfx::PointF kRightVerticalStrokePoint2(40.0f, 35.0f);
 
@@ -1649,6 +1651,116 @@ TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
                                     InkStrokeBrushSizeEq(6.0f)));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeSizeDuringErasing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Initialize to have three strokes, so there is something to erase.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, _, _)).Times(3);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  ApplyStrokeWithMouseAtPoints(kLeftVerticalStrokePoint1,
+                               base::span_from_ref(kLeftVerticalStrokePoint2),
+                               kLeftVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kMiddleVerticalStrokePoint1,
+                               base::span_from_ref(kMiddleVerticalStrokePoint2),
+                               kMiddleVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kRightVerticalStrokePoint1,
+                               base::span_from_ref(kRightVerticalStrokePoint2),
+                               kRightVerticalStrokePoint2);
+
+  // Set up for erasing.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Apply erase strokes at positions nearby the second and third strokes.
+  // They are not close enough for an eraser with a thin size to erase them.
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  static constexpr gfx::PointF kNearbyPointAboveMiddleVerticalStroke(25.0f,
+                                                                     10.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveMiddleVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveMiddleVerticalStroke),
+      kNearbyPointAboveMiddleVerticalStroke);
+
+  static constexpr gfx::PointF kNearbyPointAboveRightVerticalStroke(40.0f,
+                                                                    10.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveRightVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
+      kNearbyPointAboveRightVerticalStroke);
+
+  VerifyAndClearExpectations();
+
+  // Start erasing from where the first stroke was added.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(0), /*active=*/false));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the eraser size.
+  SelectEraserToolOfSize(6.0f);
+  VerifyAndClearExpectations();
+
+  // Continue the stroke, moving to the nearby-point above the second stroke.
+  // Since the eraser has immediately updated to the thick eraser size, it is
+  // now close enough that the stroke gets erased.
+  //
+  // Eraser stroke movement is like below, from the mouse down position D
+  // moving through position M before finishing at mouse up position U:
+  //
+  //           M............U
+  //           .
+  //           .
+  //    left   D            |  middle
+  //  stroke   |            |  stroke
+  //           |            |
+  //
+  // TODO(crbug.com/381908888): The in-progress stroke is affected by the
+  // size change.  Update the expectation to show the in-progress stroke is
+  // unchanged once the brush management in PdfInkModule protects against
+  // such changes.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(1), /*active=*/false));
+
+  static constexpr gfx::PointF kNearbyPointAboveLeftVerticalStroke(10.0f,
+                                                                   10.0f);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kNearbyPointAboveLeftVerticalStroke)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kNearbyPointAboveMiddleVerticalStroke)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  VerifyAndClearExpectations();
+
+  // Do another eraser stroke at the nearby-point above the third stroke.
+  // This point is close enough to be deleted with the thick eraser size
+  // that is now in effect.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(2), /*active=*/false));
+
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveRightVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
+      kNearbyPointAboveRightVerticalStroke);
 }
 
 TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {

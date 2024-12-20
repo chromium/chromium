@@ -820,9 +820,17 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
         FinishStroke(input_last_event.position, input_last_event.timestamp,
                      input_last_event.tool_type);
       }
+
+      current_tool_state_.emplace<EraserState>();
+    } else {
+      // Do not adjust `current_tool_state_` if an erase stroke is already
+      // in-progress.  Changes to the tool state will only apply to subsequent
+      // strokes.
+      if (!erasing_stroke_state().erasing) {
+        current_tool_state_.emplace<EraserState>();
+      }
     }
 
-    current_tool_state_.emplace<EraserState>();
     eraser_size_ = size;
     MaybeSetCursor();
     return;
