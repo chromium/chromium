@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_MOCK_AUTOFILL_PLUS_ADDRESS_DELEGATE_H_
 
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"

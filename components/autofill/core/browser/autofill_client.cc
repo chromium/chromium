@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"

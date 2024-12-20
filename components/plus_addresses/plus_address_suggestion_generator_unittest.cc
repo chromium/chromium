@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"

@@ -18,7 +18,7 @@
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#import "components/autofill/core/browser/password_form_classification.h"
+#import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"

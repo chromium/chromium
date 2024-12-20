@@ -13,7 +13,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

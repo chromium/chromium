@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_DELEGATE_H_
 
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/unique_ids.h"

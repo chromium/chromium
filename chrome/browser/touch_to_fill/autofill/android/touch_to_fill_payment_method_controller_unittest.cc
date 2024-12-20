@@ -19,7 +19,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

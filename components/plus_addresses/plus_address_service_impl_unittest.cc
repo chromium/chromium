@@ -28,7 +28,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"

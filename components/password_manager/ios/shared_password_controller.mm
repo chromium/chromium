@@ -25,7 +25,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"

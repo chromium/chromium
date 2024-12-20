@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_
 
 #include <vector>
 
 #include "base/run_loop.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
 namespace gfx {
@@ -121,4 +121,4 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TEST_AUTOFILL_EXTERNAL_DELEGATE_H_

@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

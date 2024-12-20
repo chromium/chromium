@@ -19,7 +19,7 @@
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/test_autofill_client.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"

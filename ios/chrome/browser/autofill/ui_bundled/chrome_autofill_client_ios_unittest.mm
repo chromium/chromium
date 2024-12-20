@@ -14,7 +14,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/password_form_classification.h"
+#import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_test_utils.h"

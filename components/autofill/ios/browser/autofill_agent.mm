@@ -39,7 +39,7 @@
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/ui/suggestion.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"

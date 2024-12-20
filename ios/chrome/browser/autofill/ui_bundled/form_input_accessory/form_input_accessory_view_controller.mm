@@ -8,7 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"

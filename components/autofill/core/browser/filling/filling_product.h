@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_
 
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -45,4 +45,4 @@ std::string FillingProductToString(FillingProduct filling_product);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_

@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"

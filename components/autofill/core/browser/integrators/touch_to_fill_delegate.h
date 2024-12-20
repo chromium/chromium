@@ -8,8 +8,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_TOUCH_TO_FILL_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_TOUCH_TO_FILL_DELEGATE_H_
 
 namespace autofill {
 
@@ -62,4 +62,4 @@ class TouchToFillDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_TOUCH_TO_FILL_DELEGATE_H_

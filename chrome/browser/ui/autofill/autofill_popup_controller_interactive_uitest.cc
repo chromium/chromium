@@ -22,7 +22,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/test_autofill_external_delegate.h"
+#include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

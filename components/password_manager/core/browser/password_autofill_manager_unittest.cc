@@ -26,7 +26,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"

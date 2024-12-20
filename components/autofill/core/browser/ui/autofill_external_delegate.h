@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXTERNAL_DELEGATE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXTERNAL_DELEGATE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_EXTERNAL_DELEGATE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_EXTERNAL_DELEGATE_H_
 
 #include <string>
 #include <vector>
@@ -317,4 +317,4 @@ class AutofillExternalDelegate::ScopedSuggestionSelectionShortcut {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXTERNAL_DELEGATE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_EXTERNAL_DELEGATE_H_

@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

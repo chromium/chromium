@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill_delegate.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"

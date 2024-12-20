@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_FORM_CLASSIFICATION_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_FORM_CLASSIFICATION_UTIL_H_
 
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {

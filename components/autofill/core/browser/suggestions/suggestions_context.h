@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTIONS_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTIONS_CONTEXT_H_
 
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 
