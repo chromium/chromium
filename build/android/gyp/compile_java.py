@@ -735,6 +735,11 @@ def main(argv):
       # These apply to both .jars in classpath as well as code being compiled.
       # Chrome classes rely on the presence of @NullMarked.
       errorprone_flags += ['-XepOpt:NullAway:AnnotatedPackages=']
+      errorprone_flags += [
+          '-XepOpt:NullAway:CustomContractAnnotations='
+          'org.chromium.build.annotations.Contract'
+      ]
+      errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
       # Make it a warning to use assumeNonNull() with a @NonNull.
       errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
                             'org.chromium.build.NullUtil.assumeNonNull')]

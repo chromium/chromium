@@ -48,6 +48,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
       "java/src/org/chromium/build/annotations/AssumeNonNull.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
+      "java/src/org/chromium/build/annotations/Contract.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",
       "java/src/org/chromium/build/annotations/DoNotStripLogs.java",

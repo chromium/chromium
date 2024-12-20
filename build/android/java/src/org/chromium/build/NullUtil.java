@@ -4,26 +4,28 @@
 
 package org.chromium.build;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Misc methods related to build tools. */
+/** Helpers related to NullAway's nullness checking. */
 @NullMarked
 public class NullUtil {
     private NullUtil() {}
 
     /**
-     * Tell NullAway that the given parameter is non-null.
+     * Tell NullAway that the given parameter is non-null. Using the return value is optional.
      *
-     * <p>Prefer this over "assert foo != null;", since asserts will lead to different crash
-     * signatures in Canary vs non-Canary (since asserts enabled only on Canary).
+     * <p>Prefer "assumeNotNull(foo);" over "assert foo != null;" when "foo" will be immenently
+     * dereferenced (since dereferencing checks for nullness anyways).
      *
      * <p>For when a runtime check is meritted, use Objects.requireNonNull().
      *
-     * <p>See: https://github.com/uber/NullAway/wiki/Suppressing-Warnings#downcasting
+     * <p>Expressions are supported. E.g.: assumeNonNull(foo.getBar());
      */
-    @NullUnmarked
+    @NullUnmarked // Since it does not actually check.
+    @Contract("null -> fail") // Means you do not need to use the return value.
     public static <T> T assumeNonNull(@Nullable T object) {
         return object;
     }
