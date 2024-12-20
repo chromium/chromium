@@ -985,6 +985,30 @@ TEST_F(BrowserControlsTest,
   EXPECT_EQ("40px", ResolveSafeAreaInsetsBottom(iframe));
 }
 
+TEST_F(BrowserControlsTest, MAYBE(StateUpdateRecomputesSafeAreaInset)) {
+  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
+  ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(false);
+
+  WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      0, 50.f, true);
+
+  // With DynamicSafeAreaInsetsOnScroll disabled, SetShownRatio does not update
+  // the safe area inset.
+  web_view->GetBrowserControls().SetShownRatio(0.0, 1);
+  CompositeForTest();
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
+
+  // However, UpdateConstraintsAndState always updates the safe area inset.
+  web_view->GetBrowserControls().UpdateConstraintsAndState(
+      cc::BrowserControlsState::kShown, cc::BrowserControlsState::kBoth);
+  CompositeForTest();
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+}
+
 // Browser controls visibility should remain consistent when height is changed.
 TEST_F(BrowserControlsTest, MAYBE(HeightChangeMaintainsVisibility)) {
   WebViewImpl* web_view = Initialize();
