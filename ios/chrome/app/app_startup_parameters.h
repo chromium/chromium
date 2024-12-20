@@ -118,6 +118,13 @@ class GURL;
                forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode
+    NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
              applicationMode:(ApplicationModeForTabOpening)mode
         forceApplicationMode:(BOOL)forceApplicationMode;

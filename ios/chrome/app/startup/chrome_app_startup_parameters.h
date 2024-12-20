@@ -19,6 +19,12 @@
                forceApplicationMode:(BOOL)forceApplicationMode NS_UNAVAILABLE;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode NS_UNAVAILABLE;
+
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
                   declaredSourceApp:(NSString*)declaredSourceApp
                     secureSourceApp:(NSString*)secureSourceApp
                         completeURL:(NSURL*)completeURL

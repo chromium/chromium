@@ -141,6 +141,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                forceApplicationMode:(BOOL)forceApplicationMode {
   self = [super initWithExternalURL:externalURL
                         completeURL:net::GURLWithNSURL(completeURL)
+                        sourceAppID:declaredSourceApp
                     applicationMode:mode
                forceApplicationMode:forceApplicationMode];
   if (self) {

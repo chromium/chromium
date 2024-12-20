@@ -16,6 +16,7 @@
   GURL _completeURL;
   std::vector<GURL> _URLs;
   ApplicationModeRequestStatus _applicationModeRequestStatus;
+  NSString* _sourceAppID;
 
   // The mode in which the tab must be opened. Defaults to UNDETERMINED.
   ApplicationModeForTabOpening _applicationMode;
@@ -48,6 +49,23 @@
   if (self) {
     _externalURL = externalURL;
     _completeURL = completeURL;
+    _applicationMode = mode;
+    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+    _forceApplicationMode = forceApplicationMode;
+  }
+  return self;
+}
+
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode {
+  self = [super init];
+  if (self) {
+    _externalURL = externalURL;
+    _completeURL = completeURL;
+    _sourceAppID = [sourceAppID copy];
     _applicationMode = mode;
     _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
     _forceApplicationMode = forceApplicationMode;
