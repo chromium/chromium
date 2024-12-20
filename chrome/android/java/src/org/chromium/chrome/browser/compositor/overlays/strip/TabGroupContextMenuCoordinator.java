@@ -358,14 +358,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         }
 
         if (memberRole == MemberRole.OWNER) {
-            int insertionIndex = getMenuItemIndex(itemList, R.id.manage_sharing);
-            itemList.add(
-                    insertionIndex,
-                    BrowserUiListMenuUtils.buildMenuListItem(
-                            R.string.ungroup_tab_group_menu_item,
-                            R.id.ungroup_tab,
-                            R.drawable.ic_ungroup_tabs_24dp,
-                            /* enabled= */ true));
             itemList.add(getDivider());
             itemList.add(
                     BrowserUiListMenuUtils.buildMenuListItem(
