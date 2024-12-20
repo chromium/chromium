@@ -131,7 +131,7 @@ public class StripLayoutTab extends StripLayoutView {
     private static final int CLOSE_BUTTON_WIDTH_DP = 48;
 
     // Strip Tab Offset Constants
-    private static final float TOP_MARGIN_DP = 2.f;
+    protected static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
     protected static final float FOLIO_FOOT_LENGTH_DP = 16.f;
 

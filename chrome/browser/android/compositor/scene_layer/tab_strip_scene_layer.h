@@ -38,6 +38,13 @@ class TabStripSceneLayer : public SceneLayer {
 
   ~TabStripSceneLayer() override;
 
+  void SetConstants(JNIEnv* env,
+                    jint reorder_background_top_margin,
+                    jint reorder_background_bottom_margin,
+                    jint reorder_background_padding_start,
+                    jint reorder_background_padding_end,
+                    jint reorder_background_corner_radius);
+
   void SetContentTree(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
@@ -155,8 +162,10 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       jboolean incognito,
       jboolean foreground,
+      jboolean show_reorder_background,
       jint id,
       jint tint,
+      jint reorder_background_tint,
       jfloat x,
       jfloat y,
       jfloat width,

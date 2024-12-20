@@ -21,16 +21,23 @@ class GroupIndicatorLayer : public Layer {
  public:
   static scoped_refptr<GroupIndicatorLayer> Create(
       LayerTitleCache* layer_title_cache);
+  static void SetConstants(int reorder_background_top_margin,
+                           int reorder_background_bottom_margin,
+                           int reorder_background_padding_start,
+                           int reorder_background_padding_end,
+                           int reorder_background_corner_radius);
 
   GroupIndicatorLayer(const GroupIndicatorLayer&) = delete;
   GroupIndicatorLayer& operator=(const GroupIndicatorLayer&) = delete;
 
   void SetProperties(int id,
                      int tint,
+                     int reorder_background_tint,
                      int bubble_tint,
                      bool incognito,
                      bool foreground,
                      bool show_bubble,
+                     bool show_reorder_background,
                      float x,
                      float y,
                      float width,
@@ -50,9 +57,16 @@ class GroupIndicatorLayer : public Layer {
   ~GroupIndicatorLayer() override;
 
  private:
+  static inline int reorder_background_top_margin_;
+  static inline int reorder_background_bottom_margin_;
+  static inline int reorder_background_padding_start_;
+  static inline int reorder_background_padding_end_;
+  static inline int reorder_background_corner_radius_;
+
   raw_ptr<LayerTitleCache> layer_title_cache_;
 
   scoped_refptr<cc::slim::Layer> layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> reorder_background_;
   scoped_refptr<cc::slim::SolidColorLayer> group_indicator_;
   scoped_refptr<cc::slim::SolidColorLayer> bottom_outline_;
   scoped_refptr<cc::slim::SolidColorLayer> notification_bubble_;

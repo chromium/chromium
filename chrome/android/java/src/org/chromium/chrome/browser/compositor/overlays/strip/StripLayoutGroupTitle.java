@@ -80,7 +80,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // The padding between the start of the indicator and the avatar when the group is shared. If no
     // avatar is present, the start padding should match the end padding, using `TEXT_PADDING_DP`.
     private static final int AVATAR_START_PADDING_DP = 4;
-    private static final int CORNER_RADIUS_DP = 6;
+    private static final int CORNER_RADIUS_DP = 9;
     private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
     private static final float NOTIFICATION_BUBBLE_SIZE_DP = 6.f;
     private static final float NOTIFICATION_BUBBLE_PADDING_DP = 4.f;
@@ -89,6 +89,14 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int EFFECTIVE_MIN_WIDTH = MIN_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
     private static final int EFFECTIVE_MAX_WIDTH = MAX_VISUAL_WIDTH_DP + WIDTH_MARGINS_DP;
 
+    // Reorder background constants.
+    public static final float REORDER_BACKGROUND_TOP_MARGIN = StripLayoutTab.TOP_MARGIN_DP;
+    public static final float REORDER_BACKGROUND_BOTTOM_MARGIN =
+            ReorderDelegate.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
+    public static final float REORDER_BACKGROUND_PADDING_START = 5.f;
+    public static final float REORDER_BACKGROUND_PADDING_END = 10.f;
+    public static final float REORDER_BACKGROUND_CORNER_RADIUS = 12.f;
+
     // External influences.
     private final StripLayoutGroupTitleDelegate mDelegate;
 
@@ -96,7 +104,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // Tab group's root Id this view refers to.
     // @TODO(crbug.com/379941150) Deprecate rootId and transition to using tabGroupId
     private int mRootId;
-    private Token mTabGroupId;
+    private final Token mTabGroupId;
     private String mTitle;
     @ColorInt private int mColor;
 
@@ -111,6 +119,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @ColorInt private final int mBubbleTint;
     private boolean mShowBubble;
     @Nullable private TabBubbler mTabBubbler;
+
+    // Reorder state
+    @ColorInt private final int mReorderBackgroundTint;
 
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
@@ -133,6 +144,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
         mBubbleTint = TabUiThemeUtil.getGroupTitleBubbleColor(mContext);
+        mReorderBackgroundTint = TabUiThemeUtil.getReorderBackgroundColor(mContext, incognito);
     }
 
     @Override
@@ -303,6 +315,19 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public float getBottomIndicatorHeight() {
         return BOTTOM_INDICATOR_HEIGHT_DP;
+    }
+
+    /**
+     * Returns {@code true} if the reorder background should be visible. This is the case when the
+     * group indicator is foregrounded for reorder and is not collapsed.
+     */
+    public boolean shouldShowReorderBackground() {
+        return isForegrounded() && !isCollapsed();
+    }
+
+    /** Returns the {@link ColorInt} for the reorder background. */
+    public @ColorInt int getReorderBackgroundTint() {
+        return mReorderBackgroundTint;
     }
 
     /**

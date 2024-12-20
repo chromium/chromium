@@ -17,12 +17,32 @@ scoped_refptr<GroupIndicatorLayer> GroupIndicatorLayer::Create(
   return base::WrapRefCounted(new GroupIndicatorLayer(layer_title_cache));
 }
 
+// static
+void GroupIndicatorLayer::SetConstants(int reorder_background_top_margin,
+                                       int reorder_background_bottom_margin,
+                                       int reorder_background_padding_start,
+                                       int reorder_background_padding_end,
+                                       int reorder_background_corner_radius) {
+  GroupIndicatorLayer::reorder_background_top_margin_ =
+      reorder_background_top_margin;
+  GroupIndicatorLayer::reorder_background_bottom_margin_ =
+      reorder_background_bottom_margin;
+  GroupIndicatorLayer::reorder_background_padding_start_ =
+      reorder_background_padding_start;
+  GroupIndicatorLayer::reorder_background_padding_end_ =
+      reorder_background_padding_end;
+  GroupIndicatorLayer::reorder_background_corner_radius_ =
+      reorder_background_corner_radius;
+}
+
 void GroupIndicatorLayer::SetProperties(int id,
                                         int tint,
+                                        int reorder_background_tint,
                                         int bubble_tint,
                                         bool incognito,
                                         bool foreground,
                                         bool show_bubble,
+                                        bool show_reorder_background,
                                         float x,
                                         float y,
                                         float width,
@@ -108,6 +128,35 @@ void GroupIndicatorLayer::SetProperties(int id,
   bottom_outline_->SetPosition(
       gfx::PointF(bottom_indicator_x, floor(bottom_indicator_y)));
   bottom_outline_->SetBackgroundColor(SkColor4f::FromColor(tint));
+
+  // Set reorder background if needed.
+  if (show_reorder_background) {
+    reorder_background_->SetIsDrawable(true);
+    reorder_background_->SetBackgroundColor(
+        SkColor4f::FromColor(reorder_background_tint));
+
+    float reorder_background_x = x;
+    float reorder_background_y = reorder_background_top_margin_;
+    if (l10n_util::IsLayoutRtl()) {
+      reorder_background_x -=
+          (bottom_indicator_width + reorder_background_padding_end_ - width);
+    } else {
+      reorder_background_x -= reorder_background_padding_start_;
+    }
+    reorder_background_->SetPosition(
+        gfx::PointF(reorder_background_x, reorder_background_y));
+
+    float reorder_background_width = reorder_background_padding_start_ +
+                                     bottom_indicator_width +
+                                     reorder_background_padding_end_;
+    float reorder_background_height = tab_strip_height -
+                                      reorder_background_top_margin_ -
+                                      reorder_background_bottom_margin_;
+    reorder_background_->SetBounds(
+        gfx::Size(reorder_background_width, reorder_background_height));
+  } else {
+    reorder_background_->SetIsDrawable(false);
+  }
 }
 
 bool GroupIndicatorLayer::foreground() {
@@ -121,14 +170,21 @@ scoped_refptr<cc::slim::Layer> GroupIndicatorLayer::layer() {
 GroupIndicatorLayer::GroupIndicatorLayer(LayerTitleCache* layer_title_cache)
     : layer_title_cache_(layer_title_cache),
       layer_(cc::slim::Layer::Create()),
+      reorder_background_(cc::slim::SolidColorLayer::Create()),
       group_indicator_(cc::slim::SolidColorLayer::Create()),
       bottom_outline_(cc::slim::SolidColorLayer::Create()),
       notification_bubble_(cc::slim::SolidColorLayer::Create()),
       foreground_(false) {
+  reorder_background_->SetIsDrawable(false);
   group_indicator_->SetIsDrawable(true);
   bottom_outline_->SetIsDrawable(true);
   notification_bubble_->SetIsDrawable(false);
 
+  int corner_radius = GroupIndicatorLayer::reorder_background_corner_radius_;
+  reorder_background_->SetRoundedCorner(gfx::RoundedCornersF(
+      corner_radius, corner_radius, corner_radius, corner_radius));
+
+  layer_->AddChild(reorder_background_);
   layer_->AddChild(group_indicator_);
   layer_->AddChild(bottom_outline_);
   group_indicator_->AddChild(notification_bubble_);

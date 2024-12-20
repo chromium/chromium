@@ -36,6 +36,17 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
      */
     public TabStripSceneLayer(float density) {
         mDpToPx = density;
+        TabStripSceneLayerJni.get()
+                .setConstants(
+                        mNativePtr,
+                        Math.round(StripLayoutGroupTitle.REORDER_BACKGROUND_TOP_MARGIN * mDpToPx),
+                        Math.round(
+                                StripLayoutGroupTitle.REORDER_BACKGROUND_BOTTOM_MARGIN * mDpToPx),
+                        Math.round(
+                                StripLayoutGroupTitle.REORDER_BACKGROUND_PADDING_START * mDpToPx),
+                        Math.round(StripLayoutGroupTitle.REORDER_BACKGROUND_PADDING_END * mDpToPx),
+                        Math.round(
+                                StripLayoutGroupTitle.REORDER_BACKGROUND_CORNER_RADIUS * mDpToPx));
     }
 
     public static void setTestFlag(boolean testFlag) {
@@ -113,6 +124,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     leftPaddingPx,
                     rightPaddingPx,
                     topPaddingPx);
+            pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
@@ -120,7 +132,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     stripLayoutTabsToRender,
                     selectedTabId,
                     hoveredTabId);
-            pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
@@ -285,8 +296,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             TabStripSceneLayer.this,
                             gt.isIncognito(),
                             gt.isForegrounded(),
+                            gt.shouldShowReorderBackground(),
                             gt.getRootId(),
                             gt.getTint(),
+                            gt.getReorderBackgroundTint(),
                             gt.getPaddedX() * mDpToPx,
                             gt.getPaddedY() * mDpToPx,
                             gt.getPaddedWidth() * mDpToPx,
@@ -312,6 +325,14 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @NativeMethods
     public interface Natives {
         long init(TabStripSceneLayer caller);
+
+        void setConstants(
+                long nativeTabStripSceneLayer,
+                int reorderBackgroundTopMargin,
+                int reorderBackgroundBottomMargin,
+                int reorderBackgroundPaddingStart,
+                int reorderBackgroundPaddingEnd,
+                int reorderBackgroundCornerRadius);
 
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
@@ -423,8 +444,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 TabStripSceneLayer caller,
                 boolean incognito,
                 boolean foreground,
+                boolean showReorderBackground,
                 int id,
                 int tint,
+                int reorderBackgroundTint,
                 float x,
                 float y,
                 float width,
