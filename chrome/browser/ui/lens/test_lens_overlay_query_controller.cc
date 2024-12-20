@@ -183,7 +183,6 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
             request->objects_request().payload().has_partial_pdf_document()) {
     // Partial page content upload request.
     num_partial_page_content_requests_sent_++;
-    LOG(ERROR) << num_partial_page_content_requests_sent_;
     sent_partial_page_content_objects_request_.CopyFrom(request->objects_request());
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
