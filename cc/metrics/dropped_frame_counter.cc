@@ -128,7 +128,10 @@ DroppedFrameCounter::DroppedFrameCounter()
     : frame_sorter_(base::BindRepeating(&DroppedFrameCounter::NotifyFrameResult,
                                         base::Unretained(this))) {
 }
-DroppedFrameCounter::~DroppedFrameCounter() = default;
+DroppedFrameCounter::~DroppedFrameCounter() {
+  sorted_frame_callback_.reset();
+  frame_sorter_.Reset();
+}
 
 uint32_t DroppedFrameCounter::GetAverageThroughput() const {
   size_t good_frames = 0;
