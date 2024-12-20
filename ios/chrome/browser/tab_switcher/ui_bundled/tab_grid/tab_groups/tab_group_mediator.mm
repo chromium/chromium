@@ -16,6 +16,7 @@
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/group_data.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -59,7 +60,8 @@ constexpr CGFloat kFacePileAvatarSize = 24;
 constexpr CGFloat kActivityLabelAvatarSize = 16;
 }  // namespace
 
-@interface TabGroupMediator () <TabGroupSyncServiceObserverDelegate>
+@interface TabGroupMediator () <MessagingBackendServiceObserving,
+                                TabGroupSyncServiceObserverDelegate>
 @end
 
 @implementation TabGroupMediator {
@@ -82,6 +84,9 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   // chip on its cell.
   std::map<tab_groups::LocalTabID, collaboration::messaging::PersistentMessage>
       _dirtyTabs;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
 }
 
 - (instancetype)
@@ -126,10 +131,14 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
-    // TODO(crbug.com/375594684): Start observing the messaging backend service
-    // and update _dirtyTabs.
     _messagingService = messagingService;
-    [self fetchMessagesForChip];
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+      [self fetchMessagesForChip];
+    }
 
     [self updateFacePileUI];
     [self populateConsumerItems];
@@ -186,6 +195,11 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 #pragma mark - Parent's functions
 
 - (void)disconnect {
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+  }
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
@@ -341,6 +355,9 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
   if (!_shareKitService->IsSupported() ||
       !message.attribution.triggering_user.has_value()) {
+    // TODO(crbug.com/385090658): Now, `triggering_user` doesn't have a value in
+    // any cases (a tab is added / updated) and the label isn't created. Confirm
+    // why `triggering_user` is nil.
     return nil;
   }
 
@@ -643,12 +660,73 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     if (!message.attribution.tab_metadata.has_value()) {
       continue;
     }
-    auto tab_data = message.attribution.tab_metadata.value();
+    collaboration::messaging::TabMessageMetadata tab_data =
+        message.attribution.tab_metadata.value();
     if (!tab_data.local_tab_id.has_value()) {
       continue;
     }
     _dirtyTabs[tab_data.local_tab_id.value()] = message;
   }
+}
+
+// Reconfigures a tab cell specified by `localTabID`.
+- (void)reconfigureTab:(tab_groups::LocalTabID)localTabID {
+  for (int index = 0; index < self.webStateList->count(); ++index) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(index);
+    if (localTabID == webState->GetUniqueIdentifier().identifier()) {
+      GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+      [self.consumer replaceItem:item withReplacementItem:item];
+      return;
+    }
+  }
+}
+
+#pragma mark - MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self fetchMessagesForChip];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (message.type !=
+      collaboration::messaging::PersistentNotificationType::CHIP) {
+    return;
+  }
+  if (!message.attribution.tab_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabMessageMetadata tab_data =
+      message.attribution.tab_metadata.value();
+  if (!tab_data.local_tab_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
+  _dirtyTabs[localTabID] = message;
+
+  [self reconfigureTab:localTabID];
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (!message.attribution.tab_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabMessageMetadata tab_data =
+      message.attribution.tab_metadata.value();
+  if (!tab_data.local_tab_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
+  _dirtyTabs.erase(localTabID);
+
+  [self reconfigureTab:localTabID];
 }
 
 @end

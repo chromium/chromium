@@ -15,6 +15,7 @@
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -56,7 +57,8 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
 }  // namespace
 
-@interface RegularGridMediator () <TabGroupSyncServiceObserverDelegate>
+@interface RegularGridMediator () <MessagingBackendServiceObserving,
+                                   TabGroupSyncServiceObserverDelegate>
 @end
 
 @implementation RegularGridMediator {
@@ -79,6 +81,9 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   // A set of ID of the shared tab group that has changed and a user has not
   // seen it yet.
   std::set<tab_groups::LocalTabGroupID> _dirtyGroups;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
 }
 
 - (instancetype)
@@ -105,10 +110,14 @@ constexpr CGFloat kFacePileAvatarSize = 20;
       _scopedSyncServiceObservation->Observe(_tabGroupSyncService);
     }
 
-    // TODO(crbug.com/375594684): Start observing the messaging backend service
-    // and update _dirtyGroups.
     _messagingService = messagingService;
-    [self fetchMessagesForGroup];
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+      [self fetchMessagesForGroup];
+    }
   }
   return self;
 }
@@ -231,6 +240,11 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 #pragma mark - Parent's function
 
 - (void)disconnect {
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+  }
   _tabsCloser.reset();
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
@@ -395,11 +409,25 @@ constexpr CGFloat kFacePileAvatarSize = 20;
     if (!message.attribution.tab_group_metadata.has_value()) {
       continue;
     }
-    auto group_data = message.attribution.tab_group_metadata.value();
+    collaboration::messaging::TabGroupMessageMetadata group_data =
+        message.attribution.tab_group_metadata.value();
     if (!group_data.local_tab_group_id.has_value()) {
       continue;
     }
     _dirtyGroups.insert(group_data.local_tab_group_id.value());
+  }
+}
+
+// Reconfigures a group cell specified by `localTabGroupID`.
+- (void)reconfigureGroup:(tab_groups::LocalTabGroupID)localTabGroupID {
+  for (const TabGroup* group : self.webStateList->GetGroups()) {
+    if (group->tab_group_id() == localTabGroupID) {
+      GridItemIdentifier* item =
+          [GridItemIdentifier groupIdentifier:group
+                             withWebStateList:self.webStateList];
+      [self.consumer replaceItem:item withReplacementItem:item];
+      return;
+    }
   }
 }
 
@@ -443,6 +471,56 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   config.avatarSize = kFacePileAvatarSize;
 
   return _shareKitService->FacePile(config);
+}
+
+#pragma mark - MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self fetchMessagesForGroup];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (message.type !=
+      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP) {
+    return;
+  }
+  if (!message.attribution.tab_group_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabGroupMessageMetadata group_data =
+      message.attribution.tab_group_metadata.value();
+  if (!group_data.local_tab_group_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabGroupID localTabGroupID =
+      group_data.local_tab_group_id.value();
+  _dirtyGroups.insert(localTabGroupID);
+
+  [self reconfigureGroup:localTabGroupID];
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (!message.attribution.tab_group_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabGroupMessageMetadata group_data =
+      message.attribution.tab_group_metadata.value();
+  if (!group_data.local_tab_group_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabGroupID localTabGroupID =
+      group_data.local_tab_group_id.value();
+  _dirtyGroups.erase(localTabGroupID);
+
+  [self reconfigureGroup:localTabGroupID];
 }
 
 @end
