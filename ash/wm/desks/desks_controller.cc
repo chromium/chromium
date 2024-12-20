@@ -1507,7 +1507,7 @@ bool DesksController::RequestFocusOnUndoDeskRemovalToast() {
     return false;
   }
 
-  return ToastManager::Get()->RequestFocusOnActiveToastDismissButton(
+  return ToastManager::Get()->RequestFocusOnActiveToastButton(
       temporary_removed_desk_->toast_id());
 }
 
@@ -2205,9 +2205,8 @@ void DesksController::MaybeCommitPendingDeskRemoval(
 }
 
 bool DesksController::IsUndoToastFocused() const {
-  return temporary_removed_desk_ &&
-         ToastManager::Get()->IsToastDismissButtonFocused(
-             temporary_removed_desk_->toast_id());
+  return temporary_removed_desk_ && ToastManager::Get()->IsToastButtonFocused(
+                                        temporary_removed_desk_->toast_id());
 }
 
 void DesksController::TrackWindowOnAllDesks(aura::Window* window) {

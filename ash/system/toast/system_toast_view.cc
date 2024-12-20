@@ -118,7 +118,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
       CHECK(!button_text.empty());
       AddChildView(
           views::Builder<PillButton>()
-              .CopyAddressTo(&dismiss_button_)
+              .CopyAddressTo(&button_)
               .SetID(VIEW_ID_TOAST_BUTTON)
               .SetCallback(std::move(button_callback))
               .SetText(button_text)
@@ -126,7 +126,7 @@ SystemToastView::SystemToastView(const std::u16string& text,
               .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
               .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
               .Build());
-      auto* button_focus_ring = views::FocusRing::Get(dismiss_button_);
+      auto* button_focus_ring = views::FocusRing::Get(button_);
       button_focus_ring->SetHaloInset(kTextButtonFocusRingHaloInset);
       button_focus_ring->SetOutsetFocusRingDisabled(true);
       break;
@@ -142,8 +142,10 @@ SystemToastView::SystemToastView(const std::u16string& text,
                            .SetCallback(std::move(button_callback))
                            .SetAccessibleName(button_text)
                            .Build());
+      icon_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
       icon_button->SetIconColor(cros_tokens::kCrosSysPrimary);
       icon_button->SetProperty(views::kMarginsKey, kToastIconButtonLeftPadding);
+      button_ = icon_button;
       break;
     }
   }

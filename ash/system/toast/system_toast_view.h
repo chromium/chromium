@@ -13,8 +13,8 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
+class Button;
 class Label;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -48,7 +48,7 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   SystemToastView& operator=(const SystemToastView&) = delete;
   ~SystemToastView() override;
 
-  views::LabelButton* dismiss_button() { return dismiss_button_; }
+  views::Button* button() { return button_; }
 
   // Updates the toast label text.
   void SetText(const std::u16string& text);
@@ -61,7 +61,9 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
 
   // Owned by the views hierarchy.
   raw_ptr<views::Label> label_ = nullptr;
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  // Button which either contains text or an icon depending on the toast's
+  // `ButtonType`.
+  raw_ptr<views::Button> button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 };

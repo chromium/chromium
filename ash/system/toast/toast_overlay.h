@@ -31,7 +31,7 @@ class Rect;
 }
 
 namespace views {
-class LabelButton;
+class Button;
 class Widget;
 }
 
@@ -58,11 +58,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Offset of the overlay from the edge of the work area.
   static constexpr int kOffset = 8;
 
-  // Creates the Toast overlay UI. `text` is the message to be shown, and
-  // `dismiss_text` is the dismiss button's text. The dismiss button will only
-  // be displayed if `dismiss_text` is not empty. `dismiss_callback` will be
-  // called when the dismiss button is pressed. An icon will show on the left
-  // side if `leading_icon` is not empty.
+  // Creates the Toast overlay UI.
   // To test different Toast UI variations, enable debug shortcuts by building
   // with flag `--ash-debug-shortcuts` and use command "Shift + Ctrl + Alt + O".
   ToastOverlay(Delegate* delegate,
@@ -82,13 +78,13 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   const std::u16string GetText() const;
 
-  // Requests focus on the toast's dismiss button. Return true if it was
+  // Requests focus on the toast's button if there is one. Return true if it was
   // successful.
-  bool RequestFocusOnActiveToastDismissButton();
+  bool RequestFocusOnActiveToastButton();
 
-  // Returns if the dismiss button is focused in the toast. If the toast does
-  // not have a dismiss button, it returns false.
-  bool IsDismissButtonFocused() const;
+  // Returns if the button is focused in the toast. If the toast does not have a
+  // button, it returns false.
+  bool IsButtonFocused() const;
 
   // UnifiedSystemTray::Observer:
   void OnSliderBubbleHeightChanged() override;
@@ -127,7 +123,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                              HotseatState new_state) override;
 
   views::Widget* widget_for_testing();
-  views::LabelButton* dismiss_button_for_testing();
+  views::Button* button_for_testing();
 
   const raw_ptr<Delegate> delegate_;
   const std::u16string text_;

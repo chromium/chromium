@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/toast/toast_manager_impl.h"
-
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
@@ -19,6 +17,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/work_area_insets.h"
@@ -39,7 +38,7 @@
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -146,8 +145,8 @@ class ToastManagerImplTest : public AshTestBase,
 
   void ClickDismissButton(
       aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    views::LabelButton* dismiss_button =
-        GetCurrentOverlay(root_window)->dismiss_button_for_testing();
+    views::Button* dismiss_button =
+        GetCurrentOverlay(root_window)->button_for_testing();
 
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(

@@ -50,9 +50,9 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   // ToastManager:
   void Show(ToastData data) override;
   void Cancel(std::string_view id) override;
-  bool RequestFocusOnActiveToastDismissButton(std::string_view id) override;
+  bool RequestFocusOnActiveToastButton(std::string_view id) override;
   bool IsToastShown(std::string_view id) const override;
-  bool IsToastDismissButtonFocused(std::string_view id) const override;
+  bool IsToastButtonFocused(std::string_view id) const override;
   std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
 
   // ToastOverlay::Delegate:

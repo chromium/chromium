@@ -39,7 +39,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
@@ -268,14 +268,17 @@ const std::u16string ToastOverlay::GetText() const {
   return text_;
 }
 
-bool ToastOverlay::RequestFocusOnActiveToastDismissButton() {
-  overlay_view_->dismiss_button()->RequestFocus();
-  return overlay_view_->dismiss_button()->HasFocus();
+bool ToastOverlay::RequestFocusOnActiveToastButton() {
+  if (views::Button* button = overlay_view_->button()) {
+    button->RequestFocus();
+    return button->HasFocus();
+  }
+  return false;
 }
 
-bool ToastOverlay::IsDismissButtonFocused() const {
-  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
-    return dismiss_button->HasFocus();
+bool ToastOverlay::IsButtonFocused() const {
+  if (auto* button = overlay_view_->button()) {
+    return button->HasFocus();
   }
   return false;
 }
@@ -412,8 +415,8 @@ views::Widget* ToastOverlay::widget_for_testing() {
   return overlay_widget_.get();
 }
 
-views::LabelButton* ToastOverlay::dismiss_button_for_testing() {
-  return overlay_view_->dismiss_button();
+views::Button* ToastOverlay::button_for_testing() {
+  return overlay_view_->button();
 }
 
 }  // namespace ash
