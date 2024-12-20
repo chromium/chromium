@@ -228,7 +228,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
            CompositingReason::kAffectedByOuterViewportBoundsDelta;
   }
 
-  bool IsAffectedBySafeArea() const {
+  bool IsAffectedBySafeAreaBottom() const {
     return DirectCompositingReasons() &
            CompositingReason::kAffectedBySafeAreaBottom;
   }

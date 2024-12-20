@@ -814,6 +814,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
                     CompositorElementIdNamespace::kStickyTranslation);
           }
           state.sticky_constraint = std::move(constraint);
+
+          if (object_.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+            state.direct_compositing_reasons |=
+                CompositingReason::kAffectedBySafeAreaBottom;
+          }
         }
       }
 
