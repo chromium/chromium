@@ -648,7 +648,7 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>();
   }
 }
@@ -807,7 +807,7 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
 
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     source->AddResourcePath(
         kOobeCustomVarsCssJs,
         IDR_OOBE_COMPONENTS_OOBE_VARS_OOBE_CUSTOM_VARS_REMORA_CSS_JS);
