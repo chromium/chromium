@@ -1252,12 +1252,13 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
 void inspector_paint_event::Data(perfetto::TracedValue context,
                                  LocalFrame* frame,
                                  const LayoutObject* layout_object,
-                                 const gfx::Rect& contents_cull_rect) {
+                                 const gfx::QuadF& quad,
+                                 int layer_id) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
-  CreateQuad(dict.AddItem("clip"), gfx::QuadF(gfx::RectF(contents_cull_rect)));
+  CreateQuad(dict.AddItem("clip"), quad);
   SetGeneratingNodeInfo(dict, layout_object, "nodeId");
-  dict.Add("layerId", 0);  // For backward compatibility.
+  dict.Add("layerId", layer_id);
   SetCallStack(frame->DomWindow()->GetIsolate(), dict);
 }
 

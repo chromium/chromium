@@ -30,8 +30,8 @@ class UnguessableToken;
 }
 
 namespace gfx {
-class Rect;
 class RectF;
+class QuadF;
 }
 
 namespace v8 {
@@ -435,11 +435,18 @@ namespace inspector_xhr_load_event {
 void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 }
 
+// We use this for two distincts types of paint-related events:
+//  1. A timed event showing how long we spent painting a LocalFrameView,
+//     including any iframes. The quad associated with this event is the cull
+//     rect used when painting the LocalFrameView.
+//  2. An instant event for each cc::Layer which had damage. The quad
+//     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
           LocalFrame*,
           const LayoutObject*,
-          const gfx::Rect& contents_cull_rect);
+          const gfx::QuadF& quad,
+          int layer_id);
 }
 
 namespace inspector_paint_image_event {

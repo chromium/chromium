@@ -70,9 +70,7 @@ int LocalPixelDistanceToExpand(
   return std::max<int>(scale * local_pixel_distance_to_expand, min_expansion);
 }
 
-}  // anonymous namespace
-
-bool CullRect::CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
+bool CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
   // kNotPreferred is used for selects/inputs which don't benefit from
   // composited scrolling.
   if (scroll.GetCompositedScrollingPreference() ==
@@ -88,6 +86,8 @@ bool CullRect::CanExpandForScroll(const ScrollPaintPropertyNode& scroll) {
   }
   return true;
 }
+
+}  // anonymous namespace
 
 bool CullRect::Intersects(const gfx::Rect& rect) const {
   if (rect.IsEmpty())
