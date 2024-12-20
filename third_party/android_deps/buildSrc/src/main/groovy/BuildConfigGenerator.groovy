@@ -134,6 +134,9 @@ class BuildConfigGenerator extends DefaultTask {
       'androidx_multidex_multidex',
       'androidx_pdf_pdf',
       'androidx_privacysandbox_ads_ads_adservices',
+      'androidx_slice_slice_builders_java',
+      'androidx_slice_slice_core_java',
+      'androidx_slice_slice_view_java',
       'androidx_test',
     ]
 

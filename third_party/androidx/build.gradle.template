@@ -102,9 +102,10 @@ dependencies {
     // succeed again. Deps on it will need to be removed first.
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
+    // Slice libraries no longer exist at tip-of-tree (https://crbug.com/385155411)
+    compile 'androidx.slice:slice-builders:1.1.0-alpha02'
+    compile 'androidx.slice:slice-core:1.1.0-alpha02'
+    compile 'androidx.slice:slice-view:1.1.0-alpha02'
     compile 'androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}'
     compile 'androidx.tracing:tracing:{{androidx_dependency_version}}'
     compile 'androidx.tvprovider:tvprovider:{{androidx_dependency_version}}'
