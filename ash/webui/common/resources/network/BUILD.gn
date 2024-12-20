@@ -20,7 +20,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
     ":network_config_element_behavior",
-    ":network_config_input",
     ":network_config_select",
     ":network_config_toggle",
     ":network_icon",
@@ -115,18 +114,6 @@ js_library("apn_selection_dialog_list_item") {
 }
 
 js_library("network_config_element_behavior") {
-}
-
-js_library("network_config_input") {
-  deps = [
-    ":cr_policy_network_behavior_mojo",
-    ":cr_policy_network_indicator_mojo",
-    ":network_config_element_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
 }
 
 js_library("network_config_select") {
