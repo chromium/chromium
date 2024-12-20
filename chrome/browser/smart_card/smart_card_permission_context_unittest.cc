@@ -29,6 +29,7 @@ constexpr char kDummyReader2[] = "dummy reader 2";
 
 class FakeOneTimePermissionsTracker : public OneTimePermissionsTracker {
  public:
+  using OneTimePermissionsTracker::NotifyBackgroundTimerExpired;
   using OneTimePermissionsTracker::NotifyLastPageFromOriginClosed;
 };
 
@@ -253,6 +254,29 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissionWhenAppClosed) {
   ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   one_time_tracker->NotifyLastPageFromOriginClosed(origin_1);
+
+  // The ephemeral permission should have been revoked.
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+}
+
+TEST_F(SmartCardPermissionContextTest,
+       RevokeEphemeralPermissionWhenTooLongInTheBackground) {
+  auto* one_time_tracker = static_cast<FakeOneTimePermissionsTracker*>(
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(&profile_));
+
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  one_time_tracker->NotifyBackgroundTimerExpired(
+      origin_1,
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));

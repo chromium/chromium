@@ -50,6 +50,14 @@ class SmartCardPermissionContext::OneTimeObserver
     permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
   }
 
+  void OnAllTabsInBackgroundTimerExpired(
+      const url::Origin& origin,
+      const BackgroundExpiryType& expiry_type) override {
+    if (expiry_type == BackgroundExpiryType::kTimeout) {
+      permission_context_->RevokeEphemeralPermissionsForOrigin(origin);
+    }
+  }
+
  private:
   base::ScopedObservation<OneTimePermissionsTracker,
                           OneTimePermissionsTrackerObserver>
