@@ -449,7 +449,12 @@ BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
 
 BASE_FEATURE(kEnableGestureBeginEndTypes,
              "EnableGestureBeginEndTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
 
 BASE_FEATURE(kUseUtf8EncodingForSvgImage,
              "UseUtf8EncodingForSvgImage",

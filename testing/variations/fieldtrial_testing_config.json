@@ -22353,23 +22353,6 @@
             ]
         }
     ],
-    "SuppressToolbarCapturesAtGestureEndStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_BothSuppressToolbarCaptures",
-                    "enable_features": [
-                        "EnableGestureBeginEndTypes",
-                        "SuppressToolbarCaptures",
-                        "SuppressToolbarCapturesAtGestureEnd"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuppressesNetworkActivitiesOnSlowNetwork": [
         {
             "platforms": [
