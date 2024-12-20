@@ -683,14 +683,23 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
     base::FilePath module_path;
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
-      base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
-                              nullptr);
+      {
+        GPU_STARTUP_TRACE_EVENT("Load vk_swiftshader.dll");
+        base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
+                                nullptr);
+      }
 
 #if defined(DAWN_USE_BUILT_DXC)
       // TODO(crbug.com/40075751): Preload dxil.dll to avoid loader lock issues
       // since dxcompiler.dll loads dxil.dll from DllMain.
-      base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
-      base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
+      {
+        GPU_STARTUP_TRACE_EVENT("Load dxil.dll");
+        base::LoadNativeLibrary(module_path.Append(L"dxil.dll"), nullptr);
+      }
+      {
+        GPU_STARTUP_TRACE_EVENT("Load dxcompiler.dll");
+        base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
+      }
 #endif
 
       // Preload a redistributable DirectML.dll that allows testing WebNN
@@ -699,6 +708,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       // DirectML.dll within system folder will be loaded at a later point if
       // the redistributable one fails to be loaded.
       if (command_line->HasSwitch(switches::kUseRedistributableDirectML)) {
+        GPU_STARTUP_TRACE_EVENT("Load directml.dll");
         base::LoadNativeLibrary(module_path.Append(L"directml.dll"), nullptr);
       }
     }

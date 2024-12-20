@@ -2963,6 +2963,7 @@ def GenerateSource(file, functions, set_name, used_extensions,
                    'ui/gl/gl_context.h',
                    'ui/gl/gl_implementation.h',
                    'ui/gl/gl_version_info.h',
+                   'ui/gl/startup_trace.h',
                    set_header_name ]
 
   includes_string = "\n".join(["#include \"{0}\"".format(h)
@@ -3006,6 +3007,9 @@ namespace gl {
   file.write('\n')
   file.write('void Driver%s::InitializeStaticBindings() {\n' %
              set_name.upper())
+
+  file.write('  GPU_STARTUP_TRACE_EVENT("Driver%s::InitializeStaticBindings");'
+             '\n' % (set_name.upper()))
 
   def BindingsAreAllStatic(api_set_name):
     return api_set_name == 'egl'
@@ -3095,6 +3099,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   elif set_name == 'egl':
     file.write("""\
 void ClientExtensionsEGL::InitializeClientExtensionSettings() {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeClientExtensionSettings");
   std::string client_extensions(GetClientExtensions());
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(client_extensions));
@@ -3135,6 +3140,7 @@ void Driver%s::InitializeExtensionBindings() {
 }
 
 void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
+  GPU_STARTUP_TRACE_EVENT("DriverEGL::InitializeExtensionSettings");
   std::string platform_extensions(GetPlatformExtensions(display));
   [[maybe_unused]] gfx::ExtensionSet extensions(
       gfx::MakeExtensionSet(platform_extensions));
