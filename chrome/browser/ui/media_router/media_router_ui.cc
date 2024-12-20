@@ -417,12 +417,18 @@ void MediaRouterUI::OnFreezeInfoChanged() {
 }
 
 void MediaRouterUI::UpdateSinks() {
-  if (base::FeatureList::IsEnabled(kShowCastPermissionRejectedError) &&
-      issue_.has_value() && issue_->is_permission_rejected_issue()) {
-    // Clean up the discovered sinks if the permission is rejected.
-    model_.set_media_sinks({});
-    model_.set_is_permission_rejected(true);
-  } else {
+  bool permission_rejected =
+      base::FeatureList::IsEnabled(kShowCastPermissionRejectedError) &&
+      issue_.has_value() && issue_->is_permission_rejected_issue();
+  // Speculative fix for crbug.com/374131711. Clear `issue_` when new sinks are
+  // discovered.
+  if (permission_rejected && !GetEnabledSinks().empty()) {
+    auto id = issue_->id();
+    issue_.reset();
+    ClearIssue(id);
+    permission_rejected = false;
+  }
+
     std::vector<UIMediaSink> media_sinks;
     for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
       auto route_it = base::ranges::find(routes(), sink.sink.id(),
@@ -432,10 +438,11 @@ void MediaRouterUI::UpdateSinks() {
       media_sinks.push_back(ConvertToUISink(sink, route, issue_));
     }
     model_.set_media_sinks(std::move(media_sinks));
-  }
+    model_.set_is_permission_rejected(permission_rejected);
 
-  for (CastDialogController::Observer& observer : observers_)
-    observer.OnModelUpdated(model_);
+    for (CastDialogController::Observer& observer : observers_) {
+      observer.OnModelUpdated(model_);
+    }
 }
 
 void MediaRouterUI::SendIssueForRouteTimeout(

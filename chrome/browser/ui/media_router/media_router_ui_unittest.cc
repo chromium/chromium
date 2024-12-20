@@ -577,6 +577,35 @@ TEST_F(MediaRouterViewsUITest, PermissionRejectedIssue) {
   mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
 }
 
+TEST_F(MediaRouterViewsUITest, SinksUpdatedAfterPermissionRejectedIssue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media_router::kShowCastPermissionRejectedError);
+
+  MockControllerObserver observer(ui_.get());
+  // Receives a permission rejected issue.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .WillOnce(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_TRUE(model.is_permission_rejected());
+        EXPECT_TRUE(model.media_sinks().empty());
+      })));
+
+  mock_router_->GetIssueManager()->AddPermissionRejectedIssue();
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // After getting sink updates, MediaRouterUI clears the issue and sends sink
+  // updates.
+  EXPECT_CALL(observer, OnModelUpdated(_))
+      .Times(2)
+      .WillRepeatedly(WithArg<0>(Invoke([](const CastDialogModel& model) {
+        EXPECT_FALSE(model.is_permission_rejected());
+        EXPECT_EQ(2u, model.media_sinks().size());
+      })));
+
+  NotifyUiOnSinksUpdated({{CreateCastSink("sink1", "B sink"), {}},
+                          {CreateCastSink("sink2", "A sink"), {}}});
+}
+
 TEST_F(MediaRouterViewsUITest, SortedSinks) {
   NotifyUiOnSinksUpdated({{CreateCastSink("sink3", "B sink"), {}},
                           {CreateCastSink("sink2", "A sink"), {}},
