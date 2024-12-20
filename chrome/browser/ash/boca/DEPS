@@ -55,10 +55,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "on_task_.*_browsertest.cc": [
-    "+chrome/app/chrome_command_ids.h",
-    "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
-    "+chrome/common/chrome_paths.h",
-    "+chrome/test/base/ui_test_utils.h"
-  ]
+    "on_task_locked_session_navigation_throttle_browsertest.cc": [
+      "+chrome/test/base/ui_test_utils.h",
+    ],
+    "on_task_locked_session_window_tracker_browsertest.cc": [
+        "+chrome/app/chrome_command_ids.h",
+        "+chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h",
+        "+chrome/common/chrome_paths.h",
+        "+chrome/test/base/ui_test_utils.h"
+    ]
 }

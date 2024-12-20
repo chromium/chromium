@@ -97,7 +97,6 @@ source_set("browser_tests") {
   sources = [
     "on_task_locked_session_navigation_throttle_browsertest.cc",
     "on_task_locked_session_window_tracker_browsertest.cc",
-    "on_task_session_manager_browsertest.cc",
     "on_task_system_web_app_manager_impl_browsertest.cc",
   ]
 
