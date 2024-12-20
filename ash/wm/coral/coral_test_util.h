@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "ash/birch/coral_constants.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ui::test {
@@ -41,7 +42,8 @@ coral::mojom::GroupPtr CreateTestGroup(
 // Creates a group with some default urls and apps.
 coral::mojom::GroupPtr CreateDefaultTestGroup();
 
-void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups);
+void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups,
+                          CoralSource source = CoralSource::kUnknown);
 
 // Brings up the selector menu host object by entering overview and clicking
 // the birch coral chip.

@@ -59,8 +59,10 @@ coral::mojom::GroupPtr CreateDefaultTestGroup() {
                          "Coral Group");
 }
 
-void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups) {
+void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups,
+                          CoralSource source) {
   auto test_response = std::make_unique<CoralResponse>();
+  test_response->set_source(source);
   test_response->set_groups(std::move(test_groups));
   BirchCoralProvider::Get()->OverrideCoralResponseForTest(
       std::move(test_response));

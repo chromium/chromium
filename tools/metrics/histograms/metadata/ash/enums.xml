@@ -546,6 +546,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
       label="Disabled because the related URLs are blocked by policy"/>
 </enum>
 
+<enum name="CoralActionType">
+  <int value="0" label="Restore"/>
+  <int value="1" label="LaunchToNewDesk"/>
+  <int value="2" label="SaveAsDeskTemplate"/>
+</enum>
+
 <enum name="CriticalNotificationOutcome">
   <int value="0" label="NotificationShown"/>
   <int value="1" label="Crashed"/>

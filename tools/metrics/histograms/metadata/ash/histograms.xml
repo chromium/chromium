@@ -1054,9 +1054,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Coral.Action" enum="CoralActionType"
+    expires_after="2025-03-30">
+  <owner>zxdan@chromium.org</owner>
+  <owner>cros-coral@google.com</owner>
+  <summary>
+    Recorded when a coral cluster is restored, launched to a new desk, and saved
+    as a desk templated.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Birch.Coral.ClusterCount" units="count"
     expires_after="2025-10-10">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>cros-coral@google.com</owner>
   <summary>
     The number of coral items shown in the birch bar when the user enters
@@ -1066,11 +1076,20 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Birch.Coral.ClusterExpanded" enum="Boolean"
     expires_after="2025-03-30">
-  <owner>yulunwu@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>cros-coral@google.com</owner>
   <summary>
     Recorded whenever a user expands a coral BirchChipButton. Can be recorded
     multiple times during the lifetime of the BirchChipButton.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Birch.Coral.ClusterItemRemoved" units="count"
+    expires_after="2025-03-30">
+  <owner>zxdan@chromium.org</owner>
+  <owner>cros-coral@google.com</owner>
+  <summary>
+    The number of coral items removed by user from the chevron expanded menu.
   </summary>
 </histogram>
 

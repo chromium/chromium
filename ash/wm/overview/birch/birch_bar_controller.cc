@@ -436,10 +436,8 @@ void BirchBarController::OnItemsFetchedFromModel() {
                     [](const std::unique_ptr<ash::BirchItem>& item) {
                       return item->GetType() == BirchItemType::kCoral;
                     });
-  base::UmaHistogramCustomCounts("Ash.Birch.Coral.ClusterCount",
-                                 num_coral_items,
-                                 /*min=*/0, /*exclusive_max=*/3,
-                                 /*buckets=*/3);
+  base::UmaHistogramExactLinear("Ash.Birch.Coral.ClusterCount", num_coral_items,
+                                /*exclusive_max=*/3);
 
   RecordTimeOfDayRankingHistogram(items);
 

@@ -32,6 +32,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -289,7 +290,7 @@ BEGIN_METADATA(TabAppSelectionView, TabAppSelectionItemView)
 END_METADATA
 
 // -----------------------------------------------------------------------------
-// UserFeedbackView:
+// TabAppSelectionView::UserFeedbackView:
 // A view that allows users to give feedback via the thumb up and thumb down
 // buttons.
 //
@@ -305,7 +306,7 @@ END_METADATA
 //   `UserFeedbackView`
 // TODO(crbug.com/374117101): Add hover state for thumb up/down buttons.
 // TODO(crbug.com/374116829): Localization and proper accessibility names.
-class UserFeedbackView : public views::BoxLayoutView {
+class TabAppSelectionView::UserFeedbackView : public views::BoxLayoutView {
   METADATA_HEADER(UserFeedbackView, views::BoxLayoutView)
 
  public:
@@ -348,6 +349,7 @@ class UserFeedbackView : public views::BoxLayoutView {
     StyleUtil::SetUpInkDropForButton(thumb_up_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
+    thumb_up_button_->SetID(TabAppSelectionView::ViewID::kThumbsUpID);
 
     thumb_down_button_ =
         thumb_buttons_container->AddChildView(std::make_unique<IconButton>(
@@ -362,6 +364,7 @@ class UserFeedbackView : public views::BoxLayoutView {
     StyleUtil::SetUpInkDropForButton(thumb_down_button_, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/false);
+    thumb_down_button_->SetID(TabAppSelectionView::ViewID::kThumbsDownID);
   }
 
   UserFeedbackView(const UserFeedbackView&) = delete;
@@ -416,7 +419,7 @@ class UserFeedbackView : public views::BoxLayoutView {
   raw_ptr<IconButton> thumb_down_button_;
 };
 
-BEGIN_METADATA(UserFeedbackView)
+BEGIN_METADATA(TabAppSelectionView, UserFeedbackView)
 END_METADATA
 
 // -----------------------------------------------------------------------------

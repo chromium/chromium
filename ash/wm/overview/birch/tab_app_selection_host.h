@@ -46,6 +46,9 @@ class TabAppSelectionHost : public views::Widget {
   std::unique_ptr<SelectionHostHider> hider_;
   const raw_ptr<CoralChipButton> owner_;
 
+  // Used for metrics.
+  int number_of_removed_items_ = 0;
+
   // This widget isn't activatable so this is a way to force accessibility
   // features to focus on the underlying window.
   std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
