@@ -16,6 +16,6 @@
       "webRequest",
       "webRequestBlocking"
     ],
-    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' https://dl.google.com 'unsafe-inline' 'sha256-6GFr/PbTsH4+cJ0C9phPX+lGpsvyJrh3NNnT3bfDoh8='; object-src 'self'; connect-src *"
+    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' https://dl.google.com 'unsafe-inline' 'RMSqHznNzfybAW99WZABbiusMDFL1dNKAedUmiUifxA='; object-src 'self'; connect-src *"
 
 }
