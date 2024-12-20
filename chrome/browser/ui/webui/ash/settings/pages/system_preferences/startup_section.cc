@@ -56,8 +56,8 @@ void StartupSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"onStartupSettingsCardTitle",
        IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE},
-      {"onStartupTitle", IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE},
-      {"onStartupDescription", IDS_OS_SETTINGS_REVAMP_ON_STARTUP_DESCRIPTION},
+      {"onStartupTitle", IDS_OS_SETTINGS_ON_STARTUP_TITLE},
+      {"onStartupDescription", IDS_OS_SETTINGS_ON_STARTUP_DESCRIPTION},
       {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
       {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
       {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
