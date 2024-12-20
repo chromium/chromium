@@ -4,8 +4,6 @@
 
 package org.chromium.device.nfc;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.FormatException;
@@ -444,7 +442,7 @@ public final class NdefMessageUtils {
         // We only do basic MIME type validation: trying to follow the
         // RFCs strictly only ends in tears, since there are lots of MIME
         // types in common use that are not strictly valid as per RFC rules.
-        mimeType = assumeNonNull(Intent.normalizeMimeType(mimeType));
+        mimeType = Intent.normalizeMimeType(mimeType);
         if (mimeType.length() == 0) throw new IllegalArgumentException("mimeType is empty");
         int slashIndex = mimeType.indexOf('/');
         if (slashIndex == 0) throw new IllegalArgumentException("mimeType must have major type");
