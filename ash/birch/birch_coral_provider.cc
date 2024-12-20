@@ -147,7 +147,8 @@ bool IsValidApp(aura::Window* window) {
 //  and cache a new embedding in the backend.
 bool ShouldCreateEmbedding(TabClusterUIItem* tab) {
   return tab->current_info().title != tab->old_info().title ||
-         tab->current_info().source != tab->old_info().source;
+         tab->current_info().source != tab->old_info().source ||
+         tab->current_info().is_loading != tab->old_info().is_loading;
 }
 
 // Creates an AppPtr from given `window` with app title and app ID.
