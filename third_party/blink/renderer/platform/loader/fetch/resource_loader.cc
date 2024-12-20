@@ -284,13 +284,7 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   const auto& request = resource_->GetResourceRequest();
   auto request_context = request.GetRequestContext();
   if (auto* frame_or_worker_scheduler = fetcher->GetFrameOrWorkerScheduler()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kBackForwardCacheWithKeepaliveRequest) &&
-        request.GetKeepalive()) {
-      frame_or_worker_scheduler->RegisterStickyFeature(
-          SchedulingPolicy::Feature::kKeepaliveRequest,
-          {SchedulingPolicy::DisableBackForwardCache()});
-    } else if (!RequestContextObserveResponse(request_context)) {
+    if (!RequestContextObserveResponse(request_context)) {
       // Only when this feature is turned on and the loading tasks keep being
       // processed and the data is queued up on the renderer, a page can stay in
       // BackForwardCache with network requests.

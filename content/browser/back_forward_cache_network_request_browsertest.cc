@@ -1125,21 +1125,8 @@ IN_PROC_BROWSER_TEST_F(
                     FROM_HERE);
 }
 
-class BackForwardCacheWithKeepaliveSupportBrowserTest
-    : public BackForwardCacheBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        blink::features::kBackForwardCacheWithKeepaliveRequest, "", "");
-
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-// With the feature, keepalive doesn't prevent the page from entering into the
-// bfcache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheWithKeepaliveSupportBrowserTest,
-                       KeepAliveFetch) {
+// Keepalive doesn't prevent the page from entering into the bfcache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, KeepAliveFetch) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());

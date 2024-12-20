@@ -152,12 +152,6 @@ BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows pages with keepalive requests to stay eligible for the back/forward
-// cache. See https://crbug.com/1347101 for more details.
-BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
-             "BackForwardCacheWithKeepaliveRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable background resource fetch in Blink. See https://crbug.com/1379780 for
 // more details.
 BASE_FEATURE(kBackgroundResourceFetch,
