@@ -98,9 +98,6 @@ size_t CountResidentPagesInRange(void* addr, size_t size) {
 
 class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
  public:
-  PreFreezeBackgroundMemoryTrimmerTest() {
-    fl_.InitAndEnableFeature(kOnPreFreezeMemoryTrim);
-  }
   void SetUp() override {
     PreFreezeBackgroundMemoryTrimmer::SetSupportsModernTrimForTesting(true);
     PreFreezeBackgroundMemoryTrimmer::ClearMetricsForTesting();
@@ -130,8 +127,6 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
 
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
- private:
-  test::ScopedFeatureList fl_;
 };
 
 class PreFreezeSelfCompactionTest : public testing::Test {
@@ -200,24 +195,6 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeUnsupported) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   ASSERT_FALSE(did_register_tasks());
-
-  task_environment_.FastForwardBy(base::Seconds(30));
-
-  ASSERT_EQ(pending_task_count(), 0u);
-  EXPECT_EQ(s_counter, 1);
-}
-
-TEST_F(PreFreezeBackgroundMemoryTrimmerTest, PostTaskPreFreezeWithoutTrim) {
-  test::ScopedFeatureList fl;
-  fl.InitAndDisableFeature(kOnPreFreezeMemoryTrim);
-  ASSERT_FALSE(did_register_tasks());
-
-  PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
-      SingleThreadTaskRunner::GetCurrentDefault(), FROM_HERE,
-      base::BindRepeating(&IncGlobalCounter), base::Seconds(30));
-
-  ASSERT_EQ(pending_task_count(), 0u);
-  ASSERT_TRUE(did_register_tasks());
 
   task_environment_.FastForwardBy(base::Seconds(30));
 

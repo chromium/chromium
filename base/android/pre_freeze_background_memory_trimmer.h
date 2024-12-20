@@ -20,7 +20,6 @@
 namespace base::android {
 class MemoryPurgeManagerAndroid;
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
 BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
 
 // Starting from Android U, apps are frozen shortly after being backgrounded

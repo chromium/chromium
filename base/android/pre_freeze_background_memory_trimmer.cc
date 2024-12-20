@@ -188,14 +188,6 @@ bool IsMadvisePageoutSupported() {
 
 }  // namespace
 
-BASE_FEATURE(kOnPreFreezeMemoryTrim,
-             "OnPreFreezeMemoryTrim",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIsTrimMemoryBackgroundCritical,
-             "IsTrimMemoryBackgroundCritical",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShouldFreezeSelf,
              "ShouldFreezeSelf",
              FEATURE_DISABLED_BY_DEFAULT);
@@ -386,14 +378,6 @@ void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskInternal(
   DCHECK(SupportsModernTrim());
 
   RegisterPrivateMemoryFootprintMetric();
-
-  if (!base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim)) {
-    task_runner->PostDelayedTask(
-        from_here,
-        BindOnce(std::move(task), MemoryReductionTaskContext::kDelayExpired),
-        delay);
-    return;
-  }
 
   PostDelayedBackgroundTaskModern(task_runner, from_here, std::move(task),
                                   delay);
@@ -757,14 +741,12 @@ bool PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim() {
 
 // static
 bool PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim() {
-  return SupportsModernTrim() &&
-         base::FeatureList::IsEnabled(kOnPreFreezeMemoryTrim);
+  return SupportsModernTrim();
 }
 
 // static
 bool PreFreezeBackgroundMemoryTrimmer::IsTrimMemoryBackgroundCritical() {
-  return SupportsModernTrim() &&
-         base::FeatureList::IsEnabled(kIsTrimMemoryBackgroundCritical);
+  return SupportsModernTrim();
 }
 
 // static
