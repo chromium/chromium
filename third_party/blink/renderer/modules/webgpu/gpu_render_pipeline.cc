@@ -218,21 +218,13 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
       std::make_unique<std::unique_ptr<wgpu::VertexAttribute[]>[]>(
           dawn_vertex->bufferCount);
   for (wtf_size_t i = 0; i < dawn_vertex->bufferCount; ++i) {
-    const auto& maybe_buffer = descriptor->buffers()[i];
-    if (!maybe_buffer) {
-      // This buffer layout is empty.
-      // Explicitly set VertexBufferNotUsed step mode to represent
-      // this slot is empty for Dawn, and continue the loop.
-      dawn_desc_info->buffers[i].stepMode =
-          wgpu::VertexStepMode::VertexBufferNotUsed;
-      continue;
+    if (const auto* buffer = descriptor->buffers()[i].Get()) {
+      UNSAFE_TODO(dawn_desc_info->attributes.get()[i]) =
+          AsDawnType(buffer->attributes());
+      wgpu::VertexBufferLayout* dawn_buffer = &dawn_desc_info->buffers[i];
+      dawn_buffer->attributes =
+          UNSAFE_TODO(dawn_desc_info->attributes.get()[i].get());
     }
-    const GPUVertexBufferLayout* buffer = maybe_buffer.Get();
-    UNSAFE_TODO(dawn_desc_info->attributes.get()[i]) =
-        AsDawnType(buffer->attributes());
-    wgpu::VertexBufferLayout* dawn_buffer = &dawn_desc_info->buffers[i];
-    dawn_buffer->attributes =
-        UNSAFE_TODO(dawn_desc_info->attributes.get()[i].get());
   }
 }
 
@@ -403,10 +395,6 @@ GPURenderPipeline* GPURenderPipeline::Create(
         UNSAFE_BUFFERS(base::span<const wgpu::VertexBufferLayout>(
             vertex.buffers, vertex.bufferCount));
     for (const auto& buffer : buffers) {
-      if (buffer.stepMode == wgpu::VertexStepMode::VertexBufferNotUsed) {
-        continue;
-      }
-
       // SAFETY: WebGPU works on the C equivalent of spans.
       const auto attributes =
           UNSAFE_BUFFERS(base::span<const wgpu::VertexAttribute>(
