@@ -4679,7 +4679,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _build_config = "$target_gen_dir/${_target_name}.build_config.json"
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
-    _build_config_target = "$_target_name$build_config_target_suffix"
     if (defined(invoker.proguard_android_sdk_dep)) {
       _android_sdk_dep = invoker.proguard_android_sdk_dep
     } else {
@@ -4695,7 +4694,9 @@ if (!is_robolectric && enable_java_templates) {
       not_needed(invoker, [ "add_view_trace_events" ])
     }
 
-    write_build_config(_build_config_target) {
+    _build_config_target_name = "$_target_name$build_config_target_suffix"
+    _build_config_target = ":$_build_config_target_name"
+    write_build_config(_build_config_target_name) {
       type = "android_app_bundle"
       possible_config_deps = _module_targets + [ _android_sdk_dep ]
       build_config = _build_config
@@ -4739,7 +4740,7 @@ if (!is_robolectric && enable_java_templates) {
             "@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)",
           ]
           deps = [
-                   ":$_build_config_target",
+                   _build_config_target,
                    _trace_event_rewriter_target,
                  ] + _module_java_targets
         }
@@ -4763,7 +4764,7 @@ if (!is_robolectric && enable_java_templates) {
         proguard_mapping_path = _proguard_mapping_path
         build_config = _build_config
 
-        deps = _module_java_targets + [ ":$_build_config_target" ]
+        deps = _module_java_targets + [ _build_config_target ]
         if (_add_view_trace_events) {
           deps += [ ":${_rewritten_jar_target_name}" ]
         }
@@ -4809,8 +4810,8 @@ if (!is_robolectric && enable_java_templates) {
           enable_desugar = false
 
           deps = [
-            ":$_build_config_target",
             ":${_module_target_name}__java",
+            _build_config_target,
           ]
         }
       }
@@ -4832,6 +4833,7 @@ if (!is_robolectric && enable_java_templates) {
         module_name = _module.name
         min_sdk_version = _min_sdk_version
         build_config = _module_build_config
+        app_bundle_build_config = _build_config
         module_zip_path = _module_zip_path
         if (!_proguard_enabled) {
           dex_path = _dex_path
@@ -4847,9 +4849,11 @@ if (!is_robolectric && enable_java_templates) {
                                  ])
           top_target_name = _target_name
           build_config_target = _module_build_config_target
+          app_bundle_build_config_target = _build_config_target
         }
 
         deps = [
+          _build_config_target,
           _dex_target_for_module,
           _module_build_config_target,
           _module_target,
@@ -4928,7 +4932,7 @@ if (!is_robolectric && enable_java_templates) {
       inputs = _all_module_zip_paths + _all_module_build_configs +
                [ _BUNDLETOOL_JAR_PATH ] + java_paths_for_inputs
       outputs = [ _bundle_path ]
-      deps = _all_create_module_targets + [ ":$_build_config_target" ]
+      deps = _all_create_module_targets + [ _build_config_target ]
       args = [
         "--out-bundle=$_rebased_bundle_path",
         "--rtxt-out-path=$_rebased_bundle_path.R.txt",
@@ -4999,14 +5003,12 @@ if (!is_robolectric && enable_java_templates) {
     # Create size info files for targets that care about size
     # (have proguard enabled).
     if (_proguard_enabled) {
-      # Merge all module targets to obtain size info files for all targets.
-      _all_module_targets = _module_targets
-
       _size_info_target = "${_target_name}__size_info"
       create_size_info_files(_size_info_target) {
         name = "$_bundle_name.aab"
-        deps = _all_module_targets + [ ":$_build_config_target" ]
-        module_build_configs = _all_module_build_configs
+        deps = _module_targets + [ _build_config_target ]
+        modules = _modules
+        build_config = _build_config
       }
     }
 
@@ -5119,7 +5121,7 @@ if (!is_robolectric && enable_java_templates) {
                                  "lint_suppressions_file",
                                ])
         build_config = _build_config
-        build_config_dep = ":$_build_config_target"
+        build_config_dep = _build_config_target
         deps = _module_java_targets
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]

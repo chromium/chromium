@@ -1825,7 +1825,7 @@ def main(argv):
     module_configs_by_name = {d['module_name']: d for d in module_configs}
     per_module_fields = [
         'device_classpath', 'trace_event_rewritten_device_classpath',
-        'all_dex_files'
+        'all_dex_files', 'assets'
     ]
     lint_aars = set()
     lint_srcjars = set()

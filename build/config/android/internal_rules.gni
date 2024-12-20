@@ -2709,26 +2709,24 @@ if (enable_java_templates) {
         "--res-info-path",
         rebase_path(_res_info_path, root_build_dir),
       ]
-      _is_bundle = defined(invoker.module_build_configs)
+      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+      inputs = [ invoker.build_config ]
+      _is_bundle = defined(invoker.modules)
       if (_is_bundle) {
-        inputs = invoker.module_build_configs
-        foreach(_build_config, invoker.module_build_configs) {
-          _rebased_build_config = rebase_path(_build_config, root_build_dir)
+        foreach(_module, invoker.modules) {
+          inputs += [ _module.build_config ]
+          _rebased_module_build_config =
+              rebase_path(_module.build_config, root_build_dir)
           args += [
-            "--jar-files=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
-            "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-            "--in-res-info-path=@FileArg($_rebased_build_config:deps_info:res_size_info)",
-            "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
-            "--uncompressed-assets=@FileArg($_rebased_build_config:deps_info:uncompressed_assets)",
+            "--jar-files=@FileArg($_rebased_module_build_config:deps_info:unprocessed_jar_path)",
+            "--jar-files=@FileArg($_rebased_module_build_config:deps_info:javac_full_classpath)",
+            "--in-res-info-path=@FileArg($_rebased_module_build_config:deps_info:res_size_info)",
+            "--uncompressed-assets=@FileArg($_rebased_module_build_config:deps_info:uncompressed_assets)",
+            "--assets=@FileArg($_rebased_build_config:modules:${_module.name}:assets)",
           ]
         }
       } else {
-        inputs = [
-          invoker.build_config,
-          invoker.res_size_info_path,
-        ]
-        _rebased_build_config =
-            rebase_path(invoker.build_config, root_build_dir)
+        inputs += [ invoker.res_size_info_path ]
         args += [
           "--jar-files=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
           "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
@@ -4467,6 +4465,8 @@ if (enable_java_templates) {
 #     this will always perform synchronized proguarding.
 template("create_android_app_bundle_module") {
   _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+  _rebased_app_bundle_build_config =
+      rebase_path(invoker.app_bundle_build_config, root_build_dir)
 
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _deps = invoker.deps
@@ -4479,7 +4479,10 @@ template("create_android_app_bundle_module") {
   #       dependencies like extra native libraries are all pulled from the
   #       .build_config.json through @FileArg() references (see below) and
   #       will be listed in the generated depfile instead.
-  _inputs = [ invoker.build_config ]
+  _inputs = [
+    invoker.build_config,
+    invoker.app_bundle_build_config,
+  ]
   _outputs = [ invoker.module_zip_path ]
   _args = [
     "--format=bundle-module",
@@ -4487,7 +4490,7 @@ template("create_android_app_bundle_module") {
     rebase_path(invoker.module_zip_path, root_build_dir),
     "--resource-apk=@FileArg(" +
         "$_rebased_build_config:deps_info:proto_resources_path)",
-    "--assets=@FileArg($_rebased_build_config:deps_info:assets)",
+    "--assets=@FileArg($_rebased_app_bundle_build_config:modules:${invoker.module_name}:assets)",
     "--uncompressed-assets=@FileArg(" +
         "$_rebased_build_config:deps_info:uncompressed_assets)",
     "--native-libs=@FileArg($_rebased_build_config:native:libraries)",
@@ -4542,7 +4545,10 @@ template("create_android_app_bundle_module") {
         invoker.expected_libs_and_assets,
         invoker.build_config,
       ]
-      deps = [ invoker.build_config_target ]
+      deps = [
+        invoker.build_config_target,
+        invoker.app_bundle_build_config_target,
+      ]
       outputs = [
         _actual_file,
         _failure_file,
