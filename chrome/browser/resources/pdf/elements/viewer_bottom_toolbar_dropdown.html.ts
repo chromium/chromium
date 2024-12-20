@@ -11,7 +11,8 @@ import type {ViewerBottomToolbarDropdownElement} from './viewer_bottom_toolbar_d
 export function getHtml(this: ViewerBottomToolbarDropdownElement) {
   return html`
     <cr-button @click="${this.toggleDropdown_}"
-        data-selected="${this.showDropdown_}">
+        data-selected="${this.showDropdown_}"
+        title="${this.buttonTitle}">
       <slot name="icon"></slot>
     </cr-button>
     <div>
