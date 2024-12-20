@@ -955,6 +955,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/shortcuts:shortcuts",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",

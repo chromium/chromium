@@ -132,6 +132,8 @@ SizeToBitmap GenerateIcons(const std::string& app_name) {
   const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
   const char32_t icon_letter =
       shortcuts::GenerateIconLetterFromName(app_name_utf16);
+  LOG(ERROR) << "Generated icons for " << app_name << " with letter "
+             << std::string(1, icon_letter);
 
   SizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {
