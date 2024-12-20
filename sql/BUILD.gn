@@ -7,7 +7,7 @@ import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("sql_name_variants") {
   namespace = "sql_metrics"
-  input_xml_file = "//tools/metrics/histograms/metadata/storage/histograms.xml"
+  input_xml_file = "//tools/metrics/histograms/metadata/sql/histograms.xml"
   output_file = "sql_name_variants.h"
   tag = "variant"
   allow_list_name = "DatabaseTag"

@@ -302,7 +302,7 @@ class COMPONENT_EXPORT(SQL) Database {
         // NOTREACHED() is invalid in a consteval context so compilation will
         // fail iff the string is invalid.
         NOTREACHED() << "Invalid database tag. Did you add it to the "
-                        "DatabaseTag variant in storage/histograms.xml?";
+                        "DatabaseTag variant in sql/histograms.xml?";
       }
     }
 
