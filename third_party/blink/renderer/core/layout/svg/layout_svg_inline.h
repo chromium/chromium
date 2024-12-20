@@ -70,6 +70,8 @@ class LayoutSVGInline : public LayoutInline {
     needs_update_bounding_box_ = true;
   }
 
+  void Paint(const PaintInfo&) const final;
+
  private:
   void WillBeDestroyed() final;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;

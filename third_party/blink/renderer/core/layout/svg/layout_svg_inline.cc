@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 
 namespace blink {
@@ -159,6 +160,16 @@ void LayoutSVGInline::AddOutlineRects(OutlineRectCollector& collector,
   }
   if (info)
     *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
+}
+
+void LayoutSVGInline::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
+
+  // Inlines should paint from their ancestor <text>. An exception is made if
+  // directly painting an inline SVG reference (e.g., `<feImage href=tspan>`),
+  // in which case the inline should render "according to the behavior of the
+  // use element", which is nothing for a standalone tspan.
+  CHECK(paint_info.IsRenderingResourceSubtree());
 }
 
 void LayoutSVGInline::WillBeDestroyed() {
