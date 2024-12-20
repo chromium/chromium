@@ -578,9 +578,13 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 - (void)testDefocusOmniboxTapWorks {
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a link.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE))]
+  id<GREYMatcher> firstMagicStackModuleLabel = grey_allOf(
+      grey_ancestor(
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)),
+      grey_kindOfClassName(@"UILabel"),
+      grey_accessibilityTrait(UIAccessibilityTraitHeader),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:firstMagicStackModuleLabel]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -940,9 +944,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)testFavicons {
-  id<GREYMatcher> magicStackScrollView =
-      grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
-  CGFloat moduleSwipeAmount = kMagicStackWideWidth * 0.6;
+  // Make sure the MVT position is consistent across bots.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kNewFeedPositioning);
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -952,10 +959,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  // Scroll to next module.
-  [[EarlGrey selectElementWithMatcher:magicStackScrollView]
-      performAction:GREYScrollInDirectionWithStartPoint(
-                        kGREYDirectionRight, moduleSwipeAmount, 0.9, 0.5)];
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -988,20 +991,27 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
             grey_accessibilityID([NSString
                 stringWithFormat:
                     @"%@%li",
-                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
+                    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  // Scroll to previous module.
-  [[EarlGrey selectElementWithMatcher:magicStackScrollView]
-      performAction:GREYScrollInDirectionWithStartPoint(
-                        kGREYDirectionLeft, moduleSwipeAmount, 0.1, 0.5)];
+  [[[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID([NSString
+                  stringWithFormat:
+                      @"%@0",
+                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix]),
+              grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100.0f)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID([NSString
                 stringWithFormat:
                     @"%@%li",
-                    kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
