@@ -798,7 +798,8 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
   LayoutUnit total_fixed_inline_size;
   LayoutUnit assigned_inline_size;
   Vector<LayoutUnit> column_sizes;
-  column_sizes.resize(column_constraints.data.size());
+  const wtf_size_t constraints_size = column_constraints.data.size();
+  column_sizes.resize(constraints_size);
   for (const TableTypes::Column& column : column_constraints.data) {
     all_columns_count++;
     if (column.percent) {
@@ -817,7 +818,7 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     }
   }
 
-  LayoutUnit* last_column_size = nullptr;
+  wtf_size_t last_column_size = kNotFound;
   // Distribute to fixed columns.
   if (fixed_columns_count > 0) {
     float scale = 1.0f;
@@ -836,24 +837,21 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         scale_available = false;
       }
     }
-    LayoutUnit* column_size = column_sizes.data();
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    for (auto column = column_constraints.data.begin();
-         column != column_constraints.data.end();
-         UNSAFE_TODO(++column, ++column_size)) {
-      if (!TreatAsFixed(*column)) {
+    for (wtf_size_t i = 0; i < constraints_size; ++i) {
+      const auto& column = column_constraints.data[i];
+      if (!TreatAsFixed(column)) {
         continue;
       }
-      last_column_size = column_size;
+      last_column_size = i;
       if (scale_available) {
-        *column_size =
-            LayoutUnit(scale * column->max_inline_size.value_or(LayoutUnit()));
+        column_sizes[i] =
+            LayoutUnit(scale * column.max_inline_size.value_or(LayoutUnit()));
       } else {
         DCHECK_EQ(fixed_columns_count, all_columns_count);
-        *column_size =
+        column_sizes[i] =
             LayoutUnit(target_inline_size.ToFloat() / fixed_columns_count);
       }
-      assigned_inline_size += *column_size;
+      assigned_inline_size += column_sizes[i];
     }
   }
   if (assigned_inline_size >= target_inline_size) {
@@ -877,57 +875,51 @@ Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
         scale_available = false;
       }
     }
-    LayoutUnit* column_size = column_sizes.data();
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    for (auto column = column_constraints.data.begin();
-         column != column_constraints.data.end();
-         UNSAFE_TODO(++column, ++column_size)) {
-      if (!column->percent) {
+    for (wtf_size_t i = 0; i < constraints_size; ++i) {
+      const auto& column = column_constraints.data[i];
+      if (!column.percent) {
         continue;
       }
-      last_column_size = column_size;
+      last_column_size = i;
       if (scale_available) {
-        *column_size = LayoutUnit(
-            scale * column->ResolvePercentInlineSize(target_inline_size));
+        column_sizes[i] = LayoutUnit(
+            scale * column.ResolvePercentInlineSize(target_inline_size));
       } else {
-        *column_size =
+        column_sizes[i] =
             LayoutUnit((target_inline_size - assigned_inline_size).ToFloat() /
                        percent_columns_count);
       }
-      assigned_inline_size += *column_size;
+      assigned_inline_size += column_sizes[i];
     }
   }
   // Distribute to auto, and zero inline size columns.
   LayoutUnit distributing_inline_size =
       target_inline_size - assigned_inline_size;
-  LayoutUnit* column_size = column_sizes.data();
 
   bool distribute_zero_inline_size =
       zero_inline_size_constrained_colums_count == all_columns_count;
 
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  for (auto column = column_constraints.data.begin();
-       column != column_constraints.data.end();
-       UNSAFE_TODO(++column, ++column_size)) {
-    if (column->percent || TreatAsFixed(*column)) {
+  for (wtf_size_t i = 0; i < constraints_size; ++i) {
+    const auto& column = column_constraints.data[i];
+    if (column.percent || TreatAsFixed(column)) {
       continue;
     }
     // Zero-width columns only grow if all columns are zero-width.
-    if (IsZeroInlineSizeConstrained(*column) && !distribute_zero_inline_size) {
+    if (IsZeroInlineSizeConstrained(column) && !distribute_zero_inline_size) {
       continue;
     }
 
-    last_column_size = column_size;
-    *column_size =
+    last_column_size = i;
+    column_sizes[i] =
         LayoutUnit(distributing_inline_size /
                    float(distribute_zero_inline_size
                              ? zero_inline_size_constrained_colums_count
                              : auto_columns_count));
-    assigned_inline_size += *column_size;
+    assigned_inline_size += column_sizes[i];
   }
   LayoutUnit delta = target_inline_size - assigned_inline_size;
-  DCHECK(last_column_size);
-  *last_column_size += delta;
+  DCHECK_NE(last_column_size, kNotFound);
+  column_sizes[last_column_size] += delta;
 
   return column_sizes;
 }
