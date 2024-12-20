@@ -739,10 +739,7 @@ suite('SyncAccountControl', function() {
           disabled: false,
         };
 
-        assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+        assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
         assertTrue(isChildVisible(testElement, '#account-aware'));
       });
-
-
-
 });

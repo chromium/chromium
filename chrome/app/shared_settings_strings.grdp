@@ -298,8 +298,8 @@
   <message name="IDS_SETTINGS_TURN_ON_SYNC_BUTTON_UPDATE_SETTINGS_UI_ENABLED" desc="Label of the button in the settings page to turn on Sync.">
     Turn on Sync
   </message>
-  <message name="IDS_SETTINGS_SIGNIN_BUTTON_LABEL_WHEN_SYNC_IS_PAUSED" desc="Label of the button shown in the settings page to Sign in when sync is paused">
-     Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+  <message name="IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL" desc="Label of the button shown in the settings page to sign in when users are signed in the web only ">
+     Continue as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
   </message>
 
   <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->

@@ -92,6 +92,12 @@ export class SettingsSyncAccountControlElement extends
 
       storedAccounts_: Object,
 
+      profileAvatarURL_: {
+        type: String,
+        value: null,
+        observer: 'handleUpdateAvatar_',
+      },
+
       shownAccount_: Object,
 
       showingPromo: {
@@ -158,6 +164,7 @@ export class SettingsSyncAccountControlElement extends
   promoSecondaryLabelWithNoAccount: string;
   private syncing_: boolean;
   private storedAccounts_: StoredAccount[];
+  private profileAvatarURL_: string;
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
   embeddedInSubpage: boolean;
@@ -176,6 +183,8 @@ export class SettingsSyncAccountControlElement extends
         this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
+    this.addWebUiListener(
+        'profile-avatar-changed', this.handleUpdateAvatar_.bind(this));
   }
 
   /**
@@ -255,6 +264,19 @@ export class SettingsSyncAccountControlElement extends
         turnOnSync :
         peopleSignIn;
   }
+
+
+  private getProfileImageSrc_(image: string|null, profileAvatarURL: string):
+      string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN)) {
+      return profileAvatarURL;
+    }
+
+    // image can be undefined if the account has not set an avatar photo.
+    return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
+  }
+
 
   private getAccountImageSrc_(image: string|null): string {
     // image can be undefined if the account has not set an avatar photo.
@@ -421,8 +443,8 @@ export class SettingsSyncAccountControlElement extends
 
     switch (this.syncStatus.signedInState) {
       case SignedInState.SIGNED_OUT:
-        return true;
       case SignedInState.WEB_ONLY_SIGNED_IN:
+        return true;
       case SignedInState.SIGNED_IN_PAUSED:
       case SignedInState.SYNCING:
         return false;
@@ -435,6 +457,10 @@ export class SettingsSyncAccountControlElement extends
 
   private handleStoredAccounts_(accounts: StoredAccount[]) {
     this.storedAccounts_ = accounts;
+  }
+
+  private handleUpdateAvatar_(profileAvatarURL: string) {
+    this.profileAvatarURL_ = profileAvatarURL;
   }
 
   private computeShouldShowAvatarRow_(): boolean {

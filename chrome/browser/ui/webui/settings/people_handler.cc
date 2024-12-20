@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -21,10 +22,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -413,12 +418,17 @@ void PeopleHandler::OnJavascriptAllowed() {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
+  if (g_browser_process->profile_manager()) {
+    profile_attributes_observation_.Observe(
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  }
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
   profile_pref_registrar_.reset();
   identity_manager_observation_.Reset();
   sync_service_observation_.Reset();
+  profile_attributes_observation_.Reset();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -515,16 +525,19 @@ void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
 
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar(profile_->GetPath());
 }
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar(profile_->GetPath());
 }
 
 void PeopleHandler::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
+  UpdateSyncStatus();
 #endif
 }
 
@@ -549,12 +562,45 @@ void PeopleHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
+void PeopleHandler::OnProfileAvatarChanged(const base::FilePath& profile_path) {
+  if (!switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    return;
+  }
+
+  if (profile_path != profile_->GetPath()) {
+    return;
+  }
+
+  UpdateProfileAvatar(profile_path);
+}
+
+void PeopleHandler::UpdateProfileAvatar(const base::FilePath& profile_path) {
+  // Can be null in tests
+  if (!g_browser_process->profile_manager()) {
+    return;
+  }
+
+  profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = false};
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
+
+  FireWebUIListener(
+      "profile-avatar-changed",
+      base::Value(webui::GetBitmapDataUrl(
+          entry
+              ->GetAvatarIcon(profiles::kAvatarIconSize,
+                              /*use_high_res_file=*/true, icon_params)
+              .AsBitmap())));
+}
+
 base::Value::List PeopleHandler::GetStoredAccountsList() {
   base::Value::List accounts;
   bool populate_accounts_list = false;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);

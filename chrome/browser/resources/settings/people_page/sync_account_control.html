@@ -6,7 +6,7 @@
       }
 
       .account-icon {
-        border-radius: 20px;
+        border-radius: 50%;
         flex-shrink: 0;
         height: var(--shown-avatar-size);
         width: var(--shown-avatar-size);
@@ -141,7 +141,9 @@
       <div class="cr-row first two-line" id="avatar-row">
         <div id="avatar-container">
           <img class="account-icon" alt=""
-              src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]">
+              src="[[getProfileImageSrc_(
+                shownAccount_.avatarImage,
+                profileAvatarURL_)]]">
           <div id="sync-icon-container"
               hidden="[[!isSyncing_(syncStatus.signedInState)]]"
               class$="[[getSyncIconStyle_(
