@@ -204,6 +204,8 @@ component("gpu") {
   if (is_win) {
     sources += [
       "windows/av1_guids.h",
+      "windows/av1_video_rate_control_wrapper.cc",
+      "windows/av1_video_rate_control_wrapper.h",
       "windows/d3d11_av1_accelerator.cc",
       "windows/d3d11_av1_accelerator.h",
       "windows/d3d11_copying_texture_wrapper.cc",
@@ -285,17 +287,11 @@ component("gpu") {
         "windows/d3d11_h265_accelerator.h",
       ]
     }
-    if (enable_libaom) {
-      sources += [
-        "windows/av1_video_rate_control_wrapper.cc",
-        "windows/av1_video_rate_control_wrapper.h",
-      ]
-      deps += [ "//third_party/libaom:libaomrc" ]
-    }
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",
       "//third_party/angle:includes",
+      "//third_party/libaom:libaomrc",
       "//third_party/libvpx:libvpxrc",
       "//ui/display",
     ]

@@ -51,20 +51,17 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_rate_controller.h"
 #include "media/gpu/h264_ratectrl_rtc.h"
+#include "media/gpu/windows/av1_video_rate_control_wrapper.h"
 #include "media/gpu/windows/h264_video_rate_control_wrapper.h"
 #include "media/gpu/windows/mf_video_encoder_shared_state.h"
 #include "media/gpu/windows/mf_video_encoder_switches.h"
 #include "media/gpu/windows/vp9_video_rate_control_wrapper.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
+#include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-
-#if BUILDFLAG(ENABLE_LIBAOM)
-#include "media/gpu/windows/av1_video_rate_control_wrapper.h"
-#include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
-#endif
 
 using Microsoft::WRL::ComPtr;
 
@@ -1395,21 +1392,17 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       VideoCodec::kHEVC,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(ENABLE_LIBAOM)
       VideoCodec::kAV1,
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
   };
   if (!base::Contains(kCodecsHaveSWBRC, codec_)) {
     return;
   }
 
-#if BUILDFLAG(ENABLE_LIBAOM)
   // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
   // More info: https://crbug.com/343757696
   if (codec_ == VideoCodec::kAV1 && vendor_ == DriverVendor::kQualcomm) {
     return;  // SW BRC and QCOM AV1 HMFT not ok
   }
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
 
   if (codec_ == VideoCodec::kH264) {
     // H264 SW BRC supports up to two temporal layers.
@@ -1454,10 +1447,7 @@ void MediaFoundationVideoEncodeAccelerator::SetSWRateControl() {
   if (codec_ == VideoCodec::kVP9) {
     rate_ctrl_ = VP9RateControl::Create(rate_config);
   } else if (codec_ == VideoCodec::kAV1) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-    // If libaom is not enabled, |rate_ctrl_| will not be initialized.
     rate_ctrl_ = AV1RateControl::Create(rate_config);
-#endif
   } else if (codec_ == VideoCodec::kH264) {
     rate_ctrl_ = H264RateControl::Create(rate_config);
   } else if (codec_ == VideoCodec::kHEVC) {
