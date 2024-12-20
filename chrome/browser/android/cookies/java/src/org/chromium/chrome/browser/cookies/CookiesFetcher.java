@@ -266,10 +266,10 @@ public class CookiesFetcher implements Destroyable {
 
     @CalledByNative
     private static CanonicalCookie createCookie(
-            String name,
-            String value,
-            String domain,
-            String path,
+            @JniType("std::string") String name,
+            @JniType("std::string") String value,
+            @JniType("std::string") String domain,
+            @JniType("std::string") String path,
             long creation,
             long expiration,
             long lastAccess,
@@ -278,7 +278,7 @@ public class CookiesFetcher implements Destroyable {
             boolean httpOnly,
             int sameSite,
             int priority,
-            String partitionKey,
+            @JniType("std::string") String partitionKey,
             int sourceScheme,
             int sourcePort,
             int sourceType) {
@@ -367,10 +367,10 @@ public class CookiesFetcher implements Destroyable {
 
         void restoreCookies(
                 @JniType("Profile*") Profile profile,
-                String name,
-                String value,
-                String domain,
-                String path,
+                @JniType("std::string") String name,
+                @JniType("std::string") String value,
+                @JniType("std::string") String domain,
+                @JniType("std::string") String path,
                 long creation,
                 long expiration,
                 long lastAccess,
@@ -379,7 +379,7 @@ public class CookiesFetcher implements Destroyable {
                 boolean httpOnly,
                 int sameSite,
                 int priority,
-                String partitionKey,
+                @JniType("std::string") String partitionKey,
                 int sourceScheme,
                 int sourcePort,
                 int sourceType);

@@ -10,10 +10,8 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/android/content/jni_headers/ContentUtils_jni.h"
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_ContentUtils_GetBrowserUserAgent(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, embedder_support::GetUserAgent());
+static std::string JNI_ContentUtils_GetBrowserUserAgent(JNIEnv* env) {
+  return embedder_support::GetUserAgent();
 }
 
 static void JNI_ContentUtils_SetUserAgentOverride(

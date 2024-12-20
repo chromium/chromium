@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
@@ -51,14 +52,15 @@ final class SyncTestSigninUtils {
 
     /** Add an account to the device and signs in for live testing, but does not enable Sync. */
     @CalledByNative
-    private static void setUpLiveAccountAndSignInForTesting(String accountName, String password) {
+    private static void setUpLiveAccountAndSignInForTesting(
+            @JniType("std::string") String accountName, @JniType("std::string") String password) {
         LiveSigninTestUtil.getInstance().addAccountWithPasswordThenSignin(accountName, password);
     }
 
     /** Add an account to the device and signs in for live testing, and enables Sync-the-feature. */
     @CalledByNative
     private static void setUpLiveAccountAndSignInAndEnableSyncForTesting(
-            String accountName, String password) {
+            @JniType("std::string") String accountName, @JniType("std::string") String password) {
         LiveSigninTestUtil.getInstance()
                 .addAccountWithPasswordThenSigninAndEnableSync(accountName, password);
     }
