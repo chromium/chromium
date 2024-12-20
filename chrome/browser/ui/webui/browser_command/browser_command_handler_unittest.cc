@@ -148,7 +148,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   }
 
  private:
-  bool tutorial_service_exists_;
+  bool tutorial_service_exists_ = false;
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;
