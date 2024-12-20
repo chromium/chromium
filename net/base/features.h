@@ -293,6 +293,11 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // key in partitioned cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
 
+// When enabled, requestStorageAccessFor will require storage access permissions
+// granted by StorageAccessApi or StorageAccessHeaders to send cookies on
+// requests allowed because of requestStorageAccessFor instead of cors.
+NET_EXPORT BASE_DECLARE_FEATURE(kRequestStorageAccessNoCorsRequired);
+
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 
