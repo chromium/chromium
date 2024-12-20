@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
@@ -429,13 +428,12 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
   if (audiobus_compatible) {
     auto audio_bus = AudioBus::CreateWrapper(channels);
 
-    audio_bus->set_frames(frames);
-
     for (int ch = 0; ch < channels; ++ch) {
       audio_bus->SetChannelData(
-          ch, base::span(reinterpret_cast<float*>(buffer->channel_data()[ch]),
-                         base::checked_cast<size_t>(buffer->frame_count())));
+          ch, reinterpret_cast<float*>(buffer->channel_data()[ch]));
     }
+
+    audio_bus->set_frames(frames);
 
     // Keep |buffer| alive as long as |audio_bus|.
     audio_bus->SetWrappedDataDeleter(

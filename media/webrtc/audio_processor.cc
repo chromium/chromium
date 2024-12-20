@@ -172,8 +172,11 @@ class AudioProcessorCaptureFifo {
     const media::AudioBus* source_to_push = &source;
 
     if (audio_source_intermediate_) {
+      for (int i = 0; i < destination_->bus()->channels(); ++i) {
+        audio_source_intermediate_->SetChannelData(
+            i, const_cast<float*>(source.channel(i)));
+      }
       audio_source_intermediate_->set_frames(source.frames());
-      audio_source_intermediate_->SetAllChannels(source.AllChannels());
       source_to_push = audio_source_intermediate_.get();
     }
 

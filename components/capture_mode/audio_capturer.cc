@@ -79,8 +79,10 @@ void AudioCapturer::Capture(const media::AudioBus* audio_source,
   auto wrapping_audio_bus =
       media::AudioBus::CreateWrapper(backing_audio_bus->channels());
   wrapping_audio_bus->set_frames(backing_audio_bus->frames());
-  wrapping_audio_bus->SetAllChannels(backing_audio_bus->AllChannels());
-
+  for (int channel = 0; channel < backing_audio_bus->channels(); ++channel) {
+    wrapping_audio_bus->SetChannelData(channel,
+                                       backing_audio_bus->channel(channel));
+  }
   // Keep `backing_audio_bus` alive as long as `wrapping_audio_bus` by
   // transferring its ownership to the `wrapping_audio_bus`'s deleter callback.
   wrapping_audio_bus->SetWrappedDataDeleter(

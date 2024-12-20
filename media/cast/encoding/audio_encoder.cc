@@ -20,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -536,7 +535,9 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     // Initially the input bus points to the input buffer. See the comment on
     // |input_bus_| for more on this optimization.
     input_bus_->set_frames(kAccessUnitSamples);
-    input_bus_->SetAllChannels(input_buffer_->AllChannels());
+    for (int ch = 0; ch < input_buffer_->channels(); ++ch) {
+      input_bus_->SetChannelData(ch, input_buffer_->channel(ch));
+    }
 
     return true;
   }
@@ -553,9 +554,16 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     if (num_samples == kAccessUnitSamples &&
         source_offset * sizeof(float) % AudioBus::kChannelAlignment == 0) {
       DCHECK_EQ(buffer_fill_offset, 0);
-      input_bus_->SetAllChannels(audio_bus->AllChannelsSubspan(
-          base::checked_cast<size_t>(source_offset),
-          static_cast<size_t>(kAccessUnitSamples)));
+      for (int ch = 0; ch < audio_bus->channels(); ++ch) {
+        auto* samples = const_cast<float*>(audio_bus->channel(ch));
+
+        input_bus_->SetChannelData(
+            ch,
+            // TODO(crbug.com/40285824): Remove this once the AudioBus has been
+            // migrated to not use a constant float for the channel data
+            // storage.
+            UNSAFE_BUFFERS(samples + source_offset));
+      }
       return;
     }
 
@@ -630,12 +638,11 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
       buffer.mNumberChannels = 1;
       buffer.mDataByteSize = sizeof(float) * *io_num_packets;
       buffer.mData = input_bus.channel(i_buf);
+
+      // Reset the input bus back to the input buffer. See the comment on
+      // |input_bus_| for more on this optimization.
+      input_bus.SetChannelData(i_buf, encoder.input_buffer_->channel(i_buf));
     }
-
-    // Reset the input bus back to the input buffer. See the comment on
-    // |input_bus_| for more on this optimization.
-    input_bus.SetAllChannels(encoder.input_buffer_->AllChannels());
-
     return noErr;
   }
 

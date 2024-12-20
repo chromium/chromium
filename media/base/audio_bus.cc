@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <utility>
 
@@ -31,7 +30,7 @@ namespace media {
 
 // Returns `frames` rounded up to the nearest number which allows full rows of
 // SIMD instructions.
-static size_t AlignFramesUp(size_t frames) {
+static int AlignFramesUp(int frames) {
   // Since our internal sample format is float, we can guarantee the alignment
   // by making the number of frames an integer multiple of
   // AudioBus::kChannelAlignment / sizeof(float).
@@ -46,14 +45,14 @@ static size_t AlignFramesUp(size_t frames) {
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
 // in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-static size_t CalculateMemorySizeInternal(int channels, size_t frames) {
+static int CalculateMemorySizeInternal(int channels, int frames) {
   return sizeof(float) * channels * AlignFramesUp(frames);
 }
 
-static bool IsValidChannelCount(int channels) {
+static void ValidateConfig(int channels, int frames) {
+  CHECK_GT(frames, 0);
   CHECK_GT(channels, 0);
-  return base::checked_cast<size_t>(channels) <=
-         static_cast<size_t>(limits::kMaxChannels);
+  CHECK_LE(channels, static_cast<int>(limits::kMaxChannels));
 }
 
 void AudioBus::CheckOverflow(int start_frame, int frames, int total_frames) {
@@ -66,48 +65,50 @@ void AudioBus::CheckOverflow(int start_frame, int frames, int total_frames) {
 }
 
 AudioBus::AudioBus(int channels, int frames)
-    : frames_(base::checked_cast<size_t>(frames)), is_wrapper_(false) {
-  CHECK(IsValidChannelCount(channels));
+    : frames_(frames), is_wrapper_(false) {
+  ValidateConfig(channels, frames_);
 
-  size_t size = CalculateMemorySizeInternal(channels, frames_);
+  int aligned_frames = AlignFramesUp(frames);
+  int size = CalculateMemorySizeInternal(channels, aligned_frames);
 
-  data_ = base::AlignedUninit<float>(size, AudioBus::kChannelAlignment);
+  data_ = base::AlignedUninit<float>(static_cast<size_t>(size),
+                                     AudioBus::kChannelAlignment);
 
-  BuildChannelData(channels, data_);
+  BuildChannelData(channels, aligned_frames, data_.data());
 }
 
 AudioBus::AudioBus(int channels, int frames, float* data)
-    : frames_(base::checked_cast<size_t>(frames)), is_wrapper_(false) {
-  CHECK(IsValidChannelCount(channels));
-
+    : frames_(frames), is_wrapper_(false) {
   // Since |data| may have come from an external source, ensure it's valid.
   CHECK(data);
+  ValidateConfig(channels, frames_);
 
-  // `data` must be at least CalculateMemorySizeInternal(), per interface
-  // contract.
-  BuildChannelData(channels, base::span(data, CalculateMemorySizeInternal(
-                                                  channels, frames_)));
+  int aligned_frames = AlignFramesUp(frames);
+  CalculateMemorySizeInternal(channels, aligned_frames);
+
+  BuildChannelData(channels, aligned_frames, data);
 }
 
 AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
-    : frames_(base::checked_cast<size_t>(frames)), is_wrapper_(false) {
-  channel_data_.reserve(channel_data.size());
+    : channel_data_(channel_data), frames_(frames), is_wrapper_(false) {
+  ValidateConfig(
+      base::checked_cast<int>(channel_data_.size()), frames_);
 
-  for (float* data : channel_data) {
-    CHECK(IsAligned(data));
-    channel_data_.emplace_back(data, frames_);
-  }
+  // Sanity check wrapped vector for alignment and channel count.
+  for (size_t i = 0; i < channel_data_.size(); ++i)
+    DCHECK(IsAligned(channel_data_[i]));
 }
 
 AudioBus::AudioBus(int channels)
-    : channel_data_(channels), frames_(0U), is_wrapper_(true) {
-  CHECK(IsValidChannelCount(channels));
+    : channel_data_(channels), frames_(0), is_wrapper_(true) {
+  CHECK_GT(channels, 0);
+  for (size_t i = 0; i < channel_data_.size(); ++i)
+    channel_data_[i] = nullptr;
 }
 
 AudioBus::~AudioBus() {
-  if (wrapped_data_deleter_cb_) {
+  if (wrapped_data_deleter_cb_)
     std::move(wrapped_data_deleter_cb_).Run();
-  }
 }
 
 std::unique_ptr<AudioBus> AudioBus::Create(int channels, int frames) {
@@ -167,39 +168,19 @@ std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(
   return WrapMemory(params, const_cast<void*>(data));
 }
 
-void AudioBus::SetChannelData(int channel, Channel data) {
+void AudioBus::SetChannelData(int channel, float* data) {
   CHECK(is_wrapper_);
-
-  // Make sure `set_frames()` was called first.
-  CHECK(frames_);
-  CHECK_EQ(data.size(), frames_);
-
+  CHECK(data);
   CHECK_GE(channel, 0);
   CHECK_LT(static_cast<size_t>(channel), channel_data_.size());
-  CHECK(IsAligned(data));
+  DCHECK(IsAligned(data));
   channel_data_[channel] = data;
-}
-
-void AudioBus::SetAllChannels(const ChannelVector& channels) {
-  CHECK(is_wrapper_);
-
-  // Make sure `set_frames()` was called first.
-  CHECK(frames_);
-
-  CHECK(!channels.empty());
-  CHECK_EQ(channels.size(), channel_data_.size());
-
-  for (auto channel : channels) {
-    CHECK(IsAligned(channel));
-    CHECK_EQ(channel.size(), frames_);
-  }
-
-  channel_data_ = channels;
 }
 
 void AudioBus::set_frames(int frames) {
   CHECK(is_wrapper_);
-  frames_ = base::checked_cast<size_t>(frames);
+  ValidateConfig(static_cast<int>(channel_data_.size()), frames);
+  frames_ = frames;
 }
 
 void AudioBus::SetWrappedDataDeleter(base::OnceClosure deleter) {
@@ -228,30 +209,20 @@ void AudioBus::SetBitstreamFrames(int frames) {
   bitstream_frames_ = frames;
 }
 
-void AudioBus::ZeroFramesPartial(int start, int count) {
-  // TODO(crbug.com/373960632): Update the parameters to be `size_t`.
-  size_t start_frame = base::checked_cast<size_t>(start);
-  size_t frames = base::checked_cast<size_t>(count);
-
+void AudioBus::ZeroFramesPartial(int start_frame, int frames) {
   CheckOverflow(start_frame, frames, frames_);
 
-  if (!frames) {
-    // Nothing to do.
+  if (frames <= 0)
     return;
-  }
 
   if (is_bitstream_format_) {
-    const size_t bitstream_frames =
-        base::checked_cast<size_t>(bitstream_frames_);
-
     // No need to clean unused region for bitstream formats.
-    if (start_frame >= bitstream_frames) {
+    if (start_frame >= bitstream_frames_)
       return;
-    }
 
     // Cannot clean partial frames.
-    DCHECK_EQ(start_frame, 0U);
-    DCHECK(frames >= bitstream_frames);
+    DCHECK_EQ(start_frame, 0);
+    DCHECK(frames >= bitstream_frames_);
 
     // For compressed bitstream, zeroed buffer is not valid and would be
     // discarded immediately. It is faster and makes more sense to reset
@@ -262,8 +233,9 @@ void AudioBus::ZeroFramesPartial(int start, int count) {
     return;
   }
 
-  for (auto channel : channel_data_) {
-    std::ranges::fill(channel.subspan(start_frame, frames), 0);
+  for (size_t i = 0; i < channel_data_.size(); ++i) {
+    memset(channel_data_[i] + start_frame, 0,
+           frames * sizeof(*channel_data_[i]));
   }
 }
 
@@ -277,9 +249,11 @@ void AudioBus::Zero() {
 
 bool AudioBus::AreFramesZero() const {
   DCHECK(!is_bitstream_format_);
-  for (Channel channel : channel_data_) {
-    if (std::ranges::any_of(channel, [](float frame) { return frame != 0; })) {
-      return false;
+  for (const auto* channel : channel_data_) {
+    for (int j = 0; j < frames_; ++j) {
+      if (channel[j]) {
+        return false;
+      }
     }
   }
   return true;
@@ -287,15 +261,13 @@ bool AudioBus::AreFramesZero() const {
 
 // static
 int AudioBus::CalculateMemorySize(const AudioParameters& params) {
-  return base::checked_cast<int>(CalculateMemorySizeInternal(
-      params.channels(),
-      base::checked_cast<size_t>(params.frames_per_buffer())));
+  return CalculateMemorySizeInternal(params.channels(),
+                                     params.frames_per_buffer());
 }
 
 // static
 int AudioBus::CalculateMemorySize(int channels, int frames) {
-  return base::checked_cast<int>(CalculateMemorySizeInternal(
-      channels, base::checked_cast<size_t>(frames)));
+  return CalculateMemorySizeInternal(channels, frames);
 }
 
 // static
@@ -303,29 +275,14 @@ bool AudioBus::IsAligned(void* ptr) {
   return base::IsAligned(ptr, kChannelAlignment);
 }
 
-// static
-bool AudioBus::IsAligned(base::span<float> span) {
-  return IsAligned(span.data());
-}
-
-void AudioBus::BuildChannelData(int channels, base::span<float> data) {
-  CHECK(!is_bitstream_format_);
-  CHECK(frames_);
-  CHECK(IsValidChannelCount(channels));
-  CHECK_GE(data.size(), CalculateMemorySizeInternal(channels, frames_));
-  CHECK(IsAligned(data));
-  CHECK(channel_data_.empty());
-
+void AudioBus::BuildChannelData(int channels, int aligned_frames, float* data) {
+  DCHECK(!is_bitstream_format_);
+  DCHECK(IsAligned(data));
+  DCHECK_EQ(channel_data_.size(), 0U);
   // Initialize |channel_data_| with pointers into |data|.
   channel_data_.reserve(channels);
-  const size_t frames_per_channel = AlignFramesUp(frames_);
-
-  for (int i = 0; i < channels; ++i) {
-    // We might have over-allocated memory for alignment purposes, but we only
-    // want to expose the first `frames_`.
-    channel_data_.push_back(data.subspan(i * frames_per_channel, frames_));
-    CHECK(IsAligned(channel_data_.back().data()));
-  }
+  for (int i = 0; i < channels; ++i)
+    channel_data_.push_back(data + i * aligned_frames);
 }
 
 void AudioBus::CopyTo(AudioBus* dest) const {
@@ -386,21 +343,6 @@ void AudioBus::SwapChannels(int a, int b) {
   DCHECK(b < channels() && b >= 0);
   DCHECK_NE(a, b);
   std::swap(channel_data_[a], channel_data_[b]);
-}
-
-const AudioBus::ChannelVector& AudioBus::AllChannels() const {
-  return channel_data_;
-}
-
-AudioBus::ChannelVector AudioBus::AllChannelsSubspan(size_t offset,
-                                                     size_t count) const {
-  ChannelVector sub_channels;
-
-  for (Channel channel : channel_data_) {
-    sub_channels.push_back(channel.subspan(offset, count));
-  }
-
-  return sub_channels;
 }
 
 }  // namespace media

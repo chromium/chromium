@@ -5,9 +5,7 @@
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 
 #include <memory>
-
 #include "base/functional/bind.h"
-#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
@@ -34,14 +32,11 @@ void MediaMultiChannelResampler::Resample(
   CHECK_EQ(static_cast<int>(resampler_input_bus->NumberOfChannels()),
             resampler_input_bus_wrapper_->channels());
 
-  resampler_input_bus_wrapper_->set_frames(resampler_input_bus->length());
   for (unsigned int i = 0; i < resampler_input_bus->NumberOfChannels(); ++i) {
-    // TODO(crbug.com/375449662): Spanify `AudioChannel::MuteableData`.
     resampler_input_bus_wrapper_->SetChannelData(
-        i, UNSAFE_TODO(base::span(
-               resampler_input_bus->Channel(i)->MutableData(),
-               base::checked_cast<size_t>(resampler_input_bus->length()))));
+        i, resampler_input_bus->Channel(i)->MutableData());
   }
+  resampler_input_bus_wrapper_->set_frames(resampler_input_bus->length());
   ResampleInternal(frames, resampler_input_bus_wrapper_.get());
 }
 

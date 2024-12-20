@@ -33,10 +33,6 @@ class AudioParameters;
 // requires the same for memory passed to its Wrap...() factory methods.
 class MEDIA_SHMEM_EXPORT AudioBus {
  public:
-  using Channel = base::span<float>;
-  using ConstChannel = base::span<const float>;
-  using ChannelVector = std::vector<Channel>;
-
   // Guaranteed alignment of each channel's data; use 16-byte alignment for easy
   // SSE optimizations.
   static constexpr size_t kChannelAlignment = 16;
@@ -82,17 +78,12 @@ class MEDIA_SHMEM_EXPORT AudioBus {
 
   // Checks if buffer is properly aligned to be used in `SetChannelData()`
   static bool IsAligned(void* ptr);
-  static bool IsAligned(base::span<float> span);
 
   // Methods that are expected to be called after AudioBus::CreateWrapper() in
-  // order to wrap externally allocated memory.
-  // To avoid cases where channel sizes and number of frames don't match,
-  // `set_frames()` must be called before setting channel data.
-  // Note: It is illegal to call these methods when using a factory method other
-  // than CreateWrapper().
+  // order to wrap externally allocated memory. Note: It is illegal to call
+  // these methods when using a factory method other than CreateWrapper().
+  void SetChannelData(int channel, float* data);
   void set_frames(int frames);
-  void SetChannelData(int channel, Channel data);
-  void SetAllChannels(const ChannelVector& channel_data);
 
   // Method optionally called after AudioBus::CreateWrapper().
   // Runs |deleter| when on |this|' destruction, freeing external data
@@ -175,24 +166,20 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // Returns a raw pointer to the requested channel.  Pointer is guaranteed to
   // have a 16-byte alignment.  Warning: Do not rely on having sane (i.e. not
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
-  // TODO(crbug.com/373960632): Remove these methods, and rename `channel_span`
-  // to `channel`.
-  float* channel(int channel) { return channel_data_[channel].data(); }
-  const float* channel(int channel) const {
-    return channel_data_[channel].data();
+  float* channel(int channel) { return channel_data_[channel]; }
+  const float* channel(int channel) const { return channel_data_[channel]; }
+  base::span<float> ChannelSpan(int channel) {
+    // SAFETY: AudioBus's constructor ensures that `channel_data_[channel]` is
+    // at least `frames_` size.
+    return UNSAFE_BUFFERS(
+        base::span(channel_data_[channel], static_cast<size_t>(frames_)));
   }
-
-  Channel channel_span(int channel) { return channel_data_[channel]; }
-  ConstChannel channel_span(int channel) const {
-    return channel_data_[channel];
+  base::span<const float> ChannelSpan(int channel) const {
+    // SAFETY: AudioBus's constructor ensures that `channel_data_[channel]` is
+    // at least `frames_` size.
+    return UNSAFE_BUFFERS(
+        base::span(channel_data_[channel], static_cast<size_t>(frames_)));
   }
-
-  // Convenience function to allow range-based for-loops.
-  const ChannelVector& AllChannels() const;
-
-  // Returns a copy of `channels_`, with `subspan()` applied to each channel.
-  // Note: The returned channels might not be aligned, depending on `offset`.
-  ChannelVector AllChannelsSubspan(size_t offset, size_t count) const;
 
   // Returns the number of channels.
   int channels() const { return static_cast<int>(channel_data_.size()); }
@@ -229,7 +216,7 @@ class MEDIA_SHMEM_EXPORT AudioBus {
  private:
   // Helper method for building |channel_data_| from a block of memory.  |data|
   // must be at least CalculateMemorySize(...) bytes in size.
-  void BuildChannelData(int channels, base::span<float> data);
+  void BuildChannelData(int channels, int aligned_frame, float* data);
 
   static void CheckOverflow(int start_frame, int frames, int total_frames);
 
@@ -261,10 +248,9 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // that channel. If the memory is owned by this instance, this will
   // point to the memory in |data_|. Otherwise, it may point to memory provided
   // by the client.
-  // TODO(crbug.com/385028986): Convert to `base::raw_span`
-  RAW_PTR_EXCLUSION ChannelVector channel_data_;
-
-  size_t frames_;
+  // FIELD excluded due to ptr arithmetic in audio_buss.cc channel_data_[i][j]
+  RAW_PTR_EXCLUSION std::vector<float*> channel_data_;
+  int frames_;
 
   // Protect SetChannelData(), set_frames() and SetWrappedDataDeleter() for use
   // by CreateWrapper().
