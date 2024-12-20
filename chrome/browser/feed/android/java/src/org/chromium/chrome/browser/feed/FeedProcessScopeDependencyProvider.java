@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BundleUtils;
@@ -52,6 +53,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public interface Natives {
         int[] getExperimentIds();
 
+        @JniType("std::string")
         String getSessionId();
 
         void processViewAction(byte[] actionData, byte[] loggingParameters);

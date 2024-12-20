@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -265,12 +266,15 @@ public class FeedSurfaceRendererBridge {
         // Static functions, can be called after creation, and destroy().
         void reportFeedViewed(int surfaceId);
 
-        void reportSliceViewed(int surfaceId, String sliceId);
+        void reportSliceViewed(int surfaceId, @JniType("std::string") String sliceId);
 
         void reportPageLoaded(int surfaceId, boolean inNewTab);
 
         void reportOpenAction(
-                int surfaceId, GURL url, String sliceId, @OpenActionType int openActionType);
+                int surfaceId,
+                GURL url,
+                @JniType("std::string") String sliceId,
+                @OpenActionType int openActionType);
 
         void reportOpenVisitComplete(int surfaceId, long visitTimeMs);
 

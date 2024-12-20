@@ -43,15 +43,15 @@ static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
       action_data_string, ToNativeLoggingParameters(env, logging_parameters));
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
-JNI_FeedProcessScopeDependencyProvider_GetSessionId(JNIEnv* env) {
+static std::string JNI_FeedProcessScopeDependencyProvider_GetSessionId(
+    JNIEnv* env) {
   std::string session;
   FeedApi* feed_stream_api = GetFeedApi();
   if (feed_stream_api) {
     session = feed_stream_api->GetSessionId();
   }
 
-  return base::android::ConvertUTF8ToJavaString(env, session);
+  return session;
 }
 
 static base::android::ScopedJavaLocalRef<jintArray>
