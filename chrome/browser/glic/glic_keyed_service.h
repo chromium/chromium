@@ -73,12 +73,17 @@ class GlicKeyedService : public KeyedService {
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 
  private:
+  void OnFocusedTabChanged(const content::WebContents* focused_tab);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
+
+  base::CallbackListSubscription focused_tab_changed_subscription_;
+
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };
 

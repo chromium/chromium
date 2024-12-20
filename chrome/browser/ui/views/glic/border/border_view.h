@@ -31,7 +31,7 @@ class BorderView : public views::View,
   // Helper function to find the `BorderView` for `web_contents`. Returns null
   // if there isn't a browser / browser view for `web_contents`.
   static BorderView* FindBorderForWebContents(
-      content::WebContents* web_contents);
+      const content::WebContents* web_contents);
 
   static void CancelAllAnimationsForProfile(Profile* profile);
 

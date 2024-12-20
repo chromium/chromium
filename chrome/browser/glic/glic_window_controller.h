@@ -71,6 +71,9 @@ class GlicWindowController : public views::WidgetObserver {
   // Returns whether or not the glic window is currently active.
   bool IsActive();
 
+  // Whether there is a glic window, regardless of it's visibility to the user.
+  bool HasWindow() const;
+
   using WindowActivationChangedCallback =
       base::RepeatingCallback<void(bool active)>;
 

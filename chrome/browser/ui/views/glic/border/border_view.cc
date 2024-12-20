@@ -17,7 +17,7 @@ namespace glic {
 
 // static
 BorderView* BorderView::FindBorderForWebContents(
-    content::WebContents* web_contents) {
+    const content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser || !browser->window()) {
     // We might not have a browser or browser window in unittests.
@@ -29,22 +29,19 @@ BorderView* BorderView::FindBorderForWebContents(
 }
 
 // static.
-//
-// TODO(liuwilliam): Currently there is only one border animation per Profile,
-// and that's for the last active web contents, whose contents was requested by
-// glic. We might expand the animation scope to multiple WebContents. Update the
-// impl correspondingly.
 void BorderView::CancelAllAnimationsForProfile(Profile* profile) {
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  if (!browser || !browser->window()) {
-    // Unittests, or the View tree is torn down.
-    return;
+  std::vector<Browser*> browsers = chrome::FindAllBrowsersWithProfile(profile);
+  for (auto* browser : browsers) {
+    if (!browser || !browser->window()) {
+      // Unittests, or the View tree is torn down.
+      continue;
+    }
+    CHECK(browser->GetBrowserView().contents_web_view());
+    browser->GetBrowserView()
+        .contents_web_view()
+        ->glic_border()
+        ->CancelAnimation();
   }
-  CHECK(browser->GetBrowserView().contents_web_view());
-  browser->GetBrowserView()
-      .contents_web_view()
-      ->glic_border()
-      ->CancelAnimation();
 }
 
 BorderView::BorderView() = default;

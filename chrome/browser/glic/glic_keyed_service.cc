@@ -26,7 +26,11 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
       window_controller_(Profile::FromBrowserContext(browser_context)),
       focused_tab_manager_(Profile::FromBrowserContext(browser_context),
                            window_controller_),
-      profile_manager_(profile_manager) {}
+      profile_manager_(profile_manager) {
+  focused_tab_changed_subscription_ =
+      focused_tab_manager_.AddFocusedTabChangedCallback(base::BindRepeating(
+          &GlicKeyedService::OnFocusedTabChanged, GetWeakPtr()));
+}
 
 GlicKeyedService::~GlicKeyedService() = default;
 
@@ -120,6 +124,22 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
+}
+
+void GlicKeyedService::OnFocusedTabChanged(
+    const content::WebContents* focused_tab) {
+  CHECK_EQ(focused_tab, GetFocusedTab());
+  // TODO(crbug.com/385382048): We shouldn't cancel and restart the animation.
+  // Instead we should transit the current animation state from the previous
+  // browser window to the currently focused browser window.
+  BorderView::CancelAllAnimationsForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  if (focused_tab && window_controller_.HasWindow()) {
+    if (BorderView* border =
+            BorderView::FindBorderForWebContents(focused_tab)) {
+      border->StartAnimation();
+    }
+  }
 }
 
 content::WebContents* GlicKeyedService::GetFocusedTab() {

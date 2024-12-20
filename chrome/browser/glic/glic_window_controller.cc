@@ -408,6 +408,10 @@ bool GlicWindowController::IsActive() {
   return widget_ && widget_->IsActive();
 }
 
+bool GlicWindowController::HasWindow() const {
+  return !!widget_;
+}
+
 base::CallbackListSubscription
 GlicWindowController::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
