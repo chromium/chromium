@@ -443,10 +443,10 @@ pass it along to / include someone who can direct it more precisely.
      platforms, we do also want to provide those teams visibility. If deemed
      necessary they can create a bug in their tracker, that should be tracked as
      a child bug to the original report we received in the Chromium tracker.
-   * For Mesa driver bugs, please cc: robclark@ and msturner@ for visibility for
+   * For Mesa driver bugs, please cc: robdclark@ and msturner@ for visibility for
      ChromeOS.
    * For Mali driver bugs, please cc: aygupta@, bcreasey@, asdl-kfc@ from
-     Android, mjstokes@ and layog@ from Pixel GPU, and robclark@ and msturner@
+     Android, mjstokes@ and layog@ from Pixel GPU, and robdclark@ and msturner@
      from ChromeOS GPU.
 
 ### Shift handoff
