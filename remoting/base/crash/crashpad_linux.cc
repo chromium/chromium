@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/time/time.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/version.h"
@@ -20,6 +21,8 @@
 namespace remoting {
 
 namespace {
+
+using crashpad::CrashReportDatabase;
 
 constexpr char kChromotingCrashpadHandler[] = "crashpad-handler";
 constexpr char kDefaultCrashpadUploadUrl[] =
@@ -43,9 +46,10 @@ class CrashpadLinux {
  private:
   bool GetCrashpadHandlerPath(base::FilePath* handler_path);
   base::FilePath GetCrashpadDatabasePath();
+  void LogCrashReportInfo(const CrashReportDatabase::Report& report);
   bool InitializeCrashpadDatabase(base::FilePath database_path);
 
-  std::unique_ptr<crashpad::CrashReportDatabase> database_;
+  std::unique_ptr<CrashReportDatabase> database_;
 };
 
 CrashpadLinux::CrashpadLinux() = default;
@@ -64,18 +68,53 @@ base::FilePath CrashpadLinux::GetCrashpadDatabasePath() {
   return database_path.Append(kChromotingCrashpadDatabasePath);
 }
 
+void CrashpadLinux::LogCrashReportInfo(
+    const CrashReportDatabase::Report& report) {
+  HOST_LOG << "  Crash id: " << report.id;
+  HOST_LOG << "    path: " << report.file_path;
+  HOST_LOG << "    uuid: " << report.uuid.ToString();
+  HOST_LOG << "    created: " << base::Time::FromTimeT(report.creation_time);
+  HOST_LOG << "    uploaded: " << (report.uploaded ? "yes" : "no")
+           << " (attempts: " << report.upload_attempts << ")";
+}
+
 bool CrashpadLinux::InitializeCrashpadDatabase(base::FilePath database_path) {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(database_path, &error)) {
     LOG(ERROR) << "Unable to create crashpad database directory: " << error;
     return false;
   }
-  database_ = crashpad::CrashReportDatabase::Initialize(database_path);
+  database_ = CrashReportDatabase::Initialize(database_path);
   if (!database_) {
     LOG(ERROR) << "Failed to initialize database for Crashpad at "
                << database_path.value();
     return false;
   }
+
+  // Log the crash report ids.
+  CrashReportDatabase::OperationStatus status;
+  std::vector<CrashReportDatabase::Report> completed_reports;
+  status = database_->GetCompletedReports(&completed_reports);
+  if (status == CrashReportDatabase::OperationStatus::kNoError) {
+    HOST_LOG << "Completed crash reports: " << completed_reports.size();
+    for (const auto& report : completed_reports) {
+      LogCrashReportInfo(report);
+    }
+  } else {
+    LOG(ERROR) << "Unable to read completed crash reports: " << status;
+  }
+
+  std::vector<CrashReportDatabase::Report> pending_reports;
+  status = database_->GetPendingReports(&pending_reports);
+  if (status == CrashReportDatabase::OperationStatus::kNoError) {
+    HOST_LOG << "Pending crash reports: " << pending_reports.size();
+    for (const auto& report : pending_reports) {
+      LogCrashReportInfo(report);
+    }
+  } else {
+    LOG(ERROR) << "Unable to read pending crash reports: " << status;
+  }
+
   return true;
 }
 
