@@ -860,9 +860,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     // Issue a copyTextureForBrowser call with internal usage turned on.
     // There is a special step for srcAlphaMode == wgpu::AlphaMode::Opaque that
     // clears alpha channel to one.
-    SkImageInfo sk_dst_image_info = resource_provider->GetSkImageInfo();
     wgpu::AlphaMode dstAlphaMode;
-    switch (sk_dst_image_info.alphaType()) {
+    switch (resource_provider->GetAlphaType()) {
       case SkAlphaType::kPremul_SkAlphaType:
         dstAlphaMode = wgpu::AlphaMode::Premultiplied;
         break;

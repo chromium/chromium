@@ -1744,6 +1744,10 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
                      : gfx::ColorSpace::CreateSRGB();
 }
 
+SkAlphaType CanvasResourceProvider::GetAlphaType() const {
+  return GetSkImageInfo().alphaType();
+}
+
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
     FlushReason reason) {
   if (!recorder_->HasReleasableDrawOps()) {

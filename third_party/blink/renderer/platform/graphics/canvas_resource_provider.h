@@ -185,6 +185,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
   gfx::ColorSpace GetColorSpace() const;
+  SkAlphaType GetAlphaType() const;
   gfx::Size Size() const;
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
