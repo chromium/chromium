@@ -853,7 +853,12 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
-  current_tool_state_.emplace<DrawingStrokeState>();
+  // Do not adjust `current_tool_state_` if a drawing stroke is already
+  // in-progress.  Changes to the tool state will only apply to subsequent
+  // strokes.
+  if (is_erasing_stroke() || !drawing_stroke_state().start_time.has_value()) {
+    current_tool_state_.emplace<DrawingStrokeState>();
+  }
   drawing_stroke_state().brush_type = brush_type.value();
 
   PdfInkBrush& current_brush = GetDrawingBrush();
