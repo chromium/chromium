@@ -189,15 +189,19 @@ void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
            default_fullscreen_style_->UniversalRules().size() == 8u);
   }
 
-  if (marker_style_sheet_) {
+  if (marker_style_sheet_ || scroll_button_style_sheet_) {
     default_pseudo_element_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 3u);
+    size_t expected_rule_count = 0u;
+    if (marker_style_sheet_) {
+      expected_rule_count += 3u;
+    }
+    if (scroll_button_style_sheet_) {
+      expected_rule_count += 32u;
+    }
+    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(),
+              expected_rule_count);
   }
 
-  if (scroll_button_style_sheet_) {
-    default_pseudo_element_style_->CompactRulesIfNeeded();
-    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 32u);
-  }
 #endif
 }
 
