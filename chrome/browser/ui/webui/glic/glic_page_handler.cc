@@ -4,14 +4,19 @@
 
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -22,9 +27,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   explicit GlicWebClientHandler(
       content::BrowserContext* browser_context,
       mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver)
-      : glic_service_(
+      : profile_(Profile::FromBrowserContext(browser_context)),
+        glic_service_(
             GlicKeyedServiceFactory::GetGlicKeyedService(browser_context)),
-        pref_service_(Profile::FromBrowserContext(browser_context)->GetPrefs()),
+        pref_service_(profile_->GetPrefs()),
         receiver_(this, std::move(receiver)) {}
 
   // glic::mojom::WebClientHandler implementation.
@@ -122,6 +128,28 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run();
   }
 
+  void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile_->GetPath());
+    if (!entry) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    auto result = mojom::UserProfileInfo::New();
+    // TODO(crbug.com/382794680): Determine the correct size.
+    gfx::Image icon = entry->GetAvatarIcon(512);
+    if (!icon.IsEmpty()) {
+      result->avatar_icon = icon.AsBitmap();
+    }
+    result->display_name = base::UTF16ToUTF8(entry->GetGAIAName());
+    result->email = base::UTF16ToUTF8(entry->GetUserName());
+
+    std::move(callback).Run(std::move(result));
+  }
+
   // GlicWindowController::StateObserver implementation.
   void PanelStateChanged(const mojom::PanelState& panel_state) override {
     web_client_->NotifyPanelStateChange(panel_state.Clone());
@@ -156,6 +184,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   PrefChangeRegistrar pref_change_registrar_;
+  raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> glic_service_;
   raw_ptr<PrefService> pref_service_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;

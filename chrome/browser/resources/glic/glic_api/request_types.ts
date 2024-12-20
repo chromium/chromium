@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -107,6 +107,12 @@ export declare interface HostRequestTypes {
     },
     response: void,
   };
+  glicBrowserGetUserProfileInfo: {
+    request: {},
+    response: {
+      profileInfo?: UserProfileInfoPrivate,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.
@@ -185,4 +191,9 @@ export enum ImageColorType {
 export declare interface TabContextResultPrivate extends
     Omit<TabContextResult, 'tabData'> {
   tabData: TabDataPrivate;
+}
+
+export declare interface UserProfileInfoPrivate extends
+    Omit<UserProfileInfo, 'avatarIcon'> {
+  avatarIconImage?: RgbaImage;
 }

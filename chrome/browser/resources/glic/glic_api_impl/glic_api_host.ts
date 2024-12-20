@@ -22,7 +22,7 @@ import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_a
 import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
-import type {HostRequestTypes, RgbaImage} from '../glic_api/request_types.js';
+import type {HostRequestTypes, RgbaImage, UserProfileInfoPrivate} from '../glic_api/request_types.js';
 import {ImageAlphaType, ImageColorType} from '../glic_api/request_types.js';
 
 // Turn everything except void into a promise.
@@ -234,6 +234,23 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
     return this.handler.setTabContextPermissionState(request.enabled);
+  }
+
+  async glicBrowserGetUserProfileInfo(_request: {}, transfer: Transferable[]) {
+    const {profileInfo: mojoProfileInfo} =
+        await this.handler.getUserProfileInfo();
+    if (!mojoProfileInfo) {
+      return {};
+    }
+    const {displayName, email, avatarIcon} = mojoProfileInfo;
+    const profileInfo: UserProfileInfoPrivate = {displayName, email};
+    if (avatarIcon) {
+      profileInfo.avatarIconImage = bitmapN32ToRGBAImage(avatarIcon);
+      if (profileInfo.avatarIconImage) {
+        transfer.push(profileInfo.avatarIconImage.dataRGBA);
+      }
+    }
+    return {profileInfo};
   }
 }
 

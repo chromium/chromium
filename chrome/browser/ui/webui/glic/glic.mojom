@@ -34,6 +34,16 @@ union GetContextResult {
   TabContext tab_context;
 };
 
+// Information about the user profile.
+struct UserProfileInfo {
+  // Profile avatar image bitmap.
+  skia.mojom.BitmapN32? avatar_icon;
+  // The user's name for display purposes.
+  string display_name;
+  // The user's email.
+  string email;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -86,6 +96,11 @@ interface WebClientHandler {
   // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
+
+  // Returns the user profile information. This should only return null if
+  // the profile associated with this webui is invalid, which should only
+  // possibly happen during teardown.
+  GetUserProfileInfo() => (UserProfileInfo? profile_info);
 };
 
 // State of the glic panel.

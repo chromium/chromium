@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, ErrorWithReason, GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, PanelState, Subscriber, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 import {GetTabContextErrorReason, PanelStateKind} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
@@ -212,6 +212,21 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.sender.requestWithResponse(
         'glicBrowserSetTabContextPermissionState', {enabled});
   }
+
+  async getUserProfileInfo?(): Promise<UserProfileInfo> {
+    const {profileInfo} = await this.sender.requestWithResponse(
+        'glicBrowserGetUserProfileInfo', {});
+    if (!profileInfo) {
+      throw new Error('getUserProfileInfo failed');
+    }
+    const {displayName, email, avatarIconImage} = profileInfo;
+    return {
+      displayName,
+      email,
+      avatarIcon: async () =>
+          avatarIconImage && rgbaImageToBlob(avatarIconImage),
+    };
+  }
 }
 
 // Returns a promise which resolves to the `GlicHostRegistry`. This promise
@@ -261,16 +276,19 @@ async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
         continue;
       }
       const alpha = alphaInt / 255.0;
-      pixelData[i] = pixelData[i + 2]! / alpha;
-      pixelData[i + 1] = pixelData[i + 1]! / alpha;
-      pixelData[i + 2] = pixelData[i]! / alpha;
+      const [B, G, R] = [pixelData[i]!, pixelData[i + 1]!, pixelData[i + 2]!];
+      pixelData[i] = R / alpha;
+      pixelData[i + 1] = G / alpha;
+      pixelData[i + 2] = B / alpha;
     }
   } else {
     for (let i = 0; i + 3 < pixelData.length; i += 4) {
-      pixelData[i] = pixelData[i + 2]!;
-      pixelData[i + 2] = pixelData[i]!;
+      const [B, R] = [pixelData[i]!, pixelData[i + 2]!];
+      pixelData[i] = R;
+      pixelData[i + 2] = B;
     }
   }
+
   ctx.putImageData(new ImageData(pixelData, image.width, image.height), 0, 0);
   return new Promise((resolve) => {
     canvas.toBlob((result) => {

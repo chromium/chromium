@@ -128,6 +128,9 @@ export declare interface GlicBrowserHost {
   // Set the state of the tab context permission in settings. Returns a promise
   // that resolves when the browser has stored the new pref value.
   setTabContextPermissionState(enabled: boolean): Promise<void>;
+
+  // Returns the user profile information.
+  getUserProfileInfo?(): Promise<UserProfileInfo>;
 }
 
 // A panel can be in one of these three states.
@@ -257,6 +260,15 @@ export declare interface Observable<T> {
 
 export declare interface Subscriber {
   unsubscribe(): void;
+}
+
+export declare interface UserProfileInfo {
+  // Returns the avatar icon for the profile, if available.
+  avatarIcon(): Promise<Blob|undefined>;
+  // The name displayed for this profile.
+  displayName: string;
+  // The profile email.
+  email: string;
 }
 
 
