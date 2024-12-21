@@ -159,6 +159,21 @@ MATCHER_P(InkStrokeBrushSizeEq, expected_size, "") {
   return arg.GetBrush().GetSize() == expected_size;
 }
 
+// Matcher for ink::Stroke objects against an expected drawing brush type.
+// A pen is opaque while a highlighter has transparency, so a drawing
+// brush type can be deduced from the ink::Stroke's brush coat.
+MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
+  const ink::Brush& ink_brush = arg.GetBrush();
+  const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
+  float opacity = coat.tips[0].opacity_multiplier;
+  if (expected_type == PdfInkBrush::Type::kPen) {
+    return opacity == 1.0f;
+  }
+
+  CHECK(expected_type == PdfInkBrush::Type::kHighlighter);
+  return opacity == 0.4f;
+}
+
 // Matcher for bitmap against expected dimensions.
 MATCHER_P(BitmapImageSizeEq, dimensions, "") {
   return arg.dimensions() == dimensions;
@@ -1876,6 +1891,75 @@ TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
   // and a new stroke is added.
   EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(2), _));
   EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Start drawing a stroke with a black pen.  The stroke will not finish
+  // until the mouse-up event.  The cursor image will be updated immediately
+  // each time the brush tool is changed, regardless of whether a stroke is
+  // in progress.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  {
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
+  }
+  TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
+                                                      /*color_g=*/0,
+                                                      /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 2.0f, pen_message_params);
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the input tool type to a
+  // highlighter.  The entire stroke changes to this new type.
+  TestAnnotationBrushMessageParams highlighter_message_params{/*color_r=*/221,
+                                                              /*color_g=*/243,
+                                                              /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 8.0f,
+                  highlighter_message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are handled and the new stroke is added.
+  // TODO(crbug.com/381908888): The in-progress stroke and cursor image are
+  // affected by the brush type change.  Update the expectation to show the
+  // in-progress stroke is still a pen once the brush management in
+  // PdfInkModule protects against such changes.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeDrawingBrushTypeEq(
+                                        PdfInkBrush::Type::kHighlighter)));
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kLeftVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed input tool type has taken
+  // effect for the new stroke that is added.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeDrawingBrushTypeEq(
+                                        PdfInkBrush::Type::kHighlighter)));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
