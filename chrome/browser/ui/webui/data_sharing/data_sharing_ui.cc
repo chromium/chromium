@@ -155,6 +155,8 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
        IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL},
       {"previewDialogBody", IDS_DATA_SHARING_PREVIEW_DIALOG_BODY},
       {"manageGroupTitle", IDS_DATA_SHARING_MANAGE_GROUP_TITLE},
+      {"groupFull", IDS_DATA_SHARING_GROUP_FULL},
+      {"ownerCannotShare", IDS_DATA_SHARING_OWNER_CANNOT_SHARE},
   };
   source->AddLocalizedStrings(kStrings);
 }

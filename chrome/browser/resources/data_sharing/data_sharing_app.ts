@@ -134,6 +134,9 @@ export function createTranslationMap(): TranslationMap {
           loadTimeData.getString('peopleWithAccessSubtitleManageFlow'),
       [StaticMessageKey.ERROR_DIALOG_CONTENT]:
           loadTimeData.getString('errorDialogContent'),
+      [StaticMessageKey.GROUP_FULL_TITLE]: loadTimeData.getString('groupFull'),
+      [StaticMessageKey.GROUP_FULL_CONTENT]:
+          loadTimeData.getString('ownerCannotShare'),
     },
     dynamic: {
       /** Invite flow */

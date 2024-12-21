@@ -121,6 +121,8 @@ export const enum StaticMessageKey {
   OWNER,
   PEOPLE_WITH_ACCESS,
   PEOPLE_WITH_ACCESS_SUBTITLE_MANAGE_FLOW,
+  GROUP_FULL_TITLE,
+  GROUP_FULL_CONTENT,
 }
 export const enum DynamicMessageKey {
 
