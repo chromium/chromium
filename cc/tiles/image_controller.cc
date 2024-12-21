@@ -283,10 +283,9 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
       /*can_do_hardware_accelerated_decode=*/false);
   if (is_image_lazy) {
     if (!cache_) {
-      // This should only happen in tests
-      worker_state_->origin_task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), id, ImageDecodeResult::FAILURE));
+      orphaned_decode_requests_.emplace_back(
+          id, draw_image, std::move(callback), /*task=*/nullptr,
+          /*need_unref=*/false, /*has_external_dependency=*/false);
       return id;
     }
     result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
@@ -479,6 +478,8 @@ void ImageController::GenerateTasksForOrphanedRequests() {
                                                          request.draw_image);
       request.need_unref = result.need_unref;
       request.task = result.task;
+      request.has_external_dependency =
+          result.task && !result.task->dependencies().empty();
     }
     worker_state_->image_decode_queue[request.id] = std::move(request);
   }
