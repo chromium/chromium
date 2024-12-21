@@ -20,7 +20,6 @@ static_library("vm") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/vm:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//components/strings:components_strings",
     "//content/public/browser",

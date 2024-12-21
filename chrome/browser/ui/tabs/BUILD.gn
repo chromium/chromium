@@ -350,6 +350,7 @@ if (!is_android) {
       "//components/sessions",
       "//components/sync_sessions",
       "//components/tab_groups",
+      "//ui/webui",
     ]
   }
 

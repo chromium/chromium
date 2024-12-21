@@ -47,7 +47,6 @@ static_library("a11y") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chromeos/components/kiosk",
@@ -67,6 +66,7 @@ static_library("a11y") {
     "//ui/events/ash",
     "//ui/events/devices",
     "//ui/events/ozone/layout",
+    "//ui/webui",
   ]
 }
 

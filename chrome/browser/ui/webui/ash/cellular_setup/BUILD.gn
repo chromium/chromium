@@ -30,7 +30,6 @@ static_library("cellular_setup") {
     "//chrome/browser:resources",
     "//chrome/browser/ash/mobile",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//components/login",
@@ -41,6 +40,7 @@ static_library("cellular_setup") {
     "//ui/chromeos",
     "//ui/gfx/geometry",
     "//ui/views",
+    "//ui/webui",
     "//url",
   ]
 }

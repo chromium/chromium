@@ -35,7 +35,6 @@ static_library("bluetooth") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
@@ -48,6 +47,7 @@ static_library("bluetooth") {
     "//content/public/browser",
     "//device/bluetooth/strings",
     "//ui/base",
+    "//ui/webui",
   ]
 }
 

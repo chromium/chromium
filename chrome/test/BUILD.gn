@@ -6378,7 +6378,6 @@ test("unit_tests") {
     "//chrome/browser/ui/page_info:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/updates/announcement_notification:unit_tests",
     "//chrome/browser/web_share_target:unit_tests",
@@ -7758,6 +7757,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/tabs:unit_tests",
       "//chrome/browser/ui/views/webid:test_support",
+      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/signin:unit_tests",
       "//components/autofill_ai/core/browser:browser",
@@ -10214,7 +10214,6 @@ if (!is_android) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
-      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/web_applications",
@@ -10292,6 +10291,7 @@ if (!is_android) {
       "//ui/views",
       "//ui/views:test_support",
       "//ui/views/controls/webview",
+      "//ui/webui",
     ]
 
     if (use_ozone) {

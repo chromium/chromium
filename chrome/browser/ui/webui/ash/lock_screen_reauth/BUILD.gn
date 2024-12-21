@@ -66,7 +66,6 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/resources/chromeos/lock_screen_reauth:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",
@@ -89,6 +88,7 @@ static_library("lock_screen_reauth") {
     "//ui/chromeos/strings:strings_provider",
     "//ui/display",
     "//ui/strings:ui_strings",
+    "//ui/webui",
   ]
 
   allow_circular_includes_from = [

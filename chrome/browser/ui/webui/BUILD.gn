@@ -63,24 +63,6 @@ source_set("configs") {
   }
 }
 
-source_set("webui_util") {
-  sources = [ "webui_util.h" ]
-
-  public_deps = [ "//ui/webui" ]
-
-  if (!is_android) {
-    sources += [
-      "webui_embedding_context.cc",
-      "webui_embedding_context.h",
-    ]
-
-    deps = [
-      "//chrome/browser/ui/browser_window:browser_window",
-      "//chrome/browser/ui/tabs:tabs_public",
-    ]
-  }
-}
-
 source_set("webui") {
   sources = [
     "constrained_web_dialog_ui.cc",
@@ -101,5 +83,19 @@ source_set("webui") {
   }
   if (!is_android) {
     deps += [ "//ui/web_dialogs" ]
+  }
+}
+
+if (!is_android) {
+  source_set("webui_util") {
+    sources = [
+      "webui_embedding_context.cc",
+      "webui_embedding_context.h",
+    ]
+
+    deps = [
+      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/tabs:tabs_public",
+    ]
   }
 }

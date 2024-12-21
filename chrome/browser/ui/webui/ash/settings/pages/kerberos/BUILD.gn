@@ -28,7 +28,6 @@ static_library("kerberos") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",
@@ -38,5 +37,6 @@ static_library("kerberos") {
     "//ui/base",
     "//ui/chromeos/resources",
     "//ui/gfx",
+    "//ui/webui",
   ]
 }

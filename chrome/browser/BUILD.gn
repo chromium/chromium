@@ -4357,6 +4357,7 @@ static_library("browser") {
       "//third_party/zxcvbn-cpp",
       "//ui/views",
       "//ui/web_dialogs",
+      "//ui/webui",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",

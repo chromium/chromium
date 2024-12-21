@@ -49,7 +49,6 @@ static_library("mako") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
     "//chrome/browser/ui/views/bubble",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/lobster:lobster",
     "//chrome/common:mojo_bindings",
     "//chromeos/constants",
@@ -62,6 +61,7 @@ static_library("mako") {
     "//ui/aura",
     "//ui/base/ime/ash",
     "//ui/display",
+    "//ui/webui",
   ]
 
   allow_circular_includes_from = [
