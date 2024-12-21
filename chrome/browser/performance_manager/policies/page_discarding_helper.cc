@@ -40,6 +40,10 @@ namespace performance_manager {
 namespace policies {
 namespace {
 
+BASE_FEATURE(kIgnoreDiscardAttemptMarker,
+             "IgnoreDiscardAttemptMarker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // NodeAttachedData used to indicate that there's already been an attempt to
 // discard a PageNode.
 class DiscardAttemptMarker
@@ -350,7 +354,8 @@ CanDiscardResult PageDiscardingHelper::CanDiscard(
   }
 
   // Don't discard tabs for which discarding has already been attempted.
-  if (DiscardAttemptMarker::Get(PageNodeImpl::FromNode(page_node))) {
+  if (DiscardAttemptMarker::Get(PageNodeImpl::FromNode(page_node)) &&
+      !base::FeatureList::IsEnabled(kIgnoreDiscardAttemptMarker)) {
     return CanDiscardResult::kDisallowed;
   }
 
