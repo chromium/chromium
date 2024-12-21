@@ -33,6 +33,20 @@
 
 namespace elevation_service {
 
+namespace {
+
+ProtectionLevel RemoveFlags(ProtectionLevel protection_level,
+                            EncryptFlags& flags) {
+  const uint32_t flag_value = internal::ExtractFlags(protection_level);
+  if (flag_value & internal::kFlagUseLatestKey) {
+    flags.use_latest_key = true;
+  }
+  return static_cast<ProtectionLevel>(
+      internal::ExtractProtectionLevel(protection_level));
+}
+
+}  // namespace
+
 HRESULT Elevator::RunRecoveryCRXElevated(const wchar_t* crx_path,
                                          const wchar_t* browser_appid,
                                          const wchar_t* browser_version,
@@ -51,6 +65,9 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
                               const BSTR plaintext,
                               BSTR* ciphertext,
                               DWORD* last_error) {
+  EncryptFlags flags;
+  protection_level = RemoveFlags(protection_level, flags);
+
   if (protection_level >= ProtectionLevel::PROTECTION_MAX) {
     return kErrorUnsupportedProtectionLevel;
   }

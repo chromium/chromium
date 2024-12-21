@@ -141,6 +141,30 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   EXPECT_EQ(plaintext, returned_plaintext);
 }
 
+// Test the basic interface to Encrypt and Decrypt data.
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptWithFlags) {
+  ASSERT_TRUE(install_static::IsSystemInstall());
+  const std::string plaintext("plaintext");
+  std::string ciphertext;
+  DWORD last_error;
+  elevation_service::EncryptFlags flags;
+  flags.use_latest_key = true;
+  HRESULT hr =
+      EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                            plaintext, ciphertext, last_error, &flags);
+
+  ASSERT_HRESULT_SUCCEEDED(hr);
+
+  std::string returned_plaintext;
+  std::optional<std::string> maybe_new_ciphertext;
+  hr = DecryptAppBoundString(ciphertext, returned_plaintext,
+                             ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                             maybe_new_ciphertext, last_error);
+  EXPECT_FALSE(maybe_new_ciphertext);
+  ASSERT_HRESULT_SUCCEEDED(hr);
+  EXPECT_EQ(plaintext, returned_plaintext);
+}
+
 // Test that invalid data is handled correctly.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
   ASSERT_TRUE(install_static::IsSystemInstall());
