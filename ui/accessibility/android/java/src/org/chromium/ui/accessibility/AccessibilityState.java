@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Pair;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -801,15 +802,24 @@ public class AccessibilityState {
     }
 
     /**
-     * Returns true when one of the running services is TalkBack based on list of service ids. This
-     * should not be used commonly, and is meant for identifying state while tracking metrics for
-     * performance improvements.
+     * Checks the current enabled state of TalkBack. TalkBack can either be disabled, enabled with
+     * other services running, or be the only enabled service.
+     *
+     * @return A {@link Pair} where the first boolean indicates whether or not TalkBack is enabled
+     *     at all, and the second boolean indicates whether or not TalkBack is the only running
+     *     accessibility service.
      */
-    public static boolean isTalkBackEnabled() {
+    public static Pair<Boolean, Boolean> getTalkBackEnabledState() {
         if (!sInitialized) updateAccessibilityServices();
-        return sServiceIds != null
-                && !sServiceIds.isEmpty()
-                && sServiceIds.contains(TALKBACK_SERVICE_ID);
+        if (sServiceIds == null || sServiceIds.isEmpty()) {
+            return new Pair<Boolean, Boolean>(false, false);
+        }
+
+        boolean isTalkBackEnabled = sServiceIds.contains(TALKBACK_SERVICE_ID);
+        boolean isOnlyOneServiceEnabled = sServiceIds.size() == 1;
+
+        return new Pair<Boolean, Boolean>(
+                isTalkBackEnabled, isTalkBackEnabled && isOnlyOneServiceEnabled);
     }
 
     /**

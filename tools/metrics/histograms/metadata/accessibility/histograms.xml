@@ -146,6 +146,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.FindElementType.Usage.{RunningATs}"
+    enum="AccessibilityPredicateType" expires_after="2025-04-14">
+  <owner>mschillaci@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
+  <owner>chrome-a11y-core@chromium.org</owner>
+  <summary>
+    Tracks the type of element that a user navigates by in the web contents when
+    the Android Framework calls performAction with the ACTION_NEXT_HTML_ELEMENT
+    action. This is tracked during the tree search for the next/previous
+    element. This occured with: {RunningATs}
+  </summary>
+  <token key="RunningATs">
+    <variant name="NotTalkBackAT"
+        summary="AT(s) running that are not TalkBack."/>
+    <variant name="OnlyTalkBackRunning"
+        summary="TalkBack as the only running AT."/>
+    <variant name="TalkBackRunningWithOtherAT"
+        summary="TalkBack running along with another AT."/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.Android.InlineTextBoxes.Bundle.{CallLocation}"
     enum="AccessibilityModeBundleEnum" expires_after="2025-04-14">
   <owner>mschillaci@google.com</owner>

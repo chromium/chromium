@@ -64,6 +64,7 @@ import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -1460,6 +1461,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean forwards,
             boolean canWrap,
             boolean setSequentialFocus) {
+        Pair<Boolean, Boolean> talkbackEnabledState = AccessibilityState.getTalkBackEnabledState();
         int id =
                 WebContentsAccessibilityImplJni.get()
                         .findElementType(
@@ -1468,7 +1470,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 elementType,
                                 forwards,
                                 canWrap,
-                                elementType.isEmpty());
+                                elementType.isEmpty(),
+                                talkbackEnabledState.first,
+                                talkbackEnabledState.second);
         if (id == 0) return false;
 
         if (setSequentialFocus) {
@@ -2276,7 +2280,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 String elementType,
                 boolean forwards,
                 boolean canWrapToLastElement,
-                boolean useDefaultPredicate);
+                boolean useDefaultPredicate,
+                boolean isTalkbackEnabled,
+                boolean isOnlyTalkbackEnabled);
 
         void setTextFieldValue(long nativeWebContentsAccessibilityAndroid, int id, String newValue);
 

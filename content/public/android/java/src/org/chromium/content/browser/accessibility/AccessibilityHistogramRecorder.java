@@ -454,7 +454,7 @@ public class AccessibilityHistogramRecorder {
         if (mHasRecordedTimeToFirstAccessibilityFocus) return;
 
         // We are only interested in this for TalkBack, which always focuses the root node on load.
-        if (!AccessibilityState.isTalkBackEnabled()) return;
+        if (!AccessibilityState.getTalkBackEnabledState().first) return;
 
         // TODO(mschillaci): This uses a 5 sec max, check scale after initial data collection.
         RecordHistogram.recordCustomTimesHistogram(
