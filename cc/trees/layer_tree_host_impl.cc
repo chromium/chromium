@@ -3464,6 +3464,7 @@ void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
 void LayerTreeHostImpl::SynchronouslyInitializeAllTiles() {
   // Only valid for the single-threaded non-scheduled/synchronous case
   // using the zero copy raster worker pool.
+  tile_manager_.FlushImageControllerTasksForTesting();  // IN-TEST
   single_thread_synchronous_task_graph_runner_->RunUntilIdle();
 }
 

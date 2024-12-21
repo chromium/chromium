@@ -1645,6 +1645,10 @@ void TileManager::OnRasterTaskCompleted(
   }
 }
 
+void TileManager::FlushImageControllerTasksForTesting() {
+  image_controller_.FlushDecodeTasksForTesting();  // IN-TEST
+}
+
 std::unique_ptr<Tile> TileManager::CreateTile(const Tile::CreateInfo& info,
                                               int layer_id,
                                               int source_frame_number,
