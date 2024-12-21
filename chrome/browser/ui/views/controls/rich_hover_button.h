@@ -28,14 +28,14 @@ class View;
 }  // namespace views
 
 // Hoverable button containing various components:
-// *-------------------------------------------------------------------------*
-// | Icon | Title               | Secondary text | State image | Action icon |
-// |-------------------------------------------------------------------------|
-// |      | Custom view         |                                            |
-// |-------------------------------------------------------------------------|
-// |      | Subtitle            |                                            |
-// |      | (multiline)         |                                            |
-// *-------------------------------------------------------------------------*
+// *--------------------------------------------------------*
+// | Icon | Title               | State image | Action icon |
+// |--------------------------------------------------------|
+// |      | Custom view         |             |             |
+// |--------------------------------------------------------|
+// |      | Subtitle            |             |             |
+// |      | (multiline)         |             |             |
+// *--------------------------------------------------------*
 //
 // 'RichHoverButton' inherits the interaction behavior from 'HoverButton'
 // but sets up its own layout and content.
@@ -80,12 +80,12 @@ class RichHoverButton : public HoverButton {
       }
       custom_view_row_views_.clear();
     } else if (custom_view_row_views_.empty()) {
-      // TODO(pkasting): Should add above subtitle if that exists.
-      custom_view_row_views_.push_back(
-          AddChildView(std::make_unique<views::View>()));  // main icon column
-      view = AddChildView(std::move(custom_view));
+      size_t start = custom_view_row_start_;
+      custom_view_row_views_.push_back(AddChildViewAt(
+          std::make_unique<views::View>(), start++));  // Skip main icon column.
+      view = AddChildViewAt(std::move(custom_view), start++);
       custom_view_row_views_.push_back(view);
-      base::Extend(custom_view_row_views_, AddFillerViews());
+      base::Extend(custom_view_row_views_, AddFillerViews(start));
     } else {
       CHECK_GT(custom_view_row_views_.size(), 1u);
       const size_t index = *GetIndexOf(custom_view_row_views_[1]);
@@ -122,11 +122,13 @@ class RichHoverButton : public HoverButton {
 
   // Add filler views for state icon (if set) and action icon columns. Used for
   // the table rows after the first one.
-  std::vector<raw_ptr<views::View>> AddFillerViews();
+  std::vector<raw_ptr<views::View>> AddFillerViews(size_t start);
 
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> state_icon_ = nullptr;
+  size_t custom_view_row_start_;
   std::vector<raw_ptr<views::View>> custom_view_row_views_;
+  std::vector<raw_ptr<views::View>> subtitle_row_views_;
   raw_ptr<views::Label> subtitle_ = nullptr;
 };
 

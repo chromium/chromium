@@ -79,6 +79,10 @@ RichHoverButton::RichHoverButton(
   label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
   ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
+  SetBorder(
+      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
+
   AddChildView(CreateIconView(main_image_icon));
   auto title_label = std::make_unique<views::Label>();
   title_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -100,48 +104,46 @@ RichHoverButton::RichHoverButton(
     AddChildView(std::make_unique<views::View>());
   }
 
-  if (!title_text.empty()) {
-    SetTitleText(title_text);
-  }
-
-  if (!subtitle_text.empty()) {
-    AddChildView(std::make_unique<views::View>());  // main icon column
-    auto subtitle = std::make_unique<views::Label>(
-        subtitle_text, views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
-    subtitle_ = subtitle.get();
-
-    AddChildView(std::make_unique<SubtitleLabelWrapper>(std::move(subtitle)));
-    subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
-    subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-    subtitle_->SetMultiLine(true);
-    subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    subtitle_->SetAutoColorReadabilityEnabled(false);
-    AddFillerViews();
-  }
-
-  SetBorder(
-      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
-
-  UpdateAccessibleName();
+  custom_view_row_start_ = children().size();
 
   RecreateLayout();
 
-  DeprecatedLayoutImmediately();
+  SetTitleText(title_text);
+  SetSubtitleText(subtitle_text);
 }
 
 RichHoverButton::~RichHoverButton() = default;
 
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
-  DCHECK(title_);
   title_->SetText(title_text);
   UpdateAccessibleName();
 }
 
 void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
-  DCHECK(subtitle_);
-  subtitle_->SetText(subtitle_text);
+  if (subtitle_text.empty()) {
+    subtitle_ = nullptr;
+    for (const auto& v : subtitle_row_views_) {
+      RemoveChildViewT(v);
+    }
+    subtitle_row_views_.clear();
+  } else {
+    if (subtitle_row_views_.empty()) {
+      subtitle_row_views_.push_back(AddChildView(
+          std::make_unique<views::View>()));  // Skip main icon column.
+      auto subtitle = std::make_unique<views::Label>();
+      subtitle_ = subtitle.get();
+      subtitle_row_views_.push_back(AddChildView(
+          std::make_unique<SubtitleLabelWrapper>(std::move(subtitle))));
+      subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
+      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+      subtitle_->SetMultiLine(true);
+      subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      subtitle_->SetAutoColorReadabilityEnabled(false);
+      base::Extend(subtitle_row_views_, AddFillerViews(children().size()));
+    }
+    subtitle_->SetText(subtitle_text);
+  }
+  RecreateLayout();
   UpdateAccessibleName();
 }
 
@@ -227,7 +229,7 @@ void RichHoverButton::RecreateLayout() {
     // Row for custom view.
     table_layout->AddRows(1, views::TableLayout::kFixedSize);
   }
-  if (subtitle_) {
+  if (!subtitle_row_views_.empty()) {
     // Row for subtitle.
     table_layout->AddRows(1, views::TableLayout::kFixedSize);
   }
@@ -242,12 +244,13 @@ void RichHoverButton::UpdateAccessibleName() {
   HoverButton::GetViewAccessibility().SetName(accessible_name);
 }
 
-std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews() {
+std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews(
+    size_t start) {
   std::vector<raw_ptr<views::View>> vec;
   if (state_icon_) {
-    vec.push_back(AddChildView(std::make_unique<views::View>()));
+    vec.push_back(AddChildViewAt(std::make_unique<views::View>(), start++));
   }
-  vec.push_back(AddChildView(std::make_unique<views::View>()));
+  vec.push_back(AddChildViewAt(std::make_unique<views::View>(), start));
   return vec;
 }
 
