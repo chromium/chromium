@@ -38,13 +38,13 @@ bool SidePanelEntryKey::operator==(const SidePanelEntryKey& other) const {
   return false;
 }
 
-bool SidePanelEntryKey::operator<(const SidePanelEntryKey& other) const {
+auto SidePanelEntryKey::operator<=>(const SidePanelEntryKey& other) const {
   if (id_ == other.id_ && id_ == SidePanelEntryId::kExtension) {
     CHECK(extension_id_.has_value() && other.extension_id_.has_value());
     // TODO(corising): Updating extension sorting
-    return extension_id_.value() < other.extension_id_.value();
+    return extension_id_.value() <=> other.extension_id_.value();
   }
-  return id_ < other.id_;
+  return id_ <=> other.id_;
 }
 
 std::string SidePanelEntryKey::ToString() const {

@@ -69,9 +69,9 @@ StyledLabel::LayoutSizeInfo& StyledLabel::LayoutSizeInfo::operator=(
     const LayoutSizeInfo&) = default;
 StyledLabel::LayoutSizeInfo::~LayoutSizeInfo() = default;
 
-bool StyledLabel::StyleRange::operator<(
+auto StyledLabel::StyleRange::operator<=>(
     const StyledLabel::StyleRange& other) const {
-  return range.start() < other.range.start();
+  return range <=> other.range;
 }
 
 struct StyledLabel::LayoutViews {

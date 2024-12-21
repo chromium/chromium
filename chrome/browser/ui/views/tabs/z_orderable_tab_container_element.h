@@ -24,8 +24,9 @@ class ZOrderableTabContainerElement {
   // `view`.
   static bool CanOrderView(views::View* view);
 
-  bool operator<(const ZOrderableTabContainerElement& rhs) const {
-    return z_value_ < rhs.z_value_;
+  friend auto operator<=>(const ZOrderableTabContainerElement& lhs,
+                          const ZOrderableTabContainerElement& rhs) {
+    return lhs.z_value_ <=> rhs.z_value_;
   }
 
   views::View* view() const { return child_; }

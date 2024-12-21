@@ -58,10 +58,7 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
     EventType type;
     int window_id;
     gfx::Rect bounds;
-    bool operator!=(const EventDetails& rhs) {
-      return type != rhs.type || window_id != rhs.window_id ||
-             bounds != rhs.bounds;
-    }
+    bool operator==(const EventDetails& rhs) const = default;
   };
 
   NativeViewHostWindowObserver() = default;
