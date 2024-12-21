@@ -15,6 +15,7 @@ build_webui("build") {
   static_files = [
     "alert_indicators/tab_audio_muting_rounded.svg",
     "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_glic_active.svg",
     "alert_indicators/tab_media_recording.svg",
     "tab_search.html",
   ]
