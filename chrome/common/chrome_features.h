@@ -129,6 +129,9 @@ BASE_DECLARE_FEATURE(kDataLeakPreventionFilesRestriction);
 #if !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kPreinstalledWebAppInstallation);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPreinstalledWebAppDuplicationFixer);
 #endif
 
