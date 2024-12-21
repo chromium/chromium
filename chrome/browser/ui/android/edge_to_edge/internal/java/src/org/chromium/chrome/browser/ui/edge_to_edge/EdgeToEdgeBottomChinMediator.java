@@ -50,6 +50,9 @@ class EdgeToEdgeBottomChinMediator
     // by viz instead of the browser.
     private int mRendererOffset;
 
+    private int mNavigationBarColor;
+    private int mDividerColor;
+
     /**
      * Tracks the latest value for layer visibility to watch for any changes to communicate to the
      * {@link BottomControlsStacker}.
@@ -191,6 +194,7 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onNavigationBarColorChanged(int color) {
         if (!isVisible()) {
+            mNavigationBarColor = color;
             return;
         }
 
@@ -201,6 +205,7 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
         if (!isVisible()) {
+            mDividerColor = dividerColor;
             return;
         }
 
@@ -256,6 +261,15 @@ class EdgeToEdgeBottomChinMediator
         assert BottomControlsStacker.isDispatchingYOffset();
 
         mRendererOffset = layerYOffset;
+
+        if (isVisible()) {
+            // If the chin isn't visible, cache the color and update it when the chin is visible.
+            // This is done to reduce the number of compositor frames submitted while scrolling.
+            // The color is unnecessarily set to null when the chin gets scrolled off screen, and
+            // gets set back to what it was before it was scrolled off.
+            onNavigationBarColorChanged(mNavigationBarColor);
+            onNavigationBarDividerChanged(mDividerColor);
+        }
 
         if (!mBottomControlsStacker.isMoveableByViz()) {
             mModel.set(Y_OFFSET, layerYOffset);

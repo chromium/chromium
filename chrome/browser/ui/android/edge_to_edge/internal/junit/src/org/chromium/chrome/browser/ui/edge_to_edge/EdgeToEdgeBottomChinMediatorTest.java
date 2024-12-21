@@ -132,8 +132,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
         // scroll view offscreen
         mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);
 
+        // color shouldn't be applied, but should be cached
         mMediator.onNavigationBarColorChanged(Color.WHITE);
         assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
+
+        // scroll view back on screen, should apply cached color
+        mMediator.onBrowserControlsOffsetUpdate(0, false);
+        assertEquals("The cached color should be applied.", Color.WHITE, mModel.get(COLOR));
     }
 
     @Test
@@ -159,11 +164,16 @@ public class EdgeToEdgeBottomChinMediatorTest {
         // scroll view offscreen
         mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);
 
+        // color shouldn't be applied, but should be cached
         mMediator.onNavigationBarDividerChanged(Color.WHITE);
         assertEquals(
                 "The color should not have not been updated.",
                 Color.TRANSPARENT,
                 mModel.get(DIVIDER_COLOR));
+
+        // scroll view back on screen, should apply cached color
+        mMediator.onBrowserControlsOffsetUpdate(0, false);
+        assertEquals("The cached color should be applied.", Color.WHITE, mModel.get(DIVIDER_COLOR));
     }
 
     @Test
