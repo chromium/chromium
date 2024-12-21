@@ -14,6 +14,10 @@ bool EmptyCollaborationService::IsEmptyService() {
   return true;
 }
 
+void EmptyCollaborationService::AddObserver(Observer* observer) {}
+
+void EmptyCollaborationService::RemoveObserver(Observer* observer) {}
+
 void EmptyCollaborationService::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const GURL& url) {}

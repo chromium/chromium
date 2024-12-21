@@ -32,15 +32,7 @@ CollaborationServiceImpl::CollaborationServiceImpl(
       identity_manager_(identity_manager),
       sync_service_(sync_service) {
   // Initialize ServiceStatus.
-  current_status_.collaboration_status = CollaborationStatus::kDisabled;
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature)) {
-    current_status_.collaboration_status =
-        CollaborationStatus::kEnabledCreateAndJoin;
-  } else if (base::FeatureList::IsEnabled(
-                 data_sharing::features::kDataSharingJoinOnly)) {
-    current_status_.collaboration_status = CollaborationStatus::kAllowedToJoin;
-  }
+  current_status_.collaboration_status = GetCollaborationStatus();
 
   current_status_.sync_status = GetSyncStatus();
   sync_observer_.Observe(sync_service_);
@@ -55,6 +47,16 @@ CollaborationServiceImpl::~CollaborationServiceImpl() {
 
 bool CollaborationServiceImpl::IsEmptyService() {
   return false;
+}
+
+void CollaborationServiceImpl::AddObserver(
+    CollaborationService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CollaborationServiceImpl::RemoveObserver(
+    CollaborationService::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void CollaborationServiceImpl::StartJoinFlow(
@@ -145,14 +147,7 @@ std::optional<data_sharing::GroupData> CollaborationServiceImpl::GetGroupData(
 }
 
 void CollaborationServiceImpl::OnStateChanged(syncer::SyncService* sync) {
-  SyncStatus new_status = GetSyncStatus();
-
-  if (current_status_.sync_status == new_status) {
-    return;
-  }
-
-  current_status_.sync_status = new_status;
-  // TODO(crbug.com/380145739): Notify observers.
+  RefreshServiceStatus();
 }
 
 void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
@@ -161,17 +156,17 @@ void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
 
 void CollaborationServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  RefreshSigninStatus();
+  RefreshServiceStatus();
 }
 
 void CollaborationServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  RefreshSigninStatus();
+  RefreshServiceStatus();
 }
 
 void CollaborationServiceImpl::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
-  RefreshSigninStatus();
+  RefreshServiceStatus();
 }
 
 void CollaborationServiceImpl::OnIdentityManagerShutdown(
@@ -233,14 +228,34 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
   return status;
 }
 
-void CollaborationServiceImpl::RefreshSigninStatus() {
-  SigninStatus new_status = GetSigninStatus();
-  if (current_status_.signin_status == new_status) {
-    return;
+CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
+  // TODO(haileywang): Support collaboration status updates.
+  CollaborationStatus status = CollaborationStatus::kDisabled;
+  if (base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    status = CollaborationStatus::kEnabledCreateAndJoin;
+  } else if (base::FeatureList::IsEnabled(
+                 data_sharing::features::kDataSharingJoinOnly)) {
+    status = CollaborationStatus::kAllowedToJoin;
   }
 
-  current_status_.signin_status = new_status;
-  // TODO(crbug.com/380145739): Notify observers.
+  return status;
+}
+
+void CollaborationServiceImpl::RefreshServiceStatus() {
+  ServiceStatus new_status;
+  new_status.sync_status = GetSyncStatus();
+  new_status.signin_status = GetSigninStatus();
+  new_status.collaboration_status = GetCollaborationStatus();
+
+  if (new_status != current_status_) {
+    CollaborationService::Observer::ServiceStatusUpdate update;
+    update.new_status = new_status;
+    update.old_status = current_status_;
+    current_status_ = new_status;
+    observers_.Notify(&CollaborationService::Observer::OnServiceStatusChanged,
+                      update);
+  }
 }
 
 }  // namespace collaboration

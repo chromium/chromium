@@ -43,6 +43,8 @@ class CollaborationServiceImpl : public CollaborationService,
 
   // CollaborationService implementation.
   bool IsEmptyService() override;
+  void AddObserver(CollaborationService::Observer* observer) override;
+  void RemoveObserver(CollaborationService::Observer* observer) override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                      const GURL& url) override;
   void StartShareOrManageFlow(
@@ -80,7 +82,8 @@ class CollaborationServiceImpl : public CollaborationService,
  private:
   SyncStatus GetSyncStatus();
   SigninStatus GetSigninStatus();
-  void RefreshSigninStatus();
+  CollaborationStatus GetCollaborationStatus();
+  void RefreshServiceStatus();
 
   ServiceStatus current_status_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
@@ -88,6 +91,7 @@ class CollaborationServiceImpl : public CollaborationService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
+  base::ObserverList<CollaborationService::Observer> observers_;
 
   // Service providing information about tabs and tab groups.
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

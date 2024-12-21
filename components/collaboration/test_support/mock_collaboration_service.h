@@ -16,6 +16,8 @@ class MockCollaborationService : public CollaborationService {
   ~MockCollaborationService() override;
 
   MOCK_METHOD(bool, IsEmptyService, (), (override));
+  MOCK_METHOD1(AddObserver, void(Observer*));
+  MOCK_METHOD1(RemoveObserver, void(Observer*));
   MOCK_METHOD(void,
               StartJoinFlow,
               (std::unique_ptr<CollaborationControllerDelegate> delegate,

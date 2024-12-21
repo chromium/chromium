@@ -59,6 +59,8 @@ struct ServiceStatus {
   bool IsAuthenticationValid();
 };
 
+bool operator==(const ServiceStatus& lhs, const ServiceStatus& rhs);
+
 }  // namespace collaboration
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_SERVICE_STATUS_H_

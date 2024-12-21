@@ -18,6 +18,8 @@ class EmptyCollaborationService : public CollaborationService {
 
   // CollaborationService implementation.
   bool IsEmptyService() override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void StartJoinFlow(std::unique_ptr<CollaborationControllerDelegate> delegate,
                      const GURL& url) override;
   void StartShareOrManageFlow(

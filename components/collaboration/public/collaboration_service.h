@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_SERVICE_H_
 #define COMPONENTS_COLLABORATION_PUBLIC_COLLABORATION_SERVICE_H_
 
+#include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
@@ -24,6 +25,23 @@ namespace collaboration {
 class CollaborationService : public KeyedService,
                              public base::SupportsUserData {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    struct ServiceStatusUpdate {
+      ServiceStatus old_status;
+      ServiceStatus new_status;
+
+      // Helper methods.
+    };
+    Observer() = default;
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override = default;
+
+    // Called when service status has changed.
+    virtual void OnServiceStatusChanged(const ServiceStatusUpdate& update) {}
+  };
+
 #if BUILDFLAG(IS_ANDROID)
   // Returns a Java object of the type CollaborationService for the given
   // CollaborationService.
@@ -42,6 +60,9 @@ class CollaborationService : public KeyedService,
   // Chromium build disables RTTI, and we need to be able to verify that we are
   // using an empty service from the Chrome embedder.
   virtual bool IsEmptyService() = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Starts a new join flow. This will cancel all existing ongoing join and
   // share flows in the same browser instance.
