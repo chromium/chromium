@@ -36,7 +36,7 @@ bool ServiceStatus::IsAllowedToCreate() {
 }
 // LINT.ThenChange(//components/collaboration/public/android/java/src/org/chromium/components/collaboration/ServiceStatus.java)
 
-bool ServiceStatus::IsAuthenticationValid() {
+bool ServiceStatus::IsAuthenticationValid() const {
   // This is only used in native code.
   return signin_status == SigninStatus::kSignedIn &&
          sync_status == SyncStatus::kSyncEnabled;

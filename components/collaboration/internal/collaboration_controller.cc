@@ -143,7 +143,8 @@ class PendingState : public ControllerState {
   }
 };
 
-class AuthenticatingState : public ControllerState {
+class AuthenticatingState : public ControllerState,
+                            public CollaborationService::Observer {
  public:
   AuthenticatingState(StateId id, CollaborationController* controller)
       : ControllerState(id, controller) {}
@@ -156,7 +157,14 @@ class AuthenticatingState : public ControllerState {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
     if (!status.IsAuthenticationValid()) {
-      HandleError();
+      // Set up the timeout exit task.
+      collaboration_service_observer_.Observe(
+          controller->collaboration_service());
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AuthenticatingState::HandleError,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::Minutes(30));
       return;
     }
 
@@ -164,6 +172,18 @@ class AuthenticatingState : public ControllerState {
     controller->delegate()->NotifySignInAndSyncStatusChange();
     controller->TransitionTo(StateId::kCheckingFlowRequirements);
   }
+
+  // CollaborationService::Observer implementation.
+  void OnServiceStatusChanged(const ServiceStatusUpdate& update) override {
+    if (update.new_status.IsAuthenticationValid()) {
+      controller->delegate()->NotifySignInAndSyncStatusChange();
+      controller->TransitionTo(StateId::kCheckingFlowRequirements);
+    }
+  }
+
+ private:
+  base::ScopedObservation<CollaborationService, CollaborationService::Observer>
+      collaboration_service_observer_{this};
 };
 
 class CheckingFlowRequirementsState : public ControllerState {

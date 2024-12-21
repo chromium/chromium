@@ -56,7 +56,7 @@ struct ServiceStatus {
 
   // Whether the current user is logged in and sync enabled. This will fail if
   // the current user's account is paused.
-  bool IsAuthenticationValid();
+  bool IsAuthenticationValid() const;
 };
 
 bool operator==(const ServiceStatus& lhs, const ServiceStatus& rhs);

@@ -87,7 +87,8 @@ class CollaborationControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::OnceCallback<void(Outcome)> prepare_ui_callback_;
   MockCollaborationControllerDelegate* delegate_;
   std::unique_ptr<MockCollaborationService> collaboration_service_;
@@ -132,8 +133,7 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
 
   // Simulate that the user is not already in the tab group.
   data_sharing::GroupId group_id(kGroupId);
-  const GroupToken& token =
-      GroupToken(data_sharing::GroupId(kGroupId), kAccessToken);
+  const GroupToken& token = GroupToken(group_id, kAccessToken);
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
@@ -268,18 +268,68 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
                                     IsNotNullCallback()))
       .WillOnce(MoveArg<1>(&error_ui_callback));
   ServiceStatus status;
-  status.signin_status = SigninStatus::kNotSignedIn;
-  status.sync_status = SyncStatus::kSyncEnabled;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
   ASSERT_FALSE(status.IsAuthenticationValid());
   EXPECT_CALL(*collaboration_service_, GetServiceStatus())
       .WillOnce(Return(status));
+  EXPECT_CALL(*collaboration_service_, AddObserver(_));
   std::move(authentication_ui_calback).Run(Outcome::kSuccess);
 
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAuthenticating);
+
+  // Reach time out.
+  task_environment_.FastForwardBy(base::Minutes(30));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 
   //  Simulate exiting the flow.
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
+}
+
+TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
+  RunLoop run_loop;
+  // Start Join flow with authenticating screens.
+  base::OnceCallback<void(Outcome)> authentication_ui_calback;
+  InitializeJoinController(run_loop.QuitClosure());
+  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
+      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  controller_->SetStateForTesting(StateId::kAuthenticating);
+
+  // Simulate Authentication finishing successfully on the UI.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
+  ASSERT_FALSE(status.IsAuthenticationValid());
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillOnce(Return(status));
+
+  CollaborationService::Observer* observer;
+  EXPECT_CALL(*collaboration_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
+  std::move(authentication_ui_calback).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAuthenticating);
+
+  // Simulate observing the status change.
+  CollaborationService::Observer::ServiceStatusUpdate update;
+  update.old_status = status;
+  update.new_status = status;
+  update.new_status.sync_status = SyncStatus::kSyncEnabled;
+  ASSERT_TRUE(update.new_status.IsAuthenticationValid());
+  EXPECT_CALL(*delegate_, NotifySignInAndSyncStatusChange());
+  EXPECT_CALL(*collaboration_service_, RemoveObserver(observer));
+  EXPECT_CALL(*collaboration_service_,
+              GetCurrentUserRoleForGroup(data_sharing::GroupId(kGroupId)))
+      .WillOnce(Return(data_sharing::MemberRole::kUnknown));
+  EXPECT_CALL(*data_sharing_service_, ReadNewGroup(_, _));
+  observer->OnServiceStatusChanged(update);
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kCheckingFlowRequirements);
+
+  // Reach time out won't do anything since state already transitionned.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kCheckingFlowRequirements);
 }
 
 TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
