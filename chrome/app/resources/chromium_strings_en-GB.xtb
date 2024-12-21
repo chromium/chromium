@@ -114,6 +114,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2513154137948333830">Reboot required: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">To continue, you'll need to sign in to Chromium with <ph name="EMAIL" />. This ensures compliance with your organisation's policies.</translation>
 <translation id="2542968102051442371">Select text with image search</translation>
 <translation id="2554739539410784893">Chromium is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="2560420686485554789">Chromium needs storage access to download files</translation>

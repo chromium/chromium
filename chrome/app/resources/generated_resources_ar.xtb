@@ -669,7 +669,6 @@
 <translation id="1464258312790801189">حساباتك</translation>
 <translation id="1464597059227482327">‏إذا كنت تشارك الملفات مع جهاز Chromebook غير مدرَج في جهات اتصالك، يُرجى التأكّد من تفعيل وضع "مشاركة عن قرب" على جهاز Chromebook. لتفعيل وضع "مشاركة عن قرب"، انقر على الزاوية السفلية اليسرى ثم انقر لتفعيل وضع "مشاركة عن قرب". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">بالنسبة إلى الإعدادات المفضلة، يُرجى الانتقال إلى "الإعدادات".</translation>
-<translation id="146481294006497945">ما مِن كلمات مرور محفوظة</translation>
 <translation id="1465176863081977902">ن&amp;سخ عنوان الصوت</translation>
 <translation id="146522654774760805">كلمات المرور والملء التلقائي</translation>
 <translation id="1465827627707997754">شريحة بيتزا</translation>
@@ -2170,7 +2169,6 @@
 <translation id="2485394160472549611">أهم الاقتراحات المخصّصة لك</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2485681265915754872">‏بنود خدمة Google Play</translation>
-<translation id="2486036712620651117">كلمات المرور ومفاتيح المرور</translation>
 <translation id="248676429071089168">التمرير سريعًا للأعلى لتحريك الصفحة للأسفل</translation>
 <translation id="2487067538648443797">إضافة إشارة مرجعية جديدة</translation>
 <translation id="2489686758589235262">تخصيص مفتاحَي تحكّم إضافيَّين</translation>
@@ -3893,7 +3891,6 @@
 <translation id="3721178866505920080">مزيد من المعلومات حول تفعيل التحميل المُسبَق الموسَّع</translation>
 <translation id="3722108462506185496">حدث خطأ أثناء بدء تشغيل خدمة الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="3722624153992426516">تم تلقي تعليمات "<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />".</translation>
-<translation id="3724897774652282549">يُرجى ملء الاستمارة</translation>
 <translation id="3726334084188857295">‫<ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">‏شبكات Wi-Fi المتاحة</translation>
@@ -4324,7 +4321,6 @@
 <translation id="3993887353483242788">‏يُرجى مزامنة إعدادات جهاز <ph name="DEVICE_TYPE" /> لتتوفّر إعداداتك المفضّلة على أي جهاز عند تسجيل الدخول عليه بحسابك على Google. وتشتمل هذه الإعدادات المفضّلة على الإعدادات والتطبيقات وكلمات مرور Wi-Fi واللغات والخلفية واختصارات لوحة المفاتيح وغيرها الكثير.</translation>
 <translation id="3994318741694670028">‏تم إعداد جهاز الكمبيوتر باستخدام معرّف جهاز غير صحيح. ويؤدي ذلك إلى منع تحديث نظام التشغيل ChromeOS Flex وتوفير أحدث الإصلاحات المتعلّقة بالأمان، وقد يكون جهاز الكمبيوتر <ph name="BEGIN_BOLD" />عرضة للهجمات الضارة<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">ألغِ قفل هاتفك وقرِّبه لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">تسجيل الدخول بحساب <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">تحديد مكان الأزرار على جهازك اللوحي</translation>
 <translation id="3994708120330953242">استُخدمت بعض كلمات المرور الخاصة بك في عملية اختراق للبيانات. لحماية حساباتك، عليك تغيير كلمات المرور هذه الآن.</translation>
 <translation id="3994878504415702912">&amp;تكبير/تصغير</translation>
@@ -6595,7 +6591,6 @@
 <translation id="5646994841348250879">اختيار حساب لتسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">مقبس الميكروفون</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
-<translation id="5650537073531199882">ملء الاستمارة</translation>
 <translation id="5651308944918885595">قابلية اكتشاف الجهاز الذي يستخدم ميزة "المشاركة عن قرب"</translation>
 <translation id="5653154844073528838">يتوفّر لديك <ph name="PRINTER_COUNT" /> طابعة محفوظة.</translation>
 <translation id="5654669866168491665">مزيد من المعلومات حول المواقع الإلكترونية التي قد لا تعمل عند حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
@@ -8603,6 +8598,7 @@
 <translation id="7113974454301513811">عليك الآن إضافة علامة التبويب الحالية إلى قائمتك.</translation>
 <translation id="7114054701490058191">كلمات المرور غير متطابقة</translation>
 <translation id="7114648273807173152">‏لاستخدام Smart Lock لتسجيل الدخول إلى حسابك على Google، يمكنك الانتقال إلى "الإعدادات" &gt; "الأجهزة المتصلة" &gt; "هاتفك" &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">جرب بنفسك</translation>
 <translation id="7115361495406486998">ما من جهات اتصال يمكن الوصول إليها</translation>
 <translation id="7115731767122970828">تعزيز الأداء الآن</translation>
 <translation id="7116554090938189816">‏انتهت صلاحية شهادة طبقة المقابس الآمنة (SSL) للطابعة. يُرجى إعادة تشغيل الطابعة والمحاولة مرة أخرى.</translation>

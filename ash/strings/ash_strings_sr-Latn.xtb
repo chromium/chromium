@@ -1648,6 +1648,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6539852571005954999">Skenira se fajl <ph name="FILENAME" /> koji se preuzima</translation>
 <translation id="6542521951477560771">Prebacuje se na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodžiji, GIF-ovi i drugo</translation>
+<translation id="6543942526104794893">Želite li stvarno da isključite pokrete licem?</translation>
 <translation id="6545382064335350438">Verifikacija lozinke još nije uspela. Probajte ponovo.</translation>
 <translation id="6555373427270923730">Unesite veb-adresu u traku za adresu, pa pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2315,6 +2316,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8855885154700222542">Taster za ceo ekran</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodaj eSIM</translation>
+<translation id="8869149849311827122">Želite li stvarno da isključite kontrolu kursora miša?</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
 <translation id="8873203135446552888">Potvrdite da želite da onemogućite ugrađeni tačped</translation>
 <translation id="8874184842967597500">Nije povezano</translation>

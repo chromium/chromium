@@ -666,7 +666,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1464258312790801189">Je accounts</translation>
 <translation id="1464597059227482327">Als je content deelt met een Chromebook die niet in je contacten staat, zorg je dat 'Dichtbij aan' aanstaat op de Chromebook. Als je 'Dichtbij aan' wilt aanzetten, klik je rechtsonder en zet je 'Dichtbij aan' aan. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Ga naar Instellingen voor apparaatvoorkeuren</translation>
-<translation id="146481294006497945">Geen opgeslagen wachtwoorden</translation>
 <translation id="1465176863081977902">Adres van audio k&amp;opiëren</translation>
 <translation id="146522654774760805">Wachtwoorden en automatisch invullen</translation>
 <translation id="1465827627707997754">Pizzapunt</translation>
@@ -2165,7 +2164,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2485394160472549611">De beste keuzes voor jou</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2485681265915754872">Servicevoorwaarden van Google Play</translation>
-<translation id="2486036712620651117">Wachtwoorden en toegangssleutels</translation>
 <translation id="248676429071089168">Swipe omhoog om de pagina omlaag te verplaatsen</translation>
 <translation id="2487067538648443797">Nieuwe bookmark toevoegen</translation>
 <translation id="2489686758589235262">Nog 2 schakelaars toewijzen</translation>
@@ -3886,7 +3884,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3721178866505920080">Meer informatie over hoe je uitgebreid vooraf laden aanzet</translation>
 <translation id="3722108462506185496">Fout bij starten van service voor virtuele machines. Probeer het opnieuw.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instructie ontvangen</translation>
-<translation id="3724897774652282549">Formulier invullen</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Beschikbare wifi-netwerken</translation>
@@ -4319,7 +4316,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3993887353483242788">Synchroniseer je <ph name="DEVICE_TYPE" /> zodat je voorkeuren beschikbaar zijn op elk apparaat als je inlogt met je Google-account. Voorkeuren omvatten onder andere apps, instellingen, wifi-wachtwoorden, talen, achtergrond en sneltoetsen.</translation>
 <translation id="3994318741694670028">Je computer is ingesteld met een hardware-ID met een onjuiste notatie. Dit zorgt ervoor dat Chrome OS Flex niet kan worden geüpdatet met de nieuwste beveiligingsoplossingen, waardoor je computer <ph name="BEGIN_BOLD" />kwetsbaar kan zijn voor schadelijke aanvallen<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Ontgrendel je telefoon en plaatst deze dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
-<translation id="3994522032746736727">Inloggen als <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Knoppen vinden op je tablet</translation>
 <translation id="3994708120330953242">Sommige van je wachtwoorden zijn gevonden bij een gegevenslek. Wijzig deze wachtwoorden nu om je accounts te beveiligen.</translation>
 <translation id="3994878504415702912">&amp;Zoomen</translation>
@@ -6585,7 +6581,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5646994841348250879">Kies een account om in te loggen bij <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
-<translation id="5650537073531199882">Formulier invullen</translation>
 <translation id="5651308944918885595">Vindbaarheid voor Dichtbij delen</translation>
 <translation id="5653154844073528838">Je hebt <ph name="PRINTER_COUNT" /> opgeslagen printers.</translation>
 <translation id="5654669866168491665">Meer informatie over sites die misschien niet werken als cookies van derden worden geblokkeerd</translation>
@@ -8584,6 +8579,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7113974454301513811">Voeg nu het huidige tabblad aan je lijst toe</translation>
 <translation id="7114054701490058191">Wachtwoorden komen niet overeen</translation>
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Probeer het uit</translation>
 <translation id="7115361495406486998">Geen bereikbare contacten</translation>
 <translation id="7115731767122970828">Nu boosten</translation>
 <translation id="7116554090938189816">SSL-certificaat voor printer is verlopen. Start de printer opnieuw op en probeer het nog een keer.</translation>

@@ -664,7 +664,6 @@
 <translation id="1464258312790801189">您的账号</translation>
 <translation id="1464597059227482327">如果您的分享对象是一部不在您通讯录中的 Chromebook，请确保该 Chromebook 已开启“附近分享”的高可见度模式。如需开启“附近分享”的高可见度模式，请选择右下角，然后选择开启“附近分享”的高可见度模式。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">若想指定设备偏好设置，请转到“设置”页面。</translation>
-<translation id="146481294006497945">尚未保存任何密码</translation>
 <translation id="1465176863081977902">复制音频地址(&amp;O)</translation>
 <translation id="146522654774760805">密码和自动填充</translation>
 <translation id="1465827627707997754">披萨片</translation>
@@ -2158,7 +2157,6 @@
 <translation id="2485394160472549611">为您推荐的首选内容</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2485681265915754872">Google Play 服务条款</translation>
-<translation id="2486036712620651117">密码和通行密钥</translation>
 <translation id="248676429071089168">向上滑动手指可使页面向下移动</translation>
 <translation id="2487067538648443797">添加新书签</translation>
 <translation id="2489686758589235262">再分配 2 个开关</translation>
@@ -3878,7 +3876,6 @@
 <translation id="3721178866505920080">详细了解如何开启扩展预加载功能</translation>
 <translation id="3722108462506185496">启动虚拟机服务时出错。请重试。</translation>
 <translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />说明</translation>
-<translation id="3724897774652282549">填写表单</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 Wi-Fi 网络</translation>
@@ -4310,7 +4307,6 @@
 <translation id="3993887353483242788">同步您的 <ph name="DEVICE_TYPE" /> 后，无论是在哪部设备上，您只需登录自己的 Google 账号，便能使用您保存的偏好设置。偏好设置包括应用、设置、Wi-Fi 密码、语言、壁纸、键盘快捷键，等等。</translation>
 <translation id="3994318741694670028">很遗憾，您的计算机配置了格式错误的硬件 ID。这导致 ChromeOS Flex 无法使用最新的安全修正程序进行更新，以致您的计算机<ph name="BEGIN_BOLD" />很容易遭到恶意攻击<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">请解锁您的手机并将它靠近您的 <ph name="DEVICE_TYPE" />，以解锁此设备。</translation>
-<translation id="3994522032746736727">以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="3994530503403062649">寻找平板电脑按钮</translation>
 <translation id="3994708120330953242">系统检测到，您的某些密码遭遇了数据泄露。为了保障您的账号安全，建议您立即更改这些密码。</translation>
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
@@ -6577,7 +6573,6 @@
 <translation id="5646994841348250879">选择一个用来登录“<ph name="SITE_ETLD_PLUS_ONE" />”的账号</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
-<translation id="5650537073531199882">填写表单</translation>
 <translation id="5651308944918885595">“附近分享”功能的设备可侦测性</translation>
 <translation id="5653154844073528838">您有 <ph name="PRINTER_COUNT" /> 台已保存的打印机。</translation>
 <translation id="5654669866168491665">详细了解在屏蔽第三方 Cookie 后可能无法正常运行的网站</translation>
@@ -8576,6 +8571,7 @@
 <translation id="7113974454301513811">现在，将当前标签页添加到您的清单中</translation>
 <translation id="7114054701490058191">密码不符</translation>
 <translation id="7114648273807173152">要使用 Smart Lock 登录您的 Google 账号，请依次转到“设置”&gt;“已连接的设备”&gt;“您的手机”&gt;“Smart Lock”。</translation>
+<translation id="7115051913071512405">试用</translation>
 <translation id="7115361495406486998">没有可设为分享对象的联系人</translation>
 <translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">打印机 SSL 证书已过期。请重启打印机，然后重试。</translation>

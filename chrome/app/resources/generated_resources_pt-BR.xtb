@@ -668,7 +668,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1464258312790801189">Suas contas</translation>
 <translation id="1464597059227482327">Se você estiver compartilhando com um Chromebook que não está nos seus contatos, a visibilidade do recurso "Compartilhar por proximidade" precisa estar ativada no Chromebook. Para isso, selecione o canto inferior direito e ative a opção "Visibilidade por perto". <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Para preferências de dispositivo, acesse "Configurações".</translation>
-<translation id="146481294006497945">Nenhuma senha salva</translation>
 <translation id="1465176863081977902">C&amp;opiar endereço do áudio</translation>
 <translation id="146522654774760805">Senhas e preenchimento automático</translation>
 <translation id="1465827627707997754">Fatia de pizza</translation>
@@ -2179,7 +2178,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2485394160472549611">Principais recomendações para você</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2485681265915754872">Termos de Serviço do Google Play</translation>
-<translation id="2486036712620651117">Senhas e chaves de acesso</translation>
 <translation id="248676429071089168">Deslize para cima para mover a página para baixo</translation>
 <translation id="2487067538648443797">Adicionar novo favorito</translation>
 <translation id="2489686758589235262">Atribuir mais dois interruptores</translation>
@@ -3902,7 +3900,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3721178866505920080">Mais informações sobre como ativar o pré-carregamento estendido</translation>
 <translation id="3722108462506185496">Erro ao iniciar o serviço da máquina virtual. Tente novamente.</translation>
 <translation id="3722624153992426516">Instrução <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recebida</translation>
-<translation id="3724897774652282549">Preencha o formulário</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Redes W-Fi disponíveis</translation>
@@ -4335,7 +4332,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3993887353483242788">Sincronize o <ph name="DEVICE_TYPE" /> para que suas preferências estejam em qualquer dispositivo em que você fizer login na Conta do Google. As preferências incluem apps, configurações, senhas de Wi-Fi, idiomas, planos de fundo, atalhos do teclado e muito mais.</translation>
 <translation id="3994318741694670028">Infelizmente, seu computador está configurado com um ID de hardware incorreto. Isso impede que o ChromeOS Flex seja atualizado com as correções de segurança mais recentes e, por isso, ele <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloqueie seu smartphone e aproxime-o para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Fazer login como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localizar botões no tablet</translation>
 <translation id="3994708120330953242">Algumas das suas senhas foram encontradas em um vazamento de dados. Para proteger suas contas, mude as senhas imediatamente.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -6607,7 +6603,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5646994841348250879">Escolha uma conta para fazer login em <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
-<translation id="5650537073531199882">Preencha o formulário</translation>
 <translation id="5651308944918885595">Detecção do Compartilhar por proximidade</translation>
 <translation id="5653154844073528838">Você tem <ph name="PRINTER_COUNT" /> impressoras salvas.</translation>
 <translation id="5654669866168491665">Saiba mais sobre sites que podem não funcionar com o bloqueio de cookies de terceiros</translation>
@@ -8609,6 +8604,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7113974454301513811">Agora, adicione a guia atual à sua lista</translation>
 <translation id="7114054701490058191">As senhas não correspondem</translation>
 <translation id="7114648273807173152">Para usar o Smart Lock para fazer login na sua Conta do Google, acesse "Config." &gt; "Dispositivos conectados" &gt; "Seu smartphone" &gt; "Smart Lock".</translation>
+<translation id="7115051913071512405">Experimente</translation>
 <translation id="7115361495406486998">Não há contatos acessíveis</translation>
 <translation id="7115731767122970828">Melhorar agora</translation>
 <translation id="7116554090938189816">O certificado SSL expirou. Reinicie a impressora e tente de novo.</translation>

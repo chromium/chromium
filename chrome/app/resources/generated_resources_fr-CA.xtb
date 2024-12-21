@@ -666,7 +666,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1464258312790801189">Vos comptes</translation>
 <translation id="1464597059227482327">Si vous partagez du contenu avec un Chromebook qui ne figure pas dans vos contacts, assurez-vous que le « Partage à proximité » est activé. Pour activer le « Partage à proximité », sélectionnez le coin inférieur droit, puis « Partage à proximité » pour l'activer. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Pour ouvrir les préférences de l'appareil, accédez au menu Paramètres.</translation>
-<translation id="146481294006497945">Aucun mot de passe enregistré</translation>
 <translation id="1465176863081977902">C&amp;opier l'adresse de l'audio</translation>
 <translation id="146522654774760805">Mots de passe et remplissage automatique</translation>
 <translation id="1465827627707997754">Pointe de pizza</translation>
@@ -2164,7 +2163,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2485394160472549611">Meilleures recommandations pour vous</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2485681265915754872">Conditions d'utilisation de Google Play</translation>
-<translation id="2486036712620651117">Mots de passe et clés d'accès</translation>
 <translation id="248676429071089168">Balayez l'écran vers le haut pour déplacer la page vers le bas</translation>
 <translation id="2487067538648443797">Ajouter un favori</translation>
 <translation id="2489686758589235262">Attribuer au moins deux commutateurs</translation>
@@ -3884,7 +3882,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3721178866505920080">Plus de renseignements sur l'activation du préchargement étendu</translation>
 <translation id="3722108462506185496">Erreur lors du démarrage du service de machine virtuelle. Veuillez réessayer.</translation>
 <translation id="3722624153992426516">Instruction <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> reçue</translation>
-<translation id="3724897774652282549">Remplir le formulaire</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Réseaux Wi-Fi disponibles</translation>
@@ -4315,7 +4312,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3993887353483242788">Synchronisez votre <ph name="DEVICE_TYPE" /> afin que vos préférences soient prêtes sur n'importe quel appareil lorsque vous vous connectez avec votre compte Google. Ces préférences comprennent les applications, les paramètres, les mots de passe Wi-Fi, les langues, les fonds d'écran, les raccourcis-clavier, etc.</translation>
 <translation id="3994318741694670028">Malheureusement, votre ordinateur est configuré avec un identifiant de matériel malformé. Cela empêche l'installation des derniers correctifs de sécurité pour Chrome OS Flex. Votre ordinateur <ph name="BEGIN_BOLD" />peut ainsi être vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
-<translation id="3994522032746736727">Se connecter en tant que <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localiser les boutons sur votre tablette</translation>
 <translation id="3994708120330953242">Certains de vos mots de passe ont été trouvés dans un cas de violation de données. Pour sécuriser vos comptes, changez ces mots de passe maintenant.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -6580,7 +6576,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5646994841348250879">Choisissez un compte pour vous connecter à <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Prise du microphone</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
-<translation id="5650537073531199882">Remplir le formulaire</translation>
 <translation id="5651308944918885595">Visibilité pour le partage à proximité</translation>
 <translation id="5653154844073528838">Vous avez <ph name="PRINTER_COUNT" /> imprimantes enregistrées.</translation>
 <translation id="5654669866168491665">En savoir plus sur les sites qui peuvent ne pas fonctionner si les témoins tiers sont bloqués</translation>
@@ -8575,6 +8570,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7113974454301513811">Maintenant, ajoutez l'onglet actuel à votre liste</translation>
 <translation id="7114054701490058191">Les mots de passe ne correspondent pas</translation>
 <translation id="7114648273807173152">Pour utiliser Smart Lock pour vous connecter à votre compte Google, accédez à Paramètres &gt; Appareils connectés &gt; Votre téléphone &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Essayez-le</translation>
 <translation id="7115361495406486998">Aucun contact joignable</translation>
 <translation id="7115731767122970828">Améliorer maintenant</translation>
 <translation id="7116554090938189816">Le certificat SSL de l'imprimante a expiré. Redémarrez l'imprimante et réessayez.</translation>

@@ -668,7 +668,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1464258312790801189">Dine konti</translation>
 <translation id="1464597059227482327">Hvis du deler med en Chromebook, der ikke er i dine kontakter, skal du sørge for, at "Deling tæt på" er aktiveret på din Chromebook. Hvis du vil aktivere "Deling tæt på", skal du vælge nederste højre hjørne og derefter aktivere "Deling tæt på". <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Gå til indstillingerne for at se enhedspræferencer.</translation>
-<translation id="146481294006497945">Der er ingen gemte adgangskoder</translation>
 <translation id="1465176863081977902">K&amp;opiér webadressen til lyden</translation>
 <translation id="146522654774760805">Adgangskoder og autofyld</translation>
 <translation id="1465827627707997754">Pizzastykke</translation>
@@ -2179,7 +2178,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2485394160472549611">Populære valg til dig</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2485681265915754872">Servicevilkår for Google Play</translation>
-<translation id="2486036712620651117">Adgangskoder og adgangsnøgler</translation>
 <translation id="248676429071089168">Stryg opad for at gå ned på siden</translation>
 <translation id="2487067538648443797">Tilføj nyt bogmærke</translation>
 <translation id="2489686758589235262">Tildel 2 kontakter mere</translation>
@@ -3902,7 +3900,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3721178866505920080">Flere oplysninger om aktivering af udvidet forudindlæsning</translation>
 <translation id="3722108462506185496">Der opstod en fejl under opstarten af tjenesten på den virtuelle maskine. Prøv igen.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruktionen er modtaget</translation>
-<translation id="3724897774652282549">Udfyld formularen</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Tilgængelige Wi-Fi-netværk</translation>
@@ -4335,7 +4332,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3993887353483242788">Synkroniser din <ph name="DEVICE_TYPE" />, så dine præferencer anvendes på enhver enhed, hvor du logger ind med din Google-konto. Præferencer omfatter apps, indstillinger, Wi-Fi-adgangskoder, sprog, baggrund, tastaturgenveje og meget mere.</translation>
 <translation id="3994318741694670028">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer ChromeOS Flex i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondartede angreb<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås din telefon op, og flyt den tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
-<translation id="3994522032746736727">Log ind som <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Identificer knapperne på din tablet</translation>
 <translation id="3994708120330953242">Nogle af dine adgangskoder er blevet lækket i forbindelse med et brud på datasikkerheden. Du bør ændre disse adgangskoder nu for at beskytte dine konti.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -6606,7 +6602,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5646994841348250879">Vælg en konto for at logge ind på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Stik til mikrofon</translation>
 <translation id="5648166631817621825">De seneste syv dage</translation>
-<translation id="5650537073531199882">Udfyld formularen</translation>
 <translation id="5651308944918885595">Synlighed for Deling tæt på</translation>
 <translation id="5653154844073528838">Du har <ph name="PRINTER_COUNT" /> gemte printere.</translation>
 <translation id="5654669866168491665">Få flere oplysninger om websites, der muligvis ikke fungerer, når tredjepartscookies blokeres</translation>
@@ -8608,6 +8603,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7113974454301513811">Føj nu den aktuelle fane til din liste</translation>
 <translation id="7114054701490058191">Adgangskoderne matcher ikke</translation>
 <translation id="7114648273807173152">Du kan bruge Smart Lock til at logge ind på din Google-konto ved at gå til Indstillinger &gt; Tilsluttede enheder &gt; Din telefon &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Prøv det</translation>
 <translation id="7115361495406486998">Der er ingen tilgængelige kontakter</translation>
 <translation id="7115731767122970828">Boost nu</translation>
 <translation id="7116554090938189816">Printerens SSL-certifikat er udløbet. Genstart printeren, og prøv igen.</translation>

@@ -262,6 +262,7 @@
 <translation id="2082906935540894275">Најрелевантније функције за вас у различитим периодима.</translation>
 <translation id="2085876078937250610">Сачувај…</translation>
 <translation id="2096239473850415494">Преузимање није успело</translation>
+<translation id="2096716221239095980">Избриши све податке</translation>
 <translation id="2103075008456228677">Отвори history.google.com</translation>
 <translation id="2104436223719117661">Претраге у тренду</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
@@ -1395,6 +1396,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Историја претраге<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други облици активности<ph name="END_LINK" /> могу да буду сачувани на Google налогу</translation>
 <translation id="7253951228444156601">Проверавају се лозинке…</translation>
 <translation id="7261217796641151584">Дели групу</translation>
+<translation id="7266578100016339897">То вам помаже да останете организовани. То можете да промените у подешавањима у било ком тренутку.</translation>
 <translation id="7271220006028561438">Дозволи аутоматску надоградњу приступних кључева</translation>
 <translation id="7272437679830969316">Верификација идентитета није успела. Лозинка није копирана.</translation>
 <translation id="7293429513719260019">Изаберите језик</translation>
@@ -1589,6 +1591,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8080028325999236607">Затвори све картице</translation>
 <translation id="8084285576995584326">Контролишите податке Google налога</translation>
 <translation id="809543534949702122">Историја претраге</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Картице које не користите премештају се овде после {COUNT} дана}one{Картице које не користите премештају се овде после {COUNT} дана}few{Картице које не користите премештају се овде после {COUNT} дана}other{Картице које не користите премештају се овде после {COUNT} дана}}</translation>
 <translation id="8101409298456377967">Правите и чувајте лозинке и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Н</translation>
 <translation id="8114753159095730575">Преузимање датотеке није доступно. Опције су наведене у дну екрана.</translation>

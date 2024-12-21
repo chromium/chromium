@@ -669,7 +669,6 @@
 <translation id="1464258312790801189">Вашы ўліковыя запісы</translation>
 <translation id="1464597059227482327">Каб абагульваць даныя з прыладай Chromebook, якой няма ў вашых кантактах, уключыце на ёй параметр "Бачнасць паблізу". Каб зрабіць гэта, перайдзіце да патрэбных налад, націснуўшы на правы ніжні вугал экрана. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Каб адкрыць параметры прылады, перайдзіце ў Налады.</translation>
-<translation id="146481294006497945">Няма захаваных пароляў</translation>
 <translation id="1465176863081977902">К&amp;апіраваць адрас аўдыя</translation>
 <translation id="146522654774760805">Паролі і аўтазапаўненне</translation>
 <translation id="1465827627707997754">Кавалак піцы</translation>
@@ -2166,7 +2165,6 @@
 <translation id="2485394160472549611">Найлепшыя падборкі для вас</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
 <translation id="2485681265915754872">Умовы выкарыстання Google Play</translation>
-<translation id="2486036712620651117">Паролі і ключы доступу</translation>
 <translation id="248676429071089168">Калі прагортваць уверх, старонка будзе перамяшчацца ўніз</translation>
 <translation id="2487067538648443797">Дадаць новую закладку</translation>
 <translation id="2489686758589235262">Прызначыць яшчэ 2 пераключальнікі</translation>
@@ -3887,7 +3885,6 @@
 <translation id="3721178866505920080">Дадатковая інфармацыя пра ўключэнне функцыі пашыранай перадзагрузкі</translation>
 <translation id="3722108462506185496">Памылка запуску сэрвісу віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="3722624153992426516">Атрымана інструкцыя: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
-<translation id="3724897774652282549">Запоўніць форму</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Даступныя сеткі Wi-Fi</translation>
@@ -4320,7 +4317,6 @@
 <translation id="3993887353483242788">Сінхранізуйце прыладу "<ph name="DEVICE_TYPE" />", каб вашы праграмы, налады, паролі Wi-Fi, мовы, шпалеры, спалучэнні клавіш і іншыя параметры былі даступныя вам на ўсіх прыладах, з якіх вы ўвайшлі ва Уліковы запіс Google.</translation>
 <translation id="3994318741694670028">Ваш камп’ютар сканфігураваны з няправільным ідэнтыфікатарам апаратнага забеспячэння. Гэта не дае ўсталяваць апошнія выпраўленні сістэмы бяспекі для Chrome OS Flex. Ваш камп’ютар <ph name="BEGIN_BOLD" />можа быць прыступным для атак зламыснікаў<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Разблакіруйце тэлефон і паднясіце яго бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Увайсці як <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Знайдзіце на планшэце кнопкі</translation>
 <translation id="3994708120330953242">Некаторыя з вашых пароляў былі раскрыты ў выніку парушэння прыватнасці даных. Каб абараніць свае ўліковыя запісы, вам трэба неадкладна змяніць гэтыя паролі.</translation>
 <translation id="3994878504415702912">&amp;Маштаб</translation>
@@ -6590,7 +6586,6 @@
 <translation id="5646994841348250879">Выберыце ўліковы запіс для ўваходу на сайт <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
-<translation id="5650537073531199882">Запаўненне формы</translation>
 <translation id="5651308944918885595">Абагульванне паблізу: бачнасць</translation>
 <translation id="5653154844073528838">У вас некалькі (<ph name="PRINTER_COUNT" />) захаваных прынтараў.</translation>
 <translation id="5654669866168491665">Даведацца больш пра сайты, якія могуць не працаваць, калі блакіруюцца староннія файлы cookie</translation>

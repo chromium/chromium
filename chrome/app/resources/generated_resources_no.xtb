@@ -667,7 +667,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1464258312790801189">Kontoene dine</translation>
 <translation id="1464597059227482327">Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at «Nærdeling» er påslått på Chromebooken. For å slå på «Nærdeling», velg nedre høyre hjørne og velg deretter å slå på «Nærdeling». <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">For enhetspreferanser, gå til Innstillinger.</translation>
-<translation id="146481294006497945">Ingen lagrede passord</translation>
 <translation id="1465176863081977902">K&amp;opiér lydadressen</translation>
 <translation id="146522654774760805">Passord og autofyll</translation>
 <translation id="1465827627707997754">Pizzastykke</translation>
@@ -2172,7 +2171,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2485394160472549611">Toppvalg for deg</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
 <translation id="2485681265915754872">Vilkår for bruk av Google Play</translation>
-<translation id="2486036712620651117">Passord og passnøkler</translation>
 <translation id="248676429071089168">Sveip opp for å flytte siden ned</translation>
 <translation id="2487067538648443797">Legg til nytt bokmerke</translation>
 <translation id="2489686758589235262">Tilordne to brytere til</translation>
@@ -3895,7 +3893,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3721178866505920080">Mer informasjon om å slå på utvidet forhåndslasting</translation>
 <translation id="3722108462506185496">Feil ved oppstart av den virtuelle maskinen. Prøv på nytt.</translation>
 <translation id="3722624153992426516">En <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruksjon er mottatt</translation>
-<translation id="3724897774652282549">Fyll ut skjemaet</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Tilgjengelige Wifi-nettverk</translation>
@@ -4326,7 +4323,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3993887353483242788">Synkroniser <ph name="DEVICE_TYPE" />, slik at preferansene dine er klare på alle enheter når du logger på med Google-kontoen din. Preferanser betyr blant annet apper, innstillinger, wifi-passord, språk, bakgrunnsbilde og hurtigtaster.</translation>
 <translation id="3994318741694670028">Dessverre er datamaskinen konfigurert med en feilformatert maskinvare-ID. Dette forhindrer ChromeOS Flex fra å ta i bruk de siste sikkerhetsoppdateringene, og datamaskinen <ph name="BEGIN_BOLD" />kan være sårbar for skadelige angrep<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås opp telefonen, og hold den nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
-<translation id="3994522032746736727">Logg på som <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Finn knappene på tegnebrettet</translation>
 <translation id="3994708120330953242">Noen av passordene dine ble funnet i et databrudd. Du bør endre disse passordene nå for å beskytte kontoene dine.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -6594,7 +6590,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5646994841348250879">Velg en konto for å logge på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
-<translation id="5650537073531199882">Fyll ut skjemaet</translation>
 <translation id="5651308944918885595">Synlighet for nærdeling</translation>
 <translation id="5653154844073528838">Du har <ph name="PRINTER_COUNT" /> lagrede skrivere.</translation>
 <translation id="5654669866168491665">Finn ut mer om nettsteder som kanskje ikke fungerer når du blokkerer informasjonskapsler fra tredjeparter</translation>
@@ -8594,6 +8589,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7113974454301513811">Legg til den aktive fanen på listen din</translation>
 <translation id="7114054701490058191">Passordene er ikke like</translation>
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Test det</translation>
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7115731767122970828">Øk ytelsen nå</translation>
 <translation id="7116554090938189816">SSL-sertifikatet for skriveren er utløpt. Start skriveren på nytt, og prøv igjen.</translation>
@@ -9339,7 +9335,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7660146600670077843">Høyreklikk på en fane, og velg «Legg fanen til i en ny gruppe»</translation>
 <translation id="7661259717474717992">La nettsteder lagre og lese data i informasjonskapsler</translation>
 <translation id="7661451191293163002">Kunne ikke anskaffe noe registreringssertifikat.</translation>
-<translation id="7662283695561029522">Trykk for å konfigurere</translation>
+<translation id="7662283695561029522">Konfigurer</translation>
 <translation id="7663719505383602579">Mottaker: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Det finnes en hurtigtast</translation>
 <translation id="7663859337051362114">Legg til eSIM-profil</translation>

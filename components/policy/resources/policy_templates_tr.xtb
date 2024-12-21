@@ -3333,6 +3333,7 @@ Bu politika ayarlanırsa <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 
       dosyalarını indirmek için Quirks Server ile iletişim kurmayı denemez.
 
       Bu politika true (doğru) değerine ayarlanırsa veya yapılandırılmazsa, <ph name="PRODUCT_OS_NAME" />, Quirks Server ile otomatik olarak iletişim kurar ve varsa yapılandırma dosyalarını indirip cihaza kaydeder.  Bu tür dosyalar, örneğin bağlı monitörlerin görüntü kalitesini iyileştirmek için kullanılabilir.</translation>
+<translation id="3513864752694608929">Etkin giriş yöntemlerini zorunlu kılma</translation>
 <translation id="3515196503924273265">NewBaseUrlInheritanceBehavior özelliğinin etkinleştirilmesine izin verir</translation>
 <translation id="351654132746710200"><ph name="LACROS_NAME" /> devre dışı bırakıldıktan sonra veri taşıma işlemi gerçekleştirilmez. <ph name="LACROS_NAME" /> klasörü kaldırılır ve kullanıcılar kalan verileri kullanmaya devam eder.</translation>
 <translation id="3518293344797498431">Pil kullanım ömrünü en üst düzeye çıkarmak için pili yaklaşık %80 oranında şarj et.</translation>
@@ -6780,6 +6781,7 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6092073071805297119">Erişilebilirlik performansı filtrelerinin kullanılmasına izin ver.</translation>
 <translation id="60925735895026302">Hiçbir sitenin WebPrinting API aracılığıyla yerel yazıcılara erişim istemesine izin verme</translation>
 <translation id="6093156968240188330">Uzaktan yardım oturumlarında uzak kullanıcıların yükseltilmiş pencerelerle etkileşimde bulunmasına izin ver</translation>
+<translation id="6093551397728373988">İzin verilen tüm giriş yöntemlerinin kullanıcı oturumunda etkinleştirilmesini zorunlu kıl</translation>
 <translation id="6094314311474620462">Yazdırmayı devre dışı bırak</translation>
 <translation id="6097601282776163274">URL içeren veya URL'lerle ilişkili anonim veri toplamayı etkinleştir</translation>
 <translation id="6099853574908182288">Varsayılan renkli yazdırma modu</translation>
@@ -6975,6 +6977,11 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
       Bu politika, Devre Dışı değerine ayarlanırsa kullanıcıların Chrome for Testing'i çalıştırmasına izin verilmez. Kullanıcılar yine de Chrome for Testing'i yükleyebilir ancak bu politikanın Devre Dışı değerine ayarlandığı profillerde çalıştıramaz.</translation>
 <translation id="6258658183356534534">Kullanıcı aracısı istemci ipuçları GREASE güncelleme özelliğini kontrol et.</translation>
 <translation id="6261643884958898336">Makine Kimlik bilgilerini bildir</translation>
+<translation id="6262668203803408414">Politika, doğru değerine ayarlanırsa <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> politikasındaki tüm giriş yöntemlerinin <ph name="PRODUCT_OS_NAME" /> oturumlarında etkinleştirilmesi zorunlu kılınır.
+Kullanıcı oturumlarında başka giriş yöntemi etkinleştirilemez.
+Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa etkin giriş yöntemleri zorunlu kılınmaz ve <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> politikası yalnızca hangi giriş yöntemlerinin kullanılabileceğini yapılandırır.
+
+<ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> politikası ayarlanmaz veya boş listeye ayarlanırsa bu politika yoksayılır ve kullanıcılar istedikleri giriş yöntemini etkinleştirebilir.</translation>
 <translation id="6264247808139384018">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa şifreyle kimlik doğrulayan kullanıcılar ekranı kilitleyebilir.
 
 Politika, Devre Dışı değerine ayarlanırsa kullanıcılar ekranı kilitleyemez. (Yalnızca kullanıcı oturumundan çıkış yapabilirler.)</translation>
@@ -9056,6 +9063,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 
       Geçici bir süreliğine kullanılması planlanan bu politika, yeni indirme balonu kullanıcı arayüzü tam olarak kullanıma sunulduktan sonra kaldırılmıştır.</translation>
 <translation id="7736521021425189418">Terminal (117 sürümünden itibaren desteklenir)</translation>
+<translation id="7736846524371077454">İzin verilen tüm giriş yöntemlerinin etkinleştirilmesini zorunlu kıl</translation>
 <translation id="7740644123648617252">İlk çalıştırmada form otomatik doldurma verilerinin içe aktarılmasını etkinleştir</translation>
 <translation id="7744253761377202223">AC gücünde çalışırken ekran parlaklığı yüzdesi</translation>
 <translation id="7747447585227954402">Cihazların <ph name="PRODUCT_OS_NAME" /> üzerinde bir <ph name="PLUGIN_VM_NAME" /> kullanmasına izin verir</translation>

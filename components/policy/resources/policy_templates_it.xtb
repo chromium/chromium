@@ -249,6 +249,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se il criterio è impostato su false o non viene configurato, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
 <translation id="1198458955128279215">Utilizza il comportamento predefinito del piano di implementazione delle funzionalità.</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
+<translation id="1203676252390737801">Gestione dell'IP di WebRTC per URL</translation>
 <translation id="1204263402976895730">Stampanti aziendali attive</translation>
 <translation id="1207301487141109411">Impedisci la selezione degli avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
 <translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
@@ -669,6 +670,13 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 Se questo criterio viene attivato, il selettore di emoji supporterà le emoji in formato GIF.
 Se viene disattivato o se non viene configurato, il selettore di emoji non supporterà le emoji in formato GIF.
 Se non viene configurato, il selettore di emoji verrà attivato per gli utenti normali, ma sarà disattivato per gli utenti gestiti.</translation>
+<translation id="1493245040983394029">Questa policy consente di controllare le impostazioni della funzionalità di editing di foto con AI generativa per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità.</translation>
 <translation id="1494138678487405397">Disattiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="1497797462580613666">Gestione dei download avrà un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Questo criterio consente di elencare i pattern URL che specificano i siti a cui viene automaticamente negata l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting.
@@ -1696,6 +1704,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
+<translation id="2212207215880394506">Non consentire l'editing di foto con AI generativa.</translation>
 <translation id="221287948061571053">Nascondi badge aziendale espanso nella barra degli strumenti</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
 <translation id="2213342458177721585">Attiva il layout Hindi Inscript a livello di dispositivo.</translation>
@@ -2230,6 +2239,7 @@ Se il criterio viene disattivato o se non viene configurato, i log non possono e
 
       Se il criterio viene impostato su "UserOnly" (valore 1), gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
+<translation id="2594773358911436070">Impostazioni WebRTC</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2603237557651009842">Blocca l'API WebPrinting su questi siti</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
@@ -2351,6 +2361,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
       Se imposti il criterio e attivi l'accesso automatico (vedi i criteri <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> e <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), per la sessione gestita vengono usati la prima lingua consigliata e il layout della tastiera corrispondente più usato.
 
       Il layout della tastiera preselezionato è sempre il layout più usato corrispondente alla lingua preselezionata. Gli utenti possono scegliere in qualsiasi momento qualsiasi lingua supportata da <ph name="PRODUCT_OS_NAME" /> per la loro sessione.</translation>
+<translation id="269274821351405808">Impostazioni per la funzionalità di editing di foto con AI generativa</translation>
 <translation id="2693108589792503178">Configura l'URL di modifica della password.</translation>
 <translation id="2694143893026486692">Lente d'ingrandimento ancorata attivata</translation>
 <translation id="2696077732471707315">
@@ -2522,6 +2533,7 @@ Il rapporto include informazioni sull'utilizzo e sullo stato del profilo, inclus
 Questo criterio può essere impostato soltanto come criterio relativo agli utenti cloud.</translation>
 <translation id="2846689894646472396">Velocità di controllo degli eventi di rete in millisecondi.</translation>
 <translation id="2847788524147474533">I criteri relativi al computer della piattaforma hanno la precedenza sui criteri relativi al cloud in ambito computer</translation>
+<translation id="2849051159985119151">Consenti l'editing di foto con AI generativa senza migliorare i modelli di AI.</translation>
 <translation id="2849275596224278787">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2853649500575897584">Non vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
 <translation id="2853757230661166968">Consente alle applicazioni di acquisire le scorciatoie di sistema predefinite e di eseguirne l'override.</translation>
@@ -3283,6 +3295,7 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
       Se il criterio viene impostato su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
 
       Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
+<translation id="3411947169047929182">Controlla la configurazione correlata a WebRTC</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -4668,6 +4681,7 @@ Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</trans
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
+<translation id="447692108909279121">Gestione dell'IP di WebRTC</translation>
 <translation id="4478248026668918517">Blocca il rilevamento dell'ambito dei criteri.</translation>
 <translation id="4479671363221255277">La configurazione del criterio consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
@@ -5804,6 +5818,23 @@ Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>
 <translation id="5288776487100096897">Consenti ai criteri relativi al cloud degli utenti di eseguire l'override dei criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="5289330879750533981">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile ogni pattern URL specifico.
+
+Accetta un elenco di pattern URL e coppie di tipi di gestione. I pattern URL vengono controllati in ordine e la prima corrispondenza configurerà il tipo di gestione utilizzato da WebRTC per il dominio. Quando l'URL del documento corrente non corrisponde a nessuna voce, viene usata la configurazione impostata dalla policy <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern di input validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Valori di gestione validi:
+
+* valore predefinito: WebRTC utilizza tutte le interfacce di rete.
+
+* default_public_and_private_interfaces: WebRTC utilizza tutte le interfacce pubbliche e private.
+
+* default_public_interface_only: WebRTC utilizza tutte le interfacce pubbliche, ma non quelle private.
+
+* disable_non_proxied_udp: WebRTC utilizza il proxy UDP SOCKS o passa al proxy TCP.
+
+Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="5290940294294002042">Specifica un elenco di plug-in che l'utente può attivare o disattivare</translation>
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
@@ -6953,6 +6984,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza la versione massima predefinita.
 
       In caso contrario, il criterio potrebbe essere impostato su uno dei seguenti valori: "tls1.2" o "tls1.3". Se viene impostato, <ph name="PRODUCT_NAME" /> non utilizzerà versioni di SSL/TLS successive alla versione specificata. Un valore non riconosciuto verrà ignorato.</translation>
+<translation id="6120909112796019291">Consenti l'editing di foto con AI generativa e migliora i modelli di AI.</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6130360423841559818">Gestisci il nuovo comportamento della finestra di dialogo di annullamento generata dall'evento beforeunload</translation>
 <translation id="6131803221304830537">Disattiva l'integrità del codice del renderer</translation>
@@ -7372,6 +7404,7 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
       Se il criterio viene impostato su False, i contenuti pubblicati con la tecnologia Signed HTTP Exchange non vengono caricati.</translation>
 <translation id="6368011194414932347">Configura l'URL della pagina iniziale</translation>
 <translation id="6368403635025849609">Consenti JavaScript su questi siti</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Impostazioni di insiemi di siti web correlati</translation>
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
@@ -9878,6 +9911,21 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
+<translation id="8240976615241583524">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile.
+
+Valori validi:
+
+* valore predefinito: WebRTC utilizza tutte le interfacce di rete disponibili.
+
+* default_public_and_private_interfaces: WebRTC utilizza tutte le interfacce pubbliche e private.
+
+* default_public_interface_only: WebRTC utilizza tutte le interfacce pubbliche, ma non quelle private.
+
+* disable_non_proxied_udp: WebRTC utilizza il proxy UDP SOCKS o passa al proxy TCP.
+
+Se la policy non viene configurata, per impostazione predefinita vengono usate tutte le interfacce di rete disponibili.
+
+Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
 <translation id="8244828501034607035">Questo criterio consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.

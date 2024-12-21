@@ -3390,6 +3390,7 @@ Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não p
       Quando esta política for definida como falsa, o dispositivo não tentará entrar em contato com o servidor Quirks para baixar os arquivos de configuração.
 
       Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> entrará em contato automaticamente com o servidor Quirks, fará o download dos arquivos de configuração, se eles estiverem disponíveis, e os armazenará no dispositivo.  Esses arquivos podem ser usados, por exemplo, para melhorar a qualidade de exibição de monitores acoplados.</translation>
+<translation id="3513864752694608929">Não aplicar métodos de entrada ativados</translation>
 <translation id="3515196503924273265">Permite ativar o recurso NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Depois que a opção <ph name="LACROS_NAME" /> for desativada, a migração de dados não vai ser realizada. A pasta <ph name="LACROS_NAME" /> será removida, e os usuários vão continuar usando os dados restantes.</translation>
 <translation id="3518293344797498431">Carrega a bateria até cerca de 80% para maximizar a vida útil dela.</translation>
@@ -6922,6 +6923,7 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
 <translation id="60925735895026302">Não permitir que os sites peçam acesso a impressoras locais pela API WebPrinting</translation>
 <translation id="6093156968240188330">Permitir que usuários remotos interajam com janelas elevadas em sessões de assistência remota</translation>
+<translation id="6093551397728373988">Aplicar todos os métodos de entrada permitidos para que sejam ativados em uma sessão de usuário</translation>
 <translation id="6094314311474620462">Desativar a impressão</translation>
 <translation id="6097601282776163274">Ativar a coleta de dados anônimos inseridos no URL</translation>
 <translation id="6099853574908182288">Modo de cor de impressão padrão</translation>
@@ -7118,6 +7120,11 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
       Se for desativada, os usuários não terão permissão para executar o Chrome for Testing. Os usuários ainda poderão instalar o Chrome for Testing, mas ele não será executado nos perfis em que a política estiver desativada.</translation>
 <translation id="6258658183356534534">Controlar o recurso de atualização do User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Reportar informações de identificação da máquina</translation>
+<translation id="6262668203803408414">Se a política for definida como verdadeira, todos os métodos de entrada da política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> serão ativados nas sessões do <ph name="PRODUCT_OS_NAME" />.
+Não é possível ativar outros métodos de entrada nas sessões de usuário.
+Se a política for definida como falsa ou deixada sem definição, nenhum método de entrada ativado será aplicado, e a política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> vai configurar apenas os métodos de entrada disponíveis para o usuário.
+
+Se a política <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> for deixada sem definição ou definida como uma lista vazia, ela será ignorada e os usuários poderão ativar qualquer método de entrada.</translation>
 <translation id="6264247808139384018">Se a política for ativada ou não for definida, os usuários que autenticam com uma senha poderão bloquear a tela.
 
 Se a política for desativada, os usuários não poderão bloquear a tela. Eles só poderão sair da sessão do usuário.</translation>
@@ -9248,6 +9255,7 @@ Quando ela for deixada sem definição, o renderizador de PDF será escolhido pe
 
       A política era temporária e foi removida após o lançamento da nova interface de download em balão.</translation>
 <translation id="7736521021425189418">Terminal (com suporte desde a versão 117)</translation>
+<translation id="7736846524371077454">Ativar todos os métodos de entrada permitidos</translation>
 <translation id="7740644123648617252">Ativar a importação de dados de preenchimento automático de formulários na primeira execução</translation>
 <translation id="7744253761377202223">Porcentagem de brilho da tela quando em funcionamento com energia CA.</translation>
 <translation id="7747447585227954402">Permite que dispositivos usem um <ph name="PLUGIN_VM_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>

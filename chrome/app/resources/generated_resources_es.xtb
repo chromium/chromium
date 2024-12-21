@@ -666,7 +666,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1464258312790801189">Tus cuentas</translation>
 <translation id="1464597059227482327">Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activada la opción Visibilidad Nearby. Para activar Visibilidad Nearby, selecciona la esquina inferior derecha y, después, la opción Visibilidad Nearby para activarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Para ver las preferencias del dispositivo, ve a Configuración.</translation>
-<translation id="146481294006497945">No hay contraseñas guardadas</translation>
 <translation id="1465176863081977902">C&amp;opiar dirección de audio</translation>
 <translation id="146522654774760805">Contraseñas y Autocompletar</translation>
 <translation id="1465827627707997754">Porción de pizza</translation>
@@ -2166,7 +2165,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2485394160472549611">Recomendaciones para ti</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2485681265915754872">Términos del Servicio de Google Play</translation>
-<translation id="2486036712620651117">Contraseñas y llaves de acceso</translation>
 <translation id="248676429071089168">Desliza hacia arriba para mover la página hacia abajo</translation>
 <translation id="2487067538648443797">Añadir nuevo marcador</translation>
 <translation id="2489686758589235262">Asignar 2 interruptores más</translation>
@@ -3889,7 +3887,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3721178866505920080">Más información sobre cómo activar la precarga ampliada</translation>
 <translation id="3722108462506185496">No se ha podido iniciar el servicio de la máquina virtual. Inténtalo de nuevo.</translation>
 <translation id="3722624153992426516">Instrucción <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> recibida</translation>
-<translation id="3724897774652282549">Rellena el formulario</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Redes Wi‑Fi disponibles</translation>
@@ -4321,7 +4318,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3993887353483242788">Sincroniza tu <ph name="DEVICE_TYPE" /> para encontrar tus preferencias guardadas cuando inicies sesión con tu cuenta de Google en cualquier dispositivo. Tus preferencias incluyen aplicaciones, ajustes, contraseñas de redes Wi‑Fi, idiomas, fondos de pantalla y combinaciones de teclas, entre otros.</translation>
 <translation id="3994318741694670028">Lamentablemente, tu ordenador está configurado con un identificador de hardware incorrecto. Esto impide que ChromeOS Flex se actualice con los últimos parches de seguridad y hace que el ordenador <ph name="BEGIN_BOLD" />pueda ser vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Desbloquea el teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Iniciar sesión como <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Localizar botones en tu tablet</translation>
 <translation id="3994708120330953242">Algunas de tus contraseñas se han encontrado en una brecha de seguridad de datos. Para proteger tus cuentas, deberías cambiar estas contraseñas ahora.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
@@ -6590,7 +6586,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5646994841348250879">Elige una cuenta para iniciar sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
-<translation id="5650537073531199882">Rellenar formulario</translation>
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que posiblemente no funcionen al bloquear las cookies de terceros</translation>
@@ -8590,6 +8585,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7113974454301513811">Ahora añade la pestaña actual a tu lista</translation>
 <translation id="7114054701490058191">Las contraseñas no coinciden</translation>
 <translation id="7114648273807173152">Si quieres usar Smart Lock para iniciar sesión en tu cuenta de Google, ve a Configuración &gt; Dispositivos conectados &gt; Tu teléfono &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Pruébalo</translation>
 <translation id="7115361495406486998">No hay contactos disponibles</translation>
 <translation id="7115731767122970828">Mejorar ahora</translation>
 <translation id="7116554090938189816">El certificado SSL de la impresora ha caducado. Reinicia la impresora e inténtalo de nuevo.</translation>

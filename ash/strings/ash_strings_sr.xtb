@@ -1648,6 +1648,7 @@
 <translation id="6539852571005954999">Скенира се фајл <ph name="FILENAME" /> који се преузима</translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Емоџији, GIF-ови и друго</translation>
+<translation id="6543942526104794893">Желите ли стварно да искључите покрете лицем?</translation>
 <translation id="6545382064335350438">Верификација лозинке још није успела. Пробајте поново.</translation>
 <translation id="6555373427270923730">Унесите веб-адресу у траку за адресу, па притисните <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2315,6 +2316,7 @@
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8858369206579825206">Контроле приватности</translation>
 <translation id="8860366331836346216">Додај eSIM</translation>
+<translation id="8869149849311827122">Желите ли стварно да искључите контролу курсора миша?</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
 <translation id="8873203135446552888">Потврдите да желите да онемогућите уграђени тачпед</translation>
 <translation id="8874184842967597500">Није повезано</translation>

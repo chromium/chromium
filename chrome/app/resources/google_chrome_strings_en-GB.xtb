@@ -394,6 +394,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="5947104538377036631">Chrome shortcut</translation>
 <translation id="5953954252731207958">You haven't visited recently. Chrome removed <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
@@ -612,6 +613,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="842386925677997438">Chrome’s safety tools</translation>
 <translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
 <translation id="8428213095426709021">Settings</translation>
+<translation id="8429214465555795676">To continue, you'll need to sign in to Chrome with <ph name="EMAIL" />. This ensures compliance with your organisation's policies.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

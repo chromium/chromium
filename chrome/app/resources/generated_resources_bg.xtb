@@ -667,7 +667,6 @@
 <translation id="1464258312790801189">Вашите профили</translation>
 <translation id="1464597059227482327">Ако споделяте с устройство Chromebook, което не е в контактите ви, не забравяйте да включите „Видимост наблизо“ за него. За целта кликнете върху долния десен ъгъл и включете „Видимост наблизо“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">За предпочитания за устройството отворете „Настройки“</translation>
-<translation id="146481294006497945">Няма запазени пароли</translation>
 <translation id="1465176863081977902">К&amp;опиране на адреса на аудиозаписа</translation>
 <translation id="146522654774760805">Пароли и автоматично попълване</translation>
 <translation id="1465827627707997754">Парче пица</translation>
@@ -2174,7 +2173,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2485394160472549611">Избрано за вас</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2485681265915754872">Общи условия на Google Play</translation>
-<translation id="2486036712620651117">Пароли и ключове за достъп</translation>
 <translation id="248676429071089168">Прекарайте пръст нагоре, за да преместите страницата надолу</translation>
 <translation id="2487067538648443797">Добавяне на нова отметка</translation>
 <translation id="2489686758589235262">Задаване на още 2 превключвателя</translation>
@@ -3897,7 +3895,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3721178866505920080">Още информация за включването на разширеното предварително зареждане</translation>
 <translation id="3722108462506185496">Грешка при стартирането на услугата на виртуалната машина. Моля, опитайте отново.</translation>
 <translation id="3722624153992426516">Получена е инструкция за <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
-<translation id="3724897774652282549">Попълване на формуляра</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Налични Wi-Fi мрежи</translation>
@@ -4331,7 +4328,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3993887353483242788">Синхронизирайте устройството си <ph name="DEVICE_TYPE" />, така че предпочитанията ви да са зададени на всяко устройство, когато влезете в профила си в Google. Те включват приложенията, настройките, паролите за Wi-Fi, езиците, тапета, клавишните комбинации и др.</translation>
 <translation id="3994318741694670028">За съжаление, компютърът ви е конфигуриран с неправилно образуван идентификационен номер на хардуера. Това не позволява на ChromeOS Flex да се актуализира с най-новите корекции за сигурност и устройството ви <ph name="BEGIN_BOLD" />може да е уязвимо на злонамерени атаки<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">За да отключите своя <ph name="DEVICE_TYPE" />, отключете телефона си и го приближете до него.</translation>
-<translation id="3994522032746736727">Вход като <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Намиране на бутони на таблета ви</translation>
 <translation id="3994708120330953242">Някои от паролите ви бяха открити при нарушение на сигурността на данните. Променете ги сега, за да защитите профилите си.</translation>
 <translation id="3994878504415702912">&amp;Мащаб</translation>
@@ -6603,7 +6599,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5646994841348250879">Изберете профил, за да влезете в(ъв) <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
-<translation id="5650537073531199882">Попълване на формуляра</translation>
 <translation id="5651308944918885595">Откриваемост за „Споделяне наблизо“</translation>
 <translation id="5653154844073528838">Имате <ph name="PRINTER_COUNT" /> запазени принтера.</translation>
 <translation id="5654669866168491665">Научете повече за сайтовете, които може да не работят, когато блокирате „бисквитките“ на трети страни</translation>
@@ -8603,6 +8598,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7113974454301513811">Сега добавете текущия раздел към списъка си</translation>
 <translation id="7114054701490058191">Паролите не са идентични</translation>
 <translation id="7114648273807173152">За да използвате Smart Lock за влизане в профила ви в Google, отворете „Настройки &gt; Свързани устройства &gt; Вашият телефон &gt; Smart Lock“.</translation>
+<translation id="7115051913071512405">Изпробване</translation>
 <translation id="7115361495406486998">Няма налични контакти</translation>
 <translation id="7115731767122970828">Подобряване</translation>
 <translation id="7116554090938189816">SSL сертификатът на принтера е изтекъл. Рестартирайте принтера и опитайте отново.</translation>

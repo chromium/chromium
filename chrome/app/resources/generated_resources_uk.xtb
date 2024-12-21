@@ -670,7 +670,6 @@
 <translation id="1464258312790801189">Ваші облікові записи</translation>
 <translation id="1464597059227482327">Якщо ви хочете надіслати файли на комп’ютер Chromebook, якого немає в списку ваших контактів, у правому нижньому куті цього комп’ютера ввімкніть опцію "Видимість поблизу". <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Щоб перейти до параметрів пристрою, відкрийте налаштування.</translation>
-<translation id="146481294006497945">Немає збережених паролів</translation>
 <translation id="1465176863081977902">Копіювати адресу аудіо</translation>
 <translation id="146522654774760805">Паролі й автозаповнення</translation>
 <translation id="1465827627707997754">Шматок піци</translation>
@@ -2181,7 +2180,6 @@
 <translation id="2485394160472549611">Найкращі рекомендації для вас</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2485681265915754872">Умови використання Google Play</translation>
-<translation id="2486036712620651117">Паролі й ключі доступу</translation>
 <translation id="248676429071089168">Проведіть пальцем угору, щоб прокрутити сторінку вниз</translation>
 <translation id="2487067538648443797">Додати нову закладку</translation>
 <translation id="2489686758589235262">Призначити ще 2 перемикачі</translation>
@@ -3904,7 +3902,6 @@
 <translation id="3721178866505920080">Докладніше про те, як увімкнути розширене попереднє завантаження</translation>
 <translation id="3722108462506185496">Не вдалося запустити віртуальну машину. Спробуйте пізніше.</translation>
 <translation id="3722624153992426516">Отримано вказівку "<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />"</translation>
-<translation id="3724897774652282549">Заповнити форму</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Доступні мережі Wi-Fi</translation>
@@ -4337,7 +4334,6 @@
 <translation id="3993887353483242788">Синхронізуйте свій <ph name="DEVICE_TYPE" />, щоб параметри (такі як додатки, налаштування, паролі Wi-Fi, мови, комбінації клавіш тощо) починали діяти на будь-якому пристрої, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="3994318741694670028">На жаль, ваш комп’ютер налаштовано за допомогою ідентифікатора апаратного забезпечення з неправильною структурою. Через це в ОС Chrome Flex не вдається встановити найновіші виправлення системи безпеки, а тому ваш комп’ютер <ph name="BEGIN_BOLD" />може бути вразливим до атак<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Щоб розблокувати пристрій <ph name="DEVICE_TYPE" />, розблокуйте свій телефон і розташуйте його ближче до пристрою.</translation>
-<translation id="3994522032746736727">Увійти як <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Знайдіть кнопки на планшеті</translation>
 <translation id="3994708120330953242">Деякі ваші паролі було розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, потрібно негайно змінити зламані паролі.</translation>
 <translation id="3994878504415702912">&amp;Масштаб</translation>
@@ -6604,7 +6600,6 @@
 <translation id="5646994841348250879">Виберіть, через який обліковий запис увійти в додаток <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Гніздо для мікрофона</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
-<translation id="5650537073531199882">Заповнити форму</translation>
 <translation id="5651308944918885595">Видимість для функції "Передавання поблизу"</translation>
 <translation id="5653154844073528838">Збережених принтерів: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="5654669866168491665">Докладніше про сайти, які можуть не працювати, коли блокуються сторонні файли cookie</translation>
@@ -8609,6 +8604,7 @@
 <translation id="7113974454301513811">Тепер додайте поточну вкладку в список</translation>
 <translation id="7114054701490058191">Паролі не збігаються</translation>
 <translation id="7114648273807173152">Щоб увійти в обліковий запис Google за допомогою Smart Lock, перейдіть у меню "Налаштування" &gt; "Підключені пристрої" &gt; "Телефон" &gt; "Smart Lock".</translation>
+<translation id="7115051913071512405">Спробувати</translation>
 <translation id="7115361495406486998">Немає доступних контактів</translation>
 <translation id="7115731767122970828">Підвищити</translation>
 <translation id="7116554090938189816">Строк дії сертифіката SSL принтера минув. Перезапустіть принтер і повторіть спробу.</translation>

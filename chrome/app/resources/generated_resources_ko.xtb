@@ -667,7 +667,6 @@
 <translation id="1464258312790801189">내 계정</translation>
 <translation id="1464597059227482327">연락처에 없는 Chromebook과 공유하는 경우 Chromebook에 'Nearby 공개 상태'가 사용 설정되어 있는지 확인하세요. 'Nearby 공개 상태'를 사용 설정하려면 오른쪽 하단을 선택하고 'Nearby 공개 상태'를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">기기 환경설정을 보려면 설정으로 이동하세요.</translation>
-<translation id="146481294006497945">저장된 비밀번호 없음</translation>
 <translation id="1465176863081977902">오디오 주소 복사(&amp;O)</translation>
 <translation id="146522654774760805">비밀번호 및 자동 완성</translation>
 <translation id="1465827627707997754">피자 조각</translation>
@@ -2180,7 +2179,6 @@
 <translation id="2485394160472549611">추천</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2485681265915754872">Google Play 서비스 약관</translation>
-<translation id="2486036712620651117">비밀번호 및 패스키</translation>
 <translation id="248676429071089168">위로 스와이프하여 페이지 아래로 이동</translation>
 <translation id="2487067538648443797">새 북마크 추가</translation>
 <translation id="2489686758589235262">추가 스위치 2개 할당</translation>
@@ -3903,7 +3901,6 @@
 <translation id="3721178866505920080">확장된 미리 로드 사용 설정에 관한 추가 정보</translation>
 <translation id="3722108462506185496">가상 머신 서비스를 시작하지 못했습니다. 다시 시도해 주세요.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> 안내 받음</translation>
-<translation id="3724897774652282549">양식 작성</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">사용 가능한 Wi-Fi 네트워크</translation>
@@ -4336,7 +4333,6 @@
 <translation id="3993887353483242788">Google 계정으로 로그인했을 때 모든 기기에서 환경설정을 사용할 수 있도록 <ph name="DEVICE_TYPE" /> 기기를 동기화하세요. 환경설정에는 앱, 설정, Wi-Fi 비밀번호, 언어, 배경화면, 단축키 등이 포함됩니다.</translation>
 <translation id="3994318741694670028">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 ChromeOS Flex가 최신 보안 수정사항으로 업데이트되지 않으며 컴퓨터가 <ph name="BEGIN_BOLD" />악의적인 공격에 취약해질 수 있습니다<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
-<translation id="3994522032746736727"><ph name="EMAIL" />(으)로 로그인</translation>
 <translation id="3994530503403062649">태블릿에서 버튼 찾기</translation>
 <translation id="3994708120330953242">일부 비밀번호가 정보 유출로 인해 노출된 것으로 확인되었습니다. 계정 보안을 유지하려면 지금 비밀번호를 변경해야 합니다.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
@@ -6606,7 +6602,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5646994841348250879"><ph name="SITE_ETLD_PLUS_ONE" />에 로그인하는 데 사용할 계정을 선택하세요.</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
 <translation id="5648166631817621825">지난 7일</translation>
-<translation id="5650537073531199882">양식 작성</translation>
 <translation id="5651308944918885595">Nearby Share 검색 가능 여부</translation>
 <translation id="5653154844073528838">저장된 프린터가 <ph name="PRINTER_COUNT" />대 있습니다.</translation>
 <translation id="5654669866168491665">서드 파티 쿠키를 차단하면 작동하지 않을 수 있는 사이트에 대해 자세히 알아보기</translation>
@@ -8606,6 +8601,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7113974454301513811">이제 목록에 현재 탭을 추가합니다.</translation>
 <translation id="7114054701490058191">비밀번호가 일치하지 않습니다.</translation>
 <translation id="7114648273807173152">Smart Lock을 사용해 Google 계정에 로그인하려면 설정 &gt; 연결된 기기 &gt; 휴대전화 &gt; Smart Lock으로 이동하세요.</translation>
+<translation id="7115051913071512405">사용해 보기</translation>
 <translation id="7115361495406486998">연락 가능한 연락처 없음</translation>
 <translation id="7115731767122970828">지금 향상</translation>
 <translation id="7116554090938189816">프린터 SSL 인증서가 만료되었습니다. 프린터를 다시 시작한 후 다시 시도해 보세요</translation>

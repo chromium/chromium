@@ -667,7 +667,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1464258312790801189">Dina konton</translation>
 <translation id="1464597059227482327">Om du delar med en Chromebook som inte finns i dina kontakter ska du kontrollera att alternativet för synlighet i närheten har aktiverats på din Chromebook. Du kan aktivera detta genom att välja det nedre högra hörnet och markera Synl. i närheten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Öppna Inställningar om du vill visa enhetsinställningarna</translation>
-<translation id="146481294006497945">Inga sparade lösenord</translation>
 <translation id="1465176863081977902">K&amp;opiera ljudadress</translation>
 <translation id="146522654774760805">Lösenord och autofyll</translation>
 <translation id="1465827627707997754">Pizzabit</translation>
@@ -2178,7 +2177,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2485394160472549611">De bästa valen för dig</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2485681265915754872">Google Plays användarvillkor</translation>
-<translation id="2486036712620651117">Lösenord och nycklar</translation>
 <translation id="248676429071089168">Svep uppåt för att flytta sidan nedåt</translation>
 <translation id="2487067538648443797">Lägg till ett nytt bokmärke</translation>
 <translation id="2489686758589235262">Tilldela 2 brytare till</translation>
@@ -3901,7 +3899,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3721178866505920080">Mer information om att aktivera utökad inläsning i förväg</translation>
 <translation id="3722108462506185496">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />-instruktionen har tagits emot</translation>
-<translation id="3724897774652282549">Fyll i formuläret</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">Qt</translation>
 <translation id="3727144509609414201">Tillgängliga wifi-nätverk</translation>
@@ -4334,7 +4331,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3993887353483242788">Synkronisera <ph name="DEVICE_TYPE" /> så att inställningarna kan användas på alla enheter där du är inloggad på Google-kontot. Detta gäller bland annat appar, inställningar, wifi-lösenord, språk, bakgrund och kortkommandon.</translation>
 <translation id="3994318741694670028">Tyvärr är din dator konfigurerad med ett felaktigt hårdvaru-id. Detta förhindrar att ChromeOS Flex uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara sårbar för angrepp<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås upp mobilen och håll den närmare din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Logga in som <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Hitta knappar på surfplattan</translation>
 <translation id="3994708120330953242">Vissa av dina lösenord upptäcktes i samband med ett dataintrång. För att skydda dina konton bör du ändra dessa lösenord nu.</translation>
 <translation id="3994878504415702912">&amp;Zooma in</translation>
@@ -6605,7 +6601,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5646994841348250879">Välj ett konto för att logga in på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
-<translation id="5650537073531199882">Fyll i formuläret</translation>
 <translation id="5651308944918885595">Synlighet för Närdelning</translation>
 <translation id="5653154844073528838">Du har <ph name="PRINTER_COUNT" /> sparade skrivare.</translation>
 <translation id="5654669866168491665">Läs mer om webbplatser som kanske inte fungerar när du blockerar tredjepartscookies.</translation>
@@ -8605,6 +8600,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7113974454301513811">Lägg till den aktuella fliken i listan</translation>
 <translation id="7114054701490058191">Lösenorden matchar inte</translation>
 <translation id="7114648273807173152">Öppna Inställningar &gt; Anslutna enheter &gt; Din mobil &gt; Smart Lock om du vill kunna logga in på Google-kontot med Smart Lock.</translation>
+<translation id="7115051913071512405">Testa själv</translation>
 <translation id="7115361495406486998">Det finns inga kontakter inom räckhåll</translation>
 <translation id="7115731767122970828">Förbättra nu</translation>
 <translation id="7116554090938189816">Skrivarens SSL-certifikat har upphört att gälla. Starta om skrivaren och försök igen.</translation>

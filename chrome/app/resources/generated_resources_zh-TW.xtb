@@ -666,7 +666,6 @@
 <translation id="1464258312790801189">你的帳戶</translation>
 <translation id="1464597059227482327">如果要與未設為聯絡人的 Chromebook 分享內容，請確認該 Chromebook 已開啟「鄰近分享瀏覽權限」，開啟方式如下：點選右下角並選取「鄰近分享瀏覽權限」。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">如要開啟裝置偏好設定選項，請前往「設定」。</translation>
-<translation id="146481294006497945">未儲存任何密碼</translation>
 <translation id="1465176863081977902">複製音訊位址(&amp;O)</translation>
 <translation id="146522654774760805">密碼和自動填入</translation>
 <translation id="1465827627707997754">披薩切片</translation>
@@ -2165,7 +2164,6 @@
 <translation id="2485394160472549611">專屬推薦首選</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2485681265915754872">Google Play 服務條款</translation>
-<translation id="2486036712620651117">密碼和密碼金鑰</translation>
 <translation id="248676429071089168">向上滑動即可將頁面向下移動</translation>
 <translation id="2487067538648443797">新增書籤</translation>
 <translation id="2489686758589235262">再指派 2 個外接切換裝置</translation>
@@ -3885,7 +3883,6 @@
 <translation id="3721178866505920080">進一步瞭解如何開啟延伸預先載入模式</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤，請再試一次。</translation>
 <translation id="3722624153992426516">已收到<ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" />的操作說明</translation>
-<translation id="3724897774652282549">填寫表單</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 WiFi 網路</translation>
@@ -4317,7 +4314,6 @@
 <translation id="3993887353483242788">將 <ph name="DEVICE_TYPE" /> 同步處理，如此一來，在使用 Google 帳戶登入後，就能將偏好設定同步至任何裝置。偏好設定包含應用程式、設定、Wi-Fi 密碼、語言、桌布、鍵盤快速鍵等。</translation>
 <translation id="3994318741694670028">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
-<translation id="3994522032746736727">以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="3994530503403062649">點選平板電腦上的按鈕</translation>
 <translation id="3994708120330953242">你有一些密碼在資料侵害事件中外洩。為保護你的帳戶，建議立即變更這些密碼。</translation>
 <translation id="3994878504415702912">縮放(&amp;Z)</translation>
@@ -6584,7 +6580,6 @@
 <translation id="5646994841348250879">選擇用來登入「<ph name="SITE_ETLD_PLUS_ONE" />」的帳戶</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
-<translation id="5650537073531199882">填入表單</translation>
 <translation id="5651308944918885595">鄰近分享可偵測性</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 台已儲存的印表機。</translation>
 <translation id="5654669866168491665">進一步瞭解在封鎖第三方 Cookie 的情況下，可能無法運作的網站</translation>
@@ -8582,6 +8577,7 @@
 <translation id="7113974454301513811">現在，將現有分頁加入清單</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請依序前往 [設定] &gt; [已連接的裝置] &gt; [你的手機] &gt; [Smart Lock]。</translation>
+<translation id="7115051913071512405">立即體驗</translation>
 <translation id="7115361495406486998">沒有可建立連線的聯絡人</translation>
 <translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">印表機 SSL 憑證已過期。請重新啟動印表機，然後再試一次。</translation>

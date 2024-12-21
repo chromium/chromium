@@ -667,7 +667,6 @@
 <translation id="1464258312790801189">ඔබේ ගිනුම්</translation>
 <translation id="1464597059227482327">ඔබ ඔබේ සම්බන්‍ධතාවල නැති Chromebook එකක් සමග බෙදා ගන්නේ නම්, Chromebook එකේ “ළඟ දෘශ්‍යතාව” සක්‍රීය කර ඇති බව තහවුරු කර ගන්න. “ළඟ දෘශ්‍යතාව” සක්‍රීය කිරීමට පහත දකුණු කොන තෝරා පසුව “ළඟ දෘශ්‍යතාව” සක්‍රීය කිරීමට තෝරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">උපාංග මනාප සඳහා, සැකසීම් වෙත යන්න.</translation>
-<translation id="146481294006497945">සුරැකි මුරපද නැත</translation>
 <translation id="1465176863081977902">ශ්‍රව්‍ය ලිපිනය පිටපත් කරන්න</translation>
 <translation id="146522654774760805">මුරපද සහ ස්වයං පිරවීම</translation>
 <translation id="1465827627707997754">පීසා පෙත්ත</translation>
@@ -2167,7 +2166,6 @@
 <translation id="2485394160472549611">ඔබ සඳහා ඉහළම තේරීම්</translation>
 <translation id="2485422356828889247">අස්ථාපනය</translation>
 <translation id="2485681265915754872">Google Play සේවා නියම</translation>
-<translation id="2486036712620651117">මුරපද සහ මුරයතුරු</translation>
 <translation id="248676429071089168">පිටුව පහළට ගෙන යාමට ඉහළට ස්වයිප් කරන්න</translation>
 <translation id="2487067538648443797">නව පිටුසන එක් කරන්න</translation>
 <translation id="2489686758589235262">තවත් ස්විච 2ක් පවරන්න</translation>
@@ -3888,7 +3886,6 @@
 <translation id="3721178866505920080">දිගු කළ පූර්ව පූරණය ක්‍රියාත්මක කිරීම පිළිබඳ වැඩිදුර තතු</translation>
 <translation id="3722108462506185496">අථත්‍ය යාන්ත්‍රණ සේවාව ආරම්භ කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> උපදෙස් ලැබී ඇත</translation>
-<translation id="3724897774652282549">පෝරමය පුරවන්න</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ලබා ගත හැකි WiFi ජාල</translation>
@@ -4322,7 +4319,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3993887353483242788">ඔබගේ Google ගිණුම සමඟ පුරන විට ඔබගේ මනාප ඕනෑම උපාංගයක සුදානම් වන පරිදි ඔබගේ <ph name="DEVICE_TYPE" /> සමමුහුර්ත කරන්න. මනාපවලට යෙදුම්, සැකසීම්, Wi-Fi මුරපද, භාෂා, වෝල්පේපරය, යතුරුපුවරු කෙටි මං සහ තවත් දේ ඇතුළත් වේ.</translation>
 <translation id="3994318741694670028">අවාසනාවකට, ඔබගේ පරිගණකය විකෘති වූ දෘඪාංග ID එකක් සමගින් වින්‍යාස කර තිබේ. මෙය ChromeOS Flex නවතම ආරක්ෂක විසඳුම්වලින් යාවත්කාලීන වීම වළක්වන අතර ඔබගේ පරිගණකය <ph name="BEGIN_BOLD" />අනිෂ්ට ප්‍රහාරවලට ලක් වීමට ඉඩ තිබේ<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">ඔබේ දුරකථනය අගුලු හැර <ph name="DEVICE_TYPE" /> අගුලු හැරීමට එය සමීපයට ගෙන එන්න.</translation>
-<translation id="3994522032746736727"><ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="3994530503403062649">ඔබේ ටැබ්ලටයේ බොත්තම් සොයා ගන්න</translation>
 <translation id="3994708120330953242">ඔබේ සමහර මුරපද දත්ත කඩ කිරීමක දී හමු විය. ඔබේ ගිණුම් සුරක්ෂිත කිරීම සඳහා, ඔබ දැන් මෙම මුරපද වෙනස් කළ යුතු වේ.</translation>
 <translation id="3994878504415702912">විශාලනය (&amp;Z)</translation>
@@ -6593,7 +6589,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5646994841348250879"><ph name="SITE_ETLD_PLUS_ONE" /> වෙත පුරන්නට ගිණුමක් තෝරන්න</translation>
 <translation id="5648021990716966815">මයික් ජැක්කුව</translation>
 <translation id="5648166631817621825">පසුගිය දින 7</translation>
-<translation id="5650537073531199882">පෝරමය තුළ පුරවන්න</translation>
 <translation id="5651308944918885595">ළඟ බෙදා ගැනීම සොයා ගැනීමේ හැකියාව</translation>
 <translation id="5653154844073528838">ඔබට සුරැකි මුද්‍රක <ph name="PRINTER_COUNT" />ක් තිබේ.</translation>
 <translation id="5654669866168491665">තෙවන පාර්ශ්ව කුකීස් අවහිර කිරීමේ දී ක්‍රියා නොකරන අඩවි පිළිබඳව තව දැන ගන්න</translation>
@@ -8592,6 +8587,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7113974454301513811">දැන් ඔබේ ලැයිස්තුවට වත්මන් පටිත්ත එක් කරන්න</translation>
 <translation id="7114054701490058191">මුරපද නොගැළපේ</translation>
 <translation id="7114648273807173152">ඔබේ Google ගිණුමට පුරන්නට Smart Lock භාවිත කිරීමට, සැකසීම් &gt; සම්බන්ධිත උපාංග &gt; ඔබේ දුරකථනය &gt; Smart Lock වෙත යන්න.</translation>
+<translation id="7115051913071512405">ඊට උත්සාහ කර බලන්න</translation>
 <translation id="7115361495406486998">ළඟා විය හැකි සම්බන්ධතා නැත</translation>
 <translation id="7115731767122970828">දැන් වැඩි කරන්න</translation>
 <translation id="7116554090938189816">මුද්‍රකයේ SSL සහතිකය කල් ඉකුත් වී ඇත. මුද්‍රකය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>

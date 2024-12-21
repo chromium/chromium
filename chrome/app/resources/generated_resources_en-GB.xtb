@@ -667,7 +667,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1464258312790801189">Your Accounts</translation>
 <translation id="1464597059227482327">If you're sharing with a Chromebook that is not in your contacts, make sure that the Chromebook has 'Nearby visibility' turned on. To turn on 'Nearby visibility', select the bottom-right corner and then select to turn on 'Nearby visibility'. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">For device preferences, go to Settings.</translation>
-<translation id="146481294006497945">No saved passwords</translation>
 <translation id="1465176863081977902">C&amp;opy Audio Address</translation>
 <translation id="146522654774760805">Passwords and autofill</translation>
 <translation id="1465827627707997754">Pizza slice</translation>
@@ -2178,7 +2177,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2485394160472549611">Top picks for you</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2485681265915754872">Google Play Terms of Service</translation>
-<translation id="2486036712620651117">Passwords and passkeys</translation>
 <translation id="248676429071089168">Swipe up to move the page down</translation>
 <translation id="2487067538648443797">Add new bookmark</translation>
 <translation id="2489686758589235262">Assign 2 more switches</translation>
@@ -3901,7 +3899,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3721178866505920080">More info about turning on extended preloading</translation>
 <translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> instruction received</translation>
-<translation id="3724897774652282549">Fill in form</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Available Wi-Fi networks</translation>
@@ -4334,7 +4331,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3993887353483242788">Sync your <ph name="DEVICE_TYPE" /> so that your preferences will be ready on any device when you sign in with your Google Account. Preferences include apps, settings, Wi-Fi passwords, languages, wallpaper, keyboard shortcuts and more.</translation>
 <translation id="3994318741694670028">Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS Flex from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD" />may be vulnerable to malicious attacks<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Sign in as <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Locate buttons on your tablet</translation>
 <translation id="3994708120330953242">Some of your passwords were found in a data breach. To secure your accounts, you should change these passwords now.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
@@ -4625,6 +4621,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4220648711404560261">An error occurred during activation.</translation>
 <translation id="4222917615373664617">Price tracking is enabled. Price is <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Microphone not allowed</translation>
+<translation id="4224541845943007092">Read and save keyboard input from the address bar</translation>
 <translation id="4225397296022057997">On all sites</translation>
 <translation id="4228071595943929139">Use your organisation’s email address</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{This extension is not allowed}other{Some extensions are not allowed}}</translation>
@@ -6605,7 +6602,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5646994841348250879">Choose an account to sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
-<translation id="5650537073531199882">Fill in form</translation>
 <translation id="5651308944918885595">Nearby Share discoverability</translation>
 <translation id="5653154844073528838">You have <ph name="PRINTER_COUNT" /> saved printers.</translation>
 <translation id="5654669866168491665">Learn more about sites that may not work when blocking third-party cookies</translation>
@@ -8605,6 +8601,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7113974454301513811">Now add the current tab to your list</translation>
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Try it out</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
 <translation id="7115731767122970828">Boost now</translation>
 <translation id="7116554090938189816">Printer SSL certificate is expired. Restart printer and try again.</translation>

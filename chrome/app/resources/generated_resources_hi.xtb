@@ -668,7 +668,6 @@
 <translation id="1464258312790801189">आपके खाते</translation>
 <translation id="1464597059227482327">अगर किसी ऐसे Chromebook के साथ फ़ाइलें शेयर की जा रही हैं जो आपके संपर्क में नहीं है, तो पक्का करें कि Chromebook में “आस-पास दिखे” सुविधा चालू हो. “आस-पास दिखे” सुविधा चालू करने के लिए, स्क्रीन पर सबसे नीचे दाएं कोने को चुनें. इसके बाद, “आस-पास दिखे” सुविधा को चालू करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">डिवाइस की प्राथमिकताओं के लिए, सेटिंग पेज पर जाएं.</translation>
-<translation id="146481294006497945">कोई भी पासवर्ड सेव नहीं किया गया है</translation>
 <translation id="1465176863081977902">ऑडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="146522654774760805">पासवर्ड और ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="1465827627707997754">पिज़्ज़ा का टुकड़ा</translation>
@@ -2179,7 +2178,6 @@
 <translation id="2485394160472549611">आपके लिए चुने गए सबसे अच्छे विकल्प</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
 <translation id="2485681265915754872">Google Play की सेवा की शर्तें</translation>
-<translation id="2486036712620651117">पासवर्ड और पासकी</translation>
 <translation id="248676429071089168">पेज को नीचे ले जाने के लिए, ऊपर की ओर स्वाइप करें</translation>
 <translation id="2487067538648443797">नया बुकमार्क जोड़ें</translation>
 <translation id="2489686758589235262">दो स्विच और असाइन करें</translation>
@@ -3902,7 +3900,6 @@
 <translation id="3721178866505920080">पहले से लोड करने की एक्सटेंडेड सुविधा को चालू करने के बारे में ज़्यादा जानकारी</translation>
 <translation id="3722108462506185496">वर्चुअल मशीन सेवा शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> निर्देश मिला</translation>
-<translation id="3724897774652282549">फ़ॉर्म भरें</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध वाई-फ़ाई नेटवर्क</translation>
@@ -4334,7 +4331,6 @@
 <translation id="3993887353483242788">अपने <ph name="DEVICE_TYPE" /> को सिंक करें, ताकि जब आप अपने Google खाते से किसी दूसरे डिवाइस पर साइन इन करें, तब आपकी सेव की गई सेटिंग उस डिवाइस पर, इस्तेमाल के लिए पहले से तैयार हों. आपकी सेव की गई सेटिंग में ऐप्लिकेशन, सेटिंग, वाई-फ़ाई पासवर्ड, भाषा, वॉलपेपर, कीबोर्ड शॉर्टकट, और बहुत कुछ शामिल होता है.</translation>
 <translation id="3994318741694670028">माफ़ करें, आपका कंप्यूटर किसी गलत हार्डवेयर आईडी से कॉन्फ़िगर किया गया है. इस वजह से ChromeOS Flex में नए सुरक्षा सुधार अपडेट नहीं हो पा रहे हैं. इसके अलावा, आपके कंप्यूटर को <ph name="BEGIN_BOLD" />नुकसान पहुंचाने वाले हमलों का जोखिम हो सकता है<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">अपना फ़ोन अनलॉक करें और उसे पास लाकर अपने <ph name="DEVICE_TYPE" /> को अनलॉक करें.</translation>
-<translation id="3994522032746736727"><ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="3994530503403062649">अपने टैबलेट पर मौजूद बटन पर क्लिक करें</translation>
 <translation id="3994708120330953242">आपके कुछ पासवर्ड, डेटा के गलत इस्तेमाल की वजह से लीक हो चुके हैं. अपने खातों को सुरक्षित रखने के लिए, इन पासवर्ड को अभी बदलें.</translation>
 <translation id="3994878504415702912">&amp;ज़ूम</translation>
@@ -6603,7 +6599,6 @@
 <translation id="5646994841348250879"><ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करने के लिए कोई खाता चुनें</translation>
 <translation id="5648021990716966815">माइक जैक</translation>
 <translation id="5648166631817621825">पिछले 7 दिन</translation>
-<translation id="5650537073531199882">फ़ॉर्म भरें</translation>
 <translation id="5651308944918885595">आस-पास शेयर करने की सुविधा और 'खोजने लायक बनाना' सेटिंग</translation>
 <translation id="5653154844073528838">आपके पास <ph name="PRINTER_COUNT" /> सेव किए गए प्रिंटर हैं.</translation>
 <translation id="5654669866168491665">उन साइटों के बारे में ज़्यादा जानें जो तीसरे पक्ष की कुकी ब्लॉक करने पर शायद काम न करें</translation>
@@ -8605,6 +8600,7 @@
 <translation id="7113974454301513811">अब मौजूदा टैब को अपनी सूची में जोड़ें</translation>
 <translation id="7114054701490058191">पासवर्ड मेल नहीं खाते</translation>
 <translation id="7114648273807173152">Smart Lock का इस्तेमाल करके अपने Google खाते में साइन इन करने के लिए, सेटिंग &gt; कनेक्ट किए हुए डिवाइस &gt; आपका फ़ोन &gt; Smart Lock पर जाएं.</translation>
+<translation id="7115051913071512405">इसे आज़माएं</translation>
 <translation id="7115361495406486998">Google खाते वाला कोई भी संपर्क नहीं है</translation>
 <translation id="7115731767122970828">अभी बूस्ट करें</translation>
 <translation id="7116554090938189816">प्रिंटर के एसएसएल सर्टिफ़िकेट की समयसीमा खत्म हो गई है. प्रिंटर को रीस्टार्ट करें और फिर से कोशिश करें.</translation>

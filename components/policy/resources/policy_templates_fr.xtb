@@ -3286,6 +3286,7 @@ Si cette règle est configurée, la règle <ph name="DEVELOPER_TOOLS_AVAILABILIT
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
 
       Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> contactera automatiquement Quirks Server pour télécharger les fichiers de configuration, s'ils sont disponibles, et les enregistrer sur l'appareil  Ces fichiers pourront, par exemple, être utilisés pour améliorer la qualité d'affichage des moniteurs connectés.</translation>
+<translation id="3513864752694608929">Ne pas appliquer les modes de saisie activés</translation>
 <translation id="3515196503924273265">Permet d'activer la fonctionnalité NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Une fois <ph name="LACROS_NAME" /> désactivé, la migration des données n'est pas effectuée. Le dossier <ph name="LACROS_NAME" /> est supprimé, et les utilisateurs continuent d'utiliser les données restantes.</translation>
 <translation id="3518293344797498431">Rechargez la batterie à environ 80 % pour maximiser sa durée de vie.</translation>
@@ -6678,6 +6679,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
 <translation id="60925735895026302">Interdire à tous les sites de demander l'accès aux imprimantes locales via l'API WebPrinting</translation>
 <translation id="6093156968240188330">Permettre aux utilisateurs distants d'interagir avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
+<translation id="6093551397728373988">Exiger l'activation de tous les modes de saisie autorisés dans une session utilisateur</translation>
 <translation id="6094314311474620462">Désactivez l'impression</translation>
 <translation id="6097601282776163274">Activer la collecte de données anonymisées avec clé d'URL</translation>
 <translation id="6099853574908182288">Mode d'impression par défaut couleur</translation>
@@ -6873,6 +6875,11 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
       Si cette règle est désactivée, les utilisateurs ne sont pas autorisés à exécuter Chrome for Testing. Ils pourront quand même installer Chrome for Testing, mais cette version ne s'exécutera pas avec les profils pour lesquels cette règle est désactivée.</translation>
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
+<translation id="6262668203803408414">Si cette règle est définie sur "True", tous les modes de saisie de la règle <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> sont activés dans les sessions <ph name="PRODUCT_OS_NAME" />.
+Aucun autre mode de saisie ne peut être activé dans les sessions utilisateur.
+Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucun mode de saisie activé n'est appliqué et la règle <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> ne configure que les modes de saisie disponibles pour l'utilisateur.
+
+Si la règle <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> n'est pas configurée ou qu'elle est définie sur une liste vide, cette règle est ignorée et les utilisateurs peuvent activer n'importe quel mode de saisie.</translation>
 <translation id="6264247808139384018">Si cette règle est activée ou n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.
 
 Si cette règle est désactivée, les utilisateurs ne peuvent pas verrouiller l'écran (ils peuvent uniquement se déconnecter de leur session utilisateur).</translation>
@@ -8900,6 +8907,7 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 
       Il était prévu que cette règle serait temporaire. Elle a été supprimée après le lancement complet de la nouvelle interface utilisateur de l'info-bulle de téléchargement.</translation>
 <translation id="7736521021425189418">Terminal (disponible depuis la version 117)</translation>
+<translation id="7736846524371077454">Exiger l'activation de tous les modes de saisie autorisés</translation>
 <translation id="7740644123648617252">Activer l'importation des données de saisie automatique à la première exécution</translation>
 <translation id="7744253761377202223">Pourcentage de luminosité de l'écran lorsque l'appareil fonctionne sur secteur.</translation>
 <translation id="7747447585227954402">Autoriser les appareils à utiliser un <ph name="PLUGIN_VM_NAME" /> pour <ph name="PRODUCT_OS_NAME" /></translation>

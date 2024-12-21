@@ -667,7 +667,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1464258312790801189">Tilisi</translation>
 <translation id="1464597059227482327">Jos jaat sisältöä Chromebookille, joka ei ole yhteystiedoissasi, varmista, että Lähinäkyvyys on päällä Chromebookilla. Laita Lähinäkyvyys-asetus päälle klikkaamalla oikeasta alakulmasta ja valitsemalla sitten "Lähinäkyvyys". <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Katso laitevalinnat asetuksista.</translation>
-<translation id="146481294006497945">Ei tallennettuja salasanoja</translation>
 <translation id="1465176863081977902">K&amp;opioi äänen osoite</translation>
 <translation id="146522654774760805">Salasanat ja automaattinen täyttö</translation>
 <translation id="1465827627707997754">Pizzapala</translation>
@@ -2177,7 +2176,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2485394160472549611">Suositukset sinulle</translation>
 <translation id="2485422356828889247">Poista</translation>
 <translation id="2485681265915754872">Google Playn käyttöehdot</translation>
-<translation id="2486036712620651117">Salasanat ja avainkoodit</translation>
 <translation id="248676429071089168">Siirry alaspäin sivulla pyyhkäisemällä ylöspäin</translation>
 <translation id="2487067538648443797">Lisää kirjanmerkki</translation>
 <translation id="2489686758589235262">Ota käyttöön kaksi kytkintä lisää</translation>
@@ -3900,7 +3898,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3721178866505920080">Lisätietoa laajennetun esilatauksen laittamisesta päälle</translation>
 <translation id="3722108462506185496">Virtuaalikonepalvelun käynnistys epäonnistui. Yritä myöhemmin uudelleen.</translation>
 <translation id="3722624153992426516">Ohje vastaanotettu: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
-<translation id="3724897774652282549">Täytä lomake</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Käytettävissä olevat Wi-Fi-verkot</translation>
@@ -4330,7 +4327,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3993887353483242788">Synkronoi <ph name="DEVICE_TYPE" />, niin valinnat säilyvät millä tahansa laitteella, kun kirjaudut sisään Google-tililläsi. Valinnat koskevat esimerkiksi sovelluksia, asetuksia, Wi-Fi-verkon salasanoja, kieliä, taustakuvaa ja pikanäppäimiä.</translation>
 <translation id="3994318741694670028">Tietokoneesi on valitettavasti määritetty virheellisellä laitteistotunnuksella. Tämän takia ChromeOS Flex ei voi asentaa uusimpia tietoturvapäivityksiä ja tietokoneesi <ph name="BEGIN_BOLD" />voi altistua hyökkäyksille<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Avaa laitteen <ph name="DEVICE_TYPE" /> lukitus avaamalla ensin puhelimesi ja tuomalla se lähelle laitetta.</translation>
-<translation id="3994522032746736727">Kirjaudu sisään tilillä <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Aseta tabletin painikkeet</translation>
 <translation id="3994708120330953242">Salasanojasi on paljastunut tietosuojaloukkauksen yhteydessä. Suojaa tilejäsi vaihtamalla salasanat nyt.</translation>
 <translation id="3994878504415702912">&amp;Koko</translation>
@@ -6601,7 +6597,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5646994841348250879">Valitse millä tilillä kirjaudut sovellukseen (<ph name="SITE_ETLD_PLUS_ONE" />)</translation>
 <translation id="5648021990716966815">Mikrofoniliitäntä</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
-<translation id="5650537073531199882">Täytä lomake</translation>
 <translation id="5651308944918885595">Lähijakaminen löydettävyys</translation>
 <translation id="5653154844073528838">Sinulla on <ph name="PRINTER_COUNT" /> tallennettua tulostinta</translation>
 <translation id="5654669866168491665">Lue lisää sivustoista, jotka eivät välttämättä toimi kolmannen osapuolen evästeitä estettäessä</translation>
@@ -8601,6 +8596,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7113974454301513811">Lisää nykyinen välilehti listalle</translation>
 <translation id="7114054701490058191">Salasanat eivät täsmää</translation>
 <translation id="7114648273807173152">Jos haluat kirjautua Google-tilillesi Smart Lockin avulla, siirry kohtaan Asetukset &gt; Yhdistetyt laitteet &gt; Puhelimesi &gt; Smart Lock.</translation>
+<translation id="7115051913071512405">Kokeile</translation>
 <translation id="7115361495406486998">Ei kontakteja tavoitettavissa</translation>
 <translation id="7115731767122970828">Tehosta nyt</translation>
 <translation id="7116554090938189816">Tulostimen SSL-varmenne on vanhentunut. Käynnistä tulostin uudelleen ja yritä uudelleen.</translation>

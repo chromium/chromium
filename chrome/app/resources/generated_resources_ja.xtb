@@ -666,7 +666,6 @@
 <translation id="1464258312790801189">お使いのアカウント</translation>
 <translation id="1464597059227482327">連絡先に登録されていない Chromebook と共有する場合は、その Chromebook で [周辺ユーザーによる検出] がオンになっていることを確認してください。[周辺ユーザーによる検出] をオンにするには、右下の隅を選択してから [周辺ユーザーによる検出] をオンにします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">デバイス設定を行うには、[設定] に移動してください。</translation>
-<translation id="146481294006497945">保存したパスワードはありません</translation>
 <translation id="1465176863081977902">オーディオ アドレスをコピー(&amp;C)</translation>
 <translation id="146522654774760805">パスワードと自動入力</translation>
 <translation id="1465827627707997754">ピザ</translation>
@@ -2160,7 +2159,6 @@
 <translation id="2485394160472549611">あなたへのおすすめ</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2485681265915754872">Google Play 利用規約</translation>
-<translation id="2486036712620651117">パスワードとパスキー</translation>
 <translation id="248676429071089168">上にスワイプすると、ページ下部に移動します</translation>
 <translation id="2487067538648443797">新しいブックマークを追加</translation>
 <translation id="2489686758589235262">スイッチを 2 つ追加で割り当てる</translation>
@@ -3879,7 +3877,6 @@
 <translation id="3721178866505920080">拡張プリロードの有効化の詳細</translation>
 <translation id="3722108462506185496">仮想マシンサービスの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="3722624153992426516"><ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /> の指示を受信しました</translation>
-<translation id="3724897774652282549">フォームに入力</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> • <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">利用可能な Wi-Fi ネットワーク</translation>
@@ -4312,7 +4309,6 @@
 <translation id="3993887353483242788"><ph name="DEVICE_TYPE" /> を同期すると、Google アカウントでログインする他のデバイスでご自分の環境設定を使用できるようになります。環境設定には、アプリ、設定、Wi-Fi パスワード、言語、壁紙、キーボード ショートカットなどが含まれます。</translation>
 <translation id="3994318741694670028">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、ChromeOS Flex に最新のセキュリティ修正を適用することができません。お使いのパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> のロックを解除するには、スマートフォンのロックを解除してデバイスに近づけます。</translation>
-<translation id="3994522032746736727"><ph name="EMAIL" /> としてログイン</translation>
 <translation id="3994530503403062649">タブレットのボタン設定</translation>
 <translation id="3994708120330953242">パスワードの一部がデータ侵害で漏洩しました。これらのパスワードを今すぐ変更して、アカウントを保護してください。</translation>
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
@@ -6576,7 +6572,6 @@
 <translation id="5646994841348250879"><ph name="SITE_ETLD_PLUS_ONE" /> へのログイン用アカウントを選択してください</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
-<translation id="5650537073531199882">フォームに入力</translation>
 <translation id="5651308944918885595">ニアバイシェアの検出の許可</translation>
 <translation id="5653154844073528838">保存済みのプリンタは <ph name="PRINTER_COUNT" /> 件です。</translation>
 <translation id="5654669866168491665">サードパーティ Cookie をブロックした場合に動作しない可能性のあるサイトについての詳細</translation>
@@ -8574,6 +8569,7 @@
 <translation id="7113974454301513811">ここで現在のタブをリストに追加します</translation>
 <translation id="7114054701490058191">パスワードが一致しません</translation>
 <translation id="7114648273807173152">Smart Lock を使用して Google アカウントにログインするには、[設定] &gt; [接続済みのデバイス] &gt; [スマートフォン] &gt; [Smart Lock] に移動します。</translation>
+<translation id="7115051913071512405">試してみる</translation>
 <translation id="7115361495406486998">連絡先が見つかりませんでした</translation>
 <translation id="7115731767122970828">今すぐ向上</translation>
 <translation id="7116554090938189816">プリンタの SSL 証明書の有効期限が切れています。プリンタを再起動してもう一度お試しください。</translation>

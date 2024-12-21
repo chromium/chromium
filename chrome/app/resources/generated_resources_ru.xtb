@@ -669,7 +669,6 @@
 <translation id="1464258312790801189">Аккаунты</translation>
 <translation id="1464597059227482327">Чтобы обмениваться данными с устройством Chromebook, которого нет в ваших контактах, включите на нем параметр "Широкий доступ". Нажмите на правый нижний угол экрана, чтобы перейти к нужным настройкам. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1464781208867302907">Чтобы изменить параметры устройства, откройте приложение "Настройки".</translation>
-<translation id="146481294006497945">Сохраненных паролей нет</translation>
 <translation id="1465176863081977902">&amp;Копировать URL аудио</translation>
 <translation id="146522654774760805">Пароли и автозаполнение</translation>
 <translation id="1465827627707997754">Кусок пиццы</translation>
@@ -2167,7 +2166,6 @@
 <translation id="2485394160472549611">Персональные рекомендации</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2485681265915754872">Условия использования Google Play</translation>
-<translation id="2486036712620651117">Пароли и ключи доступа</translation>
 <translation id="248676429071089168">Если провести вверх, страница прокрутится вниз</translation>
 <translation id="2487067538648443797">Новая закладка</translation>
 <translation id="2489686758589235262">Назначить ещё два</translation>
@@ -3890,7 +3888,6 @@
 <translation id="3721178866505920080">Подробнее о том, как включить расширенную предзагрузку</translation>
 <translation id="3722108462506185496">Не удалось запустить сервис виртуальной машины. Повторите попытку.</translation>
 <translation id="3722624153992426516">Получена инструкция: <ph name="IMPORT_CERTIFICATE__INSTRUCTION_NAME" /></translation>
-<translation id="3724897774652282549">Заполните форму</translation>
 <translation id="3726334084188857295"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="LAST_USED" /></translation>
 <translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Доступные сети Wi-Fi</translation>
@@ -4323,7 +4320,6 @@
 <translation id="3993887353483242788">Синхронизируйте устройство <ph name="DEVICE_TYPE" />. После этого приложения, настройки, пароли Wi-Fi, языки, обои, сочетания клавиш и другие параметры будут доступны на всех устройствах, на которых выполнен вход в аккаунт Google.</translation>
 <translation id="3994318741694670028">В настройках компьютера указан неверный аппаратный идентификатор устройства. Chrome OS Flex не сможет устанавливать обновления системы безопасности для защиты компьютера от <ph name="BEGIN_BOLD" />вредоносных атак<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
-<translation id="3994522032746736727">Войти как <ph name="EMAIL" /></translation>
 <translation id="3994530503403062649">Переназначьте кнопки планшета</translation>
 <translation id="3994708120330953242">Несколько ваших паролей были раскрыты в результате утечки данных. Чтобы защитить свои аккаунты, измените эти пароли прямо сейчас.</translation>
 <translation id="3994878504415702912">&amp;Размер текста</translation>
@@ -6593,7 +6589,6 @@
 <translation id="5646994841348250879">Выберите аккаунт для входа на сайт <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
-<translation id="5650537073531199882">Заполнить форму</translation>
 <translation id="5651308944918885595">Обмен с окружением: параметры видимости</translation>
 <translation id="5653154844073528838">Сохраненных принтеров: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="5654669866168491665">Узнайте больше о сайтах, которые могут не работать, когда сторонние файлы cookie заблокированы</translation>
@@ -8599,6 +8594,7 @@
 <translation id="7113974454301513811">Теперь добавьте текущую вкладку в список</translation>
 <translation id="7114054701490058191">Пароли не совпадают</translation>
 <translation id="7114648273807173152">Чтобы использовать Smart Lock для входа в аккаунт Google, нажмите "Настройки &gt; Подключенные устройства &gt; Телефон &gt; Smart Lock".</translation>
+<translation id="7115051913071512405">Попробовать</translation>
 <translation id="7115361495406486998">Нет доступных контактов</translation>
 <translation id="7115731767122970828">Повысить</translation>
 <translation id="7116554090938189816">Срок действия SSL-сертификата принтера истек. Перезапустите принтер и повторите попытку.</translation>
