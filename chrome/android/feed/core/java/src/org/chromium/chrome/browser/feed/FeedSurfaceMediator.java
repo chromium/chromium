@@ -667,19 +667,24 @@ public class FeedSurfaceMediator
                                             for (ScrollListener listener : mScrollListeners) {
                                                 listener.onScrolled(dx, dy);
                                             }
-                                            final boolean restored =
-                                                    mCoordinator
-                                                                    .getHybridListRenderer()
-                                                                    .getListLayoutHelper()
-                                                                    .findFirstVisibleItemPosition()
-                                                            >= mPositionToRestore;
-                                            if (mPositionToRestore != RecyclerView.NO_POSITION
+
+                                            // Null if the stream has not been binded yet.
+                                            if (mCoordinator.getHybridListRenderer() != null
+                                                    && mPositionToRestore
+                                                            != RecyclerView.NO_POSITION
                                                     && mGetRestoringStateSupplier.get()
-                                                            == RestoringState.WAITING_TO_RESTORE
-                                                    && restored) {
-                                                mGetRestoringStateSupplier.set(
-                                                        RestoringState.RESTORED);
-                                                mPositionToRestore = RecyclerView.NO_POSITION;
+                                                            == RestoringState.WAITING_TO_RESTORE) {
+                                                final boolean restored =
+                                                        mCoordinator
+                                                                        .getHybridListRenderer()
+                                                                        .getListLayoutHelper()
+                                                                        .findFirstVisibleItemPosition()
+                                                                >= mPositionToRestore;
+                                                if (restored) {
+                                                    mGetRestoringStateSupplier.set(
+                                                            RestoringState.RESTORED);
+                                                    mPositionToRestore = RecyclerView.NO_POSITION;
+                                                }
                                             }
                                         });
                     }
