@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_id.h"
@@ -205,6 +206,11 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
     }
+    if (!display_override_.empty()) {
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kStandalone;
+      web_app_info->display_override = display_override_;
+    }
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
@@ -225,6 +231,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   }
 
   std::optional<SkColor> theme_color_ = SK_ColorBLUE;
+  std::vector<blink::mojom::DisplayMode> display_override_ = {};
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
@@ -306,6 +313,31 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ContainerHeight) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, WebAppIconInTitlebar) {
   InstallAndLaunchWebApp();
   ASSERT_EQ(true, frame_view_->window_icon_for_testing()->GetVisible());
+}
+
+class TabbedWebAppBrowserFrameViewWinTest
+    : public WebAppBrowserFrameViewWinTest {
+ public:
+  TabbedWebAppBrowserFrameViewWinTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kDesktopPWAsTabStrip};
+};
+
+IN_PROC_BROWSER_TEST_F(TabbedWebAppBrowserFrameViewWinTest,
+                       TabbedWebAppIconInTitlebar) {
+  display_override_ = {blink::mojom::DisplayMode::kTabbed};
+  InstallAndLaunchWebApp();
+
+  ASSERT_FALSE(frame_view_->window_icon_for_testing()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(TabbedWebAppBrowserFrameViewWinTest,
+                       NonTabbedWebAppIconInTitlebar) {
+  InstallAndLaunchWebApp();
+
+  ASSERT_TRUE(frame_view_->window_icon_for_testing()->GetVisible());
 }
 
 class WebAppBrowserFrameViewWinWindowControlsOverlayTest

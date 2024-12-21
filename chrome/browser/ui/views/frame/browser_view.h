@@ -413,6 +413,9 @@ class BrowserView : public BrowserWindow,
   // window-controls-overlay.
   bool AppUsesWindowControlsOverlay() const;
 
+  // Returns true when an app's effective display mode is tabbed.
+  bool AppUsesTabbed() const;
+
   // Returns true when an app's effective display mode is borderless.
   bool AppUsesBorderlessMode() const;
 

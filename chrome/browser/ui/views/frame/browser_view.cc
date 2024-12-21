@@ -529,12 +529,17 @@ BEGIN_METADATA(ContentsSeparator)
 END_METADATA
 
 bool ShouldShowWindowIcon(const Browser* browser,
-                          bool app_uses_window_controls_overlay) {
+                          bool app_uses_window_controls_overlay,
+                          bool app_uses_tabbed) {
 #if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
   if (browser->is_trusted_source() || app_uses_window_controls_overlay)
     return false;
+#else
+  if (app_uses_tabbed) {
+    return false;
+  }
 #endif
   return browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
@@ -909,8 +914,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       browser_(std::move(browser)),
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
-  SetShowIcon(
-      ::ShouldShowWindowIcon(browser_.get(), AppUsesWindowControlsOverlay()));
+  SetShowIcon(::ShouldShowWindowIcon(
+      browser_.get(), AppUsesWindowControlsOverlay(), AppUsesTabbed()));
 
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
@@ -2350,6 +2355,11 @@ void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
 bool BrowserView::AppUsesWindowControlsOverlay() const {
   return browser()->app_controller() &&
          browser()->app_controller()->AppUsesWindowControlsOverlay();
+}
+
+bool BrowserView::AppUsesTabbed() const {
+  return browser()->app_controller() &&
+         browser()->app_controller()->AppUsesTabbed();
 }
 
 bool BrowserView::IsWindowControlsOverlayEnabled() const {
