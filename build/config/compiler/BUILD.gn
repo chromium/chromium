@@ -1996,11 +1996,6 @@ config("default_warnings") {
         # TODO(crbug.com/376641662): Fix and re-enable.
         cflags += [ "-Wno-nontrivial-memcall" ]
       }
-
-      if (is_castos) {
-        # TODO(crbug.com/383016423): Re-enable.
-        cflags += [ "-Wno-unused-private-field" ]
-      }
     }
 
     # Some builders, such as Cronet, use a different version of Clang than
