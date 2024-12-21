@@ -2057,6 +2057,81 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram name="Navigation.StartAdjustment"
+    enum="NavigationStartAdjustmentType" expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records whether an adjustment was made to the navigation start time, and
+    what the reason was if so. This metric is recorded each time a navigation
+    finishes.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.BeforeUnloadDialog" units="ms"
+    expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records how many milliseconds the navigation start time was delayed, in
+    cases where it was adjusted to after a beforeunload dialog was displayed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.BeforeUnloadDialog.Percentage"
+    units="%" expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records the percentage of navigation time that was ignored, in cases where
+    the start time was adjusted to after a beforeunload dialog was displayed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.BeforeUnloadHandlers" units="ms"
+    expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records how many milliseconds the navigation start time was delayed, in
+    cases where it was adjusted to after beforeunload handlers ran, when no
+    dialog was displayed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.BeforeUnloadHandlers.Percentage"
+    units="%" expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records the percentage of navigation time that was ignored, in cases where
+    the start time was adjusted to after beforeunload handlers ran, when no
+    dialog was displayed.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.LegacyPostTask" units="ms"
+    expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records how many milliseconds the navigation start time was delayed, in
+    cases where it was adjusted to after a legacy PostTask was run, when no
+    beforeunload handlers were registered.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.StartAdjustment.LegacyPostTask.Percentage"
+    units="%" expires_after="2025-12-20">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records the percentage of navigation time that was ignored, in cases where
+    the start time was adjusted to after a legacy PostTask was run, when no
+    beforeunload handlers were registered.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.StartToCommit" units="ms"
     expires_after="2025-06-01">
   <owner>nasko@chromium.org</owner>

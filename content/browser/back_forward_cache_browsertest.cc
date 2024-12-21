@@ -893,8 +893,9 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        root->navigator().BeforeUnloadCompleted(root, true /* proceed */,
-                                                base::TimeTicks::Now());
+        root->navigator().BeforeUnloadCompleted(
+            root, /*proceed=*/true, base::TimeTicks::Now(),
+            /*for_legacy=*/false, /*showed_dialog=*/false);
       }));
 
   // 7) Evict entry B. This will post a task (task #3) to restart the navigation

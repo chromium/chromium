@@ -2241,6 +2241,7 @@ NavigationRequest::~NavigationRequest() {
           common_params_->url.spec(), "Net Error Code", net_error_);
       MaybeRecordTraceEventsAndHistograms();
     }
+    MaybeRecordNavigationStartAdjustments();
 
     // Abandon the prerender host reserved for activation if it exists.
     if (IsPrerenderedPageActivation()) {
@@ -2414,6 +2415,20 @@ void NavigationRequest::BeginNavigation() {
   }
 
   BeginNavigationImpl();
+}
+
+void NavigationRequest::UpdateNavigationStartTime(const base::TimeTicks& time,
+                                                  bool for_legacy,
+                                                  bool showed_dialog) {
+  // Should be called at most once per NavigationRequest.
+  CHECK(original_navigation_start_.is_null());
+
+  // Track the adjustment details for https://crbug.com/385170155.
+  original_navigation_start_ = common_params_->navigation_start;
+  navigation_start_adjustment_for_legacy_ = for_legacy;
+  beforeunload_dialog_shown_ = showed_dialog;
+
+  common_params_->navigation_start = time;
 }
 
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
@@ -11030,6 +11045,64 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
 
 #undef MAYBE_RECORD_TRACE_AND_HISTOGRAM0
 #undef MAYBE_RECORD_TRACE_AND_HISTOGRAM1
+}
+
+void NavigationRequest::MaybeRecordNavigationStartAdjustments() {
+  // Only record metrics if we have a navigation start time.
+  if (common_params().navigation_start.is_null()) {
+    return;
+  }
+
+  // Some navigations do not adjust the start time, in which case
+  // `original_navigation_start_` is left as null.
+  if (original_navigation_start_.is_null()) {
+    base::UmaHistogramEnumeration("Navigation.StartAdjustment",
+                                  NavigationStartAdjustmentType::kNone);
+    return;
+  }
+
+  // Compute the adjustment made and what percentage of the total navigation
+  // time it includes (approximating now as the end of the navigation).
+  base::TimeDelta adjustment =
+      common_params().navigation_start - original_navigation_start_;
+  base::TimeDelta original_start_to_finish =
+      base::TimeTicks::Now() - original_navigation_start_;
+  // Note that in unit tests, all timestamps can be the same. Skip recording
+  // duration metrics if no time has elapsed during the navigation.
+  if (original_start_to_finish.is_zero()) {
+    return;
+  }
+  size_t percentage = 100 * adjustment / original_start_to_finish;
+
+  // Report the adjustment in UMA metrics specific to the case that occurred.
+  NavigationStartAdjustmentType adjustment_type =
+      NavigationStartAdjustmentType::kNone;
+  std::string histogram_name = "Navigation.StartAdjustment";
+  if (navigation_start_adjustment_for_legacy_) {
+    // No beforeunload handlers actually run in legacy mode.
+    CHECK(!beforeunload_dialog_shown_);
+    adjustment_type = NavigationStartAdjustmentType::kLegacyPostTask;
+    histogram_name += ".LegacyPostTask";
+  } else if (!beforeunload_dialog_shown_) {
+    adjustment_type = NavigationStartAdjustmentType::kBeforeUnloadHandlers;
+    histogram_name += ".BeforeUnloadHandlers";
+  } else {
+    adjustment_type = NavigationStartAdjustmentType::kBeforeUnloadDialog;
+    histogram_name += ".BeforeUnloadDialog";
+  }
+  base::UmaHistogramEnumeration("Navigation.StartAdjustment", adjustment_type);
+  base::UmaHistogramTimes(histogram_name, adjustment);
+  base::UmaHistogramPercentage(histogram_name + ".Percentage", percentage);
+
+  // Show trace events indicating where the adjustment occurred in time.
+  const auto trace_id = TRACE_ID_WITH_SCOPE("NavigationStartAdjustment",
+                                            TRACE_ID_LOCAL(navigation_id_));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "navigation", "NavigationStartAdjustment", trace_id,
+      original_navigation_start_, "Percentage", percentage);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "navigation", "NavigationStartAdjustment", trace_id,
+      common_params().navigation_start);
 }
 
 void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {

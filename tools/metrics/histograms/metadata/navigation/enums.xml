@@ -353,6 +353,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Requires dedicated process"/>
 </enum>
 
+<enum name="NavigationStartAdjustmentType">
+  <int value="0" label="No adjustment made"/>
+  <int value="1" label="Legacy PostTask without BeforeUnload"/>
+  <int value="2" label="BeforeUnload handlers without dialog"/>
+  <int value="3" label="BeforeUnload dialog shown"/>
+</enum>
+
 <enum name="NavigationSuddenTerminationDisabler">
   <int value="0" label="Subframe-None"/>
   <int value="1" label="MainFrame-None"/>
