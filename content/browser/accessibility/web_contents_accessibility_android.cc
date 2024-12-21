@@ -57,10 +57,6 @@ namespace {
 
 using SearchKeyToPredicateMap =
     std::unordered_map<std::u16string, ui::AccessibilityMatchPredicate>;
-base::LazyInstance<SearchKeyToPredicateMap>::Leaky
-    g_search_key_to_predicate_map = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
-    LAZY_INSTANCE_INITIALIZER;
 
 static const char kHtmlTypeRow[] = "ROW";
 static const char kHtmlTypeColumn[] = "COLUMN";
@@ -80,76 +76,82 @@ bool AccessibilityNoOpPredicate(ui::BrowserAccessibility* start,
   return true;
 }
 
-void AddToPredicateMap(const char* search_key_ascii,
-                       ui::AccessibilityMatchPredicate predicate) {
-  std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
-  g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
-  if (!g_all_search_keys.Get().empty()) {
-    g_all_search_keys.Get() += u",";
+// Getter function for the search key to predicate map and all keys string.
+std::pair<SearchKeyToPredicateMap&, std::u16string&> GetSearchKeyData() {
+  // These are special unofficial strings sent from TalkBack/BrailleBack
+  // to jump to certain categories of web elements.
+  static base::NoDestructor<SearchKeyToPredicateMap>
+      search_key_to_predicate_map;
+  static base::NoDestructor<std::u16string> all_search_keys;
+  static bool initialized = false;
+
+  if (!initialized) {
+    initialized = true;
+    auto add_to_map = [&](const std::u16string& key,
+                          ui::AccessibilityMatchPredicate predicate) {
+      (*search_key_to_predicate_map)[key] = predicate;
+
+      // Build the all_search_keys string.
+      if (!all_search_keys->empty()) {
+        *all_search_keys += u",";
+      }
+      *all_search_keys += key;
+    };
+
+    add_to_map(u"ARTICLE", ui::AccessibilityArticlePredicate);
+    add_to_map(u"BLOCKQUOTE", ui::AccessibilityBlockquotePredicate);
+    add_to_map(u"BUTTON", ui::AccessibilityButtonPredicate);
+    add_to_map(u"CHECKBOX", ui::AccessibilityCheckboxPredicate);
+    add_to_map(u"COMBOBOX", ui::AccessibilityComboboxPredicate);
+    add_to_map(u"CONTROL", ui::AccessibilityControlPredicate);
+    add_to_map(u"FOCUSABLE", ui::AccessibilityFocusablePredicate);
+    add_to_map(u"FRAME", ui::AccessibilityFramePredicate);
+    add_to_map(u"GRAPHIC", ui::AccessibilityGraphicPredicate);
+    add_to_map(u"H1", ui::AccessibilityH1Predicate);
+    add_to_map(u"H2", ui::AccessibilityH2Predicate);
+    add_to_map(u"H3", ui::AccessibilityH3Predicate);
+    add_to_map(u"H4", ui::AccessibilityH4Predicate);
+    add_to_map(u"H5", ui::AccessibilityH5Predicate);
+    add_to_map(u"H6", ui::AccessibilityH6Predicate);
+    add_to_map(u"HEADING", ui::AccessibilityHeadingPredicate);
+    add_to_map(u"HEADING_SAME", ui::AccessibilityHeadingSameLevelPredicate);
+    add_to_map(u"LANDMARK", ui::AccessibilityLandmarkPredicate);
+    add_to_map(u"LINK", ui::AccessibilityLinkPredicate);
+    add_to_map(u"LIST", ui::AccessibilityListPredicate);
+    add_to_map(u"LIST_ITEM", ui::AccessibilityListItemPredicate);
+    add_to_map(u"LIVE", ui::AccessibilityLiveRegionPredicate);
+    add_to_map(u"MAIN", ui::AccessibilityMainPredicate);
+    add_to_map(u"MEDIA", ui::AccessibilityMediaPredicate);
+    add_to_map(u"PARAGRAPH", ui::AccessibilityParagraphPredicate);
+    add_to_map(u"RADIO", ui::AccessibilityRadioButtonPredicate);
+    add_to_map(u"RADIO_GROUP", ui::AccessibilityRadioGroupPredicate);
+    add_to_map(u"SECTION", ui::AccessibilitySectionPredicate);
+    add_to_map(u"TABLE", ui::AccessibilityTablePredicate);
+    add_to_map(u"TEXT_FIELD", ui::AccessibilityTextfieldPredicate);
+    add_to_map(u"TEXT_BOLD", ui::AccessibilityTextStyleBoldPredicate);
+    add_to_map(u"TEXT_ITALIC", ui::AccessibilityTextStyleItalicPredicate);
+    add_to_map(u"TEXT_UNDER", ui::AccessibilityTextStyleUnderlinePredicate);
+    add_to_map(u"TREE", ui::AccessibilityTreePredicate);
+    add_to_map(u"UNVISITED_LINK", ui::AccessibilityUnvisitedLinkPredicate);
+    add_to_map(u"VISITED_LINK", ui::AccessibilityVisitedLinkPredicate);
+
+    // These are surfaced simply to document the html types, but do not do a
+    // tree/predicate search.
+    add_to_map(u"ROW", AccessibilityNoOpPredicate);
+    add_to_map(u"COLUMN", AccessibilityNoOpPredicate);
+    add_to_map(u"ROW_BOUNDS", AccessibilityNoOpPredicate);
+    add_to_map(u"COLUMN_BOUNDS", AccessibilityNoOpPredicate);
+    add_to_map(u"TABLE_BOUNDS", AccessibilityNoOpPredicate);
   }
-  g_all_search_keys.Get() += search_key_utf16;
-}
-
-// These are special unofficial strings sent from TalkBack/BrailleBack
-// to jump to certain categories of web elements.
-void InitSearchKeyToPredicateMapIfNeeded() {
-  if (!g_search_key_to_predicate_map.Get().empty()) {
-    return;
-  }
-
-  AddToPredicateMap("ARTICLE", ui::AccessibilityArticlePredicate);
-  AddToPredicateMap("BLOCKQUOTE", ui::AccessibilityBlockquotePredicate);
-  AddToPredicateMap("BUTTON", ui::AccessibilityButtonPredicate);
-  AddToPredicateMap("CHECKBOX", ui::AccessibilityCheckboxPredicate);
-  AddToPredicateMap("COMBOBOX", ui::AccessibilityComboboxPredicate);
-  AddToPredicateMap("CONTROL", ui::AccessibilityControlPredicate);
-  AddToPredicateMap("FOCUSABLE", ui::AccessibilityFocusablePredicate);
-  AddToPredicateMap("FRAME", ui::AccessibilityFramePredicate);
-  AddToPredicateMap("GRAPHIC", ui::AccessibilityGraphicPredicate);
-  AddToPredicateMap("H1", ui::AccessibilityH1Predicate);
-  AddToPredicateMap("H2", ui::AccessibilityH2Predicate);
-  AddToPredicateMap("H3", ui::AccessibilityH3Predicate);
-  AddToPredicateMap("H4", ui::AccessibilityH4Predicate);
-  AddToPredicateMap("H5", ui::AccessibilityH5Predicate);
-  AddToPredicateMap("H6", ui::AccessibilityH6Predicate);
-  AddToPredicateMap("HEADING", ui::AccessibilityHeadingPredicate);
-  AddToPredicateMap("HEADING_SAME", ui::AccessibilityHeadingSameLevelPredicate);
-  AddToPredicateMap("LANDMARK", ui::AccessibilityLandmarkPredicate);
-  AddToPredicateMap("LINK", ui::AccessibilityLinkPredicate);
-  AddToPredicateMap("LIST", ui::AccessibilityListPredicate);
-  AddToPredicateMap("LIST_ITEM", ui::AccessibilityListItemPredicate);
-  AddToPredicateMap("LIVE", ui::AccessibilityLiveRegionPredicate);
-  AddToPredicateMap("MAIN", ui::AccessibilityMainPredicate);
-  AddToPredicateMap("MEDIA", ui::AccessibilityMediaPredicate);
-  AddToPredicateMap("PARAGRAPH", ui::AccessibilityParagraphPredicate);
-  AddToPredicateMap("RADIO", ui::AccessibilityRadioButtonPredicate);
-  AddToPredicateMap("RADIO_GROUP", ui::AccessibilityRadioGroupPredicate);
-  AddToPredicateMap("SECTION", ui::AccessibilitySectionPredicate);
-  AddToPredicateMap("TABLE", ui::AccessibilityTablePredicate);
-  AddToPredicateMap("TEXT_FIELD", ui::AccessibilityTextfieldPredicate);
-  AddToPredicateMap("TEXT_BOLD", ui::AccessibilityTextStyleBoldPredicate);
-  AddToPredicateMap("TEXT_ITALIC", ui::AccessibilityTextStyleItalicPredicate);
-  AddToPredicateMap("TEXT_UNDERLINE",
-                    ui::AccessibilityTextStyleUnderlinePredicate);
-  AddToPredicateMap("TREE", ui::AccessibilityTreePredicate);
-  AddToPredicateMap("UNVISITED_LINK", ui::AccessibilityUnvisitedLinkPredicate);
-  AddToPredicateMap("VISITED_LINK", ui::AccessibilityVisitedLinkPredicate);
-
-  // These are surfaced simply to document the html types, but do not do a
-  // tree/predicate search.
-  AddToPredicateMap(kHtmlTypeRow, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeColumn, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeRowBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeColumnBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
+  return std::make_pair(std::ref(*search_key_to_predicate_map),
+                        std::ref(*all_search_keys));
 }
 
 ui::AccessibilityMatchPredicate PredicateForSearchKey(
     const std::u16string& element_type) {
-  InitSearchKeyToPredicateMapIfNeeded();
-  const auto& iter = g_search_key_to_predicate_map.Get().find(element_type);
-  if (iter != g_search_key_to_predicate_map.Get().end()) {
+  const auto& [search_map, all_keys] = GetSearchKeyData();
+  const auto& iter = search_map.find(element_type);
+  if (iter != search_map.end()) {
     return iter->second;
   }
 
@@ -778,8 +780,8 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
 
 base::android::ScopedJavaLocalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
-  InitSearchKeyToPredicateMapIfNeeded();
-  return GetCanonicalJNIString(env, g_all_search_keys.Get()).AsLocalRef(env);
+  const auto& [search_map, all_keys] = GetSearchKeyData();
+  return GetCanonicalJNIString(env, all_keys).AsLocalRef(env);
 }
 
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
