@@ -155,10 +155,6 @@ class CORE_EXPORT ImageResourceContent final
   void EmulateLoadStartedForInspector(ResourceFetcher*,
                                       const AtomicString& initiator_name);
 
-  void SetNotRefetchableDataFromDiskCache() {
-    is_refetchable_data_from_disk_cache_ = false;
-  }
-
   // The following public methods should be called from ImageResource only.
 
   // UpdateImage() is the single control point of image content modification
@@ -206,9 +202,6 @@ class CORE_EXPORT ImageResourceContent final
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {
     return !observers_.empty() || !finished_observers_.empty();
-  }
-  bool IsRefetchableDataFromDiskCache() const {
-    return is_refetchable_data_from_disk_cache_;
   }
 
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
@@ -268,10 +261,6 @@ class CORE_EXPORT ImageResourceContent final
   // Keep one-byte members together to avoid wasting space on padding.
 
   ResourceStatus content_status_ = ResourceStatus::kNotStarted;
-
-  // Indicates if this resource's encoded image data can be purged and refetched
-  // from disk cache to save memory usage. See crbug/664437.
-  bool is_refetchable_data_from_disk_cache_ = true;
 
   mutable bool is_add_remove_observer_prohibited_ = false;
 

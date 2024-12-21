@@ -53,9 +53,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
 
   image_ = image;
   image_->AddObserver(this);
-  // ResourceFetcher is not determined from StyleFetchedImage and it is
-  // impossible to send a request for refetching.
-  image_->SetNotRefetchableDataFromDiskCache();
 }
 
 StyleFetchedImage::~StyleFetchedImage() = default;
