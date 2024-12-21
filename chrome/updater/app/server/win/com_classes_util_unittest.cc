@@ -25,50 +25,50 @@ TEST(ComClassesUtil, ValidateStringEmptyNotOk) {
   ASSERT_FALSE(ValidateStringEmptyNotOk(nullptr, 10));
   ASSERT_FALSE(ValidateStringEmptyNotOk(L"", 10));
   ASSERT_FALSE(ValidateStringEmptyNotOk(L"morethan10characters", 10));
-  ASSERT_EQ("ninechars", ValidateStringEmptyNotOk(L"ninechars", 10).value());
+  ASSERT_EQ(ValidateStringEmptyNotOk(L"ninechars", 10).value(), "ninechars");
 }
 
 TEST(ComClassesUtil, ValidateStringEmptyOk) {
-  ASSERT_EQ("", ValidateStringEmptyOk(nullptr, 10).value());
-  ASSERT_EQ("", ValidateStringEmptyOk(L"", 10).value());
+  ASSERT_EQ(ValidateStringEmptyOk(nullptr, 10).value(), "");
+  ASSERT_EQ(ValidateStringEmptyOk(L"", 10).value(), "");
   ASSERT_FALSE(ValidateStringEmptyOk(L"morethan10characters", 10));
-  ASSERT_EQ("ninechars", ValidateStringEmptyOk(L"ninechars", 10).value());
+  ASSERT_EQ(ValidateStringEmptyOk(L"ninechars", 10).value(), "ninechars");
 }
 
 TEST(ComClassesUtil, ValidateAppId) {
   ASSERT_FALSE(ValidateAppId(nullptr));
   ASSERT_FALSE(ValidateAppId(L""));
   ASSERT_FALSE(ValidateAppId(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("appidisvalid", ValidateAppId(L"appidisvalid").value());
+  ASSERT_EQ(ValidateAppId(L"appidisvalid").value(), "appidisvalid");
 }
 
 TEST(ComClassesUtil, ValidateCommandId) {
   ASSERT_FALSE(ValidateCommandId(nullptr));
   ASSERT_FALSE(ValidateCommandId(L""));
   ASSERT_FALSE(ValidateCommandId(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("commandidisvalid", ValidateCommandId(L"commandidisvalid").value());
+  ASSERT_EQ(ValidateCommandId(L"commandidisvalid").value(), "commandidisvalid");
 }
 
 TEST(ComClassesUtil, ValidateBrandCode) {
-  ASSERT_EQ("", ValidateBrandCode(nullptr).value());
-  ASSERT_EQ("", ValidateBrandCode(L"").value());
+  ASSERT_EQ(ValidateBrandCode(nullptr).value(), "");
+  ASSERT_EQ(ValidateBrandCode(L"").value(), "");
   ASSERT_FALSE(ValidateBrandCode(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("brandcodeisvalid", ValidateBrandCode(L"brandcodeisvalid").value());
+  ASSERT_EQ(ValidateBrandCode(L"brandcodeisvalid").value(), "brandcodeisvalid");
 }
 
 TEST(ComClassesUtil, ValidateBrandPath) {
   ASSERT_TRUE(ValidateBrandPath(nullptr).value().empty());
   ASSERT_TRUE(ValidateBrandPath(L"").value().empty());
   ASSERT_FALSE(ValidateBrandPath(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ(L"brandpathisvalid",
-            ValidateBrandPath(L"brandpathisvalid").value().value());
+  ASSERT_EQ(ValidateBrandPath(L"brandpathisvalid").value().value(),
+            L"brandpathisvalid");
 }
 
 TEST(ComClassesUtil, ValidateAP) {
-  ASSERT_EQ("", ValidateAP(nullptr).value());
-  ASSERT_EQ("", ValidateAP(L"").value());
+  ASSERT_EQ(ValidateAP(nullptr).value(), "");
+  ASSERT_EQ(ValidateAP(L"").value(), "");
   ASSERT_FALSE(ValidateAP(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("apisvalid", ValidateAP(L"apisvalid").value());
+  ASSERT_EQ(ValidateAP(L"apisvalid").value(), "apisvalid");
 }
 
 TEST(ComClassesUtil, ValidateVersion) {
@@ -76,7 +76,7 @@ TEST(ComClassesUtil, ValidateVersion) {
   ASSERT_FALSE(ValidateVersion(L""));
   ASSERT_FALSE(ValidateVersion(std::wstring(0x4001, 'a').c_str()));
   ASSERT_FALSE(ValidateVersion(L"invalidversion"));
-  ASSERT_EQ(base::Version("1.2.3.4"), ValidateVersion(L"1.2.3.4").value());
+  ASSERT_EQ(ValidateVersion(L"1.2.3.4").value(), base::Version("1.2.3.4"));
 }
 
 TEST(ComClassesUtil, ValidateExistenceCheckerPath) {
@@ -84,62 +84,62 @@ TEST(ComClassesUtil, ValidateExistenceCheckerPath) {
   ASSERT_TRUE(ValidateExistenceCheckerPath(L"").value().empty());
   ASSERT_FALSE(ValidateExistenceCheckerPath(std::wstring(0x4001, 'a').c_str()));
   ASSERT_EQ(
-      L"existencecheckerisvalid",
-      ValidateExistenceCheckerPath(L"existencecheckerisvalid").value().value());
+      ValidateExistenceCheckerPath(L"existencecheckerisvalid").value().value(),
+      L"existencecheckerisvalid");
 }
 
 TEST(ComClassesUtil, ValidateInstallerPath) {
   ASSERT_FALSE(ValidateInstallerPath(nullptr));
   ASSERT_FALSE(ValidateInstallerPath(L""));
   ASSERT_FALSE(ValidateInstallerPath(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ(L"installerpathisvalid",
-            ValidateInstallerPath(L"installerpathisvalid").value().value());
+  ASSERT_EQ(ValidateInstallerPath(L"installerpathisvalid").value().value(),
+            L"installerpathisvalid");
 }
 
 TEST(ComClassesUtil, ValidateInstallArgs) {
-  ASSERT_EQ("", ValidateInstallArgs(nullptr).value());
-  ASSERT_EQ("", ValidateInstallArgs(L"").value());
+  ASSERT_EQ(ValidateInstallArgs(nullptr).value(), "");
+  ASSERT_EQ(ValidateInstallArgs(L"").value(), "");
   ASSERT_FALSE(ValidateInstallArgs(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("installargsisvalid",
-            ValidateInstallArgs(L"installargsisvalid").value());
+  ASSERT_EQ(ValidateInstallArgs(L"installargsisvalid").value(),
+            "installargsisvalid");
 }
 
 TEST(ComClassesUtil, ValidateInstallSettings) {
-  ASSERT_EQ("", ValidateInstallSettings(nullptr).value());
-  ASSERT_EQ("", ValidateInstallSettings(L"").value());
+  ASSERT_EQ(ValidateInstallSettings(nullptr).value(), "");
+  ASSERT_EQ(ValidateInstallSettings(L"").value(), "");
   ASSERT_FALSE(ValidateInstallSettings(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("installsettingsisvalid",
-            ValidateInstallSettings(L"installsettingsisvalid").value());
+  ASSERT_EQ(ValidateInstallSettings(L"installsettingsisvalid").value(),
+            "installsettingsisvalid");
 }
 
 TEST(ComClassesUtil, ValidateClientInstallData) {
-  ASSERT_EQ("", ValidateClientInstallData(nullptr).value());
-  ASSERT_EQ("", ValidateClientInstallData(L"").value());
+  ASSERT_EQ(ValidateClientInstallData(nullptr).value(), "");
+  ASSERT_EQ(ValidateClientInstallData(L"").value(), "");
   ASSERT_FALSE(ValidateClientInstallData(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("clientinstalldataisvalid",
-            ValidateClientInstallData(L"clientinstalldataisvalid").value());
+  ASSERT_EQ(ValidateClientInstallData(L"clientinstalldataisvalid").value(),
+            "clientinstalldataisvalid");
 }
 
 TEST(ComClassesUtil, ValidateInstallDataIndex) {
-  ASSERT_EQ("", ValidateInstallDataIndex(nullptr).value());
-  ASSERT_EQ("", ValidateInstallDataIndex(L"").value());
+  ASSERT_EQ(ValidateInstallDataIndex(nullptr).value(), "");
+  ASSERT_EQ(ValidateInstallDataIndex(L"").value(), "");
   ASSERT_FALSE(ValidateInstallDataIndex(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("installdataindexisvalid",
-            ValidateInstallDataIndex(L"installdataindexisvalid").value());
+  ASSERT_EQ(ValidateInstallDataIndex(L"installdataindexisvalid").value(),
+            "installdataindexisvalid");
 }
 
 TEST(ComClassesUtil, ValidateInstallId) {
-  ASSERT_EQ("", ValidateInstallId(nullptr).value());
-  ASSERT_EQ("", ValidateInstallId(L"").value());
+  ASSERT_EQ(ValidateInstallId(nullptr).value(), "");
+  ASSERT_EQ(ValidateInstallId(L"").value(), "");
   ASSERT_FALSE(ValidateInstallId(std::wstring(0x4001, 'a').c_str()));
-  ASSERT_EQ("installidisvalid", ValidateInstallId(L"installidisvalid").value());
+  ASSERT_EQ(ValidateInstallId(L"installidisvalid").value(), "installidisvalid");
 }
 
 TEST(ComClassesUtil, ValidateLanguage) {
-  ASSERT_EQ("", ValidateLanguage(nullptr).value());
-  ASSERT_EQ("", ValidateLanguage(L"").value());
+  ASSERT_EQ(ValidateLanguage(nullptr).value(), "");
+  ASSERT_EQ(ValidateLanguage(L"").value(), "");
   ASSERT_FALSE(ValidateLanguage(std::wstring(11, 'a').c_str()));
-  ASSERT_EQ("langvalid", ValidateLanguage(L"langvalid").value());
+  ASSERT_EQ(ValidateLanguage(L"langvalid").value(), "langvalid");
 }
 
 TEST(ComClassesUtil, ValidateRegistrationRequest) {
