@@ -46,7 +46,6 @@ ShortcutInputProvider::~ShortcutInputProvider() {
 void ShortcutInputProvider::BindInterface(
     mojo::PendingReceiver<common::mojom::ShortcutInputProvider> receiver) {
   CHECK(features::IsPeripheralCustomizationEnabled() ||
-        ::features::IsShortcutCustomizationEnabled() ||
         ::features::IsAccessibilityFaceGazeEnabled());
   if (shortcut_input_receiver_.is_bound()) {
     shortcut_input_receiver_.reset();

@@ -109,14 +109,11 @@ void EventRewriterControllerImpl::Initialize(
 
   std::unique_ptr<PeripheralCustomizationEventRewriter>
       peripheral_customization_event_rewriter;
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    peripheral_customization_event_rewriter =
-        std::make_unique<PeripheralCustomizationEventRewriter>(
-            Shell::Get()->input_device_settings_controller());
-    peripheral_customization_event_rewriter_ =
-        peripheral_customization_event_rewriter.get();
-  }
+  peripheral_customization_event_rewriter =
+      std::make_unique<PeripheralCustomizationEventRewriter>(
+          Shell::Get()->input_device_settings_controller());
+  peripheral_customization_event_rewriter_ =
+      peripheral_customization_event_rewriter.get();
 
   std::unique_ptr<PrerewrittenEventForwarder> prerewritten_event_forwarder =
       std::make_unique<PrerewrittenEventForwarder>();
@@ -167,10 +164,7 @@ void EventRewriterControllerImpl::Initialize(
         Shell::Get()->keyboard_capability(),
         ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
   }
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
-  }
+  AddEventRewriter(std::move(peripheral_customization_event_rewriter));
   AddEventRewriter(std::move(prerewritten_event_forwarder));
   // Accessibility rewriter is applied between modifier event rewriters and
   // EventRewriterAsh. Specifically, Search modifier is captured by the

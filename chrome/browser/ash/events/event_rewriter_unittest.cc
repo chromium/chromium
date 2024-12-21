@@ -51,6 +51,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/shortcut_mapping_pref_delegate.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/caps_lock_event_rewriter.h"
 #include "ui/events/ash/discard_key_event_rewriter.h"
@@ -604,6 +605,22 @@ constexpr TestKeyboard kWilco1_5Keyboard{
 constexpr TestKeyboard kWilcoKeyboardVariants[] = {
     kWilco1_0Keyboard,
     kWilco1_5Keyboard,
+};
+
+// Use to emulate `ImprovedKeyboardShortcuts` is disabled by the policy on
+// enrolled device.
+class TestShortcutMappingPrefDelegate : public ui::ShortcutMappingPrefDelegate {
+ public:
+  TestShortcutMappingPrefDelegate() = default;
+  TestShortcutMappingPrefDelegate(const TestShortcutMappingPrefDelegate&) =
+      delete;
+  TestShortcutMappingPrefDelegate& operator=(
+      const TestShortcutMappingPrefDelegate&) = delete;
+  ~TestShortcutMappingPrefDelegate() override = default;
+
+  // ui::ShortcutMappingPrefDelegate:
+  bool IsDeviceEnterpriseManaged() const override { return true; }
+  bool IsI18nShortcutPrefEnabled() const override { return false; }
 };
 
 }  // namespace
@@ -2010,72 +2027,6 @@ TEST_P(EventRewriterTest, TestRewriteFromQuickInsert) {
   scoped_feature_list_.Reset();
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-TEST_P(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {::features::kImprovedKeyboardShortcuts,
-           features::kAltClickAndSixPackCustomization});
-
-  for (const auto keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // Alt+Backspace -> Delete
-    EXPECT_EQ(KeyDelete::Typed(),
-              RunRewriter(KeyBackspace::Typed(), ui::EF_ALT_DOWN));
-
-    // Control+Alt+Backspace -> Control+Delete
-    EXPECT_EQ(KeyDelete::Typed(ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyBackspace::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
-
-    // Search+Alt+Backspace -> Alt+Backspace
-    EXPECT_EQ(KeyBackspace::Typed(ui::EF_ALT_DOWN),
-              RunRewriter(KeyBackspace::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
-
-    // Search+Control+Alt+Backspace -> Control+Alt+Backspace
-    EXPECT_EQ(KeyBackspace::Typed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
-              RunRewriter(KeyBackspace::Typed(), ui::EF_ALT_DOWN |
-                                                     ui::EF_COMMAND_DOWN |
-                                                     ui::EF_CONTROL_DOWN));
-
-    // Alt+Up -> Prior
-    EXPECT_EQ(KeyPageUp::Typed(),
-              RunRewriter(KeyArrowUp::Typed(), ui::EF_ALT_DOWN));
-
-    // Alt+Down -> Next
-    EXPECT_EQ(KeyPageDown::Typed(),
-              RunRewriter(KeyArrowDown::Typed(), ui::EF_ALT_DOWN));
-
-    // Ctrl+Alt+Up -> Home
-    EXPECT_EQ(KeyHome::Typed(),
-              RunRewriter(KeyArrowUp::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
-
-    // Ctrl+Alt+Down -> End
-    EXPECT_EQ(KeyEnd::Typed(),
-              RunRewriter(KeyArrowDown::Typed(),
-                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
-
-    // NOTE: The following are workarounds to avoid rewriting the
-    // Alt variants by additionally pressing Search.
-    // Search+Ctrl+Alt+Up -> Ctrl+Alt+Up
-    EXPECT_EQ(
-        KeyArrowUp::Typed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
-        RunRewriter(KeyArrowUp::Typed(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN |
-                                             ui::EF_COMMAND_DOWN));
-
-    // Search+Ctrl+Alt+Down -> Ctrl+Alt+Down
-    EXPECT_EQ(KeyArrowDown::Typed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyArrowDown::Typed(), ui::EF_ALT_DOWN |
-                                                     ui::EF_CONTROL_DOWN |
-                                                     ui::EF_COMMAND_DOWN));
-  }
-}
-
 TEST_P(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2154,37 +2105,11 @@ TEST_P(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   }
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-TEST_P(EventRewriterTest, TestRewriteExtendedKeyInsertOld) {
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {::features::kImprovedKeyboardShortcuts,
-           features::kAltClickAndSixPackCustomization});
-  for (const auto keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // Period -> Period
-    EXPECT_EQ(KeyPeriod::Typed(), RunRewriter(KeyPeriod::Typed()));
-
-    // Search+Period -> Insert
-    EXPECT_EQ(KeyInsert::Typed(),
-              RunRewriter(KeyPeriod::Typed(), ui::EF_COMMAND_DOWN));
-
-    // Control+Search+Period -> Control+Insert
-    EXPECT_EQ(KeyInsert::Typed(ui::EF_CONTROL_DOWN),
-              RunRewriter(KeyPeriod::Typed(),
-                          ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN));
-  }
-}
-
 TEST_P(EventRewriterTest, TestRewriteExtendedKeyInsertDeprecatedNotification) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {::features::kImprovedKeyboardShortcuts},
-      {features::kAltClickAndSixPackCustomization});
+      {}, {features::kAltClickAndSixPackCustomization});
 
   for (const auto keyboard : kNonAppleKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
@@ -2208,13 +2133,11 @@ TEST_P(EventRewriterTest, TestRewriteExtendedKeyInsertDeprecatedNotification) {
   }
 }
 
-// TODO(crbug.com/1179893): Rename once the feature is enabled permanently.
-TEST_P(EventRewriterTest, TestRewriteExtendedKeyInsertNew) {
+TEST_P(EventRewriterTest, TestRewriteExtendedKeyInsert) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {::features::kImprovedKeyboardShortcuts},
-      {features::kAltClickAndSixPackCustomization});
+      {}, {features::kAltClickAndSixPackCustomization});
 
   for (const auto keyboard : kNonAppleKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
@@ -2300,12 +2223,11 @@ TEST_P(EventRewriterTest, TestNumberRowIsNotRewritten) {
   }
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-TEST_P(EventRewriterTest, TestRewriteSearchNumberToFunctionKeyOld) {
+TEST_P(EventRewriterTest, TestRewriteSearchNumberToFunctionKey) {
+  TestShortcutMappingPrefDelegate delegate;
+  CHECK(!::features::IsImprovedKeyboardShortcutsEnabled());
+  ASSERT_FALSE(::features::IsImprovedKeyboardShortcutsEnabled());
   Preferences::RegisterProfilePrefs(prefs()->registry());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ::features::kImprovedKeyboardShortcuts);
 
   for (const auto& keyboard : kNonAppleNonCustomLayoutKeyboardVariants) {
     SCOPED_TRACE(keyboard.name);
@@ -3757,8 +3679,7 @@ TEST_P(EventRewriterTest, DontRewriteIfNotRewritten_AltClickIsRightClick_New) {
   // behavior or create a notification.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {::features::kImprovedKeyboardShortcuts},
-      {features::kAltClickAndSixPackCustomization});
+      {}, {features::kAltClickAndSixPackCustomization});
   DontRewriteIfNotRewritten(ui::EF_LEFT_MOUSE_BUTTON | ui::EF_ALT_DOWN);
   EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
@@ -4712,11 +4633,13 @@ TEST_P(EventRewriterTest, RewriteNumpadExtensionCommand) {
 }
 
 TEST_P(EventRewriterTest, RecordRewritingToFunctionKeys) {
+  TestShortcutMappingPrefDelegate delegate;
+  ASSERT_FALSE(::features::IsImprovedKeyboardShortcutsEnabled());
+
   Preferences::RegisterProfilePrefs(prefs()->registry());
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kInputDeviceSettingsSplit},
-      {::features::kImprovedKeyboardShortcuts});
+  scoped_feature_list.InitWithFeatures({features::kInputDeviceSettingsSplit},
+                                       {});
 
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("ChromeOS.Inputs.Keyboard.F1Pressed", 0);

@@ -1365,9 +1365,6 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
 ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteEvent(
     const ui::Event& event,
     const Continuation continuation) {
-  DCHECK(features::IsPeripheralCustomizationEnabled() ||
-         ::features::IsShortcutCustomizationEnabled());
-
   if (event.IsMouseWheelEvent()) {
     return RewriteMouseWheelEvent(*event.AsMouseWheelEvent(), continuation);
   }

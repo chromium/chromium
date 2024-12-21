@@ -51,8 +51,7 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
     webcontents_id_ = kShortcutAppWebContentsId;
 
     feature_list_.InitWithFeatures(
-        {::features::kShortcutCustomization,
-         ash::features::kInputDeviceSettingsSplit,
+        {ash::features::kInputDeviceSettingsSplit,
          ash::features::kEnableKeyboardBacklightControlInSettings},
         {});
   }

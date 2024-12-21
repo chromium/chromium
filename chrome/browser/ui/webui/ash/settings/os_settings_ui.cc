@@ -407,7 +407,6 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::AcceleratorFetcher> receiver) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->accelerator_fetcher()
       ->BindInterface(std::move(receiver));

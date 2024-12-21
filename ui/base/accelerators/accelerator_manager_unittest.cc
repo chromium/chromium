@@ -4,13 +4,9 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
-#include <array>
-
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -175,10 +171,6 @@ TEST_F(AcceleratorManagerTest, Process) {
 #if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kImprovedKeyboardShortcuts);
-
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
   manager.SetUsePositionalLookup(true);
@@ -197,10 +189,6 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
 }
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_MatchingDomCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kImprovedKeyboardShortcuts);
-
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
   manager.SetUsePositionalLookup(true);
@@ -220,10 +208,6 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_MatchingDomCode) {
 }
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_NotMatchingDomCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kImprovedKeyboardShortcuts);
-
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
   manager.SetUsePositionalLookup(true);
@@ -244,10 +228,6 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NotMatchingDomCode) {
 }
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalMatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kImprovedKeyboardShortcuts);
-
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
   manager.SetUsePositionalLookup(true);
@@ -268,10 +248,6 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalMatch) {
 }
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalNonMatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kImprovedKeyboardShortcuts);
-
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
   manager.SetUsePositionalLookup(true);

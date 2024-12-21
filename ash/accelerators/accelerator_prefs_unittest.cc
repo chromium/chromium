@@ -6,7 +6,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,13 +32,8 @@ class AcceleratorPrefsTest : public AshTestBase {
   ~AcceleratorPrefsTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kShortcutCustomization);
     AshTestBase::SetUp();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AcceleratorPrefsTest, PrefsAreRegisitered) {

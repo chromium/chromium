@@ -962,9 +962,6 @@ extern const char kEnablePixelCanvasRecordingDescription[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdName[];
 extern const char kEnableProcessPerSiteUpToMainFrameThresholdDescription[];
 
-extern const char kEnableShortcutCustomizationName[];
-extern const char kEnableShortcutCustomizationDescription[];
-
 extern const char kEnableSearchCustomizableShortcutsInLauncherName[];
 extern const char kEnableSearchCustomizableShortcutsInLauncherDescription[];
 
@@ -1323,9 +1320,6 @@ extern const char kHttpsUpgradesDescription[];
 
 extern const char kIgnoreGpuBlocklistName[];
 extern const char kIgnoreGpuBlocklistDescription[];
-
-extern const char kImprovedKeyboardShortcutsName[];
-extern const char kImprovedKeyboardShortcutsDescription[];
 
 extern const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[];
 extern const char

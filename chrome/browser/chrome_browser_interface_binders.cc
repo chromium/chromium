@@ -1278,11 +1278,8 @@ void PopulateChromeWebUIFrameBinders(
       ash::settings::mojom::DisplaySettingsProvider,
       ash::settings::OSSettingsUI>(map);
 
-  if (::features::IsShortcutCustomizationEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::common::mojom::AcceleratorFetcher, ash::settings::OSSettingsUI>(
-        map);
-  }
+  RegisterWebUIControllerInterfaceBinder<ash::common::mojom::AcceleratorFetcher,
+                                         ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::common::mojom::ShortcutInputProvider, ash::settings::OSSettingsUI,

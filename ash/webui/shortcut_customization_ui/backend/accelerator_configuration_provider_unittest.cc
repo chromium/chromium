@@ -39,7 +39,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -51,7 +50,6 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -362,10 +360,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kImprovedKeyboardShortcuts,
-         ::features::kShortcutCustomization},
-        {});
     input_method_manager_ = new TestInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
 
@@ -475,7 +469,6 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
   NonConfigurableActionsMap non_configurable_actions_map_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;

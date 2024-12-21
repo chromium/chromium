@@ -63,10 +63,9 @@ ShortcutInputHandler::~ShortcutInputHandler() {
 
 void ShortcutInputHandler::Initialize() {
   CHECK(Shell::Get());
-  if (!features::IsPeripheralCustomizationEnabled() &&
-      !::features::IsShortcutCustomizationEnabled()) {
+  if (!features::IsPeripheralCustomizationEnabled()) {
     LOG(ERROR) << "ShortcutInputHandler can only be initialized if "
-               << "shortcut or peripherals customization flags are enabled.";
+               << "peripherals customization flag is enabled.";
     return;
   }
 

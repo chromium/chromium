@@ -1495,11 +1495,6 @@ const char kEnableFingerprintingProtectionBlocklistInIncognitoDescription[] =
     "resources from loading in a 3p context. This flag applies only in "
     "Incognito mode.";
 
-const char kEnableShortcutCustomizationName[] =
-    "Enable customization in new shortcuts app";
-const char kEnableShortcutCustomizationDescription[] =
-    "Enable customization of shortcuts in the new shortcuts app.";
-
 const char kEnableSearchCustomizableShortcutsInLauncherName[] =
     "Enable search for customizable shortcuts in launcher";
 const char kEnableSearchCustomizableShortcutsInLauncherDescription[] =
@@ -2334,12 +2329,6 @@ const char kIgnoreGpuBlocklistName[] = "Override software rendering list";
 const char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
-
-const char kImprovedKeyboardShortcutsName[] =
-    "Enable improved keyboard shortcuts";
-const char kImprovedKeyboardShortcutsDescription[] =
-    "Ensure keyboard shortcuts work consistently with international keyboard "
-    "layouts and deprecate legacy shortcuts.";
 
 const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[] =
     "Increments LocalSurfaceId for main-frame same-doc navigations";
