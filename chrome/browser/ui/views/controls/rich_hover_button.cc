@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -24,16 +26,15 @@
 
 namespace {
 
-std::unique_ptr<views::ImageView> CreateIconView(
-    const ui::ImageModel& icon_image) {
-  auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(icon_image);
+std::unique_ptr<views::ImageView> CreateIconView(ui::ImageModel icon) {
+  auto view = std::make_unique<NonAccessibleImageView>();
+  view->SetImage(std::move(icon));
   // Make sure hovering over the icon also hovers the `RichHoverButton`.
-  icon->SetCanProcessEventsWithinSubtree(false);
+  view->SetCanProcessEventsWithinSubtree(false);
   // Don't cover |icon| when the ink drops are being painted.
-  icon->SetPaintToLayer();
-  icon->layer()->SetFillsBoundsOpaquely(false);
-  return icon;
+  view->SetPaintToLayer();
+  view->layer()->SetFillsBoundsOpaquely(false);
+  return view;
 }
 
 // TODO(crbug.com/355018927): Remove this when we implement in views::Label.
@@ -64,59 +65,63 @@ END_METADATA
 
 }  // namespace
 
-RichHoverButton::RichHoverButton(
-    views::Button::PressedCallback callback,
-    const ui::ImageModel& main_image_icon,
-    const std::u16string& title_text,
-    const std::u16string& subtitle_text,
-    std::optional<ui::ImageModel> action_image_icon,
-    std::optional<ui::ImageModel> state_icon)
-    : HoverButton(std::move(callback), std::u16string()) {
-  label()->SetHandlesTooltips(false);
-
-  // TODO(pkasting): This class should subclass Button, not HoverButton.
+RichHoverButton::RichHoverButton(views::Button::PressedCallback callback,
+                                 ui::ImageModel icon,
+                                 const std::u16string& title_text,
+                                 const std::u16string& subtitle_text,
+                                 ui::ImageModel action_icon,
+                                 ui::ImageModel state_icon) {
   image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  label()->SetHandlesTooltips(false);
   label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
   ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
+  start_ = children().size();
 
   SetBorder(
       views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
           ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
-
-  AddChildView(CreateIconView(main_image_icon));
-  auto title_label = std::make_unique<views::Label>();
-  title_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-
-  title_ = AddChildView(std::move(title_label));
+  // Main icon placeholder.
+  AddChildView(std::make_unique<views::View>());
+  // Title.
+  title_ = AddChildView(std::make_unique<views::Label>());
+  title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
-  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-
-  // State icon is optional and column is created only when it is set.
-  if (state_icon.has_value()) {
-    state_icon_ = AddChildView(CreateIconView(state_icon.value()));
-  }
-
-  if (action_image_icon.has_value()) {
-    AddChildView(CreateIconView(action_image_icon.value()));
-  } else {
-    // Fill the cell with an empty view at column 5.
-    AddChildView(std::make_unique<views::View>());
-  }
+  // Action icon placeholder.
+  AddChildView(std::make_unique<views::View>());
 
   custom_view_row_start_ = children().size();
 
   RecreateLayout();
 
+  SetCallback(std::move(callback));
+  SetIcon(std::move(icon));
   SetTitleText(title_text);
+  SetStateIcon(std::move(state_icon));
+  SetActionIcon(std::move(action_icon));
   SetSubtitleText(subtitle_text);
 }
 
 RichHoverButton::~RichHoverButton() = default;
 
+void RichHoverButton::SetIcon(ui::ImageModel icon) {
+  SetIconMember(icon_, start_, std::move(icon), true);
+}
+
 void RichHoverButton::SetTitleText(const std::u16string& title_text) {
   title_->SetText(title_text);
   UpdateAccessibleName();
+}
+
+void RichHoverButton::SetStateIcon(ui::ImageModel state_icon) {
+  SetIconMember(state_icon_, start_ + 2, std::move(state_icon), false);
+}
+
+void RichHoverButton::SetActionIcon(ui::ImageModel action_icon) {
+  SetIconMember(action_icon_, start_ + (state_icon_ ? 3 : 2),
+                std::move(action_icon), true);
 }
 
 void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
@@ -185,6 +190,33 @@ views::View* RichHoverButton::GetTooltipHandlerForPoint(
 gfx::Size RichHoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return Button::CalculatePreferredSize(available_size);
+}
+
+void RichHoverButton::SetIconMember(raw_ptr<views::ImageView>& icon_member,
+                                    size_t child_index,
+                                    ui::ImageModel icon,
+                                    bool use_placeholder) {
+  if (icon.IsEmpty()) {
+    if (icon_member) {
+      icon_member = nullptr;
+      RemoveChildViewT(children()[child_index]);
+      if (use_placeholder) {
+        AddChildViewAt(std::make_unique<views::View>(), child_index);
+      } else {
+        RecreateLayout();
+      }
+    }
+  } else if (!icon_member) {
+    if (use_placeholder) {
+      RemoveChildViewT(children()[child_index]);
+    }
+    icon_member = AddChildViewAt(CreateIconView(std::move(icon)), child_index);
+    if (!use_placeholder) {
+      RecreateLayout();
+    }
+  } else {
+    icon_member->SetImage(std::move(icon));
+  }
 }
 
 void RichHoverButton::RecreateLayout() {

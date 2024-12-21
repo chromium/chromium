@@ -45,6 +45,8 @@ class HoverButton : public views::LabelButton {
  public:
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
+  HoverButton();
+
   // Creates a single line hover button with no icon.
   HoverButton(PressedCallback callback, const std::u16string& text);
 
@@ -75,6 +77,7 @@ class HoverButton : public views::LabelButton {
   ~HoverButton() override;
 
   // views::LabelButton:
+  void SetCallback(PressedCallback callback) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;

@@ -95,12 +95,9 @@ END_METADATA
 
 }  // namespace
 
-HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
-    : views::LabelButton(
-          base::BindRepeating(&HoverButton::OnPressed, base::Unretained(this)),
-          text,
-          views::style::CONTEXT_BUTTON),
-      callback_(std::move(callback)) {
+HoverButton::HoverButton()
+    : views::LabelButton(base::BindRepeating(&HoverButton::OnPressed,
+                                             base::Unretained(this))) {
   SetButtonController(std::make_unique<HoverButtonController>(
       this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
@@ -126,6 +123,12 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
                            ui::EF_RIGHT_MOUSE_BUTTON);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
+}
+
+HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
+    : HoverButton() {
+  SetCallback(std::move(callback));
+  SetText(text);
 }
 
 HoverButton::HoverButton(PressedCallback callback,
@@ -233,6 +236,12 @@ HoverButton::HoverButton(PressedCallback callback,
 }
 
 HoverButton::~HoverButton() = default;
+
+void HoverButton::SetCallback(PressedCallback callback) {
+  // TODO(pkasting): Why does HoverButton have its own callback -- to disable
+  // special handling of the label? Can we remove this member and override?
+  callback_ = std::move(callback);
+}
 
 gfx::Size HoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {

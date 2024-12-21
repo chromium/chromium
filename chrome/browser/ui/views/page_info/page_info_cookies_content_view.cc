@@ -398,10 +398,9 @@ void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
           PageInfoViewFactory::GetImageModel(vector_icons::kTenancyIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
-          is_managed ? std::optional<ui::ImageModel>(
-                           PageInfoViewFactory::GetImageModel(
-                               vector_icons::kBusinessIcon))
-                     : std::nullopt));
+          is_managed
+              ? PageInfoViewFactory::GetImageModel(vector_icons::kBusinessIcon)
+              : ui::ImageModel()));
   rws_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
   rws_button_->SetTooltipText(

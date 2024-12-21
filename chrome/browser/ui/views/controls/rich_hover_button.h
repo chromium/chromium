@@ -44,20 +44,25 @@ class RichHoverButton : public HoverButton {
   METADATA_HEADER(RichHoverButton, HoverButton)
 
  public:
-  RichHoverButton(
-      views::Button::PressedCallback callback,
-      const ui::ImageModel& main_image_icon,
-      const std::u16string& title_text,
-      const std::u16string& subtitle_text,
-      std::optional<ui::ImageModel> action_image_icon = std::nullopt,
-      std::optional<ui::ImageModel> state_icon = std::nullopt);
+  RichHoverButton(views::Button::PressedCallback callback,
+                  ui::ImageModel icon,
+                  const std::u16string& title_text,
+                  const std::u16string& subtitle_text,
+                  ui::ImageModel action_icon = ui::ImageModel(),
+                  ui::ImageModel state_icon = ui::ImageModel());
 
   RichHoverButton(const RichHoverButton&) = delete;
   RichHoverButton& operator=(const RichHoverButton&) = delete;
 
   ~RichHoverButton() override;
 
+  void SetIcon(ui::ImageModel icon);
+
   void SetTitleText(const std::u16string& title_text);
+
+  void SetStateIcon(ui::ImageModel state_icon);
+
+  void SetActionIcon(ui::ImageModel action_icon);
 
   void SetSubtitleText(const std::u16string& subtitle_text);
 
@@ -88,9 +93,8 @@ class RichHoverButton : public HoverButton {
       base::Extend(custom_view_row_views_, AddFillerViews(start));
     } else {
       CHECK_GT(custom_view_row_views_.size(), 1u);
-      const size_t index = *GetIndexOf(custom_view_row_views_[1]);
       RemoveChildViewT(custom_view_row_views_[1]);
-      view = AddChildViewAt(std::move(custom_view), index);
+      view = AddChildViewAt(std::move(custom_view), custom_view_row_start_ + 1);
       custom_view_row_views_[1] = view;
     }
 
@@ -109,6 +113,16 @@ class RichHoverButton : public HoverButton {
       const views::SizeBounds& available_size) const override;
 
  private:
+  // Updates the image at `icon_member`, which corresponds to child
+  // `child_index`, to be `icon`. If `icon` is empty, the member will be set to
+  // null. If `use_placeholder` is true, empty `View`s are inserted (instead of
+  // nothing) when the provided image is empty, to avoid changing the columns of
+  // items in the table.
+  void SetIconMember(raw_ptr<views::ImageView>& icon_member,
+                     size_t child_index,
+                     ui::ImageModel icon,
+                     bool use_placeholder);
+
   // Recreates the table layout, which must be done any time the custom view
   // changes between empty and non-empty (since its row is not filled with
   // placeholder `View`s when absent).
@@ -124,8 +138,11 @@ class RichHoverButton : public HoverButton {
   // the table rows after the first one.
   std::vector<raw_ptr<views::View>> AddFillerViews(size_t start);
 
+  size_t start_;
+  raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> state_icon_ = nullptr;
+  raw_ptr<views::ImageView> action_icon_ = nullptr;
   size_t custom_view_row_start_;
   std::vector<raw_ptr<views::View>> custom_view_row_views_;
   std::vector<raw_ptr<views::View>> subtitle_row_views_;
