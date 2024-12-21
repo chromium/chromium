@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
+#include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -247,6 +249,122 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackOnNonCompositableSecondAnimation) {
             CompositedPaintStatus::kNotComposited);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+}
+
+TEST_F(ClipPathPaintDefinitionTest,
+       NoInvalidationsOnPseudoWithTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target:after{
+        content:"";
+      }
+    </style>
+    <span id="target"></span>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+
+  CSSPropertyID property_id_cp = CSSPropertyID::kClipPath;
+  Persistent<StringKeyframe> start_keyframe_cp =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe_cp->SetCSSPropertyValue(
+      property_id_cp, "circle(50% at 50% 50%)",
+      SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> mid_keyframe_cp =
+      MakeGarbageCollected<StringKeyframe>();
+  mid_keyframe_cp->SetCSSPropertyValue(property_id_cp, "circle(50% at 50% 50%)",
+                                       SecureContextMode::kInsecureContext,
+                                       nullptr);
+  Persistent<StringKeyframe> end_keyframe_cp =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe_cp->SetCSSPropertyValue(property_id_cp, "circle(30% at 30% 30%)",
+                                       SecureContextMode::kInsecureContext,
+                                       nullptr);
+
+  StringKeyframeVector keyframes_cp;
+  keyframes_cp.push_back(start_keyframe_cp);
+  keyframes_cp.push_back(mid_keyframe_cp);
+  keyframes_cp.push_back(end_keyframe_cp);
+
+  auto* model_cp =
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes_cp);
+  model_cp->SetComposite(EffectModel::kCompositeReplace);
+
+  CSSPropertyID property_id_tf = CSSPropertyID::kTransform;
+  Persistent<StringKeyframe> start_keyframe_tf =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe_tf->SetCSSPropertyValue(property_id_tf, "rotate(10deg)",
+                                         SecureContextMode::kInsecureContext,
+                                         nullptr);
+  Persistent<StringKeyframe> end_keyframe_tf =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe_tf->SetCSSPropertyValue(property_id_tf, "rotate(360deg)",
+                                       SecureContextMode::kInsecureContext,
+                                       nullptr);
+
+  StringKeyframeVector keyframes_tf;
+  keyframes_tf.push_back(start_keyframe_tf);
+  keyframes_tf.push_back(end_keyframe_tf);
+
+  auto* model_tf =
+      MakeGarbageCollected<StringKeyframeEffectModel>(keyframes_tf);
+  model_tf->SetComposite(EffectModel::kCompositeReplace);
+
+  Element* element_main = GetElementById("target");
+  Element* element_pseudo = To<Element>(element_main->PseudoAwareFirstChild());
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+
+  Animation* animation_tf = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element_main, model_tf, timing),
+      timeline, exception_state);
+  animation_tf->play();
+
+  Animation* animation_cp = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element_pseudo, model_cp, timing),
+      timeline, exception_state);
+  animation_cp->play();
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Set up animations for ticking.
+
+  GetDocument().Timeline().ResetForTesting();
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(0));
+  animation_tf->NotifyReady(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0));
+
+  // Check for correct state on the first frame. In all cases this should be
+  // correct (basic behavior for the feature)
+
+  LayoutObject* lo = element_pseudo->GetLayoutObject();
+  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
+  EXPECT_TRUE(element_pseudo->GetElementAnimations());
+  EXPECT_EQ(element_pseudo->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+
+  // Run lifecycle again, and advance the animation time so that style
+  // invalidation occurs. In this case, the correct behavior is that the
+  // animation should be in steady-state. The transform animation on the root
+  // element should NOT cause invalidations for the pseudo.
+
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks() +
+                                               base::Milliseconds(250));
+  animation_tf->Update(kTimingUpdateForAnimationFrame);
+  GetDocument().GetPendingAnimations().Update(
+      GetDocument().GetFrame()->View()->GetPaintArtifactCompositor(), false);
+
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(lo->NeedsPaintPropertyUpdate());
+  EXPECT_EQ(element_pseudo->GetElementAnimations()->CompositedClipPathStatus(),
+            CompositedPaintStatus::kComposited);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
 }
 
 }  // namespace blink
