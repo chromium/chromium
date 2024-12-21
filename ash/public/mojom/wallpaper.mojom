@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module crosapi.mojom;
+module ash.mojom;
 
 [Extensible]
 enum WallpaperLayout {
-  kNone = 0,
+  [Default] kNone = 0,
   kStretch = 1,
   kCenter = 2,
   kCenterCropped = 3,

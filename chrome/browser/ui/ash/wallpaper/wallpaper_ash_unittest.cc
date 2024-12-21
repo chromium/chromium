@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/mojom/wallpaper.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -21,8 +22,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/crosapi/mojom/wallpaper.mojom-forward.h"
-#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -32,8 +31,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-
-namespace crosapi {
 
 std::vector<uint8_t> CreateJpeg(int width = 100, int height = 100) {
   const SkColor kRed = SkColorSetRGB(255, 0, 0);
@@ -53,7 +50,7 @@ std::vector<uint8_t> CreateJpeg(int width = 100, int height = 100) {
   return jpg_data.value();
 }
 
-using crosapi::mojom::SetWallpaperResultPtr;
+using ash::mojom::SetWallpaperResultPtr;
 
 class WallpaperAshTest : public testing::Test {
  public:
@@ -90,7 +87,7 @@ class WallpaperAshTest : public testing::Test {
   }
 
   SetWallpaperResultPtr SetWallpaper(
-      mojom::WallpaperSettingsPtr wallpaper_settings,
+      ash::mojom::WallpaperSettingsPtr wallpaper_settings,
       const std::string& extension_id,
       const std::string& extension_name) {
     base::test::TestFuture<SetWallpaperResultPtr> future;
@@ -113,8 +110,8 @@ class WallpaperAshTest : public testing::Test {
 };
 
 TEST_F(WallpaperAshTest, SetWallpaper) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg();
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
@@ -128,8 +125,8 @@ TEST_F(WallpaperAshTest, SetWallpaper) {
 }
 
 TEST_F(WallpaperAshTest, SetWallpaper1x1) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg(1, 1);
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
@@ -143,8 +140,8 @@ TEST_F(WallpaperAshTest, SetWallpaper1x1) {
 }
 
 TEST_F(WallpaperAshTest, SetWallpaper_InvalidWallpaper) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
   // Created invalid data by not adding a wallpaper image to the settings data.
 
@@ -158,8 +155,8 @@ TEST_F(WallpaperAshTest, SetWallpaper_InvalidWallpaper) {
 }
 
 TEST_F(WallpaperAshTest, SetWallpaper_InvalidUser) {
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg();
   // Setting the wallpaper fails because we haven't set the current user.
 
@@ -177,8 +174,8 @@ TEST_F(WallpaperAshTest, SetWallpaper_CrashKeys_OnSuccess) {
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
   // Create valid settings.
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = CreateJpeg();
 
   // Invoke SetWallpaper(). It will respond with success.
@@ -200,8 +197,8 @@ TEST_F(WallpaperAshTest, SetWallpaper_CrashKeys_OnError) {
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
 
   // Create invalid data by not adding a wallpaper image to the settings data.
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
 
   // Invoke SetWallpaper(). It will respond with an error.
   base::test::TestFuture<SetWallpaperResultPtr> future;
@@ -217,5 +214,3 @@ TEST_F(WallpaperAshTest, SetWallpaper_CrashKeys_OnError) {
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(GetCrashKeyValue("extension-function-caller-1"), "");
 }
-
-}  // namespace crosapi

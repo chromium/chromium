@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "ash/public/mojom/wallpaper.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "extensions/common/extension_id.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,22 +28,20 @@ class WallpaperAsh {
   ~WallpaperAsh();
 
   void SetWallpaper(
-      crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
+      ash::mojom::WallpaperSettingsPtr wallpaper_settings,
       const std::string& extension_id,
       const std::string& extension_name,
-      base::OnceCallback<void(crosapi::mojom::SetWallpaperResultPtr)> callback);
+      base::OnceCallback<void(ash::mojom::SetWallpaperResultPtr)> callback);
 
  private:
-  void OnWallpaperDecoded(
-      crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
-      const SkBitmap& bitmap);
+  void OnWallpaperDecoded(ash::mojom::WallpaperSettingsPtr wallpaper_settings,
+                          const SkBitmap& bitmap);
   void SendErrorResult(const std::string& response);
   void SendSuccessResult(const std::vector<uint8_t>& thumbnail_data);
 
   // The ID of the extension making the current SetWallpaper() call.
   extensions::ExtensionId extension_id_;
-  base::OnceCallback<void(crosapi::mojom::SetWallpaperResultPtr)>
-      pending_callback_;
+  base::OnceCallback<void(ash::mojom::SetWallpaperResultPtr)> pending_callback_;
   data_decoder::DataDecoder data_decoder_;
   base::WeakPtrFactory<WallpaperAsh> weak_ptr_factory_{this};
 };

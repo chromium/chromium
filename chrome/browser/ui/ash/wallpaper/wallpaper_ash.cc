@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/mojom/wallpaper.mojom.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,13 +31,13 @@ namespace {
 
 WallpaperAsh* g_instance = nullptr;
 
-ash::WallpaperLayout GetLayoutEnum(crosapi::mojom::WallpaperLayout layout) {
+ash::WallpaperLayout GetLayoutEnum(ash::mojom::WallpaperLayout layout) {
   switch (layout) {
-    case crosapi::mojom::WallpaperLayout::kStretch:
+    case ash::mojom::WallpaperLayout::kStretch:
       return ash::WALLPAPER_LAYOUT_STRETCH;
-    case crosapi::mojom::WallpaperLayout::kCenter:
+    case ash::mojom::WallpaperLayout::kCenter:
       return ash::WALLPAPER_LAYOUT_CENTER;
-    case crosapi::mojom::WallpaperLayout::kCenterCropped:
+    case ash::mojom::WallpaperLayout::kCenterCropped:
       return ash::WALLPAPER_LAYOUT_CENTER_CROPPED;
     default:
       return ash::WALLPAPER_LAYOUT_CENTER;
@@ -100,10 +100,10 @@ WallpaperAsh::~WallpaperAsh() {
 }
 
 void WallpaperAsh::SetWallpaper(
-    crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
+    ash::mojom::WallpaperSettingsPtr wallpaper_settings,
     const std::string& extension_id,
     const std::string& extension_name,
-    base::OnceCallback<void(crosapi::mojom::SetWallpaperResultPtr)> callback) {
+    base::OnceCallback<void(ash::mojom::SetWallpaperResultPtr)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(ash::LoginState::Get()->IsUserLoggedIn());
   // Prevent any in progress decodes from changing wallpaper.
@@ -128,7 +128,7 @@ void WallpaperAsh::SetWallpaper(
 }
 
 void WallpaperAsh::OnWallpaperDecoded(
-    crosapi::mojom::WallpaperSettingsPtr wallpaper_settings,
+    ash::mojom::WallpaperSettingsPtr wallpaper_settings,
     const SkBitmap& bitmap) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (bitmap.isNull()) {
@@ -177,7 +177,7 @@ void WallpaperAsh::OnWallpaperDecoded(
 
 void WallpaperAsh::SendErrorResult(const std::string& response) {
   std::move(pending_callback_)
-      .Run(crosapi::mojom::SetWallpaperResult::NewErrorMessage(response));
+      .Run(ash::mojom::SetWallpaperResult::NewErrorMessage(response));
   extensions::extension_function_crash_keys::EndExtensionFunctionCall(
       extension_id_);
   extension_id_.clear();
@@ -186,8 +186,7 @@ void WallpaperAsh::SendErrorResult(const std::string& response) {
 void WallpaperAsh::SendSuccessResult(
     const std::vector<uint8_t>& thumbnail_data) {
   std::move(pending_callback_)
-      .Run(
-          crosapi::mojom::SetWallpaperResult::NewThumbnailData(thumbnail_data));
+      .Run(ash::mojom::SetWallpaperResult::NewThumbnailData(thumbnail_data));
   extensions::extension_function_crash_keys::EndExtensionFunctionCall(
       extension_id_);
   extension_id_.clear();

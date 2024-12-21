@@ -17,8 +17,8 @@ static_library("wallpaper") {
   ]
 
   public_deps = [
+    "//ash/public/mojom",
     "//chrome/common/extensions/api",
-    "//chromeos/crosapi/mojom",
     "//components/account_id",
     "//extensions/browser",
   ]

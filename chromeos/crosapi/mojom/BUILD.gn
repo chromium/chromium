@@ -112,7 +112,6 @@ mojom("mojom") {
     "volume_manager.mojom",
     "vpn_extension_observer.mojom",
     "vpn_service.mojom",
-    "wallpaper.mojom",
     "web_app_service.mojom",
     "web_app_types.mojom",
     "web_kiosk_service.mojom",

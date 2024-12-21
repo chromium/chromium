@@ -46,17 +46,17 @@ namespace set_wallpaper = extensions::api::wallpaper::SetWallpaper;
 
 namespace {
 
-crosapi::mojom::WallpaperLayout GetMojoLayoutEnum(
+ash::mojom::WallpaperLayout GetMojoLayoutEnum(
     extensions::api::wallpaper::WallpaperLayout layout) {
   switch (layout) {
     case extensions::api::wallpaper::WallpaperLayout::kStretch:
-      return crosapi::mojom::WallpaperLayout::kStretch;
+      return ash::mojom::WallpaperLayout::kStretch;
     case extensions::api::wallpaper::WallpaperLayout::kCenter:
-      return crosapi::mojom::WallpaperLayout::kCenter;
+      return ash::mojom::WallpaperLayout::kCenter;
     case extensions::api::wallpaper::WallpaperLayout::kCenterCropped:
-      return crosapi::mojom::WallpaperLayout::kCenterCropped;
+      return ash::mojom::WallpaperLayout::kCenterCropped;
     default:
-      return crosapi::mojom::WallpaperLayout::kCenter;
+      return ash::mojom::WallpaperLayout::kCenter;
   }
 }
 
@@ -188,7 +188,7 @@ void WallpaperSetWallpaperFunction::OnWallpaperFetched(
 }
 
 void WallpaperSetWallpaperFunction::OnWallpaperSetOnAsh(
-    const crosapi::mojom::SetWallpaperResultPtr result) {
+    const ash::mojom::SetWallpaperResultPtr result) {
   if (result->is_thumbnail_data()) {
     Respond(params_->details.thumbnail
                 ? WithArguments(Value(std::move(result->get_thumbnail_data())))
@@ -207,8 +207,8 @@ void WallpaperSetWallpaperFunction::SetWallpaperOnAsh() {
     extension_name = ext->name();
   }
 
-  crosapi::mojom::WallpaperSettingsPtr settings =
-      crosapi::mojom::WallpaperSettings::New();
+  ash::mojom::WallpaperSettingsPtr settings =
+      ash::mojom::WallpaperSettings::New();
   settings->data = *params_->details.data;
   settings->layout = GetMojoLayoutEnum(params_->details.layout);
   settings->filename = params_->details.filename;

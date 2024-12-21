@@ -49,4 +49,8 @@ specific_include_rules = {
   "accessibility_service_private\.cc": [
     "+chrome/browser/ash/accessibility/accessibility_manager.h",
   ],
+
+  "wallpaper_api\.h": [
+    "+ash/public/mojom/wallpaper.mojom.h",
+  ]
 }
