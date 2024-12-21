@@ -246,7 +246,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
         template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
       match.description = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT, template_url.keyword(),
+          IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
           template_url.short_name());
       match.relevance = kGeminiRelevance;
     } else {
