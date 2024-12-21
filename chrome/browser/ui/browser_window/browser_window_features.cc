@@ -47,6 +47,11 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/saved_tab_groups/public/features.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_tab_indicator_helper.h"
+#endif
+
 namespace {
 
 // This is the generic entry point for test code to stub out browser window
@@ -117,6 +122,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       tab_declutter_controller_ =
           std::make_unique<tabs::TabDeclutterController>(browser);
     }
+
+#if BUILDFLAG(ENABLE_GLIC)
+    if (GlicEnabling::IsEnabledByFlags()) {
+      glic_tab_indicator_helper_ =
+          std::make_unique<glic::GlicTabIndicatorHelper>(browser);
+    }
+#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   // The LensOverlayEntryPointController is constructed for all browser types

@@ -4,6 +4,8 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
+import("//chrome/common/features.gni")
+
 # This is the public interface for a browser window. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
@@ -15,6 +17,7 @@ source_set("browser_window") {
   ]
   public_deps = [
     "//base",
+    "//chrome/common:buildflags",
     "//content/public/browser",
     "//ui/base:types",
   ]
@@ -44,4 +47,11 @@ source_set("impl") {
     "//components/profile_metrics",
     "//components/saved_tab_groups/public",
   ]
+
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:enabling",
+    ]
+  }
 }

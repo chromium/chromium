@@ -10,6 +10,7 @@ source_set("glic") {
     "glic_page_context_fetcher.h",
     "glic_pref_names.h",
     "glic_profile_manager.h",
+    "glic_tab_indicator_helper.h",
     "glic_window_controller.h",
     "guest_util.h",
   ]
@@ -32,6 +33,7 @@ source_set("impl") {
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
     "glic_profile_manager.cc",
+    "glic_tab_indicator_helper.cc",
     "glic_window_controller.cc",
     "guest_util.cc",
   ]
@@ -45,6 +47,8 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//components/favicon/content:content",
     "//components/guest_view/browser",

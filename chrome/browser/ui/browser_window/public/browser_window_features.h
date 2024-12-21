@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "chrome/common/buildflags.h"
 
 class Browser;
 class BrowserView;
@@ -33,6 +34,12 @@ class TabDeclutterController;
 namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
+
+#if BUILDFLAG(ENABLE_GLIC)
+namespace glic {
+class GlicTabIndicatorHelper;
+}
+#endif
 
 namespace lens {
 class LensOverlayEntryPointController;
@@ -193,6 +200,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<media_router::CastBrowserController>
       cast_browser_controller_;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

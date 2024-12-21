@@ -15,11 +15,18 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
 
 std::vector<TabAlertState> GetTabAlertStatesForContents(
     content::WebContents* contents) {
@@ -76,6 +83,15 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
           content::WebContents::CapabilityType::kSerial)) {
     states.push_back(TabAlertState::SERIAL_CONNECTED);
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (GlicEnabling::IsEnabledByFlags() &&
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          contents->GetBrowserContext())
+              ->GetFocusedTab() == contents) {
+    states.push_back(TabAlertState::GLIC_ACCESSING);
+  }
+#endif
 
   // Check if VR content is being presented in a headset.
   // NOTE: This icon must take priority over the audio alert ones
