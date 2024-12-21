@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 namespace {
@@ -194,7 +195,9 @@ TabGlicContainer::TabGlicContainer(
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (GlicEnabling::IsEnabledByFlags() &&
+      glic::GlicProfileManager::IsProfileSupported(
+          tab_strip_controller->GetProfile())) {
     std::unique_ptr<glic::GlicButton> glic_button =
         std::make_unique<glic::GlicButton>(tab_strip_controller);
     glic_button->SetProperty(views::kCrossAxisAlignmentKey,

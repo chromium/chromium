@@ -24,6 +24,9 @@ class GlicProfileManager {
   // Returns the global instance.
   static GlicProfileManager* GetInstance();
 
+  // Returns whether the given profile is supported for glic.
+  static bool IsProfileSupported(Profile* profile);
+
   GlicProfileManager(const GlicProfileManager&) = delete;
   GlicProfileManager& operator=(const GlicProfileManager&) = delete;
 

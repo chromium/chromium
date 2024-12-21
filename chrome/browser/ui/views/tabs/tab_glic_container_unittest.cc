@@ -21,12 +21,25 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
-class FakeBaseTabStripControllerWithProfile
-    : public FakeBaseTabStripController {
+class FakeGlicTabStripController : public FakeBaseTabStripController {
  public:
-  Profile* GetProfile() const override { return profile_.get(); }
+  Profile* GetProfile() const override {
+    if (use_otr_profile_) {
+      TestingProfile* otr_profile = TestingProfile::Builder().BuildOffTheRecord(
+          profile_.get(), Profile::OTRProfileID::CreateUniqueForTesting());
+
+      return otr_profile;
+    }
+
+    return profile_.get();
+  }
+
+  void ShouldUseOtrProfile(bool use_otr_profile) {
+    use_otr_profile_ = use_otr_profile;
+  }
 
  private:
+  bool use_otr_profile_ = false;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
 };
 
@@ -43,17 +56,18 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
-
-    BuildGlicContainer();
   }
 
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
     tab_glic_container_.reset();
   }
-  void BuildGlicContainer() {
-    tab_strip_ = std::make_unique<TabStrip>(
-        std::make_unique<FakeBaseTabStripControllerWithProfile>());
+
+  void BuildGlicContainer(bool use_otr_profile) {
+    controller_ = std::make_unique<FakeGlicTabStripController>();
+    controller_->ShouldUseOtrProfile(use_otr_profile);
+
+    tab_strip_ = std::make_unique<TabStrip>(std::move(controller_));
 
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, tab_strip_->controller()->GetProfile());
@@ -84,6 +98,7 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::View> locked_expansion_view_;
   std::unique_ptr<TabGlicContainer> tab_glic_container_;
+  std::unique_ptr<FakeGlicTabStripController> controller_;
 
  private:
   // Owned by TabStrip.
@@ -92,12 +107,19 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
 
 #if BUILDFLAG(ENABLE_GLIC)
 TEST_F(TabGlicContainerTest, GlicButtonDrawing) {
-  EXPECT_NE(tab_glic_container_->GetGlicButton(), nullptr);
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  EXPECT_TRUE(tab_glic_container_->GetGlicButton());
+}
+
+TEST_F(TabGlicContainerTest, GlicButtonUnsupportedProfile) {
+  BuildGlicContainer(/*use_otr_profile=*/true);
+  EXPECT_FALSE(tab_glic_container_->GetGlicButton());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 TEST_F(TabGlicContainerTest, OrdersButtonsCorrectly) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
   ASSERT_EQ(tab_glic_container_->tab_declutter_button(),
             tab_glic_container_->children()[0]);
 

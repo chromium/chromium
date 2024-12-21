@@ -35,6 +35,10 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
+  // Do not open glic window if the user is browsing in incognito or guest mode.
+  DCHECK(GlicProfileManager::IsProfileSupported(
+      Profile::FromBrowserContext(browser_context_)));
+
   profile_manager_->OnUILaunching(this);
   window_controller_.Show(glic_button_view);
 
