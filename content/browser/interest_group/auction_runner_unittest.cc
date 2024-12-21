@@ -21120,56 +21120,6 @@ TEST_F(AuctionRunnerTest, RecencyPassedGenerateBid) {
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 }
 
-class AuctionRunnerPassRecencyToGenerateBidDisabledTest
-    : public AuctionRunnerTest {
- public:
-  AuctionRunnerPassRecencyToGenerateBidDisabledTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kFledgePassRecencyToGenerateBid);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AuctionRunnerPassRecencyToGenerateBidDisabledTest, NotPassed) {
-  const char kBidScript[] = R"(
-    function generateBid(
-        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
-        browserSignals) {
-      // PassRecencyToGenerateBid is disabled, so recency shouldn't be set.
-      if (typeof browserSignals.recency !== "undefined") {
-        throw "Wrong recency " + browserSignals.recency;
-      }
-      return {bid: 1,
-              render: interestGroup.ads[0].renderURL};
-    }
-
-    function reportWin(
-        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-    }
-  )";
-
-  const std::string kSellerScript = R"(
-    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      return bid;
-    }
-
-    function reportResult(auctionConfig, browserSignals) {
-    }
-  )";
-
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
-                                         kBidScript);
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         kSellerScript);
-
-  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
-  EXPECT_FALSE(result_.aborted_by_script);
-  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
-}
-
 TEST_F(RoundingTest, BidRounded) {
   const char kBidScript[] = R"(
     function generateBid(

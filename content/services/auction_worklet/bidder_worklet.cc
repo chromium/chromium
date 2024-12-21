@@ -1703,9 +1703,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       (SupportMultiBid() &&
        !browser_signals_dict.Set("multiBidLimit",
                                  static_cast<uint32_t>(multi_bid_limit))) ||
-      (base::FeatureList::IsEnabled(
-           blink::features::kFledgePassRecencyToGenerateBid) &&
-       !browser_signals_dict.Set("recency",
+      (!browser_signals_dict.Set("recency",
                                  browser_signal_recency.InMilliseconds())) ||
       !SetDataVersion(trusted_signals_relation, bidding_signals_data_version,
                       browser_signals_dict) ||
