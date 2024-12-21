@@ -11,19 +11,19 @@ build_webui("build") {
   grd_prefix = "glic"
 
   static_files = [
-    "glic.html",
     "glic.css",
+    "glic.html",
   ]
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "main.ts",
-    "glic_api_impl/glic_api_host.ts",
+    "glic_api/glic_api.ts",
     "glic_api/glic_api_client.ts",
+    "glic_api/glic_api_injected_client.ts",
     "glic_api/post_message_transport.ts",
     "glic_api/request_types.ts",
-    "glic_api/glic_api.ts",
-    "glic_api/glic_api_injected_client.ts",
+    "glic_api_impl/glic_api_host.ts",
+    "main.ts",
   ]
 
   webui_context_type = "trusted"

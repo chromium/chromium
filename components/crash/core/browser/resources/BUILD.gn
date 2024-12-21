@@ -8,8 +8,8 @@ build_webui("build") {
   grd_prefix = "crashes"
 
   static_files = [
-    "crashes.html",
     "crashes.css",
+    "crashes.html",
     "sadtab.svg",
   ]
 

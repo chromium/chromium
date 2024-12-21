@@ -10,38 +10,38 @@ build_webui("build") {
   grd_prefix = "side_panel_read_anything"
 
   static_files = [
-    "read_anything.html",
     "images/empty_state.svg",
+    "read_anything.html",
   ]
 
   web_component_files = [
     "app.ts",
     "language_menu.ts",
     "language_toast.ts",
-    "read_anything_toolbar.ts",
-    "voice_selection_menu.ts",
-    "menus/simple_action_menu.ts",
     "menus/color_menu.ts",
     "menus/highlight_menu.ts",
-    "menus/line_spacing_menu.ts",
     "menus/letter_spacing_menu.ts",
+    "menus/line_spacing_menu.ts",
+    "menus/simple_action_menu.ts",
+    "read_anything_toolbar.ts",
+    "voice_selection_menu.ts",
   ]
   non_web_component_files = [
-    "read_anything.ts",
+    "app_style_updater.ts",
     "common.ts",
+    "menus/menu_util.ts",
     "metrics_browser_proxy.ts",
+    "read_anything.ts",
     "read_anything_logger.ts",
     "voice_language_util.ts",
-    "app_style_updater.ts",
-    "menus/menu_util.ts",
     "voice_notification_manager.ts",
   ]
   css_files = [
     "app.css",
     "language_menu.css",
     "language_toast.css",
-    "voice_selection_menu.css",
     "read_anything_toolbar.css",
+    "voice_selection_menu.css",
   ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"
@@ -57,9 +57,9 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   ts_definitions = [
-    "read_anything.d.ts",
-    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "read_anything.d.ts",
   ]
   ts_path_mappings =
       [ "//read-anything-side-panel.top-chrome/shared/*|" +

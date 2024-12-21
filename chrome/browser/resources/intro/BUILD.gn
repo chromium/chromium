@@ -12,14 +12,14 @@ build_webui("build") {
 
   static_files = [
     "default_browser/default_browser.html",
-    "intro.html",
     "images/default_browser_frame.svg",
     "images/default_browser_frame_dark.svg",
+    "intro.html",
   ]
 
   non_web_component_files = [
-    "default_browser/browser_proxy.ts",
     "browser_proxy.ts",
+    "default_browser/browser_proxy.ts",
   ]
 
   if (enable_dice_support) {

@@ -8,8 +8,8 @@ build_webui("build") {
   grd_prefix = "quota_internals"
 
   static_files = [
-    "quota_internals.html",
     "quota_internals.css",
+    "quota_internals.html",
   ]
 
   non_web_component_files = [

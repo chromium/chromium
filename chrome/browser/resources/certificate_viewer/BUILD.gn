@@ -18,8 +18,8 @@ build_webui("build") {
   non_web_component_files = [
     "browser_proxy.ts",
     "certificate_viewer.ts",
-    "modifications_panel.ts",
     "modifications_panel.html.ts",
+    "modifications_panel.ts",
   ]
 
   css_files = [ "modifications_panel.css" ]

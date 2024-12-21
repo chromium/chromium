@@ -15,11 +15,11 @@ build_webui("build") {
     "feedback.html",
     "html/autofill_metadata_info.html",
     "html/system_info.html",
-    "images/2x/button_butter_bar_close_hover.png",
     "images/2x/button_butter_bar_close.png",
+    "images/2x/button_butter_bar_close_hover.png",
     "images/2x/button_butter_bar_close_pressed.png",
-    "images/button_butter_bar_close_hover.png",
     "images/button_butter_bar_close.png",
+    "images/button_butter_bar_close_hover.png",
     "images/button_butter_bar_close_pressed.png",
   ]
 
@@ -50,8 +50,8 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/feedback_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/feedback_private.d.ts",
   ]
   ts_deps = [
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",

@@ -6,8 +6,8 @@ import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
-    "privacy_sandbox_internals_test.ts",
     "content_settings_test.ts",
+    "privacy_sandbox_internals_test.ts",
   ]
   ts_path_mappings = [ "chrome://privacy-sandbox-internals/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/privacy_sandbox/internals/tsc/*",
@@ -19,10 +19,10 @@ build_webui_tests("build") {
     "//components/content_settings/core/common:mojo_bindings_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_enums.mojom-webui.ts",
     "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom-webui.ts",
   ]
   ts_deps = [
     "//chrome/browser/resources/privacy_sandbox/internals:build_ts",

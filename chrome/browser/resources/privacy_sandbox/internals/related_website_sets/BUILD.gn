@@ -12,30 +12,30 @@ build_webui("build") {
   static_files = [ "related_website_sets.html" ]
 
   non_web_component_files = [
-    "app.ts",
     "app.html.ts",
-    "related_website_sets.ts",
-    "list_container.ts",
+    "app.ts",
     "list_container.html.ts",
-    "list_item.ts",
+    "list_container.ts",
     "list_item.html.ts",
+    "list_item.ts",
+    "related_website_sets.ts",
+    "related_website_sets_api_proxy.ts",
+    "sidebar.html.ts",
+    "sidebar.ts",
+    "site_favicon.html.ts",
+    "site_favicon.ts",
     "toolbar.html.ts",
     "toolbar.ts",
-    "sidebar.ts",
-    "sidebar.html.ts",
-    "site_favicon.ts",
-    "site_favicon.html.ts",
-    "related_website_sets_api_proxy.ts",
   ]
 
   css_files = [
     "app.css",
     "list_container.css",
     "list_item.css",
-    "toolbar.css",
     "shared_vars.css",
     "sidebar.css",
     "site_favicon.css",
+    "toolbar.css",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings_ts__generator" ]

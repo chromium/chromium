@@ -42,8 +42,8 @@ build_webui("build") {
     "profile_card.css",
     "profile_card_menu.css",
     "profile_creation_flow/profile_type_choice.css",
-    "profile_picker_main_view.css",
     "profile_picker_app.css",
+    "profile_picker_main_view.css",
     "profile_picker_shared.css",
     "profile_switch.css",
   ]

@@ -11,15 +11,15 @@ build_webui("build") {
   grd_resource_path_prefix = "shared/key_value_pair_viewer"
 
   web_component_files = [
-    "key_value_pair_viewer.ts",
     "key_value_pair_entry.ts",
+    "key_value_pair_viewer.ts",
   ]
 
   non_web_component_files = [ "key_value_pair_parser.ts" ]
 
   css_files = [
-    "key_value_pair_viewer.css",
     "key_value_pair_entry.css",
+    "key_value_pair_viewer.css",
   ]
 
   html_to_wrapper_template = "detect"

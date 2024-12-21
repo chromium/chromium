@@ -8,8 +8,8 @@ build_webui("build") {
   grd_prefix = "private_aggregation_internals"
 
   static_files = [
-    "private_aggregation_internals.html",
     "private_aggregation_internals.css",
+    "private_aggregation_internals.html",
   ]
 
   non_web_component_files = [

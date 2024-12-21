@@ -8,17 +8,17 @@ build_webui("build") {
   grd_prefix = "commerce_product_specifications"
 
   static_files = [
-    "product_specifications.html",
     "disclosure/product_specifications_disclosure.html",
-    "images/empty_state_dark.svg",
     "images/empty_state.svg",
+    "images/empty_state_dark.svg",
+    "product_specifications.html",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
-    "header_menu.ts",
     "header.ts",
+    "header_menu.ts",
     "new_column_selector.ts",
     "product_selection_menu.ts",
     "product_selector.ts",

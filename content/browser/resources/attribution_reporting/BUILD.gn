@@ -8,15 +8,15 @@ build_webui("build") {
   grd_prefix = "attribution_internals"
 
   static_files = [
-    "attribution_internals.html",
     "attribution_internals.css",
+    "attribution_internals.html",
   ]
 
   non_web_component_files = [ "attribution_internals.ts" ]
 
   web_component_files = [
-    "attribution_internals_table.ts",
     "attribution_detail_table.ts",
+    "attribution_internals_table.ts",
   ]
 
   ts_deps = [
@@ -32,19 +32,19 @@ build_webui("build") {
   network_folder = "services/network/public/mojom"
 
   mojo_files = [
+    "$root_gen_dir/$attribution_reporting_component_folder/debug_types.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/registration.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_registration_time_config.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_type.mojom-webui.ts",
-    "$root_gen_dir/$attribution_reporting_component_folder/debug_types.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/trigger_data_matching.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/aggregatable_result.mojom-webui.ts",
-    "$root_gen_dir/$attribution_reporting_content_folder/process_aggregatable_debug_report_result.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/event_level_result.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_content_folder/process_aggregatable_debug_report_result.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/store_source_result.mojom-webui.ts",
-    "$root_gen_dir/$network_folder/schemeful_site.mojom-webui.ts",
     "$root_gen_dir/$network_folder/attribution.mojom-webui.ts",
+    "$root_gen_dir/$network_folder/schemeful_site.mojom-webui.ts",
   ]
 
   mojo_files_deps = [

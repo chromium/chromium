@@ -40,8 +40,8 @@ build_webui("build") {
   non_web_component_files = [
     "browser_proxy.ts",
     "data_sharing_api.ts",
-    "mojom_conversion_utils.ts",
     "data_sharing_sdk_types.ts",
+    "mojom_conversion_utils.ts",
   ]
 
   if (is_chrome_branded) {

@@ -8,10 +8,10 @@ build_webui("build") {
   grd_prefix = "search_engine_choice"
 
   static_files = [
-    "search_engine_choice.html",
     "images/arrow_downward.svg",
     "images/info_dialog_illustration.svg",
     "images/info_dialog_illustration_dark.svg",
+    "search_engine_choice.html",
   ]
 
   non_web_component_files = [
