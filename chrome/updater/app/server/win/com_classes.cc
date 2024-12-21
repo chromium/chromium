@@ -29,6 +29,7 @@
 #include "base/win/variant_vector.h"
 #include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
+#include "chrome/updater/app/server/win/com_classes_util.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
@@ -36,9 +37,6 @@
 
 namespace updater {
 namespace {
-
-// Maximum string length for COM strings.
-constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
 
 using IUpdaterCallbackPtr = Microsoft::WRL::ComPtr<IUpdaterCallback>;
 using IUpdaterInternalCallbackPtr =
@@ -219,7 +217,9 @@ HRESULT UpdaterImpl::RuntimeClassInitialize() {
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
-  CHECK(version);
+  if (!version) {
+    return E_INVALIDARG;
+  }
 
   // Return the hardcoded version instead of calling the corresponding
   // non-blocking function of `UpdateServiceImpl`. This results in some
@@ -286,46 +286,9 @@ HRESULT UpdaterImpl::RegisterApp2(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  // Validates that string parameters are not longer than 16K characters.
-  std::optional<RegistrationRequest> request =
-      [app_id, brand_code, brand_path, ap, version, existence_checker_path,
-       install_id]() -> decltype(request) {
-    for (const auto& str : {app_id, brand_code, brand_path, ap, version,
-                            existence_checker_path, install_id}) {
-      if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return std::nullopt;
-      }
-    }
-
-    RegistrationRequest request;
-    if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return std::nullopt;
-    }
-    if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
-                                         &request.brand_code)) {
-      return std::nullopt;
-    }
-    request.brand_path = base::FilePath(brand_path);
-    if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return std::nullopt;
-    }
-    std::string version_str;
-    if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return std::nullopt;
-    }
-    request.version = base::Version(version_str);
-    if (!request.version.IsValid()) {
-      return std::nullopt;
-    }
-    request.existence_checker_path = base::FilePath(existence_checker_path);
-    if (install_id && !base::WideToUTF8(install_id, wcslen(install_id),
-                                        &request.install_id)) {
-      return std::nullopt;
-    }
-
-    return request;
-  }();
-
+  const std::optional<RegistrationRequest> request =
+      ValidateRegistrationRequest(app_id, brand_code, brand_path, ap, version,
+                                  existence_checker_path, install_id);
   if (!request) {
     return E_INVALIDARG;
   }
@@ -448,6 +411,16 @@ HRESULT UpdaterImpl::CheckForUpdate2(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
+  const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
+  if (!app_id_validated) {
+    return E_INVALIDARG;
+  }
+  const std::optional<std::string> language_validated =
+      ValidateLanguage(language);
+  if (!language_validated) {
+    return E_INVALIDARG;
+  }
+
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   base::RepeatingCallback<void(const UpdateService::UpdateState&)>
@@ -490,8 +463,8 @@ HRESULT UpdaterImpl::CheckForUpdate2(const wchar_t* app_id,
             language, std::move(state_change_callback),
             std::move(complete_callback));
       },
-      base::WideToUTF8(app_id), static_cast<UpdateService::Priority>(priority),
-      same_version_update_allowed, base::WideToUTF8(language),
+      *app_id_validated, static_cast<UpdateService::Priority>(priority),
+      same_version_update_allowed, *language_validated,
       std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
@@ -518,6 +491,21 @@ HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
                              const wchar_t* language,
                              IUpdaterObserver* observer) {
   if (!observer) {
+    return E_INVALIDARG;
+  }
+
+  const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
+  if (!app_id_validated) {
+    return E_INVALIDARG;
+  }
+  const std::optional<std::string> install_data_index_validated =
+      ValidateInstallDataIndex(install_data_index);
+  if (!install_data_index_validated) {
+    return E_INVALIDARG;
+  }
+  const std::optional<std::string> language_validated =
+      ValidateLanguage(language);
+  if (!language_validated) {
     return E_INVALIDARG;
   }
 
@@ -564,9 +552,9 @@ HRESULT UpdaterImpl::Update2(const wchar_t* app_id,
             language, std::move(state_change_callback),
             std::move(complete_callback));
       },
-      base::WideToUTF8(app_id), base::WideToUTF8(install_data_index),
+      *app_id_validated, *install_data_index_validated,
       static_cast<UpdateService::Priority>(priority),
-      same_version_update_allowed, base::WideToUTF8(language),
+      same_version_update_allowed, *language_validated,
       std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
@@ -645,49 +633,26 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  // Validates that string parameters are not longer than 16K characters.
-  std::optional<RegistrationRequest> request =
-      [app_id, brand_code, brand_path, ap, version, existence_checker_path,
-       client_install_data, install_data_index, install_id,
-       language]() -> decltype(request) {
-    for (const auto& str :
-         {app_id, brand_code, brand_path, ap, version, existence_checker_path,
-          client_install_data, install_data_index, install_id, language}) {
-      if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
-        return std::nullopt;
-      }
-    }
-
-    RegistrationRequest request;
-    if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &request.app_id)) {
-      return std::nullopt;
-    }
-    if (!brand_code || !base::WideToUTF8(brand_code, wcslen(brand_code),
-                                         &request.brand_code)) {
-      return std::nullopt;
-    }
-    request.brand_path = base::FilePath(brand_path);
-    if (!ap || !base::WideToUTF8(ap, wcslen(ap), &request.ap)) {
-      return std::nullopt;
-    }
-    std::string version_str;
-    if (!version || !base::WideToUTF8(version, wcslen(version), &version_str)) {
-      return std::nullopt;
-    }
-    request.version = base::Version(version_str);
-    if (!request.version.IsValid()) {
-      return std::nullopt;
-    }
-    request.existence_checker_path = base::FilePath(existence_checker_path);
-    if (install_id && !base::WideToUTF8(install_id, wcslen(install_id),
-                                        &request.install_id)) {
-      return std::nullopt;
-    }
-
-    return request;
-  }();
-
+  const std::optional<RegistrationRequest> request =
+      ValidateRegistrationRequest(app_id, brand_code, brand_path, ap, version,
+                                  existence_checker_path, install_id);
   if (!request) {
+    return E_INVALIDARG;
+  }
+
+  const std::optional<std::string> client_install_data_validated =
+      ValidateClientInstallData(client_install_data);
+  if (!client_install_data_validated) {
+    return E_INVALIDARG;
+  }
+  const std::optional<std::string> install_data_index_validated =
+      ValidateInstallDataIndex(install_data_index);
+  if (!install_data_index_validated) {
+    return E_INVALIDARG;
+  }
+  const std::optional<std::string> language_validated =
+      ValidateLanguage(language);
+  if (!language_validated) {
     return E_INVALIDARG;
   }
 
@@ -732,18 +697,15 @@ HRESULT UpdaterImpl::Install2(const wchar_t* app_id,
                                 std::move(state_change_callback),
                                 std::move(complete_callback));
       },
-      *request, base::WideToUTF8(client_install_data),
-      base::WideToUTF8(install_data_index),
-      static_cast<UpdateService::Priority>(priority),
-      base::WideToUTF8(language), std::move(state_change_callback),
-      std::move(complete_callback)));
+      *request, *client_install_data_validated, *install_data_index_validated,
+      static_cast<UpdateService::Priority>(priority), *language_validated,
+      std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }
 
 HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
-  std::string app_id_str;
-  if (wcsnlen_s(app_id, kMaxStringLen) >= kMaxStringLen || !app_id ||
-      !base::WideToUTF8(app_id, wcslen(app_id), &app_id_str)) {
+  const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
+  if (!app_id_validated) {
     return E_INVALIDARG;
   }
   AppServerWin::PostRpcTask(base::BindOnce(
@@ -755,7 +717,7 @@ HRESULT UpdaterImpl::CancelInstalls(const wchar_t* app_id) {
         }
         update_service->CancelInstalls(app_id_str);
       },
-      app_id_str));
+      *app_id_validated));
   return S_OK;
 }
 
@@ -786,44 +748,33 @@ HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
     return E_INVALIDARG;
   }
 
-  for (const wchar_t* str : {app_id, installer_path, install_args, install_data,
-                             install_settings, language}) {
-    if (wcsnlen_s(str, kMaxStringLen) >= kMaxStringLen) {
-      return E_INVALIDARG;
-    }
-  }
-
-  std::string app_id_str;
-  if (!app_id || !base::WideToUTF8(app_id, wcslen(app_id), &app_id_str)) {
+  const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
+  if (!app_id_validated) {
     return E_INVALIDARG;
   }
-
-  if (!installer_path) {
+  const std::optional<base::FilePath> installer_path_validated =
+      ValidateInstallerPath(installer_path);
+  if (!installer_path_validated) {
     return E_INVALIDARG;
   }
-
-  std::string install_args_str;
-  if (install_args && !base::WideToUTF8(install_args, wcslen(install_args),
-                                        &install_args_str)) {
+  const std::optional<std::string> install_args_validated =
+      ValidateInstallArgs(install_args);
+  if (!install_args_validated) {
     return E_INVALIDARG;
   }
-
-  std::string install_settings_str;
-  if (install_settings &&
-      !base::WideToUTF8(install_settings, wcslen(install_settings),
-                        &install_settings_str)) {
+  const std::optional<std::string> install_data_validated =
+      ValidateClientInstallData(install_data);
+  if (!install_data_validated) {
     return E_INVALIDARG;
   }
-
-  std::string install_data_str;
-  if (install_data && !base::WideToUTF8(install_data, wcslen(install_data),
-                                        &install_data_str)) {
+  const std::optional<std::string> install_settings_validated =
+      ValidateInstallSettings(install_settings);
+  if (!install_settings_validated) {
     return E_INVALIDARG;
   }
-
-  std::string language_str;
-  if (language &&
-      !base::WideToUTF8(language, wcslen(language), &language_str)) {
+  const std::optional<std::string> language_validated =
+      ValidateLanguage(language);
+  if (!language_validated) {
     return E_INVALIDARG;
   }
 
@@ -867,8 +818,8 @@ HRESULT UpdaterImpl::RunInstaller2(const wchar_t* app_id,
                                      std::move(state_change_callback),
                                      std::move(complete_callback));
       },
-      app_id_str, base::FilePath(installer_path), install_args_str,
-      install_data_str, install_settings_str, language_str,
+      *app_id_validated, *installer_path_validated, *install_args_validated,
+      *install_data_validated, *install_settings_validated, *language_validated,
       std::move(state_change_callback), std::move(complete_callback)));
   return S_OK;
 }

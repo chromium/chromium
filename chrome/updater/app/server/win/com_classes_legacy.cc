@@ -38,6 +38,7 @@
 #include "base/win/scoped_variant.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/app/app_server_win.h"
+#include "chrome/updater/app/server/win/com_classes_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
@@ -122,7 +123,9 @@ class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
 
   // Overrides for IAppVersionWeb.
   IFACEMETHODIMP get_version(BSTR* version) override {
-    CHECK(version);
+    if (!version) {
+      return E_INVALIDARG;
+    }
 
     *version = base::win::ScopedBstr(version_).Release();
     return S_OK;
@@ -194,21 +197,27 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   // Overrides for ICurrentState.
   IFACEMETHODIMP get_stateValue(LONG* state_value) override {
-    CHECK(state_value);
+    if (!state_value) {
+      return E_INVALIDARG;
+    }
 
     *state_value = state_value_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_availableVersion(BSTR* available_version) override {
-    CHECK(available_version);
+    if (!available_version) {
+      return E_INVALIDARG;
+    }
 
     *available_version = base::win::ScopedBstr(available_version_).Release();
     return S_OK;
   }
 
   IFACEMETHODIMP get_bytesDownloaded(ULONG* bytes_downloaded) override {
-    CHECK(bytes_downloaded);
+    if (!bytes_downloaded) {
+      return E_INVALIDARG;
+    }
 
     *bytes_downloaded = bytes_downloaded_;
     return S_OK;
@@ -216,7 +225,9 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_totalBytesToDownload(
       ULONG* total_bytes_to_download) override {
-    CHECK(total_bytes_to_download);
+    if (!total_bytes_to_download) {
+      return E_INVALIDARG;
+    }
 
     *total_bytes_to_download = total_bytes_to_download_;
     return S_OK;
@@ -224,14 +235,18 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_downloadTimeRemainingMs(
       LONG* download_time_remaining_ms) override {
-    CHECK(download_time_remaining_ms);
+    if (!download_time_remaining_ms) {
+      return E_INVALIDARG;
+    }
 
     *download_time_remaining_ms = download_time_remaining_ms_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_nextRetryTime(ULONGLONG* next_retry_time) override {
-    CHECK(next_retry_time);
+    if (!next_retry_time) {
+      return E_INVALIDARG;
+    }
 
     *next_retry_time = next_retry_time_;
     return S_OK;
@@ -239,7 +254,9 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_installProgress(
       LONG* install_progress_percentage) override {
-    CHECK(install_progress_percentage);
+    if (!install_progress_percentage) {
+      return E_INVALIDARG;
+    }
 
     *install_progress_percentage = install_progress_percentage_;
     return S_OK;
@@ -247,42 +264,54 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_installTimeRemainingMs(
       LONG* install_time_remaining_ms) override {
-    CHECK(install_time_remaining_ms);
+    if (!install_time_remaining_ms) {
+      return E_INVALIDARG;
+    }
 
     *install_time_remaining_ms = install_time_remaining_ms_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_isCanceled(VARIANT_BOOL* is_canceled) override {
-    CHECK(is_canceled);
+    if (!is_canceled) {
+      return E_INVALIDARG;
+    }
 
     *is_canceled = is_canceled_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_errorCode(LONG* error_code) override {
-    CHECK(error_code);
+    if (!error_code) {
+      return E_INVALIDARG;
+    }
 
     *error_code = error_code_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_extraCode1(LONG* extra_code1) override {
-    CHECK(extra_code1);
+    if (!extra_code1) {
+      return E_INVALIDARG;
+    }
 
     *extra_code1 = extra_code1_;
     return S_OK;
   }
 
   IFACEMETHODIMP get_completionMessage(BSTR* completion_message) override {
-    CHECK(completion_message);
+    if (!completion_message) {
+      return E_INVALIDARG;
+    }
 
     *completion_message = base::win::ScopedBstr(completion_message_).Release();
     return S_OK;
   }
 
   IFACEMETHODIMP get_installerResultCode(LONG* installer_result_code) override {
-    CHECK(installer_result_code);
+    if (!installer_result_code) {
+      return E_INVALIDARG;
+    }
 
     *installer_result_code = installer_result_code_;
     return S_OK;
@@ -290,7 +319,9 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_installerResultExtraCode1(
       LONG* installer_result_extra_code1) override {
-    CHECK(installer_result_extra_code1);
+    if (!installer_result_extra_code1) {
+      return E_INVALIDARG;
+    }
 
     *installer_result_extra_code1 = installer_result_extra_code1_;
     return S_OK;
@@ -298,7 +329,9 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
 
   IFACEMETHODIMP get_postInstallLaunchCommandLine(
       BSTR* post_install_launch_command_line) override {
-    CHECK(post_install_launch_command_line);
+    if (!post_install_launch_command_line) {
+      return E_INVALIDARG;
+    }
 
     *post_install_launch_command_line =
         base::win::ScopedBstr(post_install_launch_command_line_).Release();
@@ -306,14 +339,18 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
   }
 
   IFACEMETHODIMP get_postInstallUrl(BSTR* post_install_url) override {
-    CHECK(post_install_url);
+    if (!post_install_url) {
+      return E_INVALIDARG;
+    }
 
     *post_install_url = base::win::ScopedBstr(post_install_url_).Release();
     return S_OK;
   }
 
   IFACEMETHODIMP get_postInstallAction(LONG* post_install_action) override {
-    CHECK(post_install_action);
+    if (!post_install_action) {
+      return E_INVALIDARG;
+    }
 
     *post_install_action = post_install_action_;
     return S_OK;
@@ -578,6 +615,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_currentVersionWeb(IDispatch** current) override {
+    if (!current) {
+      return E_INVALIDARG;
+    }
+
     // Holds the result of the IPC to retrieve the current version.
     struct CurrentVersionResult
         : public base::RefCountedThreadSafe<CurrentVersionResult> {
@@ -622,6 +663,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override {
+    if (!next) {
+      return E_INVALIDARG;
+    }
+
     base::AutoLock lock{lock_};
 
     if (!state_update_ || !state_update_->next_version.IsValid()) {
@@ -633,6 +678,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
+    if (!ValidateCommandId(command_id) || !command) {
+      return E_INVALIDARG;
+    }
+
     return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
         command, GetUpdaterScope(), base::UTF8ToWide(app_id_), command_id);
   }
@@ -652,7 +701,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_currentState(IDispatch** current_state) override {
-    CHECK(current_state);
+    if (!current_state) {
+      return E_INVALIDARG;
+    }
 
     base::AutoLock lock{lock_};
 
@@ -762,7 +813,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* install_data_index) override {
-    CHECK(install_data_index);
+    if (!install_data_index) {
+      return E_INVALIDARG;
+    }
 
     *install_data_index =
         base::win::ScopedBstr(base::UTF8ToWide(install_data_index_)).Release();
@@ -770,6 +823,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR install_data_index) override {
+    if (!install_data_index) {
+      return E_INVALIDARG;
+    }
+
     install_data_index_ = base::WideToUTF8(install_data_index);
     return S_OK;
   }
@@ -882,6 +939,11 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
                            BSTR brand_code,
                            BSTR language,
                            BSTR ap) override {
+    if (!ValidateAppId(app_id) || !ValidateBrandCode(brand_code) ||
+        !ValidateLanguage(language) || !ValidateAP(ap)) {
+      return E_INVALIDARG;
+    }
+
     base::AutoLock lock{lock_};
 
     if (app_web_) {
@@ -894,6 +956,10 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
+    if (!ValidateAppId(app_id)) {
+      return E_INVALIDARG;
+    }
+
     base::AutoLock lock{lock_};
 
     if (app_web_) {
@@ -925,9 +991,13 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP get_appWeb(int index, IDispatch** app_web) override {
+    if (index || !app_web) {
+      return E_INVALIDARG;
+    }
+
     base::AutoLock lock{lock_};
 
-    if (index != 0 || !app_web_) {
+    if (!app_web_) {
       return E_UNEXPECTED;
     }
 
@@ -1009,7 +1079,10 @@ LegacyOnDemandImpl::~LegacyOnDemandImpl() = default;
 
 STDMETHODIMP LegacyOnDemandImpl::createAppBundleWeb(
     IDispatch** app_bundle_web) {
-  CHECK(app_bundle_web);
+  if (!app_bundle_web) {
+    return E_INVALIDARG;
+  }
+
   return MakeAndInitializeComObject<AppBundleWebImpl>(app_bundle_web);
 }
 
@@ -1032,6 +1105,11 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
     const WCHAR* command_id,
     DWORD caller_proc_id,
     ULONG_PTR* proc_handle) {
+  if (!ValidateAppId(app_id) || !ValidateCommandId(command_id) ||
+      !proc_handle) {
+    return E_INVALIDARG;
+  }
+
   base::win::ScopedHandle caller_proc_handle;
   if (HRESULT hr = OpenCallerProcessHandle(caller_proc_id, caller_proc_handle);
       FAILED(hr)) {
@@ -1104,7 +1182,9 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
-  CHECK(status);
+  if (!status) {
+    return E_INVALIDARG;
+  }
 
   if (!process_.IsValid()) {
     *status = COMMAND_STATUS_INIT;
@@ -1118,7 +1198,9 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
-  CHECK(exit_code);
+  if (!exit_code) {
+    return E_INVALIDARG;
+  }
 
   int code = -1;
   if (!process_.IsValid() ||
@@ -1144,8 +1226,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution7,
                                               VARIANT substitution8,
                                               VARIANT substitution9) {
-  CHECK(app_command_runner_.has_value());
-  if (process_.IsValid()) {
+  if (!app_command_runner_.has_value() || process_.IsValid()) {
     return E_UNEXPECTED;
   }
 
@@ -1264,7 +1345,9 @@ HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
 
 // IPolicyStatus.
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
-  CHECK(minutes);
+  if (!minutes) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<base::TimeDelta> period = policy_service_->GetLastCheckPeriod();
   if (!period) {
@@ -1284,6 +1367,9 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   CHECK(start_min);
   CHECK(duration_min);
   CHECK(are_updates_suppressed);
+  if (!start_hour || !start_min || !duration_min || !are_updates_suppressed) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<UpdatesSuppressedTimes> updates_suppressed_times =
       policy_service_->GetUpdatesSuppressedTimes();
@@ -1301,7 +1387,9 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
 }
 
 STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
-  CHECK(pref);
+  if (!pref) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<std::string> download_preference =
       policy_service_->GetDownloadPreference();
@@ -1315,7 +1403,9 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(DWORD* limit) {
-  CHECK(limit);
+  if (!limit) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<int> cache_size_limit =
       policy_service_->GetPackageCacheSizeLimitMBytes();
@@ -1328,7 +1418,9 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(DWORD* limit) {
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(DWORD* days) {
-  CHECK(days);
+  if (!days) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<int> cache_life_limit =
       policy_service_->GetPackageCacheExpirationTimeDays();
@@ -1343,7 +1435,9 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(DWORD* days) {
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
     BSTR app_id,
     DWORD* policy) {
-  CHECK(policy);
+  if (!policy) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<int> install_policy =
       policy_service_->GetPolicyForAppInstalls(base::WideToUTF8(app_id));
@@ -1357,7 +1451,9 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
 
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(BSTR app_id,
                                                                 DWORD* policy) {
-  CHECK(policy);
+  if (!ValidateAppId(app_id) || !policy) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<int> update_policy =
       policy_service_->GetPolicyForAppUpdates(base::WideToUTF8(app_id));
@@ -1371,7 +1467,9 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(BSTR app_id,
 
 STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(BSTR app_id,
                                                        BSTR* prefix) {
-  CHECK(prefix);
+  if (!ValidateAppId(app_id) || !prefix) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<std::string> target_version_prefix =
       policy_service_->GetTargetVersionPrefix(base::WideToUTF8(app_id));
@@ -1388,7 +1486,9 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(BSTR app_id,
 STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
     BSTR app_id,
     VARIANT_BOOL* rollback_allowed) {
-  CHECK(rollback_allowed);
+  if (!ValidateAppId(app_id) || !rollback_allowed) {
+    return E_INVALIDARG;
+  }
 
   PolicyStatus<bool> is_rollback_allowed =
       policy_service_->IsRollbackToTargetVersionAllowed(
@@ -1403,7 +1503,9 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
 }
 
 STDMETHODIMP PolicyStatusImpl::get_updaterVersion(BSTR* version) {
-  CHECK(version);
+  if (!version) {
+    return E_INVALIDARG;
+  }
 
   *version = base::win::ScopedBstr(kUpdaterVersionUtf16).Release();
   return S_OK;
@@ -1460,7 +1562,9 @@ class PolicyStatusResult
 }  // namespace
 
 STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
-  CHECK(last_checked);
+  if (!last_checked) {
+    return E_INVALIDARG;
+  }
 
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
   auto result = base::MakeRefCounted<LastCheckedTimeResult>();
@@ -1524,7 +1628,10 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
 
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
       &PolicyService::DeprecatedGetLastCheckPeriodMinutes, policy_service_));
   return policy_status.has_value()
@@ -1535,8 +1642,9 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
 STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
     IPolicyStatusValue** value,
     VARIANT_BOOL* are_updates_suppressed) {
-  CHECK(value);
-  CHECK(are_updates_suppressed);
+  if (!value || !are_updates_suppressed) {
+    return E_INVALIDARG;
+  }
 
   auto policy_status =
       PolicyStatusResult<UpdatesSuppressedTimes>::Get(base::BindRepeating(
@@ -1556,7 +1664,10 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
 
 STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(base::BindRepeating(
       &PolicyService::GetDownloadPreference, policy_service_));
   return policy_status.has_value()
@@ -1566,7 +1677,10 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
       &PolicyService::GetPackageCacheSizeLimitMBytes, policy_service_));
   return policy_status.has_value()
@@ -1576,7 +1690,10 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
       &PolicyService::GetPackageCacheExpirationTimeDays, policy_service_));
   return policy_status.has_value()
@@ -1585,7 +1702,10 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetProxyMode, policy_service_));
   return policy_status.has_value()
@@ -1594,7 +1714,10 @@ STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetProxyPacUrl, policy_service_));
   return policy_status.has_value()
@@ -1603,7 +1726,10 @@ STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetProxyServer, policy_service_));
   return policy_status.has_value()
@@ -1614,7 +1740,10 @@ STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
     BSTR app_id,
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!ValidateAppId(app_id) || !value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<int>::Get(
       base::BindRepeating(&PolicyService::GetPolicyForAppInstalls,
                           policy_service_, base::WideToUTF8(app_id)));
@@ -1626,7 +1755,10 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
     BSTR app_id,
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!ValidateAppId(app_id) || !value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<int>::Get(
       base::BindRepeating(&PolicyService::GetPolicyForAppUpdates,
                           policy_service_, base::WideToUTF8(app_id)));
@@ -1638,7 +1770,10 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
 STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
     BSTR app_id,
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!ValidateAppId(app_id) || !value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetTargetVersionPrefix,
                           policy_service_, base::WideToUTF8(app_id)));
@@ -1650,7 +1785,10 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
 STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
     BSTR app_id,
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!ValidateAppId(app_id) || !value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<bool>::Get(
       base::BindRepeating(&PolicyService::IsRollbackToTargetVersionAllowed,
                           policy_service_, base::WideToUTF8(app_id)));
@@ -1661,7 +1799,10 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
 
 STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
                                                  IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!ValidateAppId(app_id) || !value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<std::string>::Get(
       base::BindRepeating(&PolicyService::GetTargetChannel, policy_service_,
                           base::WideToUTF8(app_id)));
@@ -1673,7 +1814,10 @@ STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
 STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
     VARIANT_BOOL is_machine,
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status =
       PolicyStatusResult<std::vector<std::string>>::Get(base::BindRepeating(
           &PolicyService::GetForceInstallApps, policy_service_));
@@ -1684,7 +1828,10 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
 
 STDMETHODIMP PolicyStatusImpl::get_cloudPolicyOverridesPlatformPolicy(
     IPolicyStatusValue** value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
+
   auto policy_status = PolicyStatusResult<bool>::Get(base::BindRepeating(
       &PolicyService::CloudPolicyOverridesPlatformPolicy, policy_service_));
   return policy_status.has_value()
@@ -1703,6 +1850,10 @@ template <typename T>
 [[nodiscard]] HRESULT PolicyStatusValueImpl::Create(
     const T& value,
     IPolicyStatusValue** policy_status_value) {
+  if (!policy_status_value) {
+    return E_INVALIDARG;
+  }
+
   return MakeAndInitializeComObject<PolicyStatusValueImpl>(
       policy_status_value,
       value.effective_policy() ? value.effective_policy()->source : "",
@@ -1733,14 +1884,18 @@ HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(
 
 // IPolicyStatusValue.
 STDMETHODIMP PolicyStatusValueImpl::get_source(BSTR* source) {
-  CHECK(source);
+  if (!source) {
+    return E_INVALIDARG;
+  }
 
   *source = base::win::ScopedBstr(source_).Release();
   return S_OK;
 }
 
 STDMETHODIMP PolicyStatusValueImpl::get_value(BSTR* value) {
-  CHECK(value);
+  if (!value) {
+    return E_INVALIDARG;
+  }
 
   *value = base::win::ScopedBstr(value_).Release();
   return S_OK;
@@ -1748,21 +1903,27 @@ STDMETHODIMP PolicyStatusValueImpl::get_value(BSTR* value) {
 
 STDMETHODIMP PolicyStatusValueImpl::get_hasConflict(
     VARIANT_BOOL* has_conflict) {
-  CHECK(has_conflict);
+  if (!has_conflict) {
+    return E_INVALIDARG;
+  }
 
   *has_conflict = has_conflict_;
   return S_OK;
 }
 
 STDMETHODIMP PolicyStatusValueImpl::get_conflictSource(BSTR* conflict_source) {
-  CHECK(conflict_source);
+  if (!conflict_source) {
+    return E_INVALIDARG;
+  }
 
   *conflict_source = base::win::ScopedBstr(conflict_source_).Release();
   return S_OK;
 }
 
 STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
-  CHECK(conflict_value);
+  if (!conflict_value) {
+    return E_INVALIDARG;
+  }
 
   *conflict_value = base::win::ScopedBstr(conflict_value_).Release();
   return S_OK;

@@ -228,19 +228,6 @@ bool UninstallGoogleUpdate(UpdaterScope scope) {
 
 }  // namespace
 
-HRESULT IsCOMCallerAllowed() {
-  if (!IsSystemInstall()) {
-    return S_OK;
-  }
-
-  ASSIGN_OR_RETURN(const bool result, IsCOMCallerAdmin(), [](HRESULT error) {
-    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << error;
-    return error;
-  });
-
-  return result ? S_OK : E_ACCESSDENIED;
-}
-
 scoped_refptr<App> MakeAppServer() {
   return GetAppServerWinInstance();
 }
