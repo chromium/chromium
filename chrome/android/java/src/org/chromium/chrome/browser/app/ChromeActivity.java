@@ -621,7 +621,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             mBottomContainer.initialize(
                     getBrowserControlsManager(),
-                    getWindowAndroid().getApplicationBottomInsetSupplier());
+                    getWindowAndroid().getApplicationBottomInsetSupplier(),
+                    getEdgeToEdgeSupplier());
 
             ShareDelegate shareDelegate =
                     new ShareDelegateImpl(

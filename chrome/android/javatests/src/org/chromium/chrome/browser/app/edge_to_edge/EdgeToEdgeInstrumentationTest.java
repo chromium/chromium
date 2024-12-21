@@ -387,6 +387,34 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
+    public void testFloatingSnackbar() throws InterruptedException {
+        activateFeatureToEdge();
+        optOutOfToEdge();
+        var snackbarManager = mActivity.getSnackbarManager();
+        snackbarManager.setEdgeToEdgeSupplier(mEdgeToEdgeController);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    snackbarManager.showSnackbar(
+                            Snackbar.make(
+                                    "Test",
+                                    new SnackbarManager.SnackbarController() {},
+                                    Snackbar.TYPE_PERSISTENT,
+                                    Snackbar.UMA_TEST_SNACKBAR));
+                });
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        var adjuster =
+                snackbarManager
+                        .getCurrentSnackbarViewForTesting()
+                        .getEdgeToEdgePadAdjusterForTesting();
+        Assert.assertNull(
+                "Pad Adjuster is not used in the floating snackbar and should be null.", adjuster);
+    }
+
+    @Test
+    @MediumTest
     @DisabledTest(message = "crbug.com/41492043")
     public void testUnfold() {
         activateFeatureToEdge();

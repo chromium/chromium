@@ -131,9 +131,15 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
         mRootContentView = activity.findViewById(android.R.id.content);
         mParent = mOriginalParent;
+
+        int snackbarLayout =
+                SnackbarManager.isFloatingSnackbarEnabled()
+                        ? R.layout.floating_snackbar
+                        : R.layout.snackbar;
+
         mContainerView =
-                (ViewGroup)
-                        LayoutInflater.from(activity).inflate(R.layout.snackbar, mParent, false);
+                (ViewGroup) LayoutInflater.from(activity).inflate(snackbarLayout, mParent, false);
+
         mSnackbarView = mContainerView.findViewById(R.id.snackbar);
         mAnimationDuration =
                 mContainerView.getResources().getInteger(android.R.integer.config_mediumAnimTime);
@@ -143,11 +149,14 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mActionButtonView.setOnClickListener(listener);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-        mEdgeToEdgePadAdjuster =
-                edgeToEdgeSupplier != null
-                        ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
-                        : null;
-
+        if (SnackbarManager.isFloatingSnackbarEnabled()) {
+            mEdgeToEdgePadAdjuster = null;
+        } else {
+            mEdgeToEdgePadAdjuster =
+                    edgeToEdgeSupplier != null
+                            ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
+                            : null;
+        }
         updateInternal(snackbar, false);
     }
 
@@ -175,8 +184,12 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                         startAnimatorOnSurfaceView(animator);
                     }
                 });
-        if (mEdgeToEdgeSupplier != null) {
-            mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
+
+        if (!SnackbarManager.isFloatingSnackbarEnabled()) {
+            // We do not use mEdgeToEdgePadAdjuster if FloatingSnackbar is enabled.
+            if (mEdgeToEdgeSupplier != null) {
+                mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
+            }
         }
     }
 
@@ -354,13 +367,26 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mActionButtonView.setTextAppearance(getButtonTextAppearance(snackbar));
 
         mBackgroundColor = calculateBackgroundColor(mContainerView, snackbar);
-        if (mIsTablet) {
+
+        if (SnackbarManager.isFloatingSnackbarEnabled()) {
+            // Round the corners for snackbars in both tablets and non-tablets.
+            mSnackbarView.setBackgroundResource(R.drawable.snackbar_background);
+
+            GradientDrawable backgroundDrawable =
+                    (GradientDrawable) mSnackbarView.getBackground().mutate();
+            backgroundDrawable.setColor(mBackgroundColor);
+        } else if (mIsTablet) {
+            // isFloatingSnackbarEnabled == false, mIsTablet == true
             // On tablet, snackbars have rounded corners.
             mSnackbarView.setBackgroundResource(R.drawable.snackbar_background_tablet);
             GradientDrawable backgroundDrawable =
                     (GradientDrawable) mSnackbarView.getBackground().mutate();
             backgroundDrawable.setColor(mBackgroundColor);
+
+            mContainerView.findViewById(R.id.snackbar_shadow_left).setVisibility(View.VISIBLE);
+            mContainerView.findViewById(R.id.snackbar_shadow_right).setVisibility(View.VISIBLE);
         } else {
+            // isFloatingSnackbarEnabled == false, mIsTablet == false
             mSnackbarView.setBackgroundColor(mBackgroundColor);
         }
 
@@ -392,12 +418,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         } else {
             mProfileImageView.setVisibility(View.GONE);
         }
-
-        if (mIsTablet) {
-            mContainerView.findViewById(R.id.snackbar_shadow_left).setVisibility(View.VISIBLE);
-            mContainerView.findViewById(R.id.snackbar_shadow_right).setVisibility(View.VISIBLE);
-        }
-
         return true;
     }
 
