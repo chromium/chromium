@@ -6119,7 +6119,7 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
-<histogram name="Autofill.TimingInterval.{Caller}.{Callee}.{Event}"
+<histogram name="Autofill.TimingInterval.{Callee}.{Caller}.{Event}"
     units="microseconds" expires_after="2025-12-12">
   <owner>schwering@google.com</owner>
   <owner>jkeitel@google.com</owner>
