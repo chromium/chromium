@@ -1834,6 +1834,15 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       // TODO(crbug.com/328733319): Support other tensor data types.
       CHECK(context_properties_.data_type_limits.conv2d_input.Has(
           input_data_type));
+
+      // TFLite internally performs a truncating cast. See crbug.com/384999508.
+      if (!base::IsValueInRangeForNumericType<int16_t>(
+              conv2d.dilations->height) ||
+          !base::IsValueInRangeForNumericType<int16_t>(
+              conv2d.dilations->width)) {
+        return base::unexpected(
+            "Dilation width and height must fit within the int16 range");
+      }
       break;
     case mojom::Conv2d::Kind::kTransposed:
       // TODO(crbug.com/328733319): Support other tensor data types.
@@ -1847,6 +1856,13 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
             "convTranspose2d doesn't support dilations and groups.");
       }
       break;
+  }
+
+  // TFLite internally performs a truncating cast. See crbug.com/384999508
+  if (!base::IsValueInRangeForNumericType<int16_t>(conv2d.strides->height) ||
+      !base::IsValueInRangeForNumericType<int16_t>(conv2d.strides->width)) {
+    return base::unexpected(
+        "Stride width and height must fit within the int16 range");
   }
 
   // Get tflite padding mode with the size2d of input, filter, dilation.
