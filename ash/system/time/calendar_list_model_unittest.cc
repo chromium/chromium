@@ -138,7 +138,7 @@ class CalendarListModelTest : public AshTestBase {
     AshTestBase::SetUp();
 
     // Register a mock `CalendarClient` to the `CalendarController`.
-    const std::string email = "test1@google.com";
+    const std::string email = "user1@test.com";
     AccountId account_id = AccountId::FromUserEmail(email);
     Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
         account_id);
@@ -165,19 +165,11 @@ class CalendarListModelTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdateSession(uint32_t session_id,
-                     const std::string& email,
-                     bool is_child = false) {
-    UserSession session;
-    session.session_id = session_id;
-    session.user_info.type = is_child ? user_manager::UserType::kChild
-                                      : user_manager::UserType::kRegular;
-    session.user_info.account_id = AccountId::FromUserEmail(email);
-    session.user_info.display_name = email;
-    session.user_info.display_email = email;
-    session.user_info.is_new_profile = false;
-
-    SessionController::Get()->UpdateUserSession(session);
+  AccountId SimulateLogin(const std::string& email, bool is_child = false) {
+    auto account_id = AccountId::FromUserEmail(email);
+    SimulateUserLogin(account_id, is_child ? user_manager::UserType::kChild
+                                           : user_manager::UserType::kRegular);
+    return account_id;
   }
 
   CalendarListModel* calendar_list_model() {
@@ -327,11 +319,9 @@ TEST_F(CalendarListModelTest, FetchLongCalendarList) {
 
 TEST_F(CalendarListModelTest, ActiveUserChange) {
   // Set up two users, user1 is the active user.
-  UpdateSession(1u, "user1@test.com");
-  UpdateSession(2u, "user2@test.com");
-  std::vector<uint32_t> order = {1u, 2u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
+  auto account_id1 = SimulateLogin("user1@test.com");
+  auto account_id2 = SimulateLogin("user2@test.com");
+  SwitchActiveUser(account_id1);
 
   // Set up list of calendars as the mock response.
   client()->SetCalendarList(CreateMockCalendarList());
@@ -346,8 +336,7 @@ TEST_F(CalendarListModelTest, ActiveUserChange) {
   EXPECT_EQ(3u, calendar_list.size());
 
   // Make user2 the active user, and the cached calendars should be cleared.
-  order = {2u, 1u};
-  SessionController::Get()->SetUserSessionOrder(order);
+  SwitchActiveUser(account_id2);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(calendar_list_model()->get_is_cached());
   calendar_list = calendar_list_model()->GetCachedCalendarList();
@@ -356,11 +345,9 @@ TEST_F(CalendarListModelTest, ActiveUserChange) {
 
 TEST_F(CalendarListModelTest, ActiveChildUserChange) {
   // Set up two child users, user1 is the active user.
-  UpdateSession(1u, "user1@test.com", /*is_child=*/true);
-  UpdateSession(2u, "user2@test.com", /*is_child=*/true);
-  std::vector<uint32_t> order = {1u, 2u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::RunLoop().RunUntilIdle();
+  auto account_id1 = SimulateLogin("user1@test.com", /*is_child=*/true);
+  auto account_id2 = SimulateLogin("user2@test.com", /*is_child=*/true);
+  SwitchActiveUser(account_id1);
 
   // Set up list of calendars as the mock response.
   client()->SetCalendarList(CreateMockCalendarList());
@@ -375,8 +362,7 @@ TEST_F(CalendarListModelTest, ActiveChildUserChange) {
   EXPECT_EQ(3u, calendar_list.size());
 
   // Make user2 the active user, and the cached calendars should be cleared.
-  order = {2u, 1u};
-  SessionController::Get()->SetUserSessionOrder(order);
+  SwitchActiveUser(account_id2);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(calendar_list_model()->get_is_cached());
   calendar_list = calendar_list_model()->GetCachedCalendarList();
