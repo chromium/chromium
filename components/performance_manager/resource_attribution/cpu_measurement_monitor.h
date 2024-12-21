@@ -7,7 +7,7 @@
 
 #include <map>
 #include <optional>
-#include <vector>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -147,9 +147,8 @@ class CPUMeasurementMonitor
   //
   // If the context is an `OriginInBrowsingInstanceContext`, the
   // constructor/destructor maintain a non-owning pointer to `this` in
-  // `origin_in_browsing_instance_weak_results_`, allowing
-  // `GetOrCreateResultForContext()` to reuse a result that is still referenced
-  // by `dead_context_results_`.
+  // `weak_origin_results_`, allowing `GetResultPtr()` to reuse a result that is
+  // still referenced by `dead_context_results_`.
   class ScopedCPUTimeResult : public base::RefCounted<ScopedCPUTimeResult> {
    public:
     ScopedCPUTimeResult(CPUMeasurementMonitor* monitor,
@@ -192,12 +191,10 @@ class CPUMeasurementMonitor
   void UpdateCPUMeasurements(const ProcessNode* process_node,
                              GraphChange graph_change = NoGraphChange());
 
-  // Retrieves the existing `CPUTimeResult` for `context`, or creates one if it
-  // doesn't exist. If a new result is created, it is initialized with
-  // `init_result` and the second element of the returned pair is true.
-  std::pair<CPUTimeResult&, bool> GetOrCreateResultForContext(
-      const ResourceContext& context,
-      const CPUTimeResult& init_result);
+  // Retrieves the `CPUTimeResult` for `context` from `measurement_results_`. If
+  // no result exists, creates an empty map entry and returns a reference to a
+  // null pointer, which the caller must initialize.
+  ScopedCPUTimeResultPtr& GetResultPtr(const ResourceContext& context);
 
   // Adds the new measurements in `measurement_deltas` to
   // `measurement_results_`. `graph_change` is the event that triggered the
@@ -222,9 +219,12 @@ class CPUMeasurementMonitor
   void ApplyOverlappingDelta(const ResourceContext& context,
                              const CPUTimeResult& delta);
 
-  // Moves the measurements for `contexts` from `measurement_results_` to
-  // `dead_context_results_`.
-  void SaveFinalMeasurements(const std::vector<ResourceContext>& contexts);
+  // Moves the measurements for `context` into `dead_context_results_`.
+  void SaveFinalMeasurement(const ResourceContext& context);
+
+  // Moves `result_ptr` into `dead_context_results_`. `result_ptr` is passed by
+  // move to ensure the caller drops its reference to the live result.
+  void SaveFinalMeasurement(ScopedCPUTimeResultPtr&& result_ptr);
 
   // Returns all `OriginInBrowsingInstanceContext`s associated with live frame
   // or worker contexts.
@@ -255,8 +255,7 @@ class CPUMeasurementMonitor
   // A map of non-owning pointers to all `ScopedCPUTimeResult` instances
   // associated with `OriginInBrowsingInstanceContext`.
   std::map<OriginInBrowsingInstanceContext, raw_ptr<ScopedCPUTimeResult>>
-      origin_in_browsing_instance_weak_results_
-          GUARDED_BY_CONTEXT(sequence_checker_);
+      weak_origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU time results for dead contexts retained by ScopedResourceUsageQuery.
   //
@@ -281,8 +280,8 @@ class CPUMeasurementMonitor
 
     // Results kept alive until the next measurement for this query, in case the
     // associated context is revived. If a context is revived while this set has
-    // a reference to its last result, `GetOrCreateResultForContext()` will
-    // retrieve it instead of creating a new one.
+    // a reference to its last result, GetResultPtr() will retrieve it instead
+    // of creating a new one.
     //
     // When a measurement for a query contains a result for a dead
     // `OriginInBrowsingInstanceContext`, the result is kept in the `kept_alive`
