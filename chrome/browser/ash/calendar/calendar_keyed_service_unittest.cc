@@ -59,7 +59,9 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
     ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
-  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kPrimaryProfileName;
+  }
 
   TestingProfile* CreateSecondaryProfile() {
     LogIn(kSecondaryProfileName);
@@ -134,8 +136,23 @@ class CalendarKeyedServiceIOTest : public testing::Test {
       test_shared_loader_factory_;
 };
 
+class NoProfileCalendarKeyedServiceTest : public CalendarKeyedServiceTest {
+ public:
+  NoProfileCalendarKeyedServiceTest() = default;
+  NoProfileCalendarKeyedServiceTest(
+      const NoProfileCalendarKeyedServiceTest& other) = delete;
+  NoProfileCalendarKeyedServiceTest& operator=(
+      const NoProfileCalendarKeyedServiceTest& other) = delete;
+  ~NoProfileCalendarKeyedServiceTest() override = default;
+
+  // CalendarKeyedServiceTest:
+  std::optional<std::string> GetDefaultProfileName() override {
+    return std::nullopt;
+  }
+};
+
 // Calendar service does not support guest user.
-TEST_F(CalendarKeyedServiceTest, GuestUserProfile) {
+TEST_F(NoProfileCalendarKeyedServiceTest, GuestUserProfile) {
   // Construct a guest session profile.
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();

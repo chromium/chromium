@@ -770,7 +770,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     HoldingSpaceKeyedServiceWithExperimentalFeatureTest::TearDown();
   }
 
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return user_manager::kGuestUserName;
   }
 

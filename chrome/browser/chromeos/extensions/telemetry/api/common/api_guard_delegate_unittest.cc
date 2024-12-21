@@ -172,7 +172,9 @@ class ApiGuardDelegateTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string GetDefaultProfileName() override { return kUserEmail; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kUserEmail;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
@@ -627,7 +629,7 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
   }
 
   // BrowserWithTestWindowTest overrides.
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return ash::kShimlessRmaAppBrowserContextBaseName;
   }
 

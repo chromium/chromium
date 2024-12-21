@@ -367,7 +367,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return kTestProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kTestProfileName;
+  }
 
   // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
   void LogIn(const std::string& email) override {

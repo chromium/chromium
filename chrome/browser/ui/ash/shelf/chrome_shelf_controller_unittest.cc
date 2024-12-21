@@ -1619,7 +1619,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
   }
 
   // Override BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return "user0@example.com"; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "user0@example.com";
+  }
 
   void LogIn(const std::string& email) override {
     // TODO(crbug.com/40286020): Merge into BrowserWithTestWindowTest.
