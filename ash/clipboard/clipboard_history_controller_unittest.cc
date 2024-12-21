@@ -338,16 +338,9 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
                     {user_manager::UserType::kChild, true},
                     {user_manager::UserType::kWebKioskApp, false}};
 
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-
   for (const auto& test_case : kTestCases) {
-    // Switch to the target user mode.
-    session.user_info.type = test_case.user_type;
-    Shell::Get()->session_controller()->UpdateUserSession(session);
+    ClearLogin();
+    SimulateUserLogin("user1@test.com", test_case.user_type);
 
     // Write a new item into the clipboard buffer.
     {
