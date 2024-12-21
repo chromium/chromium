@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -64,6 +65,7 @@ void RecordExtractionCancelled(ExtractionCancelled reason) {
 }
 
 void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
+                    std::string title,
                     base::ElapsedTimer passage_extraction_timer,
                     base::OnceCallback<void(std::vector<std::string>)> callback,
                     blink::mojom::InnerTextFramePtr mojo_frame) {
@@ -86,6 +88,22 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
                                valid_passages.size());
   base::UmaHistogramCounts10M("History.Embeddings.Passages.TotalTextSize",
                               total_text_size);
+
+  bool title_inserted = false;
+  if (history_embeddings::GetFeatureParameters().insert_title_passage &&
+      !title.empty() && !base::Contains(valid_passages, title)) {
+    VLOG(2) << "Title passage inserted: " << title;
+    valid_passages.insert(valid_passages.begin(), std::move(title));
+    if (valid_passages.size() >
+        static_cast<size_t>(
+            history_embeddings::GetFeatureParameters().max_passages_per_page)) {
+      valid_passages.pop_back();
+    }
+    title_inserted = true;
+  }
+  base::UmaHistogramBoolean("History.Embeddings.Passages.TitleInserted",
+                            title_inserted);
+
   std::move(callback).Run(std::move(valid_passages));
 }
 
@@ -295,7 +313,9 @@ void HistoryEmbeddingsTabHelper::RetrievePassages(
       std::move(params),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
-              &OnGotInnerText, std::move(agent), base::ElapsedTimer(),
+              &OnGotInnerText, std::move(agent),
+              base::UTF16ToUTF8(GetWebContents().GetTitle()),
+              base::ElapsedTimer(),
               base::BindOnce(&history_embeddings::HistoryEmbeddingsService::
                                  ComputeAndStorePassageEmbeddings,
                              GetHistoryEmbeddingsService()->AsWeakPtr(), url_id,

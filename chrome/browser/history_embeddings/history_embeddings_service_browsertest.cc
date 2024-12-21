@@ -4,6 +4,8 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
+#include <algorithm>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -589,6 +591,37 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
     }));
     histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
                                         false, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, TitleInserted) {
+  auto contains_title = [](const std::string& s) {
+    return s.find("test1.html") != std::string::npos;
+  };
+  ASSERT_TRUE(embedded_test_server()->Start());
+  {
+    base::test::TestFuture<UrlData> store_future;
+    service()->SetPassagesStoredCallbackForTesting(
+        store_future.GetRepeatingCallback());
+    const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    UrlData url_data = store_future.Take();
+    // No title anywhere in passages.
+    EXPECT_FALSE(
+        std::ranges::any_of(url_data.passages.passages(), contains_title));
+  }
+  {
+    ScopedFeatureParametersForTesting enable_insert_title_passage;
+    enable_insert_title_passage.Get().insert_title_passage = true;
+
+    base::test::TestFuture<UrlData> store_future;
+    service()->SetPassagesStoredCallbackForTesting(
+        store_future.GetRepeatingCallback());
+    const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    UrlData url_data = store_future.Take();
+    // Title is in first passage.
+    EXPECT_TRUE(contains_title(url_data.passages.passages(0)));
   }
 }
 

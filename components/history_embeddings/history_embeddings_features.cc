@@ -235,6 +235,10 @@ const base::FeatureParam<bool> kWordMatchSearchNonAsciiPassages(
     "WordMatchSearchNonAsciiPassages",
     false);
 
+const base::FeatureParam<bool> kInsertTitlePassage(&kHistoryEmbeddings,
+                                                   "InsertTitlePassage",
+                                                   false);
+
 FeatureParameters::FeatureParameters(bool load_finch) {
   if (!load_finch) {
     return;
@@ -284,6 +288,7 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   scroll_tags_enabled = kScrollTagsEnabled.Get();
   erase_non_ascii_characters = kEraseNonAsciiCharacters.Get();
   word_match_search_non_ascii_passages = kWordMatchSearchNonAsciiPassages.Get();
+  insert_title_passage = kInsertTitlePassage.Get();
 }
 
 FeatureParameters::FeatureParameters(const FeatureParameters&) = default;

@@ -2253,6 +2253,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.Passages.TitleInserted" enum="Boolean"
+    expires_after="2025-07-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    Whether a dedicated web contents title passage was inserted at the beginning
+    of the extracted passages vector. Logged each time passages are extracted.
+  </summary>
+</histogram>
+
 <histogram name="History.Embeddings.Passages.TotalTextSize" units="bytes"
     expires_after="2025-07-31">
   <owner>orinj@chromium.org</owner>

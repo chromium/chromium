@@ -184,6 +184,12 @@ struct FeatureParameters {
   // characters. See also `word_match_min_embedding_score`, which this bypasses.
   // Note, when `erase_non_ascii_characters` is true, this will have no effect.
   bool word_match_search_non_ascii_passages = false;
+
+  // Whether to insert the web contents title as the first passage when it
+  // isn't already in the set of extracted passages. Enabling this can help
+  // recall for URLs that have a title after the tab loads, for example PDF
+  // documents where there is no DOM and hence no <title> tag text to extract.
+  bool insert_title_passage = false;
 };
 
 // Use this to apply changes for testing only while an instance lives.
