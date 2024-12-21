@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -16,9 +17,14 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sCctAuthTabEnableHttpsRedirectsVerificationTimeoutMs;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.verify.domain.DomainVerificationManager;
+import android.content.pm.verify.domain.DomainVerificationUserState;
+import android.os.Build;
 
 import androidx.browser.auth.AuthTabIntent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +37,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowSystemClock;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -44,6 +51,8 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AuthTabVerifier}. */
@@ -64,12 +73,15 @@ public class AuthTabVerifierTest {
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
     @Mock Activity mActivity;
+    @Mock Context mContext;
+    @Mock DomainVerificationManager mDomainVerificationManager;
+    @Mock DomainVerificationUserState mDomainVerificationUserState;
 
     private AuthTabVerifier mDelegate;
     private Runnable mDelayedTask;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         ShadowPostTask.setTestImpl((taskTraits, task, delay) -> mDelayedTask = task);
 
         when(mIntentDataProvider.getAuthRedirectHost()).thenReturn(REDIRECT_HOST);
@@ -80,6 +92,11 @@ public class AuthTabVerifierTest {
         mDelegate =
                 new AuthTabVerifier(
                         mActivity, mLifecycleDispatcher, mIntentDataProvider, mActivityTabProvider);
+    }
+
+    @After
+    public void tearDown() {
+        ShadowSystemClock.reset();
     }
 
     void simulateVerificationResultFromNetwork(String url, boolean success) {
@@ -203,5 +220,33 @@ public class AuthTabVerifierTest {
         verify(mActivity).setResult(eq(AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT), any());
         verify(mActivity).finish();
         histograms.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void androidAppLinksApiInBackground() throws Exception {
+        ContextUtils.initApplicationContextForTests(mContext);
+
+        Map<String, Integer> hostToStateMap = new HashMap<>();
+        hostToStateMap.put(REDIRECT_HOST, DomainVerificationUserState.DOMAIN_STATE_VERIFIED);
+        when(mContext.getSystemService(DomainVerificationManager.class))
+                .thenReturn(mDomainVerificationManager);
+        when(mDomainVerificationManager.getDomainVerificationUserState(anyString()))
+                .thenReturn(mDomainVerificationUserState);
+        when(mDomainVerificationUserState.getHostToStateMap()).thenReturn(hostToStateMap);
+
+        // Restart AuthTabVerifier with AppLink activated.
+        mDelegate =
+                new AuthTabVerifier(
+                        mActivity, mLifecycleDispatcher, mIntentDataProvider, mActivityTabProvider);
+
+        assertTrue(mDelegate.shouldRunOriginVerifier());
+        mDelayedTask.run();
+        mDelayedTask.run();
+        assertFalse("Android AppLink should be completed", mDelegate.shouldRunOriginVerifier());
+
+        // Verify that Chrome DAL verification is never executed.
+        mDelegate.onFinishNativeInitialization();
+        verify(mOriginVerifier, never()).start(any(), any());
     }
 }
