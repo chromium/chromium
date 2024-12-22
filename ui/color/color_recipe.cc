@@ -42,8 +42,9 @@ ColorRecipe& ColorRecipe::operator+=(const ColorTransform& transform) {
 SkColor ColorRecipe::GenerateResult(SkColor input,
                                     const ColorMixer& mixer) const {
   SkColor output_color = input;
-  for (const auto& transform : transforms_)
+  for (const auto& transform : transforms_) {
     output_color = transform.Run(output_color, mixer);
+  }
   DVLOG(2) << "ColorRecipe::GenerateResult: Input Color " << SkColorName(input)
            << " Result Color " << SkColorName(output_color);
   return output_color;

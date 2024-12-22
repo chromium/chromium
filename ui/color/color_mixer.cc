@@ -34,9 +34,8 @@ SkColor ColorMixer::GetInputColor(ColorId id) const {
       previous_mixer_getter_ ? previous_mixer_getter_.Run() : nullptr;
   // Don't log transitions to previous mixers unless the logging level is a
   // little higher.
-  DVLOG_IF(3, previous_mixer)
-      << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
-      << "Checking previous mixer.";
+  DVLOG_IF(3, previous_mixer) << "GetInputColor: ColorId " << ColorIdName(id)
+                              << " not found. " << "Checking previous mixer.";
   // If there's no previous mixer, always log color id misses.
   DVLOG_IF(2, !previous_mixer)
       << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "

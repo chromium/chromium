@@ -64,8 +64,9 @@ void AccentColorObserver::OnDwmKeyUpdated() {
     // is a solid color or was just changed to a slideshow. It's unclear what
     // that value's supposed to mean, so change it to 80 to match Edge's
     // behavior.
-    if (colorization_color_balance > 100)
+    if (colorization_color_balance > 100) {
       colorization_color_balance = 80;
+    }
 
     // colorization_color's high byte is not an alpha value, so replace it
     // with 0xff to make an opaque ARGB color.
