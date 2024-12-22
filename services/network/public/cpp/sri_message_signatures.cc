@@ -277,12 +277,8 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
     // Process the parameters, according to the validation requirements at
     // https://wicg.github.io/signature-based-sri/#profile
     for (const auto& param : input_entry.params) {
-      if (param.first == "alg" && param.second.is_string() &&
-          param.second.GetString() == "ed25519") {
-        message_signature->alg =
-            mojom::SRIMessageSignature::Algorithm::kEd25519;
-      } else if (param.first == "created" && param.second.is_integer() &&
-                 param.second.GetInteger() >= 0) {
+      if (param.first == "created" && param.second.is_integer() &&
+          param.second.GetInteger() >= 0) {
         message_signature->created = param.second.GetInteger();
       } else if (param.first == "expires" && param.second.is_integer() &&
                  param.second.GetInteger() >= 0) {
@@ -301,6 +297,11 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
                  param.second.GetString() == "sri") {
         message_signature->tag = "sri";
       } else {
+        // The `alg` parameter must not be included in the signature input. Any
+        // other parameters that aren't defined in the registry also
+        // invalidate the signature.
+        //
+        // https://www.iana.org/assignments/http-message-signature/http-message-signature.xhtml#signature-metadata-parameters
         message_signature.reset();
         break;
       }
@@ -308,8 +309,7 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
 
     if (message_signature) {
       // Check required fields, and punt the signature if any are missing.
-      if (!message_signature->alg || !message_signature->keyid ||
-          !message_signature->tag) {
+      if (!message_signature->keyid || !message_signature->tag) {
         continue;
       }
 

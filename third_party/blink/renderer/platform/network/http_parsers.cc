@@ -299,17 +299,6 @@ blink::SRIMessageSignatureComponent::Parameter ConvertToBlink(
   }
 }
 
-std::optional<blink::SRIMessageSignature::Algorithm> ConvertToBlink(
-    std::optional<SRIMessageSignature::Algorithm> in) {
-  if (!in.has_value()) {
-    return std::nullopt;
-  }
-  switch (in.value()) {
-    case SRIMessageSignature::Algorithm::kEd25519:
-      return blink::SRIMessageSignature::Algorithm::kEd25519;
-  }
-}
-
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(
     const SRIMessageSignatureComponentPtr& in) {
   DCHECK(in);
@@ -321,8 +310,8 @@ blink::SRIMessageSignaturePtr ConvertToBlink(const SRIMessageSignaturePtr& in) {
   DCHECK(in);
   return blink::SRIMessageSignature::New(
       ConvertToBlink(in->label), ConvertToBlink(in->signature),
-      ConvertToBlink(in->components), ConvertToBlink(in->alg), in->created,
-      in->expires, ConvertToBlink(in->keyid), ConvertToBlink(in->nonce),
+      ConvertToBlink(in->components), in->created, in->expires,
+      ConvertToBlink(in->keyid), ConvertToBlink(in->nonce),
       ConvertToBlink(in->tag), ConvertToBlink(in->serialized_signature_params));
 }
 

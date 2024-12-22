@@ -829,11 +829,11 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
   String kValidDigestHeader =
       "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
   String kValidSignatureInputHeader =
-      "signature=(\"identity-digest\";sf);alg=\"ed25519\";"
+      "signature=(\"identity-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
   String kValidSignatureHeader =
-      "signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7"
-      "DtVQcxJFhzSYDj4RBq9grZTAQ==:";
+      "signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T"
+      "23RGuquHLdZx177tBX45CUcAg==:";
 
   String raw_headers =
       "HTTP/1.1 200 OK\r\n"

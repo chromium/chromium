@@ -890,7 +890,7 @@ TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
        "xNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:"),
       // No `Signature` header.
       ("HTTP/1.1 200 OK\r\nSignature-Input: signature=(\"identity-digest\";sf);"
-       "alg=\"ed25519\";keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
        "tag=\"sri\"")};
   for (const char* test : cases) {
     SCOPED_TRACE(test);
@@ -904,15 +904,13 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
       "HTTP/1.1 200 OK\r\n"
       "Signature: signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52"
       "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
-      "Signature-Input: signature=(\"identity-digest\";sf);alg=\"ed25519\";"
+      "Signature-Input: signature=(\"identity-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
       "tag=\"sri\"\r\n\r\n";
 
   auto result = ParseSRIMessageSignaturesFromHeaders(raw_header);
   EXPECT_EQ(1u, result.size());
   EXPECT_EQ("signature", result[0]->label);
-  EXPECT_EQ(network::mojom::blink::SRIMessageSignature::Algorithm::kEd25519,
-            result[0]->alg);
   EXPECT_FALSE(result[0]->created.has_value());
   EXPECT_FALSE(result[0]->expires.has_value());
   EXPECT_EQ("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=", result[0]->keyid);
