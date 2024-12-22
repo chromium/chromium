@@ -4,15 +4,15 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/rw_buffer.h"
 
+#include <algorithm>
+#include <atomic>
+#include <new>
+
 #include "base/atomic_ref_count.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-
-#include <algorithm>
-#include <atomic>
-#include <new>
 
 namespace blink {
 
@@ -25,7 +25,7 @@ static const size_t kMinAllocSize = 4096;
 
 struct RWBuffer::BufferBlock {
   raw_ptr<RWBuffer::BufferBlock> next_;  // updated by the writer
-  size_t used_;                  // updated by the writer
+  size_t used_;                          // updated by the writer
   const size_t capacity_;
 
   explicit BufferBlock(size_t capacity)

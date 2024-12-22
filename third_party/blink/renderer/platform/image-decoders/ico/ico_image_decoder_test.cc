@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 
 #include <memory>
+
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"

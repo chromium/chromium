@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_reader.h"
 
 #include <memory>
+
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"

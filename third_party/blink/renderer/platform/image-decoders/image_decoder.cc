@@ -350,7 +350,7 @@ bool ImageDecoder::HasSufficientDataToSniffMimeType(const SharedBuffer& data) {
     // 'size' and a four-byte 'type'.
     struct {
       uint8_t size[4];  // unsigned int(32) size;
-      char type[4];   // unsigned int(32) type = boxtype;
+      char type[4];     // unsigned int(32) type = boxtype;
     } box;
     static_assert(sizeof(box) == 8, "");
     static_assert(8 <= kLongestSignatureLength, "");

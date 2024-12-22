@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include <memory>
+
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"

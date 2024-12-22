@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
