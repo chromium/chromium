@@ -123,8 +123,7 @@ DesktopDragDropClientOzone::DragContext::~DragContext() = default;
 DesktopDragDropClientOzone::DesktopDragDropClientOzone(
     aura::Window* root_window,
     ui::WmDragHandler* drag_handler)
-    : root_window_(root_window),
-      drag_handler_(drag_handler) {}
+    : root_window_(root_window), drag_handler_(drag_handler) {}
 
 DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
   ResetDragDropTarget();

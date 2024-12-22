@@ -39,16 +39,18 @@ void ResizeArea::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 bool ResizeArea::OnMousePressed(const ui::MouseEvent& event) {
-  if (!event.IsOnlyLeftMouseButton())
+  if (!event.IsOnlyLeftMouseButton()) {
     return false;
+  }
 
   SetInitialPosition(event.x());
   return true;
 }
 
 bool ResizeArea::OnMouseDragged(const ui::MouseEvent& event) {
-  if (!event.IsLeftMouseButton())
+  if (!event.IsLeftMouseButton()) {
     return false;
+  }
 
   ReportResizeAmount(event.x(), false);
   return true;

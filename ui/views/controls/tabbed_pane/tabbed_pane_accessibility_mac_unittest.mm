@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #import "testing/gtest_mac.h"
 #include "ui/gfx/geometry/point.h"

@@ -27,8 +27,9 @@ LayoutProvider::LayoutProvider() {
 }
 
 LayoutProvider::~LayoutProvider() {
-  if (this == g_layout_delegate)
+  if (this == g_layout_delegate) {
     g_layout_delegate = nullptr;
+  }
 }
 
 // static

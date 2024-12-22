@@ -717,9 +717,8 @@ TEST_F(AXNativeWidgetMacTest, ProtectedTextfields) {
       AXObjectHandlesSelector(ax_node, @selector(setAccessibilityValue:)));
   EXPECT_NSEQ(NSAccessibilityTextFieldRole, ax_node.accessibilityRole);
 
-  NSString* kShownValue =
-      @"•"
-      @"••••••••••••••••";
+  NSString* kShownValue = @"•"
+                          @"••••••••••••••••";
   // Sanity check.
   EXPECT_EQ(static_cast<NSUInteger>(kTestStringLength), [kShownValue length]);
   EXPECT_NSEQ(kShownValue, ax_node.accessibilityValue);

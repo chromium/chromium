@@ -151,8 +151,9 @@ class PressStateButton : public TestMenuButton {
  private:
   void ButtonPressed() {
     pressed_lock_ = button_controller()->TakeLock();
-    if (release_lock_)
+    if (release_lock_) {
       ReleasePressedLock();
+    }
   }
 
   bool release_lock_;
@@ -234,8 +235,9 @@ DragOperation TestDragDropClient::StartDragAndDrop(
     const gfx::Point& screen_location,
     int allowed_operations,
     ui::mojom::DragEventSource source) {
-  if (IsDragDropInProgress())
+  if (IsDragDropInProgress()) {
     return DragOperation::kNone;
+  }
   drag_in_progress_ = true;
   target_ = root_window;
   return ui::PreferredDragOperation(allowed_operations);
@@ -250,8 +252,9 @@ bool TestDragDropClient::IsDragDropInProgress() {
 }
 
 void TestDragDropClient::OnMouseEvent(ui::MouseEvent* event) {
-  if (!IsDragDropInProgress())
+  if (!IsDragDropInProgress()) {
     return;
+  }
   switch (event->type()) {
     case ui::EventType::kMouseDragged:
       event->StopPropagation();

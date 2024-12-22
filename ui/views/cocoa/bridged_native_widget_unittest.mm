@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
-
 #import <Cocoa/Cocoa.h>
 #include <objc/runtime.h>
 
@@ -22,6 +20,7 @@
 #include "base/test/task_environment.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/cocoa/find_pasteboard.h"
@@ -46,10 +45,10 @@
 #include "ui/views/widget/widget_observer.h"
 
 using base::ASCIIToUTF16;
-using base::SysNSStringToUTF8;
 using base::SysNSStringToUTF16;
-using base::SysUTF8ToNSString;
+using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
+using base::SysUTF8ToNSString;
 
 #define EXPECT_EQ_RANGE(a, b)        \
   EXPECT_EQ(a.location, b.location); \
@@ -145,8 +144,9 @@ void SetCompositionText(ui::TextInputClient* client,
   composition.selection = gfx::Range(caret_pos);
   composition.text = composition_text;
   client->SetCompositionText(composition);
-  if (caret_range)
+  if (caret_range) {
     *caret_range = NSMakeRange(caret_pos, 0);
+  }
 }
 
 // Returns a zero width rectangle corresponding to current caret position.
@@ -186,8 +186,8 @@ gfx::Rect GetExpectedBoundsForRange(ui::TextInputClient* client,
 // Uses the NSTextInputClient protocol to extract a substring from |view|.
 NSString* GetViewStringForRange(NSView<NSTextInputClient>* view,
                                 NSRange range) {
-  return [[view attributedSubstringForProposedRange:range actualRange:nullptr]
-      string];
+  return [[view attributedSubstringForProposedRange:range
+                                        actualRange:nullptr] string];
 }
 
 // The behavior of NSTextView for RTL strings is buggy for some move and select
@@ -483,8 +483,9 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
     init_params.bounds = bounds_;
     init_params.shadow_type = shadow_type_;
 
-    if (native_widget_mac_)
+    if (native_widget_mac_) {
       native_widget_mac_->GetWidget()->Init(std::move(init_params));
+    }
   }
 
   void TearDown() override {
@@ -500,8 +501,9 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
   }
 
   NSWindow* bridge_window() const {
-    if (auto* bridge = native_widget_mac_->GetInProcessNSWindowBridge())
+    if (auto* bridge = native_widget_mac_->GetInProcessNSWindowBridge()) {
       return bridge->ns_window();
+    }
     return nil;
   }
 
@@ -783,8 +785,9 @@ void BridgedNativeWidgetTest::TearDown() {
 
 bool BridgedNativeWidgetTest::HandleKeyEvent(Textfield* sender,
                                              const ui::KeyEvent& key_event) {
-  if (handle_key_event_callback_)
+  if (handle_key_event_callback_) {
     return handle_key_event_callback_.Run(sender, key_event);
+  }
   return false;
 }
 
@@ -889,8 +892,9 @@ void BridgedNativeWidgetTest::TestEditingCommands(NSArray* selectors) {
 
           // Bail out early for selection-modifying commands that are buggy in
           // Cocoa, since the selected text will not match.
-          if (test_case.is_rtl && i != j && IsRTLSelectBuggy(sel))
+          if (test_case.is_rtl && i != j && IsRTLSelectBuggy(sel)) {
             continue;
+          }
 
           PerformCommand(sel);
           EXPECT_NSEQ(GetExpectedSelectedText(), GetActualSelectedText());
@@ -1486,8 +1490,9 @@ TEST_F(BridgedNativeWidgetTest, NilTextInputClient) {
   // doCommandBySelector: (it calls -insertText: directly instead).
   [selectors addObjectsFromArray:kMiscActions];
 
-  for (NSString* selector in selectors)
+  for (NSString* selector in selectors) {
     [ns_view_ doCommandBySelector:NSSelectorFromString(selector)];
+  }
 
   [ns_view_ insertText:@""];
 }

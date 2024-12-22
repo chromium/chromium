@@ -224,8 +224,9 @@ const cc::PaintFlags& GetBorderAndShadowFlags(
                      color_provider->GetColor(ui::kColorShadowBase),
                      shadow_type);
 
-  if (flag_map->find(key) != flag_map->end())
+  if (flag_map->find(key) != flag_map->end()) {
     return flag_map->find(key)->second;
+  }
 
   cc::PaintFlags flags;
   flags.setColor(color_provider->GetColor(ui::kColorBubbleBorder));
@@ -325,8 +326,9 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 
   // If |avoid_shadow_overlap_| is true, the shadow part of the inset is also
   // applied now, to ensure that the shadow itself doesn't overlap the anchor.
-  if (avoid_shadow_overlap_)
+  if (avoid_shadow_overlap_) {
     contents_bounds.Inset(-shadow_insets);
+  }
 
   // Adjust the contents to align with the arrow. The `anchor_point` is the
   // point on `anchor_rect` to offset from; it is also used as part of the
@@ -341,19 +343,22 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
   // used to position the bubble origin according to |anchor_rect|.
   DCHECK(shadow_ != NO_SHADOW || insets_.has_value() ||
          shadow_insets.IsEmpty() || visible_arrow_);
-  if (!avoid_shadow_overlap_)
+  if (!avoid_shadow_overlap_) {
     contents_bounds.Inset(-shadow_insets);
+  }
 
   // |arrow_offset_| is used to adjust bubbles that would normally be
   // partially offscreen.
-  if (is_arrow_on_horizontal(arrow_))
+  if (is_arrow_on_horizontal(arrow_)) {
     contents_bounds += gfx::Vector2d(-arrow_offset_, 0);
-  else
+  } else {
     contents_bounds += gfx::Vector2d(0, -arrow_offset_);
+  }
 
   // If no visible arrow is shown, return the content bounds.
-  if (!visible_arrow_)
+  if (!visible_arrow_) {
     return contents_bounds;
+  }
 
   // Finally, get the needed movement vector of |contents_bounds| to create the
   // space needed to place the visible arrow. adjustments because we don't want
@@ -448,8 +453,9 @@ void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
                           view.GetColorProvider(), ShouldDrawStroke(),
                           md_shadow_elevation_, shadow_);
 
-  if (visible_arrow_)
+  if (visible_arrow_) {
     PaintVisibleArrow(view, canvas);
+  }
 }
 
 // static
@@ -688,8 +694,9 @@ void BubbleBorder::UpdateColor(View* view) {
       view ? view->GetColorProvider()->GetColor(color_id_)
            : gfx::kPlaceholderColor;
   color_ = requested_color_.value_or(computed_color);
-  if (view)
+  if (view) {
     view->SchedulePaint();
+  }
 }
 
 void BubbleBorder::PaintNoShadow(const View& view, gfx::Canvas* canvas) {

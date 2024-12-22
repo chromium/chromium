@@ -242,8 +242,9 @@ class DropdownItemSelector {
     for (views::View* child : from->children()) {
       auto* const item = AsViewClass<MenuItemView>(child);
       if (item) {
-        if (index == 0U)
+        if (index == 0U) {
           return item;
+        }
         --index;
       } else if (auto* result = FindMenuItem(child, index)) {
         return result;
@@ -314,8 +315,9 @@ bool SendKeyPress(View* view, ui::KeyboardCode code, int flags = ui::EF_NONE) {
 
   // Verify that the button is not destroyed after the key-down before trying
   // to send the key-up.
-  if (!tracker.view())
+  if (!tracker.view()) {
     return false;
+  }
 
   tracker.view()->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyReleased, code,
                                              flags, ui::EventTimeForNow()));
@@ -333,12 +335,14 @@ InteractionTestUtilSimulatorViews::~InteractionTestUtilSimulatorViews() =
 ui::test::ActionResult InteractionTestUtilSimulatorViews::PressButton(
     ui::TrackedElement* element,
     InputType input_type) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const button =
       Button::AsButton(element->AsA<TrackedElementViews>()->view());
-  if (!button)
+  if (!button) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   PressButton(button, input_type);
   return ui::test::ActionResult::kSucceeded;
@@ -347,18 +351,21 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::PressButton(
 ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectMenuItem(
     ui::TrackedElement* element,
     InputType input_type) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const menu_item =
       AsViewClass<MenuItemView>(element->AsA<TrackedElementViews>()->view());
-  if (!menu_item)
+  if (!menu_item) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
 #if BUILDFLAG(IS_MAC)
   // Keyboard input isn't reliable on Mac for submenus, so unless the test
   // specifically calls for keyboard input, prefer mouse.
-  if (input_type == ui::test::InteractionTestUtil::InputType::kDontCare)
+  if (input_type == ui::test::InteractionTestUtil::InputType::kDontCare) {
     input_type = ui::test::InteractionTestUtil::InputType::kMouse;
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   auto* const host = menu_item->GetWidget()->GetRootView();
@@ -394,8 +401,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectMenuItem(
 ui::test::ActionResult InteractionTestUtilSimulatorViews::DoDefaultAction(
     ui::TrackedElement* element,
     InputType input_type) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   if (!DoDefaultAction(element->AsA<TrackedElementViews>()->view(),
                        input_type)) {
     LOG(ERROR) << "Failed to send default action to " << *element;
@@ -412,12 +420,14 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectTab(
   // collections (e.g. browsers and tabstrips) may be supported by a different
   // kind of simulator specific to browser code, so if this is not a supported
   // View type, just return false instead of sending an error.
-  if (!tab_collection->IsA<TrackedElementViews>())
+  if (!tab_collection->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const pane = views::AsViewClass<TabbedPane>(
       tab_collection->AsA<TrackedElementViews>()->view());
-  if (!pane)
+  if (!pane) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   // Unlike with the element type, an out-of-bounds tab is always an error.
   auto* const tab = pane->GetTabAt(index);
@@ -473,13 +483,15 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectDropdownItem(
     ui::TrackedElement* dropdown,
     size_t index,
     InputType input_type) {
-  if (!dropdown->IsA<TrackedElementViews>())
+  if (!dropdown->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const view = dropdown->AsA<TrackedElementViews>()->view();
   auto* const combobox = views::AsViewClass<Combobox>(view);
   auto* const editable_combobox = views::AsViewClass<EditableCombobox>(view);
-  if (!combobox && !editable_combobox)
+  if (!combobox && !editable_combobox) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const model =
       combobox ? combobox->GetModel() : editable_combobox->GetComboboxModel();
   if (index >= model->GetItemCount()) {
@@ -510,8 +522,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectDropdownItem(
 
   // This is required in case we want to repeatedly test a combobox; otherwise
   // it will refuse to open the second time.
-  if (combobox)
+  if (combobox) {
     combobox->closed_time_ = base::TimeTicks();
+  }
 
   // The highest-fidelity input simulation involves actually opening the
   // drop-down and selecting an item from the list.
@@ -553,15 +566,17 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::EnterText(
     ui::TrackedElement* element,
     std::u16string text,
     TextEntryMode mode) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const view = element->AsA<TrackedElementViews>()->view();
 
   // Currently, Textfields (and derived types like Textareas) are supported, as
   // well as EditableCombobox.
   Textfield* textfield = AsViewClass<Textfield>(view);
-  if (!textfield && IsViewClass<EditableCombobox>(view))
+  if (!textfield && IsViewClass<EditableCombobox>(view)) {
     textfield = AsViewClass<EditableCombobox>(view)->textfield_;
+  }
 
   if (!textfield) {
     return ui::test::ActionResult::kNotAttempted;
@@ -605,8 +620,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::EnterText(
 
 ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
     ui::TrackedElement* element) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   auto* const widget = element->AsA<TrackedElementViews>()->view()->GetWidget();
   if (!widget) {
@@ -620,8 +636,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::ActivateSurface(
 ui::test::ActionResult InteractionTestUtilSimulatorViews::SendAccelerator(
     ui::TrackedElement* element,
     ui::Accelerator accelerator) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   element->AsA<TrackedElementViews>()
       ->view()
@@ -632,8 +649,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SendAccelerator(
 
 ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
     ui::TrackedElement* element) {
-  if (!element->IsA<TrackedElementViews>())
+  if (!element->IsA<TrackedElementViews>()) {
     return ui::test::ActionResult::kNotAttempted;
+  }
   auto* const view = element->AsA<TrackedElementViews>()->view();
 
   // Currently, only dialogs can be confirmed. Fetch the delegate and call
@@ -645,8 +663,9 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::Confirm(
     delegate = bubble->AsDialogDelegate();
   }
 
-  if (!delegate)
+  if (!delegate) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   if (!delegate->GetOkButton()) {
     LOG(ERROR) << "Confirm(): cannot confirm dialog that has no OK button.";

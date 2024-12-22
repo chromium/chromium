@@ -120,8 +120,9 @@ class DialogTest : public ViewsTestBase {
   }
 
   void InitializeDialog() {
-    if (dialog_)
+    if (dialog_) {
       dialog_->TearDown();
+    }
 
     dialog_ = std::make_unique<TestDialog>();
     dialog_->Init();
@@ -145,8 +146,9 @@ class DialogTest : public ViewsTestBase {
 
   void SimulateKeyPress(ui::KeyboardCode key) {
     ui::KeyEvent event(ui::EventType::kKeyPressed, key, ui::EF_NONE);
-    if (dialog()->GetFocusManager()->OnKeyEvent(event))
+    if (dialog()->GetFocusManager()->OnKeyEvent(event)) {
       dialog()->GetWidget()->OnKeyEvent(&event);
+    }
   }
 
   TestDialog* dialog() const { return dialog_raw_; }
@@ -509,8 +511,7 @@ TEST_F(DialogDelegateCloseTest,
   bool closed = false;
   bool accepted = false;
 
-  dialog.SetCloseCallback(
-      base::BindLambdaForTesting([&]() { closed = true; }));
+  dialog.SetCloseCallback(base::BindLambdaForTesting([&]() { closed = true; }));
   dialog.SetAcceptCallback(base::BindLambdaForTesting([&]() {
     accepted = true;
     dialog.Close();

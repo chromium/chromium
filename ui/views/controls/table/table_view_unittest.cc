@@ -248,8 +248,9 @@ void TestTableModel2::AddRow(size_t row, int c1_value, int c2_value) {
   new_row.push_back(c1_value);
   new_row.push_back(c2_value);
   rows_.insert(rows_.begin() + row, new_row);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsAdded(row, 1);
+  }
 }
 
 void TestTableModel2::AddRows(size_t row, size_t length, int value_multiplier) {
@@ -263,15 +264,17 @@ void TestTableModel2::AddRows(size_t row, size_t length, int value_multiplier) {
     }
   }
 
-  if (observer_ && length > 0)
+  if (observer_ && length > 0) {
     observer_->OnItemsAdded(row, length);
+  }
 }
 
 void TestTableModel2::RemoveRow(size_t row) {
   DCHECK(row < rows_.size());
   rows_.erase(rows_.begin() + row);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsRemoved(row, 1);
+  }
 }
 
 void TestTableModel2::RemoveRows(size_t row, size_t length) {
@@ -281,16 +284,18 @@ void TestTableModel2::RemoveRows(size_t row, size_t length) {
         rows_.begin() + std::clamp(row + length, size_t{0}, rows_.size()));
   }
 
-  if (observer_ && length > 0)
+  if (observer_ && length > 0) {
     observer_->OnItemsRemoved(row, length);
+  }
 }
 
 void TestTableModel2::ChangeRow(size_t row, int c1_value, int c2_value) {
   DCHECK(row < rows_.size());
   rows_[row][0] = c1_value;
   rows_[row][1] = c2_value;
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsChanged(row, 1);
+  }
 }
 
 void TestTableModel2::MoveRows(size_t row_from, size_t length, size_t row_to) {
@@ -302,8 +307,9 @@ void TestTableModel2::MoveRows(size_t row_from, size_t length, size_t row_to) {
   std::vector<std::vector<int>> temp(old_start, old_start + length);
   rows_.erase(old_start, old_start + length);
   rows_.insert(rows_.begin() + row_to, temp.begin(), temp.end());
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsMoved(row_from, length, row_to);
+  }
 }
 
 void TestTableModel2::SetTooltip(const std::u16string& tooltip) {
@@ -334,8 +340,9 @@ int TestTableModel2::CompareValues(size_t row1, size_t row2, int column_id) {
 std::string GetViewToModelAsString(TableView* table) {
   std::string result;
   for (size_t i = 0; i < table->GetRowCount(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     result += base::NumberToString(table->ViewToModel(i));
   }
   return result;
@@ -345,8 +352,9 @@ std::string GetViewToModelAsString(TableView* table) {
 std::string GetModelToViewAsString(TableView* table) {
   std::string result;
   for (size_t i = 0; i < table->GetRowCount(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     result += base::NumberToString(table->ModelToView(i));
   }
   return result;
@@ -357,15 +365,17 @@ std::string GetModelToViewAsString(TableView* table) {
 std::string GetRowsInViewOrderAsString(TableView* table) {
   std::string result;
   for (size_t i = 0; i < table->GetRowCount(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += ", ";  // Comma between each row.
+    }
 
     // Format row |i| like this: "[value1, value2, value3]"
     result += "[";
     for (size_t j = 0; j < table->visible_columns().size(); ++j) {
       const ui::TableColumn& column = table->GetVisibleColumn(j).column;
-      if (j != 0)
+      if (j != 0) {
         result += ", ";  // Comma between each value in the row.
+      }
 
       result += base::UTF16ToUTF8(
           table->model()->GetText(table->ViewToModel(i), column.id));
@@ -382,8 +392,9 @@ std::string GetRowsInVirtualViewAsString(TableView* table) {
   std::string result;
 
   for (size_t row_index = 0; row_index < virtual_children.size(); row_index++) {
-    if (row_index != 0)
+    if (row_index != 0) {
       result += ", ";  // Comma between each row.
+    }
 
     const auto& row = virtual_children[row_index];
 
@@ -391,8 +402,9 @@ std::string GetRowsInVirtualViewAsString(TableView* table) {
 
     for (size_t cell_index = 0; cell_index < row->children().size();
          cell_index++) {
-      if (cell_index != 0)
+      if (cell_index != 0) {
         result += ", ";  // Comma between each value in the row.
+      }
 
       const auto& cell = row->children()[cell_index];
       const ui::AXNodeData& cell_data = cell->GetData();
@@ -411,8 +423,9 @@ std::string GetHeaderRowAsString(TableView* table) {
 
   for (size_t col_index = 0; col_index < table->visible_columns().size();
        ++col_index) {
-    if (col_index != 0)
+    if (col_index != 0) {
       result += ", ";  // Comma between each column.
+    }
 
     result +=
         base::UTF16ToUTF8(table->GetVisibleColumn(col_index).column.title);
@@ -606,10 +619,11 @@ class TableViewTest : public ViewsTestBase,
         ASSERT_TRUE(cell);
         const ui::AXNodeData& cell_data = cell->GetData();
 
-        if (row_index == 0)
+        if (row_index == 0) {
           EXPECT_EQ(ax::mojom::Role::kColumnHeader, cell_data.role);
-        else
+        } else {
           EXPECT_EQ(ax::mojom::Role::kGridCell, cell_data.role);
+        }
 
         // Add 1 to get the cell's index into |expected_bounds| since the first
         // entry is the row's bounds.
@@ -906,16 +920,18 @@ TEST_P(TableViewTest, ChangingCellFiresAccessibilityEvent) {
   table_->GetViewAccessibility().set_accessibility_events_callback(
       base::BindLambdaForTesting(
           [&](const ui::AXPlatformNodeDelegate*, const ax::mojom::Event event) {
-            if (event == ax::mojom::Event::kTextChanged)
+            if (event == ax::mojom::Event::kTextChanged) {
               ++text_changed_count;
+            }
           }));
 
   // First we make sure that simply accessing the data will not fire the event.
   const AXVirtualView* cell = helper_->GetVirtualAccessibilityCell(0, 0);
   ASSERT_TRUE(cell);
   ui::AXNodeData cell_data;
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 100; ++i) {
     cell_data = cell->GetData();
+  }
   EXPECT_EQ(0, text_changed_count);
 
   // A kTextChanged event is fired when a cell's data is changed and
@@ -1328,8 +1344,10 @@ class TableGrouperImpl : public TableGrouper {
   void GetGroupRange(size_t model_index, GroupRange* range) override {
     size_t offset = 0;
     size_t range_index = 0;
-    for (; range_index < ranges_.size() && offset < model_index; ++range_index)
+    for (; range_index < ranges_.size() && offset < model_index;
+         ++range_index) {
       offset += ranges_[range_index];
+    }
 
     if (offset == model_index) {
       range->start = model_index;

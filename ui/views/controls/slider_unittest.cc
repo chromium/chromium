@@ -206,15 +206,17 @@ void SliderTest::TearDown() {
 }
 
 float SliderTest::GetMinValue() const {
-  if (GetParam() == TestSliderType::kContinuousTest)
+  if (GetParam() == TestSliderType::kContinuousTest) {
     return 0.0f;
+  }
 
   return *values().cbegin();
 }
 
 float SliderTest::GetMaxValue() const {
-  if (GetParam() == TestSliderType::kContinuousTest)
+  if (GetParam() == TestSliderType::kContinuousTest) {
     return 1.0f;
+  }
 
   return *values().crbegin();
 }

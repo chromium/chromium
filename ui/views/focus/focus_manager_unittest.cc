@@ -607,8 +607,9 @@ class FocusManagerArrowKeyTraversalTest
   void SetUp() override {
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       is_rtl_ = GetParam();
-      if (is_rtl_)
+      if (is_rtl_) {
         base::i18n::SetICUDefaultLocale("he");
+      }
     }
 
     FocusManagerTest::SetUp();

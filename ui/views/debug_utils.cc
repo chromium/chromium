@@ -33,12 +33,14 @@ void PrintFocusHierarchyImp(const View* view,
   *out << view;
   *out << '\n';
 
-  if (!view->children().empty())
+  if (!view->children().empty()) {
     PrintFocusHierarchyImp(view->children().front(), indent + 2, out);
+  }
 
   const View* next_focusable = view->GetNextFocusableView();
-  if (next_focusable)
+  if (next_focusable) {
     PrintFocusHierarchyImp(next_focusable, indent, out);
+  }
 }
 
 #if !defined(NDEBUG)
@@ -47,10 +49,11 @@ std::string PrintViewGraphImpl(const View* view) {
 
   const std::string class_name(view->GetClassName());
   size_t base_name_index = class_name.find_last_of('/');
-  if (base_name_index == std::string::npos)
+  if (base_name_index == std::string::npos) {
     base_name_index = 0;
-  else
+  } else {
     base_name_index++;
+  }
 
   // Information about current node.
   result.append("  N");
@@ -73,16 +76,19 @@ std::string PrintViewGraphImpl(const View* view) {
   }
 
   result.append("\"");
-  if (!view->parent())
+  if (!view->parent()) {
     result.append(", shape=box");
+  }
   if (view->layer()) {
-    if (view->layer()->has_external_content())
+    if (view->layer()->has_external_content()) {
       result.append(", color=green");
-    else
+    } else {
       result.append(", color=red");
+    }
 
-    if (view->layer()->fills_bounds_opaquely())
+    if (view->layer()->fills_bounds_opaquely()) {
       result.append(", style=filled");
+    }
   }
   result.append("]\n");
 
@@ -91,8 +97,9 @@ std::string PrintViewGraphImpl(const View* view) {
     result.append(base::StringPrintf(" N%p -> N%p\n", view->parent(), view));
   }
 
-  for (const View* child : view->children())
+  for (const View* child : view->children()) {
     result.append(PrintViewGraphImpl(child));
+  }
 
   return result;
 }
@@ -106,16 +113,18 @@ void PrintWidgetInformation(const Widget& widget,
   *out << " name=" << widget.GetName();
   *out << " (" << &widget << ")";
 
-  if (widget.parent())
+  if (widget.parent()) {
     *out << " parent=" << widget.parent();
-  else
+  } else {
     *out << " parent=none";
+  }
 
   const ui::Layer* layer = widget.GetLayer();
-  if (layer)
+  if (layer) {
     *out << " layer=" << layer;
-  else
+  } else {
     *out << " layer=none";
+  }
 
   *out << (widget.is_top_level() ? " [top_level]" : " [!top_level]");
 
@@ -129,8 +138,9 @@ void PrintWidgetInformation(const Widget& widget,
   *out << (widget.IsMinimized() ? " [minimized]" : "");
   *out << (widget.IsFullscreen() ? " [fullscreen]" : "");
 
-  if (detailed)
+  if (detailed) {
     *out << " " << widget.GetWindowBoundsInScreen().ToString();
+  }
 
   *out << '\n';
 }

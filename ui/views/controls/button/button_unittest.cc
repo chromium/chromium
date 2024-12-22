@@ -97,8 +97,9 @@ class TestButton : public Button {
   ~TestButton() override = default;
 
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override {
-    if (custom_key_click_action_ == KeyClickAction::kNone)
+    if (custom_key_click_action_ == KeyClickAction::kNone) {
       return Button::GetKeyClickActionForEvent(event);
+    }
     return custom_key_click_action_;
   }
 
@@ -805,8 +806,9 @@ class VisibilityTestButton : public TestButton {
  public:
   VisibilityTestButton() : TestButton(false) {}
   ~VisibilityTestButton() override {
-    if (layer())
+    if (layer()) {
       ADD_FAILURE();
+    }
   }
 
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override {

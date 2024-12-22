@@ -184,20 +184,22 @@ TEST_F(TextareaTest, LineSelection) {
   // to cover the whole line.
   SendHomeEvent(true);
 
-  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
+  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND) {
     EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
-  else
+  } else {
     EXPECT_EQ(u"345", textarea_->GetSelectedText());
+  }
 
   EXPECT_TRUE(textarea_->GetSelectedRange().is_reversed());
 
   // Select line towards right.
   SendEndEvent(true);
 
-  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
+  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND) {
     EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
-  else
+  } else {
     EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
+  }
 
   EXPECT_FALSE(textarea_->GetSelectedRange().is_reversed());
 }
@@ -267,10 +269,11 @@ TEST_F(TextareaTest, MovePageUpDownAndModifySelection) {
   GetTextfieldTestApi().ExecuteTextEditCommand(
       ui::TextEditCommand::MOVE_PAGE_DOWN_AND_MODIFY_SELECTION);
 
-  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
+  if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND) {
     EXPECT_EQ(gfx::Range(0, 11), textarea_->GetSelectedRange());
-  else
+  } else {
     EXPECT_EQ(gfx::Range(6, 11), textarea_->GetSelectedRange());
+  }
 }
 
 // Ensure the textarea breaks the long word and scrolls on overflow.

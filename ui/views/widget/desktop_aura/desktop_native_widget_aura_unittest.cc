@@ -755,8 +755,9 @@ void GenerateMouseEvents(Widget* widget, ui::EventType last_event_type) {
   ui::MouseEvent release_event(ui::EventType::kMouseReleased, end_point,
                                end_point, ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&release_event);
-  if (details.dispatcher_destroyed)
+  if (details.dispatcher_destroyed) {
     return;
+  }
 }
 
 // Creates a widget and invokes GenerateMouseEvents() with |last_event_type|.

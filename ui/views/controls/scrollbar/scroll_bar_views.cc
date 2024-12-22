@@ -58,8 +58,9 @@ ScrollBarThumb::~ScrollBarThumb() = default;
 
 gfx::Size ScrollBarThumb::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return gfx::Size();
+  }
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -180,8 +181,9 @@ int ScrollBarViews::GetVerticalScrollBarWidth(const ui::NativeTheme* theme) {
 
 void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetTrackBounds();
-  if (bounds.IsEmpty())
+  if (bounds.IsEmpty()) {
     return;
+  }
 
   ui::NativeTheme::ScrollbarTrackExtraParams scrollbar_track;
   scrollbar_track.track_x = bounds.x();

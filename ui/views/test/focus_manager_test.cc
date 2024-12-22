@@ -37,8 +37,9 @@ void FocusManagerTest::SetUp() {
 }
 
 void FocusManagerTest::TearDown() {
-  if (focus_change_listener_)
+  if (focus_change_listener_) {
     GetFocusManager()->RemoveFocusChangeListener(focus_change_listener_);
+  }
   if (widget_focus_change_listener_) {
     WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(
         widget_focus_change_listener_);

@@ -52,8 +52,9 @@ void AddAttributeString(AttributeStrings& attributes,
 void AddPtrAttributeString(AttributeStrings& attributes,
                            const std::string& name,
                            const std::optional<intptr_t>& value) {
-  if (!value)
+  if (!value) {
     return;
+  }
 
   attributes.push_back(name + "=\"" + PtrToString(value.value()) + "\"");
 }

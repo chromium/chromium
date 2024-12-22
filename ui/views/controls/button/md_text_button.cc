@@ -116,8 +116,9 @@ void MdTextButton::SetBgColorOverrideDeprecated(
     const std::optional<SkColor>& color) {
   CHECK(!bg_color_id_override_.has_value());
 
-  if (color == bg_color_override_)
+  if (color == bg_color_override_) {
     return;
+  }
   bg_color_override_ = color;
   UpdateColors();
   OnPropertyChanged(&bg_color_override_, kPropertyEffectsNone);
@@ -280,8 +281,9 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
 }
 
 void MdTextButton::UpdateTextColor() {
-  if (explicitly_set_normal_color())
+  if (explicitly_set_normal_color()) {
     return;
+  }
 
   style::TextStyle text_style = style::STYLE_PRIMARY;
   if (style_ == ui::ButtonStyle::kProminent) {

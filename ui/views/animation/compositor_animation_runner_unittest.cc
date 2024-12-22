@@ -36,8 +36,9 @@ TEST_F(CompositorAnimationRunnerTest, BasicCoverageTest) {
   EXPECT_TRUE(delegate.container()->has_custom_animation_runner());
 
   interval_timer.Start(FROM_HERE, kDuration, base::BindLambdaForTesting([&]() {
-                         if (animation.is_animating())
+                         if (animation.is_animating()) {
                            return;
+                         }
 
                          interval_timer.Stop();
                          run_loop.Quit();
@@ -104,8 +105,9 @@ TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   EXPECT_TRUE(delegate.container()->has_custom_animation_runner());
 
   interval_timer.Start(FROM_HERE, kDuration, base::BindLambdaForTesting([&]() {
-                         if (animation.is_animating())
+                         if (animation.is_animating()) {
                            return;
+                         }
 
                          interval_timer.Stop();
                          tracker1.Stop();
@@ -130,8 +132,9 @@ TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   EXPECT_TRUE(animation.is_animating());
 
   interval_timer.Start(FROM_HERE, kDuration, base::BindLambdaForTesting([&]() {
-                         if (animation.is_animating())
+                         if (animation.is_animating()) {
                            return;
+                         }
 
                          interval_timer.Stop();
                          tracker2.Stop();
@@ -171,8 +174,9 @@ TEST_F(CompositorAnimationRunnerDesktopTest, SwitchCompositor) {
     base::RunLoop run_loop;
     interval_timer.Start(FROM_HERE, kDuration,
                          base::BindLambdaForTesting([&]() {
-                           if (animation.is_animating())
+                           if (animation.is_animating()) {
                              return;
+                           }
                            interval_timer.Stop();
                            run_loop.Quit();
                          }));
@@ -192,8 +196,9 @@ TEST_F(CompositorAnimationRunnerDesktopTest, SwitchCompositor) {
     base::RunLoop run_loop;
     interval_timer.Start(FROM_HERE, kDuration,
                          base::BindLambdaForTesting([&]() {
-                           if (animation.is_animating())
+                           if (animation.is_animating()) {
                              return;
+                           }
 
                            interval_timer.Stop();
                            run_loop.Quit();

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/test/widget_test.h"
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
@@ -13,6 +11,7 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_controller.h"
 
@@ -39,15 +38,18 @@ bool FindLayersInOrder(
       return *first == nullptr;
     }
 
-    if (child == *first)
+    if (child == *first) {
       *first = nullptr;
+    }
 
-    if (FindLayersInOrder(child->children(), first, second))
+    if (FindLayersInOrder(child->children(), first, second)) {
       return true;
+    }
 
     // If second is cleared without success, exit early with failure.
-    if (!*second)
+    if (!*second) {
       return false;
+    }
   }
   return false;
 }
@@ -63,8 +65,9 @@ struct FindAllWindowsData {
 BOOL CALLBACK FindAllWindowsCallback(HWND hwnd, LPARAM param) {
   FindAllWindowsData* data = reinterpret_cast<FindAllWindowsData*>(param);
   if (aura::WindowTreeHost* host =
-          aura::WindowTreeHost::GetForAcceleratedWidget(hwnd))
+          aura::WindowTreeHost::GetForAcceleratedWidget(hwnd)) {
     data->windows->push_back(host->window());
+  }
   return TRUE;
 }
 
@@ -87,8 +90,9 @@ std::vector<aura::Window*> GetAllTopLevelWindows() {
   // Chrome OS browser tests must use ash::Shell::GetAllRootWindows.
   DCHECK(aura_test_helper) << "Can't find all widgets without a test helper";
 #endif
-  if (aura_test_helper)
+  if (aura_test_helper) {
     roots.push_back(aura_test_helper->GetContext());
+  }
   return roots;
 }
 
@@ -149,14 +153,16 @@ bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
 // static
 bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
   aura::Window* window = widget->GetNativeWindow();
-  if (wm::ShadowController::GetShadowForWindow(window))
+  if (wm::ShadowController::GetShadowForWindow(window)) {
     return true;
+  }
 
   // If the Widget's native window is the content window for a
   // DesktopWindowTreeHost, then giving the root window a shadow also has the
   // effect of drawing a shadow around the window.
-  if (window->parent() == window->GetRootWindow())
+  if (window->parent() == window->GetRootWindow()) {
     return wm::ShadowController::GetShadowForWindow(window->GetRootWindow());
+  }
 
   return false;
 }
@@ -164,8 +170,9 @@ bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
 // static
 Widget::Widgets WidgetTest::GetAllWidgets() {
   Widget::Widgets all_widgets;
-  for (aura::Window* window : GetAllTopLevelWindows())
+  for (aura::Window* window : GetAllTopLevelWindows()) {
     Widget::GetAllChildWidgets(window->GetRootWindow(), &all_widgets);
+  }
   return all_widgets;
 }
 

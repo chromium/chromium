@@ -71,14 +71,16 @@ class TableHeader::HighlightPathGenerator
 
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const View* view) override {
-    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
+    if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
       return SkPath();
+    }
 
     const TableHeader* const header = static_cast<const TableHeader*>(view);
     // If there's no focus indicator fall back on the default highlight path
     // (highlights entire view instead of active cell).
-    if (!header->HasFocusIndicator())
+    if (!header->HasFocusIndicator()) {
       return SkPath();
+    }
 
     // Draw a focus indicator around the active cell.
     gfx::Rect bounds = header->GetActiveHeaderCellBounds();
@@ -174,8 +176,9 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
 
     const int x = column.x + horizontal_padding;
     int width = column.width - horizontal_padding - horizontal_padding;
-    if (width <= 0)
+    if (width <= 0) {
       continue;
+    }
 
     const int title_width =
         gfx::GetStringWidth(column.column.title, font_list_);
@@ -183,8 +186,9 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
         (column.column.id == sorted_column_id &&
          title_width + sort_indicator_width <= width);
 
-    if (paint_sort_indicator)
+    if (paint_sort_indicator) {
       width -= sort_indicator_width;
+    }
 
     canvas->DrawStringRectWithFlags(
         column.column.title, font_list_, text_color,
@@ -287,8 +291,9 @@ bool TableHeader::OnMouseDragged(const ui::MouseEvent& event) {
 void TableHeader::OnMouseReleased(const ui::MouseEvent& event) {
   const bool was_resizing = resize_details_ != nullptr;
   resize_details_.reset();
-  if (!was_resizing && event.IsOnlyLeftMouseButton())
+  if (!was_resizing && event.IsOnlyLeftMouseButton()) {
     ToggleSortOrder(event);
+  }
 }
 
 void TableHeader::OnMouseCaptureLost() {
@@ -302,8 +307,9 @@ void TableHeader::OnMouseCaptureLost() {
 void TableHeader::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTap:
-      if (!resize_details_.get())
+      if (!resize_details_.get()) {
         ToggleSortOrder(*event);
+      }
       break;
     case ui::EventType::kGestureScrollBegin:
       StartResize(*event);
@@ -366,13 +372,15 @@ bool TableHeader::HasFocusIndicator() const {
 }
 
 bool TableHeader::StartResize(const ui::LocatedEvent& event) {
-  if (is_resizing())
+  if (is_resizing()) {
     return false;
+  }
 
   const std::optional<size_t> index =
       GetResizeColumn(GetMirroredXInView(event.x()));
-  if (!index.has_value())
+  if (!index.has_value()) {
     return false;
+  }
 
   resize_details_ = std::make_unique<ColumnResizeDetails>();
   resize_details_->column_index = index.value();
@@ -383,8 +391,9 @@ bool TableHeader::StartResize(const ui::LocatedEvent& event) {
 }
 
 void TableHeader::ContinueResize(const ui::LocatedEvent& event) {
-  if (!is_resizing())
+  if (!is_resizing()) {
     return;
+  }
 
   const int scale = base::i18n::IsRTL() ? -1 : 1;
   const int delta =
@@ -401,13 +410,15 @@ void TableHeader::ContinueResize(const ui::LocatedEvent& event) {
 }
 
 void TableHeader::ToggleSortOrder(const ui::LocatedEvent& event) {
-  if (table_->visible_columns().empty())
+  if (table_->visible_columns().empty()) {
     return;
+  }
 
   const int x = GetMirroredXInView(event.x());
   const std::optional<size_t> index = GetClosestVisibleColumnIndex(*table_, x);
-  if (!index.has_value())
+  if (!index.has_value()) {
     return;
+  }
   const TableView::VisibleColumn& column(
       table_->GetVisibleColumn(index.value()));
   if (x >= column.x && x < column.x + column.width && event.y() >= 0 &&
@@ -418,8 +429,9 @@ void TableHeader::ToggleSortOrder(const ui::LocatedEvent& event) {
 
 std::optional<size_t> TableHeader::GetResizeColumn(int x) const {
   const Columns& columns(table_->visible_columns());
-  if (columns.empty())
+  if (columns.empty()) {
     return std::nullopt;
+  }
 
   const std::optional<size_t> index = GetClosestVisibleColumnIndex(*table_, x);
   DCHECK(index.has_value());

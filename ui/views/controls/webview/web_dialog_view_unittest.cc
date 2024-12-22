@@ -132,8 +132,9 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
     ASSERT_TRUE(web_dialog_view_->GetFocusManager() != nullptr);
     ASSERT_TRUE(widget_ != nullptr);
     ui::KeyEvent event_copy = event;
-    if (web_dialog_view_->GetFocusManager()->OnKeyEvent(event_copy))
+    if (web_dialog_view_->GetFocusManager()->OnKeyEvent(event_copy)) {
       widget_->OnKeyEvent(&event_copy);
+    }
   }
 
  private:

@@ -361,12 +361,15 @@ END_METADATA
 ui::mojom::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
   // because the former is implemented on all platforms but the latter is not.
-  if (widget->IsFullscreen())
+  if (widget->IsFullscreen()) {
     return ui::mojom::WindowShowState::kFullscreen;
-  if (widget->IsMaximized())
+  }
+  if (widget->IsMaximized()) {
     return ui::mojom::WindowShowState::kMaximized;
-  if (widget->IsMinimized())
+  }
+  if (widget->IsMinimized()) {
     return ui::mojom::WindowShowState::kMinimized;
+  }
   return widget->IsActive() ? ui::mojom::WindowShowState::kNormal
                             : ui::mojom::WindowShowState::kInactive;
 }

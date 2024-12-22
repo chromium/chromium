@@ -39,8 +39,9 @@ SlideOutController::SlideOutController(ui::EventTarget* target,
 SlideOutController::~SlideOutController() = default;
 
 void SlideOutController::CaptureControlOpenState() {
-  if (!has_swipe_control_)
+  if (!has_swipe_control_) {
     return;
+  }
   if ((mode_ == SlideMode::kFull || mode_ == SlideMode::kPartial) &&
       fabs(gesture_amount_) >= swipe_control_width_) {
     control_open_state_ = gesture_amount_ < 0
@@ -73,8 +74,9 @@ void SlideOutController::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  if (!event->IsScrollGestureEvent())
+  if (!event->IsScrollGestureEvent()) {
     return;
+  }
 
   if (event->type() == ui::EventType::kGestureScrollBegin) {
     switch (control_open_state_) {
@@ -213,8 +215,9 @@ void SlideOutController::SlideOutAndClose(int direction) {
 }
 
 void SlideOutController::SetOpacityIfNecessary(float opacity) {
-  if (update_opacity_)
+  if (update_opacity_) {
     delegate_->GetSlideOutLayer()->SetOpacity(opacity);
+  }
   opacity_ = opacity;
 }
 
@@ -258,8 +261,9 @@ void SlideOutController::OnAnimationsCompleted() {
       !is_completely_slid_out;
   delegate_->OnSlideChanged(in_progress);
 
-  if (!is_completely_slid_out)
+  if (!is_completely_slid_out) {
     return;
+  }
 
   // Call SlideOutControllerDelegate::OnSlideOut() if this animation came from
   // SlideOutAndClose().
@@ -282,8 +286,9 @@ void SlideOutController::SetSwipeControlWidth(int swipe_control_width) {
 }
 
 void SlideOutController::CloseSwipeControl() {
-  if (!has_swipe_control_)
+  if (!has_swipe_control_) {
     return;
+  }
   gesture_amount_ = 0;
   CaptureControlOpenState();
   RestoreVisualState();

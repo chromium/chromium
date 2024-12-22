@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
-
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace views::test {

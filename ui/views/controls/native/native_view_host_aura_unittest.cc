@@ -78,8 +78,9 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
 
     // Dedupe events as a single Hide() call can result in several
     // notifications.
-    if (events_.size() == 0u || events_.back() != event)
+    if (events_.size() == 0u || events_.back() != event) {
       events_.push_back(event);
+    }
   }
 
   void OnWindowBoundsChanged(aura::Window* window,

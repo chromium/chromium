@@ -34,7 +34,7 @@ namespace views {
 namespace test {
 class ComboboxTestApi;
 class InteractionTestUtilSimulatorViews;
-}
+}  // namespace test
 
 class MenuRunner;
 class PrefixSelector;

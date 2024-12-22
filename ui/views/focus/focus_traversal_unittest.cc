@@ -213,17 +213,21 @@ class FocusTraversalTest : public FocusManagerTest {
 
   View* FindViewByID(int id) {
     View* view = GetContentsView()->GetViewByID(id);
-    if (view)
+    if (view) {
       return view;
-    if (style_tab_)
+    }
+    if (style_tab_) {
       view = style_tab_
                  ->GetTabContentsForTesting(style_tab_->GetSelectedTabIndex())
                  ->GetViewByID(id);
-    if (view)
+    }
+    if (view) {
       return view;
+    }
     view = search_border_view_->GetContentsRootView()->GetViewByID(id);
-    if (view)
+    if (view) {
       return view;
+    }
     return nullptr;
   }
 
@@ -239,9 +243,10 @@ class FocusTraversalTest : public FocusManagerTest {
         GetFocusManager()->AdvanceFocus(reverse);
         View* focused_view = GetFocusManager()->GetFocusedView();
         EXPECT_NE(nullptr, focused_view);
-        if (focused_view)
+        if (focused_view) {
           EXPECT_EQ(traversal_ids[reverse ? traversal_ids.size() - j - 1 : j],
                     focused_view->GetID());
+        }
       }
     }
   }
@@ -266,8 +271,9 @@ class FocusTraversalTest : public FocusManagerTest {
                                      base::flat_set<View*> seen_views = {}) {
     std::vector<raw_ptr<View, VectorExperimental>> children_views =
         parent->children();
-    if (children_views.empty())
+    if (children_views.empty()) {
       return;
+    }
 
     View* first_child = children_views[0];
     std::vector<raw_ptr<View, VectorExperimental>> children_in_focus_order;
@@ -281,8 +287,9 @@ class FocusTraversalTest : public FocusManagerTest {
       seen_views.insert(child);
       children_in_focus_order.push_back(child);
 
-      if (child != first_child)
+      if (child != first_child) {
         child->InsertBeforeInFocusList(first_child);
+      }
 
       ReverseChildrenFocusOrderImpl(child, seen_views);
     }

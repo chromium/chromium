@@ -97,8 +97,9 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
 
   void TearDown() override {
     CloseWidget();
-    if (anchor_widget_ && !anchor_widget_->IsClosed())
+    if (anchor_widget_ && !anchor_widget_->IsClosed()) {
       anchor_widget_->CloseNow();
+    }
     test::WidgetTest::TearDown();
   }
 

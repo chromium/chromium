@@ -21,8 +21,9 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::debug::StackTrace, kViewStackTraceKey)
 namespace {
 
 std::string GetViewTreeAsString(View* view) {
-  if (!view->parent())
+  if (!view->parent()) {
     return view->GetClassName();
+  }
   return GetViewTreeAsString(view->parent()) + " -> " + view->GetClassName();
 }
 
@@ -64,8 +65,9 @@ std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
   }
 
   std::vector<debug::ViewDebugWrapper*> child_ptrs;
-  for (auto& child : children_)
+  for (auto& child : children_) {
     child_ptrs.push_back(child.get());
+  }
   return child_ptrs;
 }
 

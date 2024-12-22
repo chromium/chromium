@@ -272,8 +272,9 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       }
       break;
     case InkDropState::ACTION_PENDING: {
-      if (old_ink_drop_state == new_ink_drop_state)
+      if (old_ink_drop_state == new_ink_drop_state) {
         return;
+      }
       DLOG_IF(WARNING, InkDropState::HIDDEN != old_ink_drop_state)
           << "Invalid InkDropState transition. old_ink_drop_state="
           << ToString(old_ink_drop_state)
@@ -411,8 +412,9 @@ void SquareInkDropRipple::SetStateToHidden() {
 
 void SquareInkDropRipple::AbortAllAnimations() {
   root_layer_.GetAnimator()->AbortAllAnimations();
-  for (auto& painted_layer : painted_layers_)
+  for (auto& painted_layer : painted_layers_) {
     painted_layer->GetAnimator()->AbortAllAnimations();
+  }
 }
 
 void SquareInkDropRipple::SetTransforms(const InkDropTransforms transforms) {

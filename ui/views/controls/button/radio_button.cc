@@ -86,8 +86,9 @@ void RadioButton::RequestFocusFromEvent() {
   // Take focus only if another radio button in the group has focus.
   Views views;
   GetViewsInGroupFromParent(GetGroup(), &views);
-  if (base::ranges::any_of(views, [](View* v) { return v->HasFocus(); }))
+  if (base::ranges::any_of(views, [](View* v) { return v->HasFocus(); })) {
     RequestFocus();
+  }
 }
 
 void RadioButton::NotifyClick(const ui::Event& event) {

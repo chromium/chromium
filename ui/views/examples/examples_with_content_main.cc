@@ -74,8 +74,9 @@ int main(int argc, const char** argv) {
   ui::ViewsContentClient views_content_client(argc, argv);
 #endif
 
-  if (views::examples::CheckCommandLineUsage())
+  if (views::examples::CheckCommandLineUsage()) {
     return 0;
+  }
 
 #if BUILDFLAG(IS_MAC)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -87,8 +88,9 @@ int main(int argc, const char** argv) {
       sandbox::SeatbeltExecServer::CreateFromArguments(
           command_line->GetProgram().value().c_str(), argc,
           const_cast<char**>(argv));
-  if (seatbelt.sandbox_required)
+  if (seatbelt.sandbox_required) {
     CHECK(seatbelt.server->InitializeSandbox());
+  }
 #endif
 
   views_content_client.set_on_resources_loaded_callback(

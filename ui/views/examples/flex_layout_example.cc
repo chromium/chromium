@@ -94,10 +94,11 @@ void FlexLayoutExample::CreateAdditionalControls() {
 void FlexLayoutExample::UpdateLayoutManager() {
   for (View* child : layout_panel()->children()) {
     const int flex = static_cast<ChildPanel*>(child)->GetFlex();
-    if (flex < 0)
+    if (flex < 0) {
       child->ClearProperty(views::kFlexBehaviorKey);
-    else
+    } else {
       child->SetProperty(views::kFlexBehaviorKey, GetFlexSpecification(flex));
+    }
   }
 }
 

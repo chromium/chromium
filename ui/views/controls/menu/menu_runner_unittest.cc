@@ -107,8 +107,9 @@ class MenuRunnerTest : public ViewsTestBase {
   // ViewsTestBase:
   void TearDown() override {
     ResetMenuItemView();
-    if (owner_)
+    if (owner_) {
       owner_->CloseNow();
+    }
 
 #if BUILDFLAG(IS_MAC)
     MenuCocoaWatcherMac::SetNotificationFilterForTesting(
@@ -207,8 +208,9 @@ TEST_F(MenuRunnerTest, AsynchronousKeyEventHandling) {
 #define MAYBE_LatinMnemonic LatinMnemonic
 #endif
 TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
-  if (!MenuSupportsMnemonics())
+  if (!MenuSupportsMnemonics()) {
     return;
+  }
 
   views::test::DisableMenuClosureAnimations();
   InitMenuRunner(0);
@@ -231,8 +233,9 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
 // Tests that a key press on a non-US keyboard layout activates the correct menu
 // item. Disabled on Windows because a WM_CHAR event does not activate an item.
 TEST_F(MenuRunnerTest, NonLatinMnemonic) {
-  if (!MenuSupportsMnemonics())
+  if (!MenuSupportsMnemonics()) {
     return;
+  }
 
   views::test::DisableMenuClosureAnimations();
   InitMenuRunner(0);
@@ -255,8 +258,9 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
 #endif  // !BUILDFLAG(IS_WIN)
 
 TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
-  if (!MenuSupportsMnemonics())
+  if (!MenuSupportsMnemonics()) {
     return;
+  }
 
   InitMenuRunner(MenuRunner::HAS_MNEMONICS | MenuRunner::SHOULD_SHOW_MNEMONICS);
 
@@ -268,8 +272,9 @@ TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
 }
 
 TEST_F(MenuRunnerTest, MenuItemViewDoesNotShowMnemonics) {
-  if (!MenuSupportsMnemonics())
+  if (!MenuSupportsMnemonics()) {
     return;
+  }
 
   InitMenuRunner(MenuRunner::HAS_MNEMONICS);
 
@@ -281,8 +286,9 @@ TEST_F(MenuRunnerTest, MenuItemViewDoesNotShowMnemonics) {
 }
 
 TEST_F(MenuRunnerTest, PrefixSelect) {
-  if (!MenuConfig::instance().all_menus_use_prefix_selection)
+  if (!MenuConfig::instance().all_menus_use_prefix_selection) {
     return;
+  }
 
   base::SimpleTestTickClock clock;
 
@@ -334,8 +340,9 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 // activates menu items.
 #if BUILDFLAG(IS_MAC)
 TEST_F(MenuRunnerTest, SpaceActivatesItem) {
-  if (!MenuConfig::instance().all_menus_use_prefix_selection)
+  if (!MenuConfig::instance().all_menus_use_prefix_selection) {
     return;
+  }
 
   views::test::DisableMenuClosureAnimations();
   InitMenuRunner(0);
@@ -741,8 +748,9 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
 
   // This is not expected to run, however this is from the origin ASAN stack
   // traces. So regressions will be caught with the same stack trace.
-  if (menu_controller.controller())
+  if (menu_controller.controller()) {
     menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
+  }
   EXPECT_EQ(nullptr, menu_controller.controller());
 }
 
@@ -834,8 +842,9 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuClose) {
           [](bool* focus_after_menu_close_sent,
              const ui::AXPlatformNodeDelegate* delegate,
              const ax::mojom::Event event_type) {
-            if (event_type == ax::mojom::Event::kFocusAfterMenuClose)
+            if (event_type == ax::mojom::Event::kFocusAfterMenuClose) {
               *focus_after_menu_close_sent = true;
+            }
           },
           &focus_after_menu_close_sent);
   button->GetViewAccessibility().set_accessibility_events_callback(
@@ -896,8 +905,9 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
           [](bool* focus_after_menu_close_sent,
              const ui::AXPlatformNodeDelegate* delegate,
              const ax::mojom::Event event_type) {
-            if (event_type == ax::mojom::Event::kFocusAfterMenuClose)
+            if (event_type == ax::mojom::Event::kFocusAfterMenuClose) {
               *focus_after_menu_close_sent = true;
+            }
           },
           &focus_after_menu_close_sent);
   button->GetViewAccessibility().set_accessibility_events_callback(
@@ -918,8 +928,9 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
 
   // This is not expected to run, however this is from the origin ASAN stack
   // traces. So regressions will be caught with the same stack trace.
-  if (menu_controller.controller())
+  if (menu_controller.controller()) {
     menu_controller.controller()->Cancel(MenuController::ExitType::kAll);
+  }
   EXPECT_EQ(nullptr, menu_controller.controller());
 }
 

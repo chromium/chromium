@@ -182,8 +182,9 @@ void AnimationExample::CreateExampleView(View* container) {
   squares_container->layer()->SetFillsBoundsOpaquely(true);
 
   squares_container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
-  for (size_t i = 0; i < 5; ++i)
+  for (size_t i = 0; i < 5; ++i) {
     squares_container->AddChildView(std::make_unique<AnimatingSquare>(i));
+  }
 
   {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);

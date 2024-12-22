@@ -72,12 +72,14 @@ void ImageView::OnThemeChanged() {
 
 void ImageView::OnPaintImage(gfx::Canvas* canvas) {
   gfx::ImageSkia image = GetPaintImage(canvas->image_scale());
-  if (image.isNull())
+  if (image.isNull()) {
     return;
+  }
 
   gfx::Rect image_bounds(GetImageBounds());
-  if (image_bounds.IsEmpty())
+  if (image_bounds.IsEmpty()) {
     return;
+  }
 
   if (image_bounds.size() != gfx::Size(image.width(), image.height())) {
     // Resize case
@@ -93,20 +95,24 @@ void ImageView::OnPaintImage(gfx::Canvas* canvas) {
 }
 
 gfx::ImageSkia ImageView::GetPaintImage(float scale) {
-  if (image_model_.IsEmpty())
+  if (image_model_.IsEmpty()) {
     return gfx::ImageSkia();
+  }
 
   if (image_model_.IsImage() || image_model_.IsImageGenerator()) {
     const gfx::ImageSkia image = image_model_.Rasterize(GetColorProvider());
-    if (image.isNull())
+    if (image.isNull()) {
       return image;
+    }
 
     const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-    if (rep.scale() == scale || rep.unscaled())
+    if (rep.scale() == scale || rep.unscaled()) {
       return image;
+    }
 
-    if (scaled_image_.HasRepresentation(scale))
+    if (scaled_image_.HasRepresentation(scale)) {
       return scaled_image_;
+    }
 
     // Only caches one image rep for the current scale.
     scaled_image_ = gfx::ImageSkia();

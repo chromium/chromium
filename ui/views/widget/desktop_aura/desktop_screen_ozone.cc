@@ -19,8 +19,9 @@ DesktopScreenOzone::~DesktopScreenOzone() = default;
 
 gfx::NativeWindow DesktopScreenOzone::GetNativeWindowFromAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  if (!widget)
+  if (!widget) {
     return nullptr;
+  }
   return views::DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
       widget);
 }

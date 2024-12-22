@@ -27,16 +27,18 @@ AXAuraObjWrapper* AXVirtualViewWrapper::GetParent() {
     return const_cast<AXVirtualView*>(virtual_view_->virtual_parent_view())
         ->GetOrCreateWrapper(aura_obj_cache_);
   }
-  if (virtual_view_->GetOwnerView())
+  if (virtual_view_->GetOwnerView()) {
     return aura_obj_cache_->GetOrCreate(virtual_view_->GetOwnerView());
+  }
 
   return nullptr;
 }
 
 void AXVirtualViewWrapper::GetChildren(
     std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>* out_children) {
-  for (const auto& child : virtual_view_->children())
+  for (const auto& child : virtual_view_->children()) {
     out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
+  }
 }
 
 void AXVirtualViewWrapper::Serialize(ui::AXNodeData* out_node_data) {

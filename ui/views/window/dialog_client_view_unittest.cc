@@ -151,8 +151,9 @@ class DialogClientViewTest : public test::WidgetTest {
     }
     for (views::View* child : root->children()) {
       button = GetButtonByAccessibleName(child, name);
-      if (button)
+      if (button) {
         return button;
+      }
     }
     return nullptr;
   }

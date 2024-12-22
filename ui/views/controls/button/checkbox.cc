@@ -47,7 +47,7 @@ namespace {
 constexpr gfx::Size kCheckboxInkDropSize = gfx::Size(24, 24);
 constexpr float kCheckboxIconDipSize = 16;
 constexpr int kCheckboxIconCornerRadius = 2;
-}
+}  // namespace
 
 class Checkbox::FocusRingHighlightPathGenerator
     : public views::HighlightPathGenerator {
@@ -152,8 +152,9 @@ Checkbox::Checkbox(const std::u16string& label,
 Checkbox::~Checkbox() = default;
 
 void Checkbox::SetChecked(bool checked) {
-  if (GetChecked() == checked)
+  if (GetChecked() == checked) {
     return;
+  }
   checked_ = checked;
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
@@ -172,8 +173,9 @@ base::CallbackListSubscription Checkbox::AddCheckedChangedCallback(
 }
 
 void Checkbox::SetMultiLine(bool multi_line) {
-  if (GetMultiLine() == multi_line)
+  if (GetMultiLine() == multi_line) {
     return;
+  }
   label()->SetMultiLine(multi_line);
   // TODO(pkasting): Remove this and forward callback subscriptions to the
   // underlying label property when Label is converted to properties.

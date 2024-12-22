@@ -55,8 +55,9 @@ class WidgetFadeAnimatorTest : public test::WidgetTest {
   }
 
   void TearDown() override {
-    if (widget_ && !widget_->IsClosed())
+    if (widget_ && !widget_->IsClosed()) {
       widget_->CloseNow();
+    }
     test::WidgetTest::TearDown();
   }
 

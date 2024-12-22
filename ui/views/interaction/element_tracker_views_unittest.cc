@@ -95,8 +95,9 @@ class ElementEventWatcher {
 
  private:
   void OnEvent(ui::TrackedElement* element) {
-    if (event_type_ != ElementEventType::kCustom)
+    if (event_type_ != ElementEventType::kCustom) {
       EXPECT_EQ(id_, element->identifier());
+    }
     last_view_ = ElementToView(element);
     ++event_count_;
   }

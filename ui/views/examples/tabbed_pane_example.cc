@@ -63,8 +63,9 @@ void TabbedPaneExample::CreateExampleView(View* container) {
   const auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
                                            MaximumFlexSizeRule::kUnbounded)
                              .WithWeight(1);
-  for (View* view : button_panel->children())
+  for (View* view : button_panel->children()) {
     view->SetProperty(views::kFlexBehaviorKey, full_flex);
+  }
 
   CreateTabbedPane(container, TabbedPane::Orientation::kHorizontal,
                    TabbedPane::TabStripStyle::kBorder);
@@ -79,8 +80,9 @@ void TabbedPaneExample::CreateTabbedPane(View* container,
                                          TabbedPane::Orientation orientation,
                                          TabbedPane::TabStripStyle style) {
   // Tabbed panes only support highlighted style for vertical tabs.
-  if (orientation == TabbedPane::Orientation::kHorizontal)
+  if (orientation == TabbedPane::Orientation::kHorizontal) {
     style = TabbedPane::TabStripStyle::kBorder;
+  }
 
   tabbed_pane_ = container->AddChildViewAt(
       std::make_unique<TabbedPane>(orientation, style), 0);
@@ -139,8 +141,9 @@ void TabbedPaneExample::AddAt() {
 }
 
 void TabbedPaneExample::SelectAt() {
-  if (tabbed_pane_->GetTabCount() > 1)
+  if (tabbed_pane_->GetTabCount() > 1) {
     tabbed_pane_->SelectTabAt(1);
+  }
 }
 
 }  // namespace views::examples

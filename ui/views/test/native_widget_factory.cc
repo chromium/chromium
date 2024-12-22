@@ -32,10 +32,9 @@ using PlatformDesktopNativeWidget = DesktopNativeWidgetAura;
 #endif
 #endif
 
-NativeWidget* CreatePlatformNativeWidgetImpl(
-    Widget* widget,
-    uint32_t type,
-    bool* destroyed) {
+NativeWidget* CreatePlatformNativeWidgetImpl(Widget* widget,
+                                             uint32_t type,
+                                             bool* destroyed) {
   return new TestPlatformNativeWidget<PlatformNativeWidget>(
       widget, type == kStubCapture, destroyed);
 }

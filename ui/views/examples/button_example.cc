@@ -262,10 +262,10 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
   PrintStatus(base::StringPrintf("Label Button Pressed! count: %d", ++count_));
   if (event.IsControlDown()) {
     if (event.IsShiftDown()) {
-      label_button->SetText(
-          label_button->GetText().empty()
-              ? kLongText
-              : label_button->GetText().length() > 50 ? kLabelButton : u"");
+      label_button->SetText(label_button->GetText().empty() ? kLongText
+                            : label_button->GetText().length() > 50
+                                ? kLabelButton
+                                : u"");
     } else if (event.IsAltDown()) {
       label_button->SetImageModel(
           Button::STATE_NORMAL,

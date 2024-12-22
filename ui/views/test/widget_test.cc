@@ -37,16 +37,18 @@ View::Views ShuffledChildren(View* view) {
 }  // namespace
 
 View* AnyViewMatchingPredicate(View* view, const ViewPredicate& predicate) {
-  if (predicate.Run(view))
+  if (predicate.Run(view)) {
     return view;
+  }
   // Note that we randomize the order of the children, to avoid this function
   // always choosing the same View to return out of a set of possible Views.
   // If we didn't do this, client code could accidentally depend on a specific
   // search order.
   for (views::View* child : ShuffledChildren(view)) {
     auto* found = AnyViewMatchingPredicate(child, predicate);
-    if (found)
+    if (found) {
       return found;
+    }
   }
   return nullptr;
 }
@@ -192,8 +194,9 @@ TestDesktopWidgetDelegate::TestDesktopWidgetDelegate(Widget* widget)
 }
 
 TestDesktopWidgetDelegate::~TestDesktopWidgetDelegate() {
-  if (widget_)
+  if (widget_) {
     widget_->CloseNow();
+  }
   EXPECT_FALSE(widget_);
 }
 

@@ -16,11 +16,13 @@ namespace {
 
 int GetFlagsFromPointerMessage(UINT message, const POINTER_INFO& pointer_info) {
   int flags = ui::EF_NONE;
-  if (pointer_info.pointerFlags & POINTER_FLAG_FIRSTBUTTON)
+  if (pointer_info.pointerFlags & POINTER_FLAG_FIRSTBUTTON) {
     flags |= ui::EF_LEFT_MOUSE_BUTTON;
+  }
 
-  if (pointer_info.pointerFlags & POINTER_FLAG_SECONDBUTTON)
+  if (pointer_info.pointerFlags & POINTER_FLAG_SECONDBUTTON) {
     flags |= ui::EF_RIGHT_MOUSE_BUTTON;
+  }
 
   return flags;
 }
@@ -62,8 +64,9 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   // [0, 1024] as specified on MSDN.
   float pressure = static_cast<float>(pointer_pen_info.pressure) / 1024;
   int rotation_angle = static_cast<int>(pointer_pen_info.rotation) % 180;
-  if (rotation_angle < 0)
+  if (rotation_angle < 0) {
     rotation_angle += 180;
+  }
   int tilt_x = pointer_pen_info.tiltX;
   int tilt_y = pointer_pen_info.tiltY;
 
@@ -138,10 +141,11 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
     case WM_POINTERDOWN:
     case WM_NCPOINTERDOWN:
       event_type = ui::EventType::kMousePressed;
-      if (pointer_info.ButtonChangeType == POINTER_CHANGE_FIRSTBUTTON_DOWN)
+      if (pointer_info.ButtonChangeType == POINTER_CHANGE_FIRSTBUTTON_DOWN) {
         changed_flag = ui::EF_LEFT_MOUSE_BUTTON;
-      else
+      } else {
         changed_flag = ui::EF_RIGHT_MOUSE_BUTTON;
+      }
       click_count = 1;
       sent_mouse_down_[pointer_id] = true;
       break;
@@ -158,15 +162,17 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
       id_generator_->ReleaseNumber(pointer_id);
       click_count = 1;
       if (sent_mouse_down_.count(pointer_id) == 0 ||
-          !sent_mouse_down_[pointer_id])
+          !sent_mouse_down_[pointer_id]) {
         return nullptr;
+      }
       sent_mouse_down_[pointer_id] = false;
       break;
     case WM_POINTERUPDATE:
     case WM_NCPOINTERUPDATE:
       event_type = ui::EventType::kMouseDragged;
-      if (flag == ui::EF_NONE)
+      if (flag == ui::EF_NONE) {
         event_type = ui::EventType::kMouseMoved;
+      }
       break;
     case WM_POINTERENTER:
       event_type = ui::EventType::kMouseEntered;
@@ -209,8 +215,9 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
       event_type = ui::EventType::kTouchReleased;
       id_generator_->ReleaseNumber(pointer_id);
       if (sent_touch_start_.count(pointer_id) == 0 ||
-          !sent_touch_start_[pointer_id])
+          !sent_touch_start_[pointer_id]) {
         return nullptr;
+      }
       sent_touch_start_[pointer_id] = false;
       break;
     case WM_POINTERUPDATE:

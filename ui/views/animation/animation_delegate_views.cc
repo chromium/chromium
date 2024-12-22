@@ -16,24 +16,28 @@ namespace views {
 AnimationDelegateViews::AnimationDelegateViews(View* view,
                                                const base::Location& location)
     : view_(view), location_(location) {
-  if (view)
+  if (view) {
     scoped_observation_.Observe(view);
+  }
 }
 
 AnimationDelegateViews::~AnimationDelegateViews() {
   // Reset the delegate so that we don't attempt to notify our observer from
   // the destructor.
-  if (container_)
+  if (container_) {
     container_->set_observer(nullptr);
+  }
 }
 
 void AnimationDelegateViews::AnimationContainerWasSet(
     gfx::AnimationContainer* container) {
-  if (container_ == container)
+  if (container_ == container) {
     return;
+  }
 
-  if (container_)
+  if (container_) {
     container_->set_observer(nullptr);
+  }
 
   container_ = container;
   container_->set_observer(this);
@@ -73,8 +77,9 @@ void AnimationDelegateViews::UpdateAnimationRunner(
     return;
   }
 
-  if (!container_ || container_->has_custom_animation_runner())
+  if (!container_ || container_->has_custom_animation_runner()) {
     return;
+  }
 
   auto compositor_animation_runner =
       std::make_unique<CompositorAnimationRunner>(view_->GetWidget(), location);
@@ -89,8 +94,9 @@ void AnimationDelegateViews::ClearAnimationRunner() {
   compositor_animation_runner_ = nullptr;
   // TODO(crbug.com/41457352): make sure the container has a correct
   // compositor-assisted runner.
-  if (container_)
+  if (container_) {
     container_->SetAnimationRunner(nullptr);
+  }
 }
 
 }  // namespace views

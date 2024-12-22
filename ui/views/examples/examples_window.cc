@@ -145,8 +145,9 @@ class ExamplesWindowContents : public WidgetDelegateView,
   std::u16string GetWindowTitle() const override { return u"Views Examples"; }
   void WindowClosing() override {
     instance_ = nullptr;
-    if (on_close_)
+    if (on_close_) {
       std::move(on_close_).Run();
+    }
   }
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override {

@@ -168,8 +168,9 @@ void TabbedPaneTab::SetIconMargin(const gfx::Insets& margin) {
 }
 
 bool TabbedPaneTab::OnMousePressed(const ui::MouseEvent& event) {
-  if (GetEnabled() && event.IsOnlyLeftMouseButton())
+  if (GetEnabled() && event.IsOnlyLeftMouseButton()) {
     tab_strip_->SelectTab(this);
+  }
   return true;
 }
 
@@ -234,8 +235,9 @@ bool TabbedPaneTab::HandleAccessibleAction(
   // If the assistive tool sends kSetSelection, handle it like kDoDefault.
   // These generate a click event handled in TabbedPaneTab::OnMousePressed.
   ui::AXActionData action_data_copy(action_data);
-  if (action_data.action == ax::mojom::Action::kSetSelection)
+  if (action_data.action == ax::mojom::Action::kSetSelection) {
     action_data_copy.action = ax::mojom::Action::kDoDefault;
+  }
   return View::HandleAccessibleAction(action_data_copy);
 }
 
@@ -661,10 +663,11 @@ size_t TabbedPaneTabStrip::GetIndexForTab(TabbedPaneTab* tab) const {
 }
 
 size_t TabbedPaneTabStrip::GetSelectedTabIndex() const {
-  for (size_t i = 0; i < children().size(); ++i)
+  for (size_t i = 0; i < children().size(); ++i) {
     if (GetTabAtIndex(i)->selected()) {
       return i;
     }
+  }
   return kNoSelectedTab;
 }
 
@@ -843,8 +846,9 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        bool scrollable) {
   CHECK(IsValidOrientationStyleCombo(orientation, style));
 
-  if (orientation == TabbedPane::Orientation::kHorizontal)
+  if (orientation == TabbedPane::Orientation::kHorizontal) {
     SetOrientation(views::LayoutOrientation::kVertical);
+  }
 
   auto tab_strip =
       std::make_unique<TabbedPaneTabStrip>(orientation, style, this);

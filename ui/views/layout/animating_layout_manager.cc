@@ -37,14 +37,16 @@ namespace {
 // nullptr if not found.
 const ChildLayout* FindChildViewInLayout(const ProposedLayout& layout,
                                          const View* view) {
-  if (!view)
+  if (!view) {
     return nullptr;
+  }
 
   // The number of children should be small enough that this is more efficient
   // than caching a lookup set.
   for (auto& child_layout : layout.child_layouts) {
-    if (child_layout.child_view == view)
+    if (child_layout.child_view == view) {
       return &child_layout;
+    }
   }
   return nullptr;
 }
@@ -189,10 +191,11 @@ AnimatingLayoutManager::AnimationDelegate::AnimationDelegate(
   animation_->SetContainer(container_);
   View* const host_view = layout_manager->host_view();
   DCHECK(host_view);
-  if (host_view->GetWidget())
+  if (host_view->GetWidget()) {
     MakeReadyForAnimation();
-  else
+  } else {
     scoped_observation_.Observe(host_view);
+  }
   UpdateAnimationParameters();
 }
 
@@ -251,8 +254,9 @@ void AnimatingLayoutManager::AnimationDelegate::Animate() {
 }
 
 void AnimatingLayoutManager::AnimationDelegate::Reset() {
-  if (!ready_to_animate_)
+  if (!ready_to_animate_) {
     return;
+  }
   base::AutoReset<bool> setter(&resetting_animation_, true);
   animation_->Reset();
   if (fade_in_opacity_animation_.get()) {
@@ -291,8 +295,9 @@ void AnimatingLayoutManager::AnimationDelegate::AnimationCanceled(
 
 void AnimatingLayoutManager::AnimationDelegate::AnimationEnded(
     const gfx::Animation* animation) {
-  if (resetting_animation_)
+  if (resetting_animation_) {
     return;
+  }
   DCHECK(animation_.get() == animation);
   target_layout_manager_->AnimateTo(1.0, 1.0, 0.0);
 }
@@ -315,16 +320,18 @@ AnimatingLayoutManager& AnimatingLayoutManager::SetAnimationDuration(
     base::TimeDelta animation_duration) {
   DCHECK_GE(animation_duration, base::TimeDelta());
   animation_duration_ = animation_duration;
-  if (animation_delegate_)
+  if (animation_delegate_) {
     animation_delegate_->UpdateAnimationParameters();
+  }
   return *this;
 }
 
 AnimatingLayoutManager& AnimatingLayoutManager::SetTweenType(
     gfx::Tween::Type tween_type) {
   tween_type_ = tween_type;
-  if (animation_delegate_)
+  if (animation_delegate_) {
     animation_delegate_->UpdateAnimationParameters();
+  }
   return *this;
 }
 
@@ -363,8 +370,9 @@ AnimatingLayoutManager& AnimatingLayoutManager::SetDefaultFadeMode(
 }
 
 void AnimatingLayoutManager::ResetLayout() {
-  if (!target_layout_manager())
+  if (!target_layout_manager()) {
     return;
+  }
   ResetLayoutToTargetSize();
   InvalidateHost(false);
 }
@@ -395,8 +403,10 @@ void AnimatingLayoutManager::FadeOut(View* child_view) {
   // view immediately.
   const ChildLayout* const current_layout =
       FindChildViewInLayout(current_layout_, child_view);
-  if ((!current_layout || !current_layout->visible) && child_view->GetVisible())
+  if ((!current_layout || !current_layout->visible) &&
+      child_view->GetVisible()) {
     SetViewVisibility(child_view, false);
+  }
 
   // Indicate that the view should become hidden in the layout without
   // immediately changing its visibility. Instead, this triggers an animation
@@ -437,13 +447,15 @@ void AnimatingLayoutManager::FadeIn(View* child_view) {
 }
 
 void AnimatingLayoutManager::AddObserver(Observer* observer) {
-  if (!observers_.HasObserver(observer))
+  if (!observers_.HasObserver(observer)) {
     observers_.AddObserver(observer);
+  }
 }
 
 void AnimatingLayoutManager::RemoveObserver(Observer* observer) {
-  if (observers_.HasObserver(observer))
+  if (observers_.HasObserver(observer)) {
     observers_.RemoveObserver(observer);
+  }
 }
 
 bool AnimatingLayoutManager::HasObserver(Observer* observer) const {
@@ -451,13 +463,15 @@ bool AnimatingLayoutManager::HasObserver(Observer* observer) const {
 }
 
 gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
-  if (!target_layout_manager())
+  if (!target_layout_manager()) {
     return gfx::Size();
+  }
 
   // If animation is disabled, preferred size does not change with current
   // animation state.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return target_layout_manager()->GetPreferredSize(host);
+  }
 
   switch (bounds_animation_mode_) {
     case BoundsAnimationMode::kUseHostBounds:
@@ -507,8 +521,9 @@ gfx::Size AnimatingLayoutManager::GetPreferredSize(
 }
 
 gfx::Size AnimatingLayoutManager::GetMinimumSize(const View* host) const {
-  if (!target_layout_manager())
+  if (!target_layout_manager()) {
     return gfx::Size();
+  }
   // TODO(dfried): consider cases where the minimum size might not be just the
   // minimum size of the embedded layout.
   gfx::Size minimum_size = target_layout_manager()->GetMinimumSize(host);
@@ -531,8 +546,9 @@ gfx::Size AnimatingLayoutManager::GetMinimumSize(const View* host) const {
 
 int AnimatingLayoutManager::GetPreferredHeightForWidth(const View* host,
                                                        int width) const {
-  if (!target_layout_manager())
+  if (!target_layout_manager()) {
     return 0;
+  }
 
   // TODO(dfried): revisit this computation.
   if (bounds_animation_mode_ == BoundsAnimationMode::kAnimateBothAxes ||
@@ -547,8 +563,9 @@ std::vector<raw_ptr<View, VectorExperimental>>
 AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
   DCHECK_EQ(host_view(), host);
 
-  if (!is_animating())
+  if (!is_animating()) {
     return LayoutManagerBase::GetChildViewsInPaintOrder(host);
+  }
 
   std::vector<raw_ptr<View, VectorExperimental>> result;
   std::set<View*> fading;
@@ -561,8 +578,9 @@ AnimatingLayoutManager::GetChildViewsInPaintOrder(const View* host) const {
 
   // Add the result of the views.
   for (View* child : host->children()) {
-    if (!base::Contains(fading, child))
+    if (!base::Contains(fading, child)) {
       result.push_back(child);
+    }
   }
 
   return result;
@@ -597,8 +615,9 @@ bool AnimatingLayoutManager::OnViewRemoved(View* host, View* view) {
 
 void AnimatingLayoutManager::PostOrQueueAction(base::OnceClosure action) {
   queued_actions_.push_back(std::move(action));
-  if (!is_animating() && !hold_queued_actions_for_layout_)
+  if (!is_animating() && !hold_queued_actions_for_layout_) {
     PostQueuedActions();
+  }
 }
 
 FlexRule AnimatingLayoutManager::GetDefaultFlexRule() const {
@@ -708,8 +727,9 @@ void AnimatingLayoutManager::LayoutImpl() {
 
   // Send animating stopped events on layout so the current layout during the
   // event represents the final state instead of an intermediate state.
-  if (is_animating_ && current_offset_ == 1.0)
+  if (is_animating_ && current_offset_ == 1.0) {
     EndAnimation();
+  }
 
   if (hold_queued_actions_for_layout_ && !is_animating_) {
     hold_queued_actions_for_layout_ = false;
@@ -728,8 +748,9 @@ void AnimatingLayoutManager::EndAnimation() {
   }
   fade_infos_.clear();
   hold_queued_actions_for_layout_ = true;
-  if (std::exchange(is_animating_, false))
+  if (std::exchange(is_animating_, false)) {
     NotifyIsAnimatingChanged();
+  }
 }
 
 void AnimatingLayoutManager::ResetLayoutToTargetSize() {
@@ -737,8 +758,9 @@ void AnimatingLayoutManager::ResetLayoutToTargetSize() {
 }
 
 void AnimatingLayoutManager::ResetLayoutToSize(const gfx::Size& target_size) {
-  if (animation_delegate_)
+  if (animation_delegate_) {
     animation_delegate_->Reset();
+  }
 
   ResolveFades();
 
@@ -753,8 +775,9 @@ void AnimatingLayoutManager::ResetLayoutToSize(const gfx::Size& target_size) {
 bool AnimatingLayoutManager::RecalculateTarget() {
   constexpr double kResetAnimationThreshold = 0.8;
 
-  if (!target_layout_manager())
+  if (!target_layout_manager()) {
     return false;
+  }
 
   if (!cached_layout_size() || !animation_delegate_ ||
       !animation_delegate_->ready_to_animate()) {
@@ -770,8 +793,9 @@ bool AnimatingLayoutManager::RecalculateTarget() {
   const ProposedLayout proposed_layout =
       target_layout_manager()->GetProposedLayout(target_size);
 
-  if (target_layout_ == proposed_layout)
+  if (target_layout_ == proposed_layout) {
     return false;
+  }
 
   target_layout_ = proposed_layout;
   if (current_offset_ > kResetAnimationThreshold) {
@@ -817,8 +841,9 @@ void AnimatingLayoutManager::AnimateTo(double value,
   DCHECK_LE(value, 1.0);
   DCHECK_GE(value, starting_offset_);
   DCHECK_GE(value, current_offset_);
-  if (current_offset_ == value)
+  if (current_offset_ == value) {
     return;
+  }
   current_offset_ = value;
   const double percent =
       (current_offset_ - starting_offset_) / (1.0 - starting_offset_);
@@ -834,21 +859,24 @@ void AnimatingLayoutManager::NotifyIsAnimatingChanged() {
 void AnimatingLayoutManager::RunQueuedActions() {
   run_queued_actions_is_pending_ = false;
   std::vector<base::OnceClosure> actions = std::move(queued_actions_to_run_);
-  for (auto& action : actions)
+  for (auto& action : actions) {
     std::move(action).Run();
+  }
 }
 
 void AnimatingLayoutManager::PostQueuedActions() {
   // Move queued actions over to actions that should run during the next
   // PostTask(). This prevents a race between old PostTask() calls and new
   // delayed actions. See the header for more detail.
-  for (auto& action : queued_actions_)
+  for (auto& action : queued_actions_) {
     queued_actions_to_run_.push_back(std::move(action));
+  }
   queued_actions_.clear();
 
   // Early return to prevent multiple RunQueuedAction() tasks.
-  if (run_queued_actions_is_pending_)
+  if (run_queued_actions_is_pending_) {
     return;
+  }
 
   // Post to self (instead of posting the queued actions directly) which lets
   // us:
@@ -940,10 +968,11 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent,
 
     ChildLayout* const to_overwrite =
         FindChildViewInLayout(&current_layout_, fade_info.child_view);
-    if (to_overwrite)
+    if (to_overwrite) {
       *to_overwrite = child_layout;
-    else
+    } else {
       current_layout_.child_layouts.push_back(child_layout);
+    }
   }
 }
 
@@ -951,8 +980,9 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   // Save any views that were previously fading so we don't try to key off of
   // them when calculating leading/trailing edge.
   std::set<const View*> previously_fading;
-  for (const auto& fade_info : fade_infos_)
+  for (const auto& fade_info : fade_infos_) {
     previously_fading.insert(fade_info.child_view);
+  }
 
   fade_infos_.clear();
 
@@ -972,8 +1002,9 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   // Collect some bookkeping info to prevent linear searches later.
 
   for (View* child : host_view()->children()) {
-    if (IsChildIncludedInLayout(child, /* include hidden */ true))
+    if (IsChildIncludedInLayout(child, /* include hidden */ true)) {
       child_to_info.emplace(child, ChildInfo());
+    }
   }
 
   for (size_t i = 0; i < starting_layout_.child_layouts.size(); ++i) {
@@ -1174,14 +1205,16 @@ ChildLayout AnimatingLayoutManager::CalculateSlideFade(
     double scale_percent,
     bool slide_from_leading) const {
   // Fall back to kScaleFromMinimum if there is no edge to slide out from.
-  if (!fade_info.prev_view && !fade_info.next_view)
+  if (!fade_info.prev_view && !fade_info.next_view) {
     return CalculateScaleFade(fade_info, scale_percent, false);
+  }
 
   // Slide from the other direction if against the edge of the host view.
-  if (slide_from_leading && !fade_info.prev_view)
+  if (slide_from_leading && !fade_info.prev_view) {
     slide_from_leading = false;
-  else if (!slide_from_leading && !fade_info.next_view)
+  } else if (!slide_from_leading && !fade_info.next_view) {
     slide_from_leading = true;
+  }
 
   NormalizedRect new_bounds = fade_info.reference_bounds;
 
@@ -1298,8 +1331,9 @@ ChildLayout AnimatingLayoutManager::CalculateFadeAndSlideFade(
 
 // Returns the space in which to calculate the target layout.
 gfx::Size AnimatingLayoutManager::GetAvailableTargetLayoutSize() {
-  if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds)
+  if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds) {
     return host_view()->size();
+  }
 
   const SizeBounds bounds = GetAvailableHostSize();
   last_available_host_size_ = bounds;

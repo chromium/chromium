@@ -274,8 +274,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   template <typename... Args>
   Builder& AddChildrenImpl(Args*... args) & {
     std::vector<internal::ViewBuilderCore*> children = {args...};
-    for (auto* child : children)
+    for (auto* child : children) {
       children_.emplace_back(std::make_pair(child->Release(), std::nullopt));
+    }
     return *static_cast<Builder*>(this);
   }
 

@@ -1090,8 +1090,9 @@ class TooltipControllerTest3 : public ViewsTestBase {
         std::move(tooltip), /* activation_client */ nullptr);
     auto* tooltip_controller =
         static_cast<TooltipController*>(wm::GetTooltipClient(GetRootWindow()));
-    if (tooltip_controller)
+    if (tooltip_controller) {
       GetRootWindow()->RemovePreTargetHandler(tooltip_controller);
+    }
     GetRootWindow()->AddPreTargetHandler(controller_.get());
     SetTooltipClient(GetRootWindow(), controller_.get());
     helper_ = std::make_unique<TooltipControllerTestHelper>(GetRootWindow());

@@ -194,8 +194,9 @@ template <class T>
 T* ElementTrackerViews::GetUniqueViewAs(ui::ElementIdentifier id,
                                         ui::ElementContext context) {
   views::View* const view = GetUniqueView(id, context);
-  if (!view)
+  if (!view) {
     return nullptr;
+  }
   T* const result = views::AsViewClass<T>(view);
   DCHECK(result);
   return result;
@@ -205,8 +206,9 @@ template <class T>
 T* ElementTrackerViews::GetFirstMatchingViewAs(ui::ElementIdentifier id,
                                                ui::ElementContext context) {
   views::View* const view = GetFirstMatchingView(id, context);
-  if (!view)
+  if (!view) {
     return nullptr;
+  }
   T* const result = views::AsViewClass<T>(view);
   DCHECK(result);
   return result;

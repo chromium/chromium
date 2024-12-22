@@ -36,12 +36,14 @@ AnimationBuilder::Observer::~Observer() {
   DCHECK(attached_to_sequence_)
       << "You must register callbacks and get abort handle before "
       << "creating a sequence block.";
-  if (abort_handle_)
+  if (abort_handle_) {
     abort_handle_->OnObserverDeleted();
+  }
   base::RepeatingClosure& on_observer_deleted =
       AnimationBuilder::GetObserverDeletedCallback();
-  if (on_observer_deleted)
+  if (on_observer_deleted) {
     on_observer_deleted.Run();
+  }
 }
 
 void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
@@ -80,8 +82,9 @@ void AnimationBuilder::Observer::OnLayerAnimationStarted(
                            AnimationAbortHandle::AnimationState::kNotStarted) {
     abort_handle_->OnAnimationStarted();
   }
-  if (on_started_)
+  if (on_started_) {
     std::move(on_started_).Run();
+  }
 }
 
 void AnimationBuilder::Observer::SetAbortHandle(
@@ -102,15 +105,17 @@ void AnimationBuilder::Observer::OnLayerAnimationEnded(
       std::move(on_ended_).Run();
     }
     if (abort_handle_ && abort_handle_->animation_state() ==
-                             AnimationAbortHandle::AnimationState::kRunning)
+                             AnimationAbortHandle::AnimationState::kRunning) {
       abort_handle_->OnAnimationEnded();
+    }
   }
 }
 
 void AnimationBuilder::Observer::OnLayerAnimationWillRepeat(
     ui::LayerAnimationSequence* sequence) {
-  if (!on_will_repeat_)
+  if (!on_will_repeat_) {
     return;
+  }
   // First time through, initialize the repeat_map_ with the sequences.
   if (repeat_map_.empty()) {
     for (ui::LayerAnimationSequence* seq : attached_sequences()) {
@@ -139,14 +144,16 @@ void AnimationBuilder::Observer::OnLayerAnimationAborted(
     std::move(on_aborted_).Run();
   }
   if (abort_handle_ && abort_handle_->animation_state() ==
-                           AnimationAbortHandle::AnimationState::kRunning)
+                           AnimationAbortHandle::AnimationState::kRunning) {
     abort_handle_->OnAnimationEnded();
+  }
 }
 
 void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
-  if (on_scheduled_)
+  if (on_scheduled_) {
     std::move(on_scheduled_).Run();
+  }
 }
 
 void AnimationBuilder::Observer::OnAttachedToSequence(
@@ -158,8 +165,9 @@ void AnimationBuilder::Observer::OnAttachedToSequence(
 
 void AnimationBuilder::Observer::OnDetachedFromSequence(
     ui::LayerAnimationSequence* sequence) {
-  if (attached_sequences().empty())
+  if (attached_sequences().empty()) {
     delete this;
+  }
 }
 
 bool AnimationBuilder::Observer::RequiresNotificationWhenAnimatorDestroyed()
@@ -202,20 +210,23 @@ AnimationBuilder::~AnimationBuilder() {
   // The observer needs to outlive the AnimationBuilder and will manage its own
   // lifetime. GetAttachedToSequence should not return false here. This is
   // DCHECKed in the observer’s destructor.
-  if (animation_observer_ && animation_observer_->GetAttachedToSequence())
+  if (animation_observer_ && animation_observer_->GetAttachedToSequence()) {
     animation_observer_.release();
+  }
 
   for (auto it = layer_animation_sequences_.begin();
        it != layer_animation_sequences_.end();) {
     auto* const target = it->first;
     auto end_it = layer_animation_sequences_.upper_bound(target);
 
-    if (abort_handle_)
+    if (abort_handle_) {
       abort_handle_->AddLayer(target);
+    }
 
     ui::ScopedLayerAnimationSettings settings(target->GetAnimator());
-    if (preemption_strategy_)
+    if (preemption_strategy_) {
       settings.SetPreemptionStrategy(preemption_strategy_.value());
+    }
     std::vector<ui::LayerAnimationSequence*> sequences;
     std::transform(it, end_it, std::back_inserter(sequences),
                    [](auto& it) { return it.second.release(); });
@@ -296,8 +307,9 @@ void AnimationBuilder::TerminateSequence(base::PassKey<AnimationSequenceBlock>,
   for (auto& pair : values_) {
     auto sequence = std::make_unique<ui::LayerAnimationSequence>();
     sequence->set_is_repeating(repeating);
-    if (animation_observer_)
+    if (animation_observer_) {
       sequence->AddObserver(animation_observer_.get());
+    }
 
     base::TimeDelta start;
     ui::LayerAnimationElement::AnimatableProperties properties =
@@ -338,8 +350,9 @@ std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
-  if (!next_animation_observer_)
+  if (!next_animation_observer_) {
     next_animation_observer_ = std::make_unique<Observer>();
+  }
   return next_animation_observer_.get();
 }
 
@@ -355,14 +368,16 @@ AnimationSequenceBlock& AnimationBuilder::NewSequence(bool repeating) {
   // Ensure to terminate the current sequence block before touching the
   // animation sequence observer so that the sequence observer is attached to
   // the layer animation sequence.
-  if (current_sequence_)
+  if (current_sequence_) {
     current_sequence_.reset();
+  }
 
   // The observer needs to outlive the AnimationBuilder and will manage its own
   // lifetime. GetAttachedToSequence should not return false here. This is
   // DCHECKed in the observer’s destructor.
-  if (animation_observer_ && animation_observer_->GetAttachedToSequence())
+  if (animation_observer_ && animation_observer_->GetAttachedToSequence()) {
     animation_observer_.release();
+  }
   if (next_animation_observer_) {
     animation_observer_ = std::move(next_animation_observer_);
     next_animation_observer_.reset();

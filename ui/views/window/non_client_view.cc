@@ -44,8 +44,9 @@ int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
   bool point_in_left = point.x() < resize_border.left();
   bool point_in_right = point.x() >= width() - resize_border.right();
 
-  if (!point_in_left && !point_in_right && !point_in_top && !point_in_bottom)
+  if (!point_in_left && !point_in_right && !point_in_top && !point_in_bottom) {
     return HTNOWHERE;
+  }
 
   // If the window can't be resized, there are no resize boundaries, just
   // window borders.
@@ -122,14 +123,16 @@ void NonClientFrameView::OnThemeChanged() {
 }
 
 void NonClientFrameView::Layout(PassKey) {
-  if (GetLayoutManager())
+  if (GetLayoutManager()) {
     GetLayoutManager()->Layout(this);
+  }
 
   views::ClientView* client_view = GetWidget()->client_view();
   client_view->SetBoundsRect(GetBoundsForClientView());
   SkPath client_clip;
-  if (GetClientMask(client_view->size(), &client_clip))
+  if (GetClientMask(client_view->size(), &client_clip)) {
     client_view->SetClipPath(client_clip);
+  }
 }
 
 View::Views NonClientFrameView::GetChildrenInZOrder() {
@@ -191,20 +194,24 @@ void NonClientView::SetFrameView(
     frame_view_->InsertClientView(client_view_);
   }
 
-  if (old_frame_view)
+  if (old_frame_view) {
     RemoveChildView(old_frame_view.get());
+  }
 }
 
 void NonClientView::SetOverlayView(View* view) {
-  if (overlay_view_)
+  if (overlay_view_) {
     RemoveChildView(overlay_view_);
+  }
 
-  if (!view)
+  if (!view) {
     return;
+  }
 
   overlay_view_ = view;
-  if (parent())
+  if (parent()) {
     AddChildView(overlay_view_.get());
+  }
 }
 
 CloseRequestResult NonClientView::OnWindowCloseRequested() {
@@ -290,8 +297,9 @@ void NonClientView::Layout(PassKey) {
   // where that is still the case it should simply be fixed.
   frame_view_->SetBoundsRect(GetLocalBounds());
 
-  if (overlay_view_)
+  if (overlay_view_) {
     overlay_view_->SetBoundsRect(GetLocalBounds());
+  }
 }
 
 View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -304,8 +312,9 @@ View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
     View::ConvertPointToTarget(this, frame_view_.get(), &point_in_child_coords);
     View* handler =
         frame_view_->GetTooltipHandlerForPoint(point_in_child_coords);
-    if (handler)
+    if (handler) {
       return handler;
+    }
   }
 
   return View::GetTooltipHandlerForPoint(point);
@@ -321,16 +330,18 @@ void NonClientView::ViewHierarchyChanged(
   if (details.is_add && GetWidget() && details.child == this) {
     AddChildViewAt(frame_view_.get(), 0);
     frame_view_->InsertClientView(client_view_);
-    if (overlay_view_)
+    if (overlay_view_) {
       AddChildView(overlay_view_.get());
+    }
   }
 }
 
 View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
   CHECK_EQ(root, this);
 
-  if (!UsePointBasedTargeting(rect))
+  if (!UsePointBasedTargeting(rect)) {
     return ViewTargeterDelegate::TargetForRect(root, rect);
+  }
 
   // Because of the z-ordering of our child views (the client view is positioned
   // over the non-client frame view, if the client view ever overlaps the frame
@@ -347,8 +358,9 @@ View* NonClientView::TargetForRect(View* root, const gfx::Rect& rect) {
     View::ConvertRectToTarget(this, frame_view_.get(), &rect_in_child_coords_f);
     gfx::Rect rect_in_child_coords =
         gfx::ToEnclosingRect(rect_in_child_coords_f);
-    if (frame_view_->HitTestRect(rect_in_child_coords))
+    if (frame_view_->HitTestRect(rect_in_child_coords)) {
       return frame_view_->GetEventHandlerForRect(rect_in_child_coords);
+    }
   }
 
   return ViewTargeterDelegate::TargetForRect(root, rect);

@@ -223,8 +223,9 @@ class WidgetChangeObserver : public TestWidgetObserver {
   WidgetChangeObserver& operator=(const WidgetChangeObserver&) = delete;
 
   void WaitForVisibleCounts(int gained, int lost) {
-    if (gained_visible_count_ >= gained && lost_visible_count_ >= lost)
+    if (gained_visible_count_ >= gained && lost_visible_count_ >= lost) {
       return;
+    }
 
     target_gained_visible_count_ = gained;
     target_lost_visible_count_ = lost;
@@ -242,12 +243,12 @@ class WidgetChangeObserver : public TestWidgetObserver {
 
  private:
   // WidgetObserver:
-  void OnWidgetVisibilityChanged(Widget* widget,
-                                 bool visible) override {
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
     ++(visible ? gained_visible_count_ : lost_visible_count_);
     if (run_loop_ && gained_visible_count_ >= target_gained_visible_count_ &&
-        lost_visible_count_ >= target_lost_visible_count_)
+        lost_visible_count_ >= target_lost_visible_count_) {
       run_loop_->Quit();
+    }
   }
 
   int gained_visible_count_ = 0;
@@ -418,9 +419,9 @@ TEST_F(NativeWidgetMacTest, NotImplemented) {
       NativeWidgetMacNSWindowHost::GetFromNativeWindow(native_parent);
 
   EXPECT_FALSE(window_host->native_widget_mac()->WillExecuteCommand(
-                   5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::CURRENT_TAB, true));
   EXPECT_FALSE(window_host->native_widget_mac()->ExecuteCommand(
-                   5001, WindowOpenDisposition::CURRENT_TAB, true));
+      5001, WindowOpenDisposition::CURRENT_TAB, true));
 
   [native_parent close];
 }
@@ -456,13 +457,15 @@ class PaintCountView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     EXPECT_TRUE(GetWidget()->IsVisible());
     ++paint_count_;
-    if (run_loop_ && paint_count_ == target_paint_count_)
+    if (run_loop_ && paint_count_ == target_paint_count_) {
       run_loop_->Quit();
+    }
   }
 
   void WaitForPaintCount(int target) {
-    if (paint_count_ == target)
+    if (paint_count_ == target) {
       return;
+    }
 
     target_paint_count_ = target;
     base::RunLoop run_loop;
@@ -1243,8 +1246,9 @@ class ScopedSwizzleWaiter {
   }
 
   void WaitForMethod() {
-    if (method_called_)
+    if (method_called_) {
       return;
+    }
 
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1260,8 +1264,9 @@ class ScopedSwizzleWaiter {
   void CallMethodInternal(id receiver, SEL selector) {
     DCHECK(!method_called_);
     method_called_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
     swizzler_.InvokeOriginal<void>(receiver, selector);
   }
 
@@ -1858,38 +1863,38 @@ TEST_F(NativeWidgetMacTest, NativeProperties) {
   // Create a regular widget (TYPE_WINDOW).
   Widget* regular_widget = CreateTopLevelNativeWidget();
   EXPECT_TRUE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_TRUE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Disabling activation should prevent key and main status.
   regular_widget->widget_delegate()->SetCanActivate(false);
   EXPECT_FALSE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_FALSE([regular_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Create a dialog widget (also TYPE_WINDOW), but with a DialogDelegate.
   Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
       MakeModalDialog(ui::mojom::ModalType::kChild), nullptr,
       regular_widget->GetNativeView());
   EXPECT_TRUE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   // Dialogs shouldn't take main status away from their parent.
   EXPECT_FALSE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
 
   // Create a bubble widget (with a parent): also shouldn't get main.
   BubbleDialogDelegateView* bubble_view = new SimpleBubbleView();
   bubble_view->set_parent_window(regular_widget->GetNativeView());
   Widget* bubble_widget = BubbleDialogDelegateView::CreateBubble(bubble_view);
   EXPECT_TRUE([bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                   canBecomeKeyWindow]);
+      canBecomeKeyWindow]);
   EXPECT_FALSE([bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                    canBecomeMainWindow]);
+      canBecomeMainWindow]);
   EXPECT_EQ(NSWindowCollectionBehaviorTransient,
             [bubble_widget->GetNativeWindow().GetNativeNSWindow()
-                    collectionBehavior] &
+                collectionBehavior] &
                 NSWindowCollectionBehaviorTransient);
 
   regular_widget->CloseNow();
@@ -2422,7 +2427,7 @@ TEST_F(NativeWidgetMacTest, TouchBar) {
   views::DialogDelegate::CreateDialogWidget(delegate, nullptr, nullptr);
   NSView* content =
       [delegate->GetWidget()->GetNativeWindow().GetNativeNSWindow()
-              contentView];
+          contentView];
 
   // Constants from bridged_content_view_touch_bar.mm.
   NSString* const kTouchBarOKId = @"com.google.chrome-OK";

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/paint_info.h"
+
 #include "base/feature_list.h"
 #include "ui/views/views_features.h"
 
@@ -27,15 +28,17 @@ gfx::Rect GetSnappedRecordingBoundsInternal(
 
   bool empty = paint_recording_bounds.IsEmpty();
 
-  if (right == parent_size.width() && !empty)
+  if (right == parent_size.width() && !empty) {
     new_right = paint_recording_bounds.width();
-  else
+  } else {
     new_right = std::round(right * device_scale_factor);
+  }
 
-  if (bottom == parent_size.height() && !empty)
+  if (bottom == parent_size.height() && !empty) {
     new_bottom = paint_recording_bounds.height();
-  else
+  } else {
     new_bottom = std::round(bottom * device_scale_factor);
+  }
 
   return gfx::Rect(new_x + paint_recording_bounds.x(),
                    new_y + paint_recording_bounds.y(), new_right - new_x,
@@ -49,8 +52,9 @@ gfx::Rect GetSnappedRecordingBoundsInternal(
 // edges. Such cases should be handled case by case basis.
 gfx::Rect GetViewsLayerRecordingBounds(const ui::PaintContext& context,
                                        const gfx::Rect& child_bounds) {
-  if (!context.is_pixel_canvas())
+  if (!context.is_pixel_canvas()) {
     return gfx::Rect(child_bounds.size());
+  }
   return gfx::Rect(GetSnappedRecordingBoundsInternal(
                        gfx::Rect(), context.device_scale_factor(),
                        gfx::Size() /* not used */, child_bounds)
@@ -145,8 +149,9 @@ PaintInfo::PaintInfo(const PaintInfo& parent_paint_info,
 gfx::Rect PaintInfo::GetSnappedRecordingBounds(
     const gfx::Size& parent_size,
     const gfx::Rect& child_bounds) const {
-  if (!IsPixelCanvas())
+  if (!IsPixelCanvas()) {
     return (child_bounds + paint_recording_bounds_.OffsetFromOrigin());
+  }
 
   return GetSnappedRecordingBoundsInternal(paint_recording_bounds_,
                                            context().device_scale_factor(),

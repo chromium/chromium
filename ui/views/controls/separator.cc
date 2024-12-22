@@ -26,8 +26,9 @@ ui::ColorId Separator::GetColorId() const {
 }
 
 void Separator::SetColorId(ui::ColorId color_id) {
-  if (color_id_ == color_id)
+  if (color_id_ == color_id) {
     return;
+  }
 
   color_id_ = color_id;
   OnPropertyChanged(&color_id_, kPropertyEffectsPaint);
@@ -38,8 +39,9 @@ int Separator::GetPreferredLength() const {
 }
 
 void Separator::SetPreferredLength(int length) {
-  if (preferred_length_ == length)
+  if (preferred_length_ == length) {
     return;
+  }
 
   preferred_length_ = length;
   OnPropertyChanged(&preferred_length_, kPropertyEffectsPreferredSizeChanged);
@@ -67,8 +69,9 @@ void Separator::SetBorderRadius(int radius) {
 gfx::Size Separator::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
   gfx::Size size(kThickness, preferred_length_);
-  if (orientation_ == Orientation::kHorizontal)
+  if (orientation_ == Orientation::kHorizontal) {
     size.Transpose();
+  }
 
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());

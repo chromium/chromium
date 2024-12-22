@@ -43,8 +43,9 @@ class TestScrollBarController : public ScrollBarController {
     last_is_page = is_page;
     last_is_positive = is_positive;
 
-    if (is_page)
+    if (is_page) {
       return 20;
+    }
     return 10;
   }
 
@@ -114,7 +115,6 @@ class ScrollBarViewsTest : public ViewsTestBase {
   }
 
   UniqueWidgetPtr widget_;
-
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.

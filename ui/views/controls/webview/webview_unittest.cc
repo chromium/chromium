@@ -54,8 +54,9 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
       const WebViewTestWebContentsObserver&) = delete;
 
   ~WebViewTestWebContentsObserver() override {
-    if (web_contents_)
+    if (web_contents_) {
       content::WebContentsObserver::Observe(nullptr);
+    }
   }
 
   void WebContentsDestroyed() override {

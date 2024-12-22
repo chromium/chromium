@@ -99,8 +99,9 @@ class AXVirtualViewTest : public ViewsTestBase {
   void TearDown() override {
     virtual_label_ = nullptr;
     button_ = nullptr;
-    if (!widget_->IsClosed())
+    if (!widget_->IsClosed()) {
       widget_->Close();
+    }
     widget_.reset();
     ViewsTestBase::TearDown();
   }

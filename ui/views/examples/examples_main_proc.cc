@@ -94,8 +94,9 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  if (CheckCommandLineUsage())
+  if (CheckCommandLineUsage()) {
     return ExamplesExitCode::kSucceeded;
+  }
 
   ui::AXPlatformForTest ax_platform;
 
@@ -108,8 +109,9 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 
-  if (under_test)
+  if (under_test) {
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+  }
 
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;

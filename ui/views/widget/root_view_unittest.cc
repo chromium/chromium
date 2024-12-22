@@ -51,8 +51,9 @@ class RootViewTestState {
                              RootViewTestStateInit init = {}) {
     Widget::InitParams init_params = delegate->CreateParams(
         Widget::InitParams::CLIENT_OWNS_WIDGET, init.type);
-    if (init.bounds != gfx::Rect())
+    if (init.bounds != gfx::Rect()) {
       init_params.bounds = init.bounds;
+    }
     widget_.Init(std::move(init_params));
     widget_.Show();
     widget_.SetContentsView(std::make_unique<View>());
@@ -498,8 +499,9 @@ class DeleteViewOnEvent : public View {
   ~DeleteViewOnEvent() override { *was_destroyed_ = true; }
 
   void OnEvent(ui::Event* event) override {
-    if (event->type() == delete_event_type_)
+    if (event->type() == delete_event_type_) {
       delete this;
+    }
   }
 
  private:
@@ -526,8 +528,9 @@ class RemoveViewOnEvent : public View {
   RemoveViewOnEvent& operator=(const RemoveViewOnEvent&) = delete;
 
   void OnEvent(ui::Event* event) override {
-    if (event->type() == remove_event_type_)
+    if (event->type() == remove_event_type_) {
       parent()->RemoveChildView(this);
+    }
   }
 
  private:

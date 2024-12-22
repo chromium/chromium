@@ -45,8 +45,9 @@ void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->role = ax::mojom::Role::kDesktop;
 
   display::Screen* screen = display::Screen::GetScreen();
-  if (!screen)
+  if (!screen) {
     return;
+  }
 
   const display::Display& display = screen->GetPrimaryDisplay();
 
@@ -57,10 +58,11 @@ void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   // portrait. We use this rather than |rotation| because some devices default
   // to landscape, some in portrait. Encode landscape as horizontal state,
   // portrait as vertical state.
-  if (display.bounds().width() > display.bounds().height())
+  if (display.bounds().width() > display.bounds().height()) {
     out_node_data->AddState(ax::mojom::State::kHorizontal);
-  else
+  } else {
     out_node_data->AddState(ax::mojom::State::kVertical);
+  }
 }
 
 ui::AXNodeID AXRootObjWrapper::GetUniqueId() const {

@@ -5,9 +5,9 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_MAC_H_
 #define UI_VIEWS_ACCESSIBILITY_VIEW_AX_PLATFORM_NODE_DELEGATE_MAC_H_
 
-#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
-
 #include <string>
+
+#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 namespace views {
 

@@ -90,8 +90,9 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 
   cc::PaintFlags flags;
   flags.setBlendMode(blend_mode_);
-  if (antialias_)
+  if (antialias_) {
     flags.setAntiAlias(true);
+  }
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(bg_color_);
   SkPath fill_path;
@@ -263,8 +264,9 @@ void Painter::PaintPainterAt(gfx::Canvas* canvas,
 void Painter::PaintFocusPainter(View* view,
                                 gfx::Canvas* canvas,
                                 Painter* focus_painter) {
-  if (focus_painter && view->HasFocus())
+  if (focus_painter && view->HasFocus()) {
     PaintPainterAt(canvas, focus_painter, view->GetLocalBounds());
+  }
 }
 
 // static

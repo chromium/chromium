@@ -107,8 +107,9 @@ const std::u16string& Label::GetText() const {
 }
 
 void Label::SetText(const std::u16string& new_text) {
-  if (new_text == GetText())
+  if (new_text == GetText()) {
     return;
+  }
 
   std::u16string current_text = GetText();
   full_text_->SetText(new_text);
@@ -158,15 +159,17 @@ int Label::GetTextContext() const {
 }
 
 void Label::SetTextContext(int text_context) {
-  if (text_context == text_context_)
+  if (text_context == text_context_) {
     return;
+  }
   text_context_ = text_context;
   full_text_->SetFontList(
       TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateColorsFromTheme();
+  }
 
   GetViewAccessibility().SetRole(text_context_ == style::CONTEXT_DIALOG_TITLE
                                      ? ax::mojom::Role::kTitleBar
@@ -180,8 +183,9 @@ int Label::GetTextStyle() const {
 }
 
 void Label::SetTextStyle(int style) {
-  if (style == text_style_)
+  if (style == text_style_) {
     return;
+  }
 
   text_style_ = style;
   ApplyBaselineTextStyle();
@@ -192,8 +196,9 @@ void Label::ApplyBaselineTextStyle() {
       TypographyProvider::Get().GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateColorsFromTheme();
+  }
   OnPropertyChanged(&text_style_, kPropertyEffectsPreferredSizeChanged);
 }
 
@@ -224,8 +229,9 @@ bool Label::GetAutoColorReadabilityEnabled() const {
 
 void Label::SetAutoColorReadabilityEnabled(
     bool auto_color_readability_enabled) {
-  if (auto_color_readability_enabled_ == auto_color_readability_enabled)
+  if (auto_color_readability_enabled_ == auto_color_readability_enabled) {
     return;
+  }
   auto_color_readability_enabled_ = auto_color_readability_enabled;
   RecalculateColors();
   OnPropertyChanged(&auto_color_readability_enabled_, kPropertyEffectsPaint);
@@ -236,8 +242,9 @@ SkColor Label::GetEnabledColor() const {
 }
 
 void Label::SetEnabledColor(SkColor color) {
-  if (enabled_color_set_ && requested_enabled_color_ == color)
+  if (enabled_color_set_ && requested_enabled_color_ == color) {
     return;
+  }
 
   enabled_color_set_ = true;
   requested_enabled_color_ = color;
@@ -251,8 +258,9 @@ std::optional<ui::ColorId> Label::GetEnabledColorId() const {
 }
 
 void Label::SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id) {
-  if (enabled_color_id_ == enabled_color_id)
+  if (enabled_color_id_ == enabled_color_id) {
     return;
+  }
 
   enabled_color_id_ = enabled_color_id;
   if (GetWidget()) {
@@ -267,8 +275,9 @@ SkColor Label::GetBackgroundColor() const {
 }
 
 void Label::SetBackgroundColor(SkColor color) {
-  if (background_color_set_ && background_color_ == color)
+  if (background_color_set_ && background_color_ == color) {
     return;
+  }
   background_color_ = color;
   background_color_set_ = true;
   if (GetWidget()) {
@@ -281,8 +290,9 @@ void Label::SetBackgroundColor(SkColor color) {
 
 void Label::SetBackgroundColorId(
     std::optional<ui::ColorId> background_color_id) {
-  if (background_color_id_ == background_color_id)
+  if (background_color_id_ == background_color_id) {
     return;
+  }
 
   background_color_id_ = background_color_id;
   if (GetWidget()) {
@@ -296,8 +306,9 @@ SkColor Label::GetSelectionTextColor() const {
 }
 
 void Label::SetSelectionTextColor(SkColor color) {
-  if (selection_text_color_set_ && requested_selection_text_color_ == color)
+  if (selection_text_color_set_ && requested_selection_text_color_ == color) {
     return;
+  }
   requested_selection_text_color_ = color;
   selection_text_color_set_ = true;
   RecalculateColors();
@@ -309,8 +320,9 @@ SkColor Label::GetSelectionBackgroundColor() const {
 }
 
 void Label::SetSelectionBackgroundColor(SkColor color) {
-  if (selection_background_color_set_ && selection_background_color_ == color)
+  if (selection_background_color_set_ && selection_background_color_ == color) {
     return;
+  }
   selection_background_color_ = color;
   selection_background_color_set_ = true;
   RecalculateColors();
@@ -322,8 +334,9 @@ const gfx::ShadowValues& Label::GetShadows() const {
 }
 
 void Label::SetShadows(const gfx::ShadowValues& shadows) {
-  if (full_text_->shadows() == shadows)
+  if (full_text_->shadows() == shadows) {
     return;
+  }
   full_text_->set_shadows(shadows);
   ClearDisplayText();
   OnPropertyChanged(
@@ -336,8 +349,9 @@ bool Label::GetSubpixelRenderingEnabled() const {
 }
 
 void Label::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
-  if (subpixel_rendering_enabled_ == subpixel_rendering_enabled)
+  if (subpixel_rendering_enabled_ == subpixel_rendering_enabled) {
     return;
+  }
   subpixel_rendering_enabled_ = subpixel_rendering_enabled;
   ApplyTextColors();
   OnPropertyChanged(&subpixel_rendering_enabled_, kPropertyEffectsPaint);
@@ -365,8 +379,9 @@ gfx::HorizontalAlignment Label::GetHorizontalAlignment() const {
 
 void Label::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
   alignment = gfx::MaybeFlipForRTL(alignment);
-  if (GetHorizontalAlignment() == alignment)
+  if (GetHorizontalAlignment() == alignment) {
     return;
+  }
   full_text_->SetHorizontalAlignment(alignment);
   ClearDisplayText();
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
@@ -383,8 +398,9 @@ gfx::VerticalAlignment Label::GetVerticalAlignment() const {
 }
 
 void Label::SetVerticalAlignment(gfx::VerticalAlignment alignment) {
-  if (GetVerticalAlignment() == alignment)
+  if (GetVerticalAlignment() == alignment) {
     return;
+  }
   full_text_->SetVerticalAlignment(alignment);
   ClearDisplayText();
   OnPropertyChanged(
@@ -401,8 +417,9 @@ int Label::GetLineHeight() const {
 }
 
 void Label::SetLineHeight(int line_height) {
-  if (line_height_ == line_height)
+  if (line_height_ == line_height) {
     return;
+  }
   line_height_ = line_height;
   full_text_->SetMinLineHeight(line_height);
   ClearDisplayText();
@@ -418,8 +435,9 @@ bool Label::GetMultiLine() const {
 void Label::SetMultiLine(bool multi_line) {
   DCHECK(!multi_line || (elide_behavior_ == gfx::ELIDE_TAIL ||
                          elide_behavior_ == gfx::NO_ELIDE));
-  if (this->GetMultiLine() == multi_line)
+  if (this->GetMultiLine() == multi_line) {
     return;
+  }
   multi_line_ = multi_line;
   // `max_width_` and `max_width_single_line_` are mutually exclusive.
   max_width_single_line_ = 0;
@@ -433,8 +451,9 @@ size_t Label::GetMaxLines() const {
 }
 
 void Label::SetMaxLines(size_t max_lines) {
-  if (max_lines_ == max_lines)
+  if (max_lines_ == max_lines) {
     return;
+  }
   max_lines_ = max_lines;
   OnPropertyChanged(&max_lines_, kPropertyEffectsPreferredSizeChanged);
 }
@@ -444,12 +463,14 @@ bool Label::GetObscured() const {
 }
 
 void Label::SetObscured(bool obscured) {
-  if (this->GetObscured() == obscured)
+  if (this->GetObscured() == obscured) {
     return;
+  }
   full_text_->SetObscured(obscured);
   ClearDisplayText();
-  if (obscured)
+  if (obscured) {
     SetSelectable(false);
+  }
 
   UpdateTooltipText();
 
@@ -467,8 +488,9 @@ void Label::SetObscured(bool obscured) {
 
 bool Label::IsDisplayTextClipped() const {
   MaybeBuildDisplayText();
-  if (!full_text_ || full_text_->text().empty())
+  if (!full_text_ || full_text_->text().empty()) {
     return false;
+  }
   auto text_bounds = GetTextBounds();
   return text_bounds.width() > GetContentsBounds().width() ||
          text_bounds.height() > GetContentsBounds().height();
@@ -491,8 +513,9 @@ bool Label::GetAllowCharacterBreak() const {
 void Label::SetAllowCharacterBreak(bool allow_character_break) {
   const gfx::WordWrapBehavior behavior =
       allow_character_break ? gfx::WRAP_LONG_WORDS : gfx::TRUNCATE_LONG_WORDS;
-  if (full_text_->word_wrap_behavior() == behavior)
+  if (full_text_->word_wrap_behavior() == behavior) {
     return;
+  }
   full_text_->SetWordWrapBehavior(behavior);
   ClearDisplayText();
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
@@ -515,8 +538,9 @@ gfx::ElideBehavior Label::GetElideBehavior() const {
 void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   DCHECK(!GetMultiLine() || (elide_behavior == gfx::ELIDE_TAIL ||
                              elide_behavior == gfx::NO_ELIDE));
-  if (elide_behavior_ == elide_behavior)
+  if (elide_behavior_ == elide_behavior) {
     return;
+  }
   elide_behavior_ = elide_behavior;
   UpdateFullTextElideBehavior();
 
@@ -576,8 +600,9 @@ bool Label::GetHandlesTooltips() const {
 }
 
 void Label::SetHandlesTooltips(bool enabled) {
-  if (handles_tooltips_ == enabled)
+  if (handles_tooltips_ == enabled) {
     return;
+  }
   handles_tooltips_ = enabled;
 
   UpdateTooltipText();
@@ -602,16 +627,18 @@ int Label::GetMaximumWidth() const {
 void Label::SetMaximumWidth(int max_width) {
   DCHECK(GetMultiLine());
   DCHECK_EQ(0, fixed_width_);
-  if (max_width_ == max_width)
+  if (max_width_ == max_width) {
     return;
+  }
   max_width_ = max_width;
   OnPropertyChanged(&max_width_, kPropertyEffectsPreferredSizeChanged);
 }
 
 void Label::SetMaximumWidthSingleLine(int max_width) {
   DCHECK(!GetMultiLine());
-  if (max_width_single_line_ == max_width)
+  if (max_width_single_line_ == max_width) {
     return;
+  }
   max_width_single_line_ = max_width;
   UpdateFullTextElideBehavior();
   OnPropertyChanged(&max_width_single_line_,
@@ -623,8 +650,9 @@ bool Label::GetCollapseWhenHidden() const {
 }
 
 void Label::SetCollapseWhenHidden(bool value) {
-  if (collapse_when_hidden_ == value)
+  if (collapse_when_hidden_ == value) {
     return;
+  }
   collapse_when_hidden_ = value;
   OnPropertyChanged(&collapse_when_hidden_,
                     kPropertyEffectsPreferredSizeChanged);
@@ -652,8 +680,9 @@ bool Label::GetSelectable() const {
 }
 
 bool Label::SetSelectable(bool value) {
-  if (value == GetSelectable())
+  if (value == GetSelectable()) {
     return true;
+  }
 
   if (!value) {
     ClearSelection();
@@ -663,8 +692,9 @@ bool Label::SetSelectable(bool value) {
   }
 
   DCHECK(!stored_selection_range_.IsValid());
-  if (!IsSelectionSupported())
+  if (!IsSelectionSupported()) {
     return false;
+  }
 
   selection_controller_ = std::make_unique<SelectionController>(this);
   return true;
@@ -684,24 +714,27 @@ bool Label::HasFullSelection() const {
 
 void Label::SelectAll() {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  if (!render_text)
+  if (!render_text) {
     return;
+  }
   render_text->SelectAll(false);
   SchedulePaint();
 }
 
 void Label::ClearSelection() {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  if (!render_text)
+  if (!render_text) {
     return;
+  }
   render_text->ClearSelection();
   SchedulePaint();
 }
 
 void Label::SelectRange(const gfx::Range& range) {
   gfx::RenderText* render_text = GetRenderTextForSelectionController();
-  if (render_text && render_text->SelectRange(range))
+  if (render_text && render_text->SelectRange(range)) {
     SchedulePaint();
+  }
 }
 
 std::vector<gfx::Rect> Label::GetSubstringBounds(const gfx::Range& range) {
@@ -758,8 +791,9 @@ gfx::Size Label::CalculatePreferredSize(
 }
 
 gfx::Size Label::GetMinimumSize() const {
-  if (!GetVisible() && collapse_when_hidden_)
+  if (!GetVisible() && collapse_when_hidden_) {
     return gfx::Size();
+  }
 
   // Always reserve vertical space for at least one line.
   gfx::Size size(0, GetLineHeight());
@@ -867,8 +901,9 @@ std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
   // Setup render text for selection controller.
   if (GetSelectable()) {
     render_text->set_focused(HasFocus());
-    if (stored_selection_range_.IsValid())
+    if (stored_selection_range_.IsValid()) {
       render_text->SelectRange(stored_selection_range_);
+    }
   }
 
   return render_text;
@@ -877,8 +912,9 @@ std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
 gfx::Rect Label::GetTextBounds() const {
   MaybeBuildDisplayText();
 
-  if (!display_text_)
+  if (!display_text_) {
     return gfx::Rect(GetTextSize());
+  }
 
   return gfx::Rect(gfx::Point() + display_text_->GetLineOffset(0),
                    display_text_->GetStringSize());
@@ -887,8 +923,9 @@ gfx::Rect Label::GetTextBounds() const {
 int Label::GetFontListY() const {
   MaybeBuildDisplayText();
 
-  if (!display_text_)
+  if (!display_text_) {
     return 0;
+  }
 
   return GetInsets().top() + display_text_->GetBaseline() -
          font_list().GetBaseline();
@@ -897,8 +934,9 @@ int Label::GetFontListY() const {
 void Label::PaintText(gfx::Canvas* canvas) {
   MaybeBuildDisplayText();
 
-  if (display_text_)
+  if (display_text_) {
     display_text_->Draw(canvas);
+  }
 
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40725997): Enable this DCHECK on ChromeOS by fixing either
@@ -922,8 +960,9 @@ void Label::PaintText(gfx::Canvas* canvas) {
     // text bounds. This is not necessarily true as the background could be
     // inset from the parent bounds, and get_color() does not imply that all of
     // the background is painted with the same opaque color.
-    if (view->background() && IsOpaque(view->background()->get_color()))
+    if (view->background() && IsOpaque(view->background()->get_color())) {
       break;
+    }
 
     if (view->layer()) {
       // If we aren't painted to an opaque background, we must paint to an
@@ -979,8 +1018,9 @@ void Label::OnBlur() {
 }
 
 bool Label::OnMousePressed(const ui::MouseEvent& event) {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return false;
+  }
 
   const bool had_focus = HasFocus();
 
@@ -998,8 +1038,9 @@ bool Label::OnMousePressed(const ui::MouseEvent& event) {
 
   if (ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
-    if (event.IsOnlyMiddleMouseButton() && GetFocusManager() && !had_focus)
+    if (event.IsOnlyMiddleMouseButton() && GetFocusManager() && !had_focus) {
       GetFocusManager()->SetFocusedView(this);
+    }
   }
 
   return selection_controller_->OnMousePressed(
@@ -1010,29 +1051,33 @@ bool Label::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool Label::OnMouseDragged(const ui::MouseEvent& event) {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return false;
+  }
 
   return selection_controller_->OnMouseDragged(event);
 }
 
 void Label::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return;
+  }
 
   selection_controller_->OnMouseReleased(event);
 }
 
 void Label::OnMouseCaptureLost() {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return;
+  }
 
   selection_controller_->OnMouseCaptureLost();
 }
 
 bool Label::OnKeyPressed(const ui::KeyEvent& event) {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return false;
+  }
 
   const bool shift = event.IsShiftDown();
   const bool control = event.IsControlDown();
@@ -1147,15 +1192,17 @@ void Label::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 }
 
 void Label::VisibilityChanged(View* starting_from, bool is_visible) {
-  if (!is_visible)
+  if (!is_visible) {
     ClearDisplayText();
+  }
 }
 
 void Label::ShowContextMenuForViewImpl(View* source,
                                        const gfx::Point& point,
                                        ui::mojom::MenuSourceType source_type) {
-  if (!GetRenderTextForSelectionController())
+  if (!GetRenderTextForSelectionController()) {
     return;
+  }
 
   context_menu_runner_ = std::make_unique<MenuRunner>(
       &context_menu_contents_,
@@ -1225,8 +1272,9 @@ void Label::OnBeforePointerAction() {}
 
 void Label::OnAfterPointerAction(bool text_changed, bool selection_changed) {
   DCHECK(!text_changed);
-  if (selection_changed)
+  if (selection_changed) {
     SchedulePaint();
+  }
 }
 
 bool Label::PasteSelectionClipboard() {
@@ -1299,8 +1347,9 @@ bool Label::GetAcceleratorForCommandId(int command_id,
 }
 
 const gfx::RenderText* Label::GetRenderTextForSelectionController() const {
-  if (!GetSelectable())
+  if (!GetSelectable()) {
     return nullptr;
+  }
   MaybeBuildDisplayText();
 
   // This may be null when the content bounds of the view are empty.
@@ -1340,12 +1389,14 @@ void Label::Init(const std::u16string& text,
 }
 
 void Label::MaybeBuildDisplayText() const {
-  if (display_text_)
+  if (display_text_) {
     return;
+  }
 
   gfx::Rect rect = GetContentsBounds();
-  if (rect.IsEmpty())
+  if (rect.IsEmpty()) {
     return;
+  }
 
   rect.Inset(-gfx::ShadowValue::GetMargin(GetShadows()));
   display_text_ = CreateRenderText();
@@ -1422,8 +1473,9 @@ void Label::RecalculateColors() {
 }
 
 void Label::ApplyTextColors() const {
-  if (!display_text_)
+  if (!display_text_) {
     return;
+  }
 
   display_text_->SetColor(actual_enabled_color_);
   display_text_->set_selection_color(actual_selection_text_color_);
@@ -1474,8 +1526,9 @@ bool Label::ShouldShowDefaultTooltip() const {
 void Label::ClearDisplayText() {
   // The HasSelection() call below will build |display_text_| in case it is
   // empty. Return early to avoid this.
-  if (!display_text_)
+  if (!display_text_) {
     return;
+  }
 
   // Persist the selection range if there is an active selection.
   if (HasSelection()) {
@@ -1494,8 +1547,9 @@ std::u16string Label::GetSelectedText() const {
 }
 
 void Label::CopyToClipboard() {
-  if (!HasSelection() || GetObscured())
+  if (!HasSelection() || GetObscured()) {
     return;
+  }
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(GetSelectedText());
 }

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 
 // We can't create NSEventTypeSwipe using normal means, and rely on duck typing
 // instead.

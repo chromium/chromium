@@ -492,7 +492,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
     GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
-                                                   : ui::AXTreeIDUnknown());
+                                              : ui::AXTreeIDUnknown());
   }
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }

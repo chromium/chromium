@@ -68,8 +68,9 @@ void PlatformStyle::OnTextfieldEditFailed() {
 // static
 gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
                                                  size_t cursor_position) {
-  if (cursor_position == 0)
+  if (cursor_position == 0) {
     return gfx::Range();
+  }
 
   base::apple::ScopedCFTypeRef<CFStringRef> cf_string(
       CFStringCreateWithCharacters(
@@ -79,8 +80,9 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
       cf_string.get(), base::checked_cast<CFIndex>(cursor_position - 1),
       kCFStringBackwardDeletionCluster);
 
-  if (range_to_delete.location == NSNotFound)
+  if (range_to_delete.location == NSNotFound) {
     return gfx::Range();
+  }
 
   // The range needs to be reversed to undo correctly.
   return gfx::Range(base::checked_cast<size_t>(range_to_delete.location +

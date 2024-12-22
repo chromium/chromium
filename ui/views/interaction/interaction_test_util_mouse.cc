@@ -398,8 +398,9 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(
   base::AutoReset<bool> performing_gestures(&performing_gestures_, true);
   canceled_ = false;
   for (auto& gesture : gestures) {
-    if (canceled_)
+    if (canceled_) {
       break;
+    }
 
     bool force_async = false;
 #if BUILDFLAG(IS_MAC)
@@ -550,8 +551,9 @@ void InteractionTestUtilMouse::AddGestures(MouseGestures& gestures,
 // static
 void InteractionTestUtilMouse::AddGestures(MouseGestures& gestures,
                                            MouseGestures to_add) {
-  for (auto& gesture : to_add)
+  for (auto& gesture : to_add) {
     gestures.emplace_back(std::move(gesture));
+  }
 }
 
 }  // namespace views::test

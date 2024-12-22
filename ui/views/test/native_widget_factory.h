@@ -25,10 +25,9 @@ constexpr uint32_t kStubCapture = 1 << 0;
 // Creates the appropriate platform specific non-desktop NativeWidget
 // implementation. If |destroyed| is non-null it it set to true from the
 // destructor of the NativeWidget.
-NativeWidget* CreatePlatformNativeWidgetImpl(
-    Widget* widget,
-    uint32_t behavior,
-    bool* destroyed);
+NativeWidget* CreatePlatformNativeWidgetImpl(Widget* widget,
+                                             uint32_t behavior,
+                                             bool* destroyed);
 
 // Creates the appropriate platform specific non-desktop NativeWidget
 // implementation. Creates the appropriate platform specific desktop

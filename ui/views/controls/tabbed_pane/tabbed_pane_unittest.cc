@@ -387,8 +387,9 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
 
   // This is needed for FocusManager::SetFocusedViewWithReason to notify
   // observers observers of focus changes.
-  if (widget_ && !widget_->IsActive())
+  if (widget_ && !widget_->IsActive()) {
     widget_->Activate();
+  }
 
   EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
 

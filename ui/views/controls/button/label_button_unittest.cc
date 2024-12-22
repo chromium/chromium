@@ -231,10 +231,11 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
   for (bool is_multiline : {false, true}) {
     button()->SetMultiLine(is_multiline);
     for (bool set_image : {false, true}) {
-      if (set_image)
+      if (set_image) {
         button()->SetImageModel(Button::STATE_NORMAL,
                                 ui::ImageModel::FromImageSkia(
                                     gfx::test::CreateImageSkia(/*size=*/16)));
+      }
 
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
@@ -249,17 +250,20 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
           const gfx::Size preferred_size = button()->GetPreferredSize({});
           EXPECT_LE(preferred_size.width(), width_case);
 
-          if (preferred_size.width() < width_case)
+          if (preferred_size.width() < width_case) {
             preferred_size_is_sometimes_narrower_than_max = true;
+          }
 
-          if (preferred_size.height() < old_preferred_size.height())
+          if (preferred_size.height() < old_preferred_size.height()) {
             preferred_height_shrinks_as_max_width_grows = true;
+          }
         }
       }
 
       EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
-      if (is_multiline)
+      if (is_multiline) {
         EXPECT_TRUE(preferred_height_shrinks_as_max_width_grows);
+      }
     }
   }
 }

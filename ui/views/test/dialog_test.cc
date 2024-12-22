@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/views/test/dialog_test.h"
+
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"

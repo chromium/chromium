@@ -15,17 +15,19 @@ namespace views {
 // SizeBound -------------------------------------------------------------------
 
 void SizeBound::operator+=(const SizeBound& rhs) {
-  if (!rhs.is_bounded())
+  if (!rhs.is_bounded()) {
     bound_.reset();
-  else if (is_bounded())
+  } else if (is_bounded()) {
     *bound_ += rhs.value();
+  }
 }
 
 void SizeBound::operator-=(const SizeBound& rhs) {
-  if (!rhs.is_bounded())
+  if (!rhs.is_bounded()) {
     bound_ = 0;
-  else if (is_bounded())
+  } else if (is_bounded()) {
     *bound_ -= rhs.value();
+  }
 }
 
 std::string SizeBound::ToString() const {

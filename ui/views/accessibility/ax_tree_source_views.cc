@@ -39,8 +39,9 @@ void AXTreeSourceViews::HandleAccessibleAction(const ui::AXActionData& action) {
   }
 
   AXAuraObjWrapper* obj = GetFromId(id);
-  if (obj)
+  if (obj) {
     obj->HandleAccessibleAction(action);
+  }
 }
 
 bool AXTreeSourceViews::GetTreeData(ui::AXTreeData* tree_data) const {
@@ -48,8 +49,9 @@ bool AXTreeSourceViews::GetTreeData(ui::AXTreeData* tree_data) const {
   tree_data->loaded = true;
   tree_data->loading_progress = 1.0;
   AXAuraObjWrapper* focus = cache_->GetFocus();
-  if (focus)
+  if (focus) {
     tree_data->focus_id = focus->GetUniqueId();
+  }
   return true;
 }
 
@@ -60,8 +62,9 @@ AXAuraObjWrapper* AXTreeSourceViews::GetRoot() const {
 AXAuraObjWrapper* AXTreeSourceViews::GetFromId(int32_t id) const {
   AXAuraObjWrapper* root = GetRoot();
   // Root might not be in the cache.
-  if (id == root->GetUniqueId())
+  if (id == root->GetUniqueId()) {
     return root;
+  }
   AXAuraObjWrapper* wrapper = cache_->Get(id);
 
   // We must do a lookup in AXVirtualView as well if the main cache doesn't hold
@@ -108,18 +111,21 @@ void AXTreeSourceViews::ClearChildCache(AXAuraObjWrapper* node) {
 AXAuraObjWrapper* AXTreeSourceViews::GetParent(AXAuraObjWrapper* node) const {
   AXAuraObjWrapper* root = GetRoot();
   // The root has no parent by definition.
-  if (node->GetUniqueId() == root->GetUniqueId())
+  if (node->GetUniqueId() == root->GetUniqueId()) {
     return nullptr;
+  }
   AXAuraObjWrapper* parent = node->GetParent();
   // A top-level widget doesn't have a parent, so return the root.
-  if (!parent)
+  if (!parent) {
     return root;
+  }
   return parent;
 }
 
 bool AXTreeSourceViews::IsIgnored(AXAuraObjWrapper* node) const {
-  if (!node)
+  if (!node) {
     return false;
+  }
   ui::AXNodeData out_data;
   node->Serialize(&out_data);
   return out_data.IsIgnored();
@@ -154,8 +160,9 @@ void AXTreeSourceViews::SerializeNode(AXAuraObjWrapper* node,
   // a location changed event), its descendants all move relative to
   // it by default.
   AXAuraObjWrapper* parent = node->GetParent();
-  if (!parent)
+  if (!parent) {
     return;
+  }
   ui::AXNodeData parent_data;
   parent->Serialize(&parent_data);
   out_data->relative_bounds.bounds.Offset(
@@ -173,8 +180,9 @@ std::string AXTreeSourceViews::ToString(AXAuraObjWrapper* root,
   root->GetChildren(&children);
 
   prefix += prefix[0];
-  for (AXAuraObjWrapper* child : children)
+  for (AXAuraObjWrapper* child : children) {
     output += ToString(child, prefix);
+  }
 
   return output;
 }

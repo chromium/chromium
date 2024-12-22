@@ -78,30 +78,35 @@ bool IsAccessibilityFocusableWhenEnabled(View* view) {
 // being a non-keyboard-focusable child of a keyboard-focusable ancestor. E.g.,
 // LabelButtons contain Labels, but a11y should just show that there's a button.
 bool IsViewUnfocusableDescendantOfFocusableAncestor(View* view) {
-  if (IsAccessibilityFocusableWhenEnabled(view))
+  if (IsAccessibilityFocusableWhenEnabled(view)) {
     return false;
+  }
 
   while (view->parent()) {
     view = view->parent();
-    if (IsAccessibilityFocusableWhenEnabled(view))
+    if (IsAccessibilityFocusableWhenEnabled(view)) {
       return true;
+    }
   }
   return false;
 }
 
 ui::AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window) {
   Widget* widget = Widget::GetWidgetForNativeWindow(native_window);
-  if (!widget)
+  if (!widget) {
     return nullptr;
+  }
 
   View* view = widget->GetRootView();
-  if (!view)
+  if (!view) {
     return nullptr;
+  }
 
   gfx::NativeViewAccessible native_view_accessible =
       view->GetNativeViewAccessible();
-  if (!native_view_accessible)
+  if (!native_view_accessible) {
     return nullptr;
+  }
 
   return ui::AXPlatformNode::FromNativeViewAccessible(native_view_accessible);
 }
@@ -114,16 +119,18 @@ ui::AXPlatformNode* PlatformNodeFromNodeID(int32_t id) {
 
 void FireEvent(QueuedEvent event) {
   ui::AXPlatformNode* node = PlatformNodeFromNodeID(event.node_id);
-  if (node)
+  if (node) {
     node->NotifyAccessibilityEvent(event.type);
+  }
 }
 
 void FlushQueue() {
   DCHECK(g_is_queueing_events);
   g_is_queueing_events = false;
   g_is_flushing = true;
-  for (QueuedEvent event : g_event_queue.Get())
+  for (QueuedEvent event : g_event_queue.Get()) {
     FireEvent(event);
+  }
   g_is_flushing = false;
   g_event_queue.Get().clear();
 }
@@ -209,8 +216,9 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   while (focused_node) {
     ui::AXPlatformNodeBase* deeper_focus = static_cast<ui::AXPlatformNodeBase*>(
         ui::AXPlatformNode::FromNativeViewAccessible(focused_node->GetFocus()));
-    if (!deeper_focus || deeper_focus == focused_node)
+    if (!deeper_focus || deeper_focus == focused_node) {
       break;
+    }
     focused_node = deeper_focus;
   }
   if (focused_node) {
@@ -351,8 +359,9 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // (We could try to move this logic to ViewAccessibility, but
   // that would require ensuring that Chrome OS invalidates the whole
   // subtree when a View changes its visibility state.)
-  if (!view()->IsDrawn())
+  if (!view()->IsDrawn()) {
     data_.AddState(ax::mojom::State::kInvisible);
+  }
 
   // Make sure this element is excluded from the a11y tree if there's a
   // focusable parent. All keyboard focusable elements should be leaf nodes.
@@ -362,8 +371,9 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // because we needed a way to mark a View as a leaf node in the
   // accessibility tree. We need to replace this with a cross-platform
   // solution that works for ChromeVox, too, and move it to ViewAccessibility.
-  if (IsViewUnfocusableDescendantOfFocusableAncestor(view()))
+  if (IsViewUnfocusableDescendantOfFocusableAncestor(view())) {
     data_.AddState(ax::mojom::State::kIgnored);
+  }
 
 #if BUILDFLAG(IS_WIN)
   if (view()->GetViewAccessibility().needs_ax_tree_manager()) {
@@ -445,12 +455,14 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
          virtual_children()) {
       if (virtual_child->IsIgnored()) {
         size_t virtual_child_count = virtual_child->GetChildCount();
-        if (index < virtual_child_count)
+        if (index < virtual_child_count) {
           return virtual_child->ChildAtIndex(index);
+        }
         index -= virtual_child_count;
       } else {
-        if (index == 0)
+        if (index == 0) {
           return virtual_child->GetNativeObject();
+        }
         --index;
       }
     }
@@ -483,12 +495,14 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
           static_cast<ViewAXPlatformNodeDelegate*>(&view_accessibility);
       DCHECK(child_view_delegate);
       size_t child_count = child_view_delegate->GetChildCount();
-      if (index < child_count)
+      if (index < child_count) {
         return child_view_delegate->ChildAtIndex(index);
+      }
       index -= child_count;
     } else {
-      if (index == 0)
+      if (index == 0) {
         return view_accessibility.view()->GetNativeViewAccessible();
+      }
       --index;
     }
   }
@@ -598,8 +612,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() const {
 
   if (Widget* widget = view()->GetWidget()) {
     Widget* top_widget = widget->GetTopLevelWidget();
-    if (top_widget && widget != top_widget && top_widget->GetRootView())
+    if (top_widget && widget != top_widget && top_widget->GetRootView()) {
       return top_widget->GetRootView()->GetNativeViewAccessible();
+    }
   }
 
   return nullptr;
@@ -621,8 +636,9 @@ bool ViewAXPlatformNodeDelegate::IsToplevelBrowserWindow() {
   // Note: only used on Desktop Linux. Other platforms don't have an application
   // node so this would never return true.
   ui::AXNodeData data = GetData();
-  if (data.role != ax::mojom::Role::kWindow)
+  if (data.role != ax::mojom::Role::kWindow) {
     return false;
+  }
 
   AXPlatformNodeDelegate* parent = GetParentDelegate();
   return parent && parent->GetData().role == ax::mojom::Role::kApplication;
@@ -740,8 +756,9 @@ gfx::RectF ViewAXPlatformNodeDelegate::RelativeToContainerBounds(
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
     int screen_physical_pixel_x,
     int screen_physical_pixel_y) const {
-  if (!view() || !view()->GetWidget())
+  if (!view() || !view()->GetWidget()) {
     return nullptr;
+  }
 
   if (IsLeaf()) {
     return GetNativeViewAccessible();
@@ -754,13 +771,15 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   for (Widget* child_widget : GetChildWidgets().child_widgets) {
     View* child_root_view = child_widget->GetRootView();
     View::ConvertPointFromScreen(child_root_view, &point);
-    if (child_root_view->HitTestPoint(point))
+    if (child_root_view->HitTestPoint(point)) {
       return child_root_view->GetNativeViewAccessible();
+    }
   }
 
   View::ConvertPointFromScreen(view(), &point);
-  if (!view()->HitTestPoint(point))
+  if (!view()->HitTestPoint(point)) {
     return nullptr;
+  }
 
   // Check if the point is within any of the virtual children of this view.
   // AXVirtualView's HitTestSync is a recursive function that will return the
@@ -771,8 +790,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
          base::Reversed(virtual_children())) {
       gfx::NativeViewAccessible result =
           child->HitTestSync(screen_physical_pixel_x, screen_physical_pixel_y);
-      if (result)
+      if (result) {
         return result;
+      }
     }
     // If it's not inside any of our virtual children, it's inside this view.
     return GetNativeViewAccessible();
@@ -783,12 +803,14 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   // do a recursive hit test if we return anything other than |this| or NULL.
   View* v = view();
   const auto is_point_in_child = [point, v](View* child) {
-    if (!child->GetVisible())
+    if (!child->GetVisible()) {
       return false;
+    }
     ui::AXNodeData child_data;
     child->GetViewAccessibility().GetAccessibleNodeData(&child_data);
-    if (child_data.IsInvisible())
+    if (child_data.IsInvisible()) {
       return false;
+    }
     gfx::Point point_in_child_coords = point;
     v->ConvertPointToTarget(v, child, &point_in_child_coords);
     return child->HitTestPoint(point_in_child_coords);
@@ -803,15 +825,17 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetFocus() const {
   gfx::NativeViewAccessible focus_override =
       ui::AXPlatformNode::GetPopupFocusOverride();
-  if (focus_override)
+  if (focus_override) {
     return focus_override;
+  }
 
   FocusManager* focus_manager = view()->GetFocusManager();
   View* focused_view =
       focus_manager ? focus_manager->GetFocusedView() : nullptr;
 
-  if (!focused_view)
+  if (!focused_view) {
     return nullptr;
+  }
 
   // The accessibility focus will be either on the |focused_view| or on one of
   // its virtual children.
@@ -849,8 +873,9 @@ std::u16string ViewAXPlatformNodeDelegate::GetAuthorUniqueId() const {
   const View* v = view();
   if (v) {
     const int view_id = v->GetID();
-    if (view_id)
+    if (view_id) {
       return u"view_" + base::NumberToString16(view_id);
+    }
   }
 
   return std::u16string();
@@ -882,8 +907,9 @@ bool ViewAXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
         return false;
       }
 
-      if (ui::ShouldHaveReadonlyStateByDefault(GetData().role))
+      if (ui::ShouldHaveReadonlyStateByDefault(GetData().role)) {
         return true;
+      }
 
       // When readonly is not supported, we assume that the node is always
       // read-only and mark it as such since this is the default behavior.
@@ -944,13 +970,15 @@ std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds(
 std::optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
     int row_index,
     int col_index) const {
-  if (virtual_children().empty() || !GetAncestorTableView())
+  if (virtual_children().empty() || !GetAncestorTableView()) {
     return std::nullopt;
+  }
 
   AXVirtualView* ax_cell = GetAncestorTableView()->GetVirtualAccessibilityCell(
       static_cast<size_t>(row_index), static_cast<size_t>(col_index));
-  if (!ax_cell)
+  if (!ax_cell) {
     return std::nullopt;
+  }
 
   const ui::AXNodeData& cell_data = ax_cell->GetData();
   if (cell_data.role == ax::mojom::Role::kCell ||
@@ -965,8 +993,9 @@ TableView* ViewAXPlatformNodeDelegate::GetAncestorTableView() const {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
 
-  if (!ui::IsTableLike(data.role))
+  if (!ui::IsTableLike(data.role)) {
     return nullptr;
+  }
 
   return static_cast<TableView*>(view());
 }
@@ -986,17 +1015,20 @@ bool ViewAXPlatformNodeDelegate::IsOrderedSet() const {
 std::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
   // Consider overridable attributes first.
   const ui::AXNodeData& data = GetData();
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet))
+  if (data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet)) {
     return data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
+  }
 
   std::vector<raw_ptr<View, VectorExperimental>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
-  if (views_in_group.empty())
+  if (views_in_group.empty()) {
     return std::nullopt;
+  }
   // Check this is in views_in_group; it may be removed if it is ignored.
   auto found_view = base::ranges::find(views_in_group, view());
-  if (found_view == views_in_group.end())
+  if (found_view == views_in_group.end()) {
     return std::nullopt;
+  }
 
   int pos_in_set = base::checked_cast<int>(
       std::distance(views_in_group.begin(), found_view));
@@ -1007,17 +1039,20 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetPosInSet() const {
 std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
   // Consider overridable attributes first.
   const ui::AXNodeData& data = GetData();
-  if (data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize))
+  if (data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize)) {
     return data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
+  }
 
   std::vector<raw_ptr<View, VectorExperimental>> views_in_group;
   GetViewsInGroupForSet(&views_in_group);
-  if (views_in_group.empty())
+  if (views_in_group.empty()) {
     return std::nullopt;
+  }
   // Check this is in views_in_group; it may be removed if it is ignored.
   auto found_view = base::ranges::find(views_in_group, view());
-  if (found_view == views_in_group.end())
+  if (found_view == views_in_group.end()) {
     return std::nullopt;
+  }
 
   return base::checked_cast<int>(views_in_group.size());
 }
@@ -1025,14 +1060,16 @@ std::optional<int> ViewAXPlatformNodeDelegate::GetSetSize() const {
 void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
     std::vector<raw_ptr<View, VectorExperimental>>* views_in_group) const {
   const int group_id = view()->GetGroup();
-  if (group_id < 0)
+  if (group_id < 0) {
     return;
+  }
 
   View* view_to_check = view();
   // If this view has a parent, check from the parent, to make sure we catch any
   // siblings.
-  if (view()->parent())
+  if (view()->parent()) {
     view_to_check = view()->parent();
+  }
   view_to_check->GetViewsInGroup(group_id, views_in_group);
 
   // Remove any views that are ignored in the accessibility tree.
@@ -1058,8 +1095,9 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   Widget* widget = view()->GetWidget();
   // Note that during window close, a Widget may exist in a state where it has
   // no NativeView, but hasn't yet torn down its view hierarchy.
-  if (!widget || !widget->GetNativeView() || widget->GetRootView() != view())
+  if (!widget || !widget->GetNativeView() || widget->GetRootView() != view()) {
     return ChildWidgetsResult();
+  }
 
   std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
   Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
@@ -1081,8 +1119,9 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   // In order to support the "read title (NVDAKey+T)" and "read window
   // (NVDAKey+B)" commands in the NVDA screen reader, hide the rest of the UI
   // from the accessibility tree when a modal dialog is showing.
-  if (i != visible_widgets.cend())
+  if (i != visible_widgets.cend()) {
     return ChildWidgetsResult({*i}, true /* is_tab_modal_showing */);
+  }
 
   return ChildWidgetsResult(visible_widgets, false /* is_tab_modal_showing */);
 }

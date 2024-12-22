@@ -27,16 +27,18 @@ void ViewBuilderCore::AddPropertySetter(
 
 void ViewBuilderCore::CreateChildren(View* parent) {
   for (auto& builder : children_) {
-    if (builder.second)
+    if (builder.second) {
       parent->AddChildViewAt(builder.first->DoBuild(), builder.second.value());
-    else
+    } else {
       parent->AddChildView(builder.first->DoBuild());
+    }
   }
 }
 
 void ViewBuilderCore::SetProperties(View* view) {
-  for (auto& property : property_list_)
+  for (auto& property : property_list_) {
     property->SetProperty(view);
+  }
 }
 
 }  // namespace views::internal
