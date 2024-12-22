@@ -2712,6 +2712,11 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     auto aux_image_index = AuxImageIndex(aux_image);
     const auto& info = image_data->GetImageInfo(aux_image);
     if (aux_image == AuxImage::kGainmap) {
+      // The gainmap image is allowed to silently fail to decode. If that
+      // happens, there will be no data. Just pretend it didn't exist.
+      if (!image_data->decode.data(aux_image)) {
+        continue;
+      }
       has_gainmap = info.rgba.has_value() || info.yuva.has_value();
     }
     if (info.yuva.has_value()) {

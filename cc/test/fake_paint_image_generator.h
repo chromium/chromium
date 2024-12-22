@@ -65,6 +65,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
 
     frames_decoded_count_.clear();
   }
+  void SetForceFailDecode() { force_fail_decode_ = true; }
   void SetExpectFallbackToRGB() {
     base::AutoLock lock(lock_);
 
@@ -94,6 +95,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   // planes and after Chrome implements it, we should no longer expect RGB
   // fallback.
   bool expect_fallback_to_rgb_ = false;
+  bool force_fail_decode_ = false;
   ImageHeaderMetadata image_metadata_;
 };
 
