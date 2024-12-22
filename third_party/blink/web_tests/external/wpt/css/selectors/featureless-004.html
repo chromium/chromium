@@ -20,15 +20,13 @@
         :not(:not(:host)) .t2 {
           background-color: green;
         }
-
-
-        :not(aside) .t3 {
+        :not(:host(:not(aside))) .t3 {
           background-color: red;
         }
-        :not(.foo:host) .t4 {
+        :not(:host).foo .t4 {
           background-color: red;
         }
-        :not(:host > .foo) .t5 {
+        :not(:host) > .foo .t5 {
           background-color: red;
         }
       </style>
