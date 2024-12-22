@@ -2386,7 +2386,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       (0 != strcmp([parameter objCType], @encode(NSRange))))
     return nil;
 
-  return [[self getAXValueAsString] substringWithRange:[parameter rangeValue]];
+  return [self accessibilityStringForRange:[parameter rangeValue]];
 }
 
 - (id)AXRangeForPosition:(id)parameter {
@@ -3281,10 +3281,10 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 // LINT.ThenChange(AXVisibleCharacterRange)
 
 - (NSString*)accessibilityStringForRange:(NSRange)range {
-  if (!_node)
+  if (![self instanceActive]) {
     return nil;
-
-  return (NSString*)[self AXStringForRange:[NSValue valueWithRange:range]];
+  }
+  return [[self getAXValueAsString] substringWithRange:range];
 }
 
 - (NSAttributedString*)accessibilityAttributedStringForRange:(NSRange)range {

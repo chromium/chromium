@@ -1700,18 +1700,6 @@ bool ui::IsNSRange(id value) {
   return [gAttributeToMethodNameMap objectForKey:attribute];
 }
 
-- (NSString*)valueForRange:(NSRange)range {
-  if (![self instanceActive])
-    return nil;
-
-  std::u16string textContent = _owner->GetTextContentUTF16();
-  if (NSMaxRange(range) > textContent.length())
-    return nil;
-
-  return base::SysUTF16ToNSString(
-      textContent.substr(range.location, range.length));
-}
-
 - (NSRect)frameForRange:(NSRange)range {
   if (!_owner->IsText() && !_owner->IsAtomicTextField())
     return CGRectNull;
@@ -1747,9 +1735,18 @@ bool ui::IsNSRange(id value) {
   return [super accessibilityAttributeValue:attribute];
 }
 
-- (id)AXStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
-  return [self valueForRange:[(NSValue*)parameter rangeValue]];
+- (NSString*)accessibilityStringForRange:(NSRange)range {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  std::u16string textContent = _owner->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length()) {
+    return nil;
+  }
+
+  return base::SysUTF16ToNSString(
+      textContent.substr(range.location, range.length));
 }
 
 - (id)AXLineForIndex:(id)parameter {
@@ -1809,11 +1806,6 @@ bool ui::IsNSRange(id value) {
     // here, but at the moment, test infrastructure still directly calls this
     // api endpoint.
     return nil;
-  }
-
-  if ([attribute isEqualToString:
-                     NSAccessibilityStringForRangeParameterizedAttribute]) {
-    return [self AXStringForRange:parameter];
   }
 
   if ([attribute
@@ -2401,7 +2393,6 @@ bool ui::IsNSRange(id value) {
     [attributeNames addObjectsFromArray:@[
       NSAccessibilityLineForIndexParameterizedAttribute,
       NSAccessibilityRangeForLineParameterizedAttribute,
-      NSAccessibilityStringForRangeParameterizedAttribute,
       NSAccessibilityRangeForPositionParameterizedAttribute,
       NSAccessibilityRangeForIndexParameterizedAttribute,
       NSAccessibilityBoundsForRangeParameterizedAttribute,

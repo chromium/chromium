@@ -797,6 +797,18 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleRows) {
             [row node]->GetUniqueId());
 }
 
+// accessibilityStringForRange
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityStringForRange) {
+  Init(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="heybullfrog"
+  )HTML"));
+
+  AXPlatformNodeCocoa* text_field = GetCocoaNode(2);
+  NSString* string = [text_field accessibilityStringForRange:NSMakeRange(0, 3)];
+  EXPECT_TRUE([string isEqualToString:@"hey"]);
+}
+
 // Non-header cells should not support accessibilitySortDirection, even if
 // there's a sort direction in the AXNodeData. Their sort order is "unknown".
 TEST_P(AXPlatformNodeCocoaTest, AccessibilitySortDirectionOnCell) {

@@ -203,8 +203,6 @@ component("accessibility_internal") {
     "ax_tree_update_util.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
-    "test_single_ax_tree_manager.cc",
-    "test_single_ax_tree_manager.h",
   ]
 
   deps = [
@@ -266,6 +264,8 @@ static_library("test_support") {
     "test_ax_node_helper.h",
     "test_ax_tree_update.cc",
     "test_ax_tree_update.h",
+    "test_single_ax_tree_manager.cc",
+    "test_single_ax_tree_manager.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
