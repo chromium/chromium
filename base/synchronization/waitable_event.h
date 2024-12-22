@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -17,7 +18,6 @@
 #elif BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
-#include <list>
 #include <memory>
 
 #include "base/apple/scoped_mach_port.h"
@@ -239,7 +239,7 @@ class BASE_EXPORT WaitableEvent {
     base::Lock lock_;
     const bool manual_reset_;
     bool signaled_;
-    std::list<raw_ptr<Waiter, CtnExperimental>> waiters_;
+    base::circular_deque<raw_ptr<Waiter, CtnExperimental>> waiters_;
 
    private:
     friend class RefCountedThreadSafe<WaitableEventKernel>;
