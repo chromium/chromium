@@ -77,9 +77,9 @@ TEST(BufferIteratorTest, MutableObject) {
   }
 }
 
-TEST(BufferIteratorTest, ObjectDoesNotFit) {
+TEST(BufferIteratorTest, ObjectSizeOverflow) {
   char buffer[64];
-  BufferIterator<char> iterator(buffer);
+  BufferIterator<char> iterator(buffer, std::numeric_limits<size_t>::max());
 
   auto* pointer = iterator.Object<uint64_t>();
   EXPECT_TRUE(pointer);

@@ -543,7 +543,6 @@ config("ubsan_flags") {
       "-fsanitize=null",
       "-fsanitize=nonnull-attribute",
       "-fsanitize=object-size",
-      "-fsanitize=pointer-overflow",
       "-fsanitize=return",
       "-fsanitize=returns-nonnull-attribute",
       "-fsanitize=shift",
