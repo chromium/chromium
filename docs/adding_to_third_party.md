@@ -325,11 +325,10 @@ Non-Googlers can email one of the people in
 * Make sure you have the approval from Chrome ATLs as mentioned
   [above](#before-you-start).
 * Get security@chromium.org (or chrome-security@google.com, Google-only)
-  approval. Email the list with relevant details and a link to the CL.
-  Third party code is a hot spot for security vulnerabilities.
-  When adding a new package that could potentially carry security risk, make
-  sure to highlight risk to security@chromium.org. You may be asked to add
-  a README.security or, in dangerous cases, README.SECURITY.URGENTLY file.
+  approval. Document all security considerations, concerns, and risks in the
+  `Description:` field of the README.chromium. Third party code is a hot spot
+  for security vulnerabilities. Help people make informed decisions about
+  relying on this package by highlighting security considerations.
 * Add chromium-third-party@google.com as a reviewer on your change. This
   will trigger an automatic round-robin assignment to a reviewer who will check
   licensing matters. These reviewers may not be able to +1 a change so look for
