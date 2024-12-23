@@ -297,6 +297,10 @@ bool StyleFetchedImage::GetImageAnimationPolicy(
   return true;
 }
 
+bool StyleFetchedImage::CanBeSpeculativelyDecoded() const {
+  return false;
+}
+
 void StyleFetchedImage::Trace(Visitor* visitor) const {
   visitor->Trace(image_);
   visitor->Trace(document_);

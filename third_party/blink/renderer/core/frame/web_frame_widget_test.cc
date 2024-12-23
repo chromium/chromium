@@ -601,7 +601,7 @@ TEST_F(WebFrameWidgetImplSimTest, NoSpeculativeDecodeOutsideViewport) {
   Compositor().BeginFrame();
 }
 
-TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeBackgroundImage) {
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeIgnoresBackgroundImage) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -614,7 +614,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeDecodeBackgroundImage) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(1);
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _)).Times(0);
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>

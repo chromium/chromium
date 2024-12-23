@@ -211,18 +211,40 @@ static void PriorityFromObserver(
   }
 }
 
+void ImageResourceContent::UpdateResourceInfoFromObservers() {
+  ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
+
+  cached_info_.priority_ = cached_info_.priority_excluding_image_loader_ =
+      ResourcePriority();
+
+  for (const auto& it : finished_observers_) {
+    PriorityFromObserver(it.key, cached_info_.priority_,
+                         cached_info_.priority_excluding_image_loader_);
+  }
+  for (const auto& it : observers_) {
+    PriorityFromObserver(it.key, cached_info_.priority_,
+                         cached_info_.priority_excluding_image_loader_);
+  }
+}
+
+bool ImageResourceContent::CanBeSpeculativelyDecoded() const {
+  for (const auto& it : finished_observers_) {
+    if (!it.key->CanBeSpeculativelyDecoded()) {
+      return false;
+    }
+  }
+  for (const auto& it : observers_) {
+    if (!it.key->CanBeSpeculativelyDecoded()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 std::pair<ResourcePriority, ResourcePriority>
 ImageResourceContent::PriorityFromObservers() const {
-  ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
-  ResourcePriority priority;
-  ResourcePriority priority_excluding_image_loader;
-
-  for (const auto& it : finished_observers_)
-    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
-  for (const auto& it : observers_)
-    PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
-
-  return std::make_pair(priority, priority_excluding_image_loader);
+  return std::make_pair(cached_info_.priority_,
+                        cached_info_.priority_excluding_image_loader_);
 }
 
 std::optional<WebURLRequest::Priority> ImageResourceContent::RequestPriority()

@@ -600,6 +600,15 @@ void ImageResource::ResponseReceived(const ResourceResponse& response) {
   Resource::ResponseReceived(response);
 }
 
+void ImageResource::UpdateResourceInfoFromObservers() {
+  GetContent()->UpdateResourceInfoFromObservers();
+}
+
+std::pair<ResourcePriority, ResourcePriority>
+ImageResource::PriorityFromObservers() const {
+  return GetContent()->PriorityFromObservers();
+}
+
 void ImageResource::OnePartInMultipartReceived(
     const ResourceResponse& response) {
   DCHECK(multipart_parser_);
@@ -653,11 +662,6 @@ ImageResourceContent* ImageResource::GetContent() {
 
 const ImageResourceContent* ImageResource::GetContent() const {
   return content_.Get();
-}
-
-std::pair<ResourcePriority, ResourcePriority>
-ImageResource::ComputePriorityFromObservers() {
-  return GetContent()->PriorityFromObservers();
 }
 
 void ImageResource::UpdateImage(

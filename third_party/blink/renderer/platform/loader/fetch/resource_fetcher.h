@@ -300,7 +300,7 @@ class PLATFORM_EXPORT ResourceFetcher
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
 
-  void UpdateAllImageResourcePriorities();
+  void UpdateImagePrioritiesAndSpeculativeDecodes();
 
   // Returns whether the given resource is contained as a preloaded resource.
   bool ContainsAsPreload(Resource*) const;

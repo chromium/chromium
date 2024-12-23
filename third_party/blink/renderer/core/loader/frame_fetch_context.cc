@@ -887,6 +887,9 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
   if (IsA<SVGImage>(image)) {
     return false;
   }
+  if (!image_resource->GetContent()->CanBeSpeculativelyDecoded()) {
+    return false;
+  }
   PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (paint_image) {
     document_->GetFrame()->GetChromeClient().RequestDecode(

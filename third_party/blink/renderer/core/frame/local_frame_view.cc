@@ -1685,7 +1685,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
 
-  document->Fetcher()->UpdateAllImageResourcePriorities();
+  document->Fetcher()->UpdateImagePrioritiesAndSpeculativeDecodes();
   UpdateDocumentDraggableRegions();
   ExecutePendingStickyUpdates();
 

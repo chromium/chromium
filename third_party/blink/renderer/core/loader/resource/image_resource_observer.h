@@ -86,6 +86,7 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
   virtual ResourcePriority ComputeResourcePriority() const {
     return ResourcePriority();
   }
+  virtual bool CanBeSpeculativelyDecoded() const { return true; }
 
   // Name for debugging, e.g. shown in memory-infra.
   virtual WTF::String DebugName() const = 0;
