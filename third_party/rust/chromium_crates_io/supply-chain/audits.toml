@@ -223,6 +223,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.93 -> 1.0.94"
 notes = "No behavioral changes"
 
+[[audits.anyhow]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.94 -> 1.0.95"
+
 [[audits.autocfg]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

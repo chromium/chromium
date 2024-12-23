@@ -36,7 +36,7 @@ impl Error {
         E: StdError + Send + Sync + 'static,
     {
         let backtrace = backtrace_if_absent!(&error);
-        Error::from_std(error, backtrace)
+        Error::construct_from_std(error, backtrace)
     }
 
     /// Create a new error object from a printable error message.
@@ -82,12 +82,73 @@ impl Error {
     where
         M: Display + Debug + Send + Sync + 'static,
     {
-        Error::from_adhoc(message, backtrace!())
+        Error::construct_from_adhoc(message, backtrace!())
+    }
+
+    /// Construct an error object from a type-erased standard library error.
+    ///
+    /// This is mostly useful for interop with other error libraries.
+    ///
+    /// # Example
+    ///
+    /// Here is a skeleton of a library that provides its own error abstraction.
+    /// The pair of `From` impls provide bidirectional support for `?`
+    /// conversion between `Report` and `anyhow::Error`.
+    ///
+    /// ```
+    /// use std::error::Error as StdError;
+    ///
+    /// pub struct Report {/* ... */}
+    ///
+    /// impl<E> From<E> for Report
+    /// where
+    ///     E: Into<anyhow::Error>,
+    ///     Result<(), E>: anyhow::Context<(), E>,
+    /// {
+    ///     fn from(error: E) -> Self {
+    ///         let anyhow_error: anyhow::Error = error.into();
+    ///         let boxed_error: Box<dyn StdError + Send + Sync + 'static> = anyhow_error.into();
+    ///         Report::from_boxed(boxed_error)
+    ///     }
+    /// }
+    ///
+    /// impl From<Report> for anyhow::Error {
+    ///     fn from(report: Report) -> Self {
+    ///         let boxed_error: Box<dyn StdError + Send + Sync + 'static> = report.into_boxed();
+    ///         anyhow::Error::from_boxed(boxed_error)
+    ///     }
+    /// }
+    ///
+    /// impl Report {
+    ///     fn from_boxed(boxed_error: Box<dyn StdError + Send + Sync + 'static>) -> Self {
+    ///         todo!()
+    ///     }
+    ///     fn into_boxed(self) -> Box<dyn StdError + Send + Sync + 'static> {
+    ///         todo!()
+    ///     }
+    /// }
+    ///
+    /// // Example usage: can use `?` in both directions.
+    /// fn a() -> anyhow::Result<()> {
+    ///     b()?;
+    ///     Ok(())
+    /// }
+    /// fn b() -> Result<(), Report> {
+    ///     a()?;
+    ///     Ok(())
+    /// }
+    /// ```
+    #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
+    #[cold]
+    #[must_use]
+    pub fn from_boxed(boxed_error: Box<dyn StdError + Send + Sync + 'static>) -> Self {
+        let backtrace = backtrace_if_absent!(&*boxed_error);
+        Error::construct_from_boxed(boxed_error, backtrace)
     }
 
     #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
-    pub(crate) fn from_std<E>(error: E, backtrace: Option<Backtrace>) -> Self
+    pub(crate) fn construct_from_std<E>(error: E, backtrace: Option<Backtrace>) -> Self
     where
         E: StdError + Send + Sync + 'static,
     {
@@ -113,7 +174,7 @@ impl Error {
     }
 
     #[cold]
-    pub(crate) fn from_adhoc<M>(message: M, backtrace: Option<Backtrace>) -> Self
+    pub(crate) fn construct_from_adhoc<M>(message: M, backtrace: Option<Backtrace>) -> Self
     where
         M: Display + Debug + Send + Sync + 'static,
     {
@@ -142,7 +203,7 @@ impl Error {
     }
 
     #[cold]
-    pub(crate) fn from_display<M>(message: M, backtrace: Option<Backtrace>) -> Self
+    pub(crate) fn construct_from_display<M>(message: M, backtrace: Option<Backtrace>) -> Self
     where
         M: Display + Send + Sync + 'static,
     {
@@ -172,7 +233,11 @@ impl Error {
 
     #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
-    pub(crate) fn from_context<C, E>(context: C, error: E, backtrace: Option<Backtrace>) -> Self
+    pub(crate) fn construct_from_context<C, E>(
+        context: C,
+        error: E,
+        backtrace: Option<Backtrace>,
+    ) -> Self
     where
         C: Display + Send + Sync + 'static,
         E: StdError + Send + Sync + 'static,
@@ -202,7 +267,7 @@ impl Error {
 
     #[cfg(any(feature = "std", not(anyhow_no_core_error)))]
     #[cold]
-    pub(crate) fn from_boxed(
+    pub(crate) fn construct_from_boxed(
         error: Box<dyn StdError + Send + Sync>,
         backtrace: Option<Backtrace>,
     ) -> Self {
@@ -562,7 +627,7 @@ where
     #[cold]
     fn from(error: E) -> Self {
         let backtrace = backtrace_if_absent!(&error);
-        Error::from_std(error, backtrace)
+        Error::construct_from_std(error, backtrace)
     }
 }
 
