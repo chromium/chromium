@@ -480,10 +480,6 @@ int MetricsService::GetPseudoLowEntropySource() {
   return state_manager_->GetPseudoLowEntropySource();
 }
 
-void MetricsService::SetExternalClientId(const std::string& id) {
-  state_manager_->SetExternalClientId(id);
-}
-
 bool MetricsService::WasLastShutdownClean() const {
   return state_manager_->clean_exit_beacon()->exited_cleanly();
 }
@@ -515,8 +511,6 @@ void MetricsService::EnableRecording() {
   action_callback_ = base::BindRepeating(&MetricsService::OnUserAction,
                                          base::Unretained(this));
   base::AddActionCallback(action_callback_);
-
-  enablement_observers_.Notify(/*enabled=*/true);
 }
 
 void MetricsService::DisableRecording() {
@@ -540,8 +534,6 @@ void MetricsService::DisableRecording() {
   // those histograms. To ensure that this independent log contains histograms
   // that we wish to appear in every log, call OnDidCreateMetricsLog().
   delegating_provider_.OnDidCreateMetricsLog();
-
-  enablement_observers_.Notify(/*enabled=*/false);
 }
 
 bool MetricsService::recording_active() const {
@@ -1385,11 +1377,6 @@ void MetricsService::AddLogsObserver(
 void MetricsService::RemoveLogsObserver(
     MetricsLogsEventManager::Observer* observer) {
   logs_event_manager_.RemoveObserver(observer);
-}
-
-base::CallbackListSubscription MetricsService::AddEnablementObserver(
-    const base::RepeatingCallback<void(bool)>& observer) {
-  return enablement_observers_.Add(observer);
 }
 
 void MetricsService::SetPersistentSystemProfile(

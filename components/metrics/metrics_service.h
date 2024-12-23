@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -109,14 +108,6 @@ class MetricsService {
   int GetLowEntropySource();
   int GetOldLowEntropySource();
   int GetPseudoLowEntropySource();
-
-  // Set an external provided id for the metrics service. This method can be
-  // set by a caller which wants to explicitly control the *next* id used by the
-  // metrics service. Note that setting the external client id will *not* change
-  // the current metrics client id. In order to change the current client id,
-  // callers should call ResetClientId to change the current client id to the
-  // provided id.
-  void SetExternalClientId(const std::string& id);
 
   // Returns the date at which the current metrics client ID was created as
   // an int64_t containing seconds since the epoch.
@@ -269,12 +260,6 @@ class MetricsService {
   MetricsServiceObserver* logs_event_observer() {
     return logs_event_observer_.get();
   }
-
-  // Observers will be notified when the enablement state changes. The callback
-  // should accept one boolean argument, which will signal whether or not the
-  // metrics collection has been enabled.
-  base::CallbackListSubscription AddEnablementObserver(
-      const base::RepeatingCallback<void(bool)>& observer);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool IsInForegroundForTesting() const { return is_in_foreground_; }
@@ -640,9 +625,6 @@ class MetricsService {
   // is passed. This is primarily used by the chrome://metrics-internals debug
   // page.
   std::unique_ptr<MetricsServiceObserver> logs_event_observer_;
-
-  // A set of observers that keeps track of the metrics reporting state.
-  base::RepeatingCallbackList<void(bool)> enablement_observers_;
 
   // Subscription for a callback that runs if this install is detected as
   // cloned.

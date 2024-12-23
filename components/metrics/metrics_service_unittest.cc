@@ -24,7 +24,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
@@ -1351,30 +1350,6 @@ TEST_F(MetricsServiceTest, LastLiveTimestamp) {
   EXPECT_LT(
       updated_last_live_time,
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
-}
-
-TEST_F(MetricsServiceTest, EnablementObserverNotification) {
-  EnableMetricsReporting();
-  TestMetricsServiceClient client;
-  TestMetricsService service(GetMetricsStateManager(), &client,
-                             GetLocalState());
-  service.InitializeMetricsRecordingState();
-
-  std::optional<bool> enabled;
-  auto observer = [&enabled](bool notification) { enabled = notification; };
-
-  auto subscription =
-      service.AddEnablementObserver(base::BindLambdaForTesting(observer));
-
-  service.Start();
-  ASSERT_TRUE(enabled.has_value());
-  EXPECT_TRUE(enabled.value());
-
-  enabled.reset();
-
-  service.Stop();
-  ASSERT_TRUE(enabled.has_value());
-  EXPECT_FALSE(enabled.value());
 }
 
 // Verifies that when a cloned install is detected, logs are purged.
