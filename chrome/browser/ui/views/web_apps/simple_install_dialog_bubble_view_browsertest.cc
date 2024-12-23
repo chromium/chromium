@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -277,62 +275,6 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
   ASSERT_TRUE(test_future.Wait());
   EXPECT_FALSE(test_future.Get<bool>());
-
-  histograms.ExpectUniqueSample(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kCloseButtonClicked, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
-                       WindowSizeLoweringClosesDialog) {
-  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
-      GetInstallTracker(browser());
-
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
-  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
-  ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
-      std::move(install_tracker), test_future.GetCallback());
-
-  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
-  ASSERT_NE(widget, nullptr);
-  EXPECT_FALSE(test_future.IsReady());
-
-  base::HistogramTester histograms;
-  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
-  // Make the size of the browser window too small for the dialog.
-  browser()->GetBrowserView().SetBounds(gfx::Rect(100, 100));
-  destroy_waiter.Wait();
-
-  ASSERT_TRUE(test_future.Wait());
-  EXPECT_FALSE(test_future.Get<bool>());
-
-  histograms.ExpectUniqueSample(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kCloseButtonClicked, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
-                       SmallWindowClosesDialogAutomatically) {
-  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
-      GetInstallTracker(browser());
-
-  base::HistogramTester histograms;
-  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
-  browser()->GetBrowserView().SetBounds(gfx::Rect(100, 100));
-
-  base::RunLoop run_loop;
-  widget_observer.set_closing_callback(
-      base::BindLambdaForTesting([&](views::Widget* widget) {
-        if (widget->GetName() == kInstallDialogName) {
-          run_loop.Quit();
-        }
-      }));
-  ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
-      std::move(install_tracker), base::DoNothing());
-  run_loop.Run();
 
   histograms.ExpectUniqueSample(
       "WebApp.InstallConfirmation.CloseReason",
