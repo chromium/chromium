@@ -142,6 +142,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
@@ -608,10 +609,8 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    @DisabledTest(message = "https://crbug.com/380957937")
-    public void testRenderOnIdentityErrorForSignedInUsers_withReplaceSyncPromos()
-            throws IOException {
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -637,13 +636,15 @@ public class MainSettingsFragmentTest {
                             .hasProfileDataForTesting(accountInfo.getEmail());
                 });
 
+        // Wait for the default browser promo view to disappear to avoid flakiness due to race
+        // conditions.
+        ViewUtils.waitForViewCheckingState(withId(R.id.promo_card_view), ViewUtils.VIEW_NULL);
         View view =
                 mSettingsActivityTestRule
                         .getActivity()
                         .findViewById(android.R.id.content)
                         .getRootView();
-        mRenderTestRule.render(
-                view, "main_settings_signed_in_identity_error_with_replace_sync_promos");
+        mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
     }
 
     @Test
