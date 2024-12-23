@@ -54,7 +54,7 @@ public class EdgeSwipeGestureDetectorUnitTest {
     public void onSwipe_validSwipe() {
         MotionEvent eventSrc = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 7, 0, 0);
         MotionEvent eventTo = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 300, 0, 0);
-        assertTrue(mSimpleOnGestureListener.onScroll(eventSrc, eventTo, -300, 0));
+        assertTrue(mSimpleOnGestureListener.onScroll(eventSrc, eventTo, 293, 0));
         verify(mOnSwipeCallback).handleSwipe();
     }
 
@@ -64,24 +64,60 @@ public class EdgeSwipeGestureDetectorUnitTest {
         MotionEvent eventTo = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 0, 0, 0);
         assertFalse(
                 "Swipe in opposite direction should not be consumed",
-                mSimpleOnGestureListener.onScroll(eventSrc, eventTo, 300, 0));
+                mEdgeSwipeGestureDetector.isValidSwipe(eventSrc, eventTo, 300, 0));
 
         MotionEvent eventSrc1 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 300, 0, 0);
         MotionEvent eventTo1 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 600, 0, 0);
         assertFalse(
                 "Swipe does not start on left edge",
-                mSimpleOnGestureListener.onScroll(eventSrc1, eventTo1, -300, 0));
+                mEdgeSwipeGestureDetector.isValidSwipe(eventSrc1, eventTo1, -300, 0));
 
         MotionEvent eventSrc2 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
         MotionEvent eventTo2 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 40, 0, 0);
         assertFalse(
                 "Swipe does not meet horizontal threshold",
-                mSimpleOnGestureListener.onScroll(eventSrc2, eventTo2, -40, 0));
+                mEdgeSwipeGestureDetector.isValidSwipe(eventSrc2, eventTo2, -40, 0));
 
         MotionEvent eventSrc3 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 7, 0, 0);
         MotionEvent eventTo3 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 300, 500, 0);
         assertFalse(
                 "Swipe has too much vertical delta",
-                mSimpleOnGestureListener.onScroll(eventSrc3, eventTo3, -300, 500));
+                mEdgeSwipeGestureDetector.isValidSwipe(eventSrc3, eventTo3, -300, 500));
+    }
+
+    @Test
+    public void onSwipe_validBackSwipe() {
+        MotionEvent eventSrc = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 300, 0, 0);
+        MotionEvent eventTo = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 7, 0, 0);
+        assertTrue(mSimpleOnGestureListener.onScroll(eventSrc, eventTo, -293, 0));
+        verify(mOnSwipeCallback).handleBackSwipe();
+    }
+
+    @Test
+    public void onSwipe_invalidBackSwipe() {
+        mEdgeSwipeGestureDetector.setIsReadyForNewScroll(false);
+        MotionEvent eventSrc = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 7, 0, 0);
+        MotionEvent eventTo = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 300, 0, 0);
+        assertFalse(
+                "Swipe in opposite direction should not be consumed",
+                mEdgeSwipeGestureDetector.isValidBackSwipe(eventSrc, eventTo, 293, 0));
+
+        MotionEvent eventSrc1 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 400, 0, 0);
+        MotionEvent eventTo1 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 100, 0, 0);
+        assertFalse(
+                "Swipe does end near left edge",
+                mEdgeSwipeGestureDetector.isValidBackSwipe(eventSrc1, eventTo1, -300, 0));
+
+        MotionEvent eventSrc2 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 40, 0, 0);
+        MotionEvent eventTo2 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 10, 0, 0);
+        assertFalse(
+                "Swipe does not meet horizontal threshold",
+                mEdgeSwipeGestureDetector.isValidBackSwipe(eventSrc2, eventTo2, -30, 0));
+
+        MotionEvent eventSrc3 = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 300, 0, 0);
+        MotionEvent eventTo3 = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 7, 500, 0);
+        assertFalse(
+                "Swipe has too much vertical delta",
+                mEdgeSwipeGestureDetector.isValidBackSwipe(eventSrc3, eventTo3, 293, 500));
     }
 }
