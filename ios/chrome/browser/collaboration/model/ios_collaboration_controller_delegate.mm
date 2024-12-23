@@ -114,6 +114,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.URL = join_flow.url();
+  config.token = token;
   config.baseViewController = base_view_controller_;
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completionBlock = ^(BOOL completion_result) {

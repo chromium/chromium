@@ -29,6 +29,7 @@ source_set("model") {
     "share_kit_share_group_configuration.mm",
   ]
   deps = [
+    "//components/data_sharing/public",
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
     "//ios/chrome/browser/saved_tab_groups/favicon/coordinator",
