@@ -1719,11 +1719,17 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to update Chrome to fix the out-of-date Chrome client error.">
         Update Chrome
       </message>
-      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
-        To use and save Chrome data in your Google Account, enter your passphrase
+      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Verify it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
       <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE" desc="Error message to resolve sync protocol error for out-of-date client.">
         To use and save Chrome data in your Google Account, update Chrome
+      </message>
+      <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION" desc="Error message to resolve sync protocol error for out-of-date client.">
+        Update Chrome to keeping using the Chrome data in your Google Account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
 
       <!-- Sync errors. -->

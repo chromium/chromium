@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -317,39 +318,57 @@ std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
     case AvatarSyncErrorType::kSyncPaused:
       return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PAUSED_TITLE);
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
+      }
       return l10n_util::GetStringUTF16(
           is_sync_feature_enabled
               ? IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE
               : IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY);
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
+      }
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE);
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForEverythingError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
+      }
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE);
     case AvatarSyncErrorType::kPassphraseError:
       if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-        return l10n_util::GetStringUTF16(
-            is_sync_feature_enabled
-                ? IDS_SYNC_STATUS_NEEDS_PASSWORD
-                : IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY);
-      } else {
-        return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
       }
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
     case AvatarSyncErrorType::kUpgradeClientError:
-      if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
-          !is_sync_feature_enabled) {
-        return l10n_util::GetStringUTF16(
-            IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE);
-      } else {
-        return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
       }
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
+    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringFUTF16(
+            IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
+            base::UTF8ToUTF16(user_email));
+      }
+      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
     case AvatarSyncErrorType::kManagedUserUnrecoverableError:
     case AvatarSyncErrorType::kUnrecoverableError:
-    case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }
 }

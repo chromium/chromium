@@ -14392,11 +14392,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu for the case where the error only affects sync-ed passwords..">
         Password sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Verify it's you to use and save passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+      </message>
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
         To continue saving passwords in your Google Account, verify it’s you
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your sync data
+      </message>
+      <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of a sync error header of desktop user menu that prompts the user to add recovery options.">
+        Verify it's you to make sure you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your saved passwords
