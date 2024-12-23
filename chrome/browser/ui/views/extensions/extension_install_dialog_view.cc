@@ -339,14 +339,13 @@ class ExtensionInstallDialogView::ExtensionJustificationView
         base::NumberToString16(justification_field_->GetText().length()),
         base::NumberToString16(kMaxJustificationTextLength)));
 
-    justification_text_length_->SetEnabledColor(
+    justification_text_length_->SetEnabledColorId(
         IsJustificationLengthWithinLimit()
             // The original color is not stored because the theme may change
             // while the dialog is visible. To get around this, another label
             // (justification_field_label_) is used as the color reference.
-            ? justification_field_label_->GetEnabledColor()
-            : justification_text_length_->GetColorProvider()->GetColor(
-                  ui::kColorAlertHighSeverity));
+            ? justification_field_label_->GetEnabledColorId()
+            : ui::kColorAlertHighSeverity);
   }
 
   void ChildPreferredSizeChanged(views::View* child) override {
