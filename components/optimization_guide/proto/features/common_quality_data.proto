@@ -159,7 +159,7 @@ message AXRelativeBounds {
   repeated float transform = 6;
 }
 
-// Next ID: 10
+// Next ID: 11
 message PageContext {
   // The URL of the page that the form is on.
   string url = 1;
@@ -229,7 +229,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2;
 }
 
-// Next ID: 16
+// Next ID: 19
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -275,10 +275,21 @@ message ContentAttributes {
   // These can come from the aria role, the html tag, or are assumed from some
   // properties of the page.
   repeated AnnotatedRole annotated_roles = 15;
+
+  // A text "label" for the content node, e.g. for a "Submit" button this would
+  // be "Submit".
+  string label = 16;
+
+  string tag_name = 17; // HTML tag name.
+
+  string type = 18; // HTML type attribute.
 }
 
 // The geometry of the content, in the page coordinate system.
 // Next ID: 6
+// NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
+// it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
+// for details.
 message Geometry {
   // The bounding box of the content node, in the page coordinate system. This
   // roughly corresponds to the element's local box used for hit testing.
@@ -1315,11 +1326,13 @@ enum AXStringListAttribute {
 }
 
 // This will be updated when there is a significant change in the parsing logic.
-// Next ID: 2
+// Next ID: 3
 enum AnnotatedPageContentVersion {
   ANNOTATED_PAGE_CONTENT_VERSION_UNKNOWN = 0;
 
   ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
+
+  ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0 = 2;
 }
 
 // Indicates the structure of the ContentNode. Suggests which type of
