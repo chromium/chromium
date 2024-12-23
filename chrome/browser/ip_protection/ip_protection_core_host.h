@@ -19,6 +19,7 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
 #include "components/ip_protection/mojom/core.mojom.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -56,6 +57,7 @@ class IpProtectionCoreHost
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      policy::ManagementService* management_service,
       PrefService* pref_service,
       Profile* profile);
 
@@ -110,6 +112,10 @@ class IpProtectionCoreHost
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
+  // Returns whether IP Protection should be disabled for managed users and/or
+  // devices, for testing.
+  bool ShouldDisableIpProtectionForManagedForTesting();
+
  private:
   friend class IpProtectionCoreHostTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostIdentityBrowserTest,
@@ -163,6 +169,10 @@ class IpProtectionCoreHost
   // available) or extend them (if not).
   void AccountStatusChanged(bool account_available);
 
+  // Returns whether IP Protection should be disabled for managed users and/or
+  // devices.
+  bool ShouldDisableIpProtectionForManaged();
+
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -171,12 +181,14 @@ class IpProtectionCoreHost
   // is called, but will otherwise be non-null.
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  // Used to check whether the browser is being managed. Will be set to nullptr
+  // after `Shutdown()`, but will otherwise be non-null.
+  raw_ptr<policy::ManagementService> management_service_;
   // Used to request the state of the IP Protection user setting. Will be set to
   // nullptr after `Shutdown()` is called.
   raw_ptr<PrefService> pref_service_;
-  // The `Profile` object associated with this
-  // `IpProtectionCoreHost()`. Will be reset to nullptr after
-  // `Shutdown()` is called.
+  // The `Profile` object associated with this `IpProtectionCoreHost()`. Will be
+  // reset to nullptr after `Shutdown()` is called.
   // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
   // corresponding dependency (if needed) registered in the factory class.
   raw_ptr<Profile> profile_;

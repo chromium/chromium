@@ -4,8 +4,6 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
       "fuchsia",
       "android"
     ],
@@ -16,6 +14,53 @@
 	      true,
 	      false
 	    ]
-    }
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "note": "On non-CrOS a default_for_enterprise_users doesn't apply, so the default pref value won't be affected by the enterprise policy",
+        "policies": {},
+        "prefs": {
+          "tracking_protection.ip_protection_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "On CrOS, an empty policy is overriden by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "tracking_protection.ip_protection_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PrivacySandboxIpProtectionEnabled": true
+        },
+        "prefs": {
+          "tracking_protection.ip_protection_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PrivacySandboxIpProtectionEnabled": false
+        },
+        "prefs": {
+          "tracking_protection.ip_protection_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
   }
 ]
