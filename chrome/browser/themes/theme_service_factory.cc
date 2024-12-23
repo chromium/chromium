@@ -72,8 +72,9 @@ ThemeService* ThemeServiceFactory::GetForProfile(Profile* profile) {
 const extensions::Extension* ThemeServiceFactory::GetThemeForProfile(
     Profile* profile) {
   ThemeService* theme_service = GetForProfile(profile);
-  if (!theme_service->UsingExtensionTheme())
+  if (!theme_service->UsingExtensionTheme()) {
     return nullptr;
+  }
 
   return extensions::ExtensionRegistry::Get(profile)
       ->enabled_extensions()
