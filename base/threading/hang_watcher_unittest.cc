@@ -284,7 +284,9 @@ TEST_F(HangWatcherTest, MultipleInvalidateExpectationsDoNotCancelOut) {
   ASSERT_FALSE(hang_event_.IsSignaled());
 }
 
-TEST_F(HangWatcherTest, NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
+// TODO(crbug.com/385732561): Test is flaky.
+TEST_F(HangWatcherTest,
+       DISABLED_NewInnerWatchHangsInScopeAfterInvalidationDetectsHang) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
