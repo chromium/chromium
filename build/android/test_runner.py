@@ -360,6 +360,12 @@ def AddDeviceOptions(parser):
       'to the id of the main user on device. Only use when the main user is a '
       'secondary user, e.g. Android Automotive OS.')
 
+  parser.add_argument(
+      '--connect-over-ethernet',
+      action='store_true',
+      help='Connect to devices over the network using "adb connect". Only '
+      'supported when running on chromeos-swarming')
+
 
 def AddEmulatorOptions(parser):
   """Adds emulator-specific options to |parser|."""
