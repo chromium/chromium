@@ -328,11 +328,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // TODO(crbug.com/40604019): Get rid of ResourceContext.
   ResourceContext* GetResourceContext() const;
 
-  // Grant third-party cookie access to certain sites that the user visited in
-  // the past, according to the popup heuristics described at
-  // https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/explainer.md
-  void BackfillPopupHeuristicGrants(base::OnceCallback<void(bool)> callback);
-
   base::WeakPtr<BrowserContext> GetWeakPtr();
 
   //////////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,7 @@ ProfileSelections GetHumanProfileSelections() {
 
 }  // namespace
 
-static_assert(DIPSService::kDefaultRemoveMask ==
+static_assert(content::DipsDelegate::kDefaultRemoveMask ==
                   (chrome_browsing_data_remover::FILTERABLE_DATA_TYPES &
                    ((content::BrowsingDataRemover::DATA_TYPE_CONTENT_END << 1) -
                     1)),

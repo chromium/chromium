@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
-#include "content/public/browser/dips_service.h"
+#include "chrome/browser/dips/dips_service.h"
 
 namespace dips {
 

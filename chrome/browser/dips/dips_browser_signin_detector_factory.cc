@@ -6,10 +6,11 @@
 
 #include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_browser_signin_detector.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "content/public/browser/dips_service.h"
 #include "content/public/common/content_features.h"
 
 /*static*/
@@ -39,6 +40,7 @@ DIPSBrowserSigninDetectorFactory::DIPSBrowserSigninDetectorFactory(PassKey)
     : BrowserContextKeyedServiceFactory(
           "DIPSBrowserSigninDetector",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(DIPSServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

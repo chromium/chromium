@@ -353,11 +353,6 @@ ResourceContext* BrowserContext::GetResourceContext() const {
   return impl()->GetResourceContext();
 }
 
-void BrowserContext::BackfillPopupHeuristicGrants(
-    base::OnceCallback<void(bool)> callback) {
-  return impl_->BackfillPopupHeuristicGrants(std::move(callback));
-}
-
 base::WeakPtr<BrowserContext> BrowserContext::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/keyed_service",
+  "+content/public/browser",
+  "+content/public/test",
+  "+net",
+]
+
+specific_include_rules = {
+  "dips_bounce_detector_browsertest\.cc": [
+    "+device/fido/virtual_fido_device_factory.h",
+  ],
+  "dips_navigation_flow_detector_browsertest\.cc": [
+    "+device/fido/virtual_fido_device_factory.h",
+  ],
+}

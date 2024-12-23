@@ -51,6 +51,8 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -683,6 +685,44 @@ class ClearDomainReliabilityTester {
   unsigned clear_count_ = 0;
   network::mojom::NetworkContext::DomainReliabilityClearMode last_clear_mode_;
   base::RepeatingCallback<bool(const GURL&)> last_filter_;
+};
+
+class RemoveDIPSEventsTester {
+ public:
+  explicit RemoveDIPSEventsTester(Profile* profile) {
+    storage_ = DIPSServiceImpl::Get(profile)->storage();
+  }
+
+  void WriteEventTimes(GURL url,
+                       std::optional<base::Time> storage_time,
+                       std::optional<base::Time> interaction_time) {
+    if (storage_time.has_value()) {
+      storage_->AsyncCall(&DIPSStorage::RecordStorage)
+          .WithArgs(url, storage_time.value(), DIPSCookieMode::kBlock3PC);
+    }
+    if (interaction_time.has_value()) {
+      storage_->AsyncCall(&DIPSStorage::RecordInteraction)
+          .WithArgs(url, interaction_time.value(), DIPSCookieMode::kBlock3PC);
+    }
+    storage_->FlushPostedTasksForTesting();
+  }
+
+  std::optional<StateValue> ReadStateValue(GURL url) {
+    std::optional<StateValue> value;
+
+    storage_->AsyncCall(&DIPSStorage::Read)
+        .WithArgs(url)
+        .Then(base::BindLambdaForTesting([&](const DIPSState& state) {
+          value = state.was_loaded() ? std::make_optional(state.ToStateValue())
+                                     : std::nullopt;
+        }));
+    storage_->FlushPostedTasksForTesting();
+
+    return value;
+  }
+
+ private:
+  raw_ptr<base::SequenceBound<DIPSStorage>> storage_;
 };
 
 class RemoveSecurePaymentConfirmationCredentialsTester {
@@ -3546,6 +3586,125 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTopicSettings) {
   // Verify topics are unblocked after deletion.
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_one));
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_two));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
+  RemoveDIPSEventsTester tester(GetProfile());
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+
+  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
+                         /*interaction_time=*/std::nullopt);
+  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
+                         /*interaction_time=*/two_hours_ago);
+
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+
+    ASSERT_TRUE(state_val1.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+    ASSERT_TRUE(state_val2.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+  }
+
+  uint64_t remove_mask = constants::DATA_TYPE_HISTORY |
+                         content::BrowsingDataRemover::DATA_TYPE_COOKIES;
+
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(), remove_mask,
+                                false);
+
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+
+    EXPECT_FALSE(state_val1.has_value());
+    ASSERT_TRUE(state_val2.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+  }
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), remove_mask,
+                                false);
+
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+
+    EXPECT_FALSE(state_val1.has_value());
+    EXPECT_FALSE(state_val2.has_value());
+  }
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
+  RemoveDIPSEventsTester tester(GetProfile());
+  GURL url1("https://example1.com");
+  GURL url2("https://example2.com");
+  GURL url3("https://example3.com");
+  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
+
+  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
+                         /*interaction_time=*/std::nullopt);
+  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
+                         /*interaction_time=*/base::Time::Now());
+  tester.WriteEventTimes(url3, /*storage_time=*/base::Time::Now(),
+                         /*interaction_time=*/two_hours_ago);
+
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+
+    ASSERT_TRUE(state_val1.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+
+    ASSERT_TRUE(state_val2.has_value());
+    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
+
+    ASSERT_TRUE(state_val3.has_value());
+    EXPECT_TRUE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+  }
+
+  // Remove interaction events from DIPS Storage.
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  // Verify the interaction event for url2 has been removed.
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+
+    ASSERT_TRUE(state_val1.has_value());
+    EXPECT_TRUE(state_val1->site_storage_times.has_value());
+
+    EXPECT_FALSE(state_val2.has_value());
+
+    ASSERT_TRUE(state_val3.has_value());
+    EXPECT_TRUE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+  }
+
+  // Remove storage events from DIPS Storage.
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
+
+  // Verify the storage events for url1 and url3 have been removed.
+  {
+    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
+    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
+    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
+
+    EXPECT_FALSE(state_val1.has_value());
+
+    EXPECT_FALSE(state_val2.has_value());
+
+    ASSERT_TRUE(state_val3.has_value());
+    EXPECT_FALSE(state_val3->site_storage_times.has_value());
+    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
+  }
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

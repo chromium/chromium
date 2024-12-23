@@ -3309,75 +3309,56 @@ const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator
         [] = {
             {content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-            {content_settings::features::
+            {tpcd::experiment::
                  kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
              "30d"},
-            {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-             "30d"},
-            {content_settings::features::
-                 kTpcdPopupHeuristicEnableForIframeInitiatorName,
+            {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+            {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
              "none"},
-            {content_settings::features::kTpcdWriteRedirectHeuristicGrantsName,
-             "15m"},
-            {content_settings::features::
-                 kTpcdRedirectHeuristicRequireABAFlowName,
+            {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+            {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName,
              "true"},
-            {content_settings::features::
+            {tpcd::experiment::
                  kTpcdRedirectHeuristicRequireCurrentInteractionName,
              "true"}};
 const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_MainFrameInitiator[] =
         {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-         {content_settings::features::
+         {tpcd::experiment::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
           "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-          "30d"},
-         {content_settings::features::
-              kTpcdPopupHeuristicEnableForIframeInitiatorName,
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
           "none"},
-         {content_settings::features::kTpcdWriteRedirectHeuristicGrantsName,
-          "30d"},
-         {content_settings::features::kTpcdRedirectHeuristicRequireABAFlowName,
-          "true"},
-         {content_settings::features::
-              kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
           "true"}};
 const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_AllFrameInitiator[] =
         {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-         {content_settings::features::
+         {tpcd::experiment::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
           "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-          "30d"},
-         {content_settings::features::
-              kTpcdPopupHeuristicEnableForIframeInitiatorName,
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
           "all"},
-         {content_settings::features::kTpcdWriteRedirectHeuristicGrantsName,
-          "15m"},
-         {content_settings::features::kTpcdRedirectHeuristicRequireABAFlowName,
-          "true"},
-         {content_settings::features::
-              kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "15m"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
           "true"}};
 const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_LongRedirect_AllFrameInitiator[] =
         {{content_settings::features::kTpcdReadHeuristicsGrantsName, "true"},
-         {content_settings::features::
+         {tpcd::experiment::
               kTpcdWritePopupCurrentInteractionHeuristicsGrantsName,
           "30d"},
-         {content_settings::features::kTpcdBackfillPopupHeuristicsGrantsName,
-          "30d"},
-         {content_settings::features::
-              kTpcdPopupHeuristicEnableForIframeInitiatorName,
+         {tpcd::experiment::kTpcdBackfillPopupHeuristicsGrantsName, "30d"},
+         {tpcd::experiment::kTpcdPopupHeuristicEnableForIframeInitiatorName,
           "all"},
-         {content_settings::features::kTpcdWriteRedirectHeuristicGrantsName,
-          "30d"},
-         {content_settings::features::kTpcdRedirectHeuristicRequireABAFlowName,
-          "true"},
-         {content_settings::features::
-              kTpcdRedirectHeuristicRequireCurrentInteractionName,
+         {tpcd::experiment::kTpcdWriteRedirectHeuristicGrantsName, "30d"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlowName, "true"},
+         {tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteractionName,
           "true"}};
 
 const FeatureEntry::FeatureVariation kTpcdHeuristicsGrantsVariations[] = {

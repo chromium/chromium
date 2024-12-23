@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -32,93 +33,6 @@ namespace tpcd::metadata {
 namespace {
 
 using ::chrome_test_utils::GetActiveWebContents;
-
-class URLCookieAccessObserver : public content::WebContentsObserver {
- public:
-  URLCookieAccessObserver(content::WebContents* web_contents,
-                          GURL url,
-                          content::CookieAccessDetails::Type access_type);
-
-  void Wait();
-
- private:
-  // WebContentsObserver overrides
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override;
-  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
-                         const content::CookieAccessDetails& details) override;
-
-  GURL url_;
-  content::CookieAccessDetails::Type access_type_;
-  base::RunLoop run_loop_;
-};
-
-URLCookieAccessObserver::URLCookieAccessObserver(
-    content::WebContents* web_contents,
-    GURL url,
-    content::CookieAccessDetails::Type access_type)
-    : WebContentsObserver(web_contents),
-      url_(std::move(url)),
-      access_type_(access_type) {}
-
-void URLCookieAccessObserver::Wait() {
-  run_loop_.Run();
-}
-
-void URLCookieAccessObserver::OnCookiesAccessed(
-    content::RenderFrameHost* render_frame_host,
-    const content::CookieAccessDetails& details) {
-  if (details.type == access_type_ && details.url == url_) {
-    run_loop_.Quit();
-  }
-}
-
-void URLCookieAccessObserver::OnCookiesAccessed(
-    content::NavigationHandle* navigation_handle,
-    const content::CookieAccessDetails& details) {
-  if (details.type == access_type_ && details.url == url_) {
-    run_loop_.Quit();
-  }
-}
-
-bool NavigateToSetCookie(content::WebContents* web_contents,
-                         const net::EmbeddedTestServer* server,
-                         std::string_view host,
-                         bool is_secure_cookie_set,
-                         bool is_ad_tagged) {
-  std::string relative_url = "/set-cookie?name=value";
-  if (is_secure_cookie_set) {
-    relative_url += ";Secure;SameSite=None";
-  }
-  if (is_ad_tagged) {
-    relative_url += "&isad=1";
-  }
-  const auto url = server->GetURL(host, relative_url);
-
-  URLCookieAccessObserver observer(web_contents, url,
-                                   content::CookieAccessDetails::Type::kChange);
-  bool success = content::NavigateToURL(web_contents, url);
-  if (success) {
-    observer.Wait();
-  }
-  return success;
-}
-
-void CreateImageAndWaitForCookieAccess(content::WebContents* web_contents,
-                                       const GURL& image_url) {
-  URLCookieAccessObserver observer(web_contents, image_url,
-                                   content::CookieAccessDetails::Type::kRead);
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              content::JsReplace(
-                                  R"(
-    let img = document.createElement('img');
-    img.src = $1;
-    document.body.appendChild(img);)",
-                                  image_url),
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
-  // The image must cause a cookie access, or else this will hang.
-  observer.Wait();
-}
 
 }  // namespace
 

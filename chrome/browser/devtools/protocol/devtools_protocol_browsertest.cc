@@ -30,6 +30,7 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/tpcd/support/trial_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -53,17 +53,12 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/dips_redirect_info.h"
-#include "content/public/browser/dips_service.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/dips_service_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -86,8 +81,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
 
@@ -570,76 +563,6 @@ class DevToolsProtocolTest_BounceTrackingMitigations
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-testing::AssertionResult SimulateDipsBounce(content::WebContents* web_contents,
-                                            const GURL& initial_url,
-                                            const GURL& bounce_url,
-                                            const GURL& final_url) {
-  web_contents = web_contents->OpenURL(
-      content::OpenURLParams(initial_url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PageTransition::PAGE_TRANSITION_TYPED,
-                             /*is_renderer_initiated=*/false),
-      {});
-  if (!web_contents) {
-    return testing::AssertionFailure() << "OpenURL() returned nullptr";
-  }
-
-  if (!content::WaitForLoadStop(web_contents)) {
-    return testing::AssertionFailure() << "Failed to wait for loading to stop";
-  }
-
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
-  if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
-    return testing::AssertionFailure()
-           << "Failed to navigate to " << bounce_url;
-  }
-
-  tpcd::trial::URLCookieAccessObserver cookie_observer(
-      web_contents, bounce_url, tpcd::trial::CookieOperation::kChange);
-  testing::AssertionResult js_result =
-      content::ExecJs(web_contents, "document.cookie = 'bounce=stateful';",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  if (!js_result) {
-    return js_result;
-  }
-  cookie_observer.Wait();
-
-  content::DipsRedirectChainObserver final_observer(dips_service, final_url);
-  if (!content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                            final_url)) {
-    return testing::AssertionFailure() << "Failed to navigate to " << final_url;
-  }
-
-  // End redirect chain by closing the tab.
-  web_contents->Close();
-  final_observer.Wait();
-
-  if (testing::Test::HasFailure()) {
-    return testing::AssertionFailure() << "Failure generated while waiting for "
-                                          "the redirect chain to be reported";
-  }
-
-  if (final_observer.redirects()->size() != 1) {
-    return testing::AssertionFailure() << "Expected 1 redirect; found "
-                                       << final_observer.redirects()->size();
-  }
-
-  const DIPSRedirectInfo& redirect = *final_observer.redirects()->at(0);
-  if (redirect.url.url != bounce_url) {
-    return testing::AssertionFailure() << "Expected redirect at " << bounce_url
-                                       << "; found " << redirect.url.url;
-  }
-
-  if (redirect.access_type != DIPSDataAccessType::kWrite &&
-      redirect.access_type != DIPSDataAccessType::kReadWrite) {
-    return testing::AssertionFailure()
-           << "No write access recorded for redirect";
-  }
-
-  return testing::AssertionSuccess();
-}
-
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
                        RunBounceTrackingMitigations) {
   SetBlockThirdPartyCookies(true);
@@ -654,7 +577,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
   // Record a stateful bounce for `bouncer`.
   ASSERT_TRUE(SimulateDipsBounce(
       web_contents(), embedded_test_server()->GetURL("a.test", "/empty.html"),
-      bouncer, embedded_test_server()->GetURL("b.test", "/empty.html")));
+      bouncer, embedded_test_server()->GetURL("b.test", "/empty.html"),
+      embedded_test_server()->GetURL("c.test", "/empty.html")));
 
   SendCommandSync("Storage.runBounceTrackingMitigations");
 
