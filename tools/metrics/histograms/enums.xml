@@ -15997,6 +15997,7 @@ from previous Chrome versions.
   <int value="-1777540083" label="LocationBarModelOptimizations:disabled"/>
   <int value="-1776351704" label="DesktopPWAsOmniboxInstall:disabled"/>
   <int value="-1775842908" label="EnableOAuthIpp:disabled"/>
+  <int value="-1775183049" label="NewTabPageCustomization:enabled"/>
   <int value="-1774921110" label="ServiceWorkerStaticRouter:enabled"/>
   <int value="-1774818943" label="VrWebInputEditing:enabled"/>
   <int value="-1774392993"
@@ -17391,6 +17392,7 @@ from previous Chrome versions.
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
   <int value="-1218063855" label="MediaAppAnnotation:disabled"/>
   <int value="-1217936232" label="HeuristicMemorySaver:disabled"/>
+  <int value="-1217688364" label="NewTabPageCustomization:disabled"/>
   <int value="-1217623062"
       label="AutofillAlwaysReturnCloudTokenizedCard:disabled"/>
   <int value="-1217600112"

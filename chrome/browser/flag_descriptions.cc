@@ -93,6 +93,12 @@ const char kAndroidAppIntegrationV2Description[] =
     "If enabled, allows Chrome to integrate with the Android App Search "
     "directly without using internal library.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kNewTabPageCustomizationName[] = "Customize the new tab page";
+const char kNewTabPageCustomizationDescription[] =
+    "If enabled, allows users to customize the new tab page";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAndroidAppIntegrationWithFaviconName[] =
     "Integrate with Android App Search with favicons";
 const char kAndroidAppIntegrationWithFaviconDescription[] =

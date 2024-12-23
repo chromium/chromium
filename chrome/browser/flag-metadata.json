@@ -6081,6 +6081,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "new-tab-page-customization",
+    "owners": ["hanxi@chromium.org", "yanlinghu@google.com", "clank-start@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 132

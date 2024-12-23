@@ -810,6 +810,11 @@ extern const char kBiometricAuthIdentityCheckDescription[];
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kNewTabPageCustomizationName[];
+extern const char kNewTabPageCustomizationDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kEnableGenericSensorExtraClassesName[];
 extern const char kEnableGenericSensorExtraClassesDescription[];
 
