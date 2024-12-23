@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GOOGLE_GOOGLE_UPDATE_POLICY_FETCHER_WIN_UTIL_H_
 
 #include <wtypes.h>
+
 #include <memory>
 
 #include "base/functional/callback.h"

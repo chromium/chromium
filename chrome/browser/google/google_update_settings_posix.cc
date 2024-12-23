@@ -88,8 +88,9 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 
   base::FilePath consent_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &consent_dir);
-  if (!base::DirectoryExists(consent_dir))
+  if (!base::DirectoryExists(consent_dir)) {
     return false;
+  }
 
   base::AutoLock lock(g_posix_client_id_lock.Get());
 
@@ -100,8 +101,9 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
   }
 
   const std::string& client_id = g_posix_client_id.Get();
-  if (base::PathExists(consent_file) && client_id.empty())
+  if (base::PathExists(consent_file) && client_id.empty()) {
     return true;
+  }
 
   if (!base::WriteFile(consent_file, client_id)) {
     return false;
@@ -118,8 +120,9 @@ GoogleUpdateSettings::LoadMetricsClientInfo() {
   auto client_info = std::make_unique<metrics::ClientInfo>();
 
   base::AutoLock lock(g_posix_client_id_lock.Get());
-  if (g_posix_client_id.Get().empty())
+  if (g_posix_client_id.Get().empty()) {
     return nullptr;
+  }
   client_info->client_id = g_posix_client_id.Get();
 
   return client_info;
@@ -130,8 +133,9 @@ GoogleUpdateSettings::LoadMetricsClientInfo() {
 void GoogleUpdateSettings::StoreMetricsClientInfo(
     const metrics::ClientInfo& client_info) {
   // Make sure that user has consented to send crashes.
-  if (!GoogleUpdateSettings::GetCollectStatsConsent())
+  if (!GoogleUpdateSettings::GetCollectStatsConsent()) {
     return;
+  }
 
   {
     // Since user has consented, write the metrics id to the file.
