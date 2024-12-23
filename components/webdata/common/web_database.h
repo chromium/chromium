@@ -23,10 +23,7 @@ class Encryptor;
 // This class manages a SQLite database that stores various web page meta data.
 class WEBDATA_EXPORT WebDatabase {
  public:
-  enum State {
-    COMMIT_NOT_NEEDED,
-    COMMIT_NEEDED
-  };
+  enum State { COMMIT_NOT_NEEDED, COMMIT_NEEDED };
 
   // Current database version number.
   //
@@ -112,8 +109,7 @@ class WEBDATA_EXPORT WebDatabase {
   // Implementations may set |*update_compatible_version| to true if
   // the compatible version should be changed to |version|.
   // Implementations should otherwise not modify this parameter.
-  bool MigrateToVersion(int version,
-                        bool* update_compatible_version);
+  bool MigrateToVersion(int version, bool* update_compatible_version);
 
   bool MigrateToVersion58DropWebAppsAndIntents();
   bool MigrateToVersion79DropLoginsTable();

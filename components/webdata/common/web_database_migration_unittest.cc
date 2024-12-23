@@ -47,13 +47,16 @@ std::string NormalizeSchemaForComparison(const std::string& schema) {
   normalized.reserve(schema.size());
   bool skip_following_spaces = false;
   for (char c : schema) {
-    if (base::Contains("\"[]`", c))  // Quotes
+    if (base::Contains("\"[]`", c)) {  // Quotes
       continue;
-    if (c == ' ' && skip_following_spaces)
+    }
+    if (c == ' ' && skip_following_spaces) {
       continue;
+    }
     bool is_separator = base::Contains(",()", c);
-    if (is_separator && !normalized.empty() && normalized.back() == ' ')
+    if (is_separator && !normalized.empty() && normalized.back() == ' ') {
       normalized.pop_back();
+    }
     normalized.push_back(c);
     skip_following_spaces = c == ' ' || is_separator;
   }
@@ -134,8 +137,9 @@ class WebDatabaseMigrationTest : public testing::Test {
     // Get version.
     sql::Statement s(connection->GetUniqueStatement(
         "SELECT value FROM meta WHERE key='version'"));
-    if (!s.Step())
+    if (!s.Step()) {
       return 0;
+    }
     return s.ColumnInt(0);
   }
 

@@ -20,8 +20,9 @@
 
 WebDataRequest::~WebDataRequest() {
   WebDataRequestManager* manager = GetManager();
-  if (manager)
+  if (manager) {
     manager->CancelRequest(handle_);
+  }
 }
 
 WebDataServiceBase::Handle WebDataRequest::GetHandle() const {
@@ -70,9 +71,7 @@ void WebDataRequest::MarkAsInactive() {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-WebDataRequestManager::WebDataRequestManager()
-    : next_request_handle_(1) {
-}
+WebDataRequestManager::WebDataRequestManager() : next_request_handle_(1) {}
 
 std::unique_ptr<WebDataRequest> WebDataRequestManager::NewRequest(
     WebDataServiceConsumer* consumer) {
@@ -91,8 +90,9 @@ void WebDataRequestManager::CancelRequest(WebDataServiceBase::Handle h) {
   // If the request was already cancelled, or has already completed, it won't
   // be in the pending_requests_ collection any more.
   auto i = pending_requests_.find(h);
-  if (i == pending_requests_.end())
+  if (i == pending_requests_.end()) {
     return;
+  }
   i->second->MarkAsInactive();
   pending_requests_.erase(i);
 }
@@ -106,16 +106,18 @@ void WebDataRequestManager::RequestCompleted(
       request->GetTaskRunner();
   auto task = base::BindOnce(&WebDataRequestManager::RequestCompletedOnThread,
                              this, std::move(request), std::move(result));
-  if (task_runner)
+  if (task_runner) {
     task_runner->PostTask(FROM_HERE, std::move(task));
-  else
+  } else {
     base::ThreadPool::PostTask(FROM_HERE, std::move(task));
+  }
 }
 
 WebDataRequestManager::~WebDataRequestManager() {
   base::AutoLock l(pending_lock_);
-  for (auto i = pending_requests_.begin(); i != pending_requests_.end(); ++i)
+  for (auto i = pending_requests_.begin(); i != pending_requests_.end(); ++i) {
     i->second->MarkAsInactive();
+  }
   pending_requests_.clear();
 }
 
@@ -125,8 +127,9 @@ void WebDataRequestManager::RequestCompletedOnThread(
   // Check whether the request is active. It might have been cancelled in
   // another thread before this completion handler was invoked. This means the
   // request initiator is no longer interested in the result.
-  if (!request->IsActive())
+  if (!request->IsActive()) {
     return;
+  }
 
   // Stop tracking the request. The request is already finished, so "stop
   // tracking" is the same as post-facto cancellation.

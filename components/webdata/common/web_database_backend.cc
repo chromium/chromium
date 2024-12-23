@@ -48,14 +48,16 @@ void WebDatabaseBackend::InitDatabase() {
   // MaybeInitEncryptorOnUiSequence must be called first.
   CHECK(encryptor_);
   LoadDatabaseIfNecessary();
-  if (delegate_)
+  if (delegate_) {
     delegate_->DBLoaded(init_status_, diagnostics_);
+  }
 }
 
 void WebDatabaseBackend::ShutdownDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_ && init_status_ == sql::INIT_OK)
+  if (db_ && init_status_ == sql::INIT_OK) {
     db_->CommitTransaction();
+  }
   db_.reset();
   init_complete_ = true;  // Ensures the init sequence is not re-run.
   init_status_ = sql::INIT_FAILURE;
@@ -66,8 +68,9 @@ void WebDatabaseBackend::DBWriteTaskWrapper(
     std::unique_ptr<WebDataRequest> request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(init_complete_) << "Init must be complete before running a DB task.";
-  if (!request->IsActive())
+  if (!request->IsActive()) {
     return;
+  }
   ExecuteWriteTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), nullptr);
 }
@@ -77,8 +80,9 @@ void WebDatabaseBackend::ExecuteWriteTask(WebDatabaseService::WriteTask task) {
   CHECK(init_complete_) << "Init must be complete before running a DB task.";
   if (db_ && init_status_ == sql::INIT_OK) {
     WebDatabase::State state = std::move(task).Run(db_.get());
-    if (state == WebDatabase::COMMIT_NEEDED)
+    if (state == WebDatabase::COMMIT_NEEDED) {
       Commit();
+    }
   }
 }
 
@@ -87,8 +91,9 @@ void WebDatabaseBackend::DBReadTaskWrapper(
     std::unique_ptr<WebDataRequest> request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(init_complete_) << "Init must be complete before running a DB task.";
-  if (!request->IsActive())
+  if (!request->IsActive()) {
     return;
+  }
   std::unique_ptr<WDTypedResult> result = ExecuteReadTask(std::move(task));
   request_manager_->RequestCompleted(std::move(request), std::move(result));
 }
@@ -108,14 +113,16 @@ WebDatabaseBackend::~WebDatabaseBackend() {
 
 void WebDatabaseBackend::LoadDatabaseIfNecessary() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (init_complete_ || db_path_.empty())
+  if (init_complete_ || db_path_.empty()) {
     return;
+  }
 
   init_complete_ = true;
   db_ = std::make_unique<WebDatabase>();
 
-  for (const auto& table : tables_)
+  for (const auto& table : tables_) {
     db_->AddTable(table.get());
+  }
 
   // Unretained to avoid a ref loop since we own |db_|.
   db_->set_error_callback(base::BindRepeating(
@@ -130,8 +137,9 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
   }
 
   // A catastrophic error might have happened and recovered.
-  if (catastrophic_error_occurred_)
+  if (catastrophic_error_occurred_) {
     init_status_ = sql::INIT_OK_WITH_DATA_LOSS;
+  }
   db_->BeginTransaction();
 }
 

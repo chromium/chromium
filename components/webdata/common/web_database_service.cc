@@ -49,6 +49,7 @@ class WebDatabaseService::BackendDelegate
         FROM_HERE, base::BindOnce(&WebDatabaseService::OnDatabaseLoadDone,
                                   web_database_service_, status, diagnostics));
   }
+
  private:
   const base::WeakPtr<WebDatabaseService> web_database_service_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
@@ -109,8 +110,9 @@ void WebDatabaseService::LoadDatabase(os_crypt_async::OSCryptAsync* os_crypt) {
 void WebDatabaseService::ShutdownDatabase() {
   error_callbacks_.clear();
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (!web_db_backend_)
+  if (!web_db_backend_) {
     return;
+  }
   db_task_runner_->PostTask(
       FROM_HERE,
       BindOnce(&WebDatabaseBackend::ShutdownDatabase, web_db_backend_));
@@ -157,8 +159,9 @@ WebDataServiceBase::Handle WebDatabaseService::ScheduleDBTaskWithResult(
 }
 
 void WebDatabaseService::CancelRequest(WebDataServiceBase::Handle h) {
-  if (web_db_backend_)
+  if (web_db_backend_) {
     web_db_backend_->request_manager()->CancelRequest(h);
+  }
 }
 
 void WebDatabaseService::RegisterDBErrorCallback(DBLoadErrorCallback callback) {
@@ -176,8 +179,9 @@ void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,
                                             const std::string& diagnostics) {
   // The INIT_OK_WITH_DATA_LOSS status is an initialization success but with
   // suspected data loss, so we also run the error callbacks.
-  if (status == sql::INIT_OK)
+  if (status == sql::INIT_OK) {
     return;
+  }
 
   // Notify that the database load failed.
   while (!error_callbacks_.empty()) {
@@ -188,7 +192,8 @@ void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,
     // |error_callbacks_| before it accesses it.
     DBLoadErrorCallback error_callback = std::move(error_callbacks_.back());
     error_callbacks_.pop_back();
-    if (!error_callback.is_null())
+    if (!error_callback.is_null()) {
       std::move(error_callback).Run(status, diagnostics);
+    }
   }
 }
