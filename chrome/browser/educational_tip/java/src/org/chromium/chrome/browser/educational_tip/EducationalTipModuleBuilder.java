@@ -85,15 +85,14 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder, Modul
     @Override
     public InputContext createInputContext() {
         int cardType = EducationalTipModuleUtils.getCardType(mModuleType);
-        Tracker tracker =
-                TrackerFactory.getTrackerForProfile(
-                        getRegularProfile(mActionDelegate.getProfileSupplier()));
+        Profile profile = getRegularProfile(mActionDelegate.getProfileSupplier());
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         return EducationalTipCardProviderSignalHandler.createInputContext(
-                cardType, mActionDelegate, tracker);
+                cardType, mActionDelegate, profile, tracker);
     }
 
     /** Gets the regular profile if exists. */
-    private Profile getRegularProfile(ObservableSupplier<Profile> profileSupplier) {
+    private Profile getRegularProfile(@NonNull ObservableSupplier<Profile> profileSupplier) {
         if (mProfile != null) {
             return mProfile;
         }

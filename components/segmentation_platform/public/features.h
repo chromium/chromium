@@ -156,6 +156,9 @@ extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
 // The maximum number of times the tab group promo card can be visible to the
 // user.
 extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
+// The maximum number of times the tab group sync promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
 
 }  // namespace segmentation_platform::features
 

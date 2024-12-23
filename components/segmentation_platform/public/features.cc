@@ -243,5 +243,8 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
 constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
     &kEducationalTipModule, "max_tab_group_card_impressions",
     /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
+    &kEducationalTipModule, "max_tab_group_sync_card_impressions",
+    /*default_value=*/10};
 
 }  // namespace segmentation_platform::features

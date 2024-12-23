@@ -45,7 +45,8 @@ const char kHasDefaultBrowserPromoShownInOtherSurface[] =
 const char kTabGroupExists[] = "tab_group_exists";
 const char kNumberOfTabs[] = "number_of_tabs";
 const char kTabGroupPromoShownCount[] = "tab_group_shown_count";
-const char kHaveSyncedTabGroups[] = "have_synced_tab_groups";
+const char kSyncedTabGroupExists[] = "synced_tab_group_exists";
+const char kTabGroupSyncPromoShownCount[] = "tab_group_sync_shown_count";
 const char kHaveClearedBrowsingDataInThirtyDays[] =
     "have_cleared_browsing_data_in_thirty_days";
 const char kHaveUsedIncognito[] = "have_used_incognito";

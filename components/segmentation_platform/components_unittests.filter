@@ -86,6 +86,7 @@
 *StatsTest.*
 *SyncDeviceInfoObserverTest.*
 *TabGroupPromoTest.*
+*TabGroupSyncPromoTest.*
 *TabRankDispatcherTest.*
 *TabResumptionRankerTest.*
 *TabSessionSourceTest.*

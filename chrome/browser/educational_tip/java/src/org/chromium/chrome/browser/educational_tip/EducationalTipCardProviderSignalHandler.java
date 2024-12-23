@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -16,6 +21,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Provides information about the signals of cards in the educational tip module. */
 public class EducationalTipCardProviderSignalHandler {
@@ -24,6 +30,7 @@ public class EducationalTipCardProviderSignalHandler {
     static InputContext createInputContext(
             @EducationalTipCardType int cardType,
             EducationTipModuleActionDelegate actionDelegate,
+            @NonNull Profile profile,
             Tracker tracker) {
         InputContext inputContext = new InputContext();
         switch (cardType) {
@@ -46,6 +53,9 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(getCurrentTabCount(actionDelegate)));
                 return inputContext;
             case EducationalTipCardType.TAB_GROUP_SYNC:
+                inputContext.addEntry(
+                        "synced_tab_group_exists",
+                        ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
             case EducationalTipCardType.QUICK_DELETE:
                 return inputContext;
@@ -101,5 +111,20 @@ public class EducationalTipCardProviderSignalHandler {
         TabModel normalModel = tabModelSelector.getModel(/* incognito= */ false);
         TabModel incognitoModel = tabModelSelector.getModel(/* incognito= */ true);
         return normalModel.getCount() + incognitoModel.getCount();
+    }
+
+    /** Returns a value of 1.0f if a synced tab group exists. Otherwise, it returns 0.0f. */
+    private static float syncedTabGroupExists(Profile profile) {
+        @Nullable TabGroupSyncService tabGroupSyncService = null;
+        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        }
+
+        if (tabGroupSyncService == null) {
+            return 0.0f;
+        }
+
+        int syncedGroupCount = tabGroupSyncService.getAllGroupIds().length;
+        return syncedGroupCount > 0 ? 1.0f : 0.0f;
     }
 }

@@ -13,9 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -71,11 +68,9 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private TabModel mIncognitoModel;
 
     private EducationalTipModuleBuilder mModuleBuilder;
-    private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mProfileSupplier.hasValue()).thenReturn(true);
         when(mProfileSupplier.get()).thenReturn(mProfile);

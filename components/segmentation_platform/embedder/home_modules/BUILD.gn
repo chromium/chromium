@@ -45,6 +45,8 @@ static_library("home_modules") {
       "default_browser_promo.h",
       "tab_group_promo.cc",
       "tab_group_promo.h",
+      "tab_group_sync_promo.cc",
+      "tab_group_sync_promo.h",
     ]
   }
 
@@ -97,6 +99,7 @@ source_set("unit_tests") {
     sources += [
       "default_browser_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
+      "tab_group_sync_promo_unittest.cc",
     ]
   }
 
