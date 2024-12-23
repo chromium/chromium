@@ -1420,6 +1420,30 @@ TEST_F(AutofillProfileComparatorTest,
           existing_profile, new_profile, kLocale));
 }
 
+// Tests that JP profiles that differ only in the character set used for
+// alternative name are considered equal.
+TEST_F(AutofillProfileComparatorTest,
+       ProfilesHaveTheSameSettingsVisibleValuesJP) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile existing_profile(AddressCountryCode("JP"));
+  test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",
+                       "mail@mail.com", "company", "line1", "line2", "city",
+                       "state", "zip", "JP", "phone");
+  existing_profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"あおい");
+  existing_profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまもと");
+  existing_profile.FinalizeAfterImport();
+
+  AutofillProfile new_profile = existing_profile;
+  new_profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"アオイ");
+  new_profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"ヤマモト");
+  new_profile.FinalizeAfterImport();
+
+  EXPECT_FALSE(
+      AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+          existing_profile, new_profile, kLocale));
+}
+
 TEST_F(AutofillProfileComparatorTest, GetProfileDifference) {
   AutofillProfile existing_profile(AddressCountryCode("US"));
   test::SetProfileInfo(&existing_profile, "firstName", "middleName", "lastName",

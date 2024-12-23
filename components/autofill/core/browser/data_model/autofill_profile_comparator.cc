@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -666,6 +667,20 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
   // Return true if at least one value corresponding to the settings visible
   // types is different between the two profiles.
   return std::ranges::any_of(p1.GetUserVisibleTypes(), [&](FieldType type) {
+    if (IsAlternativeNameType(type) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillSupportPhoneticNameForJP)) {
+      // Consider two alternative names that differ only in the character set
+      // equal.
+      return p1.GetNameInfo()
+                 .GetStructuredAlternativeName()
+                 .GetValueForComparisonForType(
+                     type, p2.GetNameInfo().GetStructuredAlternativeName()) !=
+             p2.GetNameInfo()
+                 .GetStructuredAlternativeName()
+                 .GetValueForComparisonForType(
+                     type, p1.GetNameInfo().GetStructuredAlternativeName());
+    }
     return p1.GetInfo(type, app_locale) != p2.GetInfo(type, app_locale);
   });
 }
