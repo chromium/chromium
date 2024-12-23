@@ -440,6 +440,7 @@ source_set("unit_tests") {
     deps += [
       ":signin_ui_error",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/webui/signin:profile",
       "//components/unified_consent",
       "//components/user_manager",
     ]

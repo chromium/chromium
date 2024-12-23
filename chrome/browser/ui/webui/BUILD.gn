@@ -48,10 +48,14 @@ source_set("configs") {
     deps += [
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/signin",
     ]
 
     if (!is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/whats_new" ]
+      deps += [
+        "//chrome/browser/ui/webui/signin:profile",
+        "//chrome/browser/ui/webui/whats_new",
+      ]
     }
   }
 
