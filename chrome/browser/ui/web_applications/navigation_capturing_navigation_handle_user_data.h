@@ -82,7 +82,8 @@ class NavigationCapturingRedirectionInfo {
   NoInitialActionRedirectionHandlingEligible(
       const std::optional<webapps::AppId>& source_browser_app_id,
       const std::optional<webapps::AppId>& source_tab_app_id,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      Browser* navigation_params_browser);
 
   // Created for non-user modified navigations that usually launch a new app
   // window.
@@ -91,7 +92,8 @@ class NavigationCapturingRedirectionInfo {
       const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
       blink::mojom::DisplayMode capturing_display_mode,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      Browser* navigation_params_browser);
 
   // Created for non user modified navigations that result in a capturable
   // navigation launching a new app container (window or tab).
@@ -100,7 +102,8 @@ class NavigationCapturingRedirectionInfo {
       const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
       blink::mojom::DisplayMode capturing_display_mode,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      Browser* navigation_params_browser);
 
   // Created for non user modified navigations that result in a capturable
   // navigation opening an existing app container (window or tab). This is
@@ -110,7 +113,8 @@ class NavigationCapturingRedirectionInfo {
       const std::optional<webapps::AppId>& source_browser_app_id,
       const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      Browser* navigation_params_browser);
 
   ~NavigationCapturingRedirectionInfo();
 
@@ -143,6 +147,10 @@ class NavigationCapturingRedirectionInfo {
   // The `WindowOpenDisposition` of the first navigation.
   WindowOpenDisposition disposition() const { return disposition_; }
 
+  Browser* navigation_params_browser() const {
+    return navigation_params_browser_;
+  }
+
   base::Value ToDebugData() const;
 
  private:
@@ -151,7 +159,8 @@ class NavigationCapturingRedirectionInfo {
       const std::optional<webapps::AppId>& source_tab_app_id,
       NavigationHandlingInitialResult initial_nav_handling_result,
       const std::optional<webapps::AppId>& first_navigation_app_id,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      Browser* navigation_params_browser);
 
   std::optional<webapps::AppId> source_browser_app_id_;
   std::optional<webapps::AppId> source_tab_app_id_;
@@ -159,6 +168,7 @@ class NavigationCapturingRedirectionInfo {
       NavigationHandlingInitialResult::kBrowserTab;
   std::optional<webapps::AppId> first_navigation_app_id_;
   WindowOpenDisposition disposition_ = WindowOpenDisposition::UNKNOWN;
+  raw_ptr<Browser> navigation_params_browser_ = nullptr;
 };
 
 // Data that is tied to the NavigationHandle. Used in the
