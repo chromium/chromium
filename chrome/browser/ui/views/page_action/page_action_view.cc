@@ -117,28 +117,19 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
 }
 
 void PageActionView::UpdateIconImage() {
-  // If PageActionView is not hosted within a Widget hierarchy early return
-  // here. `UpdateIconImage()` is called in OnThemeChanged() and will update as
-  // needed when added to a Widget and on theme changes. Returning early avoids
-  // a call to GetNativeTheme() when no hosting Widget is present which falls
-  // through to the deprecated global NativeTheme accessor.
-  if (!GetWidget()) {
+  // Icon default size may be different from the size used in the location bar.
+  const int icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  const auto icon_image = action_item_->GetImage();
+  if (icon_image.Size() == gfx::Size(icon_size, icon_size)) {
     return;
   }
 
-  // Icon default size may be different from the size used in the location bar.
-  const int icon_size = GetLayoutConstant(LOCATION_BAR_TRAILING_ICON_SIZE);
+  const gfx::ImageSkia image = gfx::CreateVectorIcon(
+      *action_item_->GetImage().GetVectorIcon().vector_icon(), icon_size,
+      GetForegroundColor());
 
-  const auto icon_image = action_item_->GetImage();
-  if (icon_image.Size() != gfx::Size(icon_size, icon_size)) {
-    const gfx::ImageSkia image = gfx::CreateVectorIcon(
-        *action_item_->GetImage().GetVectorIcon().vector_icon(), icon_size,
-        GetForegroundColor());
-    if (!image.isNull()) {
-      SetImageModel(ui::ImageModel::FromImageSkia(image));
-    }
-
-    return;
+  if (!image.isNull()) {
+    SetImageModel(ui::ImageModel::FromImageSkia(image));
   }
 }
 

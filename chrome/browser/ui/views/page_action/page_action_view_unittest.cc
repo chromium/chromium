@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,16 +39,12 @@ class PageActionViewTest : public views::ViewsTestBase {
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(16, 16);
-    bitmap.eraseColor(SK_ColorRED);
-    gfx::ImageSkia test_image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-
+    // Use any arbitrary vector icon.
+    auto image = ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
+                                                ui::kColorSysPrimary,
+                                                /*icon_size=*/16);
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder()
-            .SetActionId(0)
-            .SetImage(ui::ImageModel::FromImage(gfx::Image(test_image)))
-            .Build());
+        actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
     page_action_view_ = std::make_unique<PageActionView>(
         action_item_, &icon_label_view_delegate_);
     action_view_controller_ = std::make_unique<views::ActionViewController>();
