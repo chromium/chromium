@@ -504,6 +504,13 @@ class ShowIdentityNameStateProvider : public StateProvider,
 class SyncErrorStateProvider : public StateProvider,
                                public syncer::SyncServiceObserver {
  public:
+  struct AvatarError {
+    AvatarSyncErrorType avatar_error = AvatarSyncErrorType::kUpgradeClientError;
+    std::string email;
+
+    friend bool operator==(const AvatarError&, const AvatarError&) = default;
+  };
+
   explicit SyncErrorStateProvider(
       StateObserver& state_observer,
       Profile& profile,
@@ -511,7 +518,7 @@ class SyncErrorStateProvider : public StateProvider,
       : StateProvider(state_observer),
         profile_(profile),
         sync_error_type_(sync_error_type),
-        last_avatar_error_(::GetAvatarSyncErrorType(&profile)) {
+        last_avatar_error_(GetAvatarError(&profile)) {
     if (auto* sync_service = SyncServiceFactory::GetForProfile(&profile)) {
       sync_service_observation_.Observe(sync_service);
     }
@@ -527,17 +534,37 @@ class SyncErrorStateProvider : public StateProvider,
   // std::nullopt if there is no error or if the error does not match
   // `sync_error_type_`.
   std::optional<AvatarSyncErrorType> GetLastAvatarSyncErrorType() const {
+    return HasError(last_avatar_error_) ? std::optional<AvatarSyncErrorType>(
+                                              last_avatar_error_->avatar_error)
+                                        : std::nullopt;
+  }
+
+  std::optional<AvatarError> GetLastAvatarSyncError() const {
     return HasError(last_avatar_error_) ? last_avatar_error_ : std::nullopt;
   }
 
  private:
+  // Computes the current avatar error.
+  static std::optional<AvatarError> GetAvatarError(Profile* profile) {
+    std::optional<AvatarSyncErrorType> error_type =
+        ::GetAvatarSyncErrorType(profile);
+    if (!error_type) {
+      return std::nullopt;
+    }
+
+    const syncer::SyncService* service =
+        SyncServiceFactory::GetForProfile(profile);
+    CHECK(service);
+
+    return AvatarError{error_type.value(), service->GetAccountInfo().email};
+  }
+
   // StateProvider:
   void accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override {
-    const std::optional<AvatarSyncErrorType> error =
-        ::GetAvatarSyncErrorType(&profile_.get());
+    const std::optional<AvatarError> error = GetAvatarError(&profile_.get());
     if (last_avatar_error_ == error) {
       return;
     }
@@ -560,13 +587,13 @@ class SyncErrorStateProvider : public StateProvider,
   // Returns true if `avatar_sync_error` has a value and the value matches
   // `sync_error_type_`. If `sync_error_type_` is std::nullopt then any
   // non-nullopt `avatar_sync_error` is a match.
-  bool HasError(
-      const std::optional<AvatarSyncErrorType>& avatar_sync_error) const {
+  bool HasError(const std::optional<AvatarError>& avatar_sync_error) const {
     if (!avatar_sync_error) {
       return false;  // No sync error.
     }
 
-    if (sync_error_type_.has_value() && avatar_sync_error != sync_error_type_) {
+    if (sync_error_type_.has_value() &&
+        avatar_sync_error->avatar_error != sync_error_type_) {
       return false;  // Error has the wrong type.
     }
 
@@ -580,7 +607,7 @@ class SyncErrorStateProvider : public StateProvider,
 
   // Caches the value of the last error so the class can detect when it
   // changes and notify changes.
-  std::optional<AvatarSyncErrorType> last_avatar_error_;
+  std::optional<AvatarError> last_avatar_error_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
@@ -1475,15 +1502,16 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
               *state_manager_->GetActiveStateProvider())
               .AsSyncError();
       CHECK(sync_error_state);
-      std::optional<AvatarSyncErrorType> sync_error =
-          sync_error_state->GetLastAvatarSyncErrorType();
+      std::optional<internal::SyncErrorStateProvider::AvatarError> sync_error =
+          sync_error_state->GetLastAvatarSyncError();
       CHECK(sync_error.has_value());
       return l10n_util::GetStringFUTF16(
           IDS_AVATAR_BUTTON_SYNC_ERROR_TOOLTIP, GetShortProfileName(),
           GetAvatarSyncErrorDescription(
-              *sync_error,
+              sync_error->avatar_error,
               IdentityManagerFactory::GetForProfile(profile_)
-                  ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
+                  ->HasPrimaryAccount(signin::ConsentLevel::kSync),
+              sync_error->email));
     }
     case ButtonState::kSigninPending:
     case ButtonState::kExplicitTextShowing:

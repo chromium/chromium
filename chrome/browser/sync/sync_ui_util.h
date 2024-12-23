@@ -116,7 +116,8 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile);
 // tooltip of the avatar button, and in the profile menu body (the menu opened
 // by clicking the avatar button).
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
-                                             bool is_sync_feature_enabled);
+                                             bool is_sync_feature_enabled,
+                                             const std::string& user_email);
 #endif
 
 // Whether sync is currently blocked from starting because the sync

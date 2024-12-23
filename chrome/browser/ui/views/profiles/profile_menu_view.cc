@@ -715,9 +715,12 @@ void ProfileMenuView::BuildSyncInfo() {
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile);
   if (error) {
+    std::u16string error_description = GetAvatarSyncErrorDescription(
+        *error, is_sync_feature_enabled,
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
     BuildSyncInfoWithCallToAction(
-        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
-        GetSyncErrorButtonText(*error),
+        std::move(error_description), GetSyncErrorButtonText(*error),
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), *error),
         /*show_sync_badge=*/is_sync_feature_enabled);
@@ -864,8 +867,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   // Sync error, including "paused".
   if (error.has_value()) {
-    params.subtitle =
-        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled);
+    params.subtitle = GetAvatarSyncErrorDescription(
+        *error, is_sync_feature_enabled, primary_account_info.email);
     params.button_text = GetSyncErrorButtonText(error.value());
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
