@@ -8,7 +8,7 @@
 // extension through $(ref:platformKeys chrome.platformKeys).
 [platforms = ("chromeos", "lacros")]
 namespace enterprise.platformKeys {
-  [nocompile, noinline_doc] dictionary Token {
+  [nocompile] dictionary Token {
     // Uniquely identifies this <code>Token</code>.
     // <p>Static IDs are <code>"user"</code> and <code>"system"</code>,
     // referring to the platform's user-specific and the system-wide hardware

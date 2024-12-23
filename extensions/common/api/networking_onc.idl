@@ -351,7 +351,7 @@ namespace networking.onc {
     ManagedLong Port;
   };
 
-  [noinline_doc] dictionary ManualProxySettings {
+  dictionary ManualProxySettings {
     // Settings for HTTP proxy.
     ProxyLocation? HTTPProxy;
     // Settings for secure HTTP proxy.
@@ -373,7 +373,7 @@ namespace networking.onc {
     ManagedProxyLocation? SOCKS;
   };
 
-  [noinline_doc] dictionary ProxySettings {
+  dictionary ProxySettings {
     // The type of proxy settings.
     ProxySettingsType Type;
     // Manual proxy settings - used only for <code>Manual</code> proxy settings.
@@ -422,7 +422,7 @@ namespace networking.onc {
 
   // Network type dictionary types.
 
-  [noinline_doc] dictionary CellularProperties {
+  dictionary CellularProperties {
     // Whether the cellular network should be connected automatically (when
     // in range).
     boolean? AutoConnect;
@@ -574,7 +574,7 @@ namespace networking.onc {
     DOMString Type;
   };
 
-  [noinline_doc] dictionary WiFiProperties {
+  dictionary WiFiProperties {
     [deprecated="Removed in M131. There is no active ARP polling now."]
     boolean? AllowGatewayARPPolling;
     // Whether the WiFi network should be connected automatically when in range.
@@ -681,7 +681,6 @@ namespace networking.onc {
     WiMAXProperties? WiMAX;
   };
 
-  [noinline_doc]
   dictionary NetworkProperties {
     // For cellular networks, cellular network properties.
     CellularProperties? Cellular;
@@ -741,7 +740,6 @@ namespace networking.onc {
     WiFiProperties? WiFi;
   };
 
-  [noinline_doc]
   dictionary ManagedProperties {
     // See $(ref:NetworkProperties.Cellular).
     ManagedCellularProperties? Cellular;

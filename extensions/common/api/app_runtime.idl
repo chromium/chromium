@@ -7,7 +7,7 @@
 // shut down the app at anytime.
 namespace app.runtime {
 
-  [inline_doc] dictionary LaunchItem {
+  dictionary LaunchItem {
     // Entry for the item.
     [instanceOf=Entry] object entry;
 
