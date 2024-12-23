@@ -411,29 +411,28 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   // Provided to wgpu::Device as logging callback.
 #ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
-  static void LogInfo(wgpu::LoggingType type, wgpu::StringView message) {
-    std::string_view view = {message.data, message.length};
-    switch (type) {
-      case wgpu::LoggingType::Warning:
-        LOG(WARNING) << view;
-        break;
-      case wgpu::LoggingType::Error:
-        LOG(ERROR) << view;
-        SetDawnErrorCrashKey(view);
-        base::debug::DumpWithoutCrashing();
-        break;
-      default:
-        break;
-    }
-  }
+  static void LogInfo(wgpu::LoggingType type,
+                      wgpu::StringView message,
+                      DawnSharedContext* shared_context) {
 #else
   static void LogInfo(WGPULoggingType type,
                       WGPUStringView message,
-                      void*) {
+                      void* userdata) {
+    auto* shared_context = static_cast<DawnSharedContext*>(userdata);
+#endif
     std::string_view view = {message.data, message.length};
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
         LOG(WARNING) << view;
+        if (shared_context && !shared_context->device_) {
+          // If device hasn't been created yet. This warning message must be
+          // from dawn::native::Instance when we try to enumerate adapters or
+          // when trying to create the device. In that case, saving the message
+          // so that if there is any init failure afterward, we can include the
+          // warnings in the LogInitFailure()'s report.
+          shared_context->init_warning_msgs_.append(view);
+          shared_context->init_warning_msgs_.append("\n");
+        }
         break;
       case wgpu::LoggingType::Error:
         LOG(ERROR) << view;
@@ -444,7 +443,6 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
         break;
     }
   }
-#endif
 
   ~DawnSharedContext() override;
 
@@ -458,6 +456,10 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
     }
 
     SCOPED_CRASH_KEY_STRING256("dawn-shared-context", "init-failure", reason);
+    // Also include any warning messages collected during the initialization.
+    SCOPED_CRASH_KEY_STRING1024("dawn-shared-context", "init-warning-msgs",
+                                init_warning_msgs_);
+    init_warning_msgs_.clear();
     base::debug::DumpWithoutCrashing();
   }
 
@@ -474,6 +476,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   wgpu::Adapter adapter_;
   wgpu::Device device_;
   wgpu::BackendType backend_type_;
+  std::string init_warning_msgs_;
   bool is_vulkan_swiftshader_adapter_ = false;
   bool registered_memory_dump_provider_ = false;
 
@@ -512,13 +515,16 @@ bool DawnSharedContext::Initialize(
   // instance doesn't exit the GPU process.
   // LogInfo will be used to receive instance level errors. For example failures
   // of loading libraries, initializing backend, etc
-  instance_ = webgpu::DawnInstance::Create(&platform_, gpu_preferences,
-                                           webgpu::SafetyLevel::kUnsafe,
+  instance_ = webgpu::DawnInstance::Create(
+      &platform_, gpu_preferences, webgpu::SafetyLevel::kUnsafe,
 #ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
-                                           &DawnSharedContext::LogInfo);
+      // TODO(369445924): fix this code once the new callback type is about to
+      // be landed in dawn.
+      [this](wgpu::LoggingType type, wgpu::StringView message) {
+        DawnSharedContext::LogInfo(type, message, this);
+      });
 #else
-                                           &DawnSharedContext::LogInfo,
-                                           nullptr);
+      &DawnSharedContext::LogInfo, this);
 #endif
 
   std::vector<const char*> enabled_toggles =
@@ -689,9 +695,14 @@ bool DawnSharedContext::Initialize(
   }
 
 #ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
-  device_.SetLoggingCallback(&DawnSharedContext::LogInfo);
+  // TODO(369445924): fix this code once the new callback type is about to be
+  // landed in dawn.
+  device_.SetLoggingCallback(
+      [this](wgpu::LoggingType type, wgpu::StringView message) {
+        DawnSharedContext::LogInfo(type, message, this);
+      });
 #else
-  device_.SetLoggingCallback(&DawnSharedContext::LogInfo, nullptr);
+  device_.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
 #endif
 
   backend_type_ = backend_type;
