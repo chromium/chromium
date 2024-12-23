@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -91,10 +92,12 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeEeaDialog.AckClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeEeaDialog.OpenSettingsClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();

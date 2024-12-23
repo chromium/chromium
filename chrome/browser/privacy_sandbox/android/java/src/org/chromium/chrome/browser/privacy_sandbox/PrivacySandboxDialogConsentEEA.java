@@ -182,9 +182,11 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.ConsentDialog.AckClicked");
             mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_ACCEPTED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.no_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.ConsentDialog.NoClicked");
             mPrivacySandboxBridge.promptActionOccurred(PromptAction.CONSENT_DECLINED, mSurfaceType);
             dismissAndMaybeShowNotice();
         } else if (id == R.id.more_button) {

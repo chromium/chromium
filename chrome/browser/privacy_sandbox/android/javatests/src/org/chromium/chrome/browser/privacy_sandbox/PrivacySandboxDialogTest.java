@@ -731,6 +731,10 @@ public final class PrivacySandboxDialogTest {
         // Accept the consent and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
         assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.ConsentDialog.AckClicked"));
+        assertEquals(
                 "Last dialog action",
                 PromptAction.CONSENT_ACCEPTED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
@@ -769,6 +773,10 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.CONSENT_DECLINED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.ConsentDialog.NoClicked"));
     }
 
     @Test
@@ -838,6 +846,11 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        // check for notice ack here
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.NoticeEeaDialog.AckClicked"));
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
@@ -868,6 +881,10 @@ public final class PrivacySandboxDialogTest {
                 "Last dialog action",
                 PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.NoticeEeaDialog.OpenSettingsClicked"));
         Mockito.verify(mSettingsNavigation)
                 .startSettings(
                         any(Context.class),
@@ -893,6 +910,10 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.NoticeRowDialog.AckClicked"));
 
         launchDialog();
         // Click on the expanding section and verify it worked correctly.
@@ -917,6 +938,10 @@ public final class PrivacySandboxDialogTest {
                 "Last dialog action",
                 PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.NoticeRowDialog.OpenSettingsClicked"));
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsNavigation)
                 .startSettings(
@@ -943,6 +968,11 @@ public final class PrivacySandboxDialogTest {
                 PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        // check for histogram here
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.RestrictedNoticeDialog.AckClicked"));
 
         // Click on the settings button and verify it worked correctly.
         launchDialog();
@@ -951,6 +981,10 @@ public final class PrivacySandboxDialogTest {
                 "Last dialog action",
                 PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.RestrictedNoticeDialog.OpenSettingsClicked"));
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsNavigation)
                 .startSettings(any(Context.class), eq(AdMeasurementFragment.class));

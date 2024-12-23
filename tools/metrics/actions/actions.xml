@@ -35213,6 +35213,22 @@ should be able to be added at any place in this file.
   <description>User is shown the Privacy Sandbox consent.</description>
 </action>
 
+<action name="Settings.PrivacySandbox.ConsentDialog.AckClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox consent accept button click.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.ConsentDialog.NoClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox consent no button click.
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.Fledge.AllSitesOpened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -35428,6 +35444,38 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.NoticeEeaDialog.AckClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox notice accept button click (EEA region).
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.NoticeEeaDialog.OpenSettingsClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox notice settings button click (EEA region).
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.NoticeRowDialog.AckClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox notice accept button click (ROW region).
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.NoticeRowDialog.OpenSettingsClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox notice settings button click (ROW region).
+  </description>
+</action>
+
 <action name="Settings.PrivacySandbox.OpenedFromCookiesPageToast">
   <owner>rainhard@chromium.org</owner>
   <owner>sauski@google.com</owner>
@@ -35536,6 +35584,23 @@ should be able to be added at any place in this file.
   <owner>kartoffel-core@google.com</owner>
   <owner>kartoffel-core-eng@google.com</owner>
   <description>Restricted Privacy Sandbox notice is shown.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.RestrictedNoticeDialog.AckClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox restricted notice accept button click.
+  </description>
+</action>
+
+<action
+    name="Settings.PrivacySandbox.RestrictedNoticeDialog.OpenSettingsClicked">
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded on privacy sandbox restricted notice settings button click.
+  </description>
 </action>
 
 <action

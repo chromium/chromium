@@ -191,10 +191,12 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeRowDialog.AckClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
+            RecordUserAction.record("Settings.PrivacySandbox.NoticeRowDialog.OpenSettingsClicked");
             mPrivacySandboxBridge.promptActionOccurred(
                     PromptAction.NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();
