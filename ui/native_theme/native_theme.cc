@@ -225,8 +225,9 @@ bool NativeTheme::InForcedColorsMode() const {
 
 NativeTheme::PlatformHighContrastColorScheme
 NativeTheme::GetPlatformHighContrastColorScheme() const {
-  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast)
+  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast) {
     return PlatformHighContrastColorScheme::kNone;
+  }
   return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
              ? PlatformHighContrastColorScheme::kDark
              : PlatformHighContrastColorScheme::kLight;
@@ -275,8 +276,9 @@ NativeTheme::PreferredContrast NativeTheme::GetPreferredContrast() const {
 
 void NativeTheme::SetPreferredContrast(
     NativeTheme::PreferredContrast preferred_contrast) {
-  if (preferred_contrast_ == preferred_contrast)
+  if (preferred_contrast_ == preferred_contrast) {
     return;
+  }
   preferred_contrast_ = preferred_contrast;
   NotifyOnPreferredContrastUpdated();
 }

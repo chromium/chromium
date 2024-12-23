@@ -35,7 +35,7 @@ namespace gfx {
 class Insets;
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 
@@ -109,9 +109,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   enum State {
     // IDs defined as specific values for use in arrays.
     kDisabled = 0,
-    kHovered  = 1,
-    kNormal   = 2,
-    kPressed  = 3,
+    kHovered = 1,
+    kNormal = 2,
+    kPressed = 3,
     kNumStates = kPressed + 1,
   };
 
