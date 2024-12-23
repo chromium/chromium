@@ -59,7 +59,7 @@ found in the LICENSE file.
     <dimen name="card_icon_border_width">1dp</dimen>
     <dimen name="large_card_icon_corner_radius">3dp</dimen>
     <dimen name="small_card_icon_corner_radius">2dp</dimen>
-    <dimen name="square_card_icon_corner_radius">4dp</dimen>
+    <dimen name="square_card_icon_corner_radius">3dp</dimen>
 
     <!-- Local credit card editor -->
     <dimen name="local_card_scanner_height">64dp</dimen>
