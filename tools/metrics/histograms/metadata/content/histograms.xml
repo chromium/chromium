@@ -77,22 +77,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentCapture.CaptureContentDelayTime" units="ms"
-    expires_after="2024-12-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
-  <summary>
-    The time between a change in content and when the new capture is sent to the
-    browser process.
-
-    A specific content change is hard to track. This is roughly calculated as
-    the interval from the first content change after a prior capturing content
-    to the first content being sent after the next capture of content.
-  </summary>
-</histogram>
-
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
-    expires_after="2025-06-08">
+    expires_after="2025-03-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -104,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.SendContentTime" units="microseconds"
-    expires_after="2025-06-08">
+    expires_after="2025-03-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -116,14 +102,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.SentContentCount2" units="count"
-    expires_after="2025-06-08">
+    expires_after="2025-03-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>The total number of content captures sent for a document.</summary>
 </histogram>
 
 <histogram name="ContentCapture.TaskDelayTimeInMs" units="ms"
-    expires_after="2025-06-08">
+    expires_after="2025-03-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>
@@ -135,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentCapture.TaskRunsPerCapture" units="runs"
-    expires_after="2025-06-08">
+    expires_after="2025-03-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>src/third_party/blink/renderer/core/content_capture/OWNERS</owner>
   <summary>

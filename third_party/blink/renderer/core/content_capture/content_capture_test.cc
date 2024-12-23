@@ -580,8 +580,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 0u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kTaskRunsPerCapture, 0u);
@@ -598,8 +596,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 0u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 0u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
   // The task stops at kProcessRetryTask because the captured content
@@ -614,8 +610,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 1u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 1u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
   // Run task until it stops, task will not capture content, because there is no
@@ -628,8 +622,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 1u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 2u);
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 1u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
@@ -654,8 +646,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
   histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 2u);
-  histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 0u);
 
   histograms.ExpectTotalCount(
@@ -671,8 +661,6 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSendContentTime, 3u);
-  histograms.ExpectTotalCount(
-      ContentCaptureTaskHistogramReporter::kCaptureContentDelayTime, 2u);
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kSentContentCount, 1u);
   // Verify total content has been sent.
