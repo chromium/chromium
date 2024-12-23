@@ -2189,11 +2189,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         bp_module_name.encode('utf-8')).hexdigest()[:16]
     bp_module_name = f"lib{target.crate_name}__{bp_module_hash}"
 
-    if parent_gn_type in ["static_library", "shared_library"]:
-      # CC modules must depend on a different type of modules that are
-      # rust_ffi_static instead of rust_library_rlib
-      bp_module_name += "__FFI"
-
   if bp_module_name in blueprint.modules:
     return (blueprint.modules[bp_module_name], )
 
@@ -2209,13 +2204,22 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   elif target.type == 'rust_executable':
     modules = (Module("rust_binary", bp_module_name, gn_target_name), )
   elif target.type == "rust_library":
-    _type = "rust_library_rlib"
-    if parent_gn_type in ["static_library", "shared_library"]:
-      # CPP modules must depend on rust_ffi_static as this generates the
-      # necessary static library that can be linked.
-      _type = "rust_ffi_static"
-    # Chromium only uses rlibs.
-    modules = (Module(_type, bp_module_name, gn_target_name), )
+    # Here we have to choose between rust_library_rlib and rust_ffi_static.
+    #
+    # Ideally we should pick rust_library_rlib if there are rust_library
+    # dependents, or rust_ffi_static if there are cc_library dependents.
+    # This is a bit tricky, however, because it's theoretically possible for
+    # *both* Rust and C++ code to directly depend on the library.
+    #
+    # In practice, there is currently no real difference between
+    # rust_library_rlib and rust_ffi_static as far as the actual build process
+    # is concerned - they are practically interchangeable. So, to keep things
+    # simple, we just arbitrarily pick one - here rust_ffi_static on
+    # suggestion of AOSP Rust people. See http://b/383552450.
+    #
+    # This decision may need to be revisited if the AOSP build system starts
+    # treating rust_library_rlib and rust_ffi_static differently.
+    modules = (Module("rust_ffi_static", bp_module_name, gn_target_name), )
   elif target.type == "rust_proc_macro":
     modules = (Module("rust_proc_macro", bp_module_name, gn_target_name), )
   elif target.type in ['static_library', 'source_set']:
@@ -2325,9 +2329,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     # in AOSP. Make every module visible to any module in external/cronet.
     module.visibility = {"//external/cronet:__subpackages__"}
 
-    if module.type in [
-        "rust_library_rlib", "rust_proc_macro", "rust_binary", "rust_ffi_static"
-    ]:
+    if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
       module.crate_root = gn_utils.label_to_path(target.crate_root)
       module.min_sdk_version = 30
@@ -2434,19 +2436,22 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         if dep_module.is_compiled() and not dep_module.has_input_files():
           continue
 
+        module_is_cc = module.type in [
+            'cc_library_shared', 'cc_binary', 'cc_library_static'
+        ]
+
         if dep_module.type == 'cc_library_shared':
           module_target.shared_libs.add(dep_module.name)
-        elif dep_module.type in ['cc_library_static', "rust_ffi_static"]:
-          if module.type in ['cc_library_shared', 'cc_binary']:
+        elif dep_module.type == 'cc_library_static' or (
+            dep_module.type == "rust_ffi_static" and module_is_cc):
+          if module.type in ['cc_library_shared', 'cc_binary', 'rust_binary']:
             module_target.whole_static_libs.add(dep_module.name)
           elif module.type == 'cc_library_static':
             module_target.generated_headers.update(dep_module.generated_headers)
             module_target.shared_libs.update(dep_module.shared_libs)
             module_target.header_libs.update(dep_module.header_libs)
-          elif module.type in [
-              "rust_library_rlib", "rust_binary", "rust_ffi_static"
-          ]:
-            module_target.static_libs.add(dep_module.name)
+          elif module.type == 'rust_ffi_static':
+            module_target.shared_libs.update(dep_module.shared_libs)
           else:
             raise Exception(
                 f"Trying to add an unknown type {dep_module.type} to a type of {module.type}"
@@ -2460,10 +2465,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
             # The rust_bindgen has to know the name of the cc library which is going to
             # consume it. We don't know that until we add the `rust_bindgen` as a dep.
             dep_module.static_inline_library = module.name
-        elif dep_module.type == "rust_library_rlib":
+        elif dep_module.type == "rust_ffi_static":
           if module.type in [
-              "rust_library_rlib", "rust_binary", "rust_proc_macro",
-              "rust_ffi_static"
+              "rust_binary", "rust_proc_macro", "rust_ffi_static"
           ]:
             module_target.rustlibs.add(dep_module.name)
         elif dep_module.type == "rust_proc_macro":
