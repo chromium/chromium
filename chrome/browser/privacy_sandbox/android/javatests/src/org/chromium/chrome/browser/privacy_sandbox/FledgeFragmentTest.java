@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -244,6 +245,27 @@ public final class FledgeFragmentTest {
         startFledgeSettings();
         onView(withText(containsString("30 days. Learn more"))).perform(clickOnClickableSpan(0));
         mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void siteSuggestedAdsDisclaimerMetrics() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_site_suggested_ads_page_disclaimer_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        scrollToSetting(withText(matcherText));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked"));
     }
 
     @Test

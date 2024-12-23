@@ -18,8 +18,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.view.View;
 
@@ -152,9 +155,8 @@ public final class AdMeasurementFragmentTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
-    public void adMeasurementDisclaimerIsDisplayed() throws IOException {
+    public void adMeasurementDisclaimerMetrics() throws IOException {
         setAdMeasurementPrefEnabled(true);
         startAdMeasuremenSettings();
         String disclaimerText =
@@ -165,6 +167,11 @@ public final class AdMeasurementFragmentTest {
         String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
         scrollToSetting(withText(matcherText));
         onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.AdMeasurement.PrivacyPolicyLinkClicked"));
     }
 
     @Test

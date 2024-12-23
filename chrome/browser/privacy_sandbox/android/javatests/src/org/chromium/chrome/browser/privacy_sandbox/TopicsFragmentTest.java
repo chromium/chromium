@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -32,6 +33,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
@@ -60,6 +62,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
@@ -196,6 +199,28 @@ public final class TopicsFragmentTest {
         startTopicsSettings();
         onView(withText(R.string.settings_topics_page_blocked_topics_heading_new)).perform(click());
         mRenderTestRule.render(getBlockedTopicsRootView(), "blocked_topics_page_populated");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void adTopicsDisclaimerMetrics() throws IOException {
+        setTopicsPrefEnabled(true);
+        startTopicsSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_ad_topics_page_disclaimer_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        ViewUtils.onViewWaiting(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(matcherText))));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked"));
     }
 
     @Test

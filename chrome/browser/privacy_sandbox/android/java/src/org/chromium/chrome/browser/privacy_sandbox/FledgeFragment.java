@@ -199,6 +199,8 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onPrivacyPolicyLinkClicked(View unused) {
+        RecordUserAction.record(
+                "Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked");
         getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 

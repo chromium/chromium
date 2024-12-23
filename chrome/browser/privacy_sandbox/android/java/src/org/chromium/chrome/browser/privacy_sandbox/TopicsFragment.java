@@ -172,6 +172,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onPrivacyPolicyLinkClicked(View unused) {
+        RecordUserAction.record("Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked");
         getCustomTabLauncher().openUrlInCct(getContext(), UrlConstants.GOOGLE_PRIVACY_POLICY);
     }
 
