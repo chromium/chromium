@@ -313,16 +313,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   RepostFormTabHelper::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode) ||
-      base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsUpgrades)) {
-    HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
-        web_state, profile->GetPrefs(),
-        PrerenderServiceFactory::GetForProfile(profile),
-        HttpsUpgradeServiceFactory::GetForProfile(profile));
-    HttpsOnlyModeContainer::CreateForWebState(web_state);
-  }
+  HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
+      web_state, profile->GetPrefs(),
+      PrerenderServiceFactory::GetForProfile(profile),
+      HttpsUpgradeServiceFactory::GetForProfile(profile));
+  HttpsOnlyModeContainer::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps)) {
     TypedNavigationUpgradeTabHelper::CreateForWebState(

@@ -163,11 +163,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 6;
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
+  int expectedNumberOfSections = 7;
 
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
@@ -195,13 +191,10 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       SafeBrowsingDetailText(), currentSection, 0);
 
   // HTTPS-Only Mode section.
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    currentSection++;
-    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-    CheckSwitchCellStateAndTextWithId(
-        NO, IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE, currentSection, 0);
-  }
+  currentSection++;
+  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckSwitchCellStateAndTextWithId(NO, IDS_IOS_SETTINGS_HTTPS_ONLY_MODE_TITLE,
+                                    currentSection, 0);
 
   // WebServices section.
   currentSection++;
@@ -279,11 +272,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 6;
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
+  int expectedNumberOfSections = 7;
 
   // IncognitoInterstitial section.
   expectedNumberOfSections++;
@@ -305,11 +294,7 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 6;
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    expectedNumberOfSections++;
-  }
+  int expectedNumberOfSections = 7;
 
   // IncognitoInterstitial section.
   expectedNumberOfSections++;

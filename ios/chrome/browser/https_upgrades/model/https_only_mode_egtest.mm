@@ -60,8 +60,6 @@ enum class TestType {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(
-      security_interstitials::features::kHttpsOnlyMode);
 
   config.features_disabled.push_back(
       security_interstitials::features::kHttpsUpgrades);
