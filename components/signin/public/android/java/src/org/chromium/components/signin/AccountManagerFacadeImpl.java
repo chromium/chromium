@@ -30,6 +30,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
@@ -73,7 +74,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
 
+    // Deprecated in favor of `mAccountsPromise`, to be removed after migrating all affected calls.
     private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
+
+    private @NonNull Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
     private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
 
@@ -94,13 +98,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
         new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
-        getCoreAccountInfos()
+        getAccounts()
                 .then(
-                        coreAccountInfos -> {
+                        accounts -> {
                             RecordHistogram.recordExactLinearHistogram(
-                                    "Signin.AndroidNumberOfDeviceAccounts",
-                                    coreAccountInfos.size(),
-                                    50);
+                                    "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
                         });
         onAccountsUpdated();
     }
@@ -132,6 +134,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
         ThreadUtils.assertOnUiThread();
         return mCoreAccountInfosPromise;
+    }
+
+    @MainThread
+    @Override
+    public Promise<List<AccountInfo>> getAccounts() {
+        ThreadUtils.assertOnUiThread();
+        return mAccountsPromise;
     }
 
     @MainThread
@@ -317,8 +326,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Fetches gaia ids, wraps them into {@link CoreAccountInfo} and updates {@link
-     * #mCoreAccountInfosPromise}.
+     * Fetches gaia ids, creates account objects and updates {@link #mCoreAccountInfosPromise} and
+     * {@link #mAccountsPromise}.
      */
     @MainThread
     private void fetchGaiaIdsAndUpdateCoreAccountInfos() {
@@ -362,15 +371,23 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                             return;
                         }
                         List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
+                        List<AccountInfo> accounts = new ArrayList<>();
                         for (int index = 0; index < emails.size(); index++) {
                             coreAccountInfos.add(
                                     CoreAccountInfo.createFromEmailAndGaiaId(
                                             emails.get(index), gaiaIds.get(index)));
+                            accounts.add(
+                                    new AccountInfo.Builder(emails.get(index), gaiaIds.get(index))
+                                            .build());
                         }
+                        assert mCoreAccountInfosPromise.isFulfilled()
+                                == mAccountsPromise.isFulfilled();
                         if (mCoreAccountInfosPromise.isFulfilled()) {
                             mCoreAccountInfosPromise = Promise.fulfilled(coreAccountInfos);
+                            mAccountsPromise = Promise.fulfilled(accounts);
                         } else {
                             mCoreAccountInfosPromise.fulfill(coreAccountInfos);
+                            mAccountsPromise.fulfill(accounts);
                         }
                         for (AccountsChangeObserver observer : mObservers) {
                             observer.onCoreAccountInfosChanged();
@@ -484,6 +501,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     public void resetAccountsForTesting() {
         mCoreAccountInfosPromise = new Promise<>();
+        mAccountsPromise = new Promise<>();
         mAllAccounts.set(null);
         updateAccounts();
     }

@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Promise;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.Arrays;
@@ -62,6 +63,21 @@ public class AccountUtils {
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             if (AccountUtils.canonicalizeEmail(coreAccountInfo.getEmail()).equals(canonicalEmail)) {
                 return coreAccountInfo;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds the first {@link AccountInfo} among `accounts` whose canonical email is equal to
+     * `accountEmail`; `null` if there is no match.
+     */
+    public static @Nullable AccountInfo findAccountByEmail(
+            List<AccountInfo> accounts, String accountEmail) {
+        String canonicalEmail = AccountUtils.canonicalizeEmail(accountEmail);
+        for (AccountInfo account : accounts) {
+            if (AccountUtils.canonicalizeEmail(account.getEmail()).equals(canonicalEmail)) {
+                return account;
             }
         }
         return null;

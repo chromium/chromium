@@ -25,10 +25,9 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -122,10 +121,6 @@ public class AccountManagerFacadeTest {
         }
     }
 
-    private static final AccountInfo ACCOUNT =
-            new AccountInfo.Builder(
-                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .build();
     private static final String TOKEN_SCOPE = "oauth2:http://example.com/scope";
 
     @Test
@@ -141,15 +136,21 @@ public class AccountManagerFacadeTest {
                 () -> {
                     // Cache shouldn't be populated until getAccountsSync is unblocked.
                     assertFalse(facade.getCoreAccountInfos().isFulfilled());
+                    assertFalse(facade.getAccounts().isFulfilled());
                 });
 
         blockingDelegate.unblockGetAccounts();
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+        CountDownLatch countDownLatch = new CountDownLatch(2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     facade.getCoreAccountInfos()
                             .then(
                                     coreAccountInfos -> {
+                                        countDownLatch.countDown();
+                                    });
+                    facade.getAccounts()
+                            .then(
+                                    accounts -> {
                                         countDownLatch.countDown();
                                     });
                 });
@@ -158,6 +159,7 @@ public class AccountManagerFacadeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(facade.getCoreAccountInfos().isFulfilled());
+                    assertTrue(facade.getAccounts().isFulfilled());
                 });
     }
 
@@ -170,7 +172,7 @@ public class AccountManagerFacadeTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new AccountManagerFacadeImpl(blockingDelegate));
 
-        CountDownLatch firstCounter = new CountDownLatch(1);
+        CountDownLatch firstCounter = new CountDownLatch(2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Add callback. This should be done on the main thread.
@@ -179,17 +181,22 @@ public class AccountManagerFacadeTest {
                                     coreAccountInfos -> {
                                         firstCounter.countDown();
                                     });
+                    facade.getAccounts()
+                            .then(
+                                    accounts -> {
+                                        firstCounter.countDown();
+                                    });
                 });
         assertEquals(
                 "Callback shouldn't be invoked until cache is populated",
-                1,
+                2,
                 firstCounter.getCount());
 
         blockingDelegate.unblockGetAccounts();
         // Cache should be populated & callback should be invoked
         firstCounter.await();
 
-        CountDownLatch secondCounter = new CountDownLatch(1);
+        CountDownLatch secondCounter = new CountDownLatch(2);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     facade.getCoreAccountInfos()
@@ -197,9 +204,15 @@ public class AccountManagerFacadeTest {
                                     coreAccountInfos -> {
                                         secondCounter.countDown();
                                     });
+                    facade.getAccounts()
+                            .then(
+                                    accounts -> {
+                                        secondCounter.countDown();
+                                    });
                     assertEquals(
-                            "Callback should be posted on UI thread, not executed synchronously",
-                            1,
+                            "Callback should be posted on UI thread, not "
+                                    + "executed synchronously",
+                            2,
                             secondCounter.getCount());
                 });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -214,13 +227,14 @@ public class AccountManagerFacadeTest {
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
 
-        delegate.addAccount(ACCOUNT);
+        delegate.addAccount(TestAccounts.ACCOUNT1);
         AccessTokenData expectedToken =
                 delegate.getAccessToken(
-                        CoreAccountInfo.getAndroidAccountFrom(ACCOUNT), TOKEN_SCOPE);
+                        CoreAccountInfo.getAndroidAccountFrom(TestAccounts.ACCOUNT1), TOKEN_SCOPE);
 
         CustomGetAccessTokenCallback callback = new CustomGetAccessTokenCallback();
-        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback));
+        ThreadUtils.runOnUiThread(
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, callback));
         assertEquals(expectedToken.getToken(), callback.getToken());
     }
 
@@ -233,7 +247,8 @@ public class AccountManagerFacadeTest {
 
         CustomGetAccessTokenCallback callback = new CustomGetAccessTokenCallback();
         // Request a token for an account that wasn't added.
-        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback));
+        ThreadUtils.runOnUiThread(
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, callback));
 
         assertNull(callback.getToken());
     }
@@ -245,14 +260,16 @@ public class AccountManagerFacadeTest {
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(() -> new AccountManagerFacadeImpl(delegate));
 
-        delegate.addAccount(ACCOUNT);
+        delegate.addAccount(TestAccounts.ACCOUNT1);
 
         CustomGetAccessTokenCallback callback1 = new CustomGetAccessTokenCallback();
-        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback1));
+        ThreadUtils.runOnUiThread(
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, callback1));
         String originalToken = callback1.getToken();
 
         CustomGetAccessTokenCallback callback2 = new CustomGetAccessTokenCallback();
-        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback2));
+        ThreadUtils.runOnUiThread(
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, callback2));
         assertEquals(
                 "The same token should be returned before invalidating the token.",
                 callback2.getToken(),
@@ -266,7 +283,8 @@ public class AccountManagerFacadeTest {
         invalidationCallback.waitForOnly();
 
         CustomGetAccessTokenCallback callback3 = new CustomGetAccessTokenCallback();
-        ThreadUtils.runOnUiThread(() -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, callback3));
+        ThreadUtils.runOnUiThread(
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, callback3));
         assertNotEquals(
                 "A different token should be returned since the original token is invalidated.",
                 callback3.getToken(),
@@ -278,7 +296,7 @@ public class AccountManagerFacadeTest {
     @SmallTest
     public void testWaitForPendingTokenRequestsToComplete() throws Exception {
         BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
-        blockingDelegate.addAccount(ACCOUNT);
+        blockingDelegate.addAccount(TestAccounts.ACCOUNT1);
         blockingDelegate.blockGetAuthToken();
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -286,7 +304,7 @@ public class AccountManagerFacadeTest {
 
         CustomGetAccessTokenCallback tokenCallback = new CustomGetAccessTokenCallback();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, tokenCallback));
+                () -> facade.getAccessToken(TestAccounts.ACCOUNT1, TOKEN_SCOPE, tokenCallback));
 
         CallbackHelper pendingRequestsCompleteCallback = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
