@@ -9,6 +9,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -102,5 +103,10 @@ std::string KeychainPassword::GetPassword() const {
 
   OSSTATUS_LOG(ERROR, error) << "Keychain lookup failed";
   base::UmaHistogramSparse("OSCrypt.Mac.FindGenericPasswordError", error);
+  // TODO(crbug.com/383661630): revert this change once enough data is
+  // collected.
+  if (error == errSecInteractionNotAllowed) {
+    base::debug::DumpWithoutCrashing();
+  }
   return std::string();
 }
