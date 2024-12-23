@@ -499,8 +499,8 @@ experimental domain Audits
   type AffectedRequest extends object
     properties
       # The unique request id.
-      Network.RequestId requestId
-      optional string url
+      optional Network.RequestId requestId
+      string url
 
   # Information about the frame affected by an inspector issue.
   type AffectedFrame extends object

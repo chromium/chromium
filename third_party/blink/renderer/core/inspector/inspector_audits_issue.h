@@ -99,7 +99,6 @@ class CORE_EXPORT AuditsIssue {
                                     String loader_id);
 
   static void ReportCorsIssue(ExecutionContext* execution_context,
-                              int64_t identifier,
                               RendererCorsIssueCode code,
                               WTF::String url,
                               WTF::String initiator_origin,
@@ -110,6 +109,7 @@ class CORE_EXPORT AuditsIssue {
       ExecutionContext* execution_context,
       mojom::blink::AttributionReportingIssueType type,
       Element* element,
+      const String& request_url,
       const String& request_id,
       const String& invalid_parameter);
 

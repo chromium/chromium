@@ -228,11 +228,12 @@ BuildAttributionReportingIssue(
   protocol::String violation_type = BuildAttributionReportingIssueViolationType(
       issue_details->violation_type);
 
-  CHECK(issue_details->request->url.has_value());
   auto request = protocol::Audits::AffectedRequest::Create()
-                     .SetRequestId(issue_details->request->request_id)
-                     .SetUrl(issue_details->request->url.value())
+                     .SetUrl(issue_details->request->url)
                      .Build();
+  if (issue_details->request->request_id.has_value()) {
+    request->SetRequestId(issue_details->request->request_id.value());
+  }
   auto attribution_reporting_issue_details =
       protocol::Audits::AttributionReportingIssueDetails::Create()
           .SetViolationType(violation_type)

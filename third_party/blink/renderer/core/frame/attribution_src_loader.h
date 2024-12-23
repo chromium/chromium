@@ -107,11 +107,10 @@ class CORE_EXPORT AttributionSrcLoader
   // policy supports Attribution Reporting, the window's context is secure, and
   // the Attribution Reporting runtime-enabled feature is enabled.
   //
-  // Reports a DevTools issue using `element` and `request_id` otherwise, if
-  // `log_issues` is true.
+  // Reports a DevTools issue using `element` otherwise, if `log_issues` is
+  // true.
   [[nodiscard]] bool CanRegister(const KURL& url,
                                  HTMLElement* element,
-                                 std::optional<uint64_t> request_id,
                                  bool log_issues = true);
 
   void Trace(Visitor* visitor) const;
@@ -154,6 +153,7 @@ class CORE_EXPORT AttributionSrcLoader
   std::optional<attribution_reporting::SuitableOrigin>
   ReportingOriginForUrlIfValid(const KURL& url,
                                HTMLElement* element,
+                               const WTF::String& request_url,
                                std::optional<uint64_t> request_id,
                                bool log_issues = true);
 

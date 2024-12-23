@@ -123,8 +123,7 @@ Resource* PreloadRequest::Start(Document* document) {
   // called again later.
   if (is_attribution_reporting_eligible_img_or_script_ &&
       document->domWindow()->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-          url, /*element=*/nullptr,
-          /*request_id=*/std::nullopt, /*log_issues=*/false)) {
+          url, /*element=*/nullptr, /*log_issues=*/false)) {
     resource_request.SetAttributionReportingEligibility(
         network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger);
   }

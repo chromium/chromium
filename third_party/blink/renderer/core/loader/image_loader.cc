@@ -493,8 +493,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
     if (IsA<HTMLImageElement>(GetElement())) {
       if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
           frame->GetAttributionSrcLoader()->CanRegister(
-              url, To<HTMLImageElement>(GetElement()),
-              /*request_id=*/std::nullopt)) {
+              url, To<HTMLImageElement>(GetElement()))) {
         resource_request.SetAttributionReportingEligibility(
             network::mojom::AttributionReportingEligibility::
                 kEventSourceOrTrigger);

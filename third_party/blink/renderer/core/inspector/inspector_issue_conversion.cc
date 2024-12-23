@@ -24,11 +24,10 @@ std::unique_ptr<protocol::Audits::AffectedCookie> BuildAffectedCookie(
 
 std::unique_ptr<protocol::Audits::AffectedRequest> BuildAffectedRequest(
     const mojom::blink::AffectedRequestPtr& request) {
-  auto protocol_request = protocol::Audits::AffectedRequest::create()
-                              .setRequestId(request->request_id)
-                              .build();
-  if (!request->url.empty()) {
-    protocol_request->setUrl(request->url);
+  auto protocol_request =
+      protocol::Audits::AffectedRequest::create().setUrl(request->url).build();
+  if (!request->request_id.empty()) {
+    protocol_request->setRequestId(request->request_id);
   }
   return protocol_request;
 }
