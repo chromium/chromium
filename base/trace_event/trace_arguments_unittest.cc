@@ -80,15 +80,6 @@ TEST(TraceArguments, StringStorageResetWithSize) {
   EXPECT_EQ(storage.data() + kSize, storage.end());
 }
 
-TEST(TraceArguments, StringStorageEstimateTraceMemoryOverhead) {
-  StringStorage storage;
-  EXPECT_EQ(0u, storage.EstimateTraceMemoryOverhead());
-
-  const size_t kSize = 128;
-  storage.Reset(kSize);
-  EXPECT_EQ(sizeof(size_t) + kSize, storage.EstimateTraceMemoryOverhead());
-}
-
 static void CheckJSONFor(TraceValue v, char type, const char* expected) {
   std::string out;
   v.AppendAsJSON(type, &out);

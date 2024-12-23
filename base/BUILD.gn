@@ -2387,11 +2387,8 @@ component("base") {
       "trace_event/trace_event.h",
       "trace_event/trace_event_impl.cc",
       "trace_event/trace_event_impl.h",
-      "trace_event/trace_event_memory_overhead.cc",
-      "trace_event/trace_event_memory_overhead.h",
       "trace_event/trace_log.cc",
       "trace_event/trace_log.h",
-      "trace_event/trace_log_constants.cc",
       "trace_event/traced_value.cc",
       "trace_event/traced_value.h",
       "trace_event/traced_value_support.h",
@@ -2399,8 +2396,6 @@ component("base") {
       "trace_event/tracing_agent.h",
       "trace_event/typed_macros.h",
       "trace_event/typed_macros_embedder_support.h",
-      "trace_event/typed_macros_internal.cc",
-      "trace_event/typed_macros_internal.h",
       "tracing/perfetto_platform.cc",
       "tracing/perfetto_platform.h",
       "tracing/perfetto_task_runner.cc",
@@ -4150,7 +4145,6 @@ test("base_unittests") {
       "trace_event/trace_event_unittest.cc",
       "trace_event/traced_value_support_unittest.cc",
       "trace_event/traced_value_unittest.cc",
-      "trace_event/typed_macros_unittest.cc",
       "tracing/perfetto_task_runner_unittest.cc",
     ]
 

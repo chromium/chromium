@@ -79,7 +79,6 @@ TraceEvent::TraceEvent(PlatformThreadId thread_id,
                        const char* name,
                        const char* scope,
                        unsigned long long id,
-                       unsigned long long bind_id,
                        TraceArguments* args,
                        unsigned int flags)
     : timestamp_(timestamp),
@@ -90,7 +89,6 @@ TraceEvent::TraceEvent(PlatformThreadId thread_id,
       name_(name),
       thread_id_(thread_id),
       flags_(flags),
-      bind_id_(bind_id),
       phase_(phase) {
   InitArgs(args);
 }
@@ -116,7 +114,6 @@ void TraceEvent::Reset(PlatformThreadId thread_id,
                        const char* name,
                        const char* scope,
                        unsigned long long id,
-                       unsigned long long bind_id,
                        TraceArguments* args,
                        unsigned int flags) {
   Reset();
@@ -128,7 +125,6 @@ void TraceEvent::Reset(PlatformThreadId thread_id,
   name_ = name;
   thread_id_ = thread_id;
   flags_ = flags;
-  bind_id_ = bind_id;
   phase_ = phase;
 
   InitArgs(args);
@@ -150,17 +146,6 @@ void TraceEvent::UpdateDuration(const TimeTicks& now,
   // initialized when it was recorded.
   if (thread_timestamp_ != ThreadTicks())
     thread_duration_ = thread_now - thread_timestamp_;
-}
-
-void TraceEvent::EstimateTraceMemoryOverhead(
-    TraceEventMemoryOverhead* overhead) {
-  overhead->Add(TraceEventMemoryOverhead::kTraceEvent,
-                parameter_copy_storage_.EstimateTraceMemoryOverhead());
-
-  for (size_t i = 0; i < arg_size(); ++i) {
-    if (arg_type(i) == TRACE_VALUE_TYPE_CONVERTABLE)
-      arg_value(i).as_convertable->EstimateTraceMemoryOverhead(overhead);
-  }
 }
 
 void TraceEvent::AppendAsJSON(
@@ -281,7 +266,7 @@ void TraceEvent::AppendAsJSON(
   if ((flags_ & TRACE_EVENT_FLAG_FLOW_OUT) ||
       (flags_ & TRACE_EVENT_FLAG_FLOW_IN)) {
     StringAppendF(out, ",\"bind_id\":\"0x%" PRIx64 "\"",
-                  static_cast<uint64_t>(bind_id_));
+                  static_cast<uint64_t>(0));
   }
   if (flags_ & TRACE_EVENT_FLAG_FLOW_IN)
     StringAppendF(out, ",\"flow_in\":true");

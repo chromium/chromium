@@ -8,16 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <atomic>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/containers/stack.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +23,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
@@ -43,24 +39,10 @@ class RefCountedString;
 
 namespace trace_event {
 
-class TraceBuffer;
-class TraceBufferChunk;
-class TraceEvent;
-class TraceEventMemoryOverhead;
 class JsonStringOutputWriter;
 
-struct BASE_EXPORT TraceLogStatus {
-  TraceLogStatus();
-  ~TraceLogStatus();
-  uint32_t event_capacity;
-  uint32_t event_count;
-};
-
-class BASE_EXPORT TraceLog :
-    public perfetto::TrackEventSessionObserver,
-    public MemoryDumpProvider {
+class BASE_EXPORT TraceLog : public perfetto::TrackEventSessionObserver {
  public:
-  class ThreadLocalEventBuffer;
 
   static TraceLog* GetInstance();
 
@@ -69,10 +51,6 @@ class BASE_EXPORT TraceLog :
 
   // Retrieves a copy (for thread-safety) of the current TraceConfig.
   TraceConfig GetCurrentTraceConfig() const;
-
-  // Initializes the thread-local event buffer, if not already initialized and
-  // if the current thread supports that (has a message loop).
-  void InitializeThreadLocalEventBufferIfSupported();
 
   // See TraceConfig comments for details on how to control which categories
   // will be traced.
@@ -104,13 +82,6 @@ class BASE_EXPORT TraceLog :
     AutoLock lock(track_event_lock_);
     return active_track_event_sessions_ > 0;
   }
-
-  // The number of times we have begun recording traces. If tracing is off,
-  // returns -1. If tracing is on, then it returns the number of times we have
-  // recorded a trace. By watching for this number to increment, you can
-  // passively discover when a new trace has begun. This is then used to
-  // implement the TRACE_EVENT_IS_NEW_TRACE() primitive.
-  int GetNumTracesRecorded();
 
   // Enabled state listeners give a callback when tracing is enabled or
   // disabled. This can be used to tie into other library's tracing systems
@@ -165,27 +136,6 @@ class BASE_EXPORT TraceLog :
   void RemoveAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener);
   bool HasAsyncEnabledStateObserver(AsyncEnabledStateObserver* listener) const;
 
-  // Observers that are notified when incremental state is cleared. This only
-  // happens when tracing using the perfetto backend.
-  class BASE_EXPORT IncrementalStateObserver {
-   public:
-    virtual ~IncrementalStateObserver() = default;
-
-    // Called just after the tracing system has cleared incremental state, while
-    // a tracing session is active.
-    virtual void OnIncrementalStateCleared() = 0;
-  };
-  // Adds an observer. Cannot be called from within the observer callback.
-  void AddIncrementalStateObserver(IncrementalStateObserver* listener);
-  // Removes an observer. Cannot be called from within the observer callback.
-  void RemoveIncrementalStateObserver(IncrementalStateObserver* listener);
-
-  TraceLogStatus GetStatus() const;
-
-  // Computes an estimate of the size of the TraceLog including all the retained
-  // objects.
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
-
   void SetArgumentFilterPredicate(
       const ArgumentFilterPredicate& argument_filter_predicate);
   ArgumentFilterPredicate GetArgumentFilterPredicate() const;
@@ -215,26 +165,6 @@ class BASE_EXPORT TraceLog :
   // Cancels tracing and discards collected data.
   void CancelTracing(const OutputCallback& cb);
 
-  using AddTraceEventOverrideFunction = void (*)(TraceEvent*,
-                                                 bool thread_will_flush,
-                                                 TraceEventHandle* handle);
-  using OnFlushFunction = void (*)();
-  using UpdateDurationFunction =
-      void (*)(const unsigned char* category_group_enabled,
-               const char* name,
-               TraceEventHandle handle,
-               PlatformThreadId thread_id,
-               bool explicit_timestamps,
-               const TimeTicks& now,
-               const ThreadTicks& thread_now);
-  // The callbacks will be called up until the point where the flush is
-  // finished, i.e. must be callable until OutputCallback is called with
-  // has_more_events==false.
-  void SetAddTraceEventOverrides(
-      const AddTraceEventOverrideFunction& add_event_override,
-      const OnFlushFunction& on_flush_callback,
-      const UpdateDurationFunction& update_duration_callback);
-
   // Called by TRACE_EVENT* macros, don't call this directly.
   // The name parameter is a category group for example:
   // TRACE_EVENT0("renderer,webkit", "WebViewImpl::HandleInputEvent")
@@ -245,13 +175,6 @@ class BASE_EXPORT TraceLog :
   // Called by TRACE_EVENT* macros, don't call this directly.
   // If |copy| is set, |name|, |arg_name1| and |arg_name2| will be deep copied
   // into the event; see "Memory scoping note" and TRACE_EVENT_COPY_XXX above.
-  bool ShouldAddAfterUpdatingState(char phase,
-                                   const unsigned char* category_group_enabled,
-                                   const char* name,
-                                   uint64_t id,
-                                   PlatformThreadId thread_id,
-                                   const TimeTicks timestamp,
-                                   TraceArguments* args);
   TraceEventHandle AddTraceEvent(char phase,
                                  const unsigned char* category_group_enabled,
                                  const char* name,
@@ -259,15 +182,6 @@ class BASE_EXPORT TraceLog :
                                  uint64_t id,
                                  TraceArguments* args,
                                  unsigned int flags);
-  TraceEventHandle AddTraceEventWithBindId(
-      char phase,
-      const unsigned char* category_group_enabled,
-      const char* name,
-      const char* scope,
-      uint64_t id,
-      uint64_t bind_id,
-      TraceArguments* args,
-      unsigned int flags);
   TraceEventHandle AddTraceEventWithProcessId(
       char phase,
       const unsigned char* category_group_enabled,
@@ -275,16 +189,6 @@ class BASE_EXPORT TraceLog :
       const char* scope,
       uint64_t id,
       ProcessId process_id,
-      TraceArguments* args,
-      unsigned int flags);
-  TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
-      char phase,
-      const unsigned char* category_group_enabled,
-      const char* name,
-      const char* scope,
-      uint64_t id,
-      PlatformThreadId thread_id,
-      const TimeTicks& timestamp,
       TraceArguments* args,
       unsigned int flags);
   TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
@@ -311,24 +215,9 @@ class BASE_EXPORT TraceLog :
       TraceArguments* args,
       unsigned int flags);
 
-  // Adds a metadata event that will be written when the trace log is flushed.
-  void AddMetadataEvent(const unsigned char* category_group_enabled,
-                        const char* name,
-                        TraceArguments* args,
-                        unsigned int flags);
-
   void UpdateTraceEventDuration(const unsigned char* category_group_enabled,
                                 const char* name,
                                 TraceEventHandle handle);
-
-  void UpdateTraceEventDurationExplicit(
-      const unsigned char* category_group_enabled,
-      const char* name,
-      TraceEventHandle handle,
-      PlatformThreadId thread_id,
-      bool explicit_timestamps,
-      const TimeTicks& now,
-      const ThreadTicks& thread_now);
 
   ProcessId process_id() const { return process_id_; }
 
@@ -337,14 +226,9 @@ class BASE_EXPORT TraceLog :
     return process_labels_;
   }
 
-  uint64_t MangleEventId(uint64_t id);
-
   // Exposed for unittesting:
   // Allows clearing up our singleton instance.
   static void ResetForTesting();
-
-  // Allow tests to inspect TraceEvents.
-  TraceEvent* GetEventByHandle(TraceEventHandle handle);
 
   void SetProcessID(ProcessId process_id);
 
@@ -369,14 +253,6 @@ class BASE_EXPORT TraceLog :
 
   size_t GetObserverCountForTest() const;
 
-  // Call this method if the current thread may block the message loop to
-  // prevent the thread from using the thread-local buffer because the thread
-  // may not handle the flush request in time causing lost of unflushed events.
-  void SetCurrentThreadBlocksMessageLoop();
-
-  // Replaces |logged_events_| with a new TraceBuffer for testing.
-  void SetTraceBufferForTesting(std::unique_ptr<TraceBuffer> trace_buffer);
-
   struct TrackEventSession {
     uint32_t internal_instance_index;
     perfetto::DataSourceConfig config;
@@ -400,35 +276,9 @@ class BASE_EXPORT TraceLog :
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
   void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
-  // Called by the perfetto backend just after incremental state was cleared.
-  void OnIncrementalStateCleared();
-
  private:
-  typedef unsigned int InternalTraceOptions;
-
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture,
-                           TraceBufferRingBufferGetReturnChunk);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture,
-                           TraceBufferRingBufferHalfIteration);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture,
-                           TraceBufferRingBufferFullIteration);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture, TraceBufferVectorReportFull);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture,
-                           ConvertTraceConfigToInternalOptions);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture,
-                           TraceRecordAsMuchAsPossibleMode);
-  FRIEND_TEST_ALL_PREFIXES(TraceEventTestFixture, ConfigTraceBufferLimit);
-
   friend class base::NoDestructor<TraceLog>;
 
-  // MemoryDumpProvider implementation.
-  bool OnMemoryDump(const MemoryDumpArgs& args,
-                    ProcessMemoryDump* pmd) override;
-
-  InternalTraceOptions GetInternalOptionsFromTraceConfig(
-      const TraceConfig& config);
-
-  class OptionalAutoLock;
   struct RegisteredAsyncObserver;
 
   explicit TraceLog(int generation);
@@ -441,25 +291,7 @@ class BASE_EXPORT TraceLog :
                                    const T& value)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  InternalTraceOptions trace_options() const {
-    return trace_options_.load(std::memory_order_relaxed);
-  }
-
-  TraceBuffer* trace_buffer() const { return logged_events_.get(); }
-  TraceBuffer* CreateTraceBuffer();
-
-  std::string EventToConsoleMessage(char phase,
-                                    const TimeTicks& timestamp,
-                                    TraceEvent* trace_event);
-
-  TraceEvent* AddEventToThreadSharedChunkWhileLocked(TraceEventHandle* handle,
-                                                     bool check_buffer_is_full)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void CheckIfBufferIsFullWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void SetDisabledWhileLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  TraceEvent* GetEventByHandleInternal(TraceEventHandle handle,
-                                       OptionalAutoLock* lock);
 
   void FlushInternal(const OutputCallback& cb,
                      bool use_worker_thread,
@@ -467,50 +299,9 @@ class BASE_EXPORT TraceLog :
 
   void OnTraceData(const char* data, size_t size, bool has_more);
 
-  // |generation| is used in the following callbacks to check if the callback
-  // is called for the flush of the current |logged_events_|.
-  void FlushCurrentThread(int generation, bool discard_events);
-  // Usually it runs on a different thread.
-  static void ConvertTraceEventsToTraceFormat(
-      std::unique_ptr<TraceBuffer> logged_events,
-      const TraceLog::OutputCallback& flush_output_callback,
-      const ArgumentFilterPredicate& argument_filter_predicate);
-  void FinishFlush(int generation, bool discard_events);
-  void OnFlushTimeout(int generation, bool discard_events);
-
-  int generation() const {
-    return generation_.load(std::memory_order_relaxed);
-  }
-  bool CheckGeneration(int generation) const {
-    return generation == this->generation();
-  }
-  void UseNextTraceBuffer();
-
-  TimeTicks OffsetNow() const {
-    // This should be TRACE_TIME_TICKS_NOW but include order makes that hard.
-    return OffsetTimestamp(base::subtle::TimeTicksNowIgnoringOverride());
-  }
-  TimeTicks OffsetTimestamp(const TimeTicks& timestamp) const {
-    return timestamp - time_offset_;
-  }
-
-  // Internal representation of trace options since we store the currently used
-  // trace option as an AtomicWord.
-  static const InternalTraceOptions kInternalNone;
-  static const InternalTraceOptions kInternalRecordUntilFull;
-  static const InternalTraceOptions kInternalRecordContinuously;
-  static const InternalTraceOptions kInternalEchoToConsole;
-  static const InternalTraceOptions kInternalRecordAsMuchAsPossible;
-  static const InternalTraceOptions kInternalEnableArgumentFilter;
-
   // This lock protects TraceLog member accesses (except for members protected
   // by thread_info_lock_) from arbitrary threads.
   mutable Lock lock_;
-  Lock thread_info_lock_;
-  bool enabled_{false};
-  int num_traces_recorded_{0};
-  std::unique_ptr<TraceBuffer> logged_events_;
-  std::vector<std::unique_ptr<TraceEvent>> metadata_events_;
 
   // The lock protects observers access.
   mutable Lock observers_lock_;
@@ -523,56 +314,18 @@ class BASE_EXPORT TraceLog :
   // added to |enabled_state_observers_|.
   std::vector<std::unique_ptr<EnabledStateObserver>>
       owned_enabled_state_observer_copy_ GUARDED_BY(observers_lock_);
-  std::vector<raw_ptr<IncrementalStateObserver, VectorExperimental>>
-      incremental_state_observers_ GUARDED_BY(observers_lock_);
 
   int next_process_label_id_ GUARDED_BY(lock_) = 0;
   std::unordered_map<int, std::string> process_labels_;
   int process_sort_index_;
   std::unordered_map<PlatformThreadId, int> thread_sort_indices_;
-  std::unordered_map<PlatformThreadId, std::string> thread_names_
-      GUARDED_BY(thread_info_lock_);
-
-  // The following two maps are used only when ECHO_TO_CONSOLE.
-  std::unordered_map<PlatformThreadId, base::stack<TimeTicks>>
-      thread_event_start_times_ GUARDED_BY(thread_info_lock_);
-  std::unordered_map<std::string, size_t> thread_colors_
-      GUARDED_BY(thread_info_lock_);
-
-  TimeTicks buffer_limit_reached_timestamp_;
-
-  // XORed with TraceID to make it unlikely to collide with other processes.
-  uint64_t process_id_hash_;
 
   ProcessId process_id_;
 
-  TimeDelta time_offset_;
-
-  std::atomic<InternalTraceOptions> trace_options_;
-
-  TraceConfig trace_config_;
-
-  // Contains task runners for the threads that have had at least one event
-  // added into the local event buffer.
-  std::unordered_map<PlatformThreadId, scoped_refptr<SingleThreadTaskRunner>>
-      thread_task_runners_;
-
-  // For events which can't be added into the thread local buffer, e.g. events
-  // from threads without a message loop.
-  std::unique_ptr<TraceBufferChunk> thread_shared_chunk_;
-  size_t thread_shared_chunk_index_;
-
   // Set when asynchronous Flush is in progress.
-  OutputCallback flush_output_callback_;
-  scoped_refptr<SequencedTaskRunner> flush_task_runner_;
   ArgumentFilterPredicate argument_filter_predicate_;
   MetadataFilterPredicate metadata_filter_predicate_;
   bool record_host_app_package_name_{false};
-  std::atomic<int> generation_;
-  bool use_worker_thread_;
-  std::atomic<AddTraceEventOverrideFunction> add_trace_event_override_{nullptr};
-  std::atomic<OnFlushFunction> on_flush_override_{nullptr};
-  std::atomic<UpdateDurationFunction> update_duration_override_{nullptr};
 
   std::unique_ptr<perfetto::TracingSession> tracing_session_;
   perfetto::TraceConfig perfetto_config_;
@@ -586,10 +339,6 @@ class BASE_EXPORT TraceLog :
   std::unique_ptr<JsonStringOutputWriter> json_output_writer_;
   OutputCallback proto_output_callback_;
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
-
-#if BUILDFLAG(IS_ANDROID)
-  std::optional<TraceConfig> atrace_startup_config_;
-#endif
 };
 
 }  // namespace trace_event

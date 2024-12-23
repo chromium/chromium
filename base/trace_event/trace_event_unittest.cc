@@ -938,49 +938,6 @@ TEST_F(TraceEventTestFixture, NewTraceRecording) {
   EndTraceAndFlush();
 }
 
-TEST_F(TraceEventTestFixture, AddMetadataEvent) {
-  int num_calls = 0;
-
-  class Convertable : public ConvertableToTraceFormat {
-   public:
-    explicit Convertable(int* num_calls) : num_calls_(num_calls) {}
-    ~Convertable() override = default;
-    void AppendAsTraceFormat(std::string* out) const override {
-      (*num_calls_)++;
-      out->append("\"metadata_value\"");
-    }
-
-   private:
-    raw_ptr<int> num_calls_;
-  };
-
-  std::unique_ptr<ConvertableToTraceFormat> conv1(new Convertable(&num_calls));
-  std::unique_ptr<Convertable> conv2(new Convertable(&num_calls));
-
-  BeginTrace();
-  TRACE_EVENT_API_ADD_METADATA_EVENT(
-      TraceLog::GetCategoryGroupEnabled("__metadata"), "metadata_event_1",
-      "metadata_arg_name", std::move(conv1));
-  TRACE_EVENT_API_ADD_METADATA_EVENT(
-      TraceLog::GetCategoryGroupEnabled("__metadata"), "metadata_event_2",
-      "metadata_arg_name", std::move(conv2));
-  // |AppendAsTraceFormat| should only be called on flush, not when the event
-  // is added.
-  ASSERT_EQ(0, num_calls);
-  EndTraceAndFlush();
-  ASSERT_EQ(2, num_calls);
-  EXPECT_TRUE(FindNamePhaseKeyValue("metadata_event_1", "M",
-                                    "metadata_arg_name", "metadata_value"));
-  EXPECT_TRUE(FindNamePhaseKeyValue("metadata_event_2", "M",
-                                    "metadata_arg_name", "metadata_value"));
-
-  // The metadata event should only be adde to the current trace. In this new
-  // trace, the event should not appear.
-  BeginTrace();
-  EndTraceAndFlush();
-  ASSERT_EQ(2, num_calls);
-}
-
 // Test that categories work.
 TEST_F(TraceEventTestFixture, Categories) {
   const std::vector<std::string> empty_categories;
@@ -1125,45 +1082,6 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndPointerNotMangled) {
   // Since all ids are process-local and not mangled, they should be equal.
   EXPECT_STREQ(async_begin_id_str.c_str(), async_begin2_id_str.c_str());
   EXPECT_STREQ(async_begin_id_str.c_str(), async_end_id_str.c_str());
-}
-
-// Test that static strings are not copied.
-TEST_F(TraceEventTestFixture, StaticStringVsString) {
-  TraceLog* tracer = TraceLog::GetInstance();
-  // Make sure old events are flushed:
-  EXPECT_EQ(0u, tracer->GetStatus().event_count);
-  const unsigned char* category_group_enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("base");
-
-  {
-    BeginTrace();
-    // Test that string arguments are copied.
-    [[maybe_unused]] TraceEventHandle handle1 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", std::string("argval"), "arg2",
-            std::string("argval"));
-    // Test that static TRACE_STR_COPY string arguments are copied.
-    [[maybe_unused]] TraceEventHandle handle2 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name2",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", TRACE_STR_COPY("argval"),
-            "arg2", TRACE_STR_COPY("argval"));
-    EndTraceAndFlush();
-  }
-
-  {
-    BeginTrace();
-    // Test that static literal string arguments are not copied.
-    [[maybe_unused]] TraceEventHandle handle1 =
-        trace_event_internal::AddTraceEvent(
-            TRACE_EVENT_PHASE_INSTANT, category_group_enabled, "name1",
-            trace_event_internal::kGlobalScope, trace_event_internal::kNoId, 0,
-            trace_event_internal::kNoId, "arg1", "argval", "arg2", "argval");
-    EndTraceAndFlush();
-  }
 }
 
 // Test that data sent from other threads is gathered
@@ -1655,90 +1573,6 @@ void BlockUntilStopped(WaitableEvent* task_start_event,
                        WaitableEvent* task_stop_event) {
   task_start_event->Signal();
   task_stop_event->Wait();
-}
-
-TEST_F(TraceEventTestFixture, SetCurrentThreadBlocksMessageLoopBeforeTracing) {
-  BeginTrace();
-
-  Thread thread("1");
-  WaitableEvent task_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                    WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.Start();
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceLog::SetCurrentThreadBlocksMessageLoop,
-                          Unretained(TraceLog::GetInstance())));
-
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceWithAllMacroVariants, &task_complete_event));
-  task_complete_event.Wait();
-
-  WaitableEvent task_start_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                 WaitableEvent::InitialState::NOT_SIGNALED);
-  WaitableEvent task_stop_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.task_runner()->PostTask(
-      FROM_HERE,
-      BindOnce(&BlockUntilStopped, &task_start_event, &task_stop_event));
-  task_start_event.Wait();
-
-  EndTraceAndFlush();
-  ValidateAllTraceMacrosCreatedData(trace_parsed_);
-
-  task_stop_event.Signal();
-  thread.Stop();
-}
-
-TEST_F(TraceEventTestFixture, ConvertTraceConfigToInternalOptions) {
-  TraceLog* trace_log = TraceLog::GetInstance();
-  EXPECT_EQ(TraceLog::kInternalRecordUntilFull,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, RECORD_UNTIL_FULL)));
-
-  EXPECT_EQ(TraceLog::kInternalRecordContinuously,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, RECORD_CONTINUOUSLY)));
-
-  EXPECT_EQ(TraceLog::kInternalEchoToConsole,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig(kRecordAllCategoryFilter, ECHO_TO_CONSOLE)));
-
-  EXPECT_EQ(TraceLog::kInternalEchoToConsole,
-            trace_log->GetInternalOptionsFromTraceConfig(
-                TraceConfig("*", "trace-to-console,enable-systrace")));
-}
-
-void SetBlockingFlagAndBlockUntilStopped(WaitableEvent* task_start_event,
-                                         WaitableEvent* task_stop_event) {
-  TraceLog::GetInstance()->SetCurrentThreadBlocksMessageLoop();
-  BlockUntilStopped(task_start_event, task_stop_event);
-}
-
-TEST_F(TraceEventTestFixture, SetCurrentThreadBlocksMessageLoopAfterTracing) {
-  BeginTrace();
-
-  Thread thread("1");
-  WaitableEvent task_complete_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                    WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.Start();
-
-  thread.task_runner()->PostTask(
-      FROM_HERE, BindOnce(&TraceWithAllMacroVariants, &task_complete_event));
-  task_complete_event.Wait();
-
-  WaitableEvent task_start_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                 WaitableEvent::InitialState::NOT_SIGNALED);
-  WaitableEvent task_stop_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                                WaitableEvent::InitialState::NOT_SIGNALED);
-  thread.task_runner()->PostTask(FROM_HERE,
-                                 BindOnce(&SetBlockingFlagAndBlockUntilStopped,
-                                          &task_start_event, &task_stop_event));
-  task_start_event.Wait();
-
-  EndTraceAndFlush();
-  ValidateAllTraceMacrosCreatedData(trace_parsed_);
-
-  task_stop_event.Signal();
-  thread.Stop();
 }
 
 TEST_F(TraceEventTestFixture, ThreadOnceBlocking) {

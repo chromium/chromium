@@ -353,17 +353,6 @@ MemoryAllocatorDump* ProcessMemoryDump::GetSharedGlobalAllocatorDump(
   return GetAllocatorDump(GetSharedGlobalAllocatorDumpName(guid));
 }
 
-void ProcessMemoryDump::DumpHeapUsage(
-    const std::unordered_map<base::trace_event::AllocationContext,
-                             base::trace_event::AllocationMetrics>&
-        metrics_by_context,
-    base::trace_event::TraceEventMemoryOverhead& overhead,
-    const char* allocator_name) {
-  std::string base_name = base::StringPrintf("tracing/heap_profiler_%s",
-                                             allocator_name);
-  overhead.DumpInto(base_name.c_str(), this);
-}
-
 void ProcessMemoryDump::SetAllocatorDumpsForSerialization(
     std::vector<std::unique_ptr<MemoryAllocatorDump>> dumps) {
   DCHECK(allocator_dumps_.empty());

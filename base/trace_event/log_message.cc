@@ -31,12 +31,6 @@ void LogMessage::AppendAsTraceFormat(std::string* out) const {
   out->append("}");
 }
 
-void LogMessage::EstimateTraceMemoryOverhead(
-    TraceEventMemoryOverhead* overhead) {
-  overhead->Add(TraceEventMemoryOverhead::kOther, sizeof(*this));
-  overhead->AddString(message_);
-}
-
 bool LogMessage::AppendToProto(ProtoAppender* appender) const {
   // LogMessage is handled in a special way in
   // track_event_thread_local_event_sink.cc in the function |AddTraceEvent|, so

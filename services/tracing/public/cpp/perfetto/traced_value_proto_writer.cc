@@ -224,15 +224,6 @@ class ProtoWriter final : public TracedValue::Writer {
     return true;
   }
 
-  void EstimateTraceMemoryOverhead(
-      base::trace_event::TraceEventMemoryOverhead* overhead) override {
-    overhead->Add(base::trace_event::TraceEventMemoryOverhead::kTracedValue,
-                  /* allocated size */
-                  buffer_.GetTotalSize(),
-                  /* resident size */
-                  buffer_.GetTotalSize());
-  }
-
  private:
   ProtoValue* AddDictEntry(const char* name) {
     DCHECK(!node_stack_.empty() && !node_stack_.top()->is_finalized());

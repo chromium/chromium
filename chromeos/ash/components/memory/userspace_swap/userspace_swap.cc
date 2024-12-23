@@ -11,6 +11,7 @@
 #include <optional>
 #include <random>
 #include <set>
+#include <stack>
 #include <vector>
 
 #include "base/feature_list.h"

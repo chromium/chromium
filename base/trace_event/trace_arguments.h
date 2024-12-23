@@ -140,8 +140,6 @@ class ThreadTicks;
 
 namespace trace_event {
 
-class TraceEventMemoryOverhead;
-
 // For any argument of type TRACE_VALUE_TYPE_CONVERTABLE the provided
 // class must implement this interface. Note that unlike other values,
 // these objects will be owned by the TraceArguments instance that points
@@ -175,8 +173,6 @@ class BASE_EXPORT ConvertableToTraceFormat
     virtual size_t Finalize(uint32_t field_id) = 0;
   };
   virtual bool AppendToProto(ProtoAppender* appender) const;
-
-  virtual void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 
   // DebugAnnotation implementation.
   void Add(perfetto::protos::pbzero::DebugAnnotation*) const override;
@@ -551,12 +547,6 @@ class BASE_EXPORT StringStorage {
   // Returns true if all string pointers in |args| are contained in this
   // storage area.
   bool Contains(const TraceArguments& args) const;
-
-  // Return an estimate of the memory overhead of this instance. This doesn't
-  // count the size of |data_| itself.
-  constexpr size_t EstimateTraceMemoryOverhead() const {
-    return data_ ? sizeof(size_t) + data_->size : 0u;
-  }
 
  private:
   // Heap allocated data block (variable size), made of:
