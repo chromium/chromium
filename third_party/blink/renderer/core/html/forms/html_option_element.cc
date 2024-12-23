@@ -758,9 +758,8 @@ void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && Selected()) {
     auto* select = OwnerSelectElement();
-    if (select && select->UsesMenuList() && !select->IsMultiple()) {
-      CHECK_EQ(this, select->SelectedOption());
-      select->UpdateAllSelectedcontents();
+    if (select && !select->IsMultiple()) {
+      select->UpdateAllSelectedcontents(this);
     }
   }
 }

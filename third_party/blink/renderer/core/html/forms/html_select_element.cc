@@ -1284,6 +1284,12 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   if (flags & kDeselectOtherOptionsFlag)
     should_update_popup |= DeselectItemsWithoutValidation(element);
 
+  if (!IsMultiple()) {
+    UpdateAllSelectedcontents(element);
+  }
+
+  // Note that DidSelectOption fires change events, which can invoke script
+  // and then change the selected option again.
   select_type_->DidSelectOption(element, flags, should_update_popup);
   NotifyFormStateChanged();
   if (GetDocument().IsActive()) {
@@ -1301,8 +1307,6 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
     // state to show as as autofilled.
     SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
   }
-
-  UpdateAllSelectedcontents();
 }
 
 bool HTMLSelectElement::DispatchFocusEvent(
@@ -1394,7 +1398,7 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
   DCHECK_GE(state.ValueSize(), 2u);
   if (!IsMultiple()) {
     unsigned index = state[1].ToUInt();
-    auto* option_element =
+    HTMLOptionElement* option_element =
         index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
                            : nullptr;
     if (option_element && option_element->value() == state[0]) {
@@ -1404,19 +1408,21 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     } else {
       wtf_size_t found_index = SearchOptionsForValue(state[0], 0, items_size);
       if (found_index != kNotFound) {
-        auto* found_option_element =
-            To<HTMLOptionElement>(items[found_index].Get());
-        found_option_element->SetSelectedState(true);
-        found_option_element->SetDirty(true);
-        last_on_change_option_ = found_option_element;
+        option_element = To<HTMLOptionElement>(items[found_index].Get());
+        option_element->SetSelectedState(true);
+        option_element->SetDirty(true);
+        last_on_change_option_ = option_element;
+      } else {
+        option_element = nullptr;
       }
     }
+    UpdateAllSelectedcontents(option_element);
   } else {
     wtf_size_t start_index = 0;
     for (wtf_size_t i = 0; i < state.ValueSize(); i += 2) {
       const String& value = state[i];
       const unsigned index = state[i + 1].ToUInt();
-      auto* option_element =
+      HTMLOptionElement* option_element =
           index < items_size ? DynamicTo<HTMLOptionElement>(items[index].Get())
                              : nullptr;
       if (option_element && option_element->value() == value) {
@@ -1430,16 +1436,14 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
           found_index = SearchOptionsForValue(value, 0, start_index);
         if (found_index == kNotFound)
           continue;
-        auto* found_option_element =
-            To<HTMLOptionElement>(items[found_index].Get());
-        found_option_element->SetSelectedState(true);
-        found_option_element->SetDirty(true);
+        option_element = To<HTMLOptionElement>(items[found_index].Get());
+        option_element->SetSelectedState(true);
+        option_element->SetDirty(true);
         start_index = found_index + 1;
       }
     }
   }
 
-  UpdateAllSelectedcontents();
   SetNeedsValidityCheck();
   select_type_->UpdateTextStyleAndContent();
 }
@@ -2172,18 +2176,24 @@ void HTMLSelectElement::setSelectedContentElement(
   }
 }
 
-void HTMLSelectElement::UpdateAllSelectedcontents() {
+void HTMLSelectElement::UpdateAllSelectedcontents(
+    HTMLOptionElement* selected_option) {
+  DCHECK(!IsMultiple());
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return;
   }
-  auto* option = SelectedOption();
+
+  // SelectedOption() can be slow, so callers are required to pass it in, and
+  // we have a DCHECK() that they did so correctly.
+  DCHECK_EQ(selected_option, SelectedOption());
+
   if (!descendant_selectedcontents_.IsEmpty()) {
     (*descendant_selectedcontents_.begin())
-        ->CloneContentsFromOptionElement(option);
+        ->CloneContentsFromOptionElement(selected_option);
   }
   if (RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled()) {
     if (auto* attr_selectedcontent = selectedContentElement()) {
-      attr_selectedcontent->CloneContentsFromOptionElement(option);
+      attr_selectedcontent->CloneContentsFromOptionElement(selected_option);
     }
   }
 }

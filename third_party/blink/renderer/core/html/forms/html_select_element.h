@@ -290,7 +290,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   void DefaultEventHandler(Event&) override;
 
-  void UpdateAllSelectedcontents();
+  void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
 
  private:
   mojom::blink::FormControlType FormControlType() const override;
