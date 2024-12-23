@@ -479,7 +479,7 @@ extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 
 // Title and description for the flag to enable delete all saved credentials in
-// GPM.
+// PWM.
 extern const char kIOSEnableDeleteAllSavedCredentialsName[];
 extern const char kIOSEnableDeleteAllSavedCredentialsDescription[];
 

@@ -14,7 +14,7 @@ BASE_FEATURE(kIOSEnablePasscodeSettings,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature switch for the logic that allows the user to delete all saved
-// credentials in GPM.
+// credentials in PWM.
 BASE_FEATURE(kIOSEnableDeleteAllSavedCredentials,
              "IOSEnableDeleteAllSavedCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
