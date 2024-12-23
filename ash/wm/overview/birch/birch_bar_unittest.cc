@@ -5,6 +5,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
+#include "ash/birch/coral_constants.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -295,7 +296,7 @@ class BirchBarTestBase : public AshTestBase {
   }
 
   // Adds `num` coral items to data source.
-  void SetCoralItems(size_t num) {
+  void SetCoralItems(size_t num, CoralSource source = CoralSource::kUnknown) {
     // The number of coral items cannot exceed 2.
     ASSERT_GE(2u, num);
 
@@ -320,7 +321,7 @@ class BirchBarTestBase : public AshTestBase {
       test_groups.push_back(std::move(test_group));
     }
 
-    OverrideTestResponse(std::move(test_groups));
+    OverrideTestResponse(std::move(test_groups), source);
   }
 
   std::unique_ptr<TestBirchClient> birch_client_;
@@ -375,7 +376,6 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                      base::Time::Now() + base::Minutes(30), GURL(), GURL(),
                      std::string(), /*all_day_event=*/false);
   birch_client_->SetCalendarItems(items);
-  SetCoralItems(/*num=*/2);
 
   // Entering overview shows the birch bar.
   EnterOverview();
@@ -385,16 +385,13 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
 
   // Four chips were shown.
-  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 4, 1);
+  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 2, 1);
 
   // One impression was recorded for each chip type.
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kFile, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kCalendar, 1);
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
-                               BirchItemType::kCoral, 2);
-  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 2, 1);
 
   // Two rankings were recorded for the current time slot histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);
@@ -403,6 +400,72 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   // The same ranking were recorded for the all-day total histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 1, 1);
   histograms.ExpectBucketCount("Ash.Birch.Ranking.Total", 12, 1);
+}
+
+// Tests that we get expected records when showing/hiding/activating the coral
+// chips.
+TEST_F(BirchBarTest, RecordsHistogramForCoralChips) {
+  birch_client_->Reset();
+
+  base::HistogramTester histograms;
+
+  // Add one restore chip.
+  SetCoralItems(1, CoralSource::kPostLogin);
+
+  // Entering overview shows the birch bar.
+  EnterOverview();
+
+  const auto& restore_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(restore_chips.size(), 1u);
+
+  // One cluster count was recorded for the coral chip.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 1, 1);
+
+  // Clicking on the restore chip to restore the group and exit Overview.
+  LeftClickOn(restore_chips[0]);
+
+  // One restore action was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.Action",
+                               BirchCoralItem::ActionType::kRestore, 1);
+
+  // One chip activation was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kCoral,
+                               1);
+
+  ASSERT_FALSE(IsInOverviewSession());
+
+  // Add two in-session chips.
+  SetCoralItems(2, CoralSource::kInSession);
+
+  // Entering overview shows the birch bar.
+  EnterOverview();
+
+  const auto& in_session_chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(in_session_chips.size(), 2u);
+
+  // Two cluster count was recorded for the coral chip.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 2, 1);
+
+  // Hide the one chip.
+  BirchBarController::Get()->OnItemHiddenByUser(in_session_chips[0]->GetItem());
+  ASSERT_EQ(in_session_chips.size(), 1u);
+
+  // One cluster hidden was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden", BirchItemType::kCoral,
+                               1);
+
+  // Clicking on the in-session chip to launch the group.
+  LeftClickOn(in_session_chips[0]);
+
+  // One restore action was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.Action",
+                               BirchCoralItem::ActionType::kLaunchToNewDesk, 1);
+
+  // Another chip activation was recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kCoral,
+                               2);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split

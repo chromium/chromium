@@ -18,6 +18,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/barrier_callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -141,12 +142,17 @@ base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
 }
 
 void BirchCoralItem::PerformAction() {
+  // Record basic metrics.
+  RecordActionMetrics();
+
   switch (source_) {
     case CoralSource::kPostLogin: {
       coral::mojom::GroupPtr group =
           BirchCoralProvider::Get()->ExtractGroupById(group_id_);
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kRestore);
       // End the Overview after restore.
       // TODO(zxdan|sammie): Consider the restoring failed cases.
       OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
@@ -166,6 +172,8 @@ void BirchCoralItem::PerformAction() {
       coral::mojom::GroupPtr group =
           BirchCoralProvider::Get()->ExtractGroupById(group_id_);
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kLaunchToNewDesk);
       break;
     }
     case CoralSource::kUnknown:

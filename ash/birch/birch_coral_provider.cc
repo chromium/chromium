@@ -351,9 +351,20 @@ void BirchCoralProvider::RequestBirchDataFetch() {
       }
       groups.push_back(std::move(new_group));
     }
-    fake_response_copy->set_source(HasValidPostLoginData()
-                                       ? CoralSource::kPostLogin
-                                       : CoralSource::kInSession);
+
+    switch (fake_response_->source()) {
+      case CoralSource::kUnknown:
+        fake_response_copy->set_source(HasValidPostLoginData()
+                                           ? CoralSource::kPostLogin
+                                           : CoralSource::kInSession);
+        break;
+      case CoralSource::kInSession:
+        fake_response_copy->set_source(CoralSource::kInSession);
+        break;
+      case CoralSource::kPostLogin:
+        fake_response_copy->set_source(CoralSource::kPostLogin);
+        break;
+    }
     fake_response_copy->set_groups(std::move(groups));
     HandleCoralResponse(std::move(fake_response_copy));
     return;

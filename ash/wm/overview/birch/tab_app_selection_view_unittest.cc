@@ -16,6 +16,7 @@
 #include "ash/wm/overview/birch/tab_app_selection_host.h"
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/view_utils.h"
 
@@ -125,6 +126,60 @@ TEST_F(TabAppSelectionViewTest, PressToHideMenu) {
   ASSERT_TRUE(menu);
   GetEventGenerator()->GestureTapAt(gfx::Point(1, 1));
   EXPECT_TRUE(!menu->IsVisible());
+}
+
+// Tests that corresponding metrics are recorded when showing the menu, removing
+// the item, and clicking on the thumbs up/down buttons.
+TEST_F(TabAppSelectionViewTest, RecordsHistogram) {
+  base::HistogramTester histograms;
+
+  TabAppSelectionHost* menu = ShowAndGetSelectorMenu(GetEventGenerator());
+  ASSERT_TRUE(menu);
+  EXPECT_TRUE(menu->IsVisible());
+
+  // One menu expanded is recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterExpanded", true, 1);
+
+  auto* selection_view =
+      views::AsViewClass<TabAppSelectionView>(menu->GetContentsView());
+  ASSERT_TRUE(selection_view);
+  // There are 5 items.
+  ASSERT_EQ(selection_view->item_views_.size(), 5u);
+
+  // Close two items.
+  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
+  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
+
+  // Click on thumbs up button.
+  LeftClickOn(
+      selection_view->GetViewByID(TabAppSelectionView::ViewID::kThumbsUpID));
+  // One thumbs up is recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.UserFeedback", true, 1);
+
+  LeftClickOn(menu->owner_for_testing()->addon_view());
+  EXPECT_FALSE(menu->IsVisible());
+
+  LeftClickOn(menu->owner_for_testing()->addon_view());
+  EXPECT_TRUE(menu->IsVisible());
+
+  // Another menu expanded is recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterExpanded", true, 2);
+
+  // There are 3 items.
+  ASSERT_EQ(selection_view->item_views_.size(), 3u);
+
+  // Close one item.
+  selection_view->OnCloseButtonPressed(selection_view->item_views_.front());
+
+  // Click on the thumbs down button.
+  LeftClickOn(
+      selection_view->GetViewByID(TabAppSelectionView::ViewID::kThumbsDownID));
+  // One thumbs down is recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.UserFeedback", false, 1);
+
+  ExitOverview();
+  // After exiting Overview, the total number of removed items is recorded.
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterItemRemoved", 3, 1);
 }
 
 }  // namespace ash

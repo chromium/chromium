@@ -105,7 +105,10 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
                           coral_chip->GetWidget()->GetNativeWindow());
 }
 
-TabAppSelectionHost::~TabAppSelectionHost() = default;
+TabAppSelectionHost::~TabAppSelectionHost() {
+  base::UmaHistogramExactLinear("Ash.Birch.Coral.ClusterItemRemoved",
+                                number_of_removed_items_, /*exclusive_max=*/9);
+}
 
 void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::EventType::kKeyPressed) {
@@ -125,6 +128,7 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
 }
 
 void TabAppSelectionHost::OnItemRemoved() {
+  number_of_removed_items_++;
   owner_->ReloadIcon();
 }
 
