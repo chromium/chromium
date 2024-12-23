@@ -87,8 +87,9 @@ class HostComponentTransform : public AppendComponentTransform {
       const std::string& component_text,
       base::OffsetAdjuster::Adjustments* adjustments) const override {
     // Nothing to change.
-    if (!trim_trivial_subdomains_ && !trim_mobile_prefix_)
+    if (!trim_trivial_subdomains_ && !trim_mobile_prefix_) {
       return IDNToUnicodeWithAdjustments(component_text, adjustments).result;
+    }
 
     std::string stripped_component_text = component_text;
     if (base::StartsWith(component_text, "www.m.") &&
@@ -112,8 +113,9 @@ class HostComponentTransform : public AppendComponentTransform {
     // weren't a prefix, or it otherwise didn't meet conditions for stripping
     // "www." (such as intranet hostnames). In this case, no adjustments for
     // trivial subdomains are needed.
-    if (stripped_component_text == component_text)
+    if (stripped_component_text == component_text) {
       return IDNToUnicodeWithAdjustments(component_text, adjustments).result;
+    }
 
     base::OffsetAdjuster::Adjustments offset_adjustments;
 
@@ -216,8 +218,9 @@ void AppendFormattedComponent(const std::string& spec,
 
 // If |component| is valid, its begin is incremented by |delta|.
 void AdjustComponent(int delta, url::Component* component) {
-  if (!component->is_valid())
+  if (!component->is_valid()) {
     return;
+  }
 
   DCHECK(delta >= 0 || component->begin >= -delta);
   component->begin += delta;
@@ -261,8 +264,9 @@ std::u16string FormatViewSourceUrl(
                         unescape_rules, new_parsed, prefix_end, adjustments)});
   // Revise |adjustments| by shifting to the offsets to prefix that the above
   // call to FormatUrl didn't get to see.
-  for (auto& adjustment : *adjustments)
+  for (auto& adjustment : *adjustments) {
     adjustment.original_offset += kViewSource.size();
+  }
 
   // Adjust positions of the parsed components.
   if (new_parsed->scheme.is_nonempty()) {
@@ -274,8 +278,9 @@ std::u16string FormatViewSourceUrl(
   }
   AdjustAllComponentsButScheme(kViewSource.size(), new_parsed);
 
-  if (prefix_end)
+  if (prefix_end) {
     *prefix_end += kViewSource.size();
+  }
 
   return result;
 }
@@ -310,8 +315,9 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     std::string_view host,
     base::OffsetAdjuster::Adjustments* adjustments,
     bool ignore_spoof_check_results) {
-  if (adjustments)
+  if (adjustments) {
     adjustments->clear();
+  }
   // Convert the ASCII input to a std::u16string for ICU.
   std::u16string host16;
   host16.reserve(host.length());
@@ -330,8 +336,9 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
        component_start < host16.length(); component_start = component_end + 1) {
     // Find the end of the component.
     component_end = host16.find('.', component_start);
-    if (component_end == std::u16string::npos)
+    if (component_end == std::u16string::npos) {
       component_end = host16.length();  // For getting the last component.
+    }
     size_t component_length = component_end - component_start;
     size_t new_component_start = out16.length();
     ComponentResult component_result;
@@ -356,8 +363,9 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     }
 
     // Need to add the dot we just found (if we found one).
-    if (component_end < host16.length())
+    if (component_end < host16.length()) {
       out16.push_back('.');
+    }
   }
 
   result.result = out16;
@@ -368,8 +376,9 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
         g_idn_spoof_checker.Get().GetSimilarTopDomain(out16);
     if (!ignore_spoof_check_results &&
         !result.matching_top_domain.domain.empty()) {
-      if (adjustments)
+      if (adjustments) {
         adjustments->clear();
+      }
       result.result = host16;
     }
   }
@@ -459,8 +468,9 @@ ComponentResult IDNToUnicodeOneComponent(
     std::u16string* out) {
   DCHECK(out);
   ComponentResult result;
-  if (comp.empty())
+  if (comp.empty()) {
     return result;
+  }
 
   // Early return if the input cannot be an IDN component.
   // Valid punycode must not end with a dash.
@@ -528,8 +538,9 @@ bool HasTwoViewSourceSchemes(std::string_view spec) {
   spec.remove_prefix(scheme.begin + scheme.len);
   // Consume the trailing colon. If it's not there, then `spec` didn't really
   // have the first view-source scheme.
-  if (spec.empty() || spec[0] != ':')
+  if (spec.empty() || spec[0] != ':') {
     return false;
+  }
   spec.remove_prefix(1);
 
   return url::FindAndCompareScheme(
@@ -594,10 +605,11 @@ std::u16string FormatUrlWithAdjustments(
   DCHECK(adjustments);
   adjustments->clear();
   url::Parsed parsed_temp;
-  if (!new_parsed)
+  if (!new_parsed) {
     new_parsed = &parsed_temp;
-  else
+  } else {
     *new_parsed = url::Parsed();
+  }
 
   // Special handling for view-source:. Don't use content::kViewSourceScheme
   // because this library shouldn't depend on chrome. Reject repeated
@@ -652,16 +664,19 @@ std::u16string FormatUrlWithAdjustments(
     AppendFormattedComponent(spec, parsed.username,
                              NonHostComponentTransform(unescape_rules),
                              &url_string, &new_parsed->username, adjustments);
-    if (parsed.password.is_valid())
+    if (parsed.password.is_valid()) {
       url_string.push_back(':');
+    }
     AppendFormattedComponent(spec, parsed.password,
                              NonHostComponentTransform(unescape_rules),
                              &url_string, &new_parsed->password, adjustments);
-    if (parsed.username.is_valid() || parsed.password.is_valid())
+    if (parsed.username.is_valid() || parsed.password.is_valid()) {
       url_string.push_back('@');
+    }
   }
-  if (prefix_end)
+  if (prefix_end) {
     *prefix_end = static_cast<size_t>(url_string.length());
+  }
 
   // Host.
   bool trim_trivial_subdomains =
@@ -688,12 +703,14 @@ std::u16string FormatUrlWithAdjustments(
       !url.SchemeIsFile() && !url.SchemeIsFileSystem()) {
     size_t trimmed_length = parsed.path.len;
     // Remove query and the '?' delimeter.
-    if (parsed.query.is_valid())
+    if (parsed.query.is_valid()) {
       trimmed_length += parsed.query.len + 1;
+    }
 
     // Remove ref and the '#" delimiter.
-    if (parsed.ref.is_valid())
+    if (parsed.ref.is_valid()) {
       trimmed_length += parsed.ref.len + 1;
+    }
 
     adjustments->push_back(
         base::OffsetAdjuster::Adjustment(parsed.path.begin, trimmed_length, 0));
@@ -711,14 +728,16 @@ std::u16string FormatUrlWithAdjustments(
                              NonHostComponentTransform(unescape_rules),
                              &url_string, &new_parsed->path, adjustments);
 
-    if (parsed.query.is_valid())
+    if (parsed.query.is_valid()) {
       url_string.push_back('?');
+    }
     AppendFormattedComponent(spec, parsed.query,
                              NonHostComponentTransform(unescape_rules),
                              &url_string, &new_parsed->query, adjustments);
 
-    if (parsed.ref.is_valid())
+    if (parsed.ref.is_valid()) {
       url_string.push_back('#');
+    }
     AppendFormattedComponent(spec, parsed.ref,
                              NonHostComponentTransform(unescape_rules),
                              &url_string, &new_parsed->ref, adjustments);
@@ -770,8 +789,9 @@ std::u16string FormatUrlWithAdjustments(
     adjustments->insert(adjustments->begin(),
                         base::OffsetAdjuster::Adjustment(0, scheme_size, 0));
 
-    if (prefix_end)
+    if (prefix_end) {
       *prefix_end -= scheme_size;
+    }
 
     // Adjust new_parsed.
     new_parsed->scheme.reset();
@@ -809,8 +829,9 @@ std::string StripWWW(const std::string& text) {
           text, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   // If there is no domain and registry, we may be looking at an intranet
   // or otherwise non-standard host. Leave those alone.
-  if (domain_and_registry.empty())
+  if (domain_and_registry.empty()) {
     return text;
+  }
   return text.size() - domain_and_registry.length() >= kWwwLength &&
                  base::StartsWith(text, kWww, base::CompareCase::SENSITIVE)
              ? text.substr(kWwwLength)
@@ -819,8 +840,9 @@ std::string StripWWW(const std::string& text) {
 
 void StripWWWFromHostComponent(const std::string& url, url::Component* host) {
   std::string host_str = url.substr(host->begin, host->len);
-  if (StripWWW(host_str) == host_str)
+  if (StripWWW(host_str) == host_str) {
     return;
+  }
   host->begin += kWwwLength;
   host->len -= kWwwLength;
 }

@@ -125,8 +125,9 @@ std::string TopDomainStateGenerator::Generate(
 
   TrieWriter writer(approximate_table, &huffman_builder);
   uint32_t root_position;
-  if (!writer.WriteEntries(raw_trie_entries, &root_position))
+  if (!writer.WriteEntries(raw_trie_entries, &root_position)) {
     return std::string();
+  }
 
   optimal_table = huffman_builder.ToTable();
   TrieWriter new_writer(optimal_table, &huffman_builder);
@@ -141,8 +142,9 @@ std::string TopDomainStateGenerator::Generate(
     trie_entries.push_back(std::move(trie_entry));
   }
 
-  if (!new_writer.WriteEntries(raw_trie_entries, &root_position))
+  if (!new_writer.WriteEntries(raw_trie_entries, &root_position)) {
     return std::string();
+  }
 
   uint32_t new_length = new_writer.position();
   std::vector<uint8_t> huffman_tree = huffman_builder.ToVector();

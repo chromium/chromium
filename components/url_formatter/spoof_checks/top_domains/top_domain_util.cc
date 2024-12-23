@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
+
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 

@@ -47,12 +47,14 @@ std::u16string BuildPathFromComponents(
   std::u16string path = path_prefix;
 
   // Build path from first |num_components| elements.
-  for (size_t j = 0; j < num_components; ++j)
+  for (size_t j = 0; j < num_components; ++j) {
     path += path_elements[j] + gfx::kForwardSlash;
+  }
 
   // Add |filename|, ellipsis if necessary.
-  if (num_components != (path_elements.size() - 1))
+  if (num_components != (path_elements.size() - 1)) {
     path += std::u16string(gfx::kEllipsisUTF16) + gfx::kForwardSlash;
+  }
   path += filename;
 
   return path;
@@ -91,8 +93,9 @@ std::u16string ElideComponentizedPath(
 
   // If the cutting point is at the beginning and nothing gets elided, return
   // failure even if the whole text could fit. TODO(crbug.com/40127834).
-  if (min_index == 0)
+  if (min_index == 0) {
     return std::u16string();
+  }
 
   // Elide starting at |min_index|.
   return gfx::ElideText(elided_path_at_min_index + url_query, font_list,
@@ -123,8 +126,9 @@ bool ShouldShowScheme(std::string_view scheme,
 // strong RTL character.
 std::u16string HostForDisplay(std::string_view host_in_puny) {
   std::u16string host = url_formatter::IDNToUnicode(host_in_puny);
-  return base::i18n::StringContainsStrongRTLChars(host) ?
-      base::ASCIIToUTF16(host_in_puny) : host;
+  return base::i18n::StringContainsStrongRTLChars(host)
+             ? base::ASCIIToUTF16(host_in_puny)
+             : host;
 }
 
 }  // namespace
@@ -145,8 +149,9 @@ std::u16string ElideUrl(const GURL& url,
   const std::u16string url_string = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitDefaults, base::UnescapeRule::SPACES,
       &parsed, nullptr, nullptr);
-  if (available_pixel_width <= 0)
+  if (available_pixel_width <= 0) {
     return url_string;
+  }
 
   if (!url.IsStandard()) {
     return gfx::ElideText(url_string, font_list, available_pixel_width,
@@ -157,8 +162,9 @@ std::u16string ElideUrl(const GURL& url,
   // Fist pass - check to see whether entire url_string fits.
   const float pixel_width_url_string =
       gfx::GetStringWidthF(url_string, font_list);
-  if (available_pixel_width >= pixel_width_url_string)
+  if (available_pixel_width >= pixel_width_url_string) {
     return url_string;
+  }
 
   // Get the path substring, including query and reference.
   const size_t path_start_index = parsed.path.begin;
@@ -207,17 +213,20 @@ std::u16string ElideUrl(const GURL& url,
   const float pixel_width_url_host = gfx::GetStringWidthF(url_host, font_list);
   const float pixel_width_url_path =
       gfx::GetStringWidthF(url_path_query_etc, font_list);
-  if (available_pixel_width >= pixel_width_url_host + pixel_width_url_path)
+  if (available_pixel_width >= pixel_width_url_host + pixel_width_url_path) {
     return url_host + url_path_query_etc;
+  }
 
   // Third Pass: Subdomain, domain and entire path fits.
   const float pixel_width_url_domain =
       gfx::GetStringWidthF(url_domain, font_list);
   const float pixel_width_url_subdomain =
       gfx::GetStringWidthF(url_subdomain, font_list);
-  if (available_pixel_width >=
-      pixel_width_url_subdomain + pixel_width_url_domain + pixel_width_url_path)
+  if (available_pixel_width >= pixel_width_url_subdomain +
+                                   pixel_width_url_domain +
+                                   pixel_width_url_path) {
     return url_subdomain + url_domain + url_path_query_etc;
+  }
 
   // Query element.
   std::u16string url_query;
@@ -261,8 +270,9 @@ std::u16string ElideUrl(const GURL& url,
     std::u16string elided_path = ElideComponentizedPath(
         url_subdomain + url_domain, url_path_elements, url_filename, url_query,
         font_list, available_pixel_width);
-    if (!elided_path.empty())
+    if (!elided_path.empty()) {
       return elided_path;
+    }
   }
 
   // Check with only domain.
@@ -272,17 +282,19 @@ std::u16string ElideUrl(const GURL& url,
   // which means that this case has been resolved earlier.
   std::u16string url_elided_domain = url_subdomain + url_domain;
   if (pixel_width_url_subdomain > kPixelWidthDotsTrailer) {
-    if (!url_subdomain.empty())
+    if (!url_subdomain.empty()) {
       url_elided_domain = kEllipsisAndSlash[0] + url_domain;
-    else
+    } else {
       url_elided_domain = url_domain;
+    }
 
     if (url_path_number_of_elements > 0) {
       std::u16string elided_path = ElideComponentizedPath(
           url_elided_domain, url_path_elements, url_filename, url_query,
           font_list, available_pixel_width);
-      if (!elided_path.empty())
+      if (!elided_path.empty()) {
         return elided_path;
+      }
     }
   }
 
@@ -315,17 +327,20 @@ std::u16string ElideHost(const GURL& url,
   url_formatter::SplitHost(url, &url_host, &url_domain, &url_subdomain);
 
   const float pixel_width_url_host = gfx::GetStringWidthF(url_host, font_list);
-  if (available_pixel_width >= pixel_width_url_host)
+  if (available_pixel_width >= pixel_width_url_host) {
     return url_host;
+  }
 
-  if (url_subdomain.empty())
+  if (url_subdomain.empty()) {
     return url_domain;
+  }
 
   const float pixel_width_url_domain =
       gfx::GetStringWidthF(url_domain, font_list);
   float subdomain_width = available_pixel_width - pixel_width_url_domain;
-  if (subdomain_width <= 0)
+  if (subdomain_width <= 0) {
     return std::u16string(gfx::kEllipsisUTF16) + kDot + url_domain;
+  }
 
   return gfx::ElideText(url_host, font_list, available_pixel_width,
                         gfx::ELIDE_HEAD);
@@ -335,8 +350,9 @@ std::u16string ElideHost(const GURL& url,
 
 std::u16string FormatUrlForSecurityDisplay(const GURL& url,
                                            const SchemeDisplay scheme_display) {
-  if (!url.is_valid() || url.is_empty() || !url.IsStandard())
+  if (!url.is_valid() || url.is_empty() || !url.IsStandard()) {
     return url_formatter::FormatUrl(url);
+  }
 
   constexpr std::u16string_view colon(u":");
 
@@ -369,8 +385,9 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
 
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(scheme);
-  if (port != url::PORT_UNSPECIFIED && port != default_port)
+  if (port != url::PORT_UNSPECIFIED && port != default_port) {
     result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
+  }
 
   return result;
 }
@@ -380,8 +397,9 @@ std::u16string FormatOriginForSecurityDisplay(
     const SchemeDisplay scheme_display) {
   std::string_view scheme = origin.scheme();
   std::string_view host = origin.host();
-  if (scheme.empty() && host.empty())
+  if (scheme.empty() && host.empty()) {
     return std::u16string();
+  }
 
   constexpr std::u16string_view colon(u":");
 
@@ -394,8 +412,9 @@ std::u16string FormatOriginForSecurityDisplay(
 
   int port = static_cast<int>(origin.port());
   const int default_port = url::DefaultPortForScheme(scheme);
-  if (port != 0 && port != default_port)
+  if (port != 0 && port != default_port) {
     result += base::StrCat({colon, base::NumberToString16(origin.port())});
+  }
 
   return result;
 }
@@ -452,8 +471,9 @@ void SplitHost(const GURL& url,
   if (url_subdomain) {
     const size_t domain_start_index = url_host->find(*url_domain);
     constexpr std::u16string_view kWwwPrefix = u"www.";
-    if (domain_start_index != std::u16string::npos)
+    if (domain_start_index != std::u16string::npos) {
       *url_subdomain = url_host->substr(0, domain_start_index);
+    }
     if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||
          url.SchemeIsFile())) {
       url_subdomain->clear();

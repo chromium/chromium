@@ -173,8 +173,9 @@ void SkeletonGenerator::MaybeRemoveDiacritics(icu::UnicodeString& hostname) {
   // If input has any characters outside Latin-Greek-Cyrillic and [0-9._-],
   // there is no point in getting rid of diacritics because combining marks
   // attached to non-LGC characters are already blocked.
-  if (ShouldRemoveDiacriticsFromLabel(hostname))
+  if (ShouldRemoveDiacriticsFromLabel(hostname)) {
     diacritic_remover_->transliterate(hostname);
+  }
 }
 
 std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
@@ -262,8 +263,9 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
   size_t length = host_alt.length();
   char16_t* buffer = host_alt.getBuffer(-1);
   for (char16_t* uc = buffer + src_pos; uc < buffer + length; ++uc) {
-    if (*uc == src_char)
+    if (*uc == src_char) {
       *uc = mapped_char;
+    }
   }
   host_alt.releaseBuffer(length);
   UErrorCode status = U_ZERO_ERROR;

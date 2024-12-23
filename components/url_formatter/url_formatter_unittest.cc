@@ -26,8 +26,8 @@ namespace url_formatter {
 
 namespace {
 
-using base::WideToUTF16;
 using base::ASCIIToUTF16;
+using base::WideToUTF16;
 
 const size_t kNpos = std::u16string::npos;
 
@@ -51,8 +51,9 @@ void VerboseExpect(size_t expected,
                    const std::string& original_url,
                    size_t position,
                    const std::u16string& formatted_url) {
-  EXPECT_EQ(expected, actual) << "Original URL: " << original_url
-      << " (at char " << position << ")\nFormatted URL: " << formatted_url;
+  EXPECT_EQ(expected, actual)
+      << "Original URL: " << original_url << " (at char " << position
+      << ")\nFormatted URL: " << formatted_url;
 }
 
 void CheckAdjustedOffsets(const std::string& url_string,
@@ -62,14 +63,16 @@ void CheckAdjustedOffsets(const std::string& url_string,
   GURL url(url_string);
   size_t url_length = url_string.length();
   std::vector<size_t> offsets;
-  for (size_t i = 0; i <= url_length + 1; ++i)
+  for (size_t i = 0; i <= url_length + 1; ++i) {
     offsets.push_back(i);
+  }
   offsets.push_back(500000);  // Something larger than any input length.
   offsets.push_back(std::string::npos);
   std::u16string formatted_url = FormatUrlWithOffsets(
       url, format_types, unescape_rules, nullptr, nullptr, &offsets);
-  for (size_t i = 0; i < url_length; ++i)
+  for (size_t i = 0; i < url_length; ++i) {
     VerboseExpect(output_offsets[i], offsets[i], url_string, i, formatted_url);
+  }
   VerboseExpect(formatted_url.length(), offsets[url_length], url_string,
                 url_length, formatted_url);
   VerboseExpect(std::u16string::npos, offsets[url_length + 1], url_string,
@@ -698,64 +701,62 @@ TEST(UrlFormatterTest, FormatUrlWithOffsets) {
   CheckAdjustedOffsets(std::string(), kFormatUrlOmitNothing,
                        base::UnescapeRule::NORMAL, nullptr);
 
-  const size_t basic_offsets[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25
-  };
+  const size_t basic_offsets[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,
+                                  9,  10, 11, 12, 13, 14, 15, 16, 17,
+                                  18, 19, 20, 21, 22, 23, 24, 25};
   CheckAdjustedOffsets("http://www.google.com/foo/", kFormatUrlOmitNothing,
                        base::UnescapeRule::NORMAL, basic_offsets);
 
   const size_t omit_auth_offsets_1[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 7,
-    8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
-  };
+      0,     1,     2,     3,     4,     5,  6,  7,  kNpos, kNpos,
+      kNpos, kNpos, kNpos, kNpos, kNpos, 7,  8,  9,  10,    11,
+      12,    13,    14,    15,    16,    17, 18, 19, 20,    21};
   CheckAdjustedOffsets("http://foo:bar@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, omit_auth_offsets_1);
 
   const size_t omit_auth_offsets_2[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, kNpos, kNpos, kNpos, 7, 8, 9, 10, 11, 12, 13, 14,
-    15, 16, 17, 18, 19, 20, 21
-  };
+      0, 1,  2,  3,  4,  5,  6,  7,  kNpos, kNpos, kNpos, 7,  8,
+      9, 10, 11, 12, 13, 14, 15, 16, 17,    18,    19,    20, 21};
   CheckAdjustedOffsets("http://foo@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, omit_auth_offsets_2);
 
   const size_t dont_omit_auth_offsets[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, kNpos, 11, 12, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-    30, 31
-  };
+      0,  1,     2,     3,     4,     5,     6,     7,     8,     9,
+      10, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 11,
+      12, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 13,
+      14, 15,    16,    17,    18,    19,    20,    21,    22,    23,
+      24, 25,    26,    27,    28,    29,    30,    31};
   // Unescape to "http://foo\x30B0:\x30B0bar@www.google.com".
   CheckAdjustedOffsets("http://foo%E3%82%B0:%E3%82%B0bar@www.google.com/",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        dont_omit_auth_offsets);
 
   const size_t view_source_offsets[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, kNpos,
-    kNpos, kNpos, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33
-  };
+      0,  1,  2,  3,  4,  5,  6,  7,     8,     9,     10, 11, 12,
+      13, 14, 15, 16, 17, 18, 19, kNpos, kNpos, kNpos, 19, 20, 21,
+      22, 23, 24, 25, 26, 27, 28, 29,    30,    31,    32, 33};
   CheckAdjustedOffsets("view-source:http://foo@www.google.com/",
                        kFormatUrlOmitUsernamePassword,
                        base::UnescapeRule::NORMAL, view_source_offsets);
 
   const size_t idn_hostname_offsets_1[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,
-    13, 14, 15, 16, 17, 18, 19
-  };
+      0,     1,     2,     3,     4,     5,     6,     7,     kNpos,
+      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 12,    13,
+      14,    15,    16,    17,    18,    19};
   // Convert punycode to "http://\x671d\x65e5\x3042\x3055\x3072.jp/foo/".
   CheckAdjustedOffsets("http://xn--l8jvb1ey91xtjb.jp/foo/",
                        kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
                        idn_hostname_offsets_1);
 
   const size_t idn_hostname_offsets_2[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 14, 15, kNpos, kNpos, kNpos,
-    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, 19, 20, 21, 22, 23, 24
-  };
+      0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+      kNpos, kNpos, kNpos, kNpos, 14,    15,    kNpos, kNpos, kNpos, kNpos,
+      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+      kNpos, 19,    20,    21,    22,    23,    24};
   // Convert punycode to
   // "http://test.\x89c6\x9891.\x5317\x4eac\x5927\x5b78.test/".
   CheckAdjustedOffsets("http://test.xn--cy2a840a.xn--1lq90ic7f1rc.test/",
@@ -763,12 +764,13 @@ TEST(UrlFormatterTest, FormatUrlWithOffsets) {
                        idn_hostname_offsets_2);
 
   const size_t unescape_offsets[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, kNpos, kNpos, 26, 27, 28, 29, 30, kNpos, kNpos, kNpos,
-    kNpos, kNpos, kNpos, kNpos, kNpos, 31, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, kNpos, kNpos, 32, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
-    kNpos, 33, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos
-  };
+      0,     1,     2,     3,     4,     5,     6,     7,     8,     9,
+      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+      20,    21,    22,    23,    24,    25,    kNpos, kNpos, 26,    27,
+      28,    29,    30,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+      kNpos, 31,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos,
+      32,    kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 33,
+      kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos};
   // Unescape to "http://www.google.com/foo bar/\x30B0\x30FC\x30B0\x30EB".
   CheckAdjustedOffsets(
       "http://www.google.com/foo%20bar/%E3%82%B0%E3%83%BC%E3%82%B0%E3%83%AB",
@@ -787,23 +789,21 @@ TEST(UrlFormatterTest, FormatUrlWithOffsets) {
                        ref_offsets);
 
   const size_t omit_http_offsets[] = {
-    0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14
-  };
+      0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0,  1,  2,  3,
+      4, 5,     6,     7,     8,     9,     10,    11, 12, 13, 14};
   CheckAdjustedOffsets("http://www.google.com/", kFormatUrlOmitHTTP,
                        base::UnescapeRule::NORMAL, omit_http_offsets);
 
   const size_t omit_http_start_with_ftp_offsets[] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
-  };
+      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+      11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21};
   CheckAdjustedOffsets("http://ftp.google.com/", kFormatUrlOmitHTTP,
                        base::UnescapeRule::NORMAL,
                        omit_http_start_with_ftp_offsets);
 
   const size_t omit_all_offsets[] = {
-    0, kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0, kNpos, kNpos, kNpos, kNpos,
-    0, 1, 2, 3, 4, 5, 6, 7
-  };
+      0,     kNpos, kNpos, kNpos, kNpos, kNpos, kNpos, 0, kNpos, kNpos,
+      kNpos, kNpos, 0,     1,     2,     3,     4,     5, 6,     7};
   CheckAdjustedOffsets("http://user@foo.com/", kFormatUrlOmitDefaults,
                        base::UnescapeRule::NORMAL, omit_all_offsets);
 
