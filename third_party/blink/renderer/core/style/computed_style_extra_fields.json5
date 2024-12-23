@@ -1350,7 +1350,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["paint"]
+      invalidate: ["layout"]
     }
   ],
 }
