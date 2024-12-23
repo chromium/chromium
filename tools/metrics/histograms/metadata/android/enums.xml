@@ -703,13 +703,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(XX) VR_DELEGATE (Deprecated)"/>
   <int value="2" label="(XX) AR_DELEGATE (Deprecated)"/>
   <int value="3" label="(02) SCENE_OVERLAY"/>
-  <int value="4" label="(05) START_SURFACE (with tab switcher if enabled)"/>
+  <int value="4"
+      label="(XX) START_SURFACE (with tab switcher if enabled. Deprecated)"/>
   <int value="5" label="(10) SELECTION_POPUP"/>
   <int value="6" label="(11) MANUAL_FILLING"/>
   <int value="7" label="(09) FULLSCREEN"/>
   <int value="8" label="(03) BOTTOM_SHEET"/>
   <int value="9" label="(13) TAB_MODAL_HANDLER"/>
-  <int value="10" label="(08) TAB_SWITCHER (if Start surface is disabled)"/>
+  <int value="10"
+      label="(XX) TAB_SWITCHER (if Start surface is disabled. Deprecated)"/>
   <int value="11" label="(14) CLOSE_WATCHER"/>
   <int value="12" label="(17) TAB_HISTORY"/>
   <int value="13" label="(XX) TAB_RETURN_TO_CHROME_START_SURFACE (Deprecated)"/>

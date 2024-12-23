@@ -29,13 +29,13 @@ public interface BackPressHandler {
         Type.TEXT_BUBBLE,
         Type.XR_DELEGATE,
         Type.SCENE_OVERLAY,
-        Type.START_SURFACE,
+        // Deprecated: Type.START_SURFACE,
         Type.SELECTION_POPUP,
         Type.MANUAL_FILLING,
         Type.TAB_MODAL_HANDLER,
         Type.FULLSCREEN,
         Type.HUB,
-        Type.TAB_SWITCHER,
+        // Deprecated: Type.TAB_SWITCHER,
         Type.CLOSE_WATCHER,
         Type.FIND_TOOLBAR,
         Type.LOCATION_BAR,
@@ -52,11 +52,11 @@ public interface BackPressHandler {
         int XR_DELEGATE = 1;
         int SCENE_OVERLAY = 2;
         int BOTTOM_SHEET = 3;
-        int START_SURFACE = 5;
+        // Deprecated: int START_SURFACE = 5;
         // The archived tabs dialog is shown on top of the hub, so it must take priority.
         int ARCHIVED_TABS_DIALOG = 6;
         int HUB = 7;
-        int TAB_SWITCHER = 8;
+        // Deprecated: int TAB_SWITCHER = 8;
         // Fullscreen must be before selection popup. crbug.com/1454817.
         int FULLSCREEN = 9;
         int SELECTION_POPUP = 10;
