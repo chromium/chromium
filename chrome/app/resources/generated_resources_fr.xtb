@@ -95,7 +95,7 @@
 <translation id="1060292118287751956">Indique la fréquence à laquelle l'écran est actualisé</translation>
 <translation id="1060570945511946595">Gérer les tickets</translation>
 <translation id="1061130374843955397">Bienvenue sur votre <ph name="DEVICE_TYPE" /></translation>
-<translation id="1061373870045429865">Créer un code QR pour ce lien</translation>
+<translation id="1061373870045429865">Créer un QR code pour ce lien</translation>
 <translation id="1061904396131502319">Il est presque temps de faire une pause</translation>
 <translation id="10619348099955377">Copier le nom à afficher</translation>
 <translation id="1062407476771304334">Remplacer</translation>
@@ -337,7 +337,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1232569758102978740">Sans titre</translation>
 <translation id="1233497634904001272">Appuyez de nouveau sur votre clé de sécurité pour finaliser la requête.</translation>
 <translation id="1233721473400465416">Paramètres régionaux</translation>
-<translation id="1234736487471201993">Créer un code QR pour cette image</translation>
+<translation id="1234736487471201993">Créer un QR code pour cette image</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="123578888592755962">Disque saturé.</translation>
@@ -684,7 +684,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1486012259353794050">Lorsque vous posez des questions, l'Assistant Google vous fournit des réponses personnalisées en fonction de votre écran</translation>
 <translation id="1486096554574027028">Rechercher</translation>
 <translation id="1486458761710757218">Ajuster automatiquement la luminosité du rétroéclairage du clavier</translation>
-<translation id="1486486872607808064">Scannez ce code QR avec l'appareil photo de l'appareil sur lequel vous voulez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
+<translation id="1486486872607808064">Scannez ce QR code avec l'appareil photo de l'appareil sur lequel vous voulez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="1486616492435615702">Créez un brouillon ou améliorez un travail existant.</translation>
 <translation id="1487335504823219454">Activée – Paramètres personnalisés</translation>
 <translation id="1487905215557235729">Votre organisation peut voir et gérer les données de navigation de votre profil professionnel, telles que vos favoris, votre historique et vos mots de passe.</translation>
@@ -758,7 +758,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1543538514740974167">Accédez plus rapidement à cette page</translation>
 <translation id="1544588554445317666">Essayez d'utiliser un nom de fichier plus court ou de l'enregistrer dans un dossier différent</translation>
 <translation id="1545177026077493356">Mode Kiosque automatique</translation>
-<translation id="1545749641540134597">Scanner le code QR</translation>
+<translation id="1545749641540134597">Scanner le QR code</translation>
 <translation id="1545775234664667895">Thème "<ph name="THEME_NAME" />" installé</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{La fenêtre de navigation privée ne sera pas rouverte.}one{# fenêtre de navigation privée ne sera pas rouverte.}other{Les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1546280085599573572">Cette extension a modifié la page affichée lorsque vous cliquez sur le bouton Accueil.</translation>
@@ -1153,7 +1153,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
     <ph name="LINE_BREAKS2" />
     En revanche, cette opération n'a pas d'incidence sur les applications ou le contenu figurant sur d'autres appareils.</translation>
 <translation id="1809734401532861917">Ajouter mes favoris, mon historique, mes mots de passe et d'autres paramètres au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1810070166657251157">Pour utiliser vos mots de passe enregistrés sur votre téléphone, scannez le code QR, téléchargez Chrome pour iOS et connectez-vous à votre compte Google.</translation>
+<translation id="1810070166657251157">Pour utiliser vos mots de passe enregistrés sur votre téléphone, scannez le QR code, téléchargez Chrome pour iOS et connectez-vous à votre compte Google.</translation>
 <translation id="1810366086647840386">Serveur d'image</translation>
 <translation id="1810391395243432441">Protéger les mots de passe avec le verrouillage de l'écran</translation>
 <translation id="1811908311154949291">Cadre cloisonné de navigation privée : <ph name="FENCEDFRAME_SITE" /></translation>
@@ -1459,7 +1459,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="2019718679933488176">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
 <translation id="2020183425253392403">Afficher les paramètres d'adresse réseau</translation>
 <translation id="2020225359413970060">Analyser le fichier</translation>
-<translation id="2022953316617983419">Code QR</translation>
+<translation id="2022953316617983419">QR code</translation>
 <translation id="2023042679320690325">Le <ph name="BRAND" /> ne parvient pas à comparer vos mots de passe aux violations de données. Réessayez dans 24 heures.</translation>
 <translation id="2023167225947895179">Ce code est facile à deviner</translation>
 <translation id="202352106777823113">Le téléchargement a été trop long et a été interrompu par le réseau.</translation>
@@ -1664,7 +1664,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2162705204091149050">Lire les infos sur vos navigateur, OS, appareil, logiciels installés et fichiers</translation>
 <translation id="2163470535490402084">Veuillez vous connecter à Internet pour vous connecter à votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre contacteur</translation>
-<translation id="2165102982098084499">Vous avez associé ces appareils en scannant un code QR.</translation>
+<translation id="2165102982098084499">Vous avez associé ces appareils en scannant un QR code.</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
@@ -1672,7 +1672,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2173801458090845390">Ajoutez un ID de réquisition sur cet appareil</translation>
 <translation id="2175384018164129879">&amp;Gérer les moteurs de recherche et Site Search</translation>
 <translation id="217576141146192373">Impossible d'ajouter une imprimante. Vérifiez la configuration de votre imprimante et réessayez.</translation>
-<translation id="2175927920773552910">Code QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="217631816678106981">Ne pas coller</translation>
 <translation id="2177950615300672361">Onglet de navigation privée : <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -4264,7 +4264,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4014432863917027322">Réparer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="4015163439792426608">Vous avez des extensions ? <ph name="BEGIN_LINK" />Gérez-les<ph name="END_LINK" /> facilement depuis une seule et même interface.</translation>
 <translation id="4016762287427926315">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront aussi pour cette appli. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
-<translation id="4017225831995090447">Créer un code QR pour ce lien</translation>
+<translation id="4017225831995090447">Créer un QR code pour ce lien</translation>
 <translation id="4019983356493507433">Modifier la liste des favoris</translation>
 <translation id="4020327272915390518">Menu Options</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4901,7 +4901,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4503748371388753124">Votre ordinateur comprend un dispositif de sécurité avec module de plate-forme sécurisée (TPM, Trusted Platform Module) qui permet d'implémenter plusieurs fonctionnalités de sécurité critiques dans ChromeOS Flex. Consultez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Les cookies sont autorisés}=1{Les cookies sont autorisés, 1 exception}one{Les cookies sont autorisés, {COUNT} exception}other{Les cookies sont autorisés, {COUNT} exceptions}}</translation>
 <translation id="4504940961672722399">Utilisez cette extension en cliquant sur cette icône ou en appuyant sur <ph name="EXTENSION_SHORTCUT" /></translation>
-<translation id="4505469832694348179">Téléchargez Chrome à l'aide de ce code QR, puis connectez-vous à votre compte Google.</translation>
+<translation id="4505469832694348179">Téléchargez Chrome à l'aide de ce QR code, puis connectez-vous à votre compte Google.</translation>
 <translation id="450552327874992444">Terme déjà ajouté</translation>
 <translation id="450602096898954067">Des réviseurs spécialisés peuvent consulter les données pour améliorer cette fonctionnalité</translation>
 <translation id="4507373251891673233">Vous avez bloqué toutes les extensions pour <ph name="HOST" /></translation>
@@ -5334,7 +5334,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4827283332383516812">Supprimer la carte</translation>
 <translation id="4827675678516992122">Impossible de se connecter</translation>
 <translation id="4827784381479890589">Correcteur orthographique avancé dans le navigateur Chrome (le texte est envoyé à Google pour vous proposer des suggestions d'orthographe)</translation>
-<translation id="4827904420700932487">Créer un code QR pour cette image</translation>
+<translation id="4827904420700932487">Créer un QR code pour cette image</translation>
 <translation id="4827970183019354123">Outil de vérification d'URL</translation>
 <translation id="4828567746430452681"><ph name="EXTENSION_NAME" /> n'est plus compatible</translation>
 <translation id="482952334869563894">Appareils USB du fournisseur <ph name="VENDOR_ID" /></translation>
@@ -5606,7 +5606,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5029287942302939687">Votre mot de passe est défini</translation>
 <translation id="5029873138381728058">Échec de la vérification des VM</translation>
 <translation id="503155457707535043">Téléchargement des applications</translation>
-<translation id="5032430150487044192">Impossible de créer le code QR</translation>
+<translation id="5032430150487044192">Impossible de créer le QR code</translation>
 <translation id="5033137252639132982">Non autorisé à utiliser des capteurs de mouvement</translation>
 <translation id="5033266061063942743">Formes géométriques</translation>
 <translation id="5035846135112863536">Sélectionnez "Plus d'informations" ci-dessous pour obtenir des informations complémentaires auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -6993,7 +6993,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6060842547856900641">Ouvrir Lens</translation>
 <translation id="6061408389284235459">Une notification a été envoyée à <ph name="DEVICE_NAME" /></translation>
-<translation id="6063284707309177505">Créer un code QR</translation>
+<translation id="6063284707309177505">Créer un QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />. Afin d'économiser la batterie, configurez les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
 <translation id="606449270532897041">Gérer les données des sites</translation>
@@ -7178,7 +7178,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6195693561221576702">Impossible de configurer cet appareil en mode de démonstration hors connexion.</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6196854373336333322">L'extension <ph name="EXTENSION_NAME" /> a pris le contrôle de vos paramètres de proxy, ce qui signifie que toutes vos activités en ligne peuvent être modifiées, interrompues ou espionnées. Si vous ne savez pas pourquoi cette modification s'est produite, c'est qu'elle est probablement indésirable.</translation>
-<translation id="6197128521826316819">Créer un code QR pour cette page</translation>
+<translation id="6197128521826316819">Créer un QR code pour cette page</translation>
 <translation id="6198223452299275399">Balayer pour passer d'une page à l'autre</translation>
 <translation id="6198252989419008588">Modifier le code</translation>
 <translation id="61988015556954366">Clignotement de l'écran</translation>
@@ -7235,7 +7235,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6233154960150021497">Utiliser par défaut les commandes vocales plutôt que le clavier</translation>
 <translation id="6234108445915742946">Les conditions d'utilisation de Chrome vont changer le 31 mars</translation>
 <translation id="6234474535228214774">Installation en attente</translation>
-<translation id="6235208551686043831">La caméra de l'appareil est activée. Veuillez placer le code QR de votre eSIM face à la caméra.</translation>
+<translation id="6235208551686043831">La caméra de l'appareil est activée. Veuillez placer le QR code de votre eSIM face à la caméra.</translation>
 <translation id="6237297174664969437">Vous pouvez toujours choisir quelles données de navigateur seront synchronisées dans les paramètres de Chrome. Dans les <ph name="LINK_BEGIN" />paramètres des appareils<ph name="LINK_END" />, vous pouvez contrôler la synchronisation des applis Web installées à partir du navigateur Chrome. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6237474966939441970">Application de prise de notes avec le stylet</translation>
 <translation id="6237481151388361546">Modifiez votre connexion Internet et sélectionnez "Réessayer", ou choisissez "Ouvrir dans l'éditeur de base" pour utiliser des options d'affichage et de modification limitées.</translation>
@@ -8548,7 +8548,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7201420661433230412">Voir les fichiers</translation>
 <translation id="7201432510117121839">Impossible de caster le contenu audio de l'ordinateur de bureau sur cet appareil</translation>
 <translation id="7201535955609308429">Veuillez patienter pendant la validation</translation>
-<translation id="7202337678781136582">Scanner le code QR avec votre téléphone Android</translation>
+<translation id="7202337678781136582">Scanner le QR code avec votre téléphone Android</translation>
 <translation id="7203150201908454328">Développé</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Ce paramètre est appliqué par le propriétaire. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
@@ -8767,7 +8767,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7366316827772164604">Recherche d'appareils à proximité…</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
-<translation id="7367714965999718019">Générateur de code QR</translation>
+<translation id="7367714965999718019">Générateur de QR code</translation>
 <translation id="7368695150573390554">Toutes les données hors ligne seront supprimées</translation>
 <translation id="736877393389250337">Impossible d'ouvrir <ph name="URL" /> dans <ph name="ALTERNATIVE_BROWSER_NAME" />. Veuillez contacter votre administrateur système.</translation>
 <translation id="7368927539449986686">Modifier une recherche sur un site</translation>
@@ -8930,7 +8930,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7476989672001283112">Autorisations bloquées automatiquement : <ph name="PERMISSION" /> (et <ph name="COUNT" /> de plus)</translation>
 <translation id="7477460499687558352">Sélectionnez un profil eSIM à télécharger</translation>
 <translation id="7477599578899108080">Utilisation élevée de la mémoire : <ph name="MEMORY_USAGE" /></translation>
-<translation id="7477748600276493962">Créer un code QR pour cette page</translation>
+<translation id="7477748600276493962">Créer un QR code pour cette page</translation>
 <translation id="7477793887173910789">Contrôlez votre musique, vos vidéos et bien plus</translation>
 <translation id="7478069565037869084">Large</translation>
 <translation id="7478485216301680444">Impossible d'installer l'application kiosque.</translation>
@@ -9356,7 +9356,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="778480864305029524">Pour utiliser le partage de connexion instantané, activez les notifications pour les services Google Play.</translation>
 <translation id="7785471469930192436">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
 <translation id="77855763949601045">&amp;Ouvrir le profil Invité</translation>
-<translation id="7786663536153819505">Suivez les instructions affichées sur votre téléphone pour scanner le code QR. Vérifiez que le Bluetooth est activé sur votre téléphone.
+<translation id="7786663536153819505">Suivez les instructions affichées sur votre téléphone pour scanner le QR code. Vérifiez que le Bluetooth est activé sur votre téléphone.
     <ph name="BR" />
     <ph name="BR" />
     Visible sur les appareils à proximité avec le nom "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
@@ -9640,7 +9640,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7980066177668669492">Multiples certificats à encodage en base64 ASCII</translation>
 <translation id="7980084013673500153">ID d'élément : <ph name="ASSET_ID" /></translation>
 <translation id="7981410461060625406">Utiliser une clé d'accès enregistrée pour <ph name="APP_NAME" /></translation>
-<translation id="7981662863948574132">Afficher le pop-up contenant le code QR et l'EID de l'appareil</translation>
+<translation id="7981662863948574132">Afficher le pop-up contenant le QR code et l'EID de l'appareil</translation>
 <translation id="7981670705071137488">Les mises à jour logicielles seront effectuées en tâches de fond. Vous pouvez consulter vos préférences de mise à jour dans les paramètres.</translation>
 <translation id="7982083145464587921">Pour corriger cette erreur, veuillez redémarrer votre appareil.</translation>
 <translation id="7982789257301363584">Réseau</translation>
@@ -9885,7 +9885,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8149870652370242480">Pour utiliser vos mots de passe enregistrés sur votre téléphone, téléchargez Chrome pour iOS et connectez-vous à votre compte Google.</translation>
 <translation id="8150396590017071059">Modifier le code du Gestionnaire de mots de passe</translation>
 <translation id="8151057139207656239">Détails du build copiés</translation>
-<translation id="815114315010033526">Utiliser un code QR à la place</translation>
+<translation id="815114315010033526">Utiliser un QR code à la place</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8151748163667572916">Désactiver le point d'accès instantané</translation>
 <translation id="815347678407292813">Les applis et les sites Web pourraient toujours voir votre position via votre adresse IP</translation>
@@ -9965,7 +9965,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours}one{Téléchargement en cours}other{Téléchargements en cours}}</translation>
 <translation id="8212601853154459483">Ce profil est géré par <ph name="PROFILE_MANAGER" />. Vous devez créer un profil distinct pour le compte <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="8212792694174629011">Aucun profil n'a été trouvé. Essayez de scanner le code QR avec l'appareil photo de votre mobile ou saisissez le code d'activation fourni par votre opérateur.</translation>
+<translation id="8212792694174629011">Aucun profil n'a été trouvé. Essayez de scanner le QR code avec l'appareil photo de votre mobile ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="8214489666383623925">Ouvrir le fichier...</translation>
 <translation id="8215129063232901118">Accédez aux fonctionnalités de votre téléphone depuis votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Mettre le pointeur en surbrillance</translation>
@@ -10648,7 +10648,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8705331520020532516">Numéro de série</translation>
 <translation id="8705580154597116082">Wi-Fi disponible via le téléphone</translation>
 <translation id="8705629851992224300">Impossible de lire votre clé de sécurité</translation>
-<translation id="8706111173576263877">Code QR scanné.</translation>
+<translation id="8706111173576263877">QR code scanné.</translation>
 <translation id="8707318721234217615">Espacement des lettres</translation>
 <translation id="8707562594602678416">Lieux</translation>
 <translation id="8708000541097332489">Supprimer les données à la fin de la session</translation>
@@ -10685,7 +10685,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8727751378406387165">Envoyer des <ph name="BEGIN_LINK1" />métadonnées de saisie automatique<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (vos données de saisie automatique ne seront pas partagées)</translation>
-<translation id="8729133765463465108">Scanner le code QR avec l'appareil photo</translation>
+<translation id="8729133765463465108">Scanner le QR code avec l'appareil photo</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8731029916209785242">Autorisations (<ph name="FORMATTED_ORIGIN" />)</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>
@@ -11106,7 +11106,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9022847679183471841">Ce compte est déjà utilisé sur cet ordinateur par <ph name="AVATAR_NAME" />.</translation>
 <translation id="9022871169049522985">Les sites et les annonceurs peuvent mesurer les performances de leurs annonces</translation>
 <translation id="9023015617655685412">Ajouter cet onglet aux favoris…</translation>
-<translation id="902319268551617004">Scannez le code QR avec l'appareil photo de votre appareil ou saisissez le code d'activation fourni par votre opérateur.</translation>
+<translation id="902319268551617004">Scannez le QR code avec l'appareil photo de votre appareil ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="9023723490232936872">Chichén Itzá</translation>
 <translation id="9023909777842748145">Sachez que la désactivation de cette fonctionnalité n'empêche pas votre appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour du système et la sécurité.</translation>
 <translation id="9024127637873500333">&amp;Ouvrir dans un nouvel onglet</translation>
@@ -11317,7 +11317,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
       <ph name="LIST_ITEM" />Exécutez Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
-<translation id="9166253503936244008">Scannez ce code QR avec l'appareil qui a la clé d'accès que vous voulez utiliser pour <ph name="APP_NAME" /></translation>
+<translation id="9166253503936244008">Scannez ce QR code avec l'appareil qui a la clé d'accès que vous voulez utiliser pour <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Afficher la liste de lecture</translation>
 <translation id="9167450455589251456">Profil non accepté</translation>
 <translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> comptes</translation>

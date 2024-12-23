@@ -250,7 +250,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
 <translation id="2172905120685242547">Fermer la fenêtre ?</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
-<translation id="2175927920773552910">Code QR</translation>
+<translation id="2175927920773552910">QR code</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="22091350895006575">Ajouter un nom d'utilisateur</translation>
@@ -641,7 +641,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4072805772816336153">Réessayez plus tard</translation>
 <translation id="4084682180776658562">Favori</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />proposé par Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter sur l'appareil qui affiche le code QR.</translation>
+<translation id="409109920254068737">Vous pouvez utiliser cette tablette pour vous connecter sur l'appareil qui affiche le QR code.</translation>
 <translation id="4092709865241032354">Pour aider le Gestionnaire de mots de passe de Google à enregistrer vos informations de connexion, ajoutez votre nom d'utilisateur pour ce site</translation>
 <translation id="4095146165863963773">Supprimer les données de l'application ?</translation>
 <translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
@@ -715,7 +715,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ajouté aux favoris dans "<ph name="FOLDER_NAME" />"</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 favori}one{# favori}other{# favoris}}</translation>
-<translation id="4461614516424362539">Lorsque vous associez un autre appareil avec un code QR, celui-ci peut utiliser ce téléphone comme clé de sécurité. Si vous le supprimez, vous devrez scanner à nouveau un code QR pour l'associer.</translation>
+<translation id="4461614516424362539">Lorsque vous associez un autre appareil avec un QR code, celui-ci peut utiliser ce téléphone comme clé de sécurité. Si vous le supprimez, vous devrez scanner à nouveau un QR code pour l'associer.</translation>
 <translation id="4478161224666880173">Vous pouvez utiliser votre compte <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sur ce site. Pour continuer, connectez-vous à <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Installation du module <ph name="MODULE" /> pour Chrome…</translation>
 <translation id="4481181637083926190">{BOOKMARK_COUNT,plural, =1{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans "<ph name="FOLDER_NAME" />". Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans "<ph name="FOLDER_NAME" />". Ils ne sont enregistrés que sur cet appareil.}}</translation>
@@ -859,7 +859,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5011311129201317034"><ph name="SITE" /> tente de se connecter</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5017529052065664584">15 dernières minutes</translation>
-<translation id="5032430150487044192">Impossible de créer le code QR</translation>
+<translation id="5032430150487044192">Impossible de créer le QR code</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> onglet - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> onglets - <ph name="URL_LIST" />}}</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
@@ -1136,7 +1136,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6344622098450209924">Protection contre le suivi</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
 <translation id="6356893102071098867">Vérifiez si vous avez choisi le bon compte</translation>
-<translation id="6357653805084533597">Vous pouvez utiliser ce téléphone pour vous connecter sur l'appareil qui affiche le code QR.</translation>
+<translation id="6357653805084533597">Vous pouvez utiliser ce téléphone pour vous connecter sur l'appareil qui affiche le QR code.</translation>
 <translation id="6363990818884053551">Pour lancer la synchronisation, confirmez votre identité</translation>
 <translation id="6364438453358674297">Supprimer la suggestion de l'historique ?</translation>
 <translation id="6380100320871303656">Les pages que vous êtes susceptible de consulter selon Chrome sont préchargées plus souvent (cela peut augmenter la consommation des données).</translation>
@@ -1227,7 +1227,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuteur <ph name="FQDN" /> a expiré. Il redémarrera demain.</translation>
 <translation id="6715020873764921614">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ?</translation>
-<translation id="6719634564325948108">Se connecter avec un code QR ?</translation>
+<translation id="6719634564325948108">Se connecter avec un QR code ?</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
 <translation id="6734310707649923383">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
@@ -1344,7 +1344,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7173338713290252554">Historique des prix sur le Web</translation>
 <translation id="7177466738963138057">Vous pourrez modifier le moteur de recherche plus tard dans les paramètres</translation>
-<translation id="7177873915659574692">Impossible de créer le code QR, car l'URL comporte plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
+<translation id="7177873915659574692">Impossible de créer le QR code, car l'URL comporte plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7182051712900867547">Utiliser un autre compte</translation>
 <translation id="7183517696921903380">La feuille de filtrage des applis est ouverte.</translation>
@@ -1559,7 +1559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8084285576995584326">Gérer les données de votre compte Google</translation>
 <translation id="8084864785646838999">Il est possible qu'une partie de votre historique ne soit pas affichée ici. Pour le voir en intégralité, sélectionnez "Ouvrir tout l'historique Chrome". En outre, votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="808747664143081553">Connecté à l'appareil</translation>
-<translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce code QR</translation>
+<translation id="8088176524274673045">Pour partager avec des personnes à proximité, laissez-les scanner ce QR code</translation>
 <translation id="8090732854597034573">Si tu as besoin d'aide, demande à ton parent</translation>
 <translation id="8101414242770404289">Aucun onglet à partir des <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Onglet de navigation privée</translation>

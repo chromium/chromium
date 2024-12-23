@@ -1088,7 +1088,7 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si la règle <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> est activée, les utilisateurs de Family Link sont autorisés (en plus des comptes définis dans cette règle).</translation>
 <translation id="18186215616223740">Forcer le téléchargement des documents Office gérés par <ph name="BASIC_EDITOR_NAME" />, auxquels l'utilisateur accède</translation>
 <translation id="1819272352048746487">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran</translation>
-<translation id="1820974289087266512">La fonctionnalité de générateur de code QR est désactivée.</translation>
+<translation id="1820974289087266512">La fonctionnalité de générateur de QR code est désactivée.</translation>
 <translation id="1822163547472114648">Paramètres de Créer des thèmes avec l'IA</translation>
 <translation id="1823974945066396306">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -2060,7 +2060,7 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, la mise en surbrillance du curseur de saisie est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="2506865562891982662">Autoriser les utilisateurs à sélectionner des appareils Cast avec un code d'accès ou un code QR dans la liste dédiée du menu <ph name="PRODUCT_NAME" />.</translation>
+<translation id="2506865562891982662">Autoriser les utilisateurs à sélectionner des appareils Cast avec un code d'accès ou un QR code dans la liste dédiée du menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2509748672176727116">L'utilisateur pourra capturer des paquets du réseau</translation>
 <translation id="2509919237512982967">Utiliser les anciens éléments de contrôle de formulaire jusqu'à la version M84.</translation>
 <translation id="2512972020817284317">Activer la fusion de règles cloud utilisateurs.</translation>
@@ -2922,9 +2922,9 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
 Si cette règle n'est pas configurée, les sites peuvent exécuter JavaScript. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="3207821022126246451">WebRTC utilisera TCP sur l'interface publique et utilisera UDP uniquement s'il est compatible avec un proxy configuré.</translation>
-<translation id="3207873329349672535">Cette règle détermine si l'utilisateur se verra proposer ou non une option dans le menu <ph name="PRODUCT_NAME" />, qui lui permet de caster du contenu sur des appareils Cast ne figurant pas dans la liste du menu <ph name="PRODUCT_NAME" />, en utilisant soit le code d'accès ou le code QR affiché sur l'écran de l'appareil Cast.
-      Par défaut, l'utilisateur doit ressaisir le code d'accès ou rescanner le code QR pour lancer une nouvelle session de diffusion. Toutefois, si la valeur de la règle <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> n'est pas nulle (sachant qu'elle l'est par défaut), l'appareil Cast reste alors dans la liste des appareils Cast disponibles tant que la durée d'affichage définie n'est pas écoulée.
-      Si cette règle est activée, les utilisateurs auront la possibilité de sélectionner des appareils Cast en utilisant un code d'accès ou en scannant un code QR.
+<translation id="3207873329349672535">Cette règle détermine si l'utilisateur se verra proposer ou non une option dans le menu <ph name="PRODUCT_NAME" />, qui lui permet de caster du contenu sur des appareils Cast ne figurant pas dans la liste du menu <ph name="PRODUCT_NAME" />, en utilisant soit le code d'accès ou le QR code affiché sur l'écran de l'appareil Cast.
+      Par défaut, l'utilisateur doit ressaisir le code d'accès ou rescanner le QR code pour lancer une nouvelle session de diffusion. Toutefois, si la valeur de la règle <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME" /> n'est pas nulle (sachant qu'elle l'est par défaut), l'appareil Cast reste alors dans la liste des appareils Cast disponibles tant que la durée d'affichage définie n'est pas écoulée.
+      Si cette règle est activée, les utilisateurs auront la possibilité de sélectionner des appareils Cast en utilisant un code d'accès ou en scannant un QR code.
       Si cette règle est désactivée ou n'est pas configurée, les utilisateurs n'auront pas cette possibilité.</translation>
 <translation id="3208615748170745525">Jours à compter de la détection de mises à jour.</translation>
 <translation id="3209947902706795852">Invitez les utilisateurs à migrer.</translation>
@@ -3220,7 +3220,7 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
 <translation id="3442589735857147823">Autoriser les utilisateurs à se servir des machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
 <translation id="3451422488938880786"> Permet d'autoriser ou non le remappage des raccourcis clavier internationaux</translation>
-<translation id="3451901387456196887">Permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ou en scannant un code QR.</translation>
+<translation id="3451901387456196887">Permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ou en scannant un QR code.</translation>
 <translation id="3456292544936505775">Cette règle permet de définir les périodes durant lesquelles l'appareil <ph name="PRODUCT_OS_NAME" /> n'est pas autorisé à rechercher automatiquement des mises à jour.
       Si des périodes sont définies lors de la configuration de cette règle :
       Aucune recherche automatique de mises à jour n'est effectuée pendant ces périodes. Les appareils nécessitant un rollback de la version Enterprise ou équipés d'une version antérieure à <ph name="PRODUCT_OS_NAME" /> ne sont pas concernés par cette règle en raison de problèmes de sécurité potentiels. Sachez également que cette règle n'empêche pas l'utilisateur ni l'administrateur de procéder à une recherche de mises à jour.
@@ -3880,7 +3880,7 @@ Si cette règle est définie sur 0 - Default ou si elle n'est pas configurée,
 Si cette règle est définie sur 1 - DisabledForBrowser, le processus de navigateur de <ph name="PRODUCT_NAME" /> ne peut pas créer de code dynamique.
 
 Remarque : pour en savoir plus sur les règles d'atténuation des risques liés aux processus, consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
-<translation id="3960728283243442805">Ne pas permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ni en scannant un code QR.</translation>
+<translation id="3960728283243442805">Ne pas permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ni en scannant un QR code.</translation>
 <translation id="3962445567482559878">Utiliser le mode EDU du processus de prise en main de l'Assistant</translation>
 <translation id="396261881101930204">Ne pas proposer de recommandations de contenus multimédias à l'utilisateur</translation>
 <translation id="3964298692570794635">Autoriser le contenu non sécurisé sur ces sites</translation>
@@ -4543,7 +4543,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="4483120730995943109">Les fonctions JavaScript setTimeout() dont le délai d'expiration est défini sur 0 ms ne seront pas ramenées à 1 ms.</translation>
 <translation id="4483649828988077221">Désactiver les mises à jour automatiques</translation>
 <translation id="4483738129334574255">Désactiver le jeu easter egg du dinosaure sur les appareils <ph name="PRODUCT_OS_NAME" /> enregistrés, l'activer dans d'autres circonstances</translation>
-<translation id="4484515651939984695">Définir la durée d'affichage (en secondes) d'un appareil Cast sélectionné via un code d'accès ou un code QR dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4484515651939984695">Définir la durée d'affichage (en secondes) d'un appareil Cast sélectionné via un code d'accès ou un QR code dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
 <translation id="4488959486611931919">Remarque : Aucune panne de site n'a été signalée depuis que Chrome a commencé à bloquer ces cookies par défaut à partir de M118. Cette fonctionnalité ne sera donc plus configurable (et cette règle n'aura aucun effet) à partir de M127.
 
@@ -5387,11 +5387,11 @@ Les domaines dont le format est incorrect seront ignorés.</translation>
 Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les options liées au proxy spécifiées à partir de la ligne de commande.
 
           Si cette règle n'est pas configurée, les utilisateurs peuvent choisir eux-mêmes leurs paramètres de proxy.</translation>
-<translation id="5169461017653366056">Cette règle active la fonctionnalité de générateur de code QR dans <ph name="PRODUCT_NAME" />.
+<translation id="5169461017653366056">Cette règle active la fonctionnalité de générateur de QR code dans <ph name="PRODUCT_NAME" />.
 
-Si vous activez cette règle ou ne la configurez pas, la fonctionnalité de générateur de code QR est activée.
+Si vous activez cette règle ou ne la configurez pas, la fonctionnalité de générateur de QR code est activée.
 
-Si vous désactivez cette règle, la fonctionnalité de générateur de code QR est désactivée.</translation>
+Si vous désactivez cette règle, la fonctionnalité de générateur de QR code est désactivée.</translation>
 <translation id="5170018694841697392">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google</translation>
 <translation id="5172783335366295717">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Pour connaître la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
 
@@ -7440,11 +7440,11 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="6593350713192882944">Activer les Réponses rapides</translation>
 <translation id="6594372503585248865">Activer l'interface utilisateur liée à la connexion sur le bureau de l'hôte à distance lorsqu'une connexion est active</translation>
 <translation id="65947892191748867">Désactiver l'autorisation de partage des signaux pour les utilisateurs gérés sur les appareils non gérés</translation>
-<translation id="6596675965208703569">Cette règle permet de définir la durée d'affichage (en secondes) d'un appareil Cast, auparavant sélectionné via un code d'accès ou un code QR, dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.
-      Cette durée est à compter du moment où l'utilisateur a saisi le code d'accès ou scanné le code QR pour la première fois.
+<translation id="6596675965208703569">Cette règle permet de définir la durée d'affichage (en secondes) d'un appareil Cast, auparavant sélectionné via un code d'accès ou un QR code, dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" />.
+      Cette durée est à compter du moment où l'utilisateur a saisi le code d'accès ou scanné le QR code pour la première fois.
       L'appareil Cast sera affiché dans la liste des appareils Cast du menu <ph name="PRODUCT_NAME" /> pendant toute cette durée.
-      Une fois celle-ci écoulée, l'utilisateur devra ressaisir le code d'accès ou rescanner le code QR pour réutiliser l'appareil Cast.
-      La durée par défaut est nulle. Les appareils Cast ne restent donc pas affichés dans la liste du menu <ph name="PRODUCT_NAME" />, et l'utilisateur doit ressaisir le code d'accès ou rescanner le code QR pour lancer une nouvelle session de diffusion.
+      Une fois celle-ci écoulée, l'utilisateur devra ressaisir le code d'accès ou rescanner le QR code pour réutiliser l'appareil Cast.
+      La durée par défaut est nulle. Les appareils Cast ne restent donc pas affichés dans la liste du menu <ph name="PRODUCT_NAME" />, et l'utilisateur doit ressaisir le code d'accès ou rescanner le QR code pour lancer une nouvelle session de diffusion.
       Notez que cette règle ne concerne que la durée d'affichage d'un appareil Cast dans la liste dédiée du menu <ph name="PRODUCT_NAME" />, et n'a aucune incidence sur les sessions de diffusion en cours qui se poursuivront même si la durée définie est écoulée.
       Elle n'a aucune incidence non plus, sauf si la règle <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME" /> est activée.</translation>
 <translation id="6598235178374410284">Avatar de l'utilisateur</translation>
@@ -10654,7 +10654,7 @@ Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POL
 <translation id="9113058104383612727">Activer les outils de dépannage de kiosque</translation>
 <translation id="9113065986946552397">Les résultats d'un nettoyage Chrome Cleanup sont toujours partagés avec Google</translation>
 <translation id="9113262510565261950">Délai d'inactivité pour l'écran de connexion de l'économiseur d'écran de l'appareil.</translation>
-<translation id="911448529868608648">Active le générateur de code QR</translation>
+<translation id="911448529868608648">Active le générateur de QR code</translation>
 <translation id="911605919007170833">Signaler l'état de sécurité</translation>
 <translation id="9117826695152538214">Définissez cette règle sur "True" pour maintenir les touches rémanentes activées. Définissez cette règle sur "False" pour les maintenir désactivées.
 
@@ -10747,7 +10747,7 @@ Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/
 <translation id="9142561920976791097">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="91459503271584213">Lancer directement les hôtes de messagerie native exécutables sous Windows</translation>
 <translation id="9148720248753722892">Interdire les certificats signés SHA-1</translation>
-<translation id="9149075762533142978">La fonctionnalité de générateur de code QR est activée.</translation>
+<translation id="9149075762533142978">La fonctionnalité de générateur de QR code est activée.</translation>
 <translation id="9149678135092892302">Désactiver les rapports sur les informations liées à la version</translation>
 <translation id="9150416707757015439">Cette règle est obsolète. Veuillez utiliser la règle "IncognitoModeAvailability". 
 Active le mode navigation privée de <ph name="PRODUCT_NAME" />. 
