@@ -6235,8 +6235,6 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
         send_before_unload_start_time_, for_legacy);
   }
 
-  bool showed_dialog = has_shown_beforeunload_dialog_;
-
   // Resets beforeunload waiting state.
   is_waiting_for_beforeunload_completion_ = false;
   has_shown_beforeunload_dialog_ = false;
@@ -6251,8 +6249,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
   base::OnceClosure task = base::BindOnce(
       [](base::WeakPtr<RenderFrameHostImpl> self,
          const base::TimeTicks& before_unload_end_time, bool proceed,
-         bool unload_ack_is_for_navigation, bool for_legacy,
-         bool showed_dialog) {
+         bool unload_ack_is_for_navigation) {
         if (!self)
           return;
         FrameTreeNode* frame = self->frame_tree_node();
@@ -6261,8 +6258,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
         // RenderFrameHostManager which handles closing.
         if (unload_ack_is_for_navigation) {
           frame->navigator().BeforeUnloadCompleted(frame, proceed,
-                                                   before_unload_end_time,
-                                                   for_legacy, showed_dialog);
+                                                   before_unload_end_time);
         } else {
           frame->render_manager()->BeforeUnloadCompleted(proceed);
         }
@@ -6273,7 +6269,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
       // which is tricky.
       weak_ptr_factory_.GetWeakPtr(),
       before_unload_end_time - browser_to_renderer_ipc_time_delta, proceed,
-      unload_ack_is_for_navigation_, for_legacy, showed_dialog);
+      unload_ack_is_for_navigation_);
 
   if (is_frame_being_destroyed) {
     DCHECK(proceed);

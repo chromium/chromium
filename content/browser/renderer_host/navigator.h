@@ -177,16 +177,12 @@ class CONTENT_EXPORT Navigator {
           std::nullopt);
 
   // Called after BeforeUnloadCompleted callback is invoked from the renderer.
-  // If `frame_tree_node` has a NavigationRequest waiting for the renderer
+  // If |frame_tree_node| has a NavigationRequest waiting for the renderer
   // response, then the request is either started or canceled, depending on the
-  // value of `proceed`. If `for_legacy` is true, then this beforeunload flow
-  // was only used to post a task and no beforeunload handlers were run. If
-  // `showed_dialog` is true, then a beforeunload dialog was displayed.
+  // value of |proceed|.
   void BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
                              bool proceed,
-                             const base::TimeTicks& proceed_time,
-                             bool for_legacy,
-                             bool showed_dialog);
+                             const base::TimeTicks& proceed_time);
 
   // Used to start a new renderer-initiated navigation, following a
   // BeginNavigation IPC from the renderer.

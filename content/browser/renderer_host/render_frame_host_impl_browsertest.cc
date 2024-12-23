@@ -217,9 +217,6 @@ class FirstPartySchemeContentBrowserClient
 class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
  public:
   using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
-  using NavigationStartAdjustmentType =
-      NavigationRequest::NavigationStartAdjustmentType;
-
   RenderFrameHostImplBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
   ~RenderFrameHostImplBrowserTest() override = default;
@@ -746,13 +743,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   TestJavaScriptDialogManager dialog_manager;
   web_contents()->SetDelegate(&dialog_manager);
 
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(NavigateToURL(
-        shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
-    histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment", NavigationStartAdjustmentType::kNone, 1);
-  }
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("render_frame_host", "beforeunload.html")));
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
   web_contents()
@@ -761,18 +753,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Reload. There should be no beforeunload dialog because there was no gesture
   // on the page. If there was, this WaitForLoadStop call will hang.
-  {
-    base::HistogramTester histogram_tester;
-    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-    EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
-        NavigationStartAdjustmentType::kBeforeUnloadHandlers, 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.BeforeUnloadHandlers", 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.BeforeUnloadHandlers.Percentage", 1);
-  }
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // Give the page a user gesture and try reloading again. This time there
   // should be a dialog. If there is no dialog, the call to Wait will hang.
@@ -780,22 +762,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       ->GetPrimaryMainFrame()
       ->ExecuteJavaScriptWithUserGestureForTests(
           std::u16string(), base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
-  {
-    base::HistogramTester histogram_tester;
-    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-    dialog_manager.Wait();
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  dialog_manager.Wait();
 
-    // Answer the dialog.
-    dialog_manager.Run(true, std::u16string());
-    EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
-        NavigationStartAdjustmentType::kBeforeUnloadDialog, 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.BeforeUnloadDialog.Percentage", 1);
-  }
+  // Answer the dialog.
+  dialog_manager.Run(true, std::u16string());
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The reload should have cleared the user gesture bit, so upon leaving again
   // there should be no beforeunload dialog.
@@ -2167,21 +2139,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, POSTNavigation) {
                   ->GetHasPostData());
 
   // Reload and verify the form was submitted.
-  {
-    base::HistogramTester histogram_tester;
-    web_contents()->GetController().Reload(ReloadType::NORMAL, false);
-    EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-    // This browser-initiated reload adjusts navigation start time for a legacy
-    // PostTask, without any beforeunload handlers present.
-    histogram_tester.ExpectUniqueSample(
-        "Navigation.StartAdjustment",
-        NavigationStartAdjustmentType::kLegacyPostTask, 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.LegacyPostTask", 1);
-    histogram_tester.ExpectTotalCount(
-        "Navigation.StartAdjustment.LegacyPostTask.Percentage", 1);
-  }
+  web_contents()->GetController().Reload(ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ("text=&select=a", base::UTF16ToASCII(web_contents()->GetTitle()));
   CHECK_EQ(2, post_counter);
 }
