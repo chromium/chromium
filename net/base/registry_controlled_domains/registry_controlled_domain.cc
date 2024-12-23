@@ -347,8 +347,9 @@ std::string_view GetDomainAndRegistryImpl(
 std::string_view GetDomainAndRegistryAsStringPiece(
     std::string_view host,
     PrivateRegistryFilter filter) {
-  if (host.empty() || url::HostIsIPAddress(host))
+  if (host.empty() || url::HostIsIPAddress(host)) {
     return std::string_view();
+  }
   return GetDomainAndRegistryImpl(host, filter);
 }
 
@@ -378,8 +379,9 @@ size_t DoPermissiveGetHostRegistryLength(T host,
 
     // Advance to next "." or end.
     current = host.find('.', begin);
-    if (current == std::string::npos)
+    if (current == std::string::npos) {
       current = host.length();
+    }
 
     MappedHostComponent mapping;
     mapping.original_begin = begin;
@@ -400,8 +402,9 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     mapping.canonical_end = canon_output.length();
     components.push_back(mapping);
 
-    if (current < host.length())
+    if (current < host.length()) {
       canon_output.push_back('.');
+    }
   }
   canon_output.Complete();
 
@@ -467,12 +470,14 @@ size_t DoPermissiveGetHostRegistryLength(T host,
               url::Component(
                   current_try,
                   static_cast<int>(mapping.original_end) - current_try),
-              &try_output))
+              &try_output)) {
         continue;  // Invalid substring, skip.
+      }
 
       try_output.Complete();
-      if (try_string == canonical_rcd)
+      if (try_string == canonical_rcd) {
         return host.length() - current_try;
+      }
     }
   }
 
@@ -486,13 +491,15 @@ bool SameDomainOrHost(std::string_view host1,
                       std::string_view host2,
                       PrivateRegistryFilter filter) {
   // Quickly reject cases where either host is empty.
-  if (host1.empty() || host2.empty())
+  if (host1.empty() || host2.empty()) {
     return false;
+  }
 
   // Check for exact host matches, which is faster than looking up the domain
   // and registry.
-  if (host1 == host2)
+  if (host1 == host2) {
     return true;
+  }
 
   // Check for a domain and registry match.
   std::string_view domain1 = GetDomainAndRegistryAsStringPiece(host1, filter);
@@ -517,8 +524,9 @@ std::string GetDomainAndRegistry(std::string_view host,
                                  PrivateRegistryFilter filter) {
   url::CanonHostInfo host_info;
   const std::string canon_host(CanonicalizeHost(host, &host_info));
-  if (canon_host.empty() || host_info.IsIPAddress())
+  if (canon_host.empty() || host_info.IsIPAddress()) {
     return std::string();
+  }
   return std::string(GetDomainAndRegistryImpl(canon_host, filter));
 }
 
@@ -528,10 +536,9 @@ std::string_view GetDomainAndRegistryAsStringPiece(
   return GetDomainAndRegistryAsStringPiece(origin.host(), filter);
 }
 
-bool SameDomainOrHost(
-    const GURL& gurl1,
-    const GURL& gurl2,
-    PrivateRegistryFilter filter) {
+bool SameDomainOrHost(const GURL& gurl1,
+                      const GURL& gurl2,
+                      PrivateRegistryFilter filter) {
   return SameDomainOrHost(gurl1.host_piece(), gurl2.host_piece(), filter);
 }
 
@@ -554,10 +561,9 @@ bool SameDomainOrHost(const GURL& gurl,
   return SameDomainOrHost(gurl.host_piece(), origin.host(), filter);
 }
 
-size_t GetRegistryLength(
-    const GURL& gurl,
-    UnknownRegistryFilter unknown_filter,
-    PrivateRegistryFilter private_filter) {
+size_t GetRegistryLength(const GURL& gurl,
+                         UnknownRegistryFilter unknown_filter,
+                         PrivateRegistryFilter private_filter) {
   return GetRegistryLengthImpl(gurl.host_piece(), unknown_filter,
                                private_filter)
       .registry_length;
