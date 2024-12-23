@@ -287,13 +287,18 @@
 -external/wpt/css/css-highlight-api/painting/custom-highlight-painting-vertical-writing-mode-001.html
 -external/wpt/css/css-inline/baseline-source/baseline-source-first-textarea-002.tentative.html
 -external/wpt/css/css-inline/baseline-source/baseline-source-last-textarea-002.tentative.html
+-external/wpt/css/css-inline/initial-letter/initial-letter-block-position-raise-over-ruby.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-over-ruby-tall.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-block-position-drop-under-ruby.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-rtl.html
+-external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-srl.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vlr.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-block-position-margins-vrl.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-breaking-srl.html
+-external/wpt/css/css-inline/initial-letter/initial-letter-drop-initial-rtl.html
+-external/wpt/css/css-inline/initial-letter/initial-letter-raise-initial-vrl.html
 -external/wpt/css/css-inline/initial-letter/initial-letter-short-para-initial-letter-clears.html
+-external/wpt/css/css-inline/initial-letter/initial-letter-sunk-initial.html?class=
 -external/wpt/css/css-layout-api/baseline/orthogonal-baseline.https.html
 -external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html
 -external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html
@@ -306,6 +311,8 @@
 -external/wpt/css/css-lists/list-marker-with-lineheight-and-overflow-hidden-001.html
 -external/wpt/css/css-lists/list-style-type-string-005b.html
 -external/wpt/css/css-masking/clip-path/clip-path-inline-003.html
+-external/wpt/css/css-masking/clip-path/clip-path-inline-004.html
+-external/wpt/css/css-masking/clip-path/clip-path-inline-006.html
 -external/wpt/css/css-masking/clip-path/clip-path-inline-010.html
 -external/wpt/css/css-masking/mask-image/mask-opacity-1e.html
 -external/wpt/css/css-multicol/getclientrects-000.html
@@ -353,6 +360,9 @@
 -external/wpt/css/css-page/margin-boxes/dimensions-006-print.html
 -external/wpt/css/css-page/margin-boxes/dimensions-007-print.html
 -external/wpt/css/css-page/margin-boxes/dimensions-008-print.html
+-external/wpt/css/css-page/margin-boxes/dimensions-009-print.html
+-external/wpt/css/css-page/margin-boxes/dimensions-011-print.html
+-external/wpt/css/css-page/margin-boxes/dimensions-012-print.html
 -external/wpt/css/css-page/margin-boxes/dimensions-013-print.html
 -external/wpt/css/css-page/margin-boxes/dimensions-014-print.html
 -external/wpt/css/css-page/margin-boxes/inapplicable-properties-print.html
