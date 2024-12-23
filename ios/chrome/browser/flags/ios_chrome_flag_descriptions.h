@@ -609,6 +609,11 @@ extern const char kLensOverlayEnableIPadCompatibilityDescription[];
 extern const char kLensOverlayEnableLocationBarEntrypointName[];
 extern const char kLensOverlayEnableLocationBarEntrypointDescription[];
 
+// Title and description for the flag to enable the Lens overlay location bar
+// entrypoint on SRP.
+extern const char kLensOverlayEnableLocationBarEntrypointOnSRPName[];
+extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
+
 // Title and description for the flag to allow lens overlay same tab navigation.
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];

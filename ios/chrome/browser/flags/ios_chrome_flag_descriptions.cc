@@ -710,6 +710,12 @@ extern const char kLensOverlayEnableLocationBarEntrypointDescription[] =
     "no other buttons are shown (price insight or messages). Enabled by "
     "default. ";
 
+extern const char kLensOverlayEnableLocationBarEntrypointOnSRPName[] =
+    "Enable Lens overlay location bar entrypoint on SRP.";
+extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[] =
+    "When enabled, the location bar entrypoint is available on SRP. Enabled by "
+    "default.";
+
 extern const char kLensOverlayEnableSameTabNavigationName[] =
     "Lens overlay same tab navigation";
 extern const char kLensOverlayEnableSameTabNavigationDescription[] =

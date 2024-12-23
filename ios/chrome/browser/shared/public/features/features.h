@@ -318,6 +318,10 @@ BASE_DECLARE_FEATURE(kEnableLensContextMenuUnifiedExperience);
 // default.
 BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypoint);
 
+// Feature flag to enable the Lens overlay location bar entrypoint on SRP.
+// Enabled by default.
+BASE_DECLARE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP);
+
 // Feature flag to disable price insights for a lens overlay experiment. As the
 // price insights entrypoint trumps the lens overlay entrypoint. This flag
 // should only be used for experiment.
