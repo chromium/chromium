@@ -1063,6 +1063,31 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
+// Ensures we appropriately generate suggestions for card info retrieval
+// enrolled card.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetCardSuggestionsWithCardInfoRetrievalEnrolled) {
+  CreditCard card = test::GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
+  payments_data().AddServerCreditCard(card);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      *autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false, summary);
+
+  // There are 3 suggestions, 1 for card info retrieval enrolled card
+  // suggestions, followed by a separator, and followed by "Manage payment
+  // methods..." which redirects to the Chrome payment methods settings page.
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_TRUE(summary.with_card_info_retrieval_enrolled);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
+}
+
 // Verifies that the GPay logo is set correctly.
 TEST_F(PaymentsSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   // GPay logo should be displayed if suggestions were all for server cards;

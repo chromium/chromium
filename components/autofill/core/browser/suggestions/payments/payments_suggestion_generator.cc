@@ -1019,6 +1019,11 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   }
   summary.with_cvc = !std::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
+  summary.with_card_info_retrieval_enrolled =
+      std::ranges::any_of(cards_to_suggest, [](const CreditCard& card) {
+        return card.card_info_retrieval_enrollment_state() ==
+               CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+      });
   if (suggestions.empty()) {
     return suggestions;
   }

@@ -42,6 +42,8 @@ struct CreditCardSuggestionSummary {
   bool with_offer = false;
   // True if any card has a saved CVC.
   bool with_cvc = false;
+  // True if any card is card info retrieval enrolled.
+  bool with_card_info_retrieval_enrolled = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   // Contains information regarding the ranking of suggestions and is used for

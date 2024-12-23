@@ -2675,6 +2675,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   metrics_->credit_card_form_event_logger.OnDidFetchSuggestion(
       suggestions, summary.with_offer, summary.with_cvc,
+      summary.with_card_info_retrieval_enrolled,
       is_virtual_card_standalone_cvc_field,
       std::move(summary.metadata_logging_context));
   return suggestions;

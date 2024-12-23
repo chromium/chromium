@@ -55,6 +55,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // suggestion in the list.
   // `with_cvc` indicates whether CVC is saved in any of the suggestion in
   // the list.
+  // `with_card_info_retrieval_enrolled` indicates whether at least one of the
+  // suggestions contains card info retrieval enrolled card.
   // `is_virtual_card_standalone_cvc_field` indicates whether the `suggestions`
   // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
@@ -63,6 +65,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const std::vector<Suggestion>& suggestions,
       bool with_offer,
       bool with_cvc,
+      bool with_card_info_retrieval_enrolled,
       bool is_virtual_card_standalone_cvc_field,
       CardMetadataLoggingContext metadata_logging_context);
 
@@ -194,6 +197,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool is_virtual_card_standalone_cvc_field_ = false;
   // If true, one of the cards in the suggestions fetched has cvc info saved.
   bool suggestion_contains_card_with_cvc_ = false;
+  // If true, one of the cards in the suggestions fetched card info retrieval
+  // enrolled.
+  bool suggestion_contains_card_info_retrieval_enrolled_card_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

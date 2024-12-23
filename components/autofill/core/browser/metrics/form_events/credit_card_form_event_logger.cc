@@ -46,10 +46,13 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
     const std::vector<Suggestion>& suggestions,
     bool with_offer,
     bool with_cvc,
+    bool with_card_info_retrieval_enrolled,
     bool is_virtual_card_standalone_cvc_field,
     CardMetadataLoggingContext metadata_logging_context) {
   has_eligible_offer_ = with_offer;
   suggestion_contains_card_with_cvc_ = with_cvc;
+  suggestion_contains_card_info_retrieval_enrolled_card_ =
+      with_card_info_retrieval_enrolled;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
   metadata_logging_context_ = std::move(metadata_logging_context);
   suggestions_.clear();
