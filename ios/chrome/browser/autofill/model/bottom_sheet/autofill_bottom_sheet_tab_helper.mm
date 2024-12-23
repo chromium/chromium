@@ -6,14 +6,18 @@
 
 #import "base/containers/contains.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
+#import "base/time/time.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -24,6 +28,9 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -51,6 +58,37 @@ bool IsPaymentsBottomSheetTriggeringField(autofill::FieldType type) {
     default:
       return false;
   }
+}
+
+// Returns true if there is any credit card suggestion in the `suggestions`.
+bool HasAnyCreditCardSuggestion(NSArray<FormSuggestion*>* suggestions) {
+  for (FormSuggestion* suggestion in suggestions) {
+    if (suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
+        suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Records the histograms related to the outcome of triggering the
+// Payments Bottom Sheet V3 (triggered or didn't trigger).
+void RecordPaymentsBottomSheetTriggerOutcome(bool did_trigger,
+                                             base::TimeDelta trigger_walltime) {
+  if (did_trigger) {
+    base::UmaHistogramTimes("IOS.PaymentsBottomSheet.TimeToTrigger.Triggered",
+                            trigger_walltime);
+  } else {
+    base::UmaHistogramTimes(
+        "IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered", trigger_walltime);
+  }
+  base::UmaHistogramBoolean("IOS.PaymentsBottomSheetV3.Triggered",
+                            /*sample=*/did_trigger);
+}
+
+bool UseV3() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
+         base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
 }
 
 }  // namespace
@@ -140,14 +178,14 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   if (is_password_related) {
     ShowPasswordBottomSheet(params);
   } else if (is_payments_related) {
-    ShowPaymentsBottomSheet(params);
+    MaybeShowPaymentsBottomSheet(params);
   } else if (is_password_generation_related) {
     ShowProactivePasswordGenerationBottomSheet(params);
   }
 }
 
 void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
-    const autofill::FormActivityParams params) {
+    const autofill::FormActivityParams& params) {
   // Attempt to show the password suggestions bottom sheet. There is no
   // guarantee that it will be actually shown.
   [commands_handler_ showPasswordBottomSheet:params];
@@ -168,17 +206,70 @@ void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
   }
 }
 
+void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
+    autofill::FormActivityParams params) {
+  if (!UseV3()) {
+    // Use the status quo logic for triggering the payments bottom sheet if
+    // V3 isn't enabled.
+    ShowPaymentsBottomSheet(params);
+  }
+
+  // In V3, First try to retrieve credit card suggestions before considering
+  // triggering the payments bottom sheet. Credit card suggestions are a good
+  // proxy for knowing that the type of the field is "settled" since we known
+  // that the PWM was tested for suggestions (including the server predictions)
+  // before getting the credit card suggestions.
+
+  if (!web_state_) {
+    return;
+  }
+  FormSuggestionTabHelper* tabHelper =
+      FormSuggestionTabHelper::FromWebState(web_state_);
+  if (!tabHelper) {
+    return;
+  }
+  id<FormInputSuggestionsProvider> provider =
+      tabHelper->GetAccessoryViewProvider();
+
+  // Force this bit to true as retrieving Autofill suggestions for a form
+  // requires a user manual gesture and we consider the signal to trigger
+  // the bottom sheet as a valid signal as a manual gesture.
+  params.has_user_gesture = true;
+
+  auto completion = base::CallbackToBlock(base::BindOnce(
+      &AutofillBottomSheetTabHelper::
+          OnSuggestionsRetrievedForPaymentsBottomSheet,
+      weak_factory_.GetWeakPtr(), params, base::TimeTicks::Now()));
+  [provider retrieveSuggestionsForForm:params
+                              webState:web_state_
+              accessoryViewUpdateBlock:completion];
+}
+
+void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
+    const autofill::FormActivityParams& params,
+    base::TimeTicks start_timestamp,
+    NSArray<FormSuggestion*>* suggestions,
+    id<FormInputSuggestionsProvider> provider) {
+  auto trigger_walltime = base::TimeTicks::Now() - start_timestamp;
+  bool has_cc_suggestions = HasAnyCreditCardSuggestion(suggestions);
+  RecordPaymentsBottomSheetTriggerOutcome(/*did_trigger=*/has_cc_suggestions,
+                                          trigger_walltime);
+  if (has_cc_suggestions) {
+    ShowPaymentsBottomSheet(params);
+  }
+}
+
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
-    const autofill::FormActivityParams params) {
+    const autofill::FormActivityParams& params) {
   for (auto& observer : observers_) {
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
   if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios)) {
     // In V2, detach the listeners right away to make sure they're always
-    // cleaned up to avoid issues with rogue listeners, see the documentation in
-    // ShowPasswordBottomSheet() for more details. Postpone refocus for
-    // later once the bottom sheet is dismissed.
+    // cleaned up to avoid issues with rogue listeners, see the
+    // documentation in ShowPasswordBottomSheet() for more details. Postpone
+    // refocus for later once the bottom sheet is dismissed.
     DetachPaymentsListenersForAllFrames(/*refocus=*/false);
   }
 }

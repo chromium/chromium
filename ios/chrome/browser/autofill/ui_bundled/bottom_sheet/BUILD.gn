@@ -46,6 +46,8 @@ source_set("bottom_sheet") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:features",
+    "//ios/chrome/browser/autofill/model:model_internal",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
@@ -148,6 +150,7 @@ source_set("bottom_sheet_egtest") {
     "//components/autofill/ios/common",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
@@ -239,7 +242,6 @@ source_set("virtual_card_enrollment_bottom_sheet_data") {
     "virtual_card_enrollment_bottom_sheet_data.mm",
   ]
   deps = [
-    ":bottom_sheet",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/autofill/model/message",
   ]
@@ -277,7 +279,6 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "virtual_card_enrollment_bottom_sheet_view_controller.mm",
   ]
   deps = [
-    ":bottom_sheet",
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_delegate",
     ":virtual_card_enrollment_bottom_sheet_mutator",

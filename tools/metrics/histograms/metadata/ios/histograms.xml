@@ -3523,6 +3523,47 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PaymentsBottomSheet.TimeToSelection" units="ms"
+    expires_after="2025-04-20">
+  <owner>vincb@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the elasped time between displaying the sheet and selecting a credit
+    card. Recorded when the credit is selected by the user (when they did tap on
+    it).
+  </summary>
+</histogram>
+
+<histogram name="IOS.PaymentsBottomSheetV3.TimeToTrigger.{Outcome}" units="ms"
+    expires_after="2025-04-20">
+  <owner>vincb@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the elapsed time between receiving the signal to trigger the bottom
+    sheet V3 and actually making a decision on triggering the sheet, split by
+    {Outcome}. Recorded when making the decision to trigger the sheet.
+  </summary>
+  <token key="Outcome">
+    <variant name="NotTriggered" summary="The sheet was not triggered."/>
+    <variant name="Triggered" summary="The sheet was actually triggered."/>
+  </token>
+</histogram>
+
+<histogram name="IOS.PaymentsBottomSheetV3.Triggered" enum="Boolean"
+    expires_after="2025-04-20">
+  <owner>vincb@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the outcome of attempting to trigger the bottom sheet V3 as a
+    boolean, true if it triggered or false if it didn't. Recorded when the
+    decision is made on triggering the sheet which corresponds to when the
+    activation signal is received from the sheet's form activity listeners.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
     expires_after="2025-07-09">
   <owner>ewannpv@chromium.org</owner>

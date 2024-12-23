@@ -11,6 +11,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
@@ -86,6 +87,13 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
     // Disable V2 for that test case as it doesn't support the flow tested by
     // that test case.
     config.features_disabled.push_back(kAutofillPaymentsSheetV2Ios);
+  } else if ([self isRunningTest:@selector
+                   (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
+             [self
+                 isRunningTest:@selector
+                 (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
+    config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
+    config.features_enabled.push_back(kStatelessFormSuggestionController);
   }
   return config;
 }
@@ -255,8 +263,133 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // recorded.
   CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
 
+  // Verify that the time to selection was recorded after accepting a
+  // suggestion.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
+      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
+
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the Payments Bottom Sheet V3 can fill the credit card information.
+- (void)testOpenPaymentsBottomSheetUseCreditCardOnV3 {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
+
+  // Verify that the sheet trigger outcome was recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:1
+                         forHistogram:@"IOS.PaymentsBottomSheetV3.Triggered"],
+      @"IOS.PaymentsBottomSheetV3.Triggered was not recorded when "
+      @"the sheet was triggered");
+
+  // Verify that the time to trigger the sheet was recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered"],
+      @"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered wasn't recorded");
+
+  // Verify that the credit card is visible to the user.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure the user is seeing 1 card on the bottom sheet.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
+
+  // No histogram logged because there is only 1 credential shown to the user.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"Autofill.TouchToFill.CreditCard.SelectedIndex"],
+      @"Unexpected histogram error for touch to fill credit card selected");
+
+  // Verify that the acceptance of the card suggestion at index 0 was correctly
+  // recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
+  // Verify that the time to selection was recorded after accepting a
+  // suggestion.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
+      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the sheet isn't displayed when there are no credit card
+// suggestions for the credit card form, on V3.
+- (void)testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3 {
+  [self loadPaymentsPage];
+
+  // Clear the credit cards after the listeners are attached to be able to test
+  // the sheet trigger.
+  [AutofillAppInterface clearCreditCardStore];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  // Wait enough time to hypothetically show the sheet if there were
+  // suggestions.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
+
+  // Verify that the sheet wasn't shown because there were no CC suggestions
+  // when attempting to trigger the sheet.
+  id<GREYMatcher> continueButton = ContinueButton();
+  [[EarlGrey selectElementWithMatcher:continueButton]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that the sheet trigger outcome was recorded for the case where the
+  // outcome was to not trigger the sheet.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:0
+                         forHistogram:@"IOS.PaymentsBottomSheetV3.Triggered"],
+      @"IOS.PaymentsBottomSheetV3.Triggered was not recorded when "
+      @"the sheet was not triggered");
+
+  // Verify that the time to evaluate to trigger the sheet was recorded for the
+  // case where it was decided to not trigger/show the sheet.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:1
+              forHistogram:
+                  @"IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered"],
+      @"IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered wasn't recorded");
+
+  // Verify that the case for the time to trigger for the triggered outcome case
+  // wasn't recorded since the outcome was to not trigger.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered"],
+      @"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered "
+       " was recorded when it should not");
+
+  // Verify that the time to selection was not recorded because the sheet wasn't
+  // shown.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
+      @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
 }
 
 // Tests that the expected metric is logged when accepting a suggestion from
