@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 
-#include <algorithm>
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/extend.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace test {
 class PageInfoBubbleViewTestApi;
@@ -23,6 +22,7 @@ class ImageModel;
 }  // namespace ui
 
 namespace views {
+class ImageView;
 class Label;
 class View;
 }  // namespace views
@@ -44,10 +44,11 @@ class RichHoverButton : public HoverButton {
   METADATA_HEADER(RichHoverButton, HoverButton)
 
  public:
+  RichHoverButton();
   RichHoverButton(views::Button::PressedCallback callback,
                   ui::ImageModel icon,
-                  const std::u16string& title_text,
-                  const std::u16string& subtitle_text,
+                  std::u16string_view title_text,
+                  std::u16string_view subtitle_text,
                   ui::ImageModel action_icon = ui::ImageModel(),
                   ui::ImageModel state_icon = ui::ImageModel());
 
@@ -56,17 +57,23 @@ class RichHoverButton : public HoverButton {
 
   ~RichHoverButton() override;
 
+  ui::ImageModel GetIcon() const;
   void SetIcon(ui::ImageModel icon);
 
-  void SetTitleText(const std::u16string& title_text);
+  std::u16string_view GetTitleText() const;
+  void SetTitleText(std::u16string_view title_text);
 
+  ui::ImageModel GetStateIcon() const;
   void SetStateIcon(ui::ImageModel state_icon);
 
+  ui::ImageModel GetActionIcon() const;
   void SetActionIcon(ui::ImageModel action_icon);
 
-  void SetSubtitleText(const std::u16string& subtitle_text);
+  std::u16string_view GetSubtitleText() const;
+  void SetSubtitleText(std::u16string_view subtitle_text);
 
-  void SetSubtitleMultiline(bool is_multiline);
+  bool GetSubtitleMultiline() const;
+  void SetSubtitleMultiline(bool subtitle_multiline);
 
   // TODO(crbug.com/40281048): Remove; at least color, and possibly both of
   // these, should instead be computed automatically from a single context value
@@ -102,9 +109,6 @@ class RichHoverButton : public HoverButton {
     return view;
   }
 
-  const views::Label* GetTitleViewForTesting() const;
-  const views::Label* GetSubTitleViewForTesting() const;
-
  protected:
   // HoverButton:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -123,30 +127,48 @@ class RichHoverButton : public HoverButton {
                      ui::ImageModel icon,
                      bool use_placeholder);
 
-  // Recreates the table layout, which must be done any time the custom view
-  // changes between empty and non-empty (since its row is not filled with
-  // placeholder `View`s when absent).
+  // Recreates the table layout, which must be done any time the custom view or
+  // subtitle change between empty and non-empty (since those rows are not
+  // filled with placeholder `View`s when absent).
   // TODO(pkasting): This class should lay out using box, not table, with
   // top-aligned children, and add enough padding to the
   // icons/custom view/subtitle to properly align with the title. That would
   // obviate the need to recreate the layout after construction.
   void RecreateLayout();
 
+  // Recomputes the accessible name, which is affected by both labels.
   void UpdateAccessibleName();
 
-  // Add filler views for state icon (if set) and action icon columns. Used for
+  // Adds filler views for state icon (if set) and action icon columns. Used for
   // the table rows after the first one.
   std::vector<raw_ptr<views::View>> AddFillerViews(size_t start);
 
   size_t start_;
+  // `ImageView` pointers and `subtitle` are non-null only if present.
   raw_ptr<views::ImageView> icon_ = nullptr;
-  raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::Label> title_;  // Never null.
   raw_ptr<views::ImageView> state_icon_ = nullptr;
   raw_ptr<views::ImageView> action_icon_ = nullptr;
   size_t custom_view_row_start_;
   std::vector<raw_ptr<views::View>> custom_view_row_views_;
   std::vector<raw_ptr<views::View>> subtitle_row_views_;
   raw_ptr<views::Label> subtitle_ = nullptr;
+  bool subtitle_multiline_ = true;
 };
+
+BEGIN_VIEW_BUILDER(, RichHoverButton, HoverButton)
+VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
+VIEW_BUILDER_PROPERTY(std::u16string_view, TitleText)
+VIEW_BUILDER_PROPERTY(ui::ImageModel, StateIcon)
+VIEW_BUILDER_PROPERTY(ui::ImageModel, ActionIcon)
+VIEW_BUILDER_PROPERTY(std::u16string_view, SubtitleText)
+VIEW_BUILDER_PROPERTY(bool, SubtitleMultiline)
+VIEW_BUILDER_METHOD(SetTitleTextStyleAndColor, int, ui::ColorId)
+VIEW_BUILDER_METHOD(SetSubtitleTextStyleAndColor, int, ui::ColorId)
+VIEW_BUILDER_TEMPLATED_PROPERTY(<typename T>, CustomView, std::unique_ptr<T>)
+
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, RichHoverButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_

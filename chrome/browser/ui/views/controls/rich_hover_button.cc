@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 
-#include <string>
+#include <memory>
+#include <string_view>
+#include <utility>
 
-#include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -65,12 +67,7 @@ END_METADATA
 
 }  // namespace
 
-RichHoverButton::RichHoverButton(views::Button::PressedCallback callback,
-                                 ui::ImageModel icon,
-                                 const std::u16string& title_text,
-                                 const std::u16string& subtitle_text,
-                                 ui::ImageModel action_icon,
-                                 ui::ImageModel state_icon) {
+RichHoverButton::RichHoverButton() {
   image_container_view()->SetProperty(views::kViewIgnoredByLayoutKey, true);
   label()->SetHandlesTooltips(false);
   label()->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -78,24 +75,35 @@ RichHoverButton::RichHoverButton(views::Button::PressedCallback callback,
 
   start_ = children().size();
 
-  SetBorder(
-      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)));
-  // Main icon placeholder.
-  AddChildView(std::make_unique<views::View>());
-  // Title.
-  title_ = AddChildView(std::make_unique<views::Label>());
-  title_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_->SetCanProcessEventsWithinSubtree(false);
-  // Action icon placeholder.
-  AddChildView(std::make_unique<views::View>());
+  views::Builder<RichHoverButton>(this)
+      .SetBorder(
+          views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+              ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)))
+      // Main icon placeholder.
+      .AddChild(views::Builder<views::View>())
+      // Title.
+      .AddChild(views::Builder<views::Label>()
+                    .CopyAddressTo(&title_)
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetCanProcessEventsWithinSubtree(false))
+      // Action icon placeholder.
+      .AddChild(views::Builder<views::View>())
+      .BuildChildren();
 
   custom_view_row_start_ = children().size();
 
   RecreateLayout();
+}
 
+RichHoverButton::RichHoverButton(views::Button::PressedCallback callback,
+                                 ui::ImageModel icon,
+                                 std::u16string_view title_text,
+                                 std::u16string_view subtitle_text,
+                                 ui::ImageModel action_icon,
+                                 ui::ImageModel state_icon)
+    : RichHoverButton() {
   SetCallback(std::move(callback));
   SetIcon(std::move(icon));
   SetTitleText(title_text);
@@ -106,17 +114,33 @@ RichHoverButton::RichHoverButton(views::Button::PressedCallback callback,
 
 RichHoverButton::~RichHoverButton() = default;
 
+ui::ImageModel RichHoverButton::GetIcon() const {
+  return icon_ ? icon_->GetImageModel() : ui::ImageModel();
+}
+
 void RichHoverButton::SetIcon(ui::ImageModel icon) {
   SetIconMember(icon_, start_, std::move(icon), true);
 }
 
-void RichHoverButton::SetTitleText(const std::u16string& title_text) {
-  title_->SetText(title_text);
+std::u16string_view RichHoverButton::GetTitleText() const {
+  return title_->GetText();
+}
+
+void RichHoverButton::SetTitleText(std::u16string_view title_text) {
+  title_->SetText(std::u16string(title_text));
   UpdateAccessibleName();
+}
+
+ui::ImageModel RichHoverButton::GetStateIcon() const {
+  return state_icon_ ? state_icon_->GetImageModel() : ui::ImageModel();
 }
 
 void RichHoverButton::SetStateIcon(ui::ImageModel state_icon) {
   SetIconMember(state_icon_, start_ + 2, std::move(state_icon), false);
+}
+
+ui::ImageModel RichHoverButton::GetActionIcon() const {
+  return action_icon_ ? action_icon_->GetImageModel() : ui::ImageModel();
 }
 
 void RichHoverButton::SetActionIcon(ui::ImageModel action_icon) {
@@ -124,7 +148,11 @@ void RichHoverButton::SetActionIcon(ui::ImageModel action_icon) {
                 std::move(action_icon), true);
 }
 
-void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
+std::u16string_view RichHoverButton::GetSubtitleText() const {
+  return subtitle_ ? subtitle_->GetText() : std::u16string_view();
+}
+
+void RichHoverButton::SetSubtitleText(std::u16string_view subtitle_text) {
   if (subtitle_text.empty()) {
     subtitle_ = nullptr;
     for (const auto& v : subtitle_row_views_) {
@@ -141,19 +169,26 @@ void RichHoverButton::SetSubtitleText(const std::u16string& subtitle_text) {
           std::make_unique<SubtitleLabelWrapper>(std::move(subtitle))));
       subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
       subtitle_->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
-      subtitle_->SetMultiLine(true);
+      subtitle_->SetMultiLine(subtitle_multiline_);
       subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       subtitle_->SetAutoColorReadabilityEnabled(false);
       base::Extend(subtitle_row_views_, AddFillerViews(children().size()));
     }
-    subtitle_->SetText(subtitle_text);
+    subtitle_->SetText(std::u16string(subtitle_text));
   }
   RecreateLayout();
   UpdateAccessibleName();
 }
 
-void RichHoverButton::SetSubtitleMultiline(bool is_multiline) {
-  subtitle_->SetMultiLine(is_multiline);
+bool RichHoverButton::GetSubtitleMultiline() const {
+  return subtitle_multiline_;
+}
+
+void RichHoverButton::SetSubtitleMultiline(bool subtitle_multiline) {
+  subtitle_multiline_ = subtitle_multiline;
+  if (subtitle_) {
+    subtitle_->SetMultiLine(subtitle_multiline);
+  }
 }
 
 void RichHoverButton::SetTitleTextStyleAndColor(int style,
@@ -168,14 +203,6 @@ void RichHoverButton::SetSubtitleTextStyleAndColor(int style,
     subtitle_->SetTextStyle(style);
     subtitle_->SetEnabledColorId(color_id);
   }
-}
-
-const views::Label* RichHoverButton::GetTitleViewForTesting() const {
-  return title_;
-}
-
-const views::Label* RichHoverButton::GetSubTitleViewForTesting() const {
-  return subtitle_;
 }
 
 void RichHoverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -268,12 +295,11 @@ void RichHoverButton::RecreateLayout() {
 }
 
 void RichHoverButton::UpdateAccessibleName() {
-  const std::u16string title_text = title_->GetText();
-  const std::u16string accessible_name =
-      subtitle_ == nullptr
-          ? title_text
-          : base::JoinString({title_text, subtitle_->GetText()}, u"\n");
-  HoverButton::GetViewAccessibility().SetName(accessible_name);
+  const std::u16string_view title_text = GetTitleText();
+  const std::u16string_view subtitle_text = GetSubtitleText();
+  HoverButton::GetViewAccessibility().SetName(
+      subtitle_text.empty() ? std::u16string(title_text)
+                            : base::StrCat({title_text, u"\n", subtitle_text}));
 }
 
 std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews(
@@ -287,4 +313,10 @@ std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews(
 }
 
 BEGIN_METADATA(RichHoverButton)
+ADD_PROPERTY_METADATA(ui::ImageModel, Icon)
+ADD_PROPERTY_METADATA(std::u16string_view, TitleText)
+ADD_PROPERTY_METADATA(ui::ImageModel, StateIcon)
+ADD_PROPERTY_METADATA(ui::ImageModel, ActionIcon)
+ADD_PROPERTY_METADATA(std::u16string_view, SubtitleText)
+ADD_PROPERTY_METADATA(bool, SubtitleMultiline)
 END_METADATA

@@ -259,9 +259,7 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustChipButtonInteractiveUITest,
       WaitForShow(PageInfoMerchantTrustContentView::kElementIdForTesting),
       CheckView(
           PageInfoMerchantTrustContentView::kViewReviewsId,
-          [](RichHoverButton* button) {
-            return button->GetTitleViewForTesting()->GetText();
-          },
+          [](RichHoverButton* button) { return button->GetTitleText(); },
           u"View all 23 reviews"),
       // Press the "View all reviews" button.
       PressButton(PageInfoMerchantTrustContentView::kViewReviewsId),

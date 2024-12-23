@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -35,13 +36,11 @@ namespace {
 using Status = ::content_settings::TrackingProtectionBlockingStatus;
 using FeatureType = ::content_settings::TrackingProtectionFeatureType;
 
-std::u16string GetManageButtonSubtitle(views::View* content_view) {
+std::u16string_view GetManageButtonSubtitle(views::View* content_view) {
   auto* manage_button = content_view->GetViewByID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
   EXPECT_TRUE(manage_button);
-  auto* managed_button_subtitle =
-      static_cast<RichHoverButton*>(manage_button)->GetSubTitleViewForTesting();
-  return managed_button_subtitle->GetText();
+  return static_cast<RichHoverButton*>(manage_button)->GetSubtitleText();
 }
 
 const char* GetVectorIconName(views::ImageView* image_view) {
