@@ -451,21 +451,8 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
-    base::ElapsedTimer timer;
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
-    if (for_protected_sequence) {
-      waited_for_protected_sequence_ = true;
-      auto elapsed = timer.Elapsed();
-      base::UmaHistogramMicrosecondsTimes(
-          "Compositing.MainThreadBlockedDuringCommitTime", elapsed);
-      if (in_apply_compositor_changes_) {
-        base::UmaHistogramMicrosecondsTimes(
-            "Compositing.MainThreadBlockedDuringCommitTime."
-            "ApplyCompositorChanges",
-            elapsed);
-      }
-    }
   }
 }
 
@@ -507,11 +494,6 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
     client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
   }
-  if (compositor_mode_ == CompositorMode::THREADED) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.DidMainThreadBlockDuringCommit",
-                          waited_for_protected_sequence_);
-  }
-  waited_for_protected_sequence_ = false;
 }
 
 void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
@@ -1142,9 +1124,6 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(IsMainThread());
   DCHECK(commit_data);
   TRACE_EVENT0("cc", "LayerTreeHost::ApplyCompositorChanges");
-
-  DCHECK(!in_apply_compositor_changes_);
-  base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
 
   using perfetto::protos::pbzero::TrackEvent;
 

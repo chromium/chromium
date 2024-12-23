@@ -10917,8 +10917,8 @@ class LayerTreeHostTestBlockOnCommitAfterInputEvent : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
   void WillBeginMainFrame() override { ++main_frame_num_; }
   void DidBeginMainFrame() override {
-    EXPECT_EQ(main_frame_num_ % 2 == 0,
-              layer_tree_host()->WaitedForCommitForTesting());
+    EXPECT_EQ(main_frame_num_ % 2 != 0,
+              layer_tree_host()->MustWaitForCommitForTesting());
   }
   void DidCommit() override {
     if (main_frame_num_ < 5) {
