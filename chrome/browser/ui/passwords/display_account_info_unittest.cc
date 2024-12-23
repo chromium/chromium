@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_infobar_utils.h"
-
 #include "base/test/task_environment.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -13,15 +12,14 @@
 #include "components/sync/test/test_sync_user_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace password_manager {
 namespace {
-
 const char kTestEmail[] = "john.doe@gmail.com";
 const char kTestFullName[] = "John Doe";
+}  // namespace
 
-class PasswordInfobarUtilsTest : public testing::Test {
+class DisplayAccountInfoTest : public testing::Test {
  public:
-  PasswordInfobarUtilsTest() {
+  DisplayAccountInfoTest() {
     // `identity_test_environment_` starts signed-out by default, but
     // `sync_service_` starts signed-in, make them consistent.
     sync_service_.SetSignedOut();
@@ -71,7 +69,7 @@ class PasswordInfobarUtilsTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
 };
 
-TEST_F(PasswordInfobarUtilsTest, SignedOut) {
+TEST_F(DisplayAccountInfoTest, SignedOut) {
   EXPECT_EQ(
       GetAccountInfoForPasswordMessages(sync_service(), identity_manager()),
       std::nullopt);
@@ -79,7 +77,7 @@ TEST_F(PasswordInfobarUtilsTest, SignedOut) {
             std::string());
 }
 
-TEST_F(PasswordInfobarUtilsTest, SignedInWithPasswordsEnabled) {
+TEST_F(DisplayAccountInfoTest, SignedInWithPasswordsEnabled) {
   SignInWithoutSync();
 
   std::optional<AccountInfo> account_info =
@@ -90,7 +88,7 @@ TEST_F(PasswordInfobarUtilsTest, SignedInWithPasswordsEnabled) {
             kTestEmail);
 }
 
-TEST_F(PasswordInfobarUtilsTest, SignedInWithPasswordsDisabled) {
+TEST_F(DisplayAccountInfoTest, SignedInWithPasswordsDisabled) {
   SignInWithoutSync();
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
@@ -102,7 +100,7 @@ TEST_F(PasswordInfobarUtilsTest, SignedInWithPasswordsDisabled) {
             std::string());
 }
 
-TEST_F(PasswordInfobarUtilsTest, SyncingWithPasswordsEnabled) {
+TEST_F(DisplayAccountInfoTest, SyncingWithPasswordsEnabled) {
   SignInWithSync();
 
   std::optional<AccountInfo> account_info =
@@ -113,7 +111,7 @@ TEST_F(PasswordInfobarUtilsTest, SyncingWithPasswordsEnabled) {
             kTestEmail);
 }
 
-TEST_F(PasswordInfobarUtilsTest, SyncingWithPasswordsDisabled) {
+TEST_F(DisplayAccountInfoTest, SyncingWithPasswordsDisabled) {
   SignInWithSync();
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
@@ -125,13 +123,10 @@ TEST_F(PasswordInfobarUtilsTest, SyncingWithPasswordsDisabled) {
             std::string());
 }
 
-TEST_F(PasswordInfobarUtilsTest, NonDisplayableEmail) {
+TEST_F(DisplayAccountInfoTest, NonDisplayableEmail) {
   SignInWithSync();
   SetCanDisplaySignedInAccountEmail(false);
 
   EXPECT_EQ(GetDisplayableAccountName(sync_service(), identity_manager()),
             kTestFullName);
 }
-
-}  // namespace
-}  // namespace password_manager

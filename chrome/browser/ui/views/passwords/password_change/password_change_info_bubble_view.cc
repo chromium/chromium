@@ -91,14 +91,12 @@ std::unique_ptr<views::View> PasswordChangeInfoBubbleView::CreateBodyText(
           base::BindRepeating(&PasswordChangeInfoBubbleController::
                                   OnGooglePasswordManagerLinkClicked,
                               base::Unretained(&controller_));
-      // TODO(crbug.com/384683946): Replace "account@example.com" string with
-      // the actual account.
       return CreateGooglePasswordManagerLabel(
           /*text_message_id=*/
           IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_DETAILS,
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
-          u"account@example.com", open_password_manager_closure,
+          controller_.GetPrimaryAccountEmail(), open_password_manager_closure,
           CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
     }
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:

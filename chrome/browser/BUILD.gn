@@ -3058,8 +3058,6 @@ static_library("browser") {
       "password_manager/android/password_generation_controller.h",
       "password_manager/android/password_generation_controller_impl.cc",
       "password_manager/android/password_generation_controller_impl.h",
-      "password_manager/android/password_infobar_utils.cc",
-      "password_manager/android/password_infobar_utils.h",
       "password_manager/android/password_manager_error_message_delegate.cc",
       "password_manager/android/password_manager_error_message_delegate.h",
       "password_manager/android/password_manager_error_message_helper_bridge.h",

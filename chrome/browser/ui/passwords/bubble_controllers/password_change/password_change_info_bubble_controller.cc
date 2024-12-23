@@ -7,7 +7,11 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -84,4 +88,11 @@ void PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked() {
     delegate_->NavigateToPasswordManagerSettingsPage(
         password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
   }
+}
+
+std::u16string PasswordChangeInfoBubbleController::GetPrimaryAccountEmail() {
+  Profile* profile = GetProfile();
+  return base::UTF8ToUTF16(GetDisplayableAccountName(
+      SyncServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile)));
 }

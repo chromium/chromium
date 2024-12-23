@@ -19,7 +19,6 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -144,10 +143,9 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  std::optional<AccountInfo> account_info =
-      password_manager::GetAccountInfoForPasswordMessages(
-          SyncServiceFactory::GetForProfile(profile),
-          IdentityManagerFactory::GetForProfile(profile));
+  std::optional<AccountInfo> account_info = GetAccountInfoForPasswordMessages(
+      SyncServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
   DisplaySaveUpdatePasswordPromptInternal(
       web_contents, std::move(form_to_save), std::move(account_info),
       update_password, password_manager_client);

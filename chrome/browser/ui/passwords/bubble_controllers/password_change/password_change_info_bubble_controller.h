@@ -34,6 +34,7 @@ class PasswordChangeInfoBubbleController : public PasswordBubbleControllerBase,
   // Get the change password origin to be displayed in UI.
   std::u16string GetDisplayOrigin();
   void OnGooglePasswordManagerLinkClicked();
+  std::u16string GetPrimaryAccountEmail();
 
  private:
   PasswordChangeDelegate::State state_;

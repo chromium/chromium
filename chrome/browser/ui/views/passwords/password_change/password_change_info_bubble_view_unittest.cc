@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 
+#include <memory>
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/password_manager/password_change_delegate_mock.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/test_event.h"
@@ -24,6 +31,14 @@ using testing::ReturnRef;
 
 namespace {
 const std::u16string kTestEmail = u"account@example.com";
+
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    AccountInfo account_info,
+    content::BrowserContext* context) {
+  auto sync_service = std::make_unique<syncer::TestSyncService>();
+  sync_service->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  return sync_service;
+}
 
 std::u16string GetBodyText() {
   const std::u16string link = l10n_util::GetStringUTF16(
@@ -46,6 +61,11 @@ class PasswordChangeInfoBubbleViewTest : public PasswordBubbleViewTestBase {
         .WillByDefault(ReturnRef(password_change_url_));
     ON_CALL(*model_delegate_mock(), GetPasswordChangeDelegate())
         .WillByDefault(Return(password_change_delegate_.get()));
+    AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        base::UTF16ToUTF8(kTestEmail), signin::ConsentLevel::kSignin);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&BuildTestSyncService, std::move(account_info)));
   }
 
   void TearDown() override {
