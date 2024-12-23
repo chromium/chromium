@@ -386,6 +386,7 @@
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
 <translation id="5947104538377036631">‏میان‌بر Chrome</translation>
 <translation id="5953954252731207958">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت</translation>
+<translation id="5980111191913430208">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. ‫Chrome توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6014316319780893079">‏با <ph name="BEGIN_LINK" />ابزارهای Chrome<ph name="END_LINK" />، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
@@ -604,6 +605,7 @@
 <translation id="842386925677997438">‏ابزارهای ایمنی Chrome</translation>
 <translation id="8425765582779547329">‏برای ایمن‌تر ماندن در فضای آنلاین با کمک انتخاب‌های ولی‌تان، به سیستم Chrome وارد شوید</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
+<translation id="8429214465555795676">‏برای ادامه دادن، باید با <ph name="EMAIL" /> به سیستم Chrome وارد شوید. با این کار، پیروی از خط‌مشی‌های سازمان تضمین می‌شود.</translation>
 <translation id="8433638294851456451">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="8451192282033883849">‏<ph name="MANAGER_NAME" /> حساب شما را مدیریت می‌کند. سرپرست شما می‌تواند این نمایه مرورگر Chrome و داده‌های آن را (مانند نشانک‌ها، سابقه، و گذرواژه‌ها) ببیند و ویرایش کند.</translation>
 <translation id="8496177819998570653">‏مدیر گذرواژه Google</translation>

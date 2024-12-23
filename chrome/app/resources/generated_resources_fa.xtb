@@ -4618,6 +4618,7 @@
 <translation id="4220648711404560261">خطایی درحین فعال‌سازی روی داد.</translation>
 <translation id="4222917615373664617">پیگیری قیمت فعال است. قیمت <ph name="CURRENT_PRICE" /> است.</translation>
 <translation id="4223404254440398437">میکروفون مجاز نیست</translation>
+<translation id="4224541845943007092">خواندن و ذخیره کردن ورودی صفحه‌کلید از نوار نشانی</translation>
 <translation id="4225397296022057997">در همه سایت‌ها</translation>
 <translation id="4228071595943929139">استفاده از نشانی ایمیل سازمان</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{این افزونه مجاز نیست}one{برخی افزونه‌ها مجاز نیستند}other{برخی افزونه‌ها مجاز نیستند}}</translation>

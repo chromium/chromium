@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
 <translation id="1396327438254055134">‏به سایت اجازه دهید از بهینه‌ساز V8 استفاده کند.</translation>
 <translation id="1415402041810619267">نشانی وب کوتاه‌شده</translation>
+<translation id="1415855080660575082">‏اجازه دهید Chrome برگه‌های اخیرتان را با دستگاهتان هم‌رسانی کند تا بتوانید آن‌ها را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان ببینید. می‌توانید این گزینه را در تنظیمات Chrome روشن یا خاموش کنید.</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سایت}one{<ph name="SITE_COUNT" /> سایت}other{<ph name="SITE_COUNT" /> سایت}}</translation>
 <translation id="1500473259453106018">پنهان کردن کارت «کاهش قیمت در برگه‌ها»</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">موقتاً به این سایت اجازه دادید از کوکی‌های طرف سوم استفاده کند. این کار به‌معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد طبق انتظار کار خواهند کرد. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ممکن است ویژگی‌های برخی‌از سایت‌ها در «حالت ناشناس» کار نکند</translation>
 <translation id="2442870161001914531">همیشه سایت ویژه رایانه درخواست شود</translation>
+<translation id="2445311670906052406">‏اکنون Chrome برگه‌های اخیرتان را با دستگاهتان هم‌رسانی می‌کند. آن‌ها را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان خواهید دید. هرزمان بخواهید می‌توانید این گزینه را در تنظیمات Chrome خاموش کنید.</translation>
 <translation id="2469312991797799607">با این کار، همه داده‌ها و کوکی‌های <ph name="ORIGIN" /> و همه سایت‌های تحت آن حذف خواهد شد</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
 <translation id="2787357173144933081">شروع با پرش به نوار نشانی</translation>
 <translation id="2790501146643349491">هرگاه روشن باشد، سایت‌های اخیراً بسته‌شده می‌توانند ارسال و دریافت داده را تکمیل کنند. هرگاه خاموش باشد، سایت‌های اخیراً بسته‌شده نمی‌توانند ارسال یا دریافت داده را تکمیل کنند.</translation>
+<translation id="2814830417943086299">‏اکنون Chrome برگه‌های اخیرتان را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان نشان می‌دهد. هرزمان بخواهید می‌توانید این گزینه را در تنظیمات Chrome خاموش کنید.</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
 <translation id="2850913818900871965">درخواست نمای تلفن همراه</translation>
 <translation id="2870560284913253234">سایت</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}}</translation>
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="9138217887606523162">بزرگ‌نمایی کنونی <ph name="ZOOM_LEVEL" /> %% است</translation>
+<translation id="9156722768168878035">‏اجازه دهید Chrome برگه‌های اخیرتان را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان نشان دهد. هرزمان بخواهید می‌توانید این گزینه را در تنظیمات Chrome خاموش کنید.</translation>
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند تأیید کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="959682366969460160">سازمان‌دهی شوید</translation>
