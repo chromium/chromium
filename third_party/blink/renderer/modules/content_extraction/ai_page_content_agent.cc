@@ -128,10 +128,6 @@ bool IsGenericContainer(
     return true;
   }
 
-  if (object.IsTableCell()) {
-    return true;
-  }
-
   if (const auto* element = DynamicTo<HTMLElement>(object.GetNode())) {
     if (element->HasTagName(html_names::kFigureTag)) {
       return true;
@@ -151,27 +147,6 @@ void AddAnnotatedRoles(
   const auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (!element) {
     return;
-  }
-  if (IsHeadingTag(*element)) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kHeading);
-  }
-  if (element->HasTagName(html_names::kPTag)) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kParagraph);
-  }
-  if (element->HasTagName(html_names::kOlTag)) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kOrderedList);
-  }
-  if (element->HasTagName(html_names::kUlTag) ||
-      element->HasTagName(html_names::kDlTag)) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kUnorderedList);
-  }
-  if (object.IsTableCell()) {
-    annotated_roles.push_back(
-        mojom::blink::AIPageContentAnnotatedRole::kTableCell);
   }
   if (element->HasTagName(html_names::kHeaderTag) ||
       element->FastGetAttribute(html_names::kRoleAttr) == "banner") {
@@ -529,6 +504,7 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
 
   // Set the attribute type and add any special attributes if the attribute type
   // requires it.
+  auto* element = DynamicTo<HTMLElement>(object.GetNode());
   if (const auto* iframe = GetIFrame(object)) {
     ProcessIframe(*iframe, *content_node);
   } else if (object.IsLayoutView()) {
@@ -554,6 +530,27 @@ mojom::blink::AIPageContentNodePtr AIPageContentAgent::MaybeGenerateContentNode(
     ProcessTableNode(To<LayoutTable>(object), attributes, document_style);
   } else if (object.IsTableRow()) {
     ProcessTableRowNode(To<LayoutTableRow>(object), attributes, document_style);
+  } else if (object.IsTableCell()) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kTableCell;
+  } else if (element && IsHeadingTag(*element)) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kHeading;
+  } else if (element && element->HasTagName(html_names::kPTag)) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kParagraph;
+  } else if (element && element->HasTagName(html_names::kOlTag)) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kOrderedList;
+  } else if (element && (element->HasTagName(html_names::kUlTag) ||
+                         element->HasTagName(html_names::kDlTag))) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kUnorderedList;
+  } else if (element && (element->HasTagName(html_names::kLiTag) ||
+                         element->HasTagName(html_names::kDtTag) ||
+                         element->HasTagName(html_names::kDdTag))) {
+    attributes.attribute_type =
+        mojom::blink::AIPageContentAttributeType::kListItem;
   } else if (IsGenericContainer(object, attributes.annotated_roles)) {
     // Be sure to set annotated roles before calling IsGenericContainer, as
     // IsGenericContainer will check for annotated roles.

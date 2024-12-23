@@ -276,10 +276,8 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
   ASSERT_EQ(iframe_root.children_nodes().size(), 1);
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
-  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
-  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
-            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 0);
   const auto& geometry = p.content_attributes().geometry();
   AssertRectsEqual(geometry.outer_bounding_box(),
                    gfx::Rect(-20, -10, 100, 200));
@@ -309,10 +307,8 @@ IN_PROC_BROWSER_TEST_P(
 
   const auto& p = iframe_root.children_nodes()[0];
   EXPECT_EQ(p.content_attributes().attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
-  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 1);
-  EXPECT_EQ(p.content_attributes().annotated_roles()[0],
-            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
+            optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  EXPECT_EQ(p.content_attributes().annotated_roles().size(), 0);
 
 // TODO(khushalsagar): This is an existing bug where the scroll offset of the
 // root scroller in the ancestor remote frame is not applied.

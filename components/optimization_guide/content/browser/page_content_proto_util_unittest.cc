@@ -459,16 +459,6 @@ TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {
   auto container_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer);
   container_node->content_attributes->annotated_roles.push_back(
-      blink::mojom::AIPageContentAnnotatedRole::kParagraph);
-  container_node->content_attributes->annotated_roles.push_back(
-      blink::mojom::AIPageContentAnnotatedRole::kHeading);
-  container_node->content_attributes->annotated_roles.push_back(
-      blink::mojom::AIPageContentAnnotatedRole::kOrderedList);
-  container_node->content_attributes->annotated_roles.push_back(
-      blink::mojom::AIPageContentAnnotatedRole::kUnorderedList);
-  container_node->content_attributes->annotated_roles.push_back(
-      blink::mojom::AIPageContentAnnotatedRole::kTableCell);
-  container_node->content_attributes->annotated_roles.push_back(
       blink::mojom::AIPageContentAnnotatedRole::kHeader);
   container_node->content_attributes->annotated_roles.push_back(
       blink::mojom::AIPageContentAnnotatedRole::kNav);
@@ -497,32 +487,22 @@ TEST(PageContentProtoUtilTest, ConvertAnnotatedRoles) {
       proto.root_node().children_nodes(0).content_attributes();
   EXPECT_EQ(container_node_attributes_proto.attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles_size(), 13);
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles_size(), 8);
   EXPECT_EQ(container_node_attributes_proto.annotated_roles(0),
-            optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(1),
-            optimization_guide::proto::ANNOTATED_ROLE_HEADING);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(2),
-            optimization_guide::proto::ANNOTATED_ROLE_ORDERED_LIST);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(3),
-            optimization_guide::proto::ANNOTATED_ROLE_UNORDERED_LIST);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(4),
-            optimization_guide::proto::ANNOTATED_ROLE_UNKNOWN);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(5),
             optimization_guide::proto::ANNOTATED_ROLE_HEADER);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(6),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(1),
             optimization_guide::proto::ANNOTATED_ROLE_NAV);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(7),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(2),
             optimization_guide::proto::ANNOTATED_ROLE_SEARCH);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(8),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(3),
             optimization_guide::proto::ANNOTATED_ROLE_MAIN);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(9),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(4),
             optimization_guide::proto::ANNOTATED_ROLE_ARTICLE);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(10),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(5),
             optimization_guide::proto::ANNOTATED_ROLE_SECTION);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(11),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(6),
             optimization_guide::proto::ANNOTATED_ROLE_ASIDE);
-  EXPECT_EQ(container_node_attributes_proto.annotated_roles(12),
+  EXPECT_EQ(container_node_attributes_proto.annotated_roles(7),
             optimization_guide::proto::ANNOTATED_ROLE_FOOTER);
 }
 

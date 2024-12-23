@@ -35,6 +35,19 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE;
     case blink::mojom::AIPageContentAttributeType::kTableRow:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW;
+    case blink::mojom::AIPageContentAttributeType::kParagraph:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH;
+    case blink::mojom::AIPageContentAttributeType::kHeading:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_HEADING;
+    case blink::mojom::AIPageContentAttributeType::kOrderedList:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_ORDERED_LIST;
+    case blink::mojom::AIPageContentAttributeType::kUnorderedList:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNORDERED_LIST;
+    case blink::mojom::AIPageContentAttributeType::kTableCell:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL;
+    case blink::mojom::AIPageContentAttributeType::kListItem:
+      // TODO(khushalsagar): Add this to the proto format.
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
   }
   NOTREACHED();
 }
@@ -42,17 +55,6 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
 optimization_guide::proto::AnnotatedRole ConvertAnnotatedRole(
     blink::mojom::AIPageContentAnnotatedRole role) {
   switch (role) {
-    case blink::mojom::AIPageContentAnnotatedRole::kParagraph:
-      return optimization_guide::proto::ANNOTATED_ROLE_PARAGRAPH;
-    case blink::mojom::AIPageContentAnnotatedRole::kHeading:
-      return optimization_guide::proto::ANNOTATED_ROLE_HEADING;
-    case blink::mojom::AIPageContentAnnotatedRole::kOrderedList:
-      return optimization_guide::proto::ANNOTATED_ROLE_ORDERED_LIST;
-    case blink::mojom::AIPageContentAnnotatedRole::kUnorderedList:
-      return optimization_guide::proto::ANNOTATED_ROLE_UNORDERED_LIST;
-    case blink::mojom::AIPageContentAnnotatedRole::kTableCell:
-      // TODO(abigailbklein): Add this.
-      return optimization_guide::proto::ANNOTATED_ROLE_UNKNOWN;
     case blink::mojom::AIPageContentAnnotatedRole::kHeader:
       return optimization_guide::proto::ANNOTATED_ROLE_HEADER;
     case blink::mojom::AIPageContentAnnotatedRole::kNav:

@@ -26,6 +26,8 @@ enum AIPageContentAttributeType {
   // Text chunks.
   kText,
   kAnchor,
+  kParagraph,
+  kHeading,
 
   // Image chunks.
   kImage,
@@ -34,14 +36,13 @@ enum AIPageContentAttributeType {
   kForm,
   kTable,
   kTableRow,
+  kTableCell,
+  kOrderedList,
+  kUnorderedList,
+  kListItem,
 };
 
 enum AIPageContentAnnotatedRole {
-  kParagraph,
-  kHeading,
-  kOrderedList,
-  kUnorderedList,
-  kTableCell,
   kHeader,
   kNav,
   kSearch,

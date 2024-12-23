@@ -47,6 +47,15 @@ class AIPageContentAgentTest : public testing::Test {
     ASSERT_TRUE(helper_.LocalMainFrame());
   }
 
+  void CheckListItemWithText(const mojom::blink::AIPageContentNode& node,
+                             const String& expected_text) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kListItem);
+    EXPECT_EQ(node.children_nodes.size(), 1u);
+    CheckTextNode(*node.children_nodes[0], expected_text);
+  }
+
   void CheckTextNode(const mojom::blink::AIPageContentNode& node,
                      const String& expected_text) {
     const auto& attributes = *node.content_attributes;
@@ -107,6 +116,12 @@ class AIPageContentAgentTest : public testing::Test {
     }
   }
 
+  void CheckTableCellNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kTableCell);
+  }
+
   void CheckTableRowNode(
       const mojom::blink::AIPageContentNode& node,
       const mojom::blink::AIPageContentTableRowType& expected_row_type) {
@@ -123,6 +138,30 @@ class AIPageContentAgentTest : public testing::Test {
               mojom::blink::AIPageContentAttributeType::kContainer);
   }
 
+  void CheckHeadingNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kHeading);
+  }
+
+  void CheckParagraphNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kParagraph);
+  }
+
+  void CheckUnorderedListNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kUnorderedList);
+  }
+
+  void CheckOrderedListNode(const mojom::blink::AIPageContentNode& node) {
+    const auto& attributes = *node.content_attributes;
+    EXPECT_EQ(attributes.attribute_type,
+              mojom::blink::AIPageContentAttributeType::kOrderedList);
+  }
+
   void CheckAnnotatedRole(
       const mojom::blink::AIPageContentNode& node,
       const mojom::blink::AIPageContentAnnotatedRole& expected_role) {
@@ -137,6 +176,21 @@ class AIPageContentAgentTest : public testing::Test {
     const auto& geometry = *node.content_attributes->geometry;
     EXPECT_EQ(geometry.outer_bounding_box, expected_outer_bounding_box);
     EXPECT_EQ(geometry.visible_bounding_box, expected_visible_bounding_box);
+  }
+
+  const mojom::blink::AIPageContentNode& GetSingleTableCell(
+      const mojom::blink::AIPageContentNode& table) {
+    CheckTableNode(table);
+    EXPECT_EQ(table.children_nodes.size(), 1u);
+
+    const auto& table_row = *table.children_nodes[0];
+    CheckTableRowNode(table_row,
+                      mojom::blink::AIPageContentTableRowType::kBody);
+    EXPECT_EQ(table_row.children_nodes.size(), 1u);
+
+    const auto& table_cell = *table_row.children_nodes[0];
+    CheckTableCellNode(table_cell);
+    return table_cell;
   }
 
  protected:
@@ -273,25 +327,19 @@ TEST_F(AIPageContentAgentTest, Headings) {
   ASSERT_EQ(root.children_nodes.size(), 3u);
 
   const auto& heading1 = *root.children_nodes[0];
-  CheckContainerNode(heading1);
-  CheckAnnotatedRole(heading1,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(heading1);
   ASSERT_EQ(heading1.children_nodes.size(), 1u);
   const auto& heading1_text_node = *heading1.children_nodes[0];
   CheckTextNode(heading1_text_node, "Heading 1");
 
   const auto& heading2 = *root.children_nodes[1];
-  CheckContainerNode(heading2);
-  CheckAnnotatedRole(heading2,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(heading2);
   ASSERT_EQ(heading2.children_nodes.size(), 1u);
   const auto& heading2_text_node = *heading2.children_nodes[0];
   CheckTextNode(heading2_text_node, "Heading 2");
 
   const auto& heading3 = *root.children_nodes[2];
-  CheckContainerNode(heading3);
-  CheckAnnotatedRole(heading3,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(heading3);
   ASSERT_EQ(heading3.children_nodes.size(), 1u);
   const auto& heading3_text_node = *heading3.children_nodes[0];
   CheckTextNode(heading3_text_node, "Heading 3");
@@ -327,9 +375,7 @@ TEST_F(AIPageContentAgentTest, Paragraph) {
   ASSERT_EQ(root.children_nodes.size(), 1u);
 
   const auto& paragraph = *root.children_nodes[0];
-  CheckContainerNode(paragraph);
-  CheckAnnotatedRole(paragraph,
-                     mojom::blink::AIPageContentAnnotatedRole::kParagraph);
+  CheckParagraphNode(paragraph);
   CheckGeometry(paragraph, gfx::Rect(-20, -10, 200, 40),
                 gfx::Rect(0, 0, 180, 30));
 
@@ -371,30 +417,24 @@ TEST_F(AIPageContentAgentTest, Lists) {
   ASSERT_EQ(root.children_nodes.size(), 3u);
 
   const auto& ul = *root.children_nodes[0];
-  CheckContainerNode(ul);
-  CheckAnnotatedRole(ul,
-                     mojom::blink::AIPageContentAnnotatedRole::kUnorderedList);
+  CheckUnorderedListNode(ul);
   ASSERT_EQ(ul.children_nodes.size(), 2u);
-  CheckTextNode(*ul.children_nodes[0], "Item 1");
-  CheckTextNode(*ul.children_nodes[1], "Item 2");
+  CheckListItemWithText(*ul.children_nodes[0], "Item 1");
+  CheckListItemWithText(*ul.children_nodes[1], "Item 2");
 
   const auto& ol = *root.children_nodes[1];
-  CheckContainerNode(ol);
-  CheckAnnotatedRole(ol,
-                     mojom::blink::AIPageContentAnnotatedRole::kOrderedList);
+  CheckOrderedListNode(ol);
   ASSERT_EQ(ol.children_nodes.size(), 2u);
-  CheckTextNode(*ol.children_nodes[0], "Step 1");
-  CheckTextNode(*ol.children_nodes[1], "Step 2");
+  CheckListItemWithText(*ol.children_nodes[0], "Step 1");
+  CheckListItemWithText(*ol.children_nodes[1], "Step 2");
 
   const auto& dl = *root.children_nodes[2];
-  CheckContainerNode(dl);
-  CheckAnnotatedRole(dl,
-                     mojom::blink::AIPageContentAnnotatedRole::kUnorderedList);
+  CheckUnorderedListNode(dl);
   ASSERT_EQ(dl.children_nodes.size(), 4u);
-  CheckTextNode(*dl.children_nodes[0], "Detail 1 title");
-  CheckTextNode(*dl.children_nodes[1], "Detail 1 description");
-  CheckTextNode(*dl.children_nodes[2], "Detail 2 title");
-  CheckTextNode(*dl.children_nodes[3], "Detail 2 description");
+  CheckListItemWithText(*dl.children_nodes[0], "Detail 1 title");
+  CheckListItemWithText(*dl.children_nodes[1], "Detail 1 description");
+  CheckListItemWithText(*dl.children_nodes[2], "Detail 2 title");
+  CheckListItemWithText(*dl.children_nodes[3], "Detail 2 description");
 }
 
 TEST_F(AIPageContentAgentTest, IFrameWithContent) {
@@ -504,41 +544,31 @@ TEST_F(AIPageContentAgentTest, TextSize) {
   ASSERT_EQ(root.children_nodes.size(), 5u);
 
   const auto& xl_text = *root.children_nodes[0];
-  CheckContainerNode(xl_text);
-  CheckAnnotatedRole(xl_text,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(xl_text);
   CheckTextNode(*xl_text.children_nodes[0], "Extra large text");
   CheckTextSize(*xl_text.children_nodes[0],
                 mojom::blink::AIPageContentTextSize::kXL);
 
   const auto& l_text = *root.children_nodes[1];
-  CheckContainerNode(l_text);
-  CheckAnnotatedRole(l_text,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(l_text);
   CheckTextNode(*l_text.children_nodes[0], "Large text");
   CheckTextSize(*l_text.children_nodes[0],
                 mojom::blink::AIPageContentTextSize::kL);
 
   const auto& m_text = *root.children_nodes[2];
-  CheckContainerNode(m_text);
-  CheckAnnotatedRole(m_text,
-                     mojom::blink::AIPageContentAnnotatedRole::kParagraph);
+  CheckParagraphNode(m_text);
   CheckTextNode(*m_text.children_nodes[0], "Regular text");
   CheckTextSize(*m_text.children_nodes[0],
                 mojom::blink::AIPageContentTextSize::kM);
 
   const auto& s_text = *root.children_nodes[3];
-  CheckContainerNode(s_text);
-  CheckAnnotatedRole(s_text,
-                     mojom::blink::AIPageContentAnnotatedRole::kHeading);
+  CheckHeadingNode(s_text);
   CheckTextNode(*s_text.children_nodes[0], "Small text");
   CheckTextSize(*s_text.children_nodes[0],
                 mojom::blink::AIPageContentTextSize::kS);
 
   const auto& xs_text = *root.children_nodes[4];
-  CheckContainerNode(xs_text);
-  CheckAnnotatedRole(xs_text,
-                     mojom::blink::AIPageContentAnnotatedRole::kParagraph);
+  CheckParagraphNode(xs_text);
   CheckTextNode(*xs_text.children_nodes[0], "Extra small text");
   CheckTextSize(*xs_text.children_nodes[0],
                 mojom::blink::AIPageContentTextSize::kXS);
@@ -572,9 +602,7 @@ TEST_F(AIPageContentAgentTest, TextEmphasis) {
   ASSERT_EQ(root.children_nodes.size(), 1u);
 
   const auto& paragraph = *root.children_nodes[0];
-  CheckContainerNode(paragraph);
-  CheckAnnotatedRole(paragraph,
-                     mojom::blink::AIPageContentAnnotatedRole::kParagraph);
+  CheckParagraphNode(paragraph);
   ASSERT_EQ(paragraph.children_nodes.size(), 8u);
 
   const auto& regular_text = *paragraph.children_nodes[0];
@@ -655,9 +683,7 @@ TEST_F(AIPageContentAgentTest, Table) {
   ASSERT_EQ(header1.children_nodes.size(), 1u);
 
   const auto& header1_cell1 = *header1.children_nodes[0];
-  CheckContainerNode(header1_cell1);
-  CheckAnnotatedRole(header1_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(header1_cell1);
   CheckTextNode(*header1_cell1.children_nodes[0], "Header");
 
   const auto& row1 = *table.children_nodes[1];
@@ -665,15 +691,11 @@ TEST_F(AIPageContentAgentTest, Table) {
   ASSERT_EQ(row1.children_nodes.size(), 2u);
 
   const auto& row1_cell1 = *row1.children_nodes[0];
-  CheckContainerNode(row1_cell1);
-  CheckAnnotatedRole(row1_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row1_cell1);
   CheckTextNode(*row1_cell1.children_nodes[0], "Row 1 Column 1");
 
   const auto& row1_cell2 = *row1.children_nodes[1];
-  CheckContainerNode(row1_cell2);
-  CheckAnnotatedRole(row1_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row1_cell2);
   CheckTextNode(*row1_cell2.children_nodes[0], "Row 1 Column 2");
 
   const auto& row2 = *table.children_nodes[2];
@@ -681,15 +703,11 @@ TEST_F(AIPageContentAgentTest, Table) {
   ASSERT_EQ(row2.children_nodes.size(), 2u);
 
   const auto& row2_cell1 = *row2.children_nodes[0];
-  CheckContainerNode(row2_cell1);
-  CheckAnnotatedRole(row2_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell1);
   CheckTextNode(*row2_cell1.children_nodes[0], "Row 2 Column 1");
 
   const auto& row2_cell2 = *row2.children_nodes[1];
-  CheckContainerNode(row2_cell2);
-  CheckAnnotatedRole(row2_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell2);
   CheckTextNode(*row2_cell2.children_nodes[0], "Row 2 Column 2");
 
   const auto& footer = *table.children_nodes[3];
@@ -697,15 +715,11 @@ TEST_F(AIPageContentAgentTest, Table) {
   ASSERT_EQ(footer.children_nodes.size(), 2u);
 
   const auto& footer_cell1 = *footer.children_nodes[0];
-  CheckContainerNode(footer_cell1);
-  CheckAnnotatedRole(footer_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(footer_cell1);
   CheckTextNode(*footer_cell1.children_nodes[0], "Footer 1");
 
   const auto& footer_cell2 = *footer.children_nodes[1];
-  CheckContainerNode(footer_cell2);
-  CheckAnnotatedRole(footer_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(footer_cell2);
   CheckTextNode(*footer_cell2.children_nodes[0], "Footer 2");
 }
 
@@ -782,15 +796,11 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
   ASSERT_EQ(row1.children_nodes.size(), 2u);
 
   const auto& row1_cell1 = *row1.children_nodes[0];
-  CheckContainerNode(row1_cell1);
-  CheckAnnotatedRole(row1_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row1_cell1);
   CheckTextNode(*row1_cell1.children_nodes[0], "Personal Info");
 
   const auto& row1_cell2 = *row1.children_nodes[1];
-  CheckContainerNode(row1_cell2);
-  CheckAnnotatedRole(row1_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row1_cell2);
   CheckTextNode(*row1_cell2.children_nodes[0], "Contact Info");
 
   const auto& row2 = *table.children_nodes[1];
@@ -798,27 +808,19 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
   ASSERT_EQ(row2.children_nodes.size(), 4u);
 
   const auto& row2_cell1 = *row2.children_nodes[0];
-  CheckContainerNode(row2_cell1);
-  CheckAnnotatedRole(row2_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell1);
   CheckTextNode(*row2_cell1.children_nodes[0], "Name");
 
   const auto& row2_cell2 = *row2.children_nodes[1];
-  CheckContainerNode(row2_cell2);
-  CheckAnnotatedRole(row2_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell2);
   CheckTextNode(*row2_cell2.children_nodes[0], "Age");
 
   const auto& row2_cell3 = *row2.children_nodes[2];
-  CheckContainerNode(row2_cell3);
-  CheckAnnotatedRole(row2_cell3,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell3);
   CheckTextNode(*row2_cell3.children_nodes[0], "Email");
 
   const auto& row2_cell4 = *row2.children_nodes[3];
-  CheckContainerNode(row2_cell4);
-  CheckAnnotatedRole(row2_cell4,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row2_cell4);
   CheckTextNode(*row2_cell4.children_nodes[0], "Phone");
 
   const auto& row3 = *table.children_nodes[2];
@@ -826,27 +828,19 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
   ASSERT_EQ(row3.children_nodes.size(), 4u);
 
   const auto& row3_cell1 = *row3.children_nodes[0];
-  CheckContainerNode(row3_cell1);
-  CheckAnnotatedRole(row3_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row3_cell1);
   CheckTextNode(*row3_cell1.children_nodes[0], "John Doe");
 
   const auto& row3_cell2 = *row3.children_nodes[1];
-  CheckContainerNode(row3_cell2);
-  CheckAnnotatedRole(row3_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row3_cell2);
   CheckTextNode(*row3_cell2.children_nodes[0], "30");
 
   const auto& row3_cell3 = *row3.children_nodes[2];
-  CheckContainerNode(row3_cell3);
-  CheckAnnotatedRole(row3_cell3,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row3_cell3);
   CheckTextNode(*row3_cell3.children_nodes[0], "john.doe@example.com");
 
   const auto& row3_cell4 = *row3.children_nodes[3];
-  CheckContainerNode(row3_cell4);
-  CheckAnnotatedRole(row3_cell4,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row3_cell4);
   CheckTextNode(*row3_cell4.children_nodes[0], "123-456-7890");
 
   const auto& row4 = *table.children_nodes[3];
@@ -854,27 +848,19 @@ TEST_F(AIPageContentAgentTest, TableMadeWithCss) {
   ASSERT_EQ(row4.children_nodes.size(), 4u);
 
   const auto& row4_cell1 = *row4.children_nodes[0];
-  CheckContainerNode(row4_cell1);
-  CheckAnnotatedRole(row4_cell1,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row4_cell1);
   CheckTextNode(*row4_cell1.children_nodes[0], "Jane Smith");
 
   const auto& row4_cell2 = *row4.children_nodes[1];
-  CheckContainerNode(row4_cell2);
-  CheckAnnotatedRole(row4_cell2,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row4_cell2);
   CheckTextNode(*row4_cell2.children_nodes[0], "28");
 
   const auto& row4_cell3 = *row4.children_nodes[2];
-  CheckContainerNode(row4_cell3);
-  CheckAnnotatedRole(row4_cell3,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row4_cell3);
   CheckTextNode(*row4_cell3.children_nodes[0], "jane.smith@example.com");
 
   const auto& row4_cell4 = *row4.children_nodes[3];
-  CheckContainerNode(row4_cell4);
-  CheckAnnotatedRole(row4_cell4,
-                     mojom::blink::AIPageContentAnnotatedRole::kTableCell);
+  CheckTableCellNode(row4_cell4);
   CheckTextNode(*row4_cell4.children_nodes[0], "987-654-3210");
 }
 
@@ -1282,25 +1268,6 @@ TEST_F(AIPageContentAgentTest, TopLayerContainer) {
   const auto& dialog_text = *dialog.children_nodes[0];
   CheckTextNode(dialog_text, "This is a dialog.");
 }
-
-namespace {
-const mojom::blink::AIPageContentNode& GetSingleTableCell(
-    const mojom::blink::AIPageContentNode& table) {
-  EXPECT_EQ(table.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kTable);
-  EXPECT_EQ(table.children_nodes.size(), 1u);
-
-  const auto& table_row = *table.children_nodes[0];
-  EXPECT_EQ(table_row.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kTableRow);
-  EXPECT_EQ(table_row.children_nodes.size(), 1u);
-
-  const auto& table_cell = *table_row.children_nodes[0];
-  EXPECT_EQ(table_cell.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kContainer);
-  return table_cell;
-}
-}  // namespace
 
 TEST_F(AIPageContentAgentTest, TableWithAnonymousCells) {
   frame_test_helpers::LoadHTMLString(
