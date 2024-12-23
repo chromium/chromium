@@ -1031,8 +1031,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
-    expires_after="2025-02-05">
-  <owner>sebsg@chromium.org</owner>
+    expires_after="2025-08-05">
+  <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the time on screen for an impression of a non modal promo. iOS only.
