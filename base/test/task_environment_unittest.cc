@@ -951,20 +951,25 @@ TEST_F(TaskEnvironmentTest, SetsDefaultRunTimeout) {
       EXPECT_LT(run_timeout->timeout, TestTimeouts::test_launcher_timeout());
     }
     static auto& static_on_timeout_cb = run_timeout->on_timeout;
-#if defined(__clang__) && defined(_MSC_VER)
-    EXPECT_NONFATAL_FAILURE(
-        static_on_timeout_cb.Run(FROM_HERE),
-        "RunLoop::Run() timed out. Timeout set at "
-        // We don't test the line number but it would be present.
-        "TaskEnvironment@base\\test\\task_environment.cc:");
+#if defined(OFFICIAL_BUILD)
+    // Function names are omitted from FROM_HERE in official builds.
+#define EXPECTED_FUNCTION "(unknown)"
 #else
+#define EXPECTED_FUNCTION "TaskEnvironment"
+#endif  // defined(OFFICIAL_BUILD)
+#if defined(__clang__) && defined(_MSC_VER)
+#define EXPECTED_FILE "base\\test\\task_environment.cc"
+#else
+#define EXPECTED_FILE "base/test/task_environment.cc"
+#endif
     EXPECT_NONFATAL_FAILURE(
         static_on_timeout_cb.Run(FROM_HERE),
         "RunLoop::Run() timed out. Timeout set at "
         // We don't test the line number but it would be present.
-        "TaskEnvironment@base/test/task_environment.cc:");
-#endif
+        EXPECTED_FUNCTION "@" EXPECTED_FILE ":");
   }
+#undef EXPECTED_FUNCTION
+#undef EXPECTED_FILE
 
   EXPECT_EQ(ScopedRunLoopTimeout::GetTimeoutForCurrentThread(),
             old_run_timeout);

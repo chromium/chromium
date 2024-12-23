@@ -46,11 +46,6 @@ class BASE_EXPORT Location {
     return lhs.program_counter_ <=> rhs.program_counter_;
   }
 
-  // Returns true if there is source code location info. If this is false,
-  // the Location object only contains a program counter or is
-  // default-initialized (the program counter is also null).
-  bool has_source_info() const { return function_name_ && file_name_; }
-
   // Will be nullptr for default initialized Location objects and when source
   // names are disabled.
   const char* function_name() const { return function_name_; }
@@ -108,7 +103,11 @@ class BASE_EXPORT Location {
 
 BASE_EXPORT const void* GetProgramCounter();
 
+#if defined(OFFICIAL_BUILD)
+#define FROM_HERE ::base::Location::CurrentWithoutFunctionName()
+#else
 #define FROM_HERE ::base::Location::Current()
+#endif  // defined(OFFICIAL_BUILD)
 
 }  // namespace base
 

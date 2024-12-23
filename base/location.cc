@@ -106,9 +106,9 @@ Location::Location(const char* function_name,
 }
 
 std::string Location::ToString() const {
-  if (has_source_info()) {
-    return std::string(function_name_) + "@" + file_name_ + ":" +
-           NumberToString(line_number_);
+  if (function_name_ || file_name_) {
+    return std::string(function_name_ ? function_name_ : "(unknown)") + "@" +
+           file_name_ + ":" + NumberToString(line_number_);
   }
   return StringPrintf("pc:%p", program_counter_);
 }
@@ -140,7 +140,15 @@ NOINLINE Location Location::Current(const char* function_name,
 // static
 NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
                                                        int line_number) {
-  return Location(nullptr, file_name + kStrippedPrefixLength, line_number,
+  // TODO(pbos): Make sure that Location clients
+  // don't expect all fields of Location to be set. Doing so may require
+  // experiment rollout as existing code doesn't necessarily nullptr check
+  // function_name() etc. Right now (2024-12-19) TraceEventTestFixture tests
+  // crash inside std::string when tracing calls
+  // .set_function_name(location.function_name()) as std::string can't be
+  // constructed with nullptr. For now we initialize with "(unknown)" as we
+  // don't know whether there are untested call sites that expect non-nullptr.
+  return Location("(unknown)", file_name + kStrippedPrefixLength, line_number,
                   RETURN_ADDRESS());
 }
 
