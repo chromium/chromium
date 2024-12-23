@@ -139,6 +139,12 @@ class CORE_EXPORT HTMLSelectElement final
   // Returns the first selected OPTION, or nullptr.
   HTMLOptionElement* SelectedOption() const;
 
+  // Returns true if any of the <select>'s descendants are disallowed
+  // interactive elements.
+  bool IsInDialogMode() const;
+  void IncreaseContentModelViolationCount();
+  void DecreaseContentModelViolationCount();
+
   // This is similar to |options| HTMLCollection.  But this is safe in
   // HTMLOptionElement::removedFrom() and insertedInto().
   // OptionList supports only forward iteration.
@@ -398,6 +404,7 @@ class CORE_EXPORT HTMLSelectElement final
   int index_to_select_on_cancel_;
 
   Member<SelectDescendantsObserver> descendants_observer_;
+  unsigned content_model_violations_count_ = 0U;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

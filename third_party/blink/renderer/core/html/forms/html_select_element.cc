@@ -115,7 +115,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     init->setAttributes(true);
     observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
     // Traverse descendants that have been added to the select so far.
-    TraverseDescendants();
+    TraverseNodeDescendants(select_);
   }
 
   ExecutionContext* GetExecutionContext() const override {
@@ -126,15 +126,8 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
                MutationObserver&) override {
     for (const auto& record : records) {
       if (record->type() == "childList") {
-        auto* added_nodes = record->addedNodes();
-        for (unsigned i = 0; i < added_nodes->length(); ++i) {
-          auto* descendant = added_nodes->item(i);
-          DCHECK(descendant);
-          if (IsWhitespaceOrEmpty(*descendant)) {
-            continue;
-          }
-          AddDescendantDisallowedErrorToNode(*descendant);
-        }
+        CheckAddedNodes(record);
+        CheckRemovedNodes(record);
       } else if ((record->type() == "attributes") &&
                  (record->attributeName() == html_names::kTabindexAttr ||
                   record->attributeName() ==
@@ -153,9 +146,49 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
  private:
-  void TraverseDescendants() {
-    for (Node* descendant = NodeTraversal::FirstWithin(*select_); descendant;
-         descendant = NodeTraversal::Next(*descendant, select_)) {
+  void CheckAddedNodes(MutationRecord* record) {
+    DCHECK(record);
+    auto* added_nodes = record->addedNodes();
+    for (unsigned i = 0; i < added_nodes->length(); ++i) {
+      auto* descendant = added_nodes->item(i);
+      DCHECK(descendant);
+      if (IsWhitespaceOrEmpty(*descendant)) {
+        continue;
+      }
+      AddDescendantDisallowedErrorToNode(*descendant);
+      // Check the added node's descendants, if any.
+      TraverseNodeDescendants(descendant);
+    }
+  }
+
+  void CheckRemovedNodes(MutationRecord* record) {
+    DCHECK(record);
+    auto* removed_nodes = record->removedNodes();
+    DCHECK(removed_nodes);
+    for (unsigned i = 0; i < removed_nodes->length(); ++i) {
+      auto* descendant = removed_nodes->item(i);
+      DCHECK(descendant);
+      if (IsWhitespaceOrEmpty(*descendant)) {
+        continue;
+      }
+      if (!IsAllowedInteractiveElement(*descendant)) {
+        select_->DecreaseContentModelViolationCount();
+      }
+      // Check the removed node's descendants, if any.
+      for (Node* nested_descendant = NodeTraversal::FirstWithin(*descendant);
+           nested_descendant; nested_descendant = NodeTraversal::Next(
+                                  *nested_descendant, descendant)) {
+        if (!IsWhitespaceOrEmpty(*nested_descendant) &&
+            !IsAllowedInteractiveElement(*nested_descendant)) {
+          select_->DecreaseContentModelViolationCount();
+        }
+      }
+    }
+  }
+
+  void TraverseNodeDescendants(const Node* node) {
+    for (Node* descendant = NodeTraversal::FirstWithin(*node); descendant;
+         descendant = NodeTraversal::Next(*descendant, node)) {
       if (!IsWhitespaceOrEmpty(*descendant)) {
         AddDescendantDisallowedErrorToNode(*descendant);
       }
@@ -163,7 +196,10 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   void AddDescendantDisallowedErrorToNode(Node& node) {
-    if (!IsDescendantAllowed(node)) {
+    if (!IsAllowedDescendant(node)) {
+      if (!IsAllowedInteractiveElement(node)) {
+        select_->IncreaseContentModelViolationCount();
+      }
       // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
       node.AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRecommendation,
@@ -173,7 +209,31 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     }
   }
 
-  bool IsDescendantAllowed(const Node& descendant) {
+  bool IsAllowedInteractiveElement(const Node& node) {
+    if (IsA<HTMLButtonElement>(node)) {
+      // The <button> must have a parent (not being inserted as a child of
+      // `HTMLSelectedContentElement`) and must be the first child of the
+      // <select>.
+      const Node* parent = node.parentNode();
+      return parent && IsA<HTMLSelectElement>(*parent) &&
+             !ElementTraversal::PreviousSibling(node);
+    }
+    // If the node isn't a <button> but it is an interactive element, we return
+    // false as interactive elements are disallowed.
+    return !IsInteractiveElement(node);
+  }
+
+  bool IsInteractiveElement(const Node& node) {
+    if (HasTabIndexAttribute(node)) {
+      return true;
+    }
+    if (auto* html_element = DynamicTo<HTMLElement>(node)) {
+      return IsContenteditable(node) || html_element->IsInteractiveContent();
+    }
+    return false;
+  }
+
+  bool IsAllowedDescendant(const Node& descendant) {
     // Get the parent of the descendant.
     const Node* parent = descendant.parentNode();
     // If the node has no parent, assume it is being appended to a
@@ -242,28 +302,24 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     // Check tabindex and contenteditable attributes of the descendant as well.
     return (IsA<HTMLDivElement>(descendant) ||
             IsAllowedPhrasingContent(descendant)) &&
-           IsAllowedTabIndex(descendant) &&
-           IsAllowedContenteditable(descendant);
+           !HasTabIndexAttribute(descendant) && !IsContenteditable(descendant);
   }
 
-  bool IsAllowedTabIndex(const Node& node) {
+  bool HasTabIndexAttribute(const Node& node) {
     if (auto* element = DynamicTo<Element>(node)) {
-      return !element->FastHasAttribute(html_names::kTabindexAttr);
+      return element->FastHasAttribute(html_names::kTabindexAttr);
     }
-    // Text nodes don't have attributes, so we return true if it is a text node.
-    return node.IsTextNode();
+    return false;
   }
 
-  bool IsAllowedContenteditable(const Node& node) {
+  bool IsContenteditable(const Node& node) {
     if (auto* html_element = DynamicTo<HTMLElement>(node)) {
       ContentEditableType normalized_value =
           html_element->contentEditableNormalized();
-      return !(normalized_value == ContentEditableType::kContentEditable ||
-               normalized_value == ContentEditableType::kPlaintextOnly);
+      return normalized_value == ContentEditableType::kContentEditable ||
+             normalized_value == ContentEditableType::kPlaintextOnly;
     }
-    // Similarly to above, only HTML elements can have the `contenteditable`
-    // attribute. We return true if the node is a text node or an <svg> element.
-    return node.IsTextNode() || node.IsSVGElement();
+    return false;
   }
 
   bool TraverseAncestorsAndCheckDescendant(const Node& descendant) {
@@ -1019,6 +1075,20 @@ HTMLOptionElement* HTMLSelectElement::SelectedOption() const {
       return option;
   }
   return nullptr;
+}
+
+bool HTMLSelectElement::IsInDialogMode() const {
+  return content_model_violations_count_ > 0U;
+}
+
+void HTMLSelectElement::IncreaseContentModelViolationCount() {
+  ++content_model_violations_count_;
+}
+
+void HTMLSelectElement::DecreaseContentModelViolationCount() {
+  if (content_model_violations_count_ > 0U) {
+    --content_model_violations_count_;
+  }
 }
 
 int HTMLSelectElement::selectedIndex() const {
