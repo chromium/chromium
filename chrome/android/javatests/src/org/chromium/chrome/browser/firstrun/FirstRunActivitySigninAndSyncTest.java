@@ -76,6 +76,8 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -322,9 +324,16 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void acceptingHistorySyncEndsFreAndEnablesHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.HistorySyncOptIn.Completed", SigninAccessPoint.START_PAGE)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .build();
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -338,13 +347,49 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
         SyncTestUtil.waitForHistorySyncEnabled();
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    public void aadcMinorAccount_acceptsHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.HistorySyncOptIn.Completed", SigninAccessPoint.START_PAGE)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .build();
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
+        waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
+
+        onViewWaiting(withId(R.id.button_primary));
+        clickButton(R.id.button_primary);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+        SyncTestUtil.waitForHistorySyncEnabled();
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void refusingHistorySyncEndsFreAndDoesNotEnableHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.HistorySyncOptIn.Declined", SigninAccessPoint.START_PAGE)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .build();
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
@@ -358,6 +403,35 @@ public class FirstRunActivitySigninAndSyncTest {
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    public void aadcMinorAccount_refuseHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Signin.HistorySyncOptIn.Declined", SigninAccessPoint.START_PAGE)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .build();
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        completeAutoDeviceLockIfNeeded();
+        waitUntilCurrentPageIs(HistorySyncFirstRunFragment.class);
+
+        onViewWaiting(withId(R.id.button_secondary));
+        clickButton(R.id.button_secondary);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test

@@ -37,6 +37,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid;
@@ -280,6 +281,25 @@ public class BottomSheetSigninAndHistorySyncCoordinator
                         ? SigninAndHistorySyncCoordinator.Result.COMPLETED
                         : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
         onFlowComplete(flowResult);
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void recordHistorySyncOptIn(int accessPoint, int syncButtonClicked) {
+        switch (syncButtonClicked) {
+            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED:
+            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED:
+                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                        accessPoint, syncButtonClicked);
+                break;
+            case SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED:
+            case SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED:
+                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                        accessPoint, syncButtonClicked);
+                break;
+            default:
+                throw new IllegalStateException("Unrecognized sync button type");
+        }
     }
 
     private void onProfileAvailable(Profile profile) {

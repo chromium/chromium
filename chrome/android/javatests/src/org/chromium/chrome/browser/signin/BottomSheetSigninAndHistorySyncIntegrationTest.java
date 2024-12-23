@@ -71,6 +71,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -142,6 +143,13 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -151,6 +159,29 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testWithAadcMinorAccount_requiredHistoryOptIn() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .build();
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED);
+
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_MINOR_ACCOUNT);
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
@@ -230,6 +261,13 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_optOutHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .build();
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
 
         launchActivity(
@@ -264,6 +302,39 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         // Verify history sync state.
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testWithAadcMinorAccount_signIn_optOutHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .build();
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED);
+
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        // Verify that the history opt-in dialog is shown and decline.
+        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_secondary), /* checkRootDialog= */ true).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+
+        // Verify history sync state.
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test

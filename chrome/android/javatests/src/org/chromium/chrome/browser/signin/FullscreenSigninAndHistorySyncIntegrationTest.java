@@ -70,6 +70,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -342,6 +343,13 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testUserAlreadySignedIn_onlyShowsHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
+                        .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
 
@@ -355,11 +363,45 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testAadcMinorAccount_acceptsHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
+                        .build();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+
+        launchActivity(/* shouldReplaceProgressBars= */ false);
+
+        // Verify that the history opt-in dialog is shown and accept.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_primary)).perform(click());
+
+        SyncTestUtil.waitForHistorySyncEnabled();
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testUserAlreadySignedIn_refuseHistorySync_historySyncRequired() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
+                        .build();
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
         mHistoryOptInMode = HistorySyncConfig.OptInMode.REQUIRED;
@@ -377,6 +419,34 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
         // Verify that the user is not signed-out.
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        historySyncHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testAadcMinorAccount_refuseHistorySync() {
+        HistogramWatcher historySyncHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", mSigninAccessPoint)
+                        .expectIntRecord(
+                                "Signin.SyncButtons.Clicked",
+                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
+                        .build();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
+        when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
+        mHistoryOptInMode = HistorySyncConfig.OptInMode.REQUIRED;
+
+        launchActivity(/* shouldReplaceProgressBars= */ false);
+
+        // Verify that the history opt-in dialog is shown and refuse.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
+        onViewWaiting(withId(org.chromium.chrome.test.R.id.button_secondary)).perform(click());
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        verify(mHistorySyncHelperMock, never()).recordHistorySyncNotShown(anyInt());
+        historySyncHistogramWatcher.assertExpected();
     }
 
     @Test

@@ -44,7 +44,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -147,15 +146,9 @@ public class HistorySyncTest {
     @MediumTest
     public void testPositiveButtonWithNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncButtons.Shown",
+                        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -166,7 +159,9 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
-                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
+                .recordHistorySyncOptIn(
+                        SIGNIN_ACCESS_POINT,
+                        SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
@@ -175,15 +170,9 @@ public class HistorySyncTest {
     @MediumTest
     public void testNegativeButtonNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncButtons.Shown",
+                        SyncButtonsType.HISTORY_SYNC_NOT_EQUAL_WEIGHTED);
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -193,7 +182,9 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
-                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
+                .recordHistorySyncOptIn(
+                        SIGNIN_ACCESS_POINT,
+                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
@@ -202,15 +193,9 @@ public class HistorySyncTest {
     @MediumTest
     public void testPositiveButtonWithMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Completed", SIGNIN_ACCESS_POINT)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncButtons.Shown",
+                        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -221,7 +206,8 @@ public class HistorySyncTest {
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
         verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
         verify(mHistorySyncDelegateMock)
-                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
+                .recordHistorySyncOptIn(
+                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
     }
 
@@ -229,15 +215,9 @@ public class HistorySyncTest {
     @MediumTest
     public void testNegativeButtonWithMinorModeAccount() {
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord("Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Clicked",
-                                SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED)
-                        .expectIntRecord(
-                                "Signin.SyncButtons.Shown",
-                                SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY)
-                        .build();
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncButtons.Shown",
+                        SyncButtonsType.HISTORY_SYNC_EQUAL_WEIGHTED_FROM_CAPABILITY);
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_MINOR_ACCOUNT);
         buildHistorySyncCoordinator();
@@ -247,7 +227,8 @@ public class HistorySyncTest {
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
         verify(mHistorySyncDelegateMock)
-                .maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
+                .recordHistorySyncOptIn(
+                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED);
         verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -259,14 +240,14 @@ public class HistorySyncTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ false, /* shouldSignOutOnDecline= */ true);
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Signin.HistorySyncOptIn.Declined", SIGNIN_ACCESS_POINT);
 
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
-        histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncDelegateMock)
+                .recordHistorySyncOptIn(
+                        SIGNIN_ACCESS_POINT,
+                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
         verify(mHistorySyncDelegateMock, atLeastOnce())
                 .dismissHistorySync(/* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(
