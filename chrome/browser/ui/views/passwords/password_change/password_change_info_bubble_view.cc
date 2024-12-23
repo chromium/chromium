@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/passwords/password_change/sign_in_check_bubble_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@ std::unique_ptr<views::Label> CreateBodyText(const std::u16string& text) {
 }
 }  // namespace
 
-SignInCheckBubbleView::SignInCheckBubbleView(
+PasswordChangeInfoBubbleView::PasswordChangeInfoBubbleView(
     content::WebContents* web_contents,
     views::View* anchor_view,
     PasswordChangeDelegate::State state)
@@ -60,16 +60,16 @@ SignInCheckBubbleView::SignInCheckBubbleView(
                      base::Unretained(&controller_)));
 }
 
-SignInCheckBubbleView::~SignInCheckBubbleView() = default;
+PasswordChangeInfoBubbleView::~PasswordChangeInfoBubbleView() = default;
 
-PasswordBubbleControllerBase* SignInCheckBubbleView::GetController() {
+PasswordBubbleControllerBase* PasswordChangeInfoBubbleView::GetController() {
   return &controller_;
 }
 
-const PasswordBubbleControllerBase* SignInCheckBubbleView::GetController()
-    const {
+const PasswordBubbleControllerBase*
+PasswordChangeInfoBubbleView::GetController() const {
   return &controller_;
 }
 
-BEGIN_METADATA(SignInCheckBubbleView)
+BEGIN_METADATA(PasswordChangeInfoBubbleView)
 END_METADATA

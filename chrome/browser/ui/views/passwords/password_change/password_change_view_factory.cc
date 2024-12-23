@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/password_change_view_factory.h"
 
-#include "chrome/browser/ui/views/passwords/password_change/sign_in_check_bubble_view.h"
+#include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 
 PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     PasswordChangeDelegate* delegate,
@@ -17,7 +17,7 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
-      return new SignInCheckBubbleView(web_contents, anchor_view,
-                                       delegate->GetCurrentState());
+      return new PasswordChangeInfoBubbleView(web_contents, anchor_view,
+                                              delegate->GetCurrentState());
   }
 }
