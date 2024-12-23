@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">автомат дэлгэц доторх дэлгэц</translation>
 <translation id="1100782917270858593">Аяллаа үргэлжлүүлэх товчлуур, аяллаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд Enter дээр дарна уу</translation>
 <translation id="1101672080107056897">Алдаа гарахад хийх үйлдэл</translation>
+<translation id="1101902632743388185">Таны харьцуулалтын хүснэгт</translation>
 <translation id="1104409666019087579">Зарим заавал бөглөх хэсэг хоосон байна. Хадгалахаасаа өмнө тэдгээрийг бөглөнө үү.</translation>
 <translation id="1104860668737945357">Нууц үгнүүд удирдах товчлуур, Chrome-н тохиргоонд нууц үгнүүдээ харах болон удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Поксиг авто-тохиргоонд тохируулсан.</translation>
 <translation id="2025891858974379949">Аюултай контент</translation>
 <translation id="2027465737841872819">Хуванцар</translation>
+<translation id="2027707238798802149">Карт боломжгүй байна</translation>
 <translation id="2029735183873159415">Удам угсаа, гарал судлал</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси болон галт ханыг шалгаж байна<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Товчлол нь <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />-с тодорхойлсон өгөгдмөл хайлтын үйлчилгээ үзүүлэгчийн түлхүүр үгтэй ижил байх боломжгүй: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Гэр, цэцэрлэг</translation>
 <translation id="2515629240566999685">Таны байгаа газрын дохиог шалгаж байна</translation>
 <translation id="2515761554693942801">Та <ph name="PROVIDER_ORIGIN" />-г ашигладаг вебсайтууд дээр Touch ID-р баталгаажуулахаар сонгосон. Энэ үйлчилгээ үзүүлэгч таны төлбөрийн хэрэгслийн талаарх мэдээллийг хадгалсан байж болзошгүй бөгөөд та <ph name="LINK_TEXT" /> боломжтой.</translation>
+<translation id="2518584823165598232">Энэ карт боломжгүй байна. Карт олгогчтойгоо холбогдоно уу.</translation>
 <translation id="2521385132275182522">Баруун доод буланд үдэх</translation>
 <translation id="2521736961081452453">Маягт үүсгэх</translation>
 <translation id="2523886232349826891">Зөвхөн энэ төхөөрөмж дээр хадгалсан</translation>
@@ -3342,6 +3345,7 @@
 <translation id="7003322000677139268">Тээврийн хэрэгслийн сэлбэг, дагалдах хэрэгслүүд</translation>
 <translation id="7004499039102548441">Саяхан нээсэн табууд</translation>
 <translation id="7006930604109697472">Ямар ч байсан илгээх</translation>
+<translation id="7009364359744329733">Энэ карт яг одоо боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7010658264061801199">Хоол, уух зүйлс</translation>
 <translation id="7012363358306927923">Хятадын UnionPay</translation>
 <translation id="7013835112918108252">Таны хулганыг түгжиж, ашиглахыг хүсэх боломжтой</translation>

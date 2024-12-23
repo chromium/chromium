@@ -111,6 +111,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Du musst dich mit <ph name="EMAIL" /> in Chromium anmelden, um fortzufahren. So wird die Einhaltung der Richtlinien deiner Organisation sichergestellt.</translation>
 <translation id="2542968102051442371">Text mit der Bildersuche auswählen</translation>
 <translation id="2554739539410784893">Chromium versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>

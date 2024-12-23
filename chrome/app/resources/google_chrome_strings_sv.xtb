@@ -394,6 +394,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5941830788786076944">Använd Google Chrome som standardwebbläsare</translation>
 <translation id="5947104538377036631">Chrome-genväg</translation>
 <translation id="5953954252731207958">Du har inte besökt webbplatsen nyligen. Chrome har tagit bort <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktyg från Chrome<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
@@ -612,6 +613,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="842386925677997438">Säkerhetsverktyg i Chrome</translation>
 <translation id="8425765582779547329">Du kan skydda dig online med dina föräldrars val genom att logga in i Chrome</translation>
 <translation id="8428213095426709021">Inställningar</translation>
+<translation id="8429214465555795676">Du måste logga in på Chrome med <ph name="EMAIL" /> om du vill fortsätta. Detta säkerställer att organisationens policyer följs.</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
 <translation id="8451192282033883849">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chrome-profilen och tillhörande data som bokmärken, historik och lösenord.</translation>
 <translation id="8496177819998570653">Googles Lösenordshantering</translation>

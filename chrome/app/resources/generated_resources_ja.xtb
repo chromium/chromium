@@ -8601,6 +8601,7 @@
 <translation id="7134951043985383439">危険なファイルをダウンロードしました</translation>
 <translation id="7135729336746831607">Bluetooth をオンにしますか？</translation>
 <translation id="7136694880210472378">デフォルトに設定</translation>
+<translation id="7137277889990479760"><ph name="EMAIL" /> として続行</translation>
 <translation id="7137771508221868414">サイトにより保存された <ph name="TOTAL_USAGE" /> のデータとインストールされたアプリが削除されます</translation>
 <translation id="7138678301420049075">その他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> がマイクを使用しています</translation>
@@ -9179,6 +9180,7 @@
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7561759921596375678">音量をオンにする</translation>
 <translation id="7561982940498449837">メニューを閉じる</translation>
+<translation id="7563970324931922582">[プレースホルダ テキスト]</translation>
 <translation id="756445078718366910">ブラウザ ウィンドウを開く</translation>
 <translation id="7564847347806291057">プロセスを終了</translation>
 <translation id="756503097602602175">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用されます。サイトやアプリがアカウント情報にアクセスしないようにするには、<ph name="DEVICE_TYPE" /> にゲストとしてログインするか、<ph name="LINK_2_BEGIN" />シークレット ウィンドウ<ph name="LINK_2_END" />でウェブ ブラウジングします。</translation>
@@ -10870,6 +10872,7 @@
 <translation id="8737966899544698733">位置情報の精度（Android のみ）</translation>
 <translation id="8738418093147087440">国、言語、入力名で検索</translation>
 <translation id="8740086188450289493">Google アカウントのパスワードを使用</translation>
+<translation id="874023689350909633">試してみる</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8740672167979365981">ChromeOS Flex の更新が必要です</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>

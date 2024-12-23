@@ -1647,6 +1647,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6539852571005954999">Downloaden scannes: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, giffer m.m.</translation>
+<translation id="6543942526104794893">Er du sikker på, at du vil deaktivere ansigtsbevægelser?</translation>
 <translation id="6545382064335350438">Din pinkode kan stadig ikke verificeres. Prøv igen.</translation>
 <translation id="6555373427270923730">Skriv en webadresse i adresselinjen, og tryk derefter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>
 <translation id="8860366331836346216">Tilføj eSIM</translation>
+<translation id="8869149849311827122">Er du sikker på, at du vil deaktivere styring via musemarkøren?</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
 <translation id="8873203135446552888">Bekræft, at du vil deaktivere den indbyggede touchplade</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>

@@ -386,6 +386,7 @@
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
 <translation id="5947104538377036631">Chrome షార్ట్‌కట్</translation>
 <translation id="5953954252731207958">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION" />‌ను తీసివేసింది</translation>
+<translation id="5980111191913430208">తెలియని సోర్స్‌లకు చెందిన ఎక్స్‌టెన్షన్‌లు, యాప్‌లు, థీమ్‌లు మీ పరికరానికి హాని కలిగించవచ్చు. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> నుండి మాత్రమే వాటిని ఇన్‌స్టాల్ చేయని Chrome సిఫార్సు చేస్తోంది</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome నుండి టూల్స్‌<ph name="END_LINK" />‌తో, మీరు సురక్షితంగా బ్రౌజ్ చేయవచ్చు, కంట్రోల్‌లో ఉండవచ్చు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
@@ -604,6 +605,7 @@
 <translation id="842386925677997438">Chrome భద్రతా టూల్స్</translation>
 <translation id="8425765582779547329">మీ తల్లి/తండ్రి ఛాయిస్‌లతో ఆన్‌లైన్‌లో సురక్షితంగా ఉండటానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
+<translation id="8429214465555795676">కొనసాగించడానికి, మీరు <ph name="EMAIL" />‌తో Chromeకు సైన్ ఇన్ చేయాలి. మీ సంస్థ పాలసీలకు అనుగుణంగా ఉండేలా ఇది చేస్తుంది.</translation>
 <translation id="8433638294851456451">ఇక్కడి నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8451192282033883849">మీ ఖాతాను <ph name="MANAGER_NAME" /> మేనేజ్ చేస్తున్నారు. మీ అడ్మినిస్ట్రేటర్ ఈ Chrome బ్రౌజర్ ప్రొఫైల్‌ను, అలాగే బుక్‌మార్క్‌లు, హిస్టరీ, ఇంకా పాస్‌వర్డ్‌ల వంటి దాని డేటాను చూడగలరు, ఎడిట్ చేయగలరు.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

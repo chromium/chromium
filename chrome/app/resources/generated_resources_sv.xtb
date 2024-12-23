@@ -4621,6 +4621,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4220648711404560261">Ett fel inträffade under aktiveringen.</translation>
 <translation id="4222917615373664617">Prisbevakning har aktiverats. Priset är <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofon tillåts inte</translation>
+<translation id="4224541845943007092">Läs och spara tangentbordsinmatningar från adressfältet</translation>
 <translation id="4225397296022057997">På alla webbplatser</translation>
 <translation id="4228071595943929139">Använd organisationens e-postadress</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Detta tillägg är inte tillåtet}other{Vissa tillägg är inte tillåtna}}</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">pantalla superposta automática</translation>
 <translation id="1100782917270858593">Botón para retomar o percorrido. Para retomar o percorrido e ver a actividade relevante do teu historial de Chrome, preme Introducir</translation>
 <translation id="1101672080107056897">Acción incorrecta</translation>
+<translation id="1101902632743388185">As túas táboas de comparación</translation>
 <translation id="1104409666019087579">Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.</translation>
 <translation id="1104860668737945357">Botón para xestionar os contrasinais. Actívao para ver e xestionar os teus contrasinais na configuración de Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2025186561304664664">O proxy está establecido como configurado automaticamente.</translation>
 <translation id="2025891858974379949">Contido inseguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
+<translation id="2027707238798802149">A tarxeta non está dispoñible</translation>
 <translation id="2029735183873159415">Ascendencia e xenealoxía</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atallo non pode ser igual que a palabra clave do provedor de busca predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2514548229949738417">Casa e xardín</translation>
 <translation id="2515629240566999685">Comprobar o sinal da túa zona</translation>
 <translation id="2515761554693942801">Escolliches verificar a túa identidade con Touch ID nos sitios web que usan <ph name="PROVIDER_ORIGIN" />. É posible que este provedor almacenase información sobre o teu método de pago. Podes <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Esta tarxeta non está dispoñible. Fala co provedor de tarxetas.</translation>
 <translation id="2521385132275182522">Grampa na parte inferior dereita</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
@@ -3342,6 +3345,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7003322000677139268">Pezas e accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestanas recentes</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
+<translation id="7009364359744329733">A tarxeta non está dispoñible nestes intres. Téntao de novo máis tarde.</translation>
 <translation id="7010658264061801199">Comida e bebida</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Podes pedir permiso para bloquear e usar o rato</translation>

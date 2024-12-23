@@ -248,6 +248,7 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
       Si se le asigna el valor "False" o no se le asigna ningún valor, las páginas web podrán usar la API de WebGL y los complementos podrán usar la API de Pepper 3D, pero es posible que la configuración predeterminada del navegador requiera el uso de argumentos de línea de comandos para utilizar estas API.</translation>
 <translation id="1198458955128279215">Usar el comportamiento predeterminado del plan de lanzamiento de funciones.</translation>
 <translation id="1202216683470826356">Mostrar tarjetas en la página Nueva pestaña</translation>
+<translation id="1203676252390737801">Gestión de IPs por URL de WebRTC</translation>
 <translation id="1204263402976895730">Impresoras de empresa habilitadas</translation>
 <translation id="1207301487141109411">Impedir que se seleccione el avatar del usuario desde el sistema de archivos local, la cámara o el perfil de Google.</translation>
 <translation id="1209096923317019235">Asigna aplicaciones como controladores predeterminados de extensiones de archivo especificadas</translation>
@@ -646,6 +647,13 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 Si se habilita esta política, el selector de emojis admitirá GIFs.
 Si se inhabilita esta política o no se le asigna ningún valor, el selector de emojis no admitirá GIFs.
 Si no se asigna ningún valor a esta política, el selector de emojis estará habilitado para los usuarios estándar, pero estará inhabilitado para los usuarios gestionados.</translation>
+<translation id="1493245040983394029">Esta política controla la configuración de la función de edición de fotos basada en IA generativa de <ph name="PRODUCT_OS_NAME" />.
+
+Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, datos de entrada, resultados y materiales originales. Puede que los revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
+
+Si se asigna el valor 1 a esta política, se habilitarán estas funciones para los usuarios, pero no se enviarán datos a Google para entrenar ni mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de inicio de sesión</translation>
 <translation id="1497797462580613666">El administrador de descargas tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique a qué sitios se denegará automáticamente el acceso a impresoras locales a través de la API WebPrinting.
@@ -1592,6 +1600,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
 <translation id="2212011154693551439">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped de forma predeterminada.</translation>
+<translation id="2212207215880394506">No permitir la edición de fotos basada en IA generativa.</translation>
 <translation id="221287948061571053">Ocultar insignia de empresa desplegada en la barra de herramientas</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
 <translation id="2213342458177721585">Habilitar el diseño InScript para hindi a nivel de dispositivo.</translation>
@@ -2116,6 +2125,7 @@ Si se inhabilita esta política o no se define, los registros no se podrán aña
 
       Si se le asigna el valor 1 ("UserOnly"), los usuarios podrán gestionar los certificados de usuario, pero no todos los certificados del dispositivo.</translation>
 <translation id="2593762551209145088">Navegación segura nunca está activa.</translation>
+<translation id="2594773358911436070">Ajustes de WebRTC</translation>
 <translation id="26023406105317310">Configurar las cuentas de Kerberos</translation>
 <translation id="2603237557651009842">Bloquear la API WebPrinting en estos sitios</translation>
 <translation id="2603382859270873566">Habilitar la compatibilidad con la API PPB_VideoDecoder(Dev).</translation>
@@ -2220,6 +2230,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       Si se le asigna un valor a esta política y se activa el inicio de sesión automático (consulta las políticas <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> y <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), la sesión administrada usará la primera configuración regional recomendada y el diseño de teclado correspondiente más usado.
 
       El diseño de teclado preseleccionado es siempre el más usado con la configuración regional preseleccionada. Los usuarios pueden elegir para su sesión cualquier configuración regional compatible con <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="269274821351405808">Ajustes de la función de edición de fotos basada en IA generativa</translation>
 <translation id="2693108589792503178">Configura la URL de cambio de contraseñas.</translation>
 <translation id="2694143893026486692">Lupa fijada habilitada</translation>
 <translation id="2696077732471707315">
@@ -2393,6 +2404,7 @@ El informe contiene datos sobre el estado y el uso del perfil, incluidos, entre 
 Esta política solo se puede establecer como política de usuarios basada en la nube.</translation>
 <translation id="2846689894646472396">Intervalo de comprobación de eventos de red en milisegundos</translation>
 <translation id="2847788524147474533">Las políticas basadas en la plataforma del equipo tienen prioridad sobre las políticas basadas en la nube</translation>
+<translation id="2849051159985119151">Permitir la edición de fotos basada en IA generativa sin mejorar los modelos de IA.</translation>
 <translation id="2849275596224278787">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
 <translation id="2853649500575897584">No bloquea los puntos de extensión antiguos en el proceso del navegador</translation>
 <translation id="2853757230661166968">Permite que las aplicaciones capturen y anulen las combinaciones de teclas predeterminadas del sistema.</translation>
@@ -3150,6 +3162,7 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
       Si se le asigna el valor "hidden", los usuarios no podrán utilizar ni ver las funciones inhabilitadas.
 
       Si no se le asigna ningún valor o se le asigna un valor no válido, el modo de inhabilitación de funciones del sistema tendrá el valor "blocked".</translation>
+<translation id="3411947169047929182">Controla la configuración relacionada con WebRTC</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
       Si se inhabilita esta política, el proceso de audio se ejecutará con una prioridad normal.
@@ -4505,6 +4518,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
 <translation id="4472740647327683596">Ancho de la página en micrómetros</translation>
 <translation id="4474167089968829729">Habilitar el almacenamiento de contraseñas en el gestor de contraseñas</translation>
+<translation id="447692108909279121">Gestión de IPs de WebRTC</translation>
 <translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
@@ -5626,6 +5640,23 @@ Si no se establece, el valor predeterminado será 0 grados y los usuarios podrá
 
       Si esta política no se configura o si se le asigna una cadena vacía o un intervalo de puertos no válido, WebRTC podrá utilizar cualquier puerto UDP local disponible.</translation>
 <translation id="5288776487100096897">Permitir que las políticas basadas en la nube a nivel de usuario anulen las políticas de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /></translation>
+<translation id="5289330879750533981">Esta política permite restringir el uso de direcciones IP e interfaces por parte de WebRTC al intentar buscar la mejor conexión disponible por cada patrón de URL específico.
+
+Acepta una lista de patrones de URL y pares de tipos de gestión. Los patrones de URL se comprueban en orden, y la primera coincidencia configurará el modo de gestión que usará WebRTC para el dominio. Si la URL del documento actual no coincide con ninguna entrada, se usa la configuración definida en la política <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones de entrada válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
+
+Valores de gestión válidos:
+
+* default: WebRTC usa todas las interfaces de red.
+
+* default_public_and_private_interfaces: WebRTC usa todas las interfaces públicas y privadas.
+
+* default_public_interface_only: WebRTC usa todas las interfaces públicas, pero no las privadas.
+
+* disable_non_proxied_udp: WebRTC usa el proxy SOCKS de UDP o recurrirá al proxy TCP como alternativa.
+
+Consulta la sección 5.2 del RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) para obtener una descripción detallada de todos los valores de gestión.</translation>
 <translation id="5290940294294002042">Especificar una lista de complementos que los usuarios puedan habilitar o inhabilitar</translation>
 <translation id="5293285950307241933">Borrar todos los datos de usuario locales</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de vídeo.</translation>
@@ -6718,6 +6749,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
       Si no se define esta política, <ph name="PRODUCT_NAME" /> usará la versión máxima predeterminada.
 
       Si no, se le podrá asignar uno de estos valores: "tls1.2" o "tls1.3". Si se define esta política, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS posteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.</translation>
+<translation id="6120909112796019291">Permitir la edición de fotos basada en IA generativa y mejorar los modelos de IA.</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6130360423841559818">Controlar el nuevo comportamiento del cuadro de diálogo de cancelación producido por el evento beforeunload</translation>
 <translation id="6131803221304830537">Inhabilitar la integridad del código del renderizador</translation>
@@ -7124,6 +7156,7 @@ ADVERTENCIA: Ten cuidado al cambiar este ajuste, ya que podría interferir en ot
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>
 <translation id="6368011194414932347">Configurar la URL de la página principal</translation>
 <translation id="6368403635025849609">Permitir JavaScript en estos sitios</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Configuración de Conjuntos de sitios web relacionados</translation>
 <translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
@@ -9555,6 +9588,21 @@ Esta política se aplica al modo Incógnito. Esto quiere decir que el modo Incó
 <translation id="8238421250255592181">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de autocompletar.</translation>
 <translation id="8239109177194627162">Inhabilitar la función Autocompletar para tarjetas de crédito</translation>
 <translation id="8239143983379015783">Forzar que se habilite la cuota persistente</translation>
+<translation id="8240976615241583524">Esta política permite restringir el uso de direcciones IP e interfaces por parte de WebRTC al intentar buscar la mejor conexión disponible.
+
+Valores válidos:
+
+* default: WebRTC usa todas las interfaces de red disponibles.
+
+* default_public_and_private_interfaces: WebRTC usa todas las interfaces públicas y privadas.
+
+* default_public_interface_only: WebRTC usa todas las interfaces públicas, pero no las privadas.
+
+* disable_non_proxied_udp: WebRTC usa el proxy SOCKS de UDP o recurrirá al proxy TCP como alternativa.
+
+Si no se le asigna ningún valor, utilizará de forma predeterminada todas las interfaces de red disponibles.
+
+Consulta la sección 5.2 del RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) para obtener una descripción detallada de todos los valores de gestión.</translation>
 <translation id="8244171102276095471">Habilita los conjuntos de cifrado de RC4 en TLS</translation>
 <translation id="8244525275280476362">Retraso de recuperación máximo después de validar una política</translation>
 <translation id="8244828501034607035">Esta política controla la visibilidad de la tarjeta de Outlook en la página Nueva pestaña. La tarjeta solo se mostrará en la página Nueva pestaña si la política está habilitada y tu organización ha autorizado el uso de los datos del calendario de Outlook en el navegador.

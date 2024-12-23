@@ -8630,6 +8630,7 @@
 <translation id="7134951043985383439">Преузет је опасан фајл</translation>
 <translation id="7135729336746831607">Желите ли да укључите Bluetooth?</translation>
 <translation id="7136694880210472378">Постави као подразумевано</translation>
+<translation id="7137277889990479760">Настави као <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Овим бришете <ph name="TOTAL_USAGE" /> података које чувају сајтови и инсталиране апликације</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> користи микрофон</translation>
@@ -9210,6 +9211,7 @@
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7561759921596375678">Укључите звук</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
+<translation id="7563970324931922582">[текст чувара места]</translation>
 <translation id="756445078718366910">Отвори прозор прегледача</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Можете да управљате Google налозима на које сте пријављени у <ph name="LINK_BEGIN" />Подешавањима<ph name="LINK_END" />. Дозволе које сте дали веб-сајтовима и апликацијама могу да важе за све налоге. Ако не желите да сајтови или апликације приступају информацијама о налогу, можете да се пријавите на <ph name="DEVICE_TYPE" /> као гост или да прегледате веб у <ph name="LINK_2_BEGIN" />прозору без архивирања<ph name="LINK_2_END" />.</translation>
@@ -10903,6 +10905,7 @@
 <translation id="8737966899544698733">Прецизност локације (само за Android)</translation>
 <translation id="8738418093147087440">Претражите према земљама, језику или називима уноса</translation>
 <translation id="8740086188450289493">Користите лозинку за Google налог</translation>
+<translation id="874023689350909633">Испробајте</translation>
 <translation id="8740247629089392745">Можете да предате овај Chromebook кориснику <ph name="SUPERVISED_USER_NAME" />. Подешавање је скоро готове, па долази време за истраживање.</translation>
 <translation id="8740672167979365981">Треба да ажурирате Chrome OS Flex</translation>
 <translation id="8741944563400125534">Водич за подешавање приступа помоћу прекидача</translation>

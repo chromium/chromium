@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">تم إيقاف التنزيل مؤقتًا</translation>
 <translation id="1396327438254055134">‏السماح للموقع الإلكتروني باستخدام مُحسِّن V8</translation>
 <translation id="1415402041810619267">‏تم اقتطاع عنوان URL</translation>
+<translation id="1415855080660575082">‏يمكنك السماح لمتصفِّح Chrome بمشاركة علامات التبويب الأخيرة مع جهازك لعرضها في قائمة التطبيقات ونتائج البحث. ويمكنك تفعيل أو إيقاف هذه الميزة من خلال إعدادات Chrome.</translation>
 <translation id="1448064542941920355">تصغير</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{موقع إلكتروني واحد (<ph name="SITE_COUNT" />)}zero{<ph name="SITE_COUNT" /> موقع إلكتروني}two{موقعَين إلكترونيَين (<ph name="SITE_COUNT" />)}few{<ph name="SITE_COUNT" /> مواقع إلكترونية}many{<ph name="SITE_COUNT" /> موقعًا إلكترونيًا}other{<ph name="SITE_COUNT" /> موقع إلكتروني}}</translation>
 <translation id="1500473259453106018">إخفاء بطاقة "عرض الانخفاض في السعر ضِمن علامات التبويب"</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">لقد سمحت مؤقتًا لهذا الموقع الإلكتروني باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية، ما يعني أنك ستحظى بمستوى حماية أقل خلال التصفّح، ولكن من المرجّح أكثر أن تعمل ميزات الموقع الإلكتروني على النحو المتوقّع. <ph name="BEGIN_LINK" />إرسال ملاحظات<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">قد لا تعمل ميزات بعض المواقع الإلكترونية في وضع التصفُّح المتخفي.</translation>
 <translation id="2442870161001914531">دائمًا طلب الموقع الإلكتروني المتوافق مع أجهزة الكمبيوتر</translation>
+<translation id="2445311670906052406">‏يشارك Chrome حاليًا علامات التبويب الأخيرة مع جهازك، والتي ستظهر في قائمة التطبيقات ونتائج البحث. ويمكنك إيقاف هذه الميزة في أي وقت من خلال إعدادات Chrome.</translation>
 <translation id="2469312991797799607">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط للموقع الإلكتروني <ph name="ORIGIN" /> وجميع المواقع الإلكترونية المندرجة ضِمنه.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -117,6 +119,7 @@
 <translation id="2750481671343847896">بإمكان المواقع الإلكترونية حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات.</translation>
 <translation id="2787357173144933081">تفعيل "المربّع المتعدد الاستخدامات" مباشرةً</translation>
 <translation id="2790501146643349491">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية التي تم إغلاقها مؤخرًا إتمام إرسال البيانات واستلامها. وعند إيقافه، لا يمكن لتلك المواقع الإلكترونية إرسال البيانات أو استلامها.</translation>
+<translation id="2814830417943086299">‏يعرض Chrome حاليًا علامات التبويب الأخيرة في قائمة التطبيقات ونتائج البحث على جهازك. ويمكنك إيقاف هذه الميزة في أي وقت من خلال إعدادات Chrome.</translation>
 <translation id="2822354292072154809">هل تريد فعلاً إعادة ضبط جميع أذونات الموقع الإلكتروني للكائن <ph name="CHOSEN_OBJECT_NAME" />؟</translation>
 <translation id="2850913818900871965">سيتم طلب عرضه بالإصدار المخصّص للأجهزة الجوّالة</translation>
 <translation id="2870560284913253234">الموقع</translation>
@@ -559,6 +562,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>
 <translation id="913657688200966289">‏فعِّل الأذونات لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">المستوى الحالي لميزة التكبير/التصغير هو %% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="9156722768168878035">‏يمكنك السماح لمتصفِّح Chrome بعرض علامات التبويب الأخيرة في قائمة التطبيقات ونتائج البحث على جهازك. ويمكنك إيقاف هذه الميزة في أي وقت من خلال إعدادات Chrome.</translation>
 <translation id="9162462602695099906">هذه الصفحة غير آمنة.</translation>
 <translation id="947156494302904893">يمكن للمواقع الإلكترونية التي تزورها التأكّد من أنّك مستخدِم حقيقي ولست برنامج تتبُّع.</translation>
 <translation id="959682366969460160">بدء التنظيم</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">автоматичен режим „картина в картината“</translation>
 <translation id="1100782917270858593">Бутон „Възобновяване на пътешествието“. Натиснете Enter, за да възобновите пътешествието си и да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="1101672080107056897">Грешка при действието</translation>
+<translation id="1101902632743388185">Вашите таблици за сравнение</translation>
 <translation id="1104409666019087579">Някои от задължителните полета са празни. Попълнете ги, преди да запазите.</translation>
 <translation id="1104860668737945357">Бутон „Управление на паролите“. Активирайте, за да прегледате и управлявате паролите в настройките на Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">За прокси сървъра е зададена автоматична конфигурация.</translation>
 <translation id="2025891858974379949">Незащитено съдържание</translation>
 <translation id="2027465737841872819">Пластмаса</translation>
+<translation id="2027707238798802149">Картата не е налице</translation>
 <translation id="2029735183873159415">Родословие и генеалогия</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверете прокси сървъра и защитната стена<ph name="END_LINK" />.</translation>
 <translation id="2033900728810589426">Прекият път не може да е същият като ключовата дума за доставчика за търсене по подразбиране, дефинирана от <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Дом и градина</translation>
 <translation id="2515629240566999685">Проверете сигнала в района.</translation>
 <translation id="2515761554693942801">Избрахте опцията за потвърждаване чрез Touch ID в уебсайтовете, които използват <ph name="PROVIDER_ORIGIN" />. Възможно е този доставчик да е съхранил информация за начина ви на плащане. Можете обаче да <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Тази карта не е налице. Моля, свържете се с доставчика ѝ.</translation>
 <translation id="2521385132275182522">Телбодиране долу вдясно</translation>
 <translation id="2521736961081452453">Създаване на формуляр</translation>
 <translation id="2523886232349826891">Запазено само на това устройство</translation>
@@ -3343,6 +3346,7 @@
 <translation id="7003322000677139268">Части и аксесоари за превозни средства</translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
+<translation id="7009364359744329733">В момента няма достъп до тази карта. Опитайте отново по-късно.</translation>
 <translation id="7010658264061801199">Храна и напитки</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Може да поиска да заключи и използва мишката ви</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">automatisk bild-i-bild</translation>
 <translation id="1100782917270858593">Knappen Återuppta sökning: tryck på Retur om du vill återuppta sökningen och se relevant aktivitet i Chrome-historiken</translation>
 <translation id="1101672080107056897">Ett fel uppstod under åtgärden</translation>
+<translation id="1101902632743388185">Dina jämförelsetabeller</translation>
 <translation id="1104409666019087579">Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.</translation>
 <translation id="1104860668737945357">Knappen Hantera lösenord: aktivera om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
@@ -583,6 +584,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2025186561304664664">Proxyn är inställd på automatisk konfiguration.</translation>
 <translation id="2025891858974379949">Osäkert innehåll</translation>
 <translation id="2027465737841872819">Plast</translation>
+<translation id="2027707238798802149">Kortet är inte tillgängligt</translation>
 <translation id="2029735183873159415">Förfäder och släktforskning</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />kontrollera proxyn och brandväggen<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Genvägen kan inte vara densamma som standardsökordet hos sökleverantören som definieras av <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2514548229949738417">Hem och trädgård</translation>
 <translation id="2515629240566999685">kontrollera mottagningen i området</translation>
 <translation id="2515761554693942801">Du har valt att verifiera dig med Touch ID på webbplatser där <ph name="PROVIDER_ORIGIN" /> används. Den här leverantören kan ha lagrat uppgifter om din betalningsmetod som du kan <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Kortet är inte tillgängligt. Kontakta kortutgivaren.</translation>
 <translation id="2521385132275182522">Häfta nere till höger</translation>
 <translation id="2521736961081452453">Skapa formulär</translation>
 <translation id="2523886232349826891">Endast sparat på den här enheten</translation>
@@ -3291,6 +3294,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6925267999184670015">Nordamerikansk B+</translation>
 <translation id="6926216138694948720">Kroppskonst</translation>
 <translation id="692638818576287323">Yrkesfordon</translation>
+<translation id="6933282894115597956">Inloggning krävs av organisationen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Med standardsökmotorn kan du söka på webben och få tillgång till Chrome-funktioner<ph name="END_BOLD" />, som att söka i adressfältet och från bilder på webbsidor. Vissa funktioner kanske inte är tillgängliga om sökmotorn inte har stöd för dem.</translation>
 <translation id="6934672428414710184">Det här namnet har hämtats från Google-kontot</translation>
 <translation id="6935082727755903526">Jobb inom redovisning och finans</translation>
@@ -3342,6 +3346,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7003322000677139268">Fordonsdelar och tillbehör</translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7006930604109697472">Skicka ändå</translation>
+<translation id="7009364359744329733">Kortet är inte tillgängligt just nu. Försök igen senare.</translation>
 <translation id="7010658264061801199">Mat och dryck</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Kan be om tillåtelse att låsa och använda din mus</translation>

@@ -385,6 +385,7 @@
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="5947104538377036631">Chrome-Verknüpfung</translation>
 <translation id="5953954252731207958">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION" />“ entfernt.</translation>
+<translation id="5980111191913430208">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chrome empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
 <translation id="6014316319780893079">Die <ph name="BEGIN_LINK" />Tools von Chrome<ph name="END_LINK" /> helfen dir, sicher zu surfen und deine Daten zu schützen</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
@@ -603,6 +604,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="842386925677997438">Sicherheitstools von Chrome</translation>
 <translation id="8425765582779547329">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, melde dich in Chrome an</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
+<translation id="8429214465555795676">Du musst dich mit <ph name="EMAIL" /> in Chrome anmelden, um fortzufahren. So wird die Einhaltung der Richtlinien deiner Organisation sichergestellt.</translation>
 <translation id="8433638294851456451">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
 <translation id="8451192282033883849">Dein Konto wird von <ph name="MANAGER_NAME" /> verwaltet. Dein Administrator kann das Profil dieses Chrome-Browsers und seine Daten wie Lesezeichen, den Verlauf und Passwörter ansehen und bearbeiten.</translation>
 <translation id="8496177819998570653">Google P&amp;asswortmanager</translation>

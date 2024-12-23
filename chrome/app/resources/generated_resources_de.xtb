@@ -4603,6 +4603,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
 <translation id="4222917615373664617">Preis-Tracking ist aktiviert. Aktueller Preis: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofonnutzung nicht zulässig</translation>
+<translation id="4224541845943007092">Tastatureingaben aus der Adressleiste lesen und speichern</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
 <translation id="4228071595943929139">E-Mail-Adresse der Organisation verwenden</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
