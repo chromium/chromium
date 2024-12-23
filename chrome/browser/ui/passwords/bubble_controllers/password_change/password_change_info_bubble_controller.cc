@@ -35,12 +35,13 @@ PasswordChangeInfoBubbleController::~PasswordChangeInfoBubbleController() {
 }
 
 std::u16string PasswordChangeInfoBubbleController::GetTitle() const {
-  CHECK(password_change_delegate_);
-  switch (password_change_delegate_->GetCurrentState()) {
+  switch (state_) {
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_UI_SIGN_IN_CHECK_TITLE);
     case PasswordChangeDelegate::State::kChangingPassword:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_INFO_BUBBLE_TITLE);
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kPasswordChangeFailed:
       NOTIMPLEMENTED();
@@ -76,5 +77,11 @@ std::u16string PasswordChangeInfoBubbleController::GetDisplayOrigin() {
   return url_formatter::FormatUrlForSecurityDisplay(
       password_change_delegate_->GetChangePasswordUrl(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  ;
+}
+
+void PasswordChangeInfoBubbleController::OnGooglePasswordManagerLinkClicked() {
+  if (delegate_) {
+    delegate_->NavigateToPasswordManagerSettingsPage(
+        password_manager::ManagePasswordsReferrer::kPasswordChangeInfoBubble);
+  }
 }

@@ -55,3 +55,11 @@ TEST_F(PasswordChangeBubbleControllerTest, CancelsFlow) {
   EXPECT_CALL(*password_change_delegate(), Stop);
   controller()->CancelPasswordChange();
 }
+
+TEST_F(PasswordChangeBubbleControllerTest, OpensPasswordManagerPage) {
+  CreateController();
+  EXPECT_CALL(*delegate(), NavigateToPasswordManagerSettingsPage(
+                               password_manager::ManagePasswordsReferrer::
+                                   kPasswordChangeInfoBubble));
+  controller()->OnGooglePasswordManagerLinkClicked();
+}

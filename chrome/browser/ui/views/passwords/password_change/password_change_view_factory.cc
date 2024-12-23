@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/password_change_view_factory.h"
 
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_info_bubble_view.h"
 
 PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
@@ -15,9 +17,11 @@ PasswordBubbleViewBase* CreatePasswordChangeBubbleView(
       // same view is returned for all states.
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
-    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
-    case PasswordChangeDelegate::State::kPasswordChangeFailed:
       return new PasswordChangeInfoBubbleView(web_contents, anchor_view,
                                               delegate->GetCurrentState());
+    case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
+    case PasswordChangeDelegate::State::kPasswordChangeFailed:
+      NOTIMPLEMENTED();
   }
+  NOTREACHED();
 }

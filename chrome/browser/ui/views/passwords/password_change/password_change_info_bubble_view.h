@@ -14,6 +14,9 @@ class PasswordChangeInfoBubbleView : public PasswordBubbleViewBase {
   METADATA_HEADER(PasswordChangeInfoBubbleView, PasswordBubbleViewBase)
 
  public:
+  // Bubble body text label id. It's set here to be used in unit tests.
+  static constexpr int kChangingPasswordBodyText = 1;
+
   PasswordChangeInfoBubbleView(content::WebContents* web_contents,
                                views::View* anchor_view,
                                PasswordChangeDelegate::State state);
@@ -24,6 +27,9 @@ class PasswordChangeInfoBubbleView : public PasswordBubbleViewBase {
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
   const PasswordBubbleControllerBase* GetController() const override;
+
+  std::unique_ptr<views::View> CreateBodyText(
+      PasswordChangeDelegate::State state);
 
   PasswordChangeInfoBubbleController controller_;
 };
