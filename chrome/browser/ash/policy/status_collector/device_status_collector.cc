@@ -30,7 +30,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -70,7 +69,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -2309,9 +2307,7 @@ bool DeviceStatusCollector::GetActivityTimes(
         if (session_type == em::ActiveTimePeriod::SESSION_AFFILIATED_USER) {
           active_period->set_user_email(user_email);
         }
-        if (session_type != em::ActiveTimePeriod::SESSION_UNKNOWN &&
-            base::FeatureList::IsEnabled(
-                features::kActivityReportingSessionType)) {
+        if (session_type != em::ActiveTimePeriod::SESSION_UNKNOWN) {
           active_period->set_session_type(session_type);
         }
       }

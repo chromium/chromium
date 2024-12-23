@@ -17,14 +17,6 @@ namespace features {
 
 // All features in alphabetical order.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// If enabled device status collector will add the type of session (Affiliated
-// User, Kiosks, Managed Guest Sessions) to the device status report.
-BASE_FEATURE(kActivityReportingSessionType,
-             "ActivityReportingSessionType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
 // Kill switch for disconnecting file select dialog when tab is deactivated.
 BASE_FEATURE(kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,

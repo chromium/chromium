@@ -69,7 +69,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -1526,8 +1525,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1547,8 +1544,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1576,8 +1571,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1605,8 +1598,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1634,8 +1625,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1677,8 +1666,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
