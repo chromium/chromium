@@ -41,17 +41,13 @@ import java.util.List;
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
     public static final ViewSpec TAB_LIST_RECYCLER_VIEW =
-            viewSpec(
-                    allOf(
-                            isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher()),
-                            withId(R.id.tab_list_recycler_view)));
+            HUB_PANE_HOST.descendant(withId(R.id.tab_list_recycler_view));
 
     public static final ViewSpec TOOLBAR_NEW_TAB_BUTTON =
             viewSpec(
                     allOf(
                             withId(R.id.toolbar_action_button),
                             isDescendantOfA(instanceOf(HubToolbarView.class))));
-
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
                     withId(R.id.action_button),

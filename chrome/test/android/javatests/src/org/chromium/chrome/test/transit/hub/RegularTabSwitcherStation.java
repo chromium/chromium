@@ -21,7 +21,7 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     public static final ViewSpec EMPTY_STATE_TEXT =
             viewSpec(withText(R.string.tabswitcher_no_tabs_empty_state));
     public static final ViewSpec SELECTED_REGULAR_TOGGLE_TAB_BUTTON =
-            viewSpec(REGULAR_TOGGLE_TAB_BUTTON.getViewMatcher(), isSelected());
+            REGULAR_TOGGLE_TAB_BUTTON.and(isSelected());
 
     public RegularTabSwitcherStation(boolean regularTabsExist, boolean incognitoTabsExist) {
         super(/* isIncognito= */ false, regularTabsExist, incognitoTabsExist);

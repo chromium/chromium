@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -35,27 +34,19 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
 
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
     public static final ViewSpec CLOSE_TAB_MENU_ITEM =
-            viewSpec(withText(R.string.close_tab), isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+            APP_MENU_LIST.descendant(withText(R.string.close_tab));
 
     public static final ViewSpec NEW_TAB_MENU_ITEM =
-            viewSpec(
-                    withText(R.string.menu_new_tab),
-                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+            APP_MENU_LIST.descendant(withText(R.string.menu_new_tab));
 
     public static final ViewSpec NEW_INCOGNITO_TAB_MENU_ITEM =
-            viewSpec(
-                    withText(R.string.menu_new_incognito_tab),
-                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+            APP_MENU_LIST.descendant(withText(R.string.menu_new_incognito_tab));
 
     public static final ViewSpec SWITCH_TO_INCOGNITO_MENU_ITEM =
-            viewSpec(
-                    withText(R.string.menu_switch_to_incognito),
-                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+            APP_MENU_LIST.descendant(withText(R.string.menu_switch_to_incognito));
 
     public static final ViewSpec SWITCH_OUT_OF_INCOGNITO_MENU_ITEM =
-            viewSpec(
-                    withText(R.string.menu_switch_out_of_incognito),
-                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+            APP_MENU_LIST.descendant(withText(R.string.menu_switch_out_of_incognito));
 
     @Override
     public void declareElements(Elements.Builder elements) {

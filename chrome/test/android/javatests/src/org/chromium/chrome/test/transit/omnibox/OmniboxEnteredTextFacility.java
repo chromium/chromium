@@ -6,8 +6,6 @@ package org.chromium.chrome.test.transit.omnibox;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import androidx.test.espresso.action.ViewActions;
 
 import org.chromium.base.test.transit.Elements;
@@ -32,7 +30,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(viewSpec(OmniboxFacility.URL_FIELD.getViewMatcher(), withText(mText)));
+        elements.declareView(OmniboxFacility.URL_FIELD.and(withText(mText)));
         elements.declareView(
                 OmniboxFacility.DELETE_BUTTON, ViewElement.displayingAtLeastOption(50));
         elements.declareNoView(OmniboxFacility.MIC_BUTTON);

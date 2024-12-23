@@ -45,11 +45,9 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
-            viewSpec(
-                    isDescendantOfA(withId(R.id.hub_toolbar)),
-                    withId(org.chromium.chrome.R.id.menu_button));
+            HUB_TOOLBAR.descendant(withId(org.chromium.chrome.R.id.menu_button));
     public static final ViewSpec HUB_PANE_SWITCHER =
-            viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
+            HUB_TOOLBAR.descendant(withId(R.id.pane_switcher));
 
     // The non-regular toggle tab button contentDescription is a substring found in the string:
     // R.string.accessibility_tab_switcher_standard_stack.
