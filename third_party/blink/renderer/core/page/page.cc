@@ -121,17 +121,18 @@ const int kTenFrames = 10;
 bool g_limit_max_frames_to_ten_for_testing = false;
 
 // static
-void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::Insets& safe_area) {
+void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::InsetsF& safe_area) {
   DocumentStyleEnvironmentVariables& vars =
       frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.top()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.left()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaInsetBottom,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area.bottom()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.right()));
 }
 
 }  // namespace
@@ -961,8 +962,8 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
     applied_safe_area_insets_ = new_scaled_safe_area;
 
     float zoom_factor = DeprecatedLocalMainFrame()->LayoutZoomFactor();
-    gfx::Insets new_safe_area =
-        ToRoundedInsets(ScaleInsets(new_scaled_safe_area, 1.0f / zoom_factor));
+    gfx::InsetsF new_safe_area =
+        ScaleInsets(new_scaled_safe_area, 1.0f / zoom_factor);
     SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
   }
 }
@@ -991,7 +992,7 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     // UpdateSafeAreaInsetWithBrowserControls() is called.
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
-    SetSafeAreaEnvVariables(setter, max_safe_area);
+    SetSafeAreaEnvVariables(setter, gfx::InsetsF(max_safe_area));
   }
 }
 
