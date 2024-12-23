@@ -14981,76 +14981,15 @@
             ]
         }
     ],
-    "OmniboxMlUrlPiecewiseMappedScoringAndroid": [
+    "OmniboxMlUrlScoringAndroid": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_AdjustedBy0",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,595;0.043,790;0.067,795;0.076,900;0.117,930;0.147,1200;0.184,1205;0.2,1300;0.647,1350;0.668,1410;0.988,1430;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1414",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy50",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,545;0.043,740;0.067,745;0.076,850;0.117,880;0.147,1150;0.184,1155;0.2,1250;0.647,1300;0.668,1360;0.988,1380;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1364",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy100",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,495;0.043,690;0.067,695;0.076,800;0.117,830;0.147,1100;0.184,1105;0.2,1200;0.647,1250;0.668,1310;0.988,1330;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1314",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy150",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.034,445;0.043,640;0.067,645;0.076,750;0.117,780;0.147,1050;0.184,1055;0.2,1150;0.647,1200;0.668,1260;0.988,1280;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1264",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
                         "MlUrlScoring",
                         "UrlScoringModel"
                     ]
@@ -15058,152 +14997,15 @@
             ]
         }
     ],
-    "OmniboxMlUrlPiecewiseMappedScoringDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_AdjustedBy0",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1300;0.14,1398;1,1422",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1414",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy50",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1250;0.14,1348;1,1422",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1364",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy100",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1200;0.14,1298;1,1422",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1314",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy150",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,550;0.018,1150;0.14,1248;1,1422",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1264",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxMlUrlPiecewiseMappedScoringIOS": [
+    "OmniboxMlUrlScoringIOS": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_AdjustedBy0",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,790;0.082,1290;0.443,1360;0.464,1400;0.987,1425;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1414",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy50",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,740;0.082,1240;0.443,1310;0.464,1350;0.987,1375;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1364",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy100",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,690;0.082,1190;0.443,1260;0.464,1300;0.987,1325;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1314",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
-                        "MlUrlScoring",
-                        "UrlScoringModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_DemotedBy150",
-                    "params": {
-                        "MlUrlPiecewiseMappedSearchBlending": "true",
-                        "MlUrlPiecewiseMappedSearchBlending_BreakPoints": "0,590;0.006,640;0.082,1140;0.443,1210;0.464,1250;0.987,1275;1,1530",
-                        "MlUrlPiecewiseMappedSearchBlending_GroupingThreshold": "1264",
-                        "MlUrlPiecewiseMappedSearchBlending_RelevanceBias": "0",
-                        "MlUrlScoringShortcutDocumentSignals": "true",
-                        "MlUrlSearchBlending_MappedSearchBlending": "false",
-                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
-                    },
-                    "enable_features": [
-                        "MlUrlPiecewiseMappedSearchBlending",
                         "MlUrlScoring",
                         "UrlScoringModel"
                     ]
