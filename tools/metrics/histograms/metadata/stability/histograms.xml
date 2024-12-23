@@ -507,19 +507,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
-    expires_after="2024-11-03">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The last known battery charge before a crash occurred. This will only be
-    logged for devices which were last known to be in the &quot;unplugged&quot;
-    state because the intention is to identify devices which may have died
-    leading to unexpected terminations. Logged on application launch if the last
-    session terminated in an unclean state.
-  </summary>
-</histogram>
-
 <histogram name="Stability.iOS.UTE.DeviceThermalState"
     enum="IOSDeviceThermalState" expires_after="2025-03-09">
   <owner>michaeldo@chromium.org</owner>
