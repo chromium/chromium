@@ -113,33 +113,32 @@ TabSharingInfoBar::TabSharingInfoBar(
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
 
   const int buttons = delegate_ptr->GetButtons();
-  const auto create_button = [&](TabSharingInfoBarDelegate::
-                                     TabSharingInfoBarButton type,
-                                 void (TabSharingInfoBar::*click_function)(),
-                                 int button_context =
-                                     views::style::CONTEXT_BUTTON_MD) {
-    const bool use_text_color_for_icon =
-        type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
-    auto* button = AddChildView(std::make_unique<views::MdTextButton>(
-        base::BindRepeating(click_function, base::Unretained(this)),
-        delegate_ptr->GetButtonLabel(type), button_context,
-        use_text_color_for_icon));
-    button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_TOAST_CONTROL_VERTICAL),
-                        0));
+  const auto create_button =
+      [&](TabSharingInfoBarDelegate::TabSharingInfoBarButton type,
+          void (TabSharingInfoBar::*click_function)(),
+          int button_context = views::style::CONTEXT_BUTTON_MD) {
+        const bool use_text_color_for_icon =
+            type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
+        auto* button = AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(click_function, base::Unretained(this)),
+            delegate_ptr->GetButtonLabel(type), button_context,
+            use_text_color_for_icon));
+        button->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_TOAST_CONTROL_VERTICAL),
+                            0));
 
-    const bool is_default_button =
-        type == buttons || type == TabSharingInfoBarDelegate::kStop;
-    button->SetStyle(is_default_button ? ui::ButtonStyle::kProminent
-                                       : ui::ButtonStyle::kTonal);
-    button->SetImageModel(views::Button::STATE_NORMAL,
-                          delegate_ptr->GetButtonImage(type));
-    button->SetEnabled(delegate_ptr->IsButtonEnabled(type));
-    button->SetTooltipText(delegate_ptr->GetButtonTooltip(type));
-    return button;
-  };
+        const bool is_default_button =
+            type == buttons || type == TabSharingInfoBarDelegate::kStop;
+        button->SetStyle(is_default_button ? ui::ButtonStyle::kProminent
+                                           : ui::ButtonStyle::kTonal);
+        button->SetImageModel(views::Button::STATE_NORMAL,
+                              delegate_ptr->GetButtonImage(type));
+        button->SetEnabled(delegate_ptr->IsButtonEnabled(type));
+        button->SetTooltipText(delegate_ptr->GetButtonTooltip(type));
+        return button;
+      };
 
   if (buttons & TabSharingInfoBarDelegate::kStop) {
     stop_button_ = create_button(TabSharingInfoBarDelegate::kStop,

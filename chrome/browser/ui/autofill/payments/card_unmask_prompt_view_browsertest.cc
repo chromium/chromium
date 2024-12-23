@@ -120,12 +120,14 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   payments::PaymentsAutofillClient::PaymentsRpcResult GetVerificationResult()
       const override {
-    if (expected_failure_temporary_)
+    if (expected_failure_temporary_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kTryAgainFailure;
-    if (expected_failure_permanent_)
+    }
+    if (expected_failure_permanent_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kPermanentFailure;
+    }
 
     return payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   }
@@ -144,8 +146,9 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   void ShowVerificationResult(const std::u16string verification_message,
                               bool allow_retry) {
     // It's possible the prompt has been closed.
-    if (!view())
+    if (!view()) {
       return;
+    }
     view()->GotVerificationResult(verification_message, allow_retry);
   }
 
@@ -180,8 +183,9 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     CreditCard card = test::GetMaskedServerCard();
-    if (name == kExpiryExpired)
+    if (name == kExpiryExpired) {
       card.SetExpirationYear(2016);
+    }
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(

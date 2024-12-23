@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DefaultBrowserPromptTest : public testing::Test {
-protected:
+ protected:
   void SetUp() override {
     testing_profile_manager = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -25,13 +25,13 @@ protected:
         testing_profile_manager->CreateTestingProfile("Test Profile");
   }
 
-  PrefService *profile_prefs() { return testing_profile->GetPrefs(); }
+  PrefService* profile_prefs() { return testing_profile->GetPrefs(); }
 
-  Profile *profile() { return testing_profile; }
+  Profile* profile() { return testing_profile; }
 
-  PrefService *local_state() { return g_browser_process->local_state(); }
+  PrefService* local_state() { return g_browser_process->local_state(); }
 
-private:
+ private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager;

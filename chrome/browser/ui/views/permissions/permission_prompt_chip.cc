@@ -38,8 +38,9 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   // fixes a bug when a chip overlays the padlock icon.
   lbv->InvalidateLayout();
 
-  if (delegate->ShouldCurrentRequestUseQuietUI())
+  if (delegate->ShouldCurrentRequestUseQuietUI()) {
     PreemptivelyResolvePermissionRequest(web_contents, delegate);
+  }
 
   chip_controller_ = lbv->GetChipController();
   chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
@@ -112,34 +113,34 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
 void PermissionPromptChip::PreemptivelyResolvePermissionRequest(
     content::WebContents* web_contents,
     Delegate* delegate) {
-    DCHECK(delegate->ShouldCurrentRequestUseQuietUI());
+  DCHECK(delegate->ShouldCurrentRequestUseQuietUI());
 
-    bool is_subscribed_to_permission_change_event = true;
-    content::PermissionController* permission_controller =
-        web_contents->GetBrowserContext()->GetPermissionController();
+  bool is_subscribed_to_permission_change_event = true;
+  content::PermissionController* permission_controller =
+      web_contents->GetBrowserContext()->GetPermissionController();
 
-    // If at least one RFH is not subscribed to the PermissionChange event, we
-    // should not preemptively resolve a prompt.
-    for (permissions::PermissionRequest* request : delegate->Requests()) {
-      content::RenderFrameHost* rfh =
-          content::RenderFrameHost::FromID(request->get_requesting_frame_id());
-      if (rfh == nullptr)
-        return;
+  // If at least one RFH is not subscribed to the PermissionChange event, we
+  // should not preemptively resolve a prompt.
+  for (permissions::PermissionRequest* request : delegate->Requests()) {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(request->get_requesting_frame_id());
+    if (rfh == nullptr) {
+      return;
+    }
 
-      ContentSettingsType type = request->GetContentSettingsType();
+    ContentSettingsType type = request->GetContentSettingsType();
 
-      blink::PermissionType permission_type =
-          permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
-              type);
+    blink::PermissionType permission_type =
+        permissions::PermissionUtil::ContentSettingsTypeToPermissionType(type);
 
-      // Pre-ignore is allowed only for the quiet chip. The quiet chip is
-      // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.
-      DCHECK(permission_type == blink::PermissionType::NOTIFICATIONS ||
-             permission_type == blink::PermissionType::GEOLOCATION);
+    // Pre-ignore is allowed only for the quiet chip. The quiet chip is
+    // enabled only for `NOTIFICATIONS` and `GEOLOCATION`.
+    DCHECK(permission_type == blink::PermissionType::NOTIFICATIONS ||
+           permission_type == blink::PermissionType::GEOLOCATION);
 
-      is_subscribed_to_permission_change_event &=
-          permission_controller->IsSubscribedToPermissionChangeEvent(
-              permission_type, rfh);
+    is_subscribed_to_permission_change_event &=
+        permission_controller->IsSubscribedToPermissionChangeEvent(
+            permission_type, rfh);
 
     if (is_subscribed_to_permission_change_event) {
       // This will resolve a promise so an origin is not waiting for the user's

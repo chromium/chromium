@@ -167,8 +167,9 @@ Browser* FindOneOtherBrowser(Browser* browser) {
   // Find the new browser.
   Browser* other_browser = nullptr;
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser)
+    if (b != browser) {
       other_browser = b;
+    }
   }
   return other_browser;
 }
@@ -235,8 +236,9 @@ AllBrowsersClosedWaiter::~AllBrowsersClosedWaiter() {
 }
 
 void AllBrowsersClosedWaiter::OnBrowserRemoved(Browser* browser) {
-  if (chrome::GetTotalBrowserCount() == 0)
+  if (chrome::GetTotalBrowserCount() == 0) {
     std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace
@@ -281,8 +283,9 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
   Browser* FindOneOtherBrowserForProfile(Profile* profile,
                                          Browser* not_this_browser) {
     for (Browser* browser : *BrowserList::GetInstance()) {
-      if (browser != not_this_browser && browser->profile() == profile)
+      if (browser != not_this_browser && browser->profile() == profile) {
         return browser;
+      }
     }
     return nullptr;
   }
@@ -381,9 +384,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(static_cast<int>(expected_urls.size()), tab_strip->count());
-  for (size_t i = 0; i < expected_urls.size(); i++)
+  for (size_t i = 0; i < expected_urls.size(); i++) {
     EXPECT_EQ(expected_urls[i],
               tab_strip->GetWebContentsAt(i)->GetVisibleURL());
+  }
 
   // The two test_server tabs, despite having the same site, should be in
   // different SiteInstances.
@@ -896,14 +900,13 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorChromeAppShortcutTest,
-    ::testing::Values(
-        ChromeAppDeprecationFeatureValue::kDefault
+    ::testing::Values(ChromeAppDeprecationFeatureValue::kDefault
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-        ,
-        ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch,
-        ChromeAppDeprecationFeatureValue::kDisabled
+                      ,
+                      ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch,
+                      ChromeAppDeprecationFeatureValue::kDisabled
 #endif
-        ),
+                      ),
     ChromeAppDeprecationFeatureValueToString);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -1022,8 +1025,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
 INSTANTIATE_TEST_SUITE_P(
     All,
     StartupBrowserCreatorChromeAppShortcutTestWithLaunch,
-    ::testing::Values(
-        ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch),
+    ::testing::Values(ChromeAppDeprecationFeatureValue::kEnabledWithNoLaunch),
     ChromeAppDeprecationFeatureValueToString);
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -2454,11 +2456,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   for (auto* profile : profile_manager->GetLoadedProfiles()) {
     // Don't construct SessionServices for every type just to
     // shut them down. If they were never created, just skip.
-    if (SessionServiceFactory::GetForProfileIfExisting(profile))
+    if (SessionServiceFactory::GetForProfileIfExisting(profile)) {
       SessionServiceFactory::ShutdownForProfile(profile);
+    }
 
-    if (AppSessionServiceFactory::GetForProfileIfExisting(profile))
+    if (AppSessionServiceFactory::GetForProfileIfExisting(profile)) {
       AppSessionServiceFactory::ShutdownForProfile(profile);
+    }
   }
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
@@ -2767,8 +2771,9 @@ IN_PROC_BROWSER_TEST_F(
   // There should be 3 browser windows opened at the moment.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser() && b != app_browser1)
+    if (b != browser() && b != app_browser1) {
       app_browser2 = b;
+    }
   }
   ASSERT_TRUE(app_browser2);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser2, app_id));
@@ -2835,8 +2840,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   // There should be 3 browser windows opened at the moment.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser() && b != app_browser1)
+    if (b != browser() && b != app_browser1) {
       app_browser2 = b;
+    }
   }
   ASSERT_TRUE(app_browser2);
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser2, app_id));
@@ -3544,8 +3550,9 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());
     EXPECT_TRUE(new_browser);
-    if (!new_browser)
+    if (!new_browser) {
       return nullptr;
+    }
 
     return infobars::ContentInfoBarManager::FromWebContents(
         new_browser->tab_strip_model()->GetActiveWebContents());
@@ -3670,8 +3677,9 @@ class StartupBrowserCreatorPickerTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
 
-    if (content::IsPreTest())
+    if (content::IsPreTest()) {
       return;  // Don't apply the test parameters to the PRE test.
+    }
 
     if (GetParam().url_arg) {
       command_line->AppendArg(GetParam().url_arg->spec());

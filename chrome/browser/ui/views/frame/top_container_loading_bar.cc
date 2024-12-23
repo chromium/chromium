@@ -55,15 +55,17 @@ void LoadingBarView::Show(double loading_progress) {
 }
 
 void LoadingBarView::FinishLoading() {
-  if (!is_shown_when_not_animating_)
+  if (!is_shown_when_not_animating_) {
     return;
+  }
   SetLoadingProgress(1.0);
   is_shown_when_not_animating_ = false;
 }
 
 void LoadingBarView::SetLoadingProgress(double loading_progress) {
-  if (loading_progress <= target_loading_progress_)
+  if (loading_progress <= target_loading_progress_) {
     return;
+  }
   start_loading_progress_ = GetDisplayedLoadingProgress();
   target_loading_progress_ = loading_progress;
   animation_.SetCurrentValue(0.0);

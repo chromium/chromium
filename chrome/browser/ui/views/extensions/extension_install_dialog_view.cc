@@ -390,13 +390,15 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
   // If the prompt is related to requesting an extension, set the default button
   // to OK.
   if (prompt_->type() ==
-      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT)
+      ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT) {
     default_button = static_cast<int>(ui::mojom::DialogButton::kOk);
+  }
 
   // When we require parent permission next, we
   // set the default button to OK.
-  if (prompt_->requires_parent_permission())
+  if (prompt_->requires_parent_permission()) {
     default_button = static_cast<int>(ui::mojom::DialogButton::kOk);
+  }
 
   SetModalType(ui::mojom::ModalType::kWindow);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -430,8 +432,9 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
 }
 
 ExtensionInstallDialogView::~ExtensionInstallDialogView() {
-  if (done_callback_)
+  if (done_callback_) {
     OnDialogCanceled();
+  }
 }
 
 ExtensionInstallPromptShowParams*
@@ -628,8 +631,9 @@ void ExtensionInstallDialogView::OnExtensionUninstalled(
   CHECK(prompt_);
   CHECK(prompt_->extension());
   // Close the dialog if the extension is uninstalled.
-  if (extension->id() != prompt_->extension()->id())
+  if (extension->id() != prompt_->extension()->id()) {
     return;
+  }
   CloseDialog();
 }
 
@@ -711,8 +715,9 @@ void ExtensionInstallDialogView::CreateContents() {
     header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extension_info_container->AddChildView(header_label);
 
-    if (section.contents_view)
+    if (section.contents_view) {
       extension_info_container->AddChildView(section.contents_view.release());
+    }
   }
 
   // Add separate section for user justification. This section isn't added to

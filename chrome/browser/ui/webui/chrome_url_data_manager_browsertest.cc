@@ -509,8 +509,8 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     "chrome://signin-dice-web-intercept.top-chrome/?debug",
-    // Note: Disabled because a DCHECK fires when directly visiting the URL.
-    // "chrome://signin-reauth",
+// Note: Disabled because a DCHECK fires when directly visiting the URL.
+// "chrome://signin-reauth",
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.

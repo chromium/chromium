@@ -15,8 +15,9 @@ SidePanelContentProxy::~SidePanelContentProxy() = default;
 
 void SidePanelContentProxy::SetAvailable(bool available) {
   available_ = available;
-  if (available && available_callback_)
+  if (available && available_callback_) {
     std::move(available_callback_).Run();
+  }
 }
 
 void SidePanelContentProxy::ResetAvailableCallback() {

@@ -149,10 +149,11 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
       ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON));
 
-  // The set_*_callback() methods below need a OnceCallback each and we only have one
-  // (done_callback_), so create a proxy callback that references done_callback_ and use it for each
-  // of the set_*_callback() callbacks. Note that since only one of the three callbacks can ever be
-  // invoked, done_callback_ is still run at most once.
+  // The set_*_callback() methods below need a OnceCallback each and we only
+  // have one (done_callback_), so create a proxy callback that references
+  // done_callback_ and use it for each of the set_*_callback() callbacks. Note
+  // that since only one of the three callbacks can ever be invoked,
+  // done_callback_ is still run at most once.
   auto make_done_callback = [this](safe_browsing::WarningAction value) {
     return base::BindOnce(
         [](OnWarningDone* callback, safe_browsing::WarningAction value) {
@@ -169,8 +170,9 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
   SetCloseCallback(make_done_callback(WarningAction::CLOSE));
 
   // |service| maybe NULL in tests.
-  if (service_)
+  if (service_) {
     service_->AddObserver(this);
+  }
 
   if (password_type.account_type() ==
       ReusedPasswordAccountType::SAVED_PASSWORD) {
@@ -189,8 +191,9 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
 }
 
 PasswordReuseModalWarningDialog::~PasswordReuseModalWarningDialog() {
-  if (service_)
+  if (service_) {
     service_->RemoveObserver(this);
+  }
   LogModalWarningDialogLifetime(modal_construction_start_time_);
 }
 
@@ -274,8 +277,9 @@ void PasswordReuseModalWarningDialog::OnGaiaPasswordChanged() {
 
 void PasswordReuseModalWarningDialog::OnMarkingSiteAsLegitimate(
     const GURL& url) {
-  if (url_.GetWithEmptyPath() == url.GetWithEmptyPath())
+  if (url_.GetWithEmptyPath() == url.GetWithEmptyPath()) {
     GetWidget()->Close();
+  }
 }
 
 void PasswordReuseModalWarningDialog::InvokeActionForTesting(

@@ -51,8 +51,9 @@ class TestTitleObserver : public TabStripModelObserver {
 
   // Run a loop, blocking until a tab has the title |target_title|.
   void Wait() {
-    if (seen_target_title_)
+    if (seen_target_title_) {
       return;
+    }
 
     awaiter_.Run();
   }
@@ -65,8 +66,9 @@ class TestTitleObserver : public TabStripModelObserver {
         contents->GetController().GetVisibleEntry();
     std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
-    if (title != target_title_)
+    if (title != target_title_) {
       return;
+    }
 
     seen_target_title_ = true;
     awaiter_.Quit();
@@ -157,8 +159,9 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
       : content::WebContentsObserver(contents), install_interstitial_(true) {}
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
-    if (!install_interstitial_)
+    if (!install_interstitial_) {
       return;
+    }
 
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle,
@@ -185,7 +188,6 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
   ~CustomTabBarViewBrowserTest() override = default;
 
  protected:
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     web_app::WebAppBrowserTestBase::SetUpCommandLine(command_line);
     // Browser will both run and display insecure content.

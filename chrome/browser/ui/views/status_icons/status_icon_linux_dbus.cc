@@ -166,8 +166,9 @@ base::FilePath WriteIconFile(size_t icon_file_id,
   // change in order to update, so we need a new temporary directory and a
   // unique base name for the file.
   base::FilePath temp_dir;
-  if (!base::CreateNewTempDirectory("", &temp_dir))
+  if (!base::CreateNewTempDirectory("", &temp_dir)) {
     return {};
+  }
 
   base::FilePath file_path = temp_dir.Append(
       "status_icon_" + base::NumberToString(icon_file_id) + ".png");
@@ -202,8 +203,9 @@ void StatusIconLinuxDbus::SetIcon(const gfx::ImageSkia& image) {
 
 void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!properties_)
+  if (!properties_) {
     return;
+  }
 
   UpdateMenuImpl(delegate_->GetMenuModel(), true);
 
@@ -381,8 +383,9 @@ void StatusIconLinuxDbus::RegisterStatusNotifierItem() {
 
 void StatusIconLinuxDbus::OnRegistered(dbus::Response* response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!response)
+  if (!response) {
     delegate_->OnImplInitializationFailed();
+  }
 }
 
 void StatusIconLinuxDbus::OnNameOwnerChangedReceived(
@@ -446,8 +449,9 @@ void StatusIconLinuxDbus::OnSecondaryActivate(
 void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
                                          bool send_signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!menu_)
+  if (!menu_) {
     return;
+  }
 
   if (!model) {
     empty_menu_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
@@ -457,8 +461,9 @@ void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
   click_action_menu_ = std::make_unique<ui::SimpleMenuModel>(this);
   if (delegate_->HasClickAction() && !delegate_->GetToolTip().empty()) {
     click_action_menu_->AddItem(0, delegate_->GetToolTip());
-    if (model->GetItemCount())
+    if (model->GetItemCount()) {
       click_action_menu_->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+    }
   }
 
   concat_menu_ =
@@ -470,8 +475,9 @@ void StatusIconLinuxDbus::UpdateMenuImpl(ui::MenuModel* model,
 void StatusIconLinuxDbus::SetIconImpl(const gfx::ImageSkia& image,
                                       bool send_signals) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!properties_)
+  if (!properties_) {
     return;
+  }
 
   if (should_write_icon_to_file_) {
     icon_task_runner_->PostTaskAndReplyWithResult(
@@ -493,8 +499,9 @@ void StatusIconLinuxDbus::OnIconFileWritten(const base::FilePath& icon_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CleanupIconFile();
   icon_file_ = icon_file;
-  if (icon_file_.empty())
+  if (icon_file_.empty()) {
     return;
+  }
 
   properties_->SetProperty(kInterfaceStatusNotifierItem, kPropertyIconThemePath,
                            DbusString(icon_file_.DirName().value()), false);

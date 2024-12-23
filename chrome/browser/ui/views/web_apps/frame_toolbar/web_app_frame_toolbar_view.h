@@ -20,7 +20,7 @@
 namespace {
 class WebAppNonClientFrameViewChromeOSTest;
 class LocationBarViewQuietNotificationInteractiveUITest;
-}
+}  // namespace
 
 namespace views {
 class View;

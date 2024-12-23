@@ -60,9 +60,9 @@ void LogInsertEmoji(bool is_variant, int16_t search_length) {
 }
 
 void LogInsertGif(bool is_inserted) {
-  EmojiVariantType insert_value = is_inserted
-                                      ? EmojiVariantType::kEmojiPickerGifInserted
-                                      : EmojiVariantType::kEmojiPickerGifCopied;
+  EmojiVariantType insert_value =
+      is_inserted ? EmojiVariantType::kEmojiPickerGifInserted
+                  : EmojiVariantType::kEmojiPickerGifCopied;
   base::UmaHistogramEnumeration("InputMethod.SystemEmojiPicker.TriggerType",
                                 insert_value);
 }

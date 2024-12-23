@@ -33,7 +33,7 @@ class PolicyChangeRegistrar;
 namespace ui {
 class ColorProvider;
 class ThemeProvider;
-}
+}  // namespace ui
 
 SkColor GetThemeColor(const ui::NativeTheme* native_theme,
                       const ui::ColorProvider& cp,

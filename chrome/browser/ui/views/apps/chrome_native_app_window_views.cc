@@ -108,8 +108,7 @@ ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() = default;
 void ChromeNativeAppWindowViews::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
     views::Widget::InitParams* init_params,
-    views::Widget* widget) {
-}
+    views::Widget* widget) {}
 
 void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     const AppWindow::CreateParams& create_params) {
@@ -126,11 +125,13 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     // transparency and has no standard frame, don't show a shadow for it.
     // TODO(skuhne): If we run into an application which should have a shadow
     // but does not have, a new attribute has to be added.
-    if (IsFrameless())
+    if (IsFrameless()) {
       init_params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    }
   }
-  if (create_params.always_on_top)
+  if (create_params.always_on_top) {
     init_params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  }
   init_params.visible_on_all_workspaces =
       create_params.visible_on_all_workspaces;
 
@@ -170,8 +171,9 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (create_params.is_ime_window)
+  if (create_params.is_ime_window) {
     return;
+  }
 #endif
 
   // Register accelarators supported by app windows.
@@ -225,10 +227,12 @@ gfx::Rect ChromeNativeAppWindowViews::GetRestoredBounds() const {
 
 ui::mojom::WindowShowState ChromeNativeAppWindowViews::GetRestoredState()
     const {
-  if (IsMaximized())
+  if (IsMaximized()) {
     return ui::mojom::WindowShowState::kMaximized;
-  if (IsFullscreen())
+  }
+  if (IsFullscreen()) {
     return ui::mojom::WindowShowState::kFullscreen;
+  }
 
   return ui::mojom::WindowShowState::kNormal;
 }
@@ -266,8 +270,9 @@ ui::ImageModel ChromeNativeAppWindowViews::GetWindowAppIcon() {
             base_image.AsImageSkia(), GetAppIconImage().AsImageSkia()));
   }
 
-  if (!custom_image.IsEmpty())
+  if (!custom_image.IsEmpty()) {
     return ui::ImageModel::FromImage(custom_image);
+  }
   EnsureAppIconCreated();
   return ui::ImageModel::FromImage(GetAppIconImage());
 }
@@ -285,8 +290,8 @@ ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
 
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
-  return (IsFrameless() || has_frame_color_) ?
-      CreateNonStandardAppFrame() : CreateStandardDesktopAppFrame();
+  return (IsFrameless() || has_frame_color_) ? CreateNonStandardAppFrame()
+                                             : CreateStandardDesktopAppFrame();
 }
 
 bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
@@ -360,8 +365,9 @@ void ChromeNativeAppWindowViews::UpdateShape(
   std::unique_ptr<SkRegion> region;
   if (shape_rects_) {
     region = std::make_unique<SkRegion>();
-    for (const gfx::Rect& input_rect : *shape_rects_)
+    for (const gfx::Rect& input_rect : *shape_rects_) {
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
+    }
   }
   shape_ = std::move(region);
   OnWidgetHasHitTestMaskChanged();
@@ -409,8 +415,9 @@ gfx::Image ChromeNativeAppWindowViews::GetAppIconImage() {
 }
 
 void ChromeNativeAppWindowViews::EnsureAppIconCreated() {
-  if (app_icon_ && app_icon_->IsValid())
+  if (app_icon_ && app_icon_->IsValid()) {
     return;
+  }
 
   // To avoid recursive call, reset the smart pointer. It will be checked in
   // OnIconUpdated to determine if this is a real update or the initial callback
@@ -424,8 +431,9 @@ void ChromeNativeAppWindowViews::EnsureAppIconCreated() {
 
 void ChromeNativeAppWindowViews::OnIconUpdated(
     extensions::ChromeAppIcon* icon) {
-  if (!app_icon_)
+  if (!app_icon_) {
     return;
+  }
   DCHECK_EQ(app_icon_.get(), icon);
   UpdateWindowIcon();
 }

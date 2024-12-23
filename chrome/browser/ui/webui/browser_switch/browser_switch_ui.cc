@@ -52,11 +52,13 @@ bool IsLastTab(const Profile* profile) {
   profile = profile->GetOriginalProfile();
   int tab_count = 0;
   for (const Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() != profile)
+    if (browser->profile()->GetOriginalProfile() != profile) {
       continue;
+    }
     tab_count += browser->tab_strip_model()->count();
-    if (tab_count > 1)
+    if (tab_count > 1) {
       return false;
+    }
   }
   return true;
 }
@@ -518,8 +520,9 @@ void BrowserSwitchHandler::HandleGetRulesetSources(
   base::Value::Dict retval;
   for (const auto& source : sources) {
     base::Value val;
-    if (source.url.is_valid())
+    if (source.url.is_valid()) {
       val = base::Value(source.url.spec());
+    }
     // |pref_name| is something like "browser_switcher.blah"; however path
     // expansion is not expected on it as the JavaScript expects to see
     // "browser_switcher.blah" as a key in the object, not a nested hierarchy.

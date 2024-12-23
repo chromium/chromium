@@ -24,8 +24,7 @@ namespace autofill {
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
 
-class BaseAddressBubblesControllerTest
-    : public InteractiveBrowserTest {
+class BaseAddressBubblesControllerTest : public InteractiveBrowserTest {
  protected:
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -66,7 +65,7 @@ class BaseAddressBubblesControllerTest
 ///////////////////////////////////////////////////////////////////////////////
 // SaveAddressProfileTest
 
-class SaveAddressProfileTest: public BaseAddressBubblesControllerTest {
+class SaveAddressProfileTest : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
@@ -156,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(SaveAddressProfileTest, NoCrashesOnTabClose) {
 ///////////////////////////////////////////////////////////////////////////////
 // UpdateAddressProfileTest
 
-class UpdateAddressProfileTest: public BaseAddressBubblesControllerTest {
+class UpdateAddressProfileTest : public BaseAddressBubblesControllerTest {
  protected:
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
@@ -235,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(UpdateAccountAddressProfileTest, UpdateThroughEdit) {
 ///////////////////////////////////////////////////////////////////////////////
 // SaveAddressProfileTest
 
-class MigrateToProfileAddressProfileTest: public BaseAddressBubblesControllerTest {
+class MigrateToProfileAddressProfileTest
+    : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,

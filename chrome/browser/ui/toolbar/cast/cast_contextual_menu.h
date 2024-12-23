@@ -25,16 +25,15 @@ class CastContextualMenu : public ui::SimpleMenuModel::Delegate {
   // Creates an instance for a Cast toolbar icon shown in the toolbar.
   // |observer| must outlive the context menu.
   static std::unique_ptr<CastContextualMenu> Create(Browser* browser,
-                                                           Observer* observer);
+                                                    Observer* observer);
 
   // Constructor called by the static Create* methods above and tests.
   CastContextualMenu(Browser* browser,
-                            bool shown_by_policy,
-                            Observer* observer);
+                     bool shown_by_policy,
+                     Observer* observer);
 
   CastContextualMenu(const CastContextualMenu&) = delete;
-  CastContextualMenu& operator=(const CastContextualMenu&) =
-      delete;
+  CastContextualMenu& operator=(const CastContextualMenu&) = delete;
 
   ~CastContextualMenu() override;
 
@@ -42,18 +41,13 @@ class CastContextualMenu : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
-                           ToggleCloudServicesItem);
-  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
-                           ShowCloudServicesDialog);
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest, ToggleCloudServicesItem);
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest, ShowCloudServicesDialog);
   FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
                            ToggleAlwaysShowIconItem);
-  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
-                           ToggleMediaRemotingItem);
-  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
-                           ActionShownByPolicy);
-  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest,
-                           NotifyActionController);
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest, ToggleMediaRemotingItem);
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest, ActionShownByPolicy);
+  FRIEND_TEST_ALL_PREFIXES(CastContextualMenuUnitTest, NotifyActionController);
 
   // Gets or sets the "Always show icon" option.
   bool GetAlwaysShowActionPref() const;

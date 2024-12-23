@@ -27,7 +27,7 @@ enum class SyncConfirmationStyle;
 namespace content {
 class WebContents;
 class WebContentsDelegate;
-}
+}  // namespace content
 
 namespace signin_metrics {
 enum class ReauthAccessPoint;

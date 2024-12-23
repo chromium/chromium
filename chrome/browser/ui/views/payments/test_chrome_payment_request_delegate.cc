@@ -113,8 +113,9 @@ TestChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
 
 std::string
 TestChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
-  if (is_valid_ssl_.has_value())
+  if (is_valid_ssl_.has_value()) {
     return *is_valid_ssl_ ? "" : "Invalid SSL certificate";
+  }
 
   return ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage();
 }

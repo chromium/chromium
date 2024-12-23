@@ -185,8 +185,9 @@ ui::ImageModel DeviceChooserContentView::GetIcon(size_t row) {
   }
 
   int level = chooser_controller_->GetSignalStrengthLevel(row);
-  if (level == -1)
+  if (level == -1) {
     return ui::ImageModel();
+  }
 
   static constexpr std::array kSignalStrengthLevelImageIds{
       IDR_SIGNAL_0_BAR, IDR_SIGNAL_1_BAR, IDR_SIGNAL_2_BAR, IDR_SIGNAL_3_BAR,
@@ -233,8 +234,9 @@ void DeviceChooserContentView::OnAdapterEnabledChanged(bool enabled) {
     ShowReScanButton(enabled);
   }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 void DeviceChooserContentView::OnAdapterAuthorizationChanged(bool authorized) {
@@ -257,13 +259,15 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     UpdateTableView();
   }
 
-  if (refreshing)
+  if (refreshing) {
     ShowThrobber();
-  else
+  } else {
     ShowReScanButton(/*enable=*/true);
+  }
 
-  if (GetWidget() && GetWidget()->GetRootView())
+  if (GetWidget() && GetWidget()->GetRootView()) {
     GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
+  }
 }
 
 std::u16string DeviceChooserContentView::GetWindowTitle() const {
@@ -408,8 +412,9 @@ void DeviceChooserContentView::SelectAllCheckboxChanged() {
 }
 
 void DeviceChooserContentView::ShowThrobber() {
-  if (re_scan_button_)
+  if (re_scan_button_) {
     re_scan_button_->SetVisible(false);
+  }
 
   throbber_->SetVisible(true);
   throbber_label_->SetVisible(true);

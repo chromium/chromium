@@ -70,8 +70,9 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
   std::set<std::u16string> items;
   for (size_t i = 0; i < model.GetItemCount(); ++i) {
-    if (!model.IsItemSeparatorAt(i))
+    if (!model.IsItemSeparatorAt(i)) {
       EXPECT_EQ(0u, items.count(model.GetItemAt(i)));
+    }
   }
 }
 

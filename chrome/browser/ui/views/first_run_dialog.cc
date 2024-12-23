@@ -39,14 +39,16 @@ void ShowFirstRunDialog() {
   // Don't show first run dialog when running in headless mode since this
   // would effectively block the UI because there is no one to interact with
   // the dialog.
-  if (headless::IsHeadlessMode())
+  if (headless::IsHeadlessMode()) {
     return;
+  }
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog))
+  if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog)) {
     ShowFirstRunDialogViews();
-  else
+  } else {
     ShowFirstRunDialogCocoa();
+  }
 #else
   ShowFirstRunDialogViews();
 #endif
@@ -116,8 +118,9 @@ bool FirstRunDialog::Accept() {
 
   ChangeMetricsReportingState(report_crashes_->GetChecked());
 
-  if (make_default_->GetChecked())
+  if (make_default_->GetChecked()) {
     shell_integration::SetAsDefaultBrowser();
+  }
 
   Done();
   return true;

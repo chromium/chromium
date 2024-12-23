@@ -1625,8 +1625,8 @@ TEST_F(ManagementUIHandlerTests, CloudProfileReportingPolicy) {
 
   std::set<std::string> expected_messages = {
       kProfileReportingOverview, kProfileReportingUsername,
-      kProfileReportingBrowser, kProfileReportingExtension,
-      kProfileReportingPolicy, kProfileReportingLearnMore};
+      kProfileReportingBrowser,  kProfileReportingExtension,
+      kProfileReportingPolicy,   kProfileReportingLearnMore};
 
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetReportingInfo(/*can_collect_signals=*/false,

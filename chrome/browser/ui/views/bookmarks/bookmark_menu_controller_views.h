@@ -32,7 +32,7 @@ class MenuButton;
 class MenuItemView;
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 // BookmarkMenuController is responsible for showing a menu of bookmarks,
 // each item in the menu represents a bookmark.

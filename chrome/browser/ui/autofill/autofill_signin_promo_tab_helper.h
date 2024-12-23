@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SIGNIN_PROMO_TAB_HELPER_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_form.h"

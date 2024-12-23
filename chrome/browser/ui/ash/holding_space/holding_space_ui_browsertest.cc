@@ -224,13 +224,15 @@ void MouseDrag(const views::View* from,
 
 // Waits for the specified `label` to have the desired `text`.
 void WaitForText(views::Label* label, const std::u16string& text) {
-  if (label->GetText() == text)
+  if (label->GetText() == text) {
     return;
+  }
   base::RunLoop run_loop;
   auto subscription =
       label->AddTextChangedCallback(base::BindLambdaForTesting([&]() {
-        if (label->GetText() == text)
+        if (label->GetText() == text) {
           run_loop.Quit();
+        }
       }));
   run_loop.Run();
 }
@@ -252,8 +254,9 @@ class DropSenderView : public views::WidgetDelegateView,
 
   void SetFilenamesData(const std::vector<base::FilePath> file_paths) {
     std::vector<ui::FileInfo> filenames;
-    for (const base::FilePath& file_path : file_paths)
+    for (const base::FilePath& file_path : file_paths) {
       filenames.emplace_back(file_path, /*display_name=*/base::FilePath());
+    }
     filenames_data_.emplace(std::move(filenames));
   }
 
@@ -263,8 +266,9 @@ class DropSenderView : public views::WidgetDelegateView,
     constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
     std::stringstream file_system_sources;
-    for (const GURL& file_system_url : file_system_urls)
+    for (const GURL& file_system_url : file_system_urls) {
       file_system_sources << file_system_url.spec() << "\n";
+    }
 
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(
@@ -306,8 +310,9 @@ class DropSenderView : public views::WidgetDelegateView,
         /*cursor_offset=*/gfx::Vector2d());
 
     // Payload.
-    if (filenames_data_)
+    if (filenames_data_) {
       data->provider().SetFilenames(filenames_data_.value());
+    }
     if (file_system_sources_data_) {
       data->provider().SetPickledData(
           ui::ClipboardFormatType::DataTransferCustomType(),
@@ -521,10 +526,11 @@ class HoldingSpaceUiDragAndDropBrowserTest
 
   // Sets data on `sender()` at the storage location specified by test params.
   void SetSenderData(const std::vector<base::FilePath>& file_paths) {
-    if (ShouldStoreDataIn(StorageLocationFlag::kFilenames))
+    if (ShouldStoreDataIn(StorageLocationFlag::kFilenames)) {
       sender()->SetFilenamesData(file_paths);
-    else
+    } else {
       sender()->ClearFilenamesData();
+    }
 
     if (!ShouldStoreDataIn(StorageLocationFlag::kFileSystemSources)) {
       sender()->ClearFileSystemSourcesData();
@@ -929,8 +935,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
   user_interactions.push_back(base::BindOnce(&DoubleClick));
   user_interactions.push_back(base::BindOnce(&GestureTap));
   user_interactions.push_back(base::BindOnce([](const views::View* view) {
-    while (!view->HasFocus())
+    while (!view->HasFocus()) {
       PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+    }
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }));
 
@@ -952,8 +959,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
         .WillRepeatedly(
             [&](wm::ActivationChangeObserver::ActivationReason reason,
                 aura::Window* gained_active, aura::Window* lost_active) {
-              if (gained_active->GetTitle() == u"Gallery")
+              if (gained_active->GetTitle() == u"Gallery") {
                 run_loop.Quit();
+              }
             });
     run_loop.Run();
 
@@ -1162,8 +1170,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
 
   // Add enough pinned items for there to be multiple rows in the section.
   constexpr size_t kNumPinnedItems = 3u;
-  for (size_t i = 0; i < kNumPinnedItems; ++i)
+  for (size_t i = 0; i < kNumPinnedItems; ++i) {
     AddPinnedFile();
+  }
 
   test_api().Show();
   ASSERT_TRUE(test_api().IsShowing());
@@ -1366,8 +1375,9 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
   void TearDownOnMainThread() override {
     HoldingSpaceUiBrowserTest::TearDownOnMainThread();
 
-    for (auto& observer : download_manager_observers_)
+    for (auto& observer : download_manager_observers_) {
       observer.ManagerGoingDown(download_manager_);
+    }
   }
 
   using AshDownload = testing::NiceMock<download::MockDownloadItem>;
@@ -1656,8 +1666,9 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
             });
 
     // Notify observers of the created download.
-    for (auto& observer : download_manager_observers_)
+    for (auto& observer : download_manager_observers_) {
       observer.OnDownloadCreated(download_manager_, ash_download_item.get());
+    }
 
     return ash_download_item;
   }

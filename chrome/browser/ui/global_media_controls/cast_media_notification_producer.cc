@@ -94,8 +94,9 @@ CastMediaNotificationProducer::~CastMediaNotificationProducer() = default;
 base::WeakPtr<media_message_center::MediaNotificationItem>
 CastMediaNotificationProducer::GetMediaItem(const std::string& id) {
   const auto item_it = items_.find(id);
-  if (item_it == items_.end())
+  if (item_it == items_.end()) {
     return nullptr;
+  }
   return item_it->second.GetWeakPtr();
 }
 
@@ -124,8 +125,9 @@ bool CastMediaNotificationProducer::HasFrozenItems() {
 void CastMediaNotificationProducer::OnItemShown(
     const std::string& id,
     global_media_controls::MediaItemUI* item_ui) {
-  if (item_ui)
+  if (item_ui) {
     item_ui_observer_set_.Observe(id, item_ui);
+  }
 }
 
 void CastMediaNotificationProducer::OnDialogDisplayed() {
@@ -162,8 +164,9 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   });
 
   for (const auto& route : routes) {
-    if (ShouldHideNotification(profile_, route))
+    if (ShouldHideNotification(profile_, route)) {
       continue;
+    }
 
     auto item_it = base::ranges::find(items_, route.media_route_id(),
                                       &Items::value_type::first);

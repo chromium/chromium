@@ -49,8 +49,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
   WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
-  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) =
-      delete;
+  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) = delete;
   ~WebAppBrowserTestBase() override = 0;
 
   WebAppProvider& provider();

@@ -22,7 +22,7 @@ namespace {
 // An error that has a bubble view.
 class BubbleViewError final : public GlobalErrorWithStandardBubble {
  public:
-  BubbleViewError() : bubble_view_close_count_(0) { }
+  BubbleViewError() : bubble_view_close_count_(0) {}
 
   BubbleViewError(const BubbleViewError&) = delete;
   BubbleViewError& operator=(const BubbleViewError&) = delete;
@@ -62,10 +62,9 @@ class BubbleViewError final : public GlobalErrorWithStandardBubble {
   base::WeakPtrFactory<BubbleViewError> weak_ptr_factory_{this};
 };
 
-} // namespace
+}  // namespace
 
-class GlobalErrorServiceBrowserTest : public InProcessBrowserTest {
-};
+class GlobalErrorServiceBrowserTest : public InProcessBrowserTest {};
 
 // Test that showing a error with a bubble view works.
 IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, ShowBubbleView) {

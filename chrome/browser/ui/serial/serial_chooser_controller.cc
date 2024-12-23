@@ -116,8 +116,9 @@ SerialChooserController::SerialChooserController(
 }
 
 SerialChooserController::~SerialChooserController() {
-  if (callback_)
+  if (callback_) {
     RunCallback(/*port=*/nullptr);
+  }
 }
 
 const device::mojom::SerialPortInfo& SerialChooserController::GetPortForTest(
@@ -226,8 +227,9 @@ std::u16string SerialChooserController::GetOption(size_t index) const {
 bool SerialChooserController::IsPaired(size_t index) const {
   DCHECK_LE(index, ports_.size());
 
-  if (!chooser_context_)
+  if (!chooser_context_) {
     return false;
+  }
 
   return chooser_context_->HasPortPermission(origin_, *ports_[index]);
 }
@@ -278,8 +280,9 @@ void SerialChooserController::OpenHelpCenterUrl() const {
   auto* web_contents = rfh && rfh->IsActive()
                            ? content::WebContents::FromRenderFrameHost(rfh)
                            : nullptr;
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   web_contents->OpenURL(
       content::OpenURLParams(
@@ -333,12 +336,14 @@ void SerialChooserController::AdapterPoweredChanged(BluetoothAdapter* adapter,
 
 void SerialChooserController::OnPortAdded(
     const device::mojom::SerialPortInfo& port) {
-  if (!DisplayDevice(port))
+  if (!DisplayDevice(port)) {
     return;
+  }
 
   ports_.push_back(port.Clone());
-  if (view())
+  if (view()) {
     view()->OnOptionAdded(ports_.size() - 1);
+  }
 }
 
 void SerialChooserController::OnPortRemoved(
@@ -348,8 +353,9 @@ void SerialChooserController::OnPortRemoved(
   if (it != ports_.end()) {
     const size_t index = it - ports_.begin();
     ports_.erase(it);
-    if (view())
+    if (view()) {
       view()->OnOptionRemoved(index);
+    }
   }
 }
 
@@ -367,12 +373,14 @@ void SerialChooserController::OnGetDevices(
 
   ports_.clear();
   for (auto& port : ports) {
-    if (DisplayDevice(*port))
+    if (DisplayDevice(*port)) {
       ports_.push_back(std::move(port));
+    }
   }
 
-  if (view())
+  if (view()) {
     view()->OnOptionsInitialized();
+  }
 }
 
 bool SerialChooserController::DisplayDevice(

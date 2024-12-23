@@ -172,8 +172,9 @@ class IntentPickerAppGridButton : public views::Button {
 
   bool IsGroupFocusTraversable() const override { return false; }
   views::View* GetSelectedViewForGroup(int group) override {
-    if (group != kGridItemGroupId)
+    if (group != kGridItemGroupId) {
       return nullptr;
+    }
 
     Views siblings = parent()->children();
     auto it = base::ranges::find_if(siblings, [](views::View* v) {
@@ -184,8 +185,9 @@ class IntentPickerAppGridButton : public views::Button {
   }
   void OnFocus() override {
     Button::OnFocus();
-    if (select_on_focus_)
+    if (select_on_focus_) {
       selected_callback_.Run(false);
+    }
   }
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
     if (action_data.action == ax::mojom::Action::kFocus) {
@@ -345,8 +347,9 @@ class IntentPickerLabelButton : public views::LabelButton {
       : LabelButton(std::move(callback),
                     base::UTF8ToUTF16(std::string_view(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!icon_model.IsEmpty())
+    if (!icon_model.IsEmpty()) {
       SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
+    }
     auto* provider = ChromeLayoutProvider::Get();
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
@@ -520,8 +523,9 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
       anchor_view, bubble_type, std::move(app_info),
       std::move(intent_picker_cb), web_contents, show_stay_in_chrome,
       show_remember_selection, initiating_origin);
-  if (highlighted_button)
+  if (highlighted_button) {
     intent_picker_bubble_->SetHighlightedButton(highlighted_button);
+  }
   intent_picker_bubble_->Initialize();
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(intent_picker_bubble_);
@@ -550,8 +554,9 @@ IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting() {
 
 // static
 void IntentPickerBubbleView::CloseCurrentBubble() {
-  if (intent_picker_bubble_)
+  if (intent_picker_bubble_) {
     intent_picker_bubble_->CloseBubble();
+  }
 }
 
 void IntentPickerBubbleView::CloseBubble() {
@@ -776,14 +781,16 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
 }
 
 void IntentPickerBubbleView::UpdateCheckboxState(size_t index) {
-  if (!remember_selection_checkbox_)
+  if (!remember_selection_checkbox_) {
     return;
+  }
   auto selected_app_type = app_info_[index].type;
   bool should_enable = selected_app_type != apps::PickerEntryType::kDevice;
 
   // Reset the checkbox state to the default unchecked if becomes disabled.
-  if (!should_enable)
+  if (!should_enable) {
     remember_selection_checkbox_->SetChecked(false);
+  }
   remember_selection_checkbox_->SetEnabled(should_enable);
 }
 
@@ -791,8 +798,9 @@ void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
   // This is called asynchronously during OnWidgetDestroying, at which point
   // intent_picker_bubble_ may have already been cleared or set to something
   // else.
-  if (intent_picker_bubble_ == this)
+  if (intent_picker_bubble_ == this) {
     intent_picker_bubble_ = nullptr;
+  }
 }
 
 BEGIN_METADATA(IntentPickerBubbleView)

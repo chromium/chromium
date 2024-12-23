@@ -60,8 +60,9 @@ class TestUserMetricsServiceClient
     : public ::metrics::TestMetricsServiceClient {
  public:
   std::optional<bool> GetCurrentUserMetricsConsent() const override {
-    if (should_use_user_consent_)
+    if (should_use_user_consent_) {
       return current_user_metrics_consent_;
+    }
     return std::nullopt;
   }
 

@@ -82,8 +82,9 @@ PermissionToggleRowView::PermissionToggleRowView(
 
   // Add extra details as sublabel.
   std::u16string detail = delegate->GetPermissionDetail(permission.type);
-  if (!detail.empty())
+  if (!detail.empty()) {
     row_view_->AddSecondaryLabel(detail);
+  }
 
   if (permission.requesting_origin.has_value()) {
     std::u16string requesting_origin_string;

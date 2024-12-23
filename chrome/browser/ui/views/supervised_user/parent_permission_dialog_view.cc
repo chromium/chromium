@@ -401,8 +401,9 @@ ParentPermissionDialogView::ParentPermissionDialogView(
 
 ParentPermissionDialogView::~ParentPermissionDialogView() {
   // Let the observer know that this object is being destroyed.
-  if (observer_)
+  if (observer_) {
     observer_->OnParentPermissionDialogViewDestroyed();
+  }
 
   // If the object is being destroyed but the callback hasn't been run, then
   // this is a failure case.
@@ -419,8 +420,9 @@ void ParentPermissionDialogView::SetIdentityManagerForTesting(
 
 void ParentPermissionDialogView::SetRepromptAfterIncorrectCredential(
     bool reprompt) {
-  if (reprompt_after_incorrect_credential_ == reprompt)
+  if (reprompt_after_incorrect_credential_ == reprompt) {
     return;
+  }
   reprompt_after_incorrect_credential_ = reprompt;
   OnPropertyChanged(&reprompt_after_incorrect_credential_,
                     views::kPropertyEffectsNone);
@@ -645,8 +647,9 @@ void ParentPermissionDialogView::RemoveObserver() {
 
 void ParentPermissionDialogView::SetSelectedParentPermissionEmail(
     const std::u16string& email_address) {
-  if (selected_parent_permission_email_ == email_address)
+  if (selected_parent_permission_email_ == email_address) {
     return;
+  }
   selected_parent_permission_email_ = email_address;
   OnPropertyChanged(&selected_parent_permission_email_,
                     views::kPropertyEffectsNone);
@@ -659,8 +662,9 @@ std::u16string ParentPermissionDialogView::GetSelectedParentPermissionEmail()
 
 void ParentPermissionDialogView::SetParentPermissionCredential(
     const std::u16string& credential) {
-  if (parent_permission_credential_ == credential)
+  if (parent_permission_credential_ == credential) {
     return;
+  }
   parent_permission_credential_ = credential;
   OnPropertyChanged(&parent_permission_credential_,
                     views::kPropertyEffectsNone);
@@ -687,8 +691,9 @@ void ParentPermissionDialogView::ShowDialogInternal() {
           : views::DialogDelegate::CreateDialogWidget(this, nullptr, nullptr);
   widget->Show();
 
-  if (test_view_observer)
+  if (test_view_observer) {
     test_view_observer->OnTestParentPermissionDialogViewCreated(this);
+  }
 }
 
 void ParentPermissionDialogView::LoadParentEmailAddresses() {
@@ -697,13 +702,15 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
 
   std::u16string primary_parent_email =
       base::UTF8ToUTF16(service->GetCustodianEmailAddress());
-  if (!primary_parent_email.empty())
+  if (!primary_parent_email.empty()) {
     parent_permission_email_addresses_.push_back(primary_parent_email);
+  }
 
   std::u16string secondary_parent_email =
       base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
-  if (!secondary_parent_email.empty())
+  if (!secondary_parent_email.empty()) {
     parent_permission_email_addresses_.push_back(secondary_parent_email);
+  }
 }
 
 void ParentPermissionDialogView::CloseWithReason(
@@ -722,8 +729,9 @@ std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
-  if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email))
+  if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email)) {
     return service->GetCustodianObfuscatedGaiaId();
+  }
 
   CHECK_EQ(service->GetSecondCustodianEmailAddress(),
            base::UTF16ToUTF8(parent_email))
@@ -780,8 +788,9 @@ void ParentPermissionDialogView::StartParentReauthProofTokenFetch(
 
 void ParentPermissionDialogView::SendResultOnce(
     ParentPermissionDialog::Result result) {
-  if (!params_->done_callback)
+  if (!params_->done_callback) {
     return;
+  }
   // Record UMA metrics.
   switch (result) {
     case ParentPermissionDialog::Result::kParentPermissionReceived:
@@ -891,8 +900,9 @@ void ParentPermissionDialogImpl::ShowDialog() {
   // Ownership of dialog_view is passed to the views system when the dialog is
   // shown here.  We check for the validity of view_ because in theory it could
   // disappear from beneath this object before ShowDialog() is called.
-  if (view_)
+  if (view_) {
     view_->ShowDialog();
+  }
 }
 
 ParentPermissionDialogImpl::~ParentPermissionDialogImpl() {

@@ -106,36 +106,36 @@ class UrlIdentityTest : public testing::Test {
 TEST_F(UrlIdentityTest, AllowlistedTypesAreAllowed) {
   std::string extension_id(kTestExtensionId);
   std::vector<TestCase> test_cases = {
-    {GURL("http://example.com"),
-     {Type::kDefault},
-     {},
-     {
-         .type = Type::kDefault,
-         .name = u"http://example.com",
-     }},
+      {GURL("http://example.com"),
+       {Type::kDefault},
+       {},
+       {
+           .type = Type::kDefault,
+           .name = u"http://example.com",
+       }},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {GURL(kTestIsolatedWebAppUrl),
-     {Type::kIsolatedWebApp},
-     {},
-     {
-         .type = Type::kIsolatedWebApp,
-         .name = u"Test IWA Name",
-     }},
-    {extensions::Extension::GetBaseURLFromExtensionId(extension_id),
-     {Type::kChromeExtension},
-     {},
-     {
-         .type = Type::kChromeExtension,
-         .name = u"Test Extension 1",
-     }},
+      {GURL(kTestIsolatedWebAppUrl),
+       {Type::kIsolatedWebApp},
+       {},
+       {
+           .type = Type::kIsolatedWebApp,
+           .name = u"Test IWA Name",
+       }},
+      {extensions::Extension::GetBaseURLFromExtensionId(extension_id),
+       {Type::kChromeExtension},
+       {},
+       {
+           .type = Type::kChromeExtension,
+           .name = u"Test Extension 1",
+       }},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-    {GURL("file:///tmp/index.html"),
-     {Type::kFile},
-     {},
-     {
-         .type = Type::kFile,
-         .name = u"file:///tmp/index.html",
-     }},
+      {GURL("file:///tmp/index.html"),
+       {Type::kFile},
+       {},
+       {
+           .type = Type::kFile,
+           .name = u"file:///tmp/index.html",
+       }},
   };
 
   for (const auto& test_case : test_cases) {

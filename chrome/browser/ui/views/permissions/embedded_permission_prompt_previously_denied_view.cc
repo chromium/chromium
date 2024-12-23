@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 
 #include "base/memory/weak_ptr.h"
-
 #include "chrome/browser/ui/url_identity.h"
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -82,9 +81,9 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetButtonsConfiguration() const {
       l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING),
       ButtonType::kContinueNotAllowing, ui::ButtonStyle::kTonal);
 
-    buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
-        ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
+  buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME),
+      ButtonType::kAllowThisTime, ui::ButtonStyle::kTonal, kAllowThisTimeId);
 
   return buttons;
 }

@@ -141,6 +141,7 @@ void TestToolbarActionViewController::SetEnabled(bool is_enabled) {
 }
 
 void TestToolbarActionViewController::UpdateDelegate() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->UpdateState();
+  }
 }

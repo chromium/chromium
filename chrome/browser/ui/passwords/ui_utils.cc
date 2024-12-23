@@ -190,9 +190,8 @@ std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  return (
-      sync_service &&
-      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+  return (sync_service &&
+          sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
 }
 
 std::string GetGooglePasswordManagerSubPageURLStr() {

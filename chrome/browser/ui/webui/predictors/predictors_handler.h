@@ -12,7 +12,7 @@
 namespace predictors {
 class AutocompleteActionPredictor;
 class LoadingPredictor;
-}
+}  // namespace predictors
 
 class Profile;
 

@@ -272,11 +272,13 @@ const char kEnglishNewZealand[] = "en-NZ";
 
 bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
                          const SpeechRecognitionAvailability& second) {
-  if (first.use_on_device != second.use_on_device)
+  if (first.use_on_device != second.use_on_device) {
     return false;
+  }
 
-  if (first.use_on_device)
+  if (first.use_on_device) {
     return first.on_device_availability == second.on_device_availability;
+  }
 
   return first.server_based_availability == second.server_based_availability;
 }

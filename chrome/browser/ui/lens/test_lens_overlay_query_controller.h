@@ -97,8 +97,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return sent_page_content_objects_request_;
   }
 
-  const lens::LensOverlayObjectsRequest& sent_partial_page_content_objects_request()
-      const {
+  const lens::LensOverlayObjectsRequest&
+  sent_partial_page_content_objects_request() const {
     return sent_partial_page_content_objects_request_;
   }
 

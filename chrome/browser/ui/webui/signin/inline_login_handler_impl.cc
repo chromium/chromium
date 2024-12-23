@@ -167,8 +167,9 @@ credential_provider::UiExitCodes ValidateSigninEmail(
     return credential_provider::kUiecEMailMissmatch;
   }
 
-  if (email_domains_parameter.empty())
+  if (email_domains_parameter.empty()) {
     return credential_provider::kUiecSuccess;
+  }
 
   std::vector<std::string> all_email_domains =
       GetEmailDomainsFromParameter(email_domains_parameter);
@@ -182,21 +183,25 @@ credential_provider::UiExitCodes ValidateSigninEmail(
 #endif
 
 void SetProfileLocked(const base::FilePath profile_path, bool locked) {
-  if (profile_path.empty())
+  if (profile_path.empty()) {
     return;
+  }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
+  if (!profile_manager) {
     return;
+  }
 
   ProfileAttributesEntry* entry =
       profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
-  if (!entry)
+  if (!entry) {
     return;
+  }
 
-  if (signin_util::IsForceSigninEnabled())
+  if (signin_util::IsForceSigninEnabled()) {
     entry->LockForceSigninProfile(locked);
+  }
 }
 
 void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
@@ -498,8 +503,9 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
   // make sure the webui is aware.
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
-  if (HasFromProfilePickerURLParameter(current_url))
+  if (HasFromProfilePickerURLParameter(current_url)) {
     params.Set("dontResizeNonEmbeddedPages", true);
+  }
 
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
@@ -515,15 +521,17 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
             &email_domains)) {
       std::vector<std::string> all_email_domains =
           GetEmailDomainsFromParameter(email_domains);
-      if (all_email_domains.size() == 1)
+      if (all_email_domains.size() == 1) {
         params.Set("emailDomain", all_email_domains[0]);
+      }
     }
 
     std::string show_tos;
     if (net::GetValueForKeyInQuery(
             current_url, credential_provider::kShowTosSwitch, &show_tos)) {
-      if (!show_tos.empty())
+      if (!show_tos.empty()) {
         params.Set("showTos", show_tos);
+      }
     }
 
     // Prevent opening a new window if the embedded page fails to load.
@@ -588,8 +596,9 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   }
 
   // This value exists only for webview sign in.
-  if (params.trusted_found)
+  if (params.trusted_found) {
     confirm_untrusted_signin_ = !params.trusted_value;
+  }
 
   DCHECK(!params.email.empty());
   DCHECK(!params.gaia_id.empty());
@@ -716,8 +725,9 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
 
   AboutSigninInternals* about_signin_internals =
       AboutSigninInternalsFactory::GetForProfile(profile);
-  if (about_signin_internals)
+  if (about_signin_internals) {
     about_signin_internals->OnAuthenticationResultReceived("Successful");
+  }
 
   std::string signin_scoped_device_id =
       GetSigninScopedDeviceIdForProfile(profile);
@@ -770,14 +780,16 @@ void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
 
 void InlineLoginHandlerImpl::SendLSTFetchResultsMessage(
     const base::Value& arg) {
-  if (IsJavascriptAllowed())
+  if (IsJavascriptAllowed()) {
     FireWebUIListener("send-lst-fetch-results", arg);
+  }
 }
 
 Browser* InlineLoginHandlerImpl::GetDesktopBrowser() {
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  if (!browser)
+  if (!browser) {
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui()));
+  }
   return browser;
 }
 

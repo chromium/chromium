@@ -72,8 +72,9 @@ ImmersiveModeControllerMac::RevealedLock::RevealedLock(
     : controller_(std::move(controller)) {}
 
 ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
-  if (auto* controller = controller_.get())
+  if (auto* controller = controller_.get()) {
     controller->LockDestroyed();
+  }
 }
 
 ImmersiveModeControllerMac::ImmersiveModeControllerMac(bool separate_tab_strip)
@@ -195,8 +196,9 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // Notify BrowserView about the fullscreen exit so that the top container
     // can be reparented, otherwise it might be destroyed along with the
     // overlay widget.
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnImmersiveFullscreenExited();
+    }
 
     // Rollback the view shuffling from enablement.
     MoveChildren(browser_view_->overlay_widget(), browser_view_->GetWidget());
@@ -328,8 +330,9 @@ void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
   if (browser_view_->top_container()->Contains(focused_now) ||
       browser_view_->tab_overlay_view()->Contains(focused_now)) {
-    if (!focus_lock_)
+    if (!focus_lock_) {
       focus_lock_ = GetRevealedLock(ANIMATE_REVEAL_NO);
+    }
   } else {
     focus_lock_.reset();
   }

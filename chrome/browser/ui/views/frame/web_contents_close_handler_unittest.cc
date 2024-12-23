@@ -24,9 +24,7 @@ class MockWebContentsCloseHandlerDelegate
 
   ~MockWebContentsCloseHandlerDelegate() override = default;
 
-  void Clear() {
-    got_clone_ = got_destroy_ = false;
-  }
+  void Clear() { got_clone_ = got_destroy_ = false; }
 
   bool got_clone() const { return got_clone_; }
   void clear_got_clone() { got_clone_ = false; }
@@ -57,9 +55,7 @@ class WebContentsCloseHandlerTest : public testing::Test {
   ~WebContentsCloseHandlerTest() override = default;
 
  protected:
-  bool IsTimerRunning() const {
-    return close_handler_.timer_.IsRunning();
-  }
+  bool IsTimerRunning() const { return close_handler_.timer_.IsRunning(); }
 
   MockWebContentsCloseHandlerDelegate close_handler_delegate_;
   WebContentsCloseHandler close_handler_;

@@ -53,8 +53,9 @@ void OpenNewWindowForProfile(Profile* profile) {
 
 void DeleteProfileAtPath(base::FilePath file_path,
                          ProfileMetrics::ProfileDelete deletion_source) {
-  if (!profiles::IsMultipleProfilesEnabled())
+  if (!profiles::IsMultipleProfilesEnabled()) {
     return;
+  }
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
       .MaybeScheduleProfileForDeletion(

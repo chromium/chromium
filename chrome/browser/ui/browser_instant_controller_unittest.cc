@@ -73,10 +73,12 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
         num_reloads_(0) {}
 
   void DidStartNavigation(content::NavigationHandle* navigation) override {
-    if (navigation->GetReloadType() == content::ReloadType::NONE)
+    if (navigation->GetReloadType() == content::ReloadType::NONE) {
       return;
-    if (*url_ == navigation->GetURL())
+    }
+    if (*url_ == navigation->GetURL()) {
       num_reloads_++;
+    }
     current_url_ = navigation->GetURL();
   }
 

@@ -34,8 +34,9 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
   FileSelectionUser() : file_selection_initialisation_in_progress(false) {}
 
   ~FileSelectionUser() override {
-    if (select_file_dialog_.get())
+    if (select_file_dialog_.get()) {
       select_file_dialog_->ListenerDestroyed();
+    }
   }
 
   void StartFileSelection() {

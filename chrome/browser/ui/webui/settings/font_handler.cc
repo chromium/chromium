@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 #include <vector>

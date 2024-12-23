@@ -50,7 +50,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 
   ~PermissionRHSIndicatorsInteractiveUITest() override = default;
   PermissionRHSIndicatorsInteractiveUITest(
-    const PermissionRHSIndicatorsInteractiveUITest&) = delete;
+      const PermissionRHSIndicatorsInteractiveUITest&) = delete;
   void operator=(const PermissionRHSIndicatorsInteractiveUITest&) = delete;
 
   void SetUp() override {

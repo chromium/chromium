@@ -417,8 +417,9 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 
   bool Signout() {
     OpenProfileMenu();
-    if (HasFatalFailure())
+    if (HasFatalFailure()) {
       return false;
+    }
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSignoutButtonClicked();
     return true;
@@ -648,8 +649,9 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
 
   bool Reauth() {
     OpenProfileMenu();
-    if (HasFatalFailure())
+    if (HasFatalFailure()) {
       return false;
+    }
     // This test does not check that the reauth button is displayed in the menu,
     // but this is tested in ProfileMenuClickTest.
     base::HistogramTester histogram_tester;
@@ -839,8 +841,9 @@ class ProfileMenuClickTest : public SyncTest,
       size_t index) = 0;
 
   SyncServiceImplHarness* sync_harness() {
-    if (sync_harness_)
+    if (sync_harness_) {
       return sync_harness_.get();
+    }
 
     sync_service()->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
@@ -868,9 +871,10 @@ class ProfileMenuClickTest : public SyncTest,
   }
 
   void AdvanceFocus(int count) {
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; i++) {
       profile_menu_view()->GetFocusManager()->AdvanceFocus(
           /*reverse=*/false);
+    }
   }
 
   views::View* GetFocusedItem() {

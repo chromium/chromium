@@ -73,8 +73,9 @@ std::unique_ptr<views::View> CreateValuesView(
     const std::u16string& value =
         are_new_values ? diff_entry.first_value : diff_entry.second_value;
     // Don't add rows for empty original values.
-    if (value.empty())
+    if (value.empty()) {
       continue;
+    }
     views::View* value_row =
         view->AddChildView(std::make_unique<views::View>());
     value_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -308,8 +309,9 @@ void UpdateAddressProfileView::Hide() {
   // do that here. This will clear out |controller_|'s reference to |this|. Note
   // that WindowClosing() happens only after the _asynchronous_ Close() task
   // posted in CloseBubble() completes, but we need to fix references sooner.
-  if (controller_)
+  if (controller_) {
     controller_->OnBubbleClosed();
+  }
 
   controller_ = nullptr;
 }

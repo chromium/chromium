@@ -74,8 +74,9 @@ TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 std::vector<Tab*> TabStripLayoutHelper::GetTabs() const {
   std::vector<Tab*> tabs;
   for (const TabSlot& slot : slots_) {
-    if (slot.type == ViewType::kTab)
+    if (slot.type == ViewType::kTab) {
       tabs.push_back(static_cast<Tab*>(slot.view));
+    }
   }
 
   return tabs;
@@ -83,8 +84,9 @@ std::vector<Tab*> TabStripLayoutHelper::GetTabs() const {
 
 std::vector<TabSlotView*> TabStripLayoutHelper::GetTabSlotViews() const {
   std::vector<TabSlotView*> views;
-  for (const TabSlot& slot : slots_)
+  for (const TabSlot& slot : slots_) {
     views.push_back(slot.view);
+  }
   return views;
 }
 
@@ -117,8 +119,9 @@ void TabStripLayoutHelper::RemoveTab(Tab* tab) {
   auto it = base::ranges::find_if(slots_, [tab](const TabSlot& slot) {
     return slot.type == ViewType::kTab && slot.view == tab;
   });
-  if (it != slots_.end())
+  if (it != slots_.end()) {
     slots_.erase(it);
+  }
 }
 
 void TabStripLayoutHelper::MoveTab(
@@ -133,8 +136,9 @@ void TabStripLayoutHelper::MoveTab(
       GetSlotInsertionIndexForNewTab(new_index, moving_tab_group);
   slots_.insert(slots_.begin() + new_slot_index, moving_tab);
 
-  if (moving_tab_group.has_value())
+  if (moving_tab_group.has_value()) {
     UpdateGroupHeaderIndex(moving_tab_group.value());
+  }
 }
 
 void TabStripLayoutHelper::SetTabPinned(int model_index, TabPinned pinned) {
@@ -315,8 +319,9 @@ int TabStripLayoutHelper::GetSlotInsertionIndexForNewTab(
     std::optional<tab_groups::TabGroupId> group) const {
   int slot_index = GetFirstSlotIndexForTabModelIndex(new_model_index);
 
-  if (slot_index == static_cast<int>(slots_.size()))
+  if (slot_index == static_cast<int>(slots_.size())) {
     return slot_index;
+  }
 
   // If |slot_index| points to a group header and the new tab's |group|
   // matches, the tab goes to the right of the header to keep it
@@ -361,14 +366,17 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
   // We simply return the first slot that has a matching model index.
   for (int slot_index = 0; slot_index < static_cast<int>(slots_.size());
        ++slot_index) {
-    if (slots_[slot_index].state.IsClosed())
+    if (slots_[slot_index].state.IsClosed()) {
       continue;
+    }
 
-    if (model_index == current_model_index)
+    if (model_index == current_model_index) {
       return slot_index;
+    }
 
-    if (slots_[slot_index].type == ViewType::kTab)
+    if (slots_[slot_index].type == ViewType::kTab) {
       current_model_index += 1;
+    }
   }
 
   // If there's no slot in |slots_| corresponding to |model_index|, then
@@ -394,12 +402,14 @@ void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
                                                 bool active) {
   // If the slot is collapsed, its width should never be reported as the
   // current active or inactive tab width - it's not even visible.
-  if (SlotIsCollapsedTab(tab_index))
+  if (SlotIsCollapsedTab(tab_index)) {
     return;
-  if (active)
+  }
+  if (active) {
     active_tab_width_ = tab_width;
-  else
+  } else {
     inactive_tab_width_ = tab_width;
+  }
 }
 
 bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {

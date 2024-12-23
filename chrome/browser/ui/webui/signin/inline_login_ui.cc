@@ -147,63 +147,63 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static constexpr webui::ResourcePath kResources[] = {
-    {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
-    {"error_screen.html.js",
-     IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
-    {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
-    // Resources for the server-based edu coexistence flow.
-    {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
+      {"account_manager_shared.css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
+      {"error_screen.html.js",
+       IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_HTML_JS},
+      {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
+      // Resources for the server-based edu coexistence flow.
+      {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
 
-    {"account_manager_signin_blocked_by_policy.svg",
-     IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
+      {"account_manager_signin_blocked_by_policy.svg",
+       IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
-    {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
-    {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
+      {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
+      {"account_manager_welcome_2x.png", IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG},
+      {"googleg.svg", IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG},
 #endif
   };
   source->AddResourcePaths(kResources);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
-    {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
+      {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
+      {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
-    {"ok", IDS_APP_OK},
-    {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
-    {"accountManagerDialogWelcomeTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
-    {"accountManagerDialogWelcomeCheckbox",
-     IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
-    {"accountManagerDialogArcAccountPickerTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
-    {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
-    {"accountUseInArcButtonLabel",
-     IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
-    {"accountManagerErrorNoInternetTitle",
-     IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
-    {"accountManagerErrorNoInternetBody",
-     IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_BODY},
-    {"accountManagerErrorCannotAddAccountTitle",
-     IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
-    {"accountManagerErrorCannotAddAccountBody",
-     IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
-    {"accountManagerDialogSigninBlockedByPolicyTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE},
-    {"accountManagerDialogSigninBlockedByPolicyBody",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY},
-    {"accountManagerDialogSigninErrorTitle",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_TITLE},
-    {"accountManagerDialogSigninErrorBody",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY},
-    {"accountManagerDialogSigninBlockedByPolicyImageAlt",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
-    {"accountManagerDialogSigninSpinnerText",
-     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT},
+      {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
+      {"ok", IDS_APP_OK},
+      {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
+      {"accountManagerDialogWelcomeTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
+      {"accountManagerDialogWelcomeCheckbox",
+       IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
+      {"accountManagerDialogArcAccountPickerTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
+      {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
+      {"accountUseInArcButtonLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
+      {"accountManagerErrorNoInternetTitle",
+       IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
+      {"accountManagerErrorNoInternetBody",
+       IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_BODY},
+      {"accountManagerErrorCannotAddAccountTitle",
+       IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
+      {"accountManagerErrorCannotAddAccountBody",
+       IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
+      {"accountManagerDialogSigninBlockedByPolicyTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE},
+      {"accountManagerDialogSigninBlockedByPolicyBody",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY},
+      {"accountManagerDialogSigninErrorTitle",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_TITLE},
+      {"accountManagerDialogSigninErrorBody",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_ERROR_BODY},
+      {"accountManagerDialogSigninBlockedByPolicyImageAlt",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
+      {"accountManagerDialogSigninSpinnerText",
+       IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_SPINNER_TEXT},
 #else
-    {"title", IDS_CHROME_SIGNIN_TITLE},
+      {"title", IDS_CHROME_SIGNIN_TITLE},
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -352,8 +352,9 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   CreateAndAddWebUIDataSource(profile);
 
-  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL()))
+  if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL())) {
     return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(

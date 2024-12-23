@@ -104,8 +104,7 @@ class ExtensionIconSource : public content::URLDataSource {
 
   // Loads the extension's |icon| for the given |request_id| and returns the
   // image to the client.
-  void LoadExtensionImage(const ExtensionResource& icon,
-                          int request_id);
+  void LoadExtensionImage(const ExtensionResource& icon, int request_id);
 
   // Loads the favicon image for the app associated with the |request_id|. If
   // the image does not exist, we fall back to the default image.

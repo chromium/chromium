@@ -17,7 +17,7 @@ class Browser;
 namespace display {
 class Display;
 class Screen;
-}
+}  // namespace display
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowSizer

@@ -134,13 +134,15 @@ gfx::Size SelectedKeywordView::GetMinimumSize() const {
 
 void SelectedKeywordView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
-  if (!using_custom_image_)
+  if (!using_custom_image_) {
     SetCustomImage(gfx::Image());
+  }
 }
 
 void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
-  if (keyword_ == keyword)
+  if (keyword_ == keyword) {
     return;
+  }
   keyword_ = keyword;
   OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
 

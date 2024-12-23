@@ -180,25 +180,29 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
       }
 
       const base::Value::Dict* dict = data->arg2()->GetIfDict();
-      if (!dict)
+      if (!dict) {
         return false;
+      }
 
       // Get the secure DNS mode.
       const std::string* secure_dns_mode = dict->FindString("mode");
-      if (!secure_dns_mode)
+      if (!secure_dns_mode) {
         return false;
+      }
       *out_secure_dns_mode = *secure_dns_mode;
 
       // Get the DoH config string.
       const std::string* doh_config = dict->FindString("config");
-      if (!doh_config)
+      if (!doh_config) {
         return false;
+      }
       *out_doh_config = *doh_config;
 
       // Get the forced management description.
       std::optional<int> management_mode = dict->FindInt("managementMode");
-      if (!management_mode.has_value())
+      if (!management_mode.has_value()) {
         return false;
+      }
       *out_management_mode = *management_mode;
 
       return true;
@@ -221,18 +225,21 @@ class SecureDnsHandlerTest : public InProcessBrowserTest {
         continue;
       }
       const base::Value::Dict* dict = data->arg2()->GetIfDict();
-      if (!dict)
+      if (!dict) {
         return false;
+      }
       std::optional<bool> doh_with_identifiers_active =
           dict->FindBool("dohWithIdentifiersActive");
-      if (!doh_with_identifiers_active)
+      if (!doh_with_identifiers_active) {
         return false;
+      }
       *out_doh_with_identifiers_active = *doh_with_identifiers_active;
 
       const std::string* doh_config_for_display =
           dict->FindString("configForDisplay");
-      if (!doh_config_for_display)
+      if (!doh_config_for_display) {
         return false;
+      }
       *out_doh_config_for_display = *doh_config_for_display;
 
       return true;

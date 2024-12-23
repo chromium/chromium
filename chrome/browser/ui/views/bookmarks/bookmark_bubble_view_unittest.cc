@@ -53,7 +53,7 @@ using bookmarks::BookmarkModel;
 
 namespace {
 const char kTestBookmarkURL[] = "http://www.google.com";
-} // namespace
+}  // namespace
 
 class BookmarkBubbleViewTestBase : public BrowserWithTestWindowTest {
  public:

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_HATS_SURVEY_CLIENT_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 

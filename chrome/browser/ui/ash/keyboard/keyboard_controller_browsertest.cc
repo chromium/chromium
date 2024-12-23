@@ -59,8 +59,9 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
 
   // ChromeKeyboardControllerClient::Observer
   void OnKeyboardVisibilityChanged(bool visible) override {
-    if (visible == visible_)
+    if (visible == visible_) {
       run_loop_.QuitWhenIdle();
+    }
   }
 
  private:
@@ -82,8 +83,9 @@ class KeyboardLoadedWaiter : public ChromeKeyboardControllerClient::Observer {
   }
 
   void Wait() {
-    if (ChromeKeyboardControllerClient::Get()->is_keyboard_loaded())
+    if (ChromeKeyboardControllerClient::Get()->is_keyboard_loaded()) {
       return;
+    }
     run_loop_.Run();
   }
 
@@ -141,9 +143,7 @@ class KeyboardControllerWebContentTest : public InProcessBrowserTest {
 
   ~KeyboardControllerWebContentTest() override = default;
 
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void TearDown() override { InProcessBrowserTest::TearDown(); }
 

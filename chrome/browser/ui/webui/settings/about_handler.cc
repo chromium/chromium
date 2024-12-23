@@ -133,8 +133,9 @@ bool CanChangeChannel(Profile* profile) {
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.
     ash::CrosSettings::Get()->GetBoolean(ash::kReleaseChannelDelegated, &value);
-    if (!value)
+    if (!value) {
       return false;
+    }
 
     // Get the currently logged-in user and check if it is affiliated.
     const user_manager::User* user =
@@ -186,8 +187,9 @@ base::FilePath FindRegulatoryLabelDir() {
   }
 
   // Try the fallback region code if no directory was found.
-  if (region_path.empty() && region != kDefaultRegionCode)
+  if (region_path.empty() && region != kDefaultRegionCode) {
     region_path = GetRegulatoryLabelDirForRegion(kDefaultRegionCode);
+  }
 
   return region_path;
 }
@@ -202,8 +204,9 @@ std::string ReadRegulatoryLabelText(const base::FilePath& label_dir_path) {
           .AppendASCII(kRegulatoryLabelTextFilename);
 
   std::string contents;
-  if (base::ReadFileToString(text_path, &contents))
+  if (base::ReadFileToString(text_path, &contents)) {
     return contents;
+  }
   return std::string();
 }
 
@@ -915,17 +918,19 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
                     state == VersionUpdater::PROMOTE_ENABLED;
 
   std::u16string text;
-  if (actionable)
+  if (actionable) {
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL);
-  else if (state == VersionUpdater::PROMOTED)
+  } else if (state == VersionUpdater::PROMOTED) {
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL_IS_ON);
+  }
 
   base::Value::Dict promo_state;
   promo_state.Set("hidden", hidden);
   promo_state.Set("disabled", disabled);
   promo_state.Set("actionable", actionable);
-  if (!text.empty())
+  if (!text.empty()) {
     promo_state.Set("text", text);
+  }
 
   FireWebUIListener("promotion-state-changed", promo_state);
 }

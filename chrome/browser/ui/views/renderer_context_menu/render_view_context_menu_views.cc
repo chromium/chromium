@@ -54,8 +54,9 @@ class RenderViewContextMenuViews::SubmenuViewObserver
       : parent_(parent), submenu_view_(submenu_view) {
     submenu_view_observation_.Observe(submenu_view);
     auto* widget = submenu_view_->host();
-    if (widget)
+    if (widget) {
       submenu_widget_observation_.Observe(widget);
+    }
   }
 
   SubmenuViewObserver(const SubmenuViewObserver&) = delete;
@@ -84,8 +85,9 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   void OnViewAddedToWidget(views::View* observed_view) override {
     DCHECK_EQ(submenu_view_, observed_view);
     auto* widget = submenu_view_->host();
-    if (widget)
+    if (widget) {
       submenu_widget_observation_.Observe(widget);
+    }
   }
 
   // WidgetObserver:
@@ -138,8 +140,8 @@ RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
 void RenderViewContextMenuViews::RunMenuAt(views::Widget* parent,
                                            const gfx::Point& point,
                                            ui::mojom::MenuSourceType type) {
-  static_cast<ToolkitDelegateViews*>(toolkit_delegate())->
-      RunMenuAt(parent, point, type);
+  static_cast<ToolkitDelegateViews*>(toolkit_delegate())
+      ->RunMenuAt(parent, point, type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +163,8 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 
     case IDC_CONTENT_CONTEXT_REDO:
       // TODO(jcampan): should it be Ctrl-Y?
-      *accel = ui::Accelerator(ui::VKEY_Z,
-                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+      *accel =
+          ui::Accelerator(ui::VKEY_Z, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
       return true;
 
     case IDC_CONTENT_CONTEXT_CUT:
@@ -178,8 +180,8 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       return true;
 
     case IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE:
-      *accel = ui::Accelerator(ui::VKEY_V,
-                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+      *accel =
+          ui::Accelerator(ui::VKEY_V, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
       return true;
 
     case IDC_CONTENT_CONTEXT_SELECTALL:
@@ -216,8 +218,9 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       if (IsHTML5Fullscreen()) {
         // Per UX design feedback, do not show an accelerator when press and
         // hold is required to exit fullscreen.
-        if (IsPressAndHoldEscRequiredToExitFullscreen())
+        if (IsPressAndHoldEscRequiredToExitFullscreen()) {
           return false;
+        }
 
         *accel = ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
         return true;
@@ -232,8 +235,9 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       // (i.e., F11).
       ui::AcceleratorProvider* accelerator_provider =
           GetBrowserAcceleratorProvider();
-      if (!accelerator_provider)
+      if (!accelerator_provider) {
         return false;
+      }
 
       return accelerator_provider->GetAcceleratorForCommandId(IDC_FULLSCREEN,
                                                               accel);
@@ -337,8 +341,9 @@ bool RenderViewContextMenuViews::IsCommandIdEnabled(int command_id) const {
 ui::AcceleratorProvider*
 RenderViewContextMenuViews::GetBrowserAcceleratorProvider() const {
   Browser* browser = GetBrowser();
-  if (!browser)
+  if (!browser) {
     return nullptr;
+  }
 
   return BrowserView::GetBrowserViewForBrowser(browser);
 }
@@ -361,18 +366,21 @@ void RenderViewContextMenuViews::AppendPlatformEditableItems() {
 }
 
 void RenderViewContextMenuViews::Show() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return;
+  }
 
   // Menus need a Widget to work. If we're not the active tab we won't
   // necessarily be in a widget.
   views::Widget* top_level_widget = GetTopLevelWidget();
-  if (!top_level_widget)
+  if (!top_level_widget) {
     return;
+  }
 
   // Don't show empty menus.
-  if (menu_model().GetItemCount() == 0)
+  if (menu_model().GetItemCount() == 0) {
     return;
+  }
 
   // Convert from target window coordinates to root window coordinates.
   gfx::Point screen_point(params().x, params().y);
@@ -393,9 +401,10 @@ void RenderViewContextMenuViews::Show() {
                            ->GetSubmenu();
   if (submenu_view) {
     for (auto& observer : observers_) {
-      if (submenu_view->host())
+      if (submenu_view->host()) {
         observer.OnContextMenuShown(
             params_, submenu_view->host()->GetWindowBoundsInScreen());
+      }
     }
 
     submenu_view_observer_ =

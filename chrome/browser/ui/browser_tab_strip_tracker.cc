@@ -43,8 +43,9 @@ bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {
 }
 
 void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
-  if (!ShouldTrackBrowser(browser))
+  if (!ShouldTrackBrowser(browser)) {
     return;
+  }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_strip_model->AddObserver(tab_strip_model_observer_);

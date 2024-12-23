@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PERSONALIZATION_PERSONALIZATION_HUB_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PERSONALIZATION_PERSONALIZATION_HUB_HANDLER_H_
 
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-
 #include "base/values.h"
+#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace ash::settings {
 

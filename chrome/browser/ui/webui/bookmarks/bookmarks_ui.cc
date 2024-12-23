@@ -124,8 +124,9 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"toastItemDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
       {"undo", IDS_BOOKMARK_BAR_UNDO},
   };
-  for (const auto& str : kStrings)
+  for (const auto& str : kStrings) {
     AddLocalizedString(source, str.name, str.id);
+  }
 
   return source;
 }

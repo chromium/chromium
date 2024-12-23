@@ -42,8 +42,9 @@ void PageInfoHistoryController::InitRow(views::View* container) {
 
 void PageInfoHistoryController::UpdateRow(
     std::optional<base::Time> last_visit) {
-  if (!container_tracker_.view())
+  if (!container_tracker_.view()) {
     return;
+  }
 
   auto* container_view =
       static_cast<PageInfoMainView::ContainerView*>(container_tracker_.view());

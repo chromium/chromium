@@ -30,8 +30,9 @@
 // static
 TabScrubberChromeOS* TabScrubberChromeOS::GetInstance() {
   static TabScrubberChromeOS* instance = nullptr;
-  if (!instance)
+  if (!instance) {
     instance = new TabScrubberChromeOS();
+  }
   return instance;
 }
 
@@ -51,8 +52,9 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
 
   // The contents insets are logical rather than physical, so reverse them for
   // RTL.
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     std::swap(left, right);
+  }
 
   // For very narrow tabs, the contents insets may be too large.  Clamp to the
   // opposite edges of the tab, which should be at (overlap / 2).
@@ -161,15 +163,17 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   } else if (highlighted_tab_ == -1) {
     // Has the direction of the swipe changed while scrubbing?
     Direction direction = (x_offset < 0) ? LEFT : RIGHT;
-    if (direction != swipe_direction_)
+    if (direction != swipe_direction_) {
       ScrubDirectionChanged(direction);
+    }
   }
 
   UpdateSwipeX(x_offset);
 
   Tab* new_tab = tab_strip_->GetTabAt(gfx::Point(swipe_x_, swipe_y_));
-  if (!new_tab)
+  if (!new_tab) {
     return;
+  }
 
   int new_index = tab_strip_->GetModelIndexOf(new_tab).value();
   if (highlighted_tab_ == -1 &&
@@ -178,10 +182,11 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   }
 
   if (new_index != highlighted_tab_) {
-    if (activate_timer_.IsRunning())
+    if (activate_timer_.IsRunning()) {
       activate_timer_.Reset();
-    else
+    } else {
       ScheduleFinishScrubIfNeeded();
+    }
   }
 
   UpdateHighlightedTab(new_tab, new_index);
@@ -194,8 +199,9 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
-  if (browser != browser_)
+  if (browser != browser_) {
     return;
+  }
 
   if (browser_) {
     BrowserView::GetBrowserViewForBrowser(browser_)
@@ -213,34 +219,40 @@ void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
 }
 
 void TabScrubberChromeOS::OnTabAdded(int index) {
-  if (highlighted_tab_ == -1)
+  if (highlighted_tab_ == -1) {
     return;
+  }
 
-  if (index < highlighted_tab_)
+  if (index < highlighted_tab_) {
     ++highlighted_tab_;
+  }
 }
 
 void TabScrubberChromeOS::OnTabMoved(int from_index, int to_index) {
-  if (highlighted_tab_ == -1)
+  if (highlighted_tab_ == -1) {
     return;
+  }
 
-  if (from_index == highlighted_tab_)
+  if (from_index == highlighted_tab_) {
     highlighted_tab_ = to_index;
-  else if (from_index < highlighted_tab_ && highlighted_tab_ <= to_index)
+  } else if (from_index < highlighted_tab_ && highlighted_tab_ <= to_index) {
     --highlighted_tab_;
-  else if (from_index > highlighted_tab_ && highlighted_tab_ >= to_index)
+  } else if (from_index > highlighted_tab_ && highlighted_tab_ >= to_index) {
     ++highlighted_tab_;
+  }
 }
 
 void TabScrubberChromeOS::OnTabRemoved(int index) {
-  if (highlighted_tab_ == -1)
+  if (highlighted_tab_ == -1) {
     return;
+  }
   if (index == highlighted_tab_) {
     FinishScrub(false);
     return;
   }
-  if (index < highlighted_tab_)
+  if (index < highlighted_tab_) {
     --highlighted_tab_;
+  }
 }
 
 Browser* TabScrubberChromeOS::GetActiveBrowser() {
@@ -351,8 +363,9 @@ void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   // that minimum reduction). Please note, x_offset might be negative.
   float min = 0.25 * x_offset;
   float max = x_offset;
-  if (x_offset < 0)
+  if (x_offset < 0) {
     std::swap(min, max);
+  }
   swipe_x_ += std::clamp(
       x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset), min, max);
 
@@ -367,18 +380,21 @@ void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   Tab* last_tab = tab_strip_->tab_at(last_tab_index);
   int last_tab_center = last_tab->GetMirroredBounds().CenterPoint().x();
 
-  if (swipe_x_ < first_tab_center)
+  if (swipe_x_ < first_tab_center) {
     swipe_x_ = first_tab_center;
-  if (swipe_x_ > last_tab_center)
+  }
+  if (swipe_x_ > last_tab_center) {
     swipe_x_ = last_tab_center;
+  }
 }
 
 void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
   DCHECK(scrubbing_);
   DCHECK(new_tab);
 
-  if (new_index == highlighted_tab_)
+  if (new_index == highlighted_tab_) {
     return;
+  }
 
   if (highlighted_tab_ != -1) {
     Tab* tab = tab_strip_->tab_at(highlighted_tab_);

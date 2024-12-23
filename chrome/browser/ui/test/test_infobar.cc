@@ -67,8 +67,9 @@ const infobars::ContentInfoBarManager* TestInfoBar::GetInfoBarManager() const {
 
 std::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
   const infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
-  if (!infobar_manager)
+  if (!infobar_manager) {
     return std::nullopt;
+  }
   const auto& infobars = infobar_manager->infobars();
   if ((infobars.size() < starting_infobars_.size()) ||
       !std::equal(starting_infobars_.begin(), starting_infobars_.end(),

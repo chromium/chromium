@@ -446,8 +446,8 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
                         rp_context, rp_mode, has_modal_support);
   }
 
-  account_selection_view_->ShowErrorDialog(
-      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
+  account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
+                                           idp_metadata, error);
   UpdateDialogVisibilityAndPosition();
   return true;
 }

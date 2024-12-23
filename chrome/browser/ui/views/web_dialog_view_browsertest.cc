@@ -54,8 +54,9 @@ class WidgetResizeWaiter : public views::WidgetObserver {
 
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override {
-    if (bounds.size() != old_size_)
+    if (bounds.size() != old_size_) {
       run_loop_.Quit();
+    }
   }
 
  private:

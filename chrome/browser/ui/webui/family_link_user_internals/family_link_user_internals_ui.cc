@@ -22,7 +22,8 @@ void CreateAndAddFamilyLinkUserInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFamilyLinkUserInternalsHost);
   webui::SetupWebUIDataSource(
-      source, base::span<const webui::ResourcePath>(kFamilyLinkUserInternalsResources),
+      source,
+      base::span<const webui::ResourcePath>(kFamilyLinkUserInternalsResources),
       IDR_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(

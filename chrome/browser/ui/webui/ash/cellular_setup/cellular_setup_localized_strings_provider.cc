@@ -133,18 +133,21 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
-  for (const auto& entry : kLocalizedStringsWithoutPlaceholders)
+  for (const auto& entry : kLocalizedStringsWithoutPlaceholders) {
     builder->Add(entry.name, entry.id);
+  }
 }
 
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
-  for (const auto& entry : GetBooleanValues())
+  for (const auto& entry : GetBooleanValues()) {
     html_source->AddBoolean(entry.name, entry.value);
+  }
 }
 
 void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
-  for (const auto& entry : GetBooleanValues())
+  for (const auto& entry : GetBooleanValues()) {
     dict->SetByDottedPath(entry.name, entry.value);
+  }
 }
 
 }  // namespace ash::cellular_setup

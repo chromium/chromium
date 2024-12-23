@@ -90,8 +90,9 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
 PasswordType GetPasswordType(content::WebContents* web_contents) {
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetPendingEntry();
-  if (!nav_entry || !nav_entry->GetHasPostData() || !nav_entry->GetPostData())
+  if (!nav_entry || !nav_entry->GetHasPostData() || !nav_entry->GetPostData()) {
     return PasswordType::PASSWORD_TYPE_UNKNOWN;
+  }
   auto& post_data = nav_entry->GetPostData()->elements()->at(0);
   if (post_data.type() == network::DataElement::Tag::kBytes) {
     int post_data_int = -1;
@@ -108,8 +109,9 @@ PasswordType GetPasswordType(content::WebContents* web_contents) {
 // Properly format host name based on text direction.
 std::u16string GetFormattedHostName(const std::string host_name) {
   std::u16string host = url_formatter::IDNToUnicode(host_name);
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     base::i18n::WrapStringWithLTRFormatting(&host);
+  }
   return host;
 }
 

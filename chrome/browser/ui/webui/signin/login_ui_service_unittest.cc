@@ -62,7 +62,7 @@ class LoginUIServiceTest : public testing::Test {
 
 class TestLoginUI : public LoginUIService::LoginUI {
  public:
-  TestLoginUI() { }
+  TestLoginUI() {}
 
   TestLoginUI(const TestLoginUI&) = delete;
   TestLoginUI& operator=(const TestLoginUI&) = delete;

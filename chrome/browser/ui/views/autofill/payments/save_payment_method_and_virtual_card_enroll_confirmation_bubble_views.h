@@ -24,9 +24,11 @@ class SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews(
-      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
+      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) =
+      delete;
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews& operator=(
-      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) = delete;
+      const SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews&) =
+      delete;
 
   // AutofillBubbleBase:
   void Hide() override;

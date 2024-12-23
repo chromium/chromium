@@ -55,8 +55,9 @@ LocalCardMigrationDialogControllerImpl::LocalCardMigrationDialogControllerImpl(
 
 LocalCardMigrationDialogControllerImpl::
     ~LocalCardMigrationDialogControllerImpl() {
-  if (local_card_migration_dialog_)
+  if (local_card_migration_dialog_) {
     local_card_migration_dialog_->CloseDialog();
+  }
   observer_list_.Notify(
       &LocalCardMigrationControllerObserver::OnSourceDestruction,
       LocalCardMigrationControllerObserver::LocalCardMigrationControllerSource::
@@ -69,8 +70,9 @@ void LocalCardMigrationDialogControllerImpl::ShowOfferDialog(
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     payments::PaymentsAutofillClient::LocalCardMigrationCallback
         start_migrating_cards_callback) {
-  if (local_card_migration_dialog_)
+  if (local_card_migration_dialog_) {
     local_card_migration_dialog_->CloseDialog();
+  }
 
   legal_message_lines_ = legal_message_lines;
   view_state_ = LocalCardMigrationDialogState::kOffered;
@@ -93,8 +95,9 @@ void LocalCardMigrationDialogControllerImpl::UpdateCreditCardIcon(
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     payments::PaymentsAutofillClient::MigrationDeleteCardCallback
         delete_local_card_callback) {
-  if (local_card_migration_dialog_)
+  if (local_card_migration_dialog_) {
     local_card_migration_dialog_->CloseDialog();
+  }
 
   migratable_credit_cards_ = migratable_credit_cards;
   tip_message_ = tip_message;
@@ -252,8 +255,9 @@ void LocalCardMigrationDialogControllerImpl::DeleteCard(
 }
 
 void LocalCardMigrationDialogControllerImpl::OnDialogClosed() {
-  if (local_card_migration_dialog_)
+  if (local_card_migration_dialog_) {
     local_card_migration_dialog_ = nullptr;
+  }
 
   UpdateLocalCardMigrationIcon();
 }

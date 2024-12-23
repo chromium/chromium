@@ -20,20 +20,21 @@
 #include "ui/gfx/icon_util.h"
 #endif
 
-
 // Helpers --------------------------------------------------------------------
 
 namespace {
 
 #if BUILDFLAG(IS_WIN)
 SkBitmap GetElevationIcon() {
-  if (!base::win::UserAccountControlIsEnabled())
+  if (!base::win::UserAccountControlIsEnabled()) {
     return SkBitmap();
+  }
 
-  SHSTOCKICONINFO icon_info = { sizeof(SHSTOCKICONINFO) };
+  SHSTOCKICONINFO icon_info = {sizeof(SHSTOCKICONINFO)};
   if (FAILED(SHGetStockIconInfo(SIID_SHIELD, SHGSI_ICON | SHGSI_SMALLICON,
-                                &icon_info)))
+                                &icon_info))) {
     return SkBitmap();
+  }
 
   SkBitmap icon = IconUtil::CreateSkBitmapFromHICON(
       icon_info.hIcon,
@@ -44,7 +45,6 @@ SkBitmap GetElevationIcon() {
 #endif
 
 }  // namespace
-
 
 // ElevationIconSetter --------------------------------------------------------
 

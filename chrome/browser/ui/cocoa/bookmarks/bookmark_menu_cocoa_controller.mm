@@ -37,8 +37,9 @@ namespace {
 NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   NSArray* parent_items = [[submenu supermenu] itemArray];
   for (NSMenuItem* item in parent_items) {
-    if ([item submenu] == submenu)
+    if ([item submenu] == submenu) {
       return item;
+    }
   }
   return nil;
 }
@@ -48,8 +49,9 @@ void DoOpenBookmark(Profile* profile,
                     const BookmarkNode* node) {
   DCHECK(profile);
   Browser* browser = chrome::FindTabbedBrowser(profile, true);
-  if (!browser)
+  if (!browser) {
     browser = Browser::Create(Browser::CreateParams(profile, true));
+  }
   OpenURLParams params(node->url(), Referrer(), disposition,
                        ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
@@ -158,8 +160,9 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {
   NSString* title = base::SysUTF16ToNSString(node->GetTitle());
-  if (node->is_folder())
+  if (node->is_folder()) {
     return title;
+  }
   std::string urlString = node->url().possibly_invalid_spec();
   NSString* url = base::SysUTF8ToNSString(urlString);
   return cocoa_l10n_util::TooltipForURLAndTitle(url, title);

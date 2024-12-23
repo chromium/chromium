@@ -105,8 +105,9 @@ bool IsIncognitoAllowed() {
 // "chrome://settings/networks/?type=WiFi" returns "networks/?type=WiFi".
 std::string GetPathAndQuery(const GURL& url) {
   std::string result = url.path();
-  if (!result.empty() && result[0] == '/')
+  if (!result.empty() && result[0] == '/') {
     result.erase(0, 1);
+  }
   if (url.has_query()) {
     result += '?';
     result += url.query();
@@ -258,8 +259,9 @@ void ChromeNewWindowClient::NewTab() {
 
 void ChromeNewWindowClient::NewWindow(bool is_incognito,
                                       bool should_trigger_session_restore) {
-  if (is_incognito && !IsIncognitoAllowed())
+  if (is_incognito && !IsIncognitoAllowed()) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   Profile* profile = (browser && browser->profile())
@@ -365,8 +367,9 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
   // If the |from| is kUserInteraction, then the page will load with a user
   // activation. This means it will be able to autoplay media without
   // restriction.
-  if (from == OpenUrlFrom::kUserInteraction)
+  if (from == OpenUrlFrom::kUserInteraction) {
     navigate_params.was_activated = blink::mojom::WasActivatedOption::kYes;
+  }
 
   Navigate(&navigate_params);
 
@@ -478,14 +481,17 @@ void ChromeNewWindowClient::RestoreTab() {
 
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   Profile* profile = browser ? browser->profile() : nullptr;
-  if (!profile)
+  if (!profile) {
     profile = ProfileManager::GetActiveUserProfile();
-  if (profile->IsOffTheRecord())
+  }
+  if (profile->IsOffTheRecord()) {
     return;
+  }
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(profile);
-  if (!service)
+  if (!service) {
     return;
+  }
 
   if (service->IsLoaded()) {
     RestoreTabUsingProfile(profile);
@@ -572,12 +578,14 @@ void ChromeNewWindowClient::CloseCameraApp() {
       ChromeShelfController::instance()
           ->shelf_model()
           ->GetAppWindowShelfItemController(shelf_id);
-  if (!app_controller)
+  if (!app_controller) {
     return;
+  }
 
   DCHECK_LE(app_controller->window_count(), 1lu);
-  if (app_controller->window_count() > 0)
+  if (app_controller->window_count() > 0) {
     app_controller->windows().front()->Close();
+  }
 }
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {

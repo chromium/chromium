@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace webauthn_ui_helpers {
 
 // Takes a valid relying party identifier and elides it so that it's suitable to

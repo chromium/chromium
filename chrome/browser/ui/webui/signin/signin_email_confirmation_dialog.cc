@@ -135,15 +135,17 @@ void SigninEmailConfirmationDialog::ShowDialog() {
 
 void SigninEmailConfirmationDialog::CloseDialog() {
   content::WebContents* dialog_web_contents = GetDialogWebContents();
-  if (!dialog_web_contents)
+  if (!dialog_web_contents) {
     return;
+  }
 
   content::WebUI* web_ui = dialog_web_contents->GetWebUI();
   if (web_ui) {
     SigninEmailConfirmationUI* signin_email_confirmation_ui =
         static_cast<SigninEmailConfirmationUI*>(web_ui->GetController());
-    if (signin_email_confirmation_ui)
+    if (signin_email_confirmation_ui) {
       signin_email_confirmation_ui->Close();
+    }
   }
 }
 
@@ -187,8 +189,9 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
 
   NotifyModalDialogClosed();
 
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run(action);
+  }
 }
 
 void SigninEmailConfirmationDialog::CloseModalSignin() {

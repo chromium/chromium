@@ -397,19 +397,22 @@ void PresentationReceiverWindowView::DestroyAnyExclusiveAccessBubble() {
 bool PresentationReceiverWindowView::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  if (command_id != IDC_FULLSCREEN)
+  if (command_id != IDC_FULLSCREEN) {
     return false;
+  }
   *accelerator = fullscreen_accelerator_;
   return true;
 }
 
 void PresentationReceiverWindowView::OnFullscreenChanged() {
   const bool fullscreen = IsFullscreen();
-  if (!fullscreen)
+  if (!fullscreen) {
     exclusive_access_bubble_.reset();
+  }
   location_bar_view_->SetVisible(!fullscreen);
-  if (fullscreen == (location_bar_view_->height() > 0))
+  if (fullscreen == (location_bar_view_->height() > 0)) {
     DeprecatedLayoutImmediately();
+  }
 }
 
 BEGIN_METADATA(PresentationReceiverWindowView)

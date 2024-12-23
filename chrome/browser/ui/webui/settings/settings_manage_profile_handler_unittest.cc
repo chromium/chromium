@@ -30,8 +30,8 @@ class TestManageProfileHandler : public ManageProfileHandler {
   explicit TestManageProfileHandler(Profile* profile)
       : ManageProfileHandler(profile) {}
 
-  using ManageProfileHandler::set_web_ui;
   using ManageProfileHandler::AllowJavascript;
+  using ManageProfileHandler::set_web_ui;
 };
 
 }  // namespace

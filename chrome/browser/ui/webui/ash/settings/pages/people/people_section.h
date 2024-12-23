@@ -74,7 +74,6 @@ class PeopleSection : public OsSettingsSection,
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
 
-
   raw_ptr<account_manager::AccountManager> account_manager_ = nullptr;
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
       nullptr;

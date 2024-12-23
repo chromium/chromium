@@ -23,7 +23,7 @@
 - (instancetype)initWithIcon:(StatusIconMac*)icon;
 - (void)handleClick:(id)sender;
 
-@end // @interface StatusItemController
+@end  // @interface StatusItemController
 
 @implementation StatusItemController
 

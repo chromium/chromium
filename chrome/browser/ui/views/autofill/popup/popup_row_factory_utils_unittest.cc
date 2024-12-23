@@ -92,7 +92,6 @@ class PopupRowFactoryUtilsTest : public ChromeViewsTestBase {
 // A test fixture for testing the creation of rows that contain a button.
 class PopupRowFactoryUtilsRowWithButtonTest : public PopupRowFactoryUtilsTest {
  public:
-
   void ShowAutocompleteSuggestion() {
     ShowSuggestion(
         Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry));

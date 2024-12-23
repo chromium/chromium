@@ -21,7 +21,7 @@ DesktopMediaPaneView::DesktopMediaPaneView(
 #if BUILDFLAG(IS_MAC)
     : type_(type)
 #endif
-  {
+{
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
 

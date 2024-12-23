@@ -175,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
                        VerifyCorrectVisiblityWithSinks) {
   ShowBubble();
 
-    // The tray defaults to visible.
-    EXPECT_TRUE(IsTrayVisible());
+  // The tray defaults to visible.
+  EXPECT_TRUE(IsTrayVisible());
 
   std::vector<media_router::MediaSink> zero_sinks;
   std::vector<media_router::MediaSink> one_sink;
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
 
   ShowBubble();
 
-    // The tray is always visible.
+  // The tray is always visible.
   EXPECT_TRUE(IsTrayVisible());
 }
 

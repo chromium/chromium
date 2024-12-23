@@ -104,8 +104,9 @@ base::Time GetTabGroupTimeStamp(
   for (const auto& tab : tabs) {
     const sessions::SerializedNavigationEntry& entry =
         tab->navigations[tab->current_navigation_index];
-    if (entry.timestamp() > last_active_time)
+    if (entry.timestamp() > last_active_time) {
       last_active_time = entry.timestamp();
+    }
   }
   return last_active_time;
 }
@@ -659,8 +660,9 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   if (!sent_initial_payload_) {
     sent_initial_payload_ = true;
     int tab_count = 0;
-    for (const auto& window : profile_tabs->windows)
+    for (const auto& window : profile_tabs->windows) {
       tab_count += window->tabs.size();
+    }
     base::UmaHistogramCounts100("Tabs.TabSearch.NumWindowsOnOpen",
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
@@ -791,11 +793,13 @@ void TabSearchPageHandler::SwitchToTab(
 void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  if (!tab_restore_service)
+  if (!tab_restore_service) {
     return;
+  }
   Browser* active_browser = chrome::FindLastActive();
-  if (!active_browser)
+  if (!active_browser) {
     return;
+  }
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(
           active_browser->tab_strip_model()->GetActiveWebContents()),
@@ -1092,21 +1096,24 @@ void TabSearchPageHandler::MaybeShowUI() {
     return;
   }
   auto embedder = webui_controller_->embedder();
-  if (embedder)
+  if (embedder) {
     embedder->ShowUI();
+  }
 }
 
 tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   auto profile_data = tab_search::mojom::ProfileData::New();
   Browser* active_browser = chrome::FindLastActive();
-  if (!active_browser)
+  if (!active_browser) {
     return profile_data;
+  }
 
   std::set<DedupKey> tab_dedup_keys;
   std::set<tab_groups::TabGroupId> tab_group_ids;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldTrackBrowser(browser))
+    if (!ShouldTrackBrowser(browser)) {
       continue;
+    }
     TabStripModel* tab_strip_model = browser->tab_strip_model();
 
     auto window = tab_search::mojom::Window::New();
@@ -1118,15 +1125,16 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
       // during loading and thus has no title/URL. Skip any such pending tabs.
       // These tabs will be added to the list later on once loading has
       // finished.
-      if (!web_contents->GetController().GetLastCommittedEntry())
+      if (!web_contents->GetController().GetLastCommittedEntry()) {
         continue;
+      }
       tab_search::mojom::TabPtr tab = GetTab(tab_strip_model, web_contents, i);
       tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
       window->tabs.push_back(std::move(tab));
     }
     profile_data->windows.push_back(std::move(window));
 
-    if (tab_strip_model->group_model())
+    if (tab_strip_model->group_model()) {
       for (auto tab_group_id :
            tab_strip_model->group_model()->ListTabGroups()) {
         const tab_groups::TabGroupVisualData* tab_group_visual_data =
@@ -1142,6 +1150,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
         tab_group_ids.insert(tab_group_id);
         profile_data->tab_groups.push_back(std::move(tab_group));
       }
+    }
   }
 
   AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
@@ -1291,8 +1300,9 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::set<DedupKey>& tab_dedup_keys) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  if (!tab_restore_service)
+  if (!tab_restore_service) {
     return;
+  }
 
   const int kRecentlyClosedTabCountThreshold = 100;
   int recently_closed_tab_count = 0;
@@ -1381,8 +1391,9 @@ bool TabSearchPageHandler::AddRecentlyClosedTab(
     std::set<DedupKey>& tab_dedup_keys,
     std::set<tab_groups::TabGroupId>& tab_group_ids,
     std::vector<tab_search::mojom::TabGroupPtr>& tab_groups) {
-  if (tab->navigations.size() == 0)
+  if (tab->navigations.size() == 0) {
     return false;
+  }
 
   tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
       GetRecentlyClosedTab(tab, close_time);
@@ -1570,15 +1581,18 @@ void TabSearchPageHandler::OnTabStripModelChanged(
 void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
                                         int index,
                                         TabChangeType change_type) {
-  if (!IsWebContentsVisible())
+  if (!IsWebContentsVisible()) {
     return;
+  }
   // TODO(crbug.com/40709736): Support more values for TabChangeType and filter
   // out the changes we are not interested in.
-  if (change_type != TabChangeType::kAll)
+  if (change_type != TabChangeType::kAll) {
     return;
+  }
   Browser* browser = chrome::FindBrowserWithTab(contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
   Browser* active_browser = chrome::FindLastActive();
   TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
 
@@ -1596,13 +1610,15 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
 }
 
 void TabSearchPageHandler::ScheduleDebounce() {
-  if (!debounce_timer_->IsRunning())
+  if (!debounce_timer_->IsRunning()) {
     debounce_timer_->Reset();
+  }
 }
 
 void TabSearchPageHandler::NotifyTabsChanged() {
-  if (!IsWebContentsVisible())
+  if (!IsWebContentsVisible()) {
     return;
+  }
   page_->TabsChanged(CreateProfileData());
   debounce_timer_->Stop();
 }

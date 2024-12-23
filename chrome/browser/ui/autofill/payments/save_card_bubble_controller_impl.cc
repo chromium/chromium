@@ -72,8 +72,9 @@ SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() = default;
 // static
 SaveCardBubbleController* SaveCardBubbleController::GetOrCreate(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents);
   return SaveCardBubbleControllerImpl::FromWebContents(web_contents);
@@ -82,8 +83,9 @@ SaveCardBubbleController* SaveCardBubbleController::GetOrCreate(
 // static
 SaveCardBubbleController* SaveCardBubbleController::Get(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return SaveCardBubbleControllerImpl::FromWebContents(web_contents);
 }
@@ -100,8 +102,9 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_upload_save_ = false;
   is_reshow_ = false;
@@ -116,10 +119,11 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
           ? BubbleType::LOCAL_CVC_SAVE
           : BubbleType::LOCAL_SAVE;
 
-  if (options.show_prompt)
+  if (options.show_prompt) {
     ShowBubble();
-  else
+  } else {
     ShowIconOnly();
+  }
 }
 
 void SaveCardBubbleControllerImpl::OfferUploadSave(
@@ -135,8 +139,9 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_upload_save_ = true;
   is_reshow_ = false;
@@ -160,10 +165,11 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     legal_message_lines_ = legal_message_lines;
   }
 
-  if (options_.show_prompt)
+  if (options_.show_prompt) {
     ShowBubble();
-  else
+  } else {
     ShowIconOnly();
+  }
 }
 
 // Exists for testing purposes only.
@@ -177,8 +183,9 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
 void SaveCardBubbleControllerImpl::ReshowBubble(
     bool is_triggered_by_user_gesture) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_reshow_ = true;
   is_triggered_by_user_gesture_ = is_triggered_by_user_gesture;
@@ -342,8 +349,9 @@ AccountInfo SaveCardBubbleControllerImpl::GetAccountInfo() {
 }
 
 Profile* SaveCardBubbleControllerImpl::GetProfile() const {
-  if (!web_contents())
+  if (!web_contents()) {
     return nullptr;
+  }
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 

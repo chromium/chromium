@@ -331,24 +331,27 @@ void SetID(WebContents* web_contents, int id) {
 }
 
 void ResetIDs(TabStripModel* model, int start) {
-  for (int i = 0; i < model->count(); ++i)
+  for (int i = 0; i < model->count(); ++i) {
     SetID(model->GetWebContentsAt(i), start + i);
+  }
 }
 
 std::string IDString(TabStripModel* model) {
   std::string result;
   for (int i = 0; i < model->count(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     WebContents* contents = model->GetWebContentsAt(i);
     TabDragControllerInteractiveUITestUserData* user_data =
         static_cast<TabDragControllerInteractiveUITestUserData*>(
             contents->GetUserData(
                 &kTabDragControllerInteractiveUITestUserDataKey));
-    if (user_data)
+    if (user_data) {
       result += base::NumberToString(user_data->id());
-    else
+    } else {
       result += "?";
+    }
   }
   return result;
 }
@@ -539,15 +542,12 @@ void TabDragControllerTest::SetUp() {
 
 namespace {
 
-enum InputSource {
-  INPUT_SOURCE_MOUSE = 0,
-  INPUT_SOURCE_TOUCH = 1
-};
+enum InputSource { INPUT_SOURCE_MOUSE = 0, INPUT_SOURCE_TOUCH = 1 };
 
 int GetDetachY(TabStrip* tab_strip) {
   return std::max(TabDragController::kTouchVerticalDetachMagnetism,
                   TabDragController::kVerticalDetachMagnetism) +
-      tab_strip->height() + 1;
+         tab_strip->height() + 1;
 }
 
 bool GetIsDragged(Browser* browser) {
@@ -579,9 +579,7 @@ class TestDesktopBrowserFrameAura : public DESKTOP_BROWSER_FRAME_AURA {
       delete;
   ~TestDesktopBrowserFrameAura() override = default;
 
-  void ReleaseCaptureOnNextClear() {
-    release_capture_ = true;
-  }
+  void ReleaseCaptureOnNextClear() { release_capture_ = true; }
 
   void ClearNativeFocus() override {
     views::DesktopNativeWidgetAura::ClearNativeFocus();
@@ -626,13 +624,14 @@ IN_PROC_BROWSER_TEST_F(TabDragCaptureLostTest, ReleaseCaptureOnDrag) {
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   gfx::Point tab_1_center(GetCenterInScreenCoordinates(tab_strip->tab_at(1)));
-  ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(tab_1_center) &&
-              ui_test_utils::SendMouseEventsSync(
-                  ui_controls::LEFT, ui_controls::DOWN));
+  ASSERT_TRUE(
+      ui_test_utils::SendMouseMoveSync(tab_1_center) &&
+      ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
   TestDesktopBrowserFrameAura* frame =
       static_cast<TestDesktopBrowserFrameAura*>(
-          BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->
-          native_widget_private());
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetWidget()
+              ->native_widget_private());
   // Invoke ReleaseCaptureOnDrag() so that when the drag happens and focus
   // changes capture is released and the drag cancels.
   frame->ReleaseCaptureOnNextClear();
@@ -655,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest, GestureEndShouldEndDragTest) {
       tab_1_center.x(), tab_1_center.x(), 0, base::TimeTicks(),
       ui::GestureEventDetails(ui::EventType::kGestureTapDown));
   tab_strip->MaybeStartDrag(tab1, gesture_tap_down,
-    tab_strip->GetSelectionModel());
+                            tab_strip->GetSelectionModel());
   EXPECT_TRUE(TabDragController::IsActive());
 
   ui::GestureEvent gesture_end(
@@ -773,8 +772,9 @@ class DetachToBrowserTabDragControllerTest
   }
 
   bool DragInputTo(const gfx::Point& location, gfx::NativeWindow window_hint) {
-    if (input_source() == INPUT_SOURCE_MOUSE)
+    if (input_source() == INPUT_SOURCE_MOUSE) {
       return ui_test_utils::SendMouseMoveSync(location, window_hint);
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchMove, 0, location);
 #else
@@ -791,9 +791,10 @@ class DetachToBrowserTabDragControllerTest
 
   bool DragInputToAsync(const gfx::Point& location,
                         const gfx::NativeWindow window_hint) {
-    if (input_source() == INPUT_SOURCE_MOUSE)
+    if (input_source() == INPUT_SOURCE_MOUSE) {
       return ui_controls::SendMouseMove(location.x(), location.y(),
                                         window_hint);
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     return ui_controls::SendTouchEvents(ui_controls::kTouchMove, 0,
                                         location.x(), location.y());
@@ -882,8 +883,9 @@ class DetachToBrowserTabDragControllerTest
 
   bool MoveInputTo(const gfx::Point& location) {
     aura::Env::GetInstance()->SetLastMouseLocation(location);
-    if (input_source() == INPUT_SOURCE_MOUSE)
+    if (input_source() == INPUT_SOURCE_MOUSE) {
       return ui_test_utils::SendMouseMoveSync(location);
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchMove, 0, location);
 #else
@@ -2081,8 +2083,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(new_browser));
   // After this both windows should still be manageable.
   EXPECT_TRUE(IsWindowPositionManaged(browser()->window()->GetNativeWindow()));
-  EXPECT_TRUE(IsWindowPositionManaged(
-      new_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(
+      IsWindowPositionManaged(new_browser->window()->GetNativeWindow()));
 
   // Both windows should not be maximized
   EXPECT_FALSE(browser()->window()->IsMaximized());
@@ -2320,8 +2322,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(GetIsDragged(new_browser));
   // After this both windows should still be manageable.
   EXPECT_TRUE(IsWindowPositionManaged(browser()->window()->GetNativeWindow()));
-  EXPECT_TRUE(IsWindowPositionManaged(
-      new_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(
+      IsWindowPositionManaged(new_browser->window()->GetNativeWindow()));
 
   const bool kMaximizedStateRetainedOnTabDrag =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -3686,8 +3688,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_EQ(1u, browser_list()->size());
 
   // Cancel the drag.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser2, ui::VKEY_ESCAPE, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser2, ui::VKEY_ESCAPE, false,
+                                              false, false, false));
 
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
@@ -3958,8 +3960,9 @@ TabStrip* GetAttachedTabstrip() {
   for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     if (TabDragController::IsAttachedTo(
-            browser_view->tabstrip()->GetDragContext()))
+            browser_view->tabstrip()->GetDragContext())) {
       return browser_view->tabstrip();
+    }
   }
   return nullptr;
 }
@@ -4165,8 +4168,9 @@ class DraggedWindowObserver : public aura::WindowObserver {
   DraggedWindowObserver(const DraggedWindowObserver&) = delete;
   DraggedWindowObserver& operator=(const DraggedWindowObserver&) = delete;
   ~DraggedWindowObserver() override {
-    if (window_)
+    if (window_) {
       window_->RemoveObserver(this);
+    }
   }
 
   void StartObserving(aura::Window* window) {
@@ -5323,8 +5327,9 @@ class SelectTabDuringDragObserver : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kMoved)
+    if (change.type() != TabStripModelChange::kMoved) {
       return;
+    }
     const TabStripModelChange::Move* move = change.GetMove();
     int index_to_select = move->to_index == 0 ? 1 : 0;
     tab_strip_model->ToggleSelectionAt(index_to_select);

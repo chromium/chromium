@@ -29,8 +29,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentsWebView,
                                       kContentsWebViewElementId);
 
 ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
-    : views::WebView(browser_context),
-      status_bubble_(nullptr) {
+    : views::WebView(browser_context), status_bubble_(nullptr) {
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
 #if BUILDFLAG(ENABLE_GLIC)
   glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
@@ -55,8 +54,9 @@ ContentsWebView::~ContentsWebView() {
 void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
   status_bubble_ = status_bubble;
   DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
-  if (status_bubble_)
+  if (status_bubble_) {
     status_bubble_->Reposition();
+  }
   OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
 }
 
@@ -66,8 +66,9 @@ StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
 
 void ContentsWebView::SetBackgroundVisible(bool background_visible) {
   background_visible_ = background_visible;
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
 }
 
 void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
@@ -86,8 +87,9 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
-  if (status_bubble_)
+  if (status_bubble_) {
     status_bubble_->Reposition();
+  }
 }
 
 void ContentsWebView::OnThemeChanged() {
@@ -96,8 +98,9 @@ void ContentsWebView::OnThemeChanged() {
 }
 
 void ContentsWebView::OnLetterboxingChanged() {
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
 }
 
 void ContentsWebView::UpdateBackgroundColor() {
@@ -138,8 +141,9 @@ std::unique_ptr<ui::Layer> ContentsWebView::RecreateLayer() {
 }
 
 void ContentsWebView::CloneWebContentsLayer() {
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 #if defined(USE_AURA)
   // We don't need to clone the layers on non-Aura (Mac), because closing an
   // NSWindow does not animate.
@@ -171,8 +175,9 @@ void ContentsWebView::DestroyClonedLayer() {
 
 void ContentsWebView::RenderViewReady() {
   // Set the background color to be the theme's ntp background on startup.
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateBackgroundColor();
+  }
   WebView::RenderViewReady();
 }
 

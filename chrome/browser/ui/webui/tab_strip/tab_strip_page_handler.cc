@@ -270,8 +270,9 @@ void TabStripPageHandler::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   TRACE_EVENT0("browser", "TabStripPageHandler:OnTabStripModelChanged");
-  if (tab_strip_model->empty())
+  if (tab_strip_model->empty()) {
     return;
+  }
 
   // The context menu model is created when the menu is first shown. However, if
   // the tab strip model changes, the context menu model may not longer reflect
@@ -405,15 +406,17 @@ bool TabStripPageHandler::PreHandleGestureEvent(
         should_drag_on_gesture_scroll_ = false;
         return false;
       }
-      if (!context_menu_after_tap_)
+      if (!context_menu_after_tap_) {
         page_->ShowContextMenu();
+      }
       return true;
     case blink::WebInputEvent::Type::kGestureTwoFingerTap:
       page_->ShowContextMenu();
       return true;
     case blink::WebInputEvent::Type::kGestureLongTap:
-      if (context_menu_after_tap_)
+      if (context_menu_after_tap_) {
         page_->ShowContextMenu();
+      }
 
       should_drag_on_gesture_scroll_ = false;
       long_press_timer_->Stop();
@@ -829,10 +832,11 @@ void TabStripPageHandler::SetThumbnailTracked(int32_t tab_id,
     return;
   }
 
-  if (thumbnail_tracked)
+  if (thumbnail_tracked) {
     thumbnail_tracker_.AddTab(tab);
-  else
+  } else {
     thumbnail_tracker_.RemoveTab(tab);
+  }
 }
 
 void TabStripPageHandler::ReportTabActivationDuration(uint32_t duration_ms) {
@@ -863,8 +867,9 @@ void TabStripPageHandler::HandleThumbnailUpdate(
   // there is no data), send a blank URI.
   TRACE_EVENT0("browser", "TabStripPageHandler:HandleThumbnailUpdate");
   std::string data_uri;
-  if (image)
+  if (image) {
     data_uri = webui::MakeDataURIForImage(base::span(image->data), "jpeg");
+  }
 
   const SessionID::id_type tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   page_->TabThumbnailUpdated(tab_id, data_uri);
@@ -882,8 +887,9 @@ void TabStripPageHandler::ReportTabDurationHistogram(
     const char* histogram_fragment,
     int tab_count,
     base::TimeDelta duration) {
-  if (tab_count <= 0)
+  if (tab_count <= 0) {
     return;
+  }
 
   // It isn't possible to report both a number of tabs and duration datapoint
   // together in a histogram or to correlate two histograms together. As a

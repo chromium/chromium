@@ -131,8 +131,9 @@ ui::mojom::ModalType EnrollmentDialogView::GetModalType() const {
 }
 
 void EnrollmentDialogView::WindowClosing() {
-  if (!accepted_)
+  if (!accepted_) {
     return;
+  }
   NavigateParams params(profile_, GURL(target_uri_), ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
@@ -180,8 +181,9 @@ bool ShowEnrollmentDialog(const std::string& network_guid,
 bool EnrollmentDialogAllowed(Profile* profile) {
   // Enrollment dialog is currently not supported on the sign-in profile.
   // This also applies to lock screen,
-  if (ProfileHelper::IsSigninProfile(profile))
+  if (ProfileHelper::IsSigninProfile(profile)) {
     return false;
+  }
 
   LoginState::LoggedInUserType user_type =
       LoginState::Get()->GetLoggedInUserType();

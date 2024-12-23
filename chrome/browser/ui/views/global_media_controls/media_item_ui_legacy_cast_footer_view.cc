@@ -73,8 +73,9 @@ MediaItemUILegacyCastFooterView::GetStopCastingButtonForTesting() {
 
 void MediaItemUILegacyCastFooterView::OnColorsChanged(SkColor foreground,
                                                       SkColor background) {
-  if (foreground == foreground_color_ && background == background_color_)
+  if (foreground == foreground_color_ && background == background_color_) {
     return;
+  }
 
   foreground_color_ = foreground;
   background_color_ = background;

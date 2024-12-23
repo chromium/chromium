@@ -38,10 +38,11 @@
 namespace {
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
-  if (downloaded_bytes < 0 || total_bytes <= 0)
+  if (downloaded_bytes < 0 || total_bytes <= 0) {
     return -1;
+  }
   return 100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
-                           0.0, 1.0);
+                          0.0, 1.0);
 }
 
 void UpdateStatus(VersionUpdater::StatusCallback status_callback,

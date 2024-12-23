@@ -37,8 +37,9 @@ void LauncherInternalsUI::CreatePageHandler(
     mojo::PendingRemote<launcher_internals::mojom::Page> page) {
   auto* search_controller =
       AppListClientImpl::GetInstance()->search_controller();
-  if (!search_controller)
+  if (!search_controller) {
     return;
+  }
 
   page_handler_ = std::make_unique<LauncherInternalsHandler>(search_controller,
                                                              std::move(page));

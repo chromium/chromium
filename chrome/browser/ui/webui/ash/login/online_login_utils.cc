@@ -98,8 +98,9 @@ void SetCookieForPartition(
     OnSetCookieForLoadGaiaWithPartition callback) {
   content::StoragePartition* partition =
       signin_partition_manager->GetCurrentStoragePartition();
-  if (!partition)
+  if (!partition) {
     return;
+  }
 
   // Note: The CanonicalCookie created here is not Secure. This is fine because
   // it's being set into a different StoragePartition than the user's actual
@@ -117,8 +118,9 @@ void SetCookieForPartition(
       std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */,
       net::CookieSourceType::kOther,
       /*status=*/nullptr));
-  if (!cc)
+  if (!cc) {
     return;
+  }
 
   const net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   partition->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
@@ -260,8 +262,9 @@ void GaiaCookieRetriever::RetrieveCookies(
 
   content::StoragePartition* partition =
       signin_partition_manager_->GetCurrentStoragePartition();
-  if (!partition)
+  if (!partition) {
     return;
+  }
 
   // Validity check that partition did not change during login flow.
   DCHECK_EQ(signin_partition_manager_->GetCurrentStoragePartitionName(),
@@ -309,12 +312,13 @@ void GaiaCookieRetriever::OnGetCookieListResponse(
   login::GaiaCookiesData cookie_data;
   for (const auto& cookie_with_access_result : cookies) {
     const auto& cookie = cookie_with_access_result.cookie;
-    if (cookie.Name() == login::kOAUTHCodeCookie)
+    if (cookie.Name() == login::kOAUTHCodeCookie) {
       cookie_data.auth_code = cookie.Value();
-    else if (cookie.Name() == login::kGAPSCookie)
+    } else if (cookie.Name() == login::kGAPSCookie) {
       cookie_data.gaps_cookie = cookie.Value();
-    else if (cookie.Name() == login::kRAPTCookie)
+    } else if (cookie.Name() == login::kRAPTCookie) {
       cookie_data.rapt = cookie.Value();
+    }
   }
 
   if (cookie_data.auth_code.empty() && !allow_empty_auth_code_for_testing_) {

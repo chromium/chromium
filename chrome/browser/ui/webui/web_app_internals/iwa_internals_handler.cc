@@ -618,7 +618,8 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
     return;
   }
 
-  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id), [&](auto) { std::move(callback).Run(/*success=*/false); });
+  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id),
+                  [&](auto) { std::move(callback).Run(/*success=*/false); });
 
   base::Version version = base::Version(pinned_version);
   if (!version.IsValid()) {

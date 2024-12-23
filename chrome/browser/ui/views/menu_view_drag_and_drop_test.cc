@@ -320,8 +320,8 @@ bool MenuViewDragAndDropTest::CanDrag(views::MenuItemView* menu) {
   return true;
 }
 
-void MenuViewDragAndDropTest::WriteDragData(
-    views::MenuItemView* sender, ui::OSExchangeData* data) {
+void MenuViewDragAndDropTest::WriteDragData(views::MenuItemView* sender,
+                                            ui::OSExchangeData* data) {
   data->SetString(kTestTopLevelDragData);
 }
 

@@ -22,10 +22,8 @@ namespace {
 
 class TestingResetSettingsHandler : public ResetSettingsHandler {
  public:
-  TestingResetSettingsHandler(
-      TestingProfile* profile, content::WebUI* web_ui)
-      : ResetSettingsHandler(profile),
-        resetter_(profile) {
+  TestingResetSettingsHandler(TestingProfile* profile, content::WebUI* web_ui)
+      : ResetSettingsHandler(profile), resetter_(profile) {
     set_web_ui(web_ui);
   }
 
@@ -73,8 +71,7 @@ TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
   // Check that the delegate ProfileResetter was called.
   EXPECT_EQ(1u, handler()->Resets());
   // Check that Javascript side is notified after resetting is done.
-  EXPECT_EQ("cr.webUIResponse",
-            web_ui()->call_data()[0]->function_name());
+  EXPECT_EQ("cr.webUIResponse", web_ui()->call_data()[0]->function_name());
   const std::string* callback_id =
       web_ui()->call_data()[0]->arg1()->GetIfString();
   EXPECT_NE(nullptr, callback_id);

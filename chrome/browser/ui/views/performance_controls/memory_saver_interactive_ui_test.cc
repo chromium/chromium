@@ -75,7 +75,6 @@ constexpr char kDocumentWithForm[] = "/form_interaction.html";
 
 }  // namespace
 
-
 // Tests Discarding on pages with various types of content
 class MemorySaverDiscardPolicyInteractiveTest
     : public MemorySaverInteractiveTestMixin<InteractiveBrowserTest>,

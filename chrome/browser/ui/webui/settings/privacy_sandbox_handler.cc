@@ -125,12 +125,14 @@ void PrivacySandboxHandler::HandleGetTopicsState(
     const base::Value::List& args) {
   AllowJavascript();
   base::Value::List top_topics_list;
-  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics())
+  for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics()) {
     top_topics_list.Append(ConvertTopicToValue(topic));
+  }
 
   base::Value::List blocked_topics_list;
-  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics())
+  for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics()) {
     blocked_topics_list.Append(ConvertTopicToValue(topic));
+  }
 
   base::Value::Dict topics_state;
   topics_state.Set(kTopTopics, std::move(top_topics_list));
@@ -152,14 +154,16 @@ void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
   // Combine |joining_sites| with the blocked FLEDGE sites information. The
   // latter is available synchronously.
   base::Value::List joining_sites_list;
-  for (const auto& site : joining_sites)
+  for (const auto& site : joining_sites) {
     joining_sites_list.Append(site);
+  }
 
   const auto blocked_sites =
       GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay();
   base::Value::List blocked_sites_list;
-  for (const auto& site : blocked_sites)
+  for (const auto& site : blocked_sites) {
     blocked_sites_list.Append(site);
+  }
 
   base::Value::Dict fledge_state;
   fledge_state.Set(kJoiningSites, std::move(joining_sites_list));

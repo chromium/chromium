@@ -130,8 +130,9 @@ ui::ImageModel ExtensionShelfContextMenu::GetIconForCommandId(
 
 std::u16string ExtensionShelfContextMenu::GetLabelForCommandId(
     int command_id) const {
-  if (command_id == ash::LAUNCH_NEW)
+  if (command_id == ash::LAUNCH_NEW) {
     return l10n_util::GetStringUTF16(GetLaunchTypeStringId());
+  }
 
   return ShelfContextMenu::GetLabelForCommandId(command_id);
 }
@@ -149,8 +150,9 @@ bool ExtensionShelfContextMenu::IsCommandIdChecked(int command_id) const {
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       NOTREACHED();
     default:
-      if (command_id < ash::COMMAND_ID_COUNT)
+      if (command_id < ash::COMMAND_ID_COUNT) {
         return ShelfContextMenu::IsCommandIdChecked(command_id);
+      }
       return (extension_items_ &&
               extension_items_->IsCommandIdChecked(command_id));
   }
@@ -170,8 +172,9 @@ bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
       return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
              policy::IncognitoModeAvailability::kDisabled;
     default:
-      if (command_id < ash::COMMAND_ID_COUNT)
+      if (command_id < ash::COMMAND_ID_COUNT) {
         return ShelfContextMenu::IsCommandIdEnabled(command_id);
+      }
       return (extension_items_ &&
               extension_items_->IsCommandIdEnabled(command_id));
   }
@@ -185,8 +188,9 @@ bool ExtensionShelfContextMenu::IsItemForCommandIdDynamic(
 
 void ExtensionShelfContextMenu::ExecuteCommand(int command_id,
                                                int event_flags) {
-  if (ExecuteCommonCommand(command_id, event_flags))
+  if (ExecuteCommonCommand(command_id, event_flags)) {
     return;
+  }
 
   // Place new windows on the same display as the context menu.
   display::ScopedDisplayForNewWindows scoped_display(display_id());
@@ -253,8 +257,9 @@ extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {
       GetExtensionForAppID(item().id.app_id, controller()->profile());
 
   // An extension can be unloaded/updated/unavailable at any time.
-  if (!extension)
+  if (!extension) {
     return extensions::LAUNCH_TYPE_DEFAULT;
+  }
 
   return extensions::GetLaunchType(
       extensions::ExtensionPrefs::Get(controller()->profile()), extension);

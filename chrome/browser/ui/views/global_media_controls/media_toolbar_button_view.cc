@@ -111,8 +111,8 @@ void MediaToolbarButtonView::Enable() {
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
   if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
   }
 
   observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);

@@ -82,8 +82,9 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
 // them.
 // Headless mode also allows chrome:// URLs if the user explicitly allowed it.
 bool ValidateUrl(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   const GURL settings_url(chrome::kChromeUISettingsURL);
   bool url_points_to_an_approved_settings_page = false;
@@ -166,8 +167,9 @@ bool IsWelcomePageUrl(const GURL& url) {
 
 StartupTabs StartupTabProviderImpl::GetDistributionFirstRunTabs(
     StartupBrowserCreator* browser_creator) const {
-  if (!browser_creator)
+  if (!browser_creator) {
     return StartupTabs();
+  }
   StartupTabs tabs = GetInitialPrefsTabsForState(
       first_run::IsChromeFirstRun(), browser_creator->first_run_tabs_);
   browser_creator->first_run_tabs_.clear();
@@ -304,8 +306,9 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
 StartupTabs StartupTabProviderImpl::GetResetTriggerTabsForState(
     bool profile_has_trigger) {
   StartupTabs tabs;
-  if (profile_has_trigger)
+  if (profile_has_trigger) {
     tabs.emplace_back(GetTriggeredResetSettingsUrl());
+  }
   return tabs;
 }
 
@@ -314,8 +317,9 @@ StartupTabs StartupTabProviderImpl::GetPinnedTabsForState(
     const SessionStartupPref& pref,
     const StartupTabs& pinned_tabs,
     bool profile_has_other_tabbed_browser) {
-  if (pref.ShouldRestoreLastSession() || profile_has_other_tabbed_browser)
+  if (pref.ShouldRestoreLastSession() || profile_has_other_tabbed_browser) {
     return StartupTabs();
+  }
   return pinned_tabs;
 }
 
@@ -339,8 +343,9 @@ StartupTabs StartupTabProviderImpl::GetPreferencesTabsForState(
 StartupTabs StartupTabProviderImpl::GetNewTabPageTabsForState(
     const SessionStartupPref& pref) {
   StartupTabs tabs;
-  if (!pref.ShouldRestoreLastSession())
+  if (!pref.ShouldRestoreLastSession()) {
     tabs.emplace_back(GURL(chrome::kChromeUINewTabURL));
+  }
   return tabs;
 }
 
@@ -348,8 +353,9 @@ StartupTabs StartupTabProviderImpl::GetNewTabPageTabsForState(
 StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
     bool has_incompatible_applications) {
   StartupTabs tabs;
-  if (has_incompatible_applications)
+  if (has_incompatible_applications) {
     AddIncompatibleApplicationsUrl(&tabs);
+  }
   return tabs;
 }
 
@@ -358,8 +364,9 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
     bool whats_new_enabled) {
   StartupTabs tabs;
-  if (whats_new_enabled)
+  if (whats_new_enabled) {
     tabs.emplace_back(whats_new::GetWebUIStartupURL());
+  }
   return tabs;
 }
 
@@ -382,8 +389,9 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
         return PrivacySandboxService::IsUrlSuitableForPrompt(tab.url);
       });
 
-  if (suitable_tab_available)
+  if (suitable_tab_available) {
     return tabs;
+  }
 
   // Fallback to using about:blank if the user has customized the NTP.
   // TODO(crbug.com/40218325): Stop using about:blank and create a dedicated
@@ -456,8 +464,9 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
       url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
     }
 
-    if (ValidateUrl(url))
+    if (ValidateUrl(url)) {
       return {CommandLineTabsPresent::kYes, std::move(url)};
+    }
   }
 
   return {CommandLineTabsPresent::kNo, GURL()};

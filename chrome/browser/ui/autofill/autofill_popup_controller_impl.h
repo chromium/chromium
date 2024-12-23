@@ -65,9 +65,8 @@ class ExpandablePopupParentControllerImpl {
 // This class is a controller for an AutofillPopupView. It implements
 // AutofillPopupController to allow calls from AutofillPopupView. The
 // other, public functions are available to its instantiator.
-class AutofillPopupControllerImpl
-    : public AutofillPopupController,
-      public ExpandablePopupParentControllerImpl {
+class AutofillPopupControllerImpl : public AutofillPopupController,
+                                    public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =

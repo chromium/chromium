@@ -13,14 +13,16 @@ AppWindowBase::AppWindowBase(const ash::ShelfID& shelf_id,
     : shelf_id_(shelf_id), widget_(widget) {}
 
 AppWindowBase::~AppWindowBase() {
-  if (controller_)
+  if (controller_) {
     controller_->RemoveWindow(this);
+  }
 }
 
 void AppWindowBase::SetController(AppWindowShelfItemController* controller) {
   DCHECK(!controller_ || !controller);
-  if (!controller && controller_)
+  if (!controller && controller_) {
     controller_->RemoveWindow(this);
+  }
   controller_ = controller;
 }
 

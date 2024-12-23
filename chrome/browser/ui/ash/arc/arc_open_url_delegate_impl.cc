@@ -261,8 +261,9 @@ ArcOpenUrlDelegateImpl* ArcOpenUrlDelegateImpl::GetForTesting() {
 }
 
 void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
+  }
 
   GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
@@ -278,14 +279,16 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   // opened through here to be installed in the profile associated with ARC.
   // |user| may be null if sign-in hasn't happened yet
   const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  if (!user) {
     return;
+  }
 
   // `profile` may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   std::optional<webapps::AppId> app_id =
       web_app::IsWebAppsCrosapiEnabled()
@@ -323,27 +326,32 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
-  if (!package_name.has_value())
+  if (!package_name.has_value()) {
     return;
+  }
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
-  if (!chrome_shelf_controller)
+  if (!chrome_shelf_controller) {
     return;
+  }
 
   auto* arc_tracker =
       chrome_shelf_controller->app_service_app_window_controller()
           ->app_service_arc_tracker();
-  if (!arc_tracker)
+  if (!arc_tracker) {
     return;
+  }
 
-  for (const auto& id : prefs->GetAppsForPackage(package_name.value()))
+  for (const auto& id : prefs->GetAppsForPackage(package_name.value())) {
     arc_tracker->CloseWindows(id);
+  }
 }
 
 void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
@@ -419,8 +427,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   webapps::AppId app_id =
       web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
@@ -433,8 +442,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
       });
 
   if (!app_installed) {
-    if (arc_intent->data)
+    if (arc_intent->data) {
       OpenUrlFromArc(*arc_intent->data);
+    }
     return;
   }
 

@@ -30,9 +30,9 @@ using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 class MagicBoostCardControllerTest : public ChromeViewsTestBase {
  public:
   MagicBoostCardControllerTest() {
-// Sets the default functions for the test to create image with the lottie
-// resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in the
-// `ResourceBundle`.
+    // Sets the default functions for the test to create image with the lottie
+    // resource id. Otherwise there's no `g_parse_lottie_as_still_image_` set in
+    // the `ResourceBundle`.
     ui::ResourceBundle::SetLottieParsingFunctions(
         &lottie::ParseLottieAsStillImage,
         &lottie::ParseLottieAsThemedStillImage);

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
+
 #include <sstream>
 #include <string>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 
 SidePanelEntryKey::SidePanelEntryKey(SidePanelEntryId id) : id_(id) {
   CHECK_NE(id_, SidePanelEntryId::kExtension);

@@ -50,23 +50,27 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
   // We can't launch into certain profiles, and we can't find a suitable
   // alternative.
-  if (profile->IsSystemProfile())
+  if (profile->IsSystemProfile()) {
     return nullptr;
-  if (ProfileHelper::IsSigninProfile(profile))
+  }
+  if (ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
+  }
 
   // For a guest sessions, launch into the primary off-the-record profile, which
   // is used for browsing in guest sessions. We do this because the "original"
   // profile of the guest session can't create windows.
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
 
   // We don't support launching SWA in incognito profiles, use the original
   // profile if an incognito profile is provided (with the exception of guest
   // session, which is implemented with an incognito profile, thus it is handled
   // above).
-  if (profile->IsIncognitoProfile())
+  if (profile->IsIncognitoProfile()) {
     return profile->GetOriginalProfile();
+  }
 
   // Use the profile provided in other scenarios.
   return profile;
@@ -97,8 +101,9 @@ std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
-  if (!app_id)
+  if (!app_id) {
     return std::nullopt;
+  }
 
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
@@ -134,8 +139,9 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
 
   const std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
-  if (!app_id)
+  if (!app_id) {
     return;
+  }
 
   auto* app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
@@ -228,12 +234,14 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   }
 
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
-  if (!swa_manager)
+  if (!swa_manager) {
     return nullptr;
+  }
 
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
+  if (!provider) {
     return nullptr;
+  }
 
   auto* system_app = swa_manager->GetSystemApp(app_type);
 
@@ -291,8 +299,9 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   // app install and then provide a valid answer here.
   std::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
-  if (!app_id)
+  if (!app_id) {
     return nullptr;
+  }
 
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
@@ -322,8 +331,9 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
       // In case a URL is provided, only allow a browser which shows it.
       content::WebContents* content =
           browser->tab_strip_model()->GetActiveWebContents();
-      if (!content->GetVisibleURL().EqualsIgnoringRef(url))
+      if (!content->GetVisibleURL().EqualsIgnoringRef(url)) {
         continue;
+      }
     }
 
     return browser;
@@ -352,8 +362,9 @@ std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   DCHECK(browser);
-  if (browser->app_controller() && browser->app_controller()->system_app())
+  if (browser->app_controller() && browser->app_controller()->system_app()) {
     return browser->app_controller()->system_app()->GetMinimumWindowSize();
+  }
 
   return gfx::Size();
 }

@@ -39,7 +39,8 @@ class PerformanceHandler : public SettingsPageUIHandler,
   void OnDeviceHasBatteryChanged(bool device_has_battery) override;
 
   /**
-   * Returns a list of currently opened tabs' urls in order of most recently used.
+   * Returns a list of currently opened tabs' urls in order of most recently
+   * used.
    */
   base::Value GetCurrentOpenSites();
   void HandleGetCurrentOpenSites(const base::Value::List& args);

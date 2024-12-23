@@ -72,8 +72,9 @@ bool UseMultiscreen() {
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
                                    const std::string& account_domain_name) {
   DCHECK(entry);
-  if (entry->GetHostedDomain() == kNoHostedDomainFound)
+  if (entry->GetHostedDomain() == kNoHostedDomainFound) {
     return std::string();
+  }
   const std::string domain_name = entry->GetHostedDomain().empty()
                                       ? account_domain_name
                                       : entry->GetHostedDomain();
@@ -85,8 +86,9 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 std::string GetManagedDeviceTitle() {
   std::optional<std::string> device_manager =
       chrome::GetDeviceManagerIdentity();
-  if (!device_manager)
+  if (!device_manager) {
     return std::string();
+  }
   if (device_manager->empty()) {
     return l10n_util::GetStringUTF8(
         IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED);
@@ -191,8 +193,9 @@ void ManagedUserProfileNoticeHandler::OnProfileHostedDomainChanged(
 }
 
 void ManagedUserProfileNoticeHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser_ == browser)
+  if (browser_ == browser) {
     browser_ = nullptr;
+  }
 }
 
 void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(
@@ -231,8 +234,9 @@ void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
     const base::Value::List& args) {
   AllowJavascript();
 
-  if (browser_)
+  if (browser_) {
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
+  }
 }
 
 void ManagedUserProfileNoticeHandler::HandleProceed(
@@ -340,8 +344,9 @@ void ManagedUserProfileNoticeHandler::OnLongProcessingTime() {
 void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
   DCHECK(IsJavascriptAllowed());
-  if (profile_path != profile_path_)
+  if (profile_path != profile_path_) {
     return;
+  }
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 

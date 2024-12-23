@@ -83,12 +83,15 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
 
 // Flaky on IS_CHROMEOS. crbug.com/369817361
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
 #else
-#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable \
+  PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
 #endif
-IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
-                       MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
+IN_PROC_BROWSER_TEST_F(
+    UnloadControllerPreventCloseTest,
+    MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
   const absl::Cleanup policy_cleanup = [this] {
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };

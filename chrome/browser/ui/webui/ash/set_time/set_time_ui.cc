@@ -146,8 +146,9 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
   void OnParentAccessValidation(bool success) {
-    if (success)
+    if (success) {
       FireWebUIListener("validation-complete");
+    }
   }
 
   base::ScopedObservation<SystemClockClient, SystemClockClient::Observer>

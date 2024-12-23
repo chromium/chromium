@@ -107,8 +107,9 @@ const char* GetUpdateUrlChannelSuffix(version_info::Channel channel) {
 }  // namespace
 
 void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
-  if (g_upgrade_bubble_is_showing)
+  if (g_upgrade_bubble_is_showing) {
     return;
+  }
 
   g_upgrade_bubble_is_showing = true;
 

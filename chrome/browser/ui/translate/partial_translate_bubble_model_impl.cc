@@ -97,10 +97,11 @@ void PartialTranslateBubbleModelImpl::SetTargetText(
   // Luxembourgish uses a leading space and is the only one of these languages
   // supported by Translate in Chrome. Given this, specific localization is not
   // handled, but could be in the future if more languages are included.
-  if (source_text_truncated_)
+  if (source_text_truncated_) {
     target_text_ = text + u"…";
-  else
+  } else {
     target_text_ = text;
+  }
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetTargetText() const {
@@ -171,10 +172,11 @@ void PartialTranslateBubbleModelImpl::Translate(
   // If the selected text was truncated, strip the trailing ellipses before
   // sending for translation.
   std::u16string source_text = GetSourceText();
-  if (source_text_truncated_)
+  if (source_text_truncated_) {
     request.selection_text = source_text.substr(0, source_text.size() - 1);
-  else
+  } else {
     request.selection_text = source_text;
+  }
 
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();

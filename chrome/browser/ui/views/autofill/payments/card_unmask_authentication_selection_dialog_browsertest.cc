@@ -42,13 +42,15 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTestBase
   }
 
   CardUnmaskAuthenticationSelectionDialogView* GetDialog() {
-    if (!controller())
+    if (!controller()) {
       return nullptr;
+    }
 
     CardUnmaskAuthenticationSelectionDialog* dialog_view =
         controller()->GetDialogViewForTesting();
-    if (!dialog_view)
+    if (!dialog_view) {
       return nullptr;
+    }
 
     return static_cast<CardUnmaskAuthenticationSelectionDialogView*>(
         dialog_view);

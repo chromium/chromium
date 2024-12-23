@@ -283,7 +283,8 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
                               nullptr),
         /*form_control_ax_id=*/0);
   };
-  WeakPtr<AutofillSuggestionController> controller = create_controller(gfx::RectF());
+  WeakPtr<AutofillSuggestionController> controller =
+      create_controller(gfx::RectF());
   EXPECT_TRUE(controller);
 
   controller->Hide(SuggestionHidingReason::kViewDestroyed);
@@ -306,8 +307,9 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   base::WeakPtr<AutofillSuggestionController> controller3 =
       create_controller(bounds);
   EXPECT_EQ(&client().popup_controller(manager()), controller3.get());
-  EXPECT_EQ(bounds, static_cast<AutofillSuggestionController*>(controller3.get())
-                        ->element_bounds());
+  EXPECT_EQ(bounds,
+            static_cast<AutofillSuggestionController*>(controller3.get())
+                ->element_bounds());
   controller3->Hide(SuggestionHidingReason::kViewDestroyed);
 
   client().popup_controller(manager()).DoHide();
@@ -401,7 +403,8 @@ TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
 // picture-in-picture window.
 // TODO(crbug.com/40280362): Implement PIP overlap checks on Android.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture) {
+TEST_F(AutofillSuggestionControllerTest,
+       CheckBoundsOverlapWithPictureInPicture) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
@@ -468,7 +471,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
 
 // Tests that if the popup is shown, destruction of the WebContents hides the
 // popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideOnWebContentsDestroyed) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideOnWebContentsDestroyed) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -478,7 +482,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic, HideOnWebContentsDestroyed) 
 
 // Tests that if the popup is shown in the *main frame*, destruction of the
 // *main frame* hides the popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideInMainFrameOnDestruction) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
   EXPECT_CALL(client().popup_controller(manager()),
@@ -487,7 +492,8 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInMainFrameOnDestruction
 
 // Tests that if the popup is shown in the *sub frame*, destruction of the
 // *sub frame* hides the popup.
-TEST_F(AutofillSuggestionControllerTestHidingLogic, HideInSubFrameOnDestruction) {
+TEST_F(AutofillSuggestionControllerTestHidingLogic,
+       HideInSubFrameOnDestruction) {
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
   EXPECT_CALL(client().popup_controller(sub_manager()),

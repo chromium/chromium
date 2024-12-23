@@ -58,7 +58,7 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
 
   ~PermissionChipKombuchaInteractiveUITest() override = default;
   PermissionChipKombuchaInteractiveUITest(
-    const PermissionChipKombuchaInteractiveUITest&) = delete;
+      const PermissionChipKombuchaInteractiveUITest&) = delete;
   void operator=(const PermissionChipKombuchaInteractiveUITest&) = delete;
 
   void SetUp() override {

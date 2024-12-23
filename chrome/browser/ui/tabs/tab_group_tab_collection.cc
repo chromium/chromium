@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
+
 #include <memory>
 #include <optional>
 
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
-#include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "components/tab_groups/tab_group_id.h"
 

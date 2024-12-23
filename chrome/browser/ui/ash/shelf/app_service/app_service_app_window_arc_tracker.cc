@@ -61,8 +61,9 @@ bool GetTimeDeltaFromIntent(const arc::Intent& intent,
                             const std::string& param_key,
                             base::TimeDelta* out) {
   std::string time_ms_string;
-  if (!intent.GetExtraParamValue(param_key, &time_ms_string))
+  if (!intent.GetExtraParamValue(param_key, &time_ms_string)) {
     return false;
+  }
 
   int64_t time_ms;
   if (!base::StringToInt64(time_ms_string, &time_ms)) {
@@ -79,8 +80,9 @@ bool GetTimeDeltaFromIntent(const arc::Intent& intent,
 void HandlePlayStoreLaunch(const arc::Intent& intent) {
   // Don't track initial Play Store launch. We currently shows Play Store in
   // very rare case in-session provisioning.
-  if (intent.HasExtraParam(arc::kInitialStartParam))
+  if (intent.HasExtraParam(arc::kInitialStartParam)) {
     return;
+  }
 
   base::TimeDelta launch_time;
   // This param is injected by |arc:: LaunchAppWithIntent|.
@@ -116,14 +118,16 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
-  if (arc_session_manager)
+  if (arc_session_manager) {
     arc_session_manager->AddObserver(this);
+  }
 
   auto* arc_handler =
       ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
           observed_profile_);
-  if (arc_handler)
+  if (arc_handler) {
     arc_handler->OnShelfReady();
+  }
 }
 
 AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
@@ -133,8 +137,9 @@ AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager may be released first.
-  if (arc_session_manager)
+  if (arc_session_manager) {
     arc_session_manager->RemoveObserver(this);
+  }
 }
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
@@ -146,8 +151,9 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
   if (user_email == primary_user_email) {
     // Make sure that we created items for all apps, not only which have a
     // window.
-    for (const auto& info : task_id_to_arc_app_window_info_)
+    for (const auto& info : task_id_to_arc_app_window_info_) {
       AttachControllerToTask(info.first);
+    }
 
     // Update active status.
     OnTaskSetActive(active_task_id_);
@@ -191,30 +197,34 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
   // before OnTaskDestroyed() is called to remove the entry from
   // |task_id_to_arc_app_window_info_|;
   ArcAppWindowInfo* info = GetArcAppWindowInfo(window);
-  if (info)
+  if (info) {
     info->set_window(nullptr);
+  }
 
   auto session_id = arc::GetWindowSessionId(window);
   if (session_id.has_value()) {
     OnSessionDestroyed(*session_id);
     session_id_to_arc_app_window_info_.erase(*session_id);
-    if (session_id == active_session_id_)
+    if (session_id == active_session_id_) {
       active_session_id_ = arc::kNoTaskId;
+    }
   }
 }
 
 void AppServiceAppWindowArcTracker::CloseWindows(const std::string& app_id) {
   const std::vector<int> task_ids = GetTaskIdsForApp(app_id);
-  for (const auto task_id : task_ids)
+  for (const auto task_id : task_ids) {
     arc::CloseTask(task_id);
+  }
 }
 
 void AppServiceAppWindowArcTracker::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (key != exo::kApplicationIdKey || old == 0)
+  if (key != exo::kApplicationIdKey || old == 0) {
     return;
+  }
   const std::string* old_val = reinterpret_cast<std::string*>(old);
   const auto maybe_session_id = arc::GetSessionIdFromWindowAppId(*old_val);
   const auto maybe_task_id = arc::GetWindowTaskId(window);
@@ -226,19 +236,22 @@ void AppServiceAppWindowArcTracker::OnWindowPropertyChanged(
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  if (!app_info.ready)
+  if (!app_info.ready) {
     OnAppRemoved(app_id);
+  }
 }
 
 void AppServiceAppWindowArcTracker::OnAppRemoved(const std::string& app_id) {
   const std::vector<int> task_ids_to_remove = GetTaskIdsForApp(app_id);
-  for (const auto task_id : task_ids_to_remove)
+  for (const auto task_id : task_ids_to_remove) {
     OnTaskDestroyed(task_id);
+  }
   DCHECK(GetTaskIdsForApp(app_id).empty());
 
   const std::vector<int> session_ids_to_remove = GetSessionIdsForApp(app_id);
-  for (const auto session_id : session_ids_to_remove)
+  for (const auto session_id : session_ids_to_remove) {
     OnSessionDestroyed(session_id);
+  }
   DCHECK(GetSessionIdsForApp(app_id).empty());
 }
 
@@ -266,12 +279,14 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
     task_id_to_arc_app_window_info_[task_id]->set_window(it->second->window());
 
     auto it_controller = app_shelf_group_to_controller_map_.find(app_shelf_id);
-    if (it_controller != app_shelf_group_to_controller_map_.end())
+    if (it_controller != app_shelf_group_to_controller_map_.end()) {
       it_controller->second->RemoveSessionId(it->first);
+    }
 
     session_id_to_arc_app_window_info_.erase(it);
-    if (session_id == active_session_id_)
+    if (session_id == active_session_id_) {
       active_session_id_ = arc::kNoTaskId;
+    }
   } else {
     const std::string arc_app_id =
         ArcAppListPrefs::GetAppId(package_name, activity_name);
@@ -311,8 +326,9 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   }
 
   aura::Window* const window = task_id_it->second->window();
-  if (!window)
+  if (!window) {
     return;
+  }
 
   // If we found the window, update AppService InstanceRegistry to add the
   // window information.
@@ -335,8 +351,9 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
     uint32_t primary_color,
     uint32_t status_bar_color) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
-  if (it == task_id_to_arc_app_window_info_.end())
+  if (it == task_id_to_arc_app_window_info_.end()) {
     return;
+  }
 
   // If |icon| is empty, and non-adaptive icon as the default value, don't
   // call ArcRawIconPngDataToImageSkia, because it might return the default
@@ -357,14 +374,16 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   CHECK_NE(task_id_being_created_, task_id);
 
   auto it = task_id_to_arc_app_window_info_.find(task_id);
-  if (it == task_id_to_arc_app_window_info_.end())
+  if (it == task_id_to_arc_app_window_info_.end()) {
     return;
+  }
 
   if (!it->second->logical_window_id().empty()) {
     const int other_id = GetTaskIdSharingLogicalWindow(task_id);
-    if (other_id != arc::kNoTaskId)
+    if (other_id != arc::kNoTaskId) {
       task_id_to_arc_app_window_info_[other_id]->set_window_hidden_from_shelf(
           false);
+    }
   }
 
   aura::Window* const window = it->second.get()->window();
@@ -404,8 +423,9 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
     return;
   }
 
-  if (task_id == active_task_id_)
+  if (task_id == active_task_id_) {
     return;
+  }
 
   auto* helper = app_service_controller_->app_service_instance_helper();
   auto it = task_id_to_arc_app_window_info_.find(active_task_id_);
@@ -434,18 +454,21 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
 
   active_task_id_ = task_id;
   it = task_id_to_arc_app_window_info_.find(active_task_id_);
-  if (it == task_id_to_arc_app_window_info_.end())
+  if (it == task_id_to_arc_app_window_info_.end()) {
     return;
+  }
   ArcAppWindowInfo* const current_arc_app_window_info = it->second.get();
-  if (!current_arc_app_window_info || !current_arc_app_window_info->window())
+  if (!current_arc_app_window_info || !current_arc_app_window_info->window()) {
     return;
+  }
   aura::Window* const window = current_arc_app_window_info->window();
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(window);
   DCHECK(widget);
   if (widget && widget->IsActive()) {
     auto* controller = app_service_controller_->ControllerForWindow(window);
-    if (controller)
+    if (controller) {
       controller->SetActiveWindow(window);
+    }
   }
   app_service_controller_->owner()->SetItemStatus(
       current_arc_app_window_info->shelf_id(), ash::STATUS_RUNNING);
@@ -459,18 +482,21 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     aura::Window* window) {
   auto task_or_session_id = arc::GetWindowTaskOrSessionId(window);
-  if (!task_or_session_id.has_value())
+  if (!task_or_session_id.has_value()) {
     return;
+  }
 
   // System windows are also arc apps.
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
 
-  if (*task_or_session_id == arc::kSystemWindowTaskId)
+  if (*task_or_session_id == arc::kSystemWindowTaskId) {
     return;
+  }
 
   ArcAppWindowInfo* const info = GetArcAppWindowInfo(window);
-  if (!info)
+  if (!info) {
     return;
+  }
 
   window->SetProperty(ash::kArcPackageNameKey, info->package_name());
   window->SetProperty<int>(ash::kShelfItemTypeKey, ash::TYPE_APP);
@@ -478,8 +504,9 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   // Check if we have set the AppWindowBase for this task. If it was a session
   // window (ARC ghost window) and replace by real task window, function will
   // returen here.
-  if (app_service_controller_->GetAppWindow(window))
+  if (app_service_controller_->GetAppWindow(window)) {
     return;
+  }
 
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(window);
   DCHECK(widget);
@@ -488,23 +515,27 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
 
   const auto task_id = arc::GetWindowTaskId(window);
   const auto session_id = arc::GetWindowSessionId(window);
-  if (task_id.has_value())
+  if (task_id.has_value()) {
     AttachControllerToTask(*task_id);
-  else if (session_id.has_value())
+  } else if (session_id.has_value()) {
     AttachControllerToSession(*session_id, *info);
+  }
 
-  if (!info->task_hidden_from_shelf())
+  if (!info->task_hidden_from_shelf()) {
     app_service_controller_->AddWindowToShelf(window, shelf_id);
+  }
   AppWindowBase* app_window = app_service_controller_->GetAppWindow(window);
-  if (app_window)
+  if (app_window) {
     app_window->SetDescription(info->title(), info->icon());
+  }
 
   window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
   window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
   window->SetProperty(aura::client::kSkipImeProcessing, true);
 
-  if (info->launch_intent().empty())
+  if (info->launch_intent().empty()) {
     return;
+  }
 
   auto intent = arc::Intent::Get(info->launch_intent());
   if (!intent) {
@@ -512,8 +543,9 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     return;
   }
 
-  if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId)
+  if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId) {
     HandlePlayStoreLaunch(*intent);
+  }
   MaybeHandleDeferredLaunch(*intent);
 }
 
@@ -539,12 +571,14 @@ void AppServiceAppWindowArcTracker::OnItemDelegateDiscarded(
 }
 
 ash::ShelfID AppServiceAppWindowArcTracker::GetShelfId(aura::Window* window) {
-  if (observed_profile_ != app_service_controller_->owner()->profile())
+  if (observed_profile_ != app_service_controller_->owner()->profile()) {
     return ash::ShelfID();
+  }
 
   ArcAppWindowInfo* info = GetArcAppWindowInfo(window);
-  if (!info)
+  if (!info) {
     return ash::ShelfID();
+  }
 
   return info->shelf_id();
 }
@@ -559,12 +593,14 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   // TODO(crbug.com/40808991): Investigate why `task_id_to_arc_app_window_info_`
   // doesn't have the `task_id` or why it->second is null.
   auto it = task_id_to_arc_app_window_info_.find(task_id);
-  if (it == task_id_to_arc_app_window_info_.end() || !it->second)
+  if (it == task_id_to_arc_app_window_info_.end() || !it->second) {
     return;
+  }
 
   ArcAppWindowInfo* const app_window_info = it->second.get();
-  if (app_window_info->task_hidden_from_shelf())
+  if (app_window_info->task_hidden_from_shelf()) {
     return;
+  }
 
   const arc::ArcAppShelfId& app_shelf_id = app_window_info->app_shelf_id();
   if (base::Contains(app_shelf_group_to_controller_map_, app_shelf_id)) {
@@ -625,30 +661,36 @@ void AppServiceAppWindowArcTracker::AttachControllerToSession(
 }
 
 void AppServiceAppWindowArcTracker::OnArcPlayStoreEnabledChanged(bool enabled) {
-  if (enabled)
+  if (enabled) {
     return;
+  }
 
   // If ARC was disabled, close the ghost window.
   std::vector<int> session_ids;
-  for (const auto& it : session_id_to_arc_app_window_info_)
+  for (const auto& it : session_id_to_arc_app_window_info_) {
     session_ids.push_back(it.first);
+  }
 
-  for (const auto session_id : session_ids)
+  for (const auto session_id : session_ids) {
     OnSessionDestroyed(session_id);
+  }
 
   DCHECK(session_id_to_arc_app_window_info_.empty());
 }
 
 int AppServiceAppWindowArcTracker::GetTaskIdSharingLogicalWindow(int task_id) {
   auto fixed_it = task_id_to_arc_app_window_info_.find(task_id);
-  if (fixed_it == task_id_to_arc_app_window_info_.end())
+  if (fixed_it == task_id_to_arc_app_window_info_.end()) {
     return arc::kNoTaskId;
-  if (fixed_it->second->logical_window_id().empty())
+  }
+  if (fixed_it->second->logical_window_id().empty()) {
     return arc::kNoTaskId;
+  }
   for (auto it = task_id_to_arc_app_window_info_.begin();
        it != task_id_to_arc_app_window_info_.end(); it++) {
-    if (task_id == it->first)
+    if (task_id == it->first) {
       continue;
+    }
     if (fixed_it->second->logical_window_id() ==
             it->second->logical_window_id() &&
         fixed_it->second->shelf_id() == it->second->shelf_id()) {
@@ -663,8 +705,9 @@ std::vector<int> AppServiceAppWindowArcTracker::GetTaskIdsForApp(
   std::vector<int> task_ids;
   for (const auto& it : task_id_to_arc_app_window_info_) {
     const ArcAppWindowInfo* app_window_info = it.second.get();
-    if (app_window_info->app_shelf_id().app_id() == app_id)
+    if (app_window_info->app_shelf_id().app_id() == app_id) {
       task_ids.push_back(it.first);
+    }
   }
 
   return task_ids;
@@ -675,8 +718,9 @@ std::vector<int> AppServiceAppWindowArcTracker::GetSessionIdsForApp(
   std::vector<int> session_ids;
   for (const auto& it : session_id_to_arc_app_window_info_) {
     const ArcAppWindowInfo* app_window_info = it.second.get();
-    if (app_window_info->app_shelf_id().app_id() == app_id)
+    if (app_window_info->app_shelf_id().app_id() == app_id) {
       session_ids.push_back(it.first);
+    }
   }
 
   return session_ids;
@@ -686,16 +730,18 @@ void AppServiceAppWindowArcTracker::OnIconLoaded(int32_t task_id,
                                                  const std::string& title,
                                                  const gfx::ImageSkia& icon) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
-  if (it == task_id_to_arc_app_window_info_.end())
+  if (it == task_id_to_arc_app_window_info_.end()) {
     return;
+  }
 
   ArcAppWindowInfo* const info = it->second.get();
   DCHECK(info);
   info->SetDescription(title, icon);
   AppWindowBase* app_window =
       app_service_controller_->GetAppWindow(it->second->window());
-  if (app_window)
+  if (app_window) {
     app_window->SetDescription(title, icon);
+  }
 }
 
 ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
@@ -703,13 +749,15 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
   const auto task_id = arc::GetWindowTaskId(window);
   if (task_id.has_value()) {
     auto it = task_id_to_arc_app_window_info_.find(*task_id);
-    if (it != task_id_to_arc_app_window_info_.end())
+    if (it != task_id_to_arc_app_window_info_.end()) {
       return it->second.get();
+    }
   }
 
   const auto session_id = arc::GetWindowSessionId(window);
-  if (!session_id.has_value())
+  if (!session_id.has_value()) {
     return nullptr;
+  }
 
   // Since OnTaskCreated is async with corresponding aura window create, so in
   // some cases, the task has beend created but window property in aura window
@@ -717,17 +765,20 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
   // session's task created, just return the latest task info.
   if (base::Contains(session_id_to_task_id_map_, *session_id)) {
     auto mapped_task_id = session_id_to_task_id_map_[*session_id];
-    if (base::Contains(task_id_to_arc_app_window_info_, mapped_task_id))
+    if (base::Contains(task_id_to_arc_app_window_info_, mapped_task_id)) {
       return task_id_to_arc_app_window_info_[mapped_task_id].get();
+    }
   }
 
   const std::string* arc_app_id = window->GetProperty(app_restore::kAppIdKey);
-  if (!arc_app_id || arc_app_id->empty())
+  if (!arc_app_id || arc_app_id->empty()) {
     return nullptr;
+  }
 
   auto session_id_it = session_id_to_arc_app_window_info_.find(*session_id);
-  if (session_id_it != session_id_to_arc_app_window_info_.end())
+  if (session_id_it != session_id_to_arc_app_window_info_.end()) {
     return session_id_it->second.get();
+  }
 
   const arc::ArcAppShelfId arc_app_shelf_id =
       arc::ArcAppShelfId::FromIntentAndAppId(/*intent=*/std::string(),
@@ -742,8 +793,9 @@ ArcAppWindowInfo* AppServiceAppWindowArcTracker::GetArcAppWindowInfo(
 
 void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
   auto it = session_id_to_arc_app_window_info_.find(session_id);
-  if (it == session_id_to_arc_app_window_info_.end())
+  if (it == session_id_to_arc_app_window_info_.end()) {
     return;
+  }
 
   aura::Window* const window = it->second.get()->window();
   if (window) {
@@ -772,6 +824,7 @@ void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
   auto* arc_handler =
       ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
           observed_profile_);
-  if (arc_handler && arc_handler->window_handler())
+  if (arc_handler && arc_handler->window_handler()) {
     arc_handler->window_handler()->CloseWindow(session_id);
+  }
 }

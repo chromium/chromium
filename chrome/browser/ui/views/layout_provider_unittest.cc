@@ -463,8 +463,9 @@ TEST_F(LayoutProviderTest, OmniboxFontAlways14) {
   for (; latin_height_threshold > 0; --latin_height_threshold) {
     if (kOmniboxDesiredSize - base_font_size !=
         GetFontSizeDeltaBoundedByAvailableHeight(latin_height_threshold,
-                                                 kOmniboxDesiredSize))
+                                                 kOmniboxDesiredSize)) {
       break;
+    }
   }
   // The threshold should always be the same, but the value depends on font
   // metrics. Check for some sane value. This should only change if Roboto

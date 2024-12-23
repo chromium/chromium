@@ -144,8 +144,9 @@ TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {
 
     last_ten.push_back(photo->id);
 
-    if (last_ten.size() > 10)
+    if (last_ten.size() > 10) {
       last_ten.pop_front();
+    }
   };
 
   for (int i = 0; i < 20; i++) {

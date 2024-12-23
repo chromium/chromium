@@ -28,8 +28,9 @@ TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
     ui::ColorMixer& mixer = provider.AddMixer();
     mixer[kColorToolbar] = {toolbar_color};
     ui::ColorProviderKey key;
-    if (color_utils::IsDark(toolbar_color))
+    if (color_utils::IsDark(toolbar_color)) {
       key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+    }
     AddNewTabPageColorMixer(&provider, key);
 
     EXPECT_EQ(provider.GetColor(kColorToolbar), toolbar_color);

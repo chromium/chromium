@@ -17,4 +17,4 @@ NSString* const kBookmarkItemsProperty = @"bookmarkItems";
 NSString* const kNormalWindowMode = @"normal";
 
 NSString* const kIncognitoWindowMode = @"incognito";
-}
+}  // namespace AppleScript

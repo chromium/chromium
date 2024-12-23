@@ -203,8 +203,9 @@ void CheckHistograms(const base::HistogramTester& histograms,
       PrintSettingsBuckets::kTotal,    PrintSettingsBuckets::kDefaultMedia,
   };
 
-  for (auto bucket : kPopulatedPrintSettingsBuckets)
+  for (auto bucket : kPopulatedPrintSettingsBuckets) {
     histograms.ExpectBucketCount("PrintPreview.PrintSettings", bucket, 1);
+  }
 
   // All other PrintPreview.PrintSettings buckets should be empty.
   histograms.ExpectTotalCount("PrintPreview.PrintSettings",
@@ -238,8 +239,9 @@ class TestPrinterHandler : public PrinterHandler {
 
   void StartGetPrinters(AddedPrintersCallback added_printers_callback,
                         GetPrintersDoneCallback done_callback) override {
-    if (!printers_.empty())
+    if (!printers_.empty()) {
       added_printers_callback.Run(printers_.Clone());
+    }
     std::move(done_callback).Run();
   }
 
@@ -261,8 +263,9 @@ class TestPrinterHandler : public PrinterHandler {
   void SetPrinters(const std::vector<PrinterInfo>& printers) {
     printers_.clear();
     for (const auto& printer : printers) {
-      if (printer.is_default)
+      if (printer.is_default) {
         default_printer_ = printer.id;
+      }
       printers_.Append(printer.basic_info.Clone());
       printer_capabilities_[printer.id] = printer.capabilities.Clone();
     }
@@ -604,8 +607,9 @@ class PrintPreviewHandlerTest : public testing::Test {
       const base::Value::Dict& settings,
       const std::string& policy_name) {
     const base::Value::Dict* policies = settings.FindDict("policies");
-    if (!policies)
+    if (!policies) {
       return nullptr;
+    }
     return policies->FindDict(policy_name);
   }
 
@@ -625,8 +629,9 @@ class PrintPreviewHandlerTest : public testing::Test {
     const base::Value* policy_value = policy ? policy->Find("value") : nullptr;
 
     ASSERT_EQ(expected_policy_value.has_value(), !!policy_value);
-    if (expected_policy_value.has_value())
+    if (expected_policy_value.has_value()) {
       EXPECT_EQ(expected_policy_value.value(), *policy_value);
+    }
   }
 
   // Validates the initial settings allowed/default mode policies structure in
@@ -649,12 +654,14 @@ class PrintPreviewHandlerTest : public testing::Test {
         policy ? policy->Find("defaultMode") : nullptr;
 
     ASSERT_EQ(expected_allowed_mode.has_value(), !!allowed_mode);
-    if (expected_allowed_mode.has_value())
+    if (expected_allowed_mode.has_value()) {
       EXPECT_EQ(expected_allowed_mode.value(), *allowed_mode);
+    }
 
     ASSERT_EQ(expected_default_mode.has_value(), !!default_mode);
-    if (expected_default_mode.has_value())
+    if (expected_default_mode.has_value()) {
       EXPECT_EQ(expected_default_mode.value(), *default_mode);
+    }
   }
 
   // Simulates a 'getPrinters' Web UI message by constructing the arguments and

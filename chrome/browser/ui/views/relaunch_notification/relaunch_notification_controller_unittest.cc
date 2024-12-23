@@ -1134,10 +1134,11 @@ class RelaunchNotificationControllerPlatformImplTest
   }
 
   void SetVisibility(bool is_visible) {
-    if (is_visible)
+    if (is_visible) {
       browser_view()->Show();
-    else
+    } else {
       browser_view()->Hide();
+    }
 
     // Allow UI tasks to run so that the browser becomes fully active/inactive.
     task_environment()->RunUntilIdle();

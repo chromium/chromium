@@ -33,8 +33,9 @@ WeakPtr<AutofillSuggestionController> AutofillSuggestionController::GetOrCreate(
     return previous_impl->GetWeakPtr();
   }
 
-  if (previous.get())
+  if (previous.get()) {
     previous->Hide(SuggestionHidingReason::kViewDestroyed);
+  }
 
   auto* controller = new AutofillPopupControllerImplMac(
       delegate, web_contents, std::move(controller_common), form_control_ax_id);
@@ -78,8 +79,9 @@ void AutofillPopupControllerImplMac::Show(
 
 void AutofillPopupControllerImplMac::UpdateDataListValues(
     base::span<const SelectOption> options) {
-  if (touch_bar_controller_)
+  if (touch_bar_controller_) {
     [touch_bar_controller_ invalidateTouchBar];
+  }
 
   AutofillPopupControllerImpl::UpdateDataListValues(options);
   // No code below this line!

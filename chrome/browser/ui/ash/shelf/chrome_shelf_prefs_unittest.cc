@@ -91,8 +91,9 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   syncer::StringOrdinal GetPinPosition(const std::string& app_id) override {
     const SyncItem* item = GetSyncItem(app_id);
-    if (!item)
+    if (!item) {
       return syncer::StringOrdinal();
+    }
     return item->item_pin_ordinal;
   }
 
@@ -112,8 +113,9 @@ class AppListSyncableServiceFake : public app_list::AppListSyncableService {
 
   const SyncItem* GetSyncItem(const std::string& id) const override {
     auto it = item_map_.find(id);
-    if (it == item_map_.end())
+    if (it == item_map_.end()) {
       return nullptr;
+    }
     return it->second.get();
   }
 

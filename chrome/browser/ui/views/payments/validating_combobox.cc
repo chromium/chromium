@@ -32,8 +32,9 @@ void ValidatingCombobox::OnBlur() {
 
 void ValidatingCombobox::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.child == this && !details.is_add)
+  if (details.child == this && !details.is_add) {
     being_removed_ = true;
+  }
 }
 
 void ValidatingCombobox::OnContentsChanged() {

@@ -357,8 +357,7 @@ class LoginPromptBrowserTest
 
     AuthInfo() = default;
 
-    AuthInfo(const std::string& username,
-             const std::string& password)
+    AuthInfo(const std::string& username, const std::string& password)
         : username_(username), password_(password) {}
   };
 
@@ -448,7 +447,7 @@ INSTANTIATE_TEST_SUITE_P(
 const char kPrefetchAuthPage[] = "/login/prefetch.html";
 
 const char kMultiRealmTestPage[] = "/login/multi_realm.html";
-const int  kMultiRealmTestRealmCount = 2;
+const int kMultiRealmTestRealmCount = 2;
 const int kMultiRealmTestAuthRequestsCount = 4;
 
 const char kAuthBasicPage[] = "/auth-basic";
@@ -500,8 +499,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
   for (bool crash_network_service : {false, true}) {
     if (crash_network_service) {
       // Can't crash the network service if it isn't running out of process.
-      if (!content::IsOutOfProcessNetworkService())
+      if (!content::IsOutOfProcessNetworkService()) {
         return;
+      }
 
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
@@ -2265,12 +2265,12 @@ class LoginPromptExtensionBrowserTest
     scoped_feature_list_.InitWithFeatureStates(
         {{network::features::kSplitAuthCacheByNetworkIsolationKey,
           (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)}});
-    }
+  }
 
-    void SetUpOnMainThread() override {
-      SetUpLoginFakes();
-      extensions::ExtensionBrowserTest::SetUpOnMainThread();
-    }
+  void SetUpOnMainThread() override {
+    SetUpLoginFakes();
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+  }
 
   ~LoginPromptExtensionBrowserTest() override = default;
 
@@ -2297,8 +2297,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest,
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != kSlowResponse)
+        if (request.relative_url != kSlowResponse) {
           return nullptr;
+        }
         auto response = std::make_unique<SlowAuthResponse>(
             base::BindLambdaForTesting([&](base::OnceClosure start_response,
                                            base::OnceClosure finish_response) {
@@ -2450,8 +2451,9 @@ const char kWorkerHttpBasicAuthPath[] =
 // Serves a Basic Auth challenge.
 std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != kWorkerHttpBasicAuthPath)
+  if (request.relative_url != kWorkerHttpBasicAuthPath) {
     return nullptr;
+  }
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_UNAUTHORIZED);

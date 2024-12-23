@@ -173,12 +173,14 @@ std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   // This delegate doesn't create an interstitial.
   int options_mask = 0;
-  if (overridable)
+  if (overridable) {
     options_mask |=
         security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  if (strict_enforcement)
+  }
+  if (strict_enforcement) {
     options_mask |=
         security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
+  }
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateSSLPage(web_contents, cert_error, ssl_info,
                                              request_url, options_mask,
@@ -442,8 +444,9 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
                                  &url_param)) {
-    if (GURL(url_param).is_valid())
+    if (GURL(url_param).is_valid()) {
       request_url = GURL(url_param);
+    }
   }
   std::string type_param;
   bool is_giant_webview = false;
@@ -503,14 +506,16 @@ std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
   std::string request_url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
                                  &request_url_param)) {
-    if (GURL(request_url_param).is_valid())
+    if (GURL(request_url_param).is_valid()) {
       request_url = GURL(request_url_param);
+    }
   }
   std::string landing_url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "landing_page",
                                  &landing_url_param)) {
-    if (GURL(landing_url_param).is_valid())
+    if (GURL(landing_url_param).is_valid()) {
       landing_url = GURL(landing_url_param);
+    }
   }
   std::string wifi_connection_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "is_wifi",

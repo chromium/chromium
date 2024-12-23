@@ -84,10 +84,11 @@ void TabGroup::AddTab() {
 void TabGroup::RemoveTab() {
   DCHECK_GT(tab_count_, 0);
   --tab_count_;
-  if (tab_count_ == 0)
+  if (tab_count_ == 0) {
     controller_->CloseTabGroup(id_);
-  else
+  } else {
     controller_->ChangeTabGroupContents(id_);
+  }
 
   RunTabGroupVisualsChangedCallback();
 }
@@ -102,8 +103,9 @@ bool TabGroup::IsCustomized() const {
 
 std::optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
-    if (controller_->GetTabGroupForTab(i) == id_)
+    if (controller_->GetTabGroupForTab(i) == id_) {
       return i;
+    }
   }
 
   return std::nullopt;
@@ -111,8 +113,9 @@ std::optional<int> TabGroup::GetFirstTab() const {
 
 std::optional<int> TabGroup::GetLastTab() const {
   for (int i = controller_->GetTabCount() - 1; i >= 0; --i) {
-    if (controller_->GetTabGroupForTab(i) == id_)
+    if (controller_->GetTabGroupForTab(i) == id_) {
       return i;
+    }
   }
 
   return std::nullopt;
@@ -120,8 +123,9 @@ std::optional<int> TabGroup::GetLastTab() const {
 
 gfx::Range TabGroup::ListTabs() const {
   std::optional<int> maybe_first_tab = GetFirstTab();
-  if (!maybe_first_tab)
+  if (!maybe_first_tab) {
     return gfx::Range();
+  }
 
   int first_tab = maybe_first_tab.value();
   // Safe to assume GetLastTab() is not nullopt.

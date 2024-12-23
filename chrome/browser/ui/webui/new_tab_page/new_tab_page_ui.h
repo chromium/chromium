@@ -96,14 +96,13 @@ class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-class NewTabPageUI
-    : public ui::MojoWebUIController,
-      public new_tab_page::mojom::PageHandlerFactory,
-      public most_visited::mojom::MostVisitedPageHandlerFactory,
-      public browser_command::mojom::CommandHandlerFactory,
-      public help_bubble::mojom::HelpBubbleHandlerFactory,
-      public NtpCustomBackgroundServiceObserver,
-      content::WebContentsObserver {
+class NewTabPageUI : public ui::MojoWebUIController,
+                     public new_tab_page::mojom::PageHandlerFactory,
+                     public most_visited::mojom::MostVisitedPageHandlerFactory,
+                     public browser_command::mojom::CommandHandlerFactory,
+                     public help_bubble::mojom::HelpBubbleHandlerFactory,
+                     public NtpCustomBackgroundServiceObserver,
+                     content::WebContentsObserver {
  public:
   explicit NewTabPageUI(content::WebUI* web_ui);
 

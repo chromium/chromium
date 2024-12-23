@@ -55,8 +55,9 @@ bool ContactInfoEditorViewController::IsEditingExistingItem() {
 std::vector<EditorField>
 ContactInfoEditorViewController::GetFieldDefinitions() {
   std::vector<EditorField> fields;
-  if (!spec())
+  if (!spec()) {
     return fields;
+  }
 
   if (spec()->request_payer_name()) {
     fields.push_back(EditorField(
@@ -82,22 +83,25 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
 
 std::u16string ContactInfoEditorViewController::GetInitialValueForType(
     autofill::FieldType type) {
-  if (!profile_to_edit_)
+  if (!profile_to_edit_) {
     return std::u16string();
+  }
   return GetValueForType(*profile_to_edit_, type);
 }
 
 bool ContactInfoEditorViewController::ValidateModelAndSave() {
   // TODO(crbug.com/40515884): Move this method and its helpers to a base class
   // shared with the Shipping Address editor.
-  if (!ValidateInputFields())
+  if (!ValidateInputFields()) {
     return false;
+  }
 
   if (profile_to_edit_) {
     PopulateProfile(profile_to_edit_);
-    if (!is_incognito())
+    if (!is_incognito()) {
       state()->GetPersonalDataManager()->address_data_manager().UpdateProfile(
           *profile_to_edit_);
+    }
     state()->profile_comparator()->Invalidate(*profile_to_edit_);
     std::move(on_edited_).Run();
     on_added_.Reset();
@@ -108,9 +112,10 @@ bool ContactInfoEditorViewController::ValidateModelAndSave() {
         std::make_unique<autofill::AutofillProfile>(
             autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
     PopulateProfile(profile.get());
-    if (!is_incognito())
+    if (!is_incognito()) {
       state()->GetPersonalDataManager()->address_data_manager().AddProfile(
           *profile);
+    }
     std::move(on_added_).Run(*profile);
     on_edited_.Reset();
   }
@@ -200,8 +205,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     TextfieldValueChanged(views::Textfield* textfield, bool was_blurred) {
-  if (!was_blurred)
+  if (!was_blurred) {
     return true;
+  }
 
   std::u16string error_message;
   bool is_valid = ValidateTextfield(textfield, &error_message);
@@ -212,8 +218,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ValidateTextfield(views::Textfield* textfield,
                       std::u16string* error_message) {
-  if (!controller_->spec())
+  if (!controller_->spec()) {
     return false;
+  }
 
   // Show errors from merchant's retry() call.
   autofill::AutofillProfile* invalid_contact_profile =
@@ -222,8 +229,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
       textfield->GetText() ==
           controller_->GetValueForType(*invalid_contact_profile, field_.type)) {
     *error_message = controller_->spec()->GetPayerError(field_.type);
-    if (!error_message->empty())
+    if (!error_message->empty()) {
       return false;
+    }
   }
 
   bool is_valid = true;

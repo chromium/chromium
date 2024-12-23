@@ -15,8 +15,7 @@
 AppWindowNativeWidgetMac::AppWindowNativeWidgetMac(
     views::Widget* widget,
     extensions::NativeAppWindow* native_app_window)
-    : NativeWidgetMac(widget), native_app_window_(native_app_window) {
-}
+    : NativeWidgetMac(widget), native_app_window_(native_app_window) {}
 
 AppWindowNativeWidgetMac::~AppWindowNativeWidgetMac() = default;
 

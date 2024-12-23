@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
+
 #import <AppKit/AppKit.h>
 
 #include "base/strings/sys_string_conversions.h"
@@ -14,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -38,8 +39,9 @@ void ClearDelegatesFromSubmenu(NSMenu* menu) {
   [menu setDelegate:nil];
   NSArray* items = [menu itemArray];
   for (NSMenuItem* item in items) {
-    if ([item hasSubmenu])
+    if ([item hasSubmenu]) {
       ClearDelegatesFromSubmenu([item submenu]);
+    }
   }
 }
 
@@ -79,8 +81,9 @@ void BookmarkMenuBridge::UpdateMenu(NSMenu* menu,
   DCHECK_EQ([menu delegate], controller_);
 
   if (menu == menu_root_) {
-    if (!IsMenuValid())
+    if (!IsMenuValid()) {
       BuildRootMenu(recurse);
+    }
     return;
   }
 
@@ -92,8 +95,9 @@ void BookmarkMenuBridge::UpdateMenu(NSMenu* menu,
 
 void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
   BookmarkModel* model = GetBookmarkModel();
-  if (!model || !model->loaded())
+  if (!model || !model->loaded()) {
     return;
+  }
 
   if (!folder_image_) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -109,8 +113,9 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
   const BookmarkNode* barNode = model->bookmark_bar_node();
   const BookmarkNode* managedNode = managed->managed_node();
-  if (!barNode->children().empty() || !managedNode->children().empty())
+  if (!barNode->children().empty() || !managedNode->children().empty()) {
     [menu_root_ addItem:[NSMenuItem separatorItem]];
+  }
   if (!managedNode->children().empty()) {
     // Most users never see this node, so the image is only loaded if needed.
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
@@ -118,8 +123,9 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
         rb.GetNativeImageNamed(IDR_BOOKMARK_BAR_FOLDER_MANAGED).ToNSImage();
     AddNodeAsSubmenu(menu_root_, managedNode, image, recurse);
   }
-  if (!barNode->children().empty())
+  if (!barNode->children().empty()) {
     AddNodeToMenu(barNode, menu_root_, recurse);
+  }
 
   // If the "Other Bookmarks" folder has any content, make a submenu for it and
   // fill it in.
@@ -133,8 +139,9 @@ void BookmarkMenuBridge::BuildRootMenu(bool recurse) {
   if (!model->mobile_node()->children().empty()) {
     // Add a separator if we did not already add one due to a non-empty
     // "Other Bookmarks" folder.
-    if (model->other_node()->children().empty())
+    if (model->other_node()->children().empty()) {
       [menu_root_ addItem:[NSMenuItem separatorItem]];
+    }
 
     AddNodeAsSubmenu(menu_root_, model->mobile_node(), folder_image_, recurse);
   }
@@ -173,14 +180,16 @@ void BookmarkMenuBridge::BookmarkAllUserNodesRemoved(
 
 void BookmarkMenuBridge::BookmarkNodeChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
-  if (item)
+  if (item) {
     ConfigureMenuItem(node, item, true);
+  }
 }
 
 void BookmarkMenuBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
-  if (item)
+  if (item) {
     ConfigureMenuItem(node, item, false);
+  }
 }
 
 void BookmarkMenuBridge::BookmarkNodeChildrenReordered(
@@ -193,8 +202,9 @@ void BookmarkMenuBridge::ObserveBookmarkModel() {
   BookmarkModel* model = GetBookmarkModel();
 
   // In Guest mode, there is no bookmark model.
-  if (!model)
+  if (!model) {
     return;
+  }
 
   bookmark_model_observation_.Observe(model);
   if (model->loaded()) {
@@ -231,15 +241,15 @@ void BookmarkMenuBridge::ClearBookmarkMenu() {
   for (NSMenuItem* item in items) {
     // If there's a submenu, it may have a reference to |controller_|. Ensure
     // that gets nerfed recursively.
-    if ([item hasSubmenu])
+    if ([item hasSubmenu]) {
       ClearDelegatesFromSubmenu([item submenu]);
+    }
 
     // Convention: items in the bookmark list which are bookmarks have
     // an action of openBookmarkMenuItem:.  Also, assume all items
     // with submenus are submenus of bookmarks.
     if (([item action] == @selector(openBookmarkMenuItem:)) ||
-        [item hasSubmenu] ||
-        [item isSeparatorItem]) {
+        [item hasSubmenu] || [item isSeparatorItem]) {
       // This will eventually [obj release] all its kids, if it has any.
       [menu_root_ removeItem:item];
     } else {
@@ -262,15 +272,17 @@ void BookmarkMenuBridge::AddNodeAsSubmenu(NSMenu* menu,
 
   // Set a delegate and a tag on the item so that the submenu can be populated
   // when (and if) Cocoa asks for it.
-  if (!recurse)
+  if (!recurse) {
     [submenu setDelegate:controller_];
+  }
   [items setTag:node->id()];
   tag_to_guid_[node->id()] = node->uuid();
 
   [menu addItem:items];
 
-  if (recurse)
+  if (recurse) {
     AddNodeToMenu(node, submenu, recurse);
+  }
 }
 
 // TODO(jrg): limit the number of bookmarks in the menubar?
@@ -305,21 +317,24 @@ void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node,
 void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
                                            NSMenuItem* item,
                                            bool set_title) {
-  if (set_title)
+  if (set_title) {
     [item setTitle:MenuTitleForNode(node)];
+  }
   [item setTarget:controller_];
   [item setAction:@selector(openBookmarkMenuItem:)];
   [item setTag:node->id()];
   tag_to_guid_[node->id()] = node->uuid();
-  if (node->is_url())
+  if (node->is_url()) {
     [item setToolTip:[BookmarkMenuCocoaController tooltipForNode:node]];
+  }
   // Check to see if we have a favicon.
   NSImage* favicon = nil;
   BookmarkModel* model = GetBookmarkModel();
   if (model) {
     const gfx::Image& image = model->GetFavicon(node);
-    if (!image.IsEmpty())
+    if (!image.IsEmpty()) {
       favicon = image.ToNSImage();
+    }
   }
   // If we do not have a loaded favicon, use the default site image instead.
   if (!favicon) {
@@ -330,11 +345,13 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
 }
 
 NSMenuItem* BookmarkMenuBridge::MenuItemForNode(const BookmarkNode* node) {
-  if (!node)
+  if (!node) {
     return nil;
+  }
   auto it = bookmark_nodes_.find(node);
-  if (it == bookmark_nodes_.end())
+  if (it == bookmark_nodes_.end()) {
     return nil;
+  }
   return it->second;
 }
 

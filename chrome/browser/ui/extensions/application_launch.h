@@ -62,8 +62,7 @@ content::WebContents* OpenApplicationWindow(Profile* profile,
 // and shortcuts that open an installed application.  This function
 // is used to open the former.  To open the latter, use
 // application_launch::OpenApplication().
-content::WebContents* OpenAppShortcutWindow(Profile* profile,
-                                            const GURL& url);
+content::WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url);
 
 // Whether the extension can be launched by sending a
 // chrome.app.runtime.onLaunched event.

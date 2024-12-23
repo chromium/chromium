@@ -40,7 +40,7 @@ class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
   void OnPeripheralDataAccessProtectionChanged();
 
   void OnFilePathChecked(const std::string& callback_id,
-      bool is_thunderbolt_supported);
+                         bool is_thunderbolt_supported);
 
   void OnLocalStatePrefChanged();
 

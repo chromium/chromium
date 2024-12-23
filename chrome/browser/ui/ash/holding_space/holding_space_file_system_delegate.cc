@@ -49,8 +49,10 @@ base::FilePath ConvertDrivePathToAbsoluteFilePath(
   if (drive_integration_service) {
     base::FilePath absolute_file_path =
         drive_integration_service->GetMountPointPath();
-    if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
+    if (base::FilePath("/").AppendRelativePath(drive_path,
+                                               &absolute_file_path)) {
       return absolute_file_path;
+    }
   }
   NOTREACHED();
 }
@@ -59,8 +61,9 @@ base::FilePath ConvertDrivePathToAbsoluteFilePath(
 arc::ConnectionHolder<arc::mojom::FileSystemInstance,
                       arc::mojom::FileSystemHost>*
 GetArcFileSystem() {
-  if (!arc::ArcServiceManager::Get())
+  if (!arc::ArcServiceManager::Get()) {
     return nullptr;
+  }
   return arc::ArcServiceManager::Get()->arc_bridge_service()->file_system();
 }
 
@@ -116,8 +119,9 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 
     // If the target path got deleted while request to add a watcher was in
     // flight, notify observers of path change immediately.
-    if (!base::PathExists(file_path))
+    if (!base::PathExists(file_path)) {
       OnFilePathChanged(path_to_watch, /*error=*/false);
+    }
   }
 
   void RemoveWatch(const base::FilePath& file_path) {
@@ -167,8 +171,9 @@ HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
 void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
   // Schedule validity checks for android items.
   for (auto& item : model()->items()) {
-    if (!ItemBackedByAndroidFile(item.get()))
+    if (!ItemBackedByAndroidFile(item.get())) {
       continue;
+    }
 
     holding_space_util::ValidityRequirement requirements;
     if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
@@ -193,8 +198,9 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
     // Holding space requires absolute file paths.
     const base::FilePath absolute_file_path =
         ConvertDrivePathToAbsoluteFilePath(profile(), change.path);
-    if (absolute_file_path.empty())
+    if (absolute_file_path.empty()) {
       continue;
+    }
 
     switch (change.type) {
       case drivefs::mojom::FileChange::Type::kCreate: {
@@ -217,10 +223,11 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
         // change is move or a delete will not be known until a `kCreate` change
         // follows (or is confirmed *not* to follow). When `stable_id` is absent
         // it is not possible to detect a move.
-        if (change.stable_id)
+        if (change.stable_id) {
           deleted_paths_by_stable_id[change.stable_id] = absolute_file_path;
-        else
+        } else {
           deleted_paths.insert(absolute_file_path);
+        }
         break;
       }
       case drivefs::mojom::FileChange::Type::kModify: {
@@ -233,8 +240,9 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
   // At this point, all `kDelete` changes in `deleted_paths_by_stable_id` are
   // confirmed to be deletions, having already stripped out all changes that
   // were actually constituting moves.
-  for (const auto& deleted_path_by_stable_id : deleted_paths_by_stable_id)
+  for (const auto& deleted_path_by_stable_id : deleted_paths_by_stable_id) {
     deleted_paths.insert(deleted_path_by_stable_id.second);
+  }
 
   // Remove any holding space items backed by deleted file paths.
   model()->RemoveIf(base::BindRepeating(
@@ -257,8 +265,9 @@ void HoldingSpaceFileSystemDelegate::Init() {
 
   // Arc file system.
   auto* const arc_file_system = GetArcFileSystem();
-  if (arc_file_system)
+  if (arc_file_system) {
     arc_file_system_observer_.Observe(arc_file_system);
+  }
 
   // Drive file system.
   if (drive::DriveIntegrationService* const service =
@@ -272,8 +281,9 @@ void HoldingSpaceFileSystemDelegate::Init() {
 
   // Volume manager.
   auto* const volume_manager = file_manager::VolumeManager::Get(profile());
-  if (volume_manager)
+  if (volume_manager) {
     volume_manager_observer_.Observe(volume_manager);
+  }
 
   // Schedule a task to clean up items that belong to volumes that haven't been
   // mounted in a reasonable amount of time. The primary goal of handling the
@@ -302,8 +312,9 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     }
 
     // In-progress items are not subject to validity checks.
-    if (!item->progress().IsComplete())
+    if (!item->progress().IsComplete()) {
       continue;
+    }
 
     // If the item has not yet been initialized, check whether it's path can be
     // resolved to a file system URL - failure to do so may indicate that the
@@ -320,13 +331,15 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     // requirement.
     const GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
         profile(), item->file().file_path);
-    if (file_system_url.is_empty())
+    if (file_system_url.is_empty()) {
       continue;
+    }
 
     // Defer validity checks (and initialization) for android files if the ARC
     // file system connection is not yet ready.
-    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
+    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item)) {
       continue;
+    }
 
     holding_space_util::ValidityRequirement requirements;
     if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
@@ -339,8 +352,9 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  for (const HoldingSpaceItem* item : items)
+  for (const HoldingSpaceItem* item : items) {
     MaybeRemoveWatch(item->file().file_path.DirName());
+  }
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
@@ -349,8 +363,9 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // In-progress items are not subject to validity checks.
-  if (item->progress().IsComplete())
+  if (item->progress().IsComplete()) {
     AddWatchForParent(item->file().file_path);
+  }
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
@@ -368,8 +383,9 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
   // Check validity of partially initialized items under the volume's mount
   // path.
   for (auto& item : model()->items()) {
-    if (item->IsInitialized())
+    if (item->IsInitialized()) {
       continue;
+    }
     if (!volume.mount_path().IsParent(item->file().file_path)) {
       continue;
     }
@@ -516,8 +532,9 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     const base::FilePath& trash_location =
         it.first.Append(it.second.relative_folder_path);
     for (const auto& [id, file_path] : items_to_move) {
-      if (trash_location.IsParent(file_path))
+      if (trash_location.IsParent(file_path)) {
         item_ids_to_remove.insert(id);
+      }
     }
   }
 
@@ -533,8 +550,9 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
 
   // Finally, update the files that have been moved.
   for (const auto& [id, file_path] : items_to_move) {
-    if (item_ids_to_remove.count(id))
+    if (item_ids_to_remove.count(id)) {
       continue;
+    }
 
     // File.
     const GURL file_system_url =
@@ -557,8 +575,9 @@ void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
     holding_space_util::FilePathWithValidityRequirement requirement) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   pending_file_path_validity_checks_.push_back(std::move(requirement));
-  if (file_path_validity_checks_scheduled_)
+  if (file_path_validity_checks_scheduled_) {
     return;
+  }
 
   file_path_validity_checks_scheduled_ = true;
 
@@ -599,14 +618,16 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
          const std::vector<base::FilePath>* invalid_paths,
          const HoldingSpaceItem* item) {
         // In-progress items are not subject to validity checks.
-        if (!item->progress().IsComplete())
+        if (!item->progress().IsComplete()) {
           return false;
+        }
 
         // Avoid removing Android files if connection to ARC file system has
         // been lost (e.g. Android container might have crashed). Validity
         // checks will be re-run once the file system gets connected.
-        if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
+        if (arc_file_system_disconnected && ItemBackedByAndroidFile(item)) {
           return false;
+        }
 
         return base::Contains(*invalid_paths, item->file().file_path);
       },
@@ -616,8 +637,9 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
   for (auto& item : model()->items()) {
     // Defer initialization of items backed by android files if the connection
     // to ARC file system service has been lost.
-    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item.get()))
+    if (arc_file_system_disconnected && ItemBackedByAndroidFile(item.get())) {
       continue;
+    }
 
     if (!item->IsInitialized() &&
         base::Contains(valid_paths, item->file().file_path)) {
@@ -657,8 +679,9 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
                item->file().file_path.DirName() == file_path;
       });
 
-  if (!remove_watch)
+  if (!remove_watch) {
     return;
+  }
 
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::RemoveWatch,
@@ -679,8 +702,9 @@ void HoldingSpaceFileSystemDelegate::ClearNonInitializedItems() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](Profile* profile, const HoldingSpaceItem* item) {
-        if (item->IsInitialized())
+        if (item->IsInitialized()) {
           return false;
+        }
 
         // Do not remove items whose path can be resolved to a file system URL.
         // In this case, the associated mount point has been mounted, but the

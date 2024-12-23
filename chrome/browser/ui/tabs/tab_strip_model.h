@@ -1030,7 +1030,8 @@ namespace base {
 template <>
 class ScopedObservation<TabStripModel, TabStripModelObserver> {
  public:
-  // Deleting the constructor gives a clear error message traceable back to here.
+  // Deleting the constructor gives a clear error message traceable back to
+  // here.
   explicit ScopedObservation(TabStripModelObserver* observer) = delete;
 };
 

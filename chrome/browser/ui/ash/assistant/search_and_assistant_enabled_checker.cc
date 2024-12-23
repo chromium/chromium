@@ -77,11 +77,10 @@ SearchAndAssistantEnabledChecker::~SearchAndAssistantEnabledChecker() = default;
 
 void SearchAndAssistantEnabledChecker::SyncSearchAndAssistantState() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      net::AppendOrReplaceQueryParameter(
-          GURL(chromeos::assistant::kServiceIdEndpoint),
-          chromeos::assistant::kPayloadParamName,
-          chromeos::assistant::kServiceIdRequestPayload);
+  resource_request->url = net::AppendOrReplaceQueryParameter(
+      GURL(chromeos::assistant::kServiceIdEndpoint),
+      chromeos::assistant::kPayloadParamName,
+      chromeos::assistant::kServiceIdRequestPayload);
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kSearchAndAssistantEnabledCheckerNetworkTag);
   url_loader_->DownloadToString(

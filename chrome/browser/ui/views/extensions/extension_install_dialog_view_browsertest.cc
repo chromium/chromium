@@ -169,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
   std::u16string permission_string(u"Test");
   PermissionMessages permissions;
   for (int i = 0; i < 20; i++) {
-    permissions.push_back(PermissionMessage(permission_string,
-                                            PermissionIDSet()));
+    permissions.push_back(
+        PermissionMessage(permission_string, PermissionIDSet()));
   }
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt =
       CreatePrompt(ExtensionInstallPrompt::PERMISSIONS_PROMPT);
@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
   std::u16string permission_string(
       u"Read and modify your data on *.facebook.com");
   PermissionMessages permissions;
-  permissions.push_back(PermissionMessage(permission_string,
-                                          PermissionIDSet()));
+  permissions.push_back(
+      PermissionMessage(permission_string, PermissionIDSet()));
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt =
       CreatePrompt(ExtensionInstallPrompt::PERMISSIONS_PROMPT);
   prompt->AddPermissionMessages(permissions);
@@ -375,8 +375,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
         TabStripModel* tab_strip_model,
         const TabStripModelChange& change,
         const TabStripSelectionChange& selection) override {
-      if (change.type() != TabStripModelChange::kInserted)
+      if (change.type() != TabStripModelChange::kInserted) {
         return;
+      }
 
       for (const auto& contents : change.GetInsert()->contents) {
         // Note: GetVisibleURL() is used instead of GetLastCommittedURL() for
@@ -442,13 +443,15 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
     // The invoke UI tests can either directly set permission messages to easily
     // test different potential edge cases, or use a proper permission set which
     // goes through the standard flow to generate the messages.
-    if (permission_set_)
+    if (permission_set_) {
       prompt->AddPermissionSet(*permission_set_);
-    else
+    } else {
       prompt->AddPermissionMessages(permission_messages_);
+    }
 
-    if (from_webstore_)
+    if (from_webstore_) {
       prompt->SetWebstoreData("69,420", true, 2.5, 37, "37");
+    }
 
     ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -527,8 +530,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
                        InvokeUi_ManyPermissions) {
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < 20; i++) {
     AddPermission("Example permission");
+  }
   ShowAndVerifyUi();
 }
 

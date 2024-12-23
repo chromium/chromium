@@ -99,8 +99,9 @@ AppServiceAppWindowShelfItemController::GetAppMenuItems(
     for (const ui::BaseWindow* window : windows()) {
       ++command_id;
       auto* native_window = window->GetNativeWindow();
-      if (!filter_predicate.is_null() && !filter_predicate.Run(native_window))
+      if (!filter_predicate.is_null() && !filter_predicate.Run(native_window)) {
         continue;
+      }
 
       extensions::AppWindow* const app_window =
           app_window_registry->GetAppWindowForNativeWindow(native_window);
@@ -121,22 +122,25 @@ AppServiceAppWindowShelfItemController::GetAppMenuItems(
           app_icon = app_window->GetNativeWindow()->GetProperty(
               aura::client::kAppIconKey);
         }
-        if (app_icon && !app_icon->isNull())
+        if (app_icon && !app_icon->isNull()) {
           image = *app_icon;
+        }
       }
 
       items.push_back({command_id, app_window->GetTitle(), image});
     }
-    if (!switch_profile)
+    if (!switch_profile) {
       return items;
+    }
   }
   return AppMenuItems();
 }
 
 void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
     aura::Window* window) {
-  if (!IsChromeApp())
+  if (!IsChromeApp()) {
     return;
+  }
 
   ui::BaseWindow* const base_window =
       GetAppWindow(window, true /*include_hidden*/);
@@ -155,13 +159,15 @@ void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
     extensions::AppWindow* const app_window =
         app_window_registry->GetAppWindowForNativeWindow(
             base_window->GetNativeWindow());
-    if (!app_window)
+    if (!app_window) {
       continue;
+    }
 
     if (app_window->show_in_shelf()) {
       const std::u16string title = window->GetTitle();
-      if (!title.empty())
+      if (!title.empty()) {
         ChromeShelfController::instance()->SetItemTitle(shelf_id(), title);
+      }
     }
     return;
   }

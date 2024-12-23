@@ -77,8 +77,9 @@ bool AlternateNavInfoBarDelegate::LinkClicked(
   }
 
   // Tell the history system to remove any saved search term for the search.
-  if (history_service)
+  if (history_service) {
     history_service->DeleteKeywordSearchTermForURL(original_url_);
+  }
 
   // Pretend the user typed this URL, so that navigating to it will be the
   // default action when it's typed again in the future.
@@ -104,8 +105,9 @@ AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(
       match_(std::move(match)),
       destination_url_(destination_url),
       original_url_(original_url) {
-  if (match_)
+  if (match_) {
     DCHECK_EQ(destination_url_, match_->destination_url);
+  }
 
   DCHECK(destination_url_.is_valid());
   DCHECK(original_url_.is_valid());

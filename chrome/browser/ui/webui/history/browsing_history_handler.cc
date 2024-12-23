@@ -77,7 +77,8 @@ static const char kDeviceTypeTablet[] = "tablet";
 // Gets the name and type of a device for the given sync client ID.
 // |name| and |type| are out parameters.
 void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
-                          const std::string& client_id, std::string* name,
+                          const std::string& client_id,
+                          std::string* name,
                           std::string* type) {
   // DeviceInfoTracker must be syncing in order for remote history entries to
   // be available.
@@ -131,16 +132,18 @@ void SetHistoryEntryUrlAndTitle(
   // as the title, we mark the title as LTR since URLs are always treated as
   // left to right strings.
   if (base::i18n::IsRTL()) {
-    if (using_url_as_the_title)
+    if (using_url_as_the_title) {
       base::i18n::WrapStringWithLTRFormatting(&title_to_set);
-    else
+    } else {
       base::i18n::AdjustStringForLocaleDirection(&title_to_set);
+    }
   }
 
   // Number of chars to truncate titles when making them "short".
   static const size_t kShortTitleLength = 300;
-  if (title_to_set.size() > kShortTitleLength)
+  if (title_to_set.size() > kShortTitleLength) {
     title_to_set.resize(kShortTitleLength);
+  }
 
   result->Set("title", title_to_set);
 }
@@ -185,8 +188,10 @@ constexpr UrlIdentity::FormatOptions url_identity_options{
 // Converts `entry` to a base::Value::Dict to be owned by the caller.
 base::Value::Dict HistoryEntryToValue(
     const BrowsingHistoryService::HistoryEntry& entry,
-    BookmarkModel* bookmark_model, Profile& profile,
-    const syncer::DeviceInfoTracker* tracker, base::Clock* clock) {
+    BookmarkModel* bookmark_model,
+    Profile& profile,
+    const syncer::DeviceInfoTracker* tracker,
+    base::Clock* clock) {
   base::Value::Dict result;
   SetHistoryEntryUrlAndTitle(entry, &result);
 
@@ -199,7 +204,9 @@ base::Value::Dict HistoryEntryToValue(
 
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
-  if (domain.empty()) domain = base::UTF8ToUTF16(entry.url.scheme() + ":");
+  if (domain.empty()) {
+    domain = base::UTF8ToUTF16(entry.url.scheme() + ":");
+  }
 
   // The items which are to be written into result are also described in
   // chrome/browser/resources/history/history.js in @typedef for
@@ -253,8 +260,9 @@ base::Value::Dict HistoryEntryToValue(
 
   std::string device_name;
   std::string device_type;
-  if (!entry.client_id.empty())
+  if (!entry.client_id.empty()) {
     GetDeviceNameAndType(tracker, entry.client_id, &device_name, &device_type);
+  }
   result.Set("deviceName", device_name);
   result.Set("deviceType", device_type);
 
@@ -409,7 +417,8 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::Value::List& args) {
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(
-    int max_count, const std::u16string& query,
+    int max_count,
+    const std::u16string& query,
     std::optional<double> begin_timestamp) {
   history::QueryOptions options;
   options.max_count = max_count;
@@ -581,7 +590,8 @@ void BrowsingHistoryHandler::HistoryDeleted() {
 }
 
 void BrowsingHistoryHandler::HasOtherFormsOfBrowsingHistory(
-    bool has_other_forms, bool has_synced_results) {
+    bool has_other_forms,
+    bool has_synced_results) {
   if (IsJavascriptAllowed()) {
     FireWebUIListener("has-other-forms-changed", base::Value(has_other_forms));
   } else {

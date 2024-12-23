@@ -109,8 +109,9 @@ class TestMediaRouter : public media_router::MockMediaRouter {
   }
 
   media_router::LoggerImpl* GetLogger() override {
-    if (!logger_)
+    if (!logger_) {
       logger_ = std::make_unique<media_router::LoggerImpl>();
+    }
     return logger_.get();
   }
 
@@ -232,8 +233,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForEnterPictureInPicture() {
-    if (GetActiveWebContents()->HasPictureInPictureVideo())
+    if (GetActiveWebContents()->HasPictureInPictureVideo()) {
       return;
+    }
 
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
@@ -242,8 +244,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForExitPictureInPicture() {
-    if (!GetActiveWebContents()->HasPictureInPictureVideo())
+    if (!GetActiveWebContents()->HasPictureInPictureVideo()) {
       return;
+    }
 
     content::MediaStartStopObserver observer(
         GetActiveWebContents(),
@@ -353,8 +356,9 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   // Returns true if |target| exists in |base|'s forward focus chain
   bool ViewFollowsInFocusChain(views::View* base, views::View* target) {
     for (views::View* cur = base; cur; cur = cur->GetNextFocusableView()) {
-      if (cur == target)
+      if (cur == target) {
         return true;
+      }
     }
     return false;
   }
@@ -994,18 +998,13 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         content::GetBasicBackForwardCacheFeatureForTesting({
 #if BUILDFLAG(IS_ANDROID)
-          {features::kBackForwardCache,
-           {
-             { "process_binding_strength",
-               "NORMAL" }
-           }},
+            {features::kBackForwardCache,
+             {
+               { "process_binding_strength",
+                 "NORMAL" }
+             }},
 #endif
-          {
-            features::kBackForwardCacheMediaSessionService, {
-              {}
-            }
-          }
-        }),
+            {features::kBackForwardCacheMediaSessionService, {{}}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 

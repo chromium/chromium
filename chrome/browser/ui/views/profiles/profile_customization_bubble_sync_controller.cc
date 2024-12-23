@@ -32,11 +32,13 @@ void ShowBubble(Browser* browser,
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise
       // the IPH will be shown after the customization bubble.
-      if (!anchor_view->GetWidget())
+      if (!anchor_view->GetWidget()) {
         return;
+      }
       gfx::NativeWindow window = anchor_view->GetWidget()->GetNativeWindow();
-      if (!window || !BrowserView::GetBrowserViewForNativeWindow(window))
+      if (!window || !BrowserView::GetBrowserViewForNativeWindow(window)) {
         return;
+      }
       // Attempts to show first the Supervised user IPH (which has higher
       // priority), then the profile switch IPH. Whether the IPH will show (if
       // all conditions are met) is decided by the IPH framework.
@@ -72,8 +74,9 @@ void ProfileCustomizationBubbleSyncController::
       SyncServiceFactory::GetForProfile(profile);
   // TODO(crbug.com/40183503): A speculative fix, remove if not functional or
   // not needed.
-  if (!anchor_view || !sync_service)
+  if (!anchor_view || !sync_service) {
     return;
+  }
 
   auto controller =
       base::WrapUnique(new ProfileCustomizationBubbleSyncController(
@@ -174,10 +177,11 @@ void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
     case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncSuccess: {
       bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
                                 !theme_service_->UsingSystemTheme();
-      if (using_custom_theme)
+      if (using_custom_theme) {
         InvokeCallbackAndDeleteItself(Outcome::kSkipBubble);
-      else
+      } else {
         ApplyDefaultColorAndShowBubble();
+      }
       break;
     }
     case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncCannotStart:
@@ -215,11 +219,13 @@ void ProfileCustomizationBubbleSyncController::InvokeCallbackAndDeleteItself(
 void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
     Browser* browser,
     SkColor suggested_profile_color) {
-  if (!browser)
+  if (!browser) {
     return;
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view || !browser_view->toolbar_button_provider())
+  if (!browser_view || !browser_view->toolbar_button_provider()) {
     return;
+  }
   views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
                                  ->toolbar_button_provider()
                                  ->GetAvatarToolbarButton();

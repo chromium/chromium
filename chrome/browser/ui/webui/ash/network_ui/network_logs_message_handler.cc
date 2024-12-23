@@ -33,8 +33,9 @@ base::FilePath GetDownloadsDirectory(content::WebUI* web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   const DownloadPrefs* const prefs = DownloadPrefs::FromBrowserContext(profile);
   base::FilePath path = prefs->DownloadPath();
-  if (file_manager::util::IsUnderNonNativeLocalPath(profile, path))
+  if (file_manager::util::IsUnderNonNativeLocalPath(profile, path)) {
     path = prefs->GetDefaultDownloadDirectoryForProfile();
+  }
   return path;
 }
 

@@ -44,8 +44,9 @@ ChromePopupNavigationDelegate::NavigateWithGesture(
     const blink::mojom::WindowFeatures& window_features,
     std::optional<WindowOpenDisposition> updated_disposition) {
   params_.user_gesture = true;
-  if (updated_disposition)
+  if (updated_disposition) {
     params_.disposition = updated_disposition.value();
+  }
 #if BUILDFLAG(IS_ANDROID)
   TabModelList::HandlePopupNavigation(&params_);
 #else

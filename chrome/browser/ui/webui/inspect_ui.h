@@ -57,10 +57,9 @@ class InspectUI : public content::WebUIController,
             const std::string& browser_id,
             const std::string& url);
   void Pause(const std::string& source_id, const std::string& target_id);
-  void InspectBrowserWithCustomFrontend(
-      const std::string& source_id,
-      const std::string& browser_id,
-      const GURL& frontend_url);
+  void InspectBrowserWithCustomFrontend(const std::string& source_id,
+                                        const std::string& browser_id,
+                                        const GURL& frontend_url);
 
   void PopulateNativeUITargets(const base::Value::List& targets);
   void ShowNativeUILaunchButton(bool enabled);
@@ -88,8 +87,7 @@ class InspectUI : public content::WebUIController,
 
   void AddTargetUIHandler(std::unique_ptr<DevToolsTargetsUIHandler> handler);
 
-  DevToolsTargetsUIHandler* FindTargetHandler(
-      const std::string& source_id);
+  DevToolsTargetsUIHandler* FindTargetHandler(const std::string& source_id);
   scoped_refptr<content::DevToolsAgentHost> FindTarget(
       const std::string& source_id,
       const std::string& target_id);

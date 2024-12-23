@@ -398,10 +398,11 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) {
-        if (done_once)
+        if (done_once) {
           run_loop()->Quit();
-        else
+        } else {
           done_once = true;
+        }
       }));
 
   ansible_management_service()->ConfigureContainer(
@@ -409,10 +410,11 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
       browser()->profile()->GetPrefs()->GetFilePath(
           crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
       base::BindLambdaForTesting([&](bool success) {
-        if (done_once)
+        if (done_once) {
           run_loop()->Quit();
-        else
+        } else {
           done_once = true;
+        }
       }));
   run_loop()->Run();
   EXPECT_TRUE(HasNoView(container1));

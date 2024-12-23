@@ -118,12 +118,14 @@ class OfferNotificationControllerAndroidBrowserTest
   }
 
   void SetShownOffer(int64_t id) {
-    if (!GetOfferManager())
+    if (!GetOfferManager()) {
       return;
+    }
 
     auto* handler = &(GetOfferManager()->notification_handler_);
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     handler->ClearShownNotificationIdForTesting();
     handler->AddShownNotificationIdForTesting(id);

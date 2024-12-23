@@ -172,10 +172,11 @@ void EnrollmentScreenHandler::SetEnrollmentController(Controller* controller) {
 }
 
 void EnrollmentScreenHandler::Show() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     show_on_init_ = true;
-  else
+  } else {
     DoShow();
+  }
 }
 
 void EnrollmentScreenHandler::Hide() {
@@ -712,9 +713,10 @@ void EnrollmentScreenHandler::HandleDeviceAttributesProvided(
 }
 
 void EnrollmentScreenHandler::HandleOnLearnMore() {
-  if (!help_app_.get())
+  if (!help_app_.get()) {
     help_app_ = new HelpAppLauncher(
         LoginDisplayHost::default_host()->GetNativeWindow());
+  }
   help_app_->ShowHelpTopic(HelpAppLauncher::HELP_DEVICE_ATTRIBUTES);
 }
 
@@ -783,8 +785,9 @@ void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
   // If enrollment ends and the browser is being restarted, the renderers are
   // killed so we can not talk to them anymore.
-  if (shutdown_)
+  if (shutdown_) {
     return;
+  }
 
   signin_partition_name_ = partition_name;
 
@@ -819,8 +822,9 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty())
+  if (!app_locale.empty()) {
     screen_data.Set("hl", app_locale);
+  }
   const std::string& email = config_.enrollment_nudge_email;
   if (!email.empty()) {
     screen_data.Set("email", email);

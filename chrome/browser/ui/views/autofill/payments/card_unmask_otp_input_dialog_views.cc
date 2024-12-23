@@ -134,8 +134,9 @@ views::View* CardUnmaskOtpInputDialogViews::GetInitiallyFocusedView() {
 void CardUnmaskOtpInputDialogViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  if (otp_input_textfield_->GetInvalid())
+  if (otp_input_textfield_->GetInvalid()) {
     HideInvalidState();
+  }
 
   SetButtonEnabled(
       ui::mojom::DialogButton::kOk,

@@ -20,17 +20,20 @@ NativeAppWindowFrameViewMac::NativeAppWindowFrameViewMac(
 NativeAppWindowFrameViewMac::~NativeAppWindowFrameViewMac() = default;
 
 int NativeAppWindowFrameViewMac::NonClientHitTest(const gfx::Point& point) {
-  if (!bounds().Contains(point))
+  if (!bounds().Contains(point)) {
     return HTNOWHERE;
+  }
 
-  if (GetWidget()->IsFullscreen())
+  if (GetWidget()->IsFullscreen()) {
     return HTCLIENT;
+  }
 
   // Check for possible draggable region in the client area for the frameless
   // window.
   SkRegion* draggable_region = native_app_window_->GetDraggableRegion();
-  if (draggable_region && draggable_region->contains(point.x(), point.y()))
+  if (draggable_region && draggable_region->contains(point.x(), point.y())) {
     return HTCAPTION;
+  }
 
   return HTCLIENT;
 }

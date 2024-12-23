@@ -84,9 +84,7 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
     download::DownloadItem* item,
     Profile* profile,
     OnDone done)
-    : download_(item),
-      profile_(profile),
-      done_(std::move(done)) {
+    : download_(item), profile_(profile), done_(std::move(done)) {
   // Note that this prompt is asking whether to cancel a dangerous download, so
   // the accept path is titled "Cancel".
   SetButtonLabel(ui::mojom::DialogButton::kOk,
@@ -125,8 +123,9 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {
-  if (download_)
+  if (download_) {
     download_->RemoveObserver(this);
+  }
 }
 
 // DownloadDangerPrompt methods:
@@ -236,8 +235,9 @@ void DownloadDangerPromptViews::RunDone(Action action) {
     download_->RemoveObserver(this);
     download_ = nullptr;
   }
-  if (done)
+  if (done) {
     std::move(done).Run(action);
+  }
 }
 
 BEGIN_METADATA(DownloadDangerPromptViews)

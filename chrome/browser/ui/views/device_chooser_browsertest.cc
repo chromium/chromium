@@ -37,10 +37,11 @@ void ShowChooserModal(
 void ShowChooser(const std::string& test_name,
                  Browser* browser,
                  std::unique_ptr<permissions::ChooserController> controller) {
-  if (base::EndsWith(test_name, "Modal", base::CompareCase::SENSITIVE))
+  if (base::EndsWith(test_name, "Modal", base::CompareCase::SENSITIVE)) {
     ShowChooserModal(browser, std::move(controller));
-  else
+  } else {
     ShowChooserBubble(browser, std::move(controller));
+  }
 }
 
 }  // namespace

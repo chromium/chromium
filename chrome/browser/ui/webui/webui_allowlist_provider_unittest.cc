@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/webui/webui_allowlist_provider.h"
+
 #include <map>
 #include <memory>
 
@@ -23,7 +25,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/webui/webui_allowlist.h"
-#include "ui/webui/webui_allowlist_provider.h"
 #include "url/origin.h"
 
 using ::testing::_;

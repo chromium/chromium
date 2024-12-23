@@ -37,11 +37,13 @@ void TabStripScrubbingMetrics::IncrementPressCount(
     base::TimeDelta tab_switch_delta =
         base::TimeTicks::Now() - last_tab_switch_timestamp_;
     if (tab_switch_delta <= kMaxTimeConsideredScrubbing) {
-      if (user_gesture.type == TabStripUserGestureDetails::GestureType::kMouse)
+      if (user_gesture.type ==
+          TabStripUserGestureDetails::GestureType::kMouse) {
         ++tabs_scrubbed_by_mouse_press_count_;
-      else if (user_gesture.type ==
-               TabStripUserGestureDetails::GestureType::kKeyboard)
+      } else if (user_gesture.type ==
+                 TabStripUserGestureDetails::GestureType::kKeyboard) {
         ++tabs_scrubbed_by_key_press_count_;
+      }
     }
   }
   last_tab_switch_timestamp_ = base::TimeTicks::Now();

@@ -385,8 +385,8 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
 }
 
 int TabGroupHeader::GetDesiredWidth() const {
-    const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
-    return overlap_margin + title_chip_->width();
+  const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
+  return overlap_margin + title_chip_->width();
 }
 
 void TabGroupHeader::SetCollapsedState() {

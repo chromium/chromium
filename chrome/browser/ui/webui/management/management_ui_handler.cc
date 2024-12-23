@@ -424,17 +424,17 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
     const char* title;
     const char* permission;
   } analysis_connector_permissions[] = {
-    {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
-     kManagementOnFileAttachedVisibleData},
-    {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
-     kManagementOnFileDownloadedVisibleData},
-    {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
-     kManagementOnBulkDataEntryVisibleData},
-    {enterprise_connectors::PRINT, kManagementOnPrintEvent,
-     kManagementOnPrintVisibleData},
+      {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
+       kManagementOnFileAttachedVisibleData},
+      {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
+       kManagementOnFileDownloadedVisibleData},
+      {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
+       kManagementOnBulkDataEntryVisibleData},
+      {enterprise_connectors::PRINT, kManagementOnPrintEvent,
+       kManagementOnPrintVisibleData},
 #if BUILDFLAG(IS_CHROMEOS)
-    {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
-     kManagementOnFileTransferVisibleData},
+      {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
+       kManagementOnFileTransferVisibleData},
 #endif
   };
   auto* connectors_service =

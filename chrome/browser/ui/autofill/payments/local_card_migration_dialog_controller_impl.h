@@ -140,8 +140,7 @@ class LocalCardMigrationDialogControllerImpl
 
   // Contains observer listening to user's interactions with the dialog. The
   // observer is responsible for setting flow step upon these interactions.
-  base::ObserverList<LocalCardMigrationControllerObserver>
-      observer_list_;
+  base::ObserverList<LocalCardMigrationControllerObserver> observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

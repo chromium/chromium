@@ -40,11 +40,8 @@ struct RecentlyUsedFoldersComboModel::Item {
   Type type;
 };
 
-RecentlyUsedFoldersComboModel::Item::Item(const BookmarkNode* node,
-                                          Type type)
-    : node(node),
-      type(type) {
-}
+RecentlyUsedFoldersComboModel::Item::Item(const BookmarkNode* node, Type type)
+    : node(node), type(type) {}
 
 RecentlyUsedFoldersComboModel::Item::~Item() = default;
 
@@ -190,8 +187,9 @@ void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
     }
   }
   if (changed) {
-    for (ui::ComboboxModelObserver& observer : observers())
+    for (ui::ComboboxModelObserver& observer : observers()) {
       observer.OnComboboxModelChanged(this);
+    }
   }
 }
 
@@ -227,8 +225,9 @@ void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
     }
   }
   if (changed) {
-    for (ui::ComboboxModelObserver& observer : observers())
+    for (ui::ComboboxModelObserver& observer : observers()) {
       observer.OnComboboxModelChanged(this);
+    }
   }
 }
 
@@ -253,6 +252,7 @@ const BookmarkNode* RecentlyUsedFoldersComboModel::GetNodeAt(size_t index) {
 
 void RecentlyUsedFoldersComboModel::RemoveNode(const BookmarkNode* node) {
   auto it = base::ranges::find(items_, Item(node, Item::TYPE_NODE));
-  if (it != items_.end())
+  if (it != items_.end()) {
     items_.erase(it);
+  }
 }

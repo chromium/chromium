@@ -205,8 +205,8 @@ class AutofillSuggestionControllerTestBase
 };
 
 // Below are test versions of `AutofillClient`, `BrowserAutofillManager`,
-// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used in the
-// fixture above.
+// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used
+// in the fixture above.
 
 class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
  public:

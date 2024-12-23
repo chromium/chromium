@@ -99,8 +99,9 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     for (size_t i = 0; i < test_helper_->GetBookmarkButtonCount() &&
                        test_helper_->GetBookmarkButton(i)->GetVisible();
          ++i) {
-      if (i != 0)
+      if (i != 0) {
         result += " ";
+      }
       result +=
           base::UTF16ToASCII(test_helper_->GetBookmarkButton(i)->GetText());
     }
@@ -168,8 +169,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         *profile->GetPrefs(), *search_engine_choice_service,
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-    );
+        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
   }
 };
 

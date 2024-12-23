@@ -64,8 +64,9 @@ AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
 
 AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
   session_manager::SessionManager::Get()->RemoveObserver(this);
-  if (identity_manager_)
+  if (identity_manager_) {
     identity_manager_->RemoveObserver(this);
+  }
 }
 
 void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
@@ -82,8 +83,9 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   }
   DCHECK_EQ(profile_, profile);
 
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
 
   initialized_ = true;
 
@@ -99,15 +101,17 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
 }
 
 void AssistantBrowserDelegateImpl::MaybeStartAssistantOptInFlow() {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   assistant_setup_->MaybeStartAssistantOptInFlow();
 }
 
 void AssistantBrowserDelegateImpl::OnAppTerminating() {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   ash::assistant::AssistantService::Get()->Shutdown();
 }
@@ -243,8 +247,9 @@ void AssistantBrowserDelegateImpl::OverrideEntryPointIdForTesting(
 
 void AssistantBrowserDelegateImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
 
   MaybeInit(profile_);
 }

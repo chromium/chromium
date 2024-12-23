@@ -193,8 +193,9 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                                     {IDC_SELECT_TAB_0, 0},
                                     {IDC_SELECT_NEXT_TAB, 1},
                                     {IDC_SELECT_PREVIOUS_TAB, 0}};
-  for (const auto& datum : test_data)
+  for (const auto& datum : test_data) {
     tester.RunCommand(datum.command, datum.expected_index);
+  }
 }
 
 // This test does not make sense for the webUI tabstrip, since the window layout

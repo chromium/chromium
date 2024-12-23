@@ -147,8 +147,9 @@ class ThumbnailTabHelper::TabStateTracker
 
   // Tells our scheduling logic that a frame was received.
   void OnFrameCaptured(CaptureType capture_type) {
-    if (capture_type == CaptureType::kVideoFrame)
+    if (capture_type == CaptureType::kVideoFrame) {
       capture_driver_.GotFrame();
+    }
   }
 
   bool is_ready() const {
@@ -312,8 +313,9 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         std::optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
-  if (bitmap.drawsNothing())
+  if (bitmap.drawsNothing()) {
     return;
+  }
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -327,13 +329,15 @@ void ThumbnailTabHelper::ClearData() {
 
 void ThumbnailTabHelper::StartVideoCapture() {
   content::RenderWidgetHostView* const source_view = state_->GetView();
-  if (!source_view)
+  if (!source_view) {
     return;
+  }
 
   const float scale_factor = source_view->GetDeviceScaleFactor();
   const gfx::Size source_size = source_view->GetViewBounds().size();
-  if (source_size.IsEmpty())
+  if (source_size.IsEmpty()) {
     return;
+  }
 
   last_frame_capture_info_ = GetInitialCaptureInfo(
       source_size, scale_factor, /* include_scrollbars_in_capture */ true);
@@ -375,15 +379,18 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   // Round up to make sure any scrollbar pixls are eliminated. It's better to
   // lose a single pixel of content than having a single pixel of scrollbar.
   const int scrollbar_size = std::ceil(scale_factor * scrollbar_size_dip);
-  if (source_size.width() - scrollbar_size > smallest_dimension)
+  if (source_size.width() - scrollbar_size > smallest_dimension) {
     capture_info.scrollbar_insets.set_right(scrollbar_size);
-  if (source_size.height() - scrollbar_size > smallest_dimension)
+  }
+  if (source_size.height() - scrollbar_size > smallest_dimension) {
     capture_info.scrollbar_insets.set_bottom(scrollbar_size);
+  }
 
   // Calculate the region to copy from.
   capture_info.copy_rect = gfx::Rect(source_size);
-  if (!include_scrollbars_in_capture)
+  if (!include_scrollbars_in_capture) {
     capture_info.copy_rect.Inset(capture_info.scrollbar_insets);
+  }
 
   // Compute minimum sizes for multiple uses of the thumbnail - currently,
   // tablet tabstrip previews and tab hover card preview images.

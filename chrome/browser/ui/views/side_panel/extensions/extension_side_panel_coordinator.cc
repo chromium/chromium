@@ -118,7 +118,6 @@ void ExtensionSidePanelCoordinator::DeregisterEntry() {
   registry_->Deregister(GetEntryKey());
 }
 
-
 void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     const ExtensionId& extension_id,
     const api::side_panel::PanelOptions& updated_options) {
@@ -154,8 +153,8 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     return;
   }
 
-  bool should_create_entry = !entry && should_enable_entry &&
-                             !side_panel_url_.is_empty();
+  bool should_create_entry =
+      !entry && should_enable_entry && !side_panel_url_.is_empty();
   if (should_create_entry) {
     // Create a global entry if the extension has not disabled its side panel
     // for the current tab.

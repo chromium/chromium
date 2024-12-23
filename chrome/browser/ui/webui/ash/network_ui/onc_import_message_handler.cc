@@ -44,8 +44,9 @@ void GetCertDBOnIOThread(
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   net::NSSCertDatabase* cert_db =
       std::move(database_getter).Run(std::move(split_callback.first));
-  if (cert_db)
+  if (cert_db) {
     std::move(split_callback.second).Run(cert_db);
+  }
 }
 
 }  // namespace
@@ -123,8 +124,9 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
   result +=
       base::StringPrintf("Networks imported: %d\n", num_networks_imported);
   if (certificates.empty()) {
-    if (!num_networks_imported)
+    if (!num_networks_imported) {
       has_error = true;
+    }
     Respond(callback_id, result, has_error);
     return;
   }

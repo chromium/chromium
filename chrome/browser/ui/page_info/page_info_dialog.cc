@@ -16,17 +16,20 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
                         PageInfoClosingCallback closing_callback,
                         bubble_anchor_util::Anchor anchor,
                         std::optional<ContentSettingsType> type) {
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return false;
+  }
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  if (entry->IsInitialEntry())
+  if (entry->IsInitialEntry()) {
     return false;
+  }
 
   auto initialized_callback =
       GetPageInfoDialogCreatedCallbackForTesting()

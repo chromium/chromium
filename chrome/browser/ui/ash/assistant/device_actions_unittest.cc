@@ -77,8 +77,7 @@ TEST_F(DeviceActionsTest, UnregisteredAppShouldBeUnavailable) {
   ASSERT_EQ(GetAppStatus(kUnregisteredAppName), AppStatus::kUnavailable);
 }
 
-TEST_F(DeviceActionsTest, UnknownAppShouldBeUnknown) {
-}
+TEST_F(DeviceActionsTest, UnknownAppShouldBeUnknown) {}
 
 TEST_F(DeviceActionsTest, MultipleAppsShouldBeVerifiedCorrectly) {
   ASSERT_EQ(GetAppStatus(kRegisteredAppName), AppStatus::kAvailable);

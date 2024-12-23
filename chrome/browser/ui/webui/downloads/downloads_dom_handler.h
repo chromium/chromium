@@ -26,7 +26,7 @@ namespace content {
 class DownloadManager;
 class WebContents;
 class WebUI;
-}
+}  // namespace content
 
 namespace download {
 class DownloadItem;

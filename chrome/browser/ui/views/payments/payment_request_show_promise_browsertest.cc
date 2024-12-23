@@ -71,8 +71,9 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
   void ExpectNoShippingWarningMessage() {
     views::View* view = dialog_view()->GetViewByID(
         static_cast<int>(DialogViewID::WARNING_LABEL));
-    if (!view || !view->GetVisible())
+    if (!view || !view->GetVisible()) {
       return;
+    }
 
     EXPECT_EQ(std::u16string(), static_cast<views::Label*>(view)->GetText());
   }

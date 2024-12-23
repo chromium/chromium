@@ -63,11 +63,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
             kDefaultDisclosureFields,
             /*has_login_status_mismatch=*/false)) {
     test_shared_url_loader_factory_ =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_);
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
   }
-  AccountSelectionModalViewTest(const AccountSelectionModalViewTest&) =
-      delete;
+  AccountSelectionModalViewTest(const AccountSelectionModalViewTest&) = delete;
   AccountSelectionModalViewTest& operator=(
       const AccountSelectionModalViewTest&) = delete;
   ~AccountSelectionModalViewTest() override = default;
@@ -95,9 +94,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
  protected:
-  void CreateAccountSelectionModal() {
-    ShowUi("");
-  }
+  void CreateAccountSelectionModal() { ShowUi(""); }
 
   void CreateAndShowSingleAccountPicker(
       bool show_back_button,

@@ -20,25 +20,27 @@ namespace policy_indicator {
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   int controlled_setting_policy_id = IDS_CONTROLLED_SETTING_POLICY;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::DemoSession::IsDeviceInDemoMode())
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
     controlled_setting_policy_id = IDS_CONTROLLED_SETTING_DEMO_SESSION;
+  }
 #endif
   webui::LocalizedString localized_strings[] = {
-    {"controlledSettingPolicy", controlled_setting_policy_id},
-    {"controlledSettingRecommendedMatches", IDS_CONTROLLED_SETTING_RECOMMENDED},
-    {"controlledSettingRecommendedDiffers",
-     IDS_CONTROLLED_SETTING_HAS_RECOMMENDATION},
-    {"controlledSettingExtension", IDS_CONTROLLED_SETTING_EXTENSION},
-    {"controlledSettingExtensionWithoutName",
-     IDS_CONTROLLED_SETTING_EXTENSION_WITHOUT_NAME},
-    {"controlledSettingChildRestriction",
-     IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
-    {"controlledSettingParent", IDS_CONTROLLED_SETTING_PARENT},
+      {"controlledSettingPolicy", controlled_setting_policy_id},
+      {"controlledSettingRecommendedMatches",
+       IDS_CONTROLLED_SETTING_RECOMMENDED},
+      {"controlledSettingRecommendedDiffers",
+       IDS_CONTROLLED_SETTING_HAS_RECOMMENDATION},
+      {"controlledSettingExtension", IDS_CONTROLLED_SETTING_EXTENSION},
+      {"controlledSettingExtensionWithoutName",
+       IDS_CONTROLLED_SETTING_EXTENSION_WITHOUT_NAME},
+      {"controlledSettingChildRestriction",
+       IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
+      {"controlledSettingParent", IDS_CONTROLLED_SETTING_PARENT},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"controlledSettingShared", IDS_CONTROLLED_SETTING_SHARED},
-    {"controlledSettingWithOwner", IDS_CONTROLLED_SETTING_WITH_OWNER},
-    {"controlledSettingNoOwner", IDS_CONTROLLED_SETTING_NO_OWNER},
+      {"controlledSettingShared", IDS_CONTROLLED_SETTING_SHARED},
+      {"controlledSettingWithOwner", IDS_CONTROLLED_SETTING_WITH_OWNER},
+      {"controlledSettingNoOwner", IDS_CONTROLLED_SETTING_NO_OWNER},
 #endif
   };
   html_source->AddLocalizedStrings(localized_strings);

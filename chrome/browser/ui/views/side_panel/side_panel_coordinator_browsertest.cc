@@ -529,7 +529,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {
             SidePanel::HorizontalAlignment::kLeft);
 }
 
-
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        SidePanelToggleWithEntriesTest) {
   Init();

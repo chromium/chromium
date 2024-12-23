@@ -58,8 +58,9 @@ void AutofillErrorDialogViewNativeViews::Dismiss() {
 }
 
 views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
-  if (!children().empty())
+  if (!children().empty()) {
     return this;
+  }
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),

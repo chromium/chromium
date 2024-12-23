@@ -23,8 +23,9 @@ MessageBoxResult ShowMessageBoxCocoa(std::u16string_view message,
                                      MessageBoxType type,
                                      std::u16string_view checkbox_text) {
   startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
-  if (internal::g_should_skip_message_box_for_test)
+  if (internal::g_should_skip_message_box_for_test) {
     return MESSAGE_BOX_RESULT_YES;
+  }
 
   NSAlert* alert = [[NSAlert alloc] init];
   alert.messageText = base::SysUTF16ToNSString(message);
@@ -48,8 +49,9 @@ MessageBoxResult ShowMessageBoxCocoa(std::u16string_view message,
   }
 
   NSInteger result = [alert runModal];
-  if (result == NSAlertSecondButtonReturn)
+  if (result == NSAlertSecondButtonReturn) {
     return MESSAGE_BOX_RESULT_NO;
+  }
 
   if (!checkbox || (checkbox.state == NSControlStateValueOn)) {
     return MESSAGE_BOX_RESULT_YES;

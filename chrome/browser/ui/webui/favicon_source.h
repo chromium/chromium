@@ -25,7 +25,7 @@ class RefCountedMemory;
 namespace chrome {
 enum class FaviconUrlFormat;
 struct ParsedFaviconPath;
-}
+}  // namespace chrome
 
 namespace ui {
 class NativeTheme;
@@ -70,12 +70,7 @@ class FaviconSource : public content::URLDataSource {
 
  private:
   // Defines the allowed pixel sizes for requested favicons.
-  enum IconSize {
-    SIZE_16,
-    SIZE_32,
-    SIZE_64,
-    NUM_SIZES
-  };
+  enum IconSize { SIZE_16, SIZE_32, SIZE_64, NUM_SIZES };
 
   // Called when favicon data is available from the history backend. If
   // |bitmap_result| is valid, returns it to caller using |callback|. Otherwise

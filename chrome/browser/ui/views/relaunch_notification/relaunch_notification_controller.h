@@ -23,7 +23,7 @@
 namespace base {
 class Clock;
 class TickClock;
-}
+}  // namespace base
 
 // A class that observes changes to the browser.relaunch_notification
 // preference (which is backed by the RelaunchNotification policy

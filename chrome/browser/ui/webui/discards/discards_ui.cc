@@ -78,8 +78,9 @@ discards::mojom::LifecycleUnitVisibility GetLifecycleUnitVisibility(
 resource_coordinator::LifecycleUnit* GetLifecycleUnitById(int32_t id) {
   for (resource_coordinator::LifecycleUnit* lifecycle_unit :
        g_browser_process->GetTabManager()->GetSortedLifecycleUnits()) {
-    if (lifecycle_unit->GetID() == id)
+    if (lifecycle_unit->GetID() == id) {
       return lifecycle_unit;
+    }
   }
   return nullptr;
 }
@@ -90,8 +91,9 @@ double GetSiteEngagementScore(content::WebContents* contents) {
   const int current_entry_index = controller.GetCurrentEntryIndex();
 
   // A WebContents which hasn't navigated yet does not have a NavigationEntry.
-  if (current_entry_index == -1)
+  if (current_entry_index == -1) {
     return 0;
+  }
 
   auto* nav_entry = controller.GetEntryAtIndex(current_entry_index);
   DCHECK(nav_entry);
@@ -208,8 +210,9 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
     if (lifecycle_unit) {
       auto* tab_lifecycle_unit_external =
           lifecycle_unit->AsTabLifecycleUnitExternal();
-      if (tab_lifecycle_unit_external)
+      if (tab_lifecycle_unit_external) {
         tab_lifecycle_unit_external->SetAutoDiscardable(is_auto_discardable);
+      }
     }
     std::move(callback).Run();
   }
@@ -253,8 +256,9 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
 
   void LoadById(int32_t id) override {
     auto* lifecycle_unit = GetLifecycleUnitById(id);
-    if (lifecycle_unit)
+    if (lifecycle_unit) {
       lifecycle_unit->Load();
+    }
   }
 
   void Discard(DiscardCallback callback) override {

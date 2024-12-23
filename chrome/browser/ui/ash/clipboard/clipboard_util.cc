@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/clipboard/clipboard_util.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 

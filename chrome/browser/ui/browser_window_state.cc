@@ -87,8 +87,9 @@ base::Value::Dict& GetWindowPlacementDictionaryReadWrite(
       std::make_unique<ScopedDictPrefUpdate>(prefs, prefs::kAppWindowPlacement);
   base::Value::Dict* this_app_dict =
       (*scoped_update)->FindDictByDottedPath(window_name);
-  if (this_app_dict)
+  if (this_app_dict) {
     return *this_app_dict;
+  }
   return (*scoped_update)
       ->SetByDottedPath(window_name, base::Value::Dict())
       ->GetDict();
@@ -98,8 +99,9 @@ const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs) {
   DCHECK(!window_name.empty());
-  if (prefs->FindPreference(window_name))
+  if (prefs->FindPreference(window_name)) {
     return &prefs->GetDict(window_name);
+  }
 
   const base::Value::Dict& app_windows =
       prefs->GetDict(prefs::kAppWindowPlacement);
@@ -130,14 +132,16 @@ void SaveWindowPlacement(const Browser* browser,
   // the session service. This function gets called during initial window
   // showing, and we don't want to bring in the session service this early.
   SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(browser);
-  if (service)
+  if (service) {
     service->SetWindowBounds(browser->session_id(), bounds, show_state);
+  }
 }
 
 void SaveWindowWorkspace(const Browser* browser, const std::string& workspace) {
   SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(browser);
-  if (service)
+  if (service) {
     service->SetWindowWorkspace(browser->session_id(), workspace);
+  }
 }
 
 void SaveWindowVisibleOnAllWorkspaces(const Browser* browser,

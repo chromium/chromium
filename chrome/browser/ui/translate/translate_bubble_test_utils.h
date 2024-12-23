@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 class TranslateBubbleModel;
 class Browser;
 

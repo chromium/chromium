@@ -58,8 +58,9 @@ BrowserCommandHandler::BrowserCommandHandler(
       supported_commands_(supported_commands),
       command_updater_(std::make_unique<CommandUpdaterImpl>(this)),
       page_handler_(this, std::move(pending_page_handler)) {
-  if (supported_commands_.empty())
+  if (supported_commands_.empty()) {
     return;
+  }
 
   EnableSupportedCommands();
 }
@@ -111,8 +112,7 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
-      can_execute = TutorialServiceExists() &&
-                    DefaultSearchProviderIsGoogle();
+      can_execute = TutorialServiceExists() && DefaultSearchProviderIsGoogle();
       break;
     case Command::kStartPasswordManagerTutorial:
       can_execute = TutorialServiceExists();

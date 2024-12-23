@@ -35,7 +35,7 @@ class TabGroupVisualData;
 namespace ui {
 class Event;
 class ListSelectionModel;
-}
+}  // namespace ui
 
 // Model/Controller for the TabStrip.
 // NOTE: All indices used by this class are in model coordinates.

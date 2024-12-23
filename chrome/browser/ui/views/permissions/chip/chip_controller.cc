@@ -454,12 +454,14 @@ void ChipController::ResetPermissionRequestChip() {
 
 void ChipController::ShowPageInfoDialog() {
   content::WebContents* contents = GetLocationBarView()->GetWebContents();
-  if (!contents)
+  if (!contents) {
     return;
+  }
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  if (entry->IsInitialEntry())
+  if (entry->IsInitialEntry()) {
     return;
+  }
 
   // Prevent chip from collapsing while prompt bubble is open.
   ResetTimers();
@@ -585,8 +587,9 @@ void ChipController::OnCollapseAnimationEnded() {
 }
 
 void ChipController::HideChip() {
-  if (!chip_->GetVisible())
+  if (!chip_->GetVisible()) {
     return;
+  }
 
   chip_->SetVisible(false);
   if (permission_dashboard_view_) {
@@ -690,8 +693,9 @@ void ChipController::ObservePromptBubble() {
 
 void ChipController::OnPromptBubbleDismissed() {
   DCHECK(permission_prompt_model_);
-  if (!permission_prompt_model_)
+  if (!permission_prompt_model_) {
     return;
+  }
 
   if (permission_prompt_model_->GetDelegate()) {
     permission_prompt_model_->GetDelegate()->SetDismissOnTabClose();
@@ -773,8 +777,9 @@ void ChipController::StartCollapseTimer() {
 }
 
 void ChipController::StartDismissTimer() {
-  if (!permission_prompt_model_)
+  if (!permission_prompt_model_) {
     return;
+  }
 
   dismiss_timer_.Start(FROM_HERE,
                        permission_prompt_model_->ShouldExpand()

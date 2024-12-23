@@ -514,7 +514,6 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
 void PlusAddressCreationDialogDelegate::ShowReserveResult(
     const PlusProfileOrError& maybe_plus_profile,
     bool offer_refresh) {
-
   SetProgressBarVisibility(false);
   plus_address_container_->ShowRefresh(offer_refresh);
   plus_address_container_->SetEnabledForRefreshButton(true);

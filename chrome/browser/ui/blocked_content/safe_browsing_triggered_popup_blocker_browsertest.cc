@@ -75,8 +75,9 @@ void RoundTripAndVerifyLogMessages(
       messages_expected.erase(message);
       continue;
     }
-    if (base::Contains(messages_not_expected, message))
+    if (base::Contains(messages_not_expected, message)) {
       ADD_FAILURE() << "Saw anti-expected message: " << message;
+    }
   }
   EXPECT_THAT(messages_expected, ::testing::IsEmpty())
       << "Missing expected messages.";
@@ -739,8 +740,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                                   {blocked_content::kAbusiveWarnMessage},
                                   {blocked_content::kAbusiveEnforceMessage});
     EXPECT_GE(console_observer.messages().size(), 1u);
-    for (auto& message : console_observer.messages())
+    for (auto& message : console_observer.messages()) {
       EXPECT_EQ(message.source_frame, web_contents()->GetPrimaryMainFrame());
+    }
   }
 
   // Load prerendering and ensure that the source frame for console logs in
@@ -759,8 +761,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                                   {blocked_content::kAbusiveWarnMessage},
                                   {blocked_content::kAbusiveEnforceMessage});
     EXPECT_GE(console_observer.messages().size(), 1u);
-    for (auto& message : console_observer.messages())
+    for (auto& message : console_observer.messages()) {
       EXPECT_EQ(message.source_frame, prerendered_frame_host);
+    }
   }
   // When prerendering activation, OnSafeBrowsingChecksComplete() is not called.
   // So SubresourceFilterLevel is not set on DidFinishNavigation() and the

@@ -43,15 +43,18 @@ bool FilterMatch(const blink::mojom::HidDeviceFilterPtr& filter,
                  const device::mojom::HidDeviceInfo& device) {
   if (filter->device_ids) {
     if (filter->device_ids->is_vendor()) {
-      if (filter->device_ids->get_vendor() != device.vendor_id)
+      if (filter->device_ids->get_vendor() != device.vendor_id) {
         return false;
+      }
     } else if (filter->device_ids->is_vendor_and_product()) {
       const auto& vendor_and_product =
           filter->device_ids->get_vendor_and_product();
-      if (vendor_and_product->vendor != device.vendor_id)
+      if (vendor_and_product->vendor != device.vendor_id) {
         return false;
-      if (vendor_and_product->product != device.product_id)
+      }
+      if (vendor_and_product->product != device.product_id) {
         return false;
+      }
     }
   }
 
@@ -109,8 +112,9 @@ HidChooserController::HidChooserController(
 }
 
 HidChooserController::~HidChooserController() {
-  if (callback_)
+  if (callback_) {
     std::move(callback_).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
+  }
 }
 
 bool HidChooserController::ShouldShowHelpButton() const {
@@ -145,8 +149,9 @@ std::u16string HidChooserController::GetOption(size_t index) const {
 bool HidChooserController::IsPaired(size_t index) const {
   DCHECK_LT(index, items_.size());
 
-  if (!chooser_context_)
+  if (!chooser_context_) {
     return false;
+  }
 
   DCHECK(base::Contains(device_map_, items_[index]));
   const auto& device_infos = device_map_.find(items_[index])->second;
@@ -178,8 +183,9 @@ void HidChooserController::Select(const std::vector<size_t>& indices) {
   bool any_persistent_permission_granted = false;
   for (auto& device : device_infos) {
     chooser_context_->GrantDevicePermission(origin_, *device);
-    if (HidChooserContext::CanStorePersistentEntry(*device))
+    if (HidChooserContext::CanStorePersistentEntry(*device)) {
       any_persistent_permission_granted = true;
+    }
     devices.push_back(device->Clone());
   }
 
@@ -209,8 +215,9 @@ void HidChooserController::OpenHelpCenterUrl() const {
   auto* web_contents = rfh && rfh->IsActive()
                            ? content::WebContents::FromRenderFrameHost(rfh)
                            : nullptr;
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   web_contents->OpenURL(
       content::OpenURLParams(
@@ -222,11 +229,13 @@ void HidChooserController::OpenHelpCenterUrl() const {
 
 void HidChooserController::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device) {
-  if (!DisplayDevice(device))
+  if (!DisplayDevice(device)) {
     return;
+  }
 
-  if (AddDeviceInfo(device) && view())
+  if (AddDeviceInfo(device) && view()) {
     view()->OnOptionAdded(items_.size() - 1);
+  }
   return;
 }
 
@@ -234,12 +243,14 @@ void HidChooserController::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
   auto items_it = base::ranges::find(items_, id);
-  if (items_it == items_.end())
+  if (items_it == items_.end()) {
     return;
+  }
   size_t index = std::distance(items_.begin(), items_it);
 
-  if (RemoveDeviceInfo(device) && view())
+  if (RemoveDeviceInfo(device) && view()) {
     view()->OnOptionRemoved(index);
+  }
 }
 
 void HidChooserController::OnDeviceChanged(
@@ -247,8 +258,9 @@ void HidChooserController::OnDeviceChanged(
   bool has_chooser_item =
       base::Contains(items_, PhysicalDeviceIdFromDeviceInfo(device));
   if (!DisplayDevice(device)) {
-    if (has_chooser_item)
+    if (has_chooser_item) {
       OnDeviceRemoved(device);
+    }
     return;
   }
 
@@ -272,17 +284,20 @@ void HidChooserController::OnHidChooserContextShutdown() {
 void HidChooserController::OnGotDevices(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   for (auto& device : devices) {
-    if (DisplayDevice(*device))
+    if (DisplayDevice(*device)) {
       AddDeviceInfo(*device);
+    }
   }
 
   // Listen to HidChooserContext for OnDeviceAdded/Removed events after the
   // enumeration.
-  if (chooser_context_)
+  if (chooser_context_) {
     observation_.Observe(chooser_context_.get());
+  }
 
-  if (view())
+  if (view()) {
     view()->OnOptionsInitialized();
+  }
 }
 
 bool HidChooserController::DisplayDevice(
@@ -328,12 +343,14 @@ bool HidChooserController::DisplayDevice(
 
 bool HidChooserController::FilterMatchesAny(
     const device::mojom::HidDeviceInfo& device) const {
-  if (filters_.empty())
+  if (filters_.empty()) {
     return true;
+  }
 
   for (const auto& filter : filters_) {
-    if (FilterMatch(filter, device))
+    if (FilterMatch(filter, device)) {
       return true;
+    }
   }
   return false;
 }
@@ -341,8 +358,9 @@ bool HidChooserController::FilterMatchesAny(
 bool HidChooserController::IsExcluded(
     const device::mojom::HidDeviceInfo& device) const {
   for (const auto& exclusion_filter : exclusion_filters_) {
-    if (FilterMatch(exclusion_filter, device))
+    if (FilterMatch(exclusion_filter, device)) {
       return true;
+    }
   }
   return false;
 }
@@ -380,8 +398,9 @@ bool HidChooserController::RemoveDeviceInfo(
                 [&device](const device::mojom::HidDeviceInfoPtr& d) {
                   return d->guid == device.guid;
                 });
-  if (!device_infos.empty())
+  if (!device_infos.empty()) {
     return false;
+  }
   // A device was disconnected. Remove it from the chooser list.
   device_map_.erase(find_it);
   std::erase(items_, id);

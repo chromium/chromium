@@ -48,7 +48,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesToPage);
 
-
   void OpenInNewTab();
 
   void Timeout();

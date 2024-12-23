@@ -158,8 +158,9 @@ base::Value GetWebApps::GetInstalledWebApps() {
 base::Value GetWebApps::GetOpenWebApps() {
   base::flat_map<std::string, base::Value::List> open_apps;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->type() != Browser::Type::TYPE_APP)
+    if (browser->type() != Browser::Type::TYPE_APP) {
       continue;
+    }
     std::string app_profile_base_name =
         browser->profile()->GetBaseName().AsUTF8Unsafe();
     if (!profile_base_name_.empty() &&

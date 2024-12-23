@@ -144,8 +144,9 @@ void DiceWebSigninInterceptHandler::OnJavascriptDisallowed() {
 
 void DiceWebSigninInterceptHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  if (!info.IsValid())
+  if (!info.IsValid()) {
     return;
+  }
 
   bool should_fire_event = false;
   if (info.account_id == intercepted_account().account_id) {
@@ -200,10 +201,12 @@ void DiceWebSigninInterceptHandler::HandlePageLoaded(
 
   // If there is no extended info for the primary account, populate with
   // reasonable defaults.
-  if (primary_account().hosted_domain.empty())
+  if (primary_account().hosted_domain.empty()) {
     bubble_parameters_.primary_account.hosted_domain = kNoHostedDomainFound;
-  if (primary_account().given_name.empty())
+  }
+  if (primary_account().given_name.empty()) {
     bubble_parameters_.primary_account.given_name = primary_account().email;
+  }
 
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
@@ -505,8 +508,9 @@ std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
   std::string manager_domain = intercepted_account().IsManaged()
                                    ? intercepted_account().hosted_domain
                                    : std::string();
-  if (manager_domain.empty())
+  if (manager_domain.empty()) {
     manager_domain = chrome::GetDeviceManagerIdentity().value_or(std::string());
+  }
 
   if (manager_domain.empty()) {
     return l10n_util::GetStringFUTF8(

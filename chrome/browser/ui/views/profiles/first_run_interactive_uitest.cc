@@ -319,6 +319,7 @@ class FirstRunInteractiveUiTestBase
         // chrome/test/data/webui/intro/sign_in_promo_test.ts
         PressJsButton(kWebContentsId, button));
   }
+
  private:
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
 };
@@ -608,8 +609,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
 
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -754,15 +756,17 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   // TODO(crbug.com/366082752): Re-enable this test
   should_skip_test = true;
 #endif  // WIN && ARCH_CPU_64_BITS
-  if (should_skip_test)
+  if (should_skip_test) {
     GTEST_SKIP() << "Test is flaky on win64";
+  }
 
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
   }
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());

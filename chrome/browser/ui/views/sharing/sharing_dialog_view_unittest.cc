@@ -57,8 +57,9 @@ class SharingDialogViewTest : public TestWithBrowserView {
   }
 
   void TearDown() override {
-    if (dialog_)
+    if (dialog_) {
       dialog_->GetWidget()->CloseNow();
+    }
     TestWithBrowserView::TearDown();
   }
 
@@ -94,12 +95,13 @@ class SharingDialogViewTest : public TestWithBrowserView {
   SharingDialogData CreateDialogData(int devices, int apps) {
     SharingDialogData data;
 
-    if (devices)
+    if (devices) {
       data.type = SharingDialogType::kDialogWithDevicesMaybeApps;
-    else if (apps)
+    } else if (apps) {
       data.type = SharingDialogType::kDialogWithoutDevicesWithApp;
-    else
+    } else {
       data.type = SharingDialogType::kEducationalDialog;
+    }
 
     data.prefix = SharingFeatureName::kClickToCall;
     data.devices = CreateDevices(devices);

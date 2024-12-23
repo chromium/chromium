@@ -145,8 +145,9 @@ void AssistantOptInDialog::Show(
 
 // static
 bool AssistantOptInDialog::BounceIfActive() {
-  if (!g_dialog)
+  if (!g_dialog) {
     return false;
+  }
 
   g_dialog->Focus();
   wm::AnimateWindow(g_dialog->dialog_window(),
@@ -190,8 +191,9 @@ void AssistantOptInDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void AssistantOptInDialog::OnDialogClosed(const std::string& json_retval) {
-  if (assistant_ui_)
+  if (assistant_ui_) {
     assistant_ui_->OnDialogClosed();
+  }
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const bool completed =

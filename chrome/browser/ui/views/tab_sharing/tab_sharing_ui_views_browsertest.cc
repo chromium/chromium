@@ -897,8 +897,9 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
   }
 
   void AddTabs(Browser* browser, int tab_count) {
-    for (int i = 0; i < tab_count; ++i)
+    for (int i = 0; i < tab_count; ++i) {
       AddBlankTabAndShow(browser);
+    }
   }
 
  private:
@@ -918,14 +919,16 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   // Check that all tabs have 3 infobars corresponding to the 3 sharing
   // sessions.
   int tab_count = browser()->tab_strip_model()->count();
-  for (int i = 0; i < tab_count; ++i)
+  for (int i = 0; i < tab_count; ++i) {
     EXPECT_EQ(3u, GetInfoBarManager(browser(), i)->infobars().size());
+  }
 
   // Check that all shared tabs display a tab capture indicator.
   auto capture_indicator = GetCaptureIndicator();
-  for (int i = 1; i < tab_count; ++i)
+  for (int i = 1; i < tab_count; ++i) {
     ASSERT_TRUE(
         capture_indicator->IsBeingMirrored(GetWebContents(browser(), i)));
+  }
 
   views::Widget* contents_border = GetContentsBorder(browser());
   // The capturing tab, which is not itself being captured, does not have
@@ -950,9 +953,10 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   size_t shared_tab_count = 3;
   while (shared_tab_count) {
     tab_sharing_ui_views(--shared_tab_count)->StopSharing();
-    for (int j = 0; j < browser()->tab_strip_model()->count(); ++j)
+    for (int j = 0; j < browser()->tab_strip_model()->count(); ++j) {
       ASSERT_EQ(shared_tab_count,
                 GetInfoBarManager(browser(), j)->infobars().size());
+    }
   }
 }
 
@@ -966,9 +970,10 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   while (tab_strip_model->count() > 1) {
     tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
-    for (int i = 0; i < tab_strip_model->count(); ++i)
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
       ASSERT_EQ(tab_strip_model->count() - 1u,
                 GetInfoBarManager(browser(), i)->infobars().size());
+    }
   }
 }
 
@@ -1139,8 +1144,9 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
   }
 
   void AddTabs(Browser* browser, int tab_count) {
-    for (int i = 0; i < tab_count; ++i)
+    for (int i = 0; i < tab_count; ++i) {
       AddBlankTabAndShow(browser);
+    }
   }
 
   void SourceChange(const content::DesktopMediaID& media_id,

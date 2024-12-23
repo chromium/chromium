@@ -54,8 +54,9 @@ void CompletionCallback(
   // continues by blocking sub-elements of the list. When everything is blocked,
   // it implies that no `result.paths_results` is allowed.
   if (file_indexes_to_block.size() == drop_data.filenames.size()) {
-    for (size_t i = 0; i < data.paths.size(); ++i)
+    for (size_t i = 0; i < data.paths.size(); ++i) {
       result.paths_results[i] = false;
+    }
 
     std::move(callback).Run(std::nullopt);
     return;
@@ -69,14 +70,16 @@ void CompletionCallback(
   for (size_t i = 0; i < data.paths.size(); ++i) {
     int parent_index =
         files_scan_data->expanded_paths_indexes().at(data.paths[i]);
-    if (file_indexes_to_block.count(parent_index))
+    if (file_indexes_to_block.count(parent_index)) {
       result.paths_results[i] = false;
+    }
   }
 
   std::vector<ui::FileInfo> final_filenames;
   for (size_t i = 0; i < drop_data.filenames.size(); ++i) {
-    if (file_indexes_to_block.count(i))
+    if (file_indexes_to_block.count(i)) {
       continue;
+    }
     final_filenames.push_back(std::move(drop_data.filenames[i]));
   }
 
@@ -162,12 +165,15 @@ void HandleOnPerformingDrop(
   data.reason = enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP;
 
   // Collect the data that needs to be scanned.
-  if (!drop_data.url_title.empty())
+  if (!drop_data.url_title.empty()) {
     data.text.push_back(base::UTF16ToUTF8(drop_data.url_title));
-  if (drop_data.text)
+  }
+  if (drop_data.text) {
     data.text.push_back(base::UTF16ToUTF8(*drop_data.text));
-  if (drop_data.html)
+  }
+  if (drop_data.html) {
     data.text.push_back(base::UTF16ToUTF8(*drop_data.html));
+  }
 
   // `callback` should only run asynchronously when scanning is blocking.
   content::WebContentsViewDelegate::DropCompletionCallback scan_callback =

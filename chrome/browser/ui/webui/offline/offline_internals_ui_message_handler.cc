@@ -58,8 +58,9 @@ std::string GetStringFromDeleteRequestResults(
     const offline_pages::MultipleItemStatuses& results) {
   // If any requests failed, return "failure", else "success".
   for (const auto& result : results) {
-    if (result.second == offline_pages::ItemActionStatus::STORE_ERROR)
+    if (result.second == offline_pages::ItemActionStatus::STORE_ERROR) {
       return "Store failure, could not delete one or more requests";
+    }
   }
 
   return "Success";
@@ -225,8 +226,9 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordPageModel(
   AllowJavascript();
   CHECK(!args.empty());
   const bool should_record = args[0].GetBool();
-  if (offline_page_model_)
+  if (offline_page_model_) {
     offline_page_model_->GetLogger()->SetIsLogging(should_record);
+  }
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetNetworkStatus(
@@ -288,8 +290,9 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordRequestQueue(
   AllowJavascript();
   CHECK(!args.empty());
   const bool should_record = args[0].GetBool();
-  if (request_coordinator_)
+  if (request_coordinator_) {
     request_coordinator_->GetLogger()->SetIsLogging(should_record);
+  }
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetRecordPrefetchService(
@@ -299,9 +302,7 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordPrefetchService(
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetLimitlessPrefetchingEnabled(
-    const base::Value::List& args) {
-
-}
+    const base::Value::List& args) {}
 
 void OfflineInternalsUIMessageHandler::HandleGetLimitlessPrefetchingEnabled(
     const base::Value::List& args) {
@@ -342,10 +343,12 @@ void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
   const base::Value& callback_id = args[0];
 
   std::vector<std::string> logs;
-  if (offline_page_model_)
+  if (offline_page_model_) {
     offline_page_model_->GetLogger()->GetLogs(&logs);
-  if (request_coordinator_)
+  }
+  if (request_coordinator_) {
     request_coordinator_->GetLogger()->GetLogs(&logs);
+  }
   std::sort(logs.begin(), logs.end());
 
   base::Value::List result;

@@ -224,8 +224,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void SendKeySequence(const ui::KeyboardCode* keys) {
-    for (; *keys != ui::VKEY_UNKNOWN; ++keys)
+    for (; *keys != ui::VKEY_UNKNOWN; ++keys) {
       ASSERT_NO_FATAL_FAILURE(SendKey(*keys, 0));
+    }
   }
 
   void ExpectBrowserClosed(Browser* browser,
@@ -256,8 +257,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
 
   void WaitForTabOpenOrClose(int expected_tab_count) {
     int tab_count = browser()->tab_strip_model()->count();
-    if (tab_count == expected_tab_count)
+    if (tab_count == expected_tab_count) {
       return;
+    }
 
     while (!HasFailure() &&
            browser()->tab_strip_model()->count() != expected_tab_count) {
@@ -275,8 +277,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
         omnibox_view->controller()->autocomplete_controller();
     ASSERT_TRUE(controller);
 
-    if (controller->done())
+    if (controller->done()) {
       return;
+    }
 
     ui_test_utils::WaitForAutocompleteDone(browser());
     ASSERT_TRUE(controller->done());
@@ -307,8 +310,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
     TemplateURLService::TemplateURLVector urls = model->GetTemplateURLs();
     for (TemplateURLService::TemplateURLVector::const_iterator i = urls.begin();
          i != urls.end(); ++i) {
-      if ((*i)->prepopulate_id() != 0)
+      if ((*i)->prepopulate_id() != 0) {
         model->Remove(*i);
+      }
     }
   }
 
@@ -336,8 +340,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
     history_service->AddPageWithDetails(url, base::UTF8ToUTF16(entry.title),
                                         entry.visit_count, entry.typed_count,
                                         time, false, history::SOURCE_BROWSED);
-    if (entry.starred)
+    if (entry.starred) {
       bookmarks::AddIfNotBookmarked(bookmark_model, url, std::u16string());
+    }
 
     // Running the task scheduler until idle finishes AddPageWithDetails.
     content::RunAllTasksUntilIdle();
@@ -355,8 +360,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void SetupHostResolver() {
-    for (size_t i = 0; i < std::size(kBlockedHostnames); ++i)
+    for (size_t i = 0; i < std::size(kBlockedHostnames); ++i) {
       host_resolver()->AddSimulatedFailure(kBlockedHostnames[i]);
+    }
   }
 
   void SetupComponents() {
@@ -598,8 +604,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
       omnibox_view->controller()->autocomplete_controller()->result().size();
   while (omnibox_view->model()->GetPopupSelection().line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
-    if (omnibox_view->GetText() == u"abc")
+    if (omnibox_view->GetText() == u"abc") {
       break;
+    }
   }
   ASSERT_EQ(u"abc", omnibox_view->GetText());
 
@@ -1392,8 +1399,9 @@ namespace {
 size_t GetSelectionSize(OmniboxView* omnibox_view) {
   size_t start, end;
   omnibox_view->GetSelectionBounds(&start, &end);
-  if (end >= start)
+  if (end >= start) {
     return end - start;
+  }
   return start - end;
 }
 
@@ -1463,341 +1471,332 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
   EXPECT_EQ(1u, GetSelectionSize(omnibox_view));
 }
 
-  base::Value CreateSiteSearchPolicyValue(bool featured) {
-    base::Value::List policy_value;
-    policy_value.Append(
-        base::Value::Dict()
-            .Set(policy::SiteSearchPolicyHandler::kShortcut,
-                 kSiteSearchPolicyKeyword)
-            .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
-            .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL)
-            .Set(policy::SiteSearchPolicyHandler::kFeatured, featured));
-    return base::Value(std::move(policy_value));
-  }
+base::Value CreateSiteSearchPolicyValue(bool featured) {
+  base::Value::List policy_value;
+  policy_value.Append(
+      base::Value::Dict()
+          .Set(policy::SiteSearchPolicyHandler::kShortcut,
+               kSiteSearchPolicyKeyword)
+          .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
+          .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL)
+          .Set(policy::SiteSearchPolicyHandler::kFeatured, featured));
+  return base::Value(std::move(policy_value));
+}
 
 // Verifies that keyword search works when `SiteSearchSettings` policy is set.
-  IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonFeatured) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kSiteSearchSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateSiteSearchPolicyValue(/*featured=*/false), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonFeatured) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               CreateSiteSearchPolicyValue(/*featured=*/false), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-    // Check that new entries have been added to TemplateURLService.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(kSiteSearchPolicyKeyword);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSiteSearch);
-    EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
-    EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
-    EXPECT_FALSE(turl->featured_by_policy());
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSiteSearchPolicyKeyword);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
+  EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
+  EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
+  EXPECT_FALSE(turl->featured_by_policy());
 
-    // Trigger keyword hint mode.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
-    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSiteSearchPolicyKeyword, omnibox_view->model()->keyword());
+  // Trigger keyword hint mode.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeyword, omnibox_view->model()->keyword());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSiteSearchPolicyKeyword, omnibox_view->model()->keyword());
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeyword, omnibox_view->model()->keyword());
 
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
-                                            ->autocomplete_controller()
-                                            ->result()
-                                            .default_match()
-                                            ->destination_url.spec());
-  }
+  EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
+                                          ->autocomplete_controller()
+                                          ->result()
+                                          .default_match()
+                                          ->destination_url.spec());
+}
 
 // Verifies that keyword search works when `SiteSearchSettings` policy defines
 // a featured search engine.
-  IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Featured) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kSiteSearchSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Featured) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-    // Check that new entries have been added to TemplateURLService.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSiteSearch);
-    EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
-    EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
-    EXPECT_TRUE(turl->featured_by_policy());
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
+  EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
+  EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
+  EXPECT_TRUE(turl->featured_by_policy());
 
-    // Trigger keyword hint mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
-    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
+  // Trigger keyword hint mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
-                                            ->autocomplete_controller()
-                                            ->result()
-                                            .default_match()
-                                            ->destination_url.spec());
-  }
+  EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
+                                          ->autocomplete_controller()
+                                          ->result()
+                                          .default_match()
+                                          ->destination_url.spec());
+}
 
 // Verifies that featured search engine is shown with starter pack on "@" state
 // and that the underlying search works.
-  IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedOnArrowDown) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kSiteSearchSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FeaturedOnArrowDown) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-    // Check that new entries have been added to TemplateURLService.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSiteSearch);
-    EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
-    EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
-    EXPECT_TRUE(turl->featured_by_policy());
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(), TemplateURLData::PolicyOrigin::kSiteSearch);
+  EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
+  EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
+  EXPECT_TRUE(turl->featured_by_policy());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, /*modifiers=*/0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, /*modifiers=*/0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
-                                            ->autocomplete_controller()
-                                            ->result()
-                                            .default_match()
-                                            ->destination_url.spec());
+  EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
+                                          ->autocomplete_controller()
+                                          ->result()
+                                          .default_match()
+                                          ->destination_url.spec());
+}
+
+class SearchAggregatorPolicyOmniboxViewTest : public OmniboxViewTest {
+ public:
+  SearchAggregatorPolicyOmniboxViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kEnableSearchAggregatorPolicy);
+  }
+  ~SearchAggregatorPolicyOmniboxViewTest() override = default;
+
+  base::Value CreateEnterpriseSearchAggregatorPolicyValue() {
+    base::Value::Dict policy_value;
+    policy_value = base::Value::Dict()
+                       .Set(policy::SearchAggregatorPolicyHandler::kIconUrl,
+                            kSearchAggregatorPolicyIconUrl)
+                       .Set(policy::SearchAggregatorPolicyHandler::kShortcut,
+                            kSearchAggregatorPolicyKeyword)
+                       .Set(policy::SearchAggregatorPolicyHandler::kName,
+                            kSearchAggregatorPolicyName)
+                       .Set(policy::SearchAggregatorPolicyHandler::kSearchUrl,
+                            kSearchAggregatorPolicySearchUrl)
+                       .Set(policy::SearchAggregatorPolicyHandler::kSuggestUrl,
+                            kSearchAggregatorPolicySuggestUrl);
+    return base::Value(std::move(policy_value));
   }
 
-  class SearchAggregatorPolicyOmniboxViewTest : public OmniboxViewTest {
-   public:
-    SearchAggregatorPolicyOmniboxViewTest() {
-      scoped_feature_list_.InitAndEnableFeature(
-          omnibox::kEnableSearchAggregatorPolicy);
-    }
-    ~SearchAggregatorPolicyOmniboxViewTest() override = default;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-    base::Value CreateEnterpriseSearchAggregatorPolicyValue() {
-      base::Value::Dict policy_value;
-      policy_value =
-          base::Value::Dict()
-              .Set(policy::SearchAggregatorPolicyHandler::kIconUrl,
-                   kSearchAggregatorPolicyIconUrl)
-              .Set(policy::SearchAggregatorPolicyHandler::kShortcut,
-                   kSearchAggregatorPolicyKeyword)
-              .Set(policy::SearchAggregatorPolicyHandler::kName,
-                   kSearchAggregatorPolicyName)
-              .Set(policy::SearchAggregatorPolicyHandler::kSearchUrl,
-                   kSearchAggregatorPolicySearchUrl)
-              .Set(policy::SearchAggregatorPolicyHandler::kSuggestUrl,
-                   kSearchAggregatorPolicySuggestUrl);
-      return base::Value(std::move(policy_value));
-    }
+// Verifies that keyword search works when
+// `EnterpriseSearchAggregatorSettings` policy is set.
+IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-   private:
-    base::test::ScopedFeatureList scoped_feature_list_;
-  };
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  // Verifies that keyword search works when
-  // `EnterpriseSearchAggregatorSettings` policy is set.
-  IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, NonFeatured) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSearchAggregatorPolicyKeyword);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(),
+            TemplateURLData::PolicyOrigin::kSearchAggregator);
+  EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
+  EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
+  EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
+  EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
+  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_FALSE(turl->safe_for_autoreplace());
+  EXPECT_FALSE(turl->featured_by_policy());
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  // Trigger keyword hint mode.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchAggregatorPolicyKeywordKeys));
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchAggregatorPolicyKeyword, omnibox_view->model()->keyword());
 
-    // Check that new entries have been added to TemplateURLService.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(kSearchAggregatorPolicyKeyword);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSearchAggregator);
-    EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
-    EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
-    EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
-    EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-    EXPECT_FALSE(turl->enforced_by_policy());
-    EXPECT_FALSE(turl->safe_for_autoreplace());
-    EXPECT_FALSE(turl->featured_by_policy());
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchAggregatorPolicyKeyword, omnibox_view->model()->keyword());
 
-    // Trigger keyword hint mode.
-    ASSERT_NO_FATAL_FAILURE(
-        SendKeySequence(kSearchAggregatorPolicyKeywordKeys));
-    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchAggregatorPolicyKeyword, omnibox_view->model()->keyword());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchAggregatorPolicyKeyword, omnibox_view->model()->keyword());
+  EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
+                                                ->autocomplete_controller()
+                                                ->result()
+                                                .default_match()
+                                                ->destination_url.spec());
+}
 
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+// Verifies that featured search engine is shown when
+// `EnterpriseSearchAggregatorSettings` policy is set.
+IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-    EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
-                                                  ->autocomplete_controller()
-                                                  ->result()
-                                                  .default_match()
-                                                  ->destination_url.spec());
-  }
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  // Verifies that featured search engine is shown when
-  // `EnterpriseSearchAggregatorSettings` policy is set.
-  IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest, Featured) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+  // Check that new entries have been added to TemplateURLService with at
+  // prefix.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(
+              kSearchAggregatorPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(),
+            TemplateURLData::PolicyOrigin::kSearchAggregator);
+  EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
+  EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
+  EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
+  EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
+  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_FALSE(turl->safe_for_autoreplace());
+  EXPECT_TRUE(turl->featured_by_policy());
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  // Trigger keyword hint mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchAggregatorPolicyKeywordKeys));
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Check that new entries have been added to TemplateURLService with at
-    // prefix.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(
-                kSearchAggregatorPolicyKeywordWithAtPrefix);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSearchAggregator);
-    EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
-    EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
-    EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
-    EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-    EXPECT_FALSE(turl->enforced_by_policy());
-    EXPECT_FALSE(turl->safe_for_autoreplace());
-    EXPECT_TRUE(turl->featured_by_policy());
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Trigger keyword hint mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
-    ASSERT_NO_FATAL_FAILURE(
-        SendKeySequence(kSearchAggregatorPolicyKeywordKeys));
-    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
+  EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
+                                                ->autocomplete_controller()
+                                                ->result()
+                                                .default_match()
+                                                ->destination_url.spec());
+}
 
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+// Verifies that featured search engine is shown with starter pack on "@"
+// state and that the underlying search works when
+// `EnterpriseSearchAggregatorSettings` policy is set.
+IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
+                       FeaturedOnArrowDown) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
 
-    EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
-                                                  ->autocomplete_controller()
-                                                  ->result()
-                                                  .default_match()
-                                                  ->destination_url.spec());
-  }
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  // Verifies that featured search engine is shown with starter pack on "@"
-  // state and that the underlying search works when
-  // `EnterpriseSearchAggregatorSettings` policy is set.
-  IN_PROC_BROWSER_TEST_F(SearchAggregatorPolicyOmniboxViewTest,
-                         FeaturedOnArrowDown) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kEnterpriseSearchAggregatorSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 CreateEnterpriseSearchAggregatorPolicyValue(), nullptr);
-    policy_provider()->UpdateChromePolicy(policies);
+  // Check that new entries have been added to TemplateURLService with at
+  // prefix.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(
+              kSearchAggregatorPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->policy_origin(),
+            TemplateURLData::PolicyOrigin::kSearchAggregator);
+  EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
+  EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
+  EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
+  EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
+  EXPECT_FALSE(turl->enforced_by_policy());
+  EXPECT_FALSE(turl->safe_for_autoreplace());
+  EXPECT_TRUE(turl->featured_by_policy());
 
-    OmniboxView* omnibox_view = nullptr;
-    ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
-    // Check that new entries have been added to TemplateURLService with at
-    // prefix.
-    const TemplateURL* turl =
-        TemplateURLServiceFactory::GetForProfile(browser()->profile())
-            ->GetTemplateURLForKeyword(
-                kSearchAggregatorPolicyKeywordWithAtPrefix);
-    ASSERT_TRUE(turl);
-    EXPECT_EQ(turl->policy_origin(),
-              TemplateURLData::PolicyOrigin::kSearchAggregator);
-    EXPECT_EQ(turl->short_name(), kSearchAggregatorPolicyName);
-    EXPECT_EQ(turl->url(), kSearchAggregatorPolicySearchUrl);
-    EXPECT_EQ(turl->suggestions_url(), kSearchAggregatorPolicySuggestUrl);
-    EXPECT_EQ(turl->favicon_url(), kSearchAggregatorPolicyIconUrl);
-    EXPECT_FALSE(turl->enforced_by_policy());
-    EXPECT_FALSE(turl->safe_for_autoreplace());
-    EXPECT_TRUE(turl->featured_by_policy());
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
-    // Trigger keyword mode.
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
-    ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchAggregatorPolicyKeywordWithAtPrefix,
-              omnibox_view->model()->keyword());
-
-    // Input something as search text and perform a search.
-    ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
-    ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-    ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
-
-    EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
-                                                  ->autocomplete_controller()
-                                                  ->result()
-                                                  .default_match()
-                                                  ->destination_url.spec());
-  }
+  EXPECT_EQ(kSearchAggregatorPolicyTextURL, omnibox_view->controller()
+                                                ->autocomplete_controller()
+                                                ->result()
+                                                .default_match()
+                                                ->destination_url.spec());
+}
 
 // Tests for IDN hostnames that contain deviation characters. See
 // idn_spoof_checker.h for details.

@@ -122,9 +122,10 @@ void PeripheralDataAccessHandler::HandleGetPolicyState(
 }
 
 void PeripheralDataAccessHandler::OnFilePathChecked(
-    const std::string& callback_id, bool is_thunderbolt_supported) {
+    const std::string& callback_id,
+    bool is_thunderbolt_supported) {
   ResolveJavascriptCallback(base::Value(callback_id),
-      base::Value(is_thunderbolt_supported));
+                            base::Value(is_thunderbolt_supported));
 }
 
 void PeripheralDataAccessHandler::OnPeripheralDataAccessProtectionChanged() {

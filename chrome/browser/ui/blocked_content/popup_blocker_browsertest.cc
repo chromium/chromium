@@ -219,8 +219,9 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
       new_browser = BrowserList::GetInstance()->GetLastActive();
       EXPECT_NE(browser, new_browser);
       web_contents = new_browser->tab_strip_model()->GetActiveWebContents();
-      if (what_to_expect == kExpectNewWindow)
+      if (what_to_expect == kExpectNewWindow) {
         EXPECT_TRUE(new_browser->is_type_normal());
+      }
     } else {
       tab_add.Wait();
       new_browser = browser;
@@ -602,8 +603,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(dialog);
 #if !BUILDFLAG(IS_MAC)
-  if (chrome::FindLastActive() != browser())
+  if (chrome::FindLastActive() != browser()) {
     alert_waiter.WaitForActivation();
+  }
 #endif
 
 // Verify that after the dialog is closed, the popup is in front again.

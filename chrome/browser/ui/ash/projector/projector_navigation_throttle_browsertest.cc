@@ -110,8 +110,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
   url += "/";
   url += kFilePath;
-  if (!url_params().empty())
+  if (!url_params().empty()) {
     url += "?" + url_params();
+  }
   GURL gurl(url);
 
   // Prior to navigation, there is only one browser available.
@@ -159,8 +160,9 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
   // The timestamp corresponds to 21 Jan 2022 10:00:00 GMT in microseconds since
   // Unix epoch (Jan 1 1970).
   expected_url += "?timestamp=1642759200000000%20bogo-microseconds";
-  if (!url_params().empty())
+  if (!url_params().empty()) {
     expected_url += "&" + url_params();
+  }
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
 
   std::string histogram_name = navigate_from_link()

@@ -87,14 +87,17 @@ ExtensionSettingsOverriddenDialog::~ExtensionSettingsOverriddenDialog() =
     default;
 
 bool ExtensionSettingsOverriddenDialog::ShouldShow() {
-  if (params_.controlling_extension_id.empty())
+  if (params_.controlling_extension_id.empty()) {
     return false;
+  }
 
-  if (HasShownFor(profile_, params_.controlling_extension_id))
+  if (HasShownFor(profile_, params_.controlling_extension_id)) {
     return false;
+  }
 
-  if (HasAcknowledgedExtension(params_.controlling_extension_id))
+  if (HasAcknowledgedExtension(params_.controlling_extension_id)) {
     return false;
+  }
 
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)

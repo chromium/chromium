@@ -34,8 +34,9 @@ DownloadsHandler::DownloadsHandler(Profile* profile) : profile_(profile) {}
 DownloadsHandler::~DownloadsHandler() {
   // There may be pending file dialogs, we need to tell them that we've gone
   // away so they don't try and call back to us.
-  if (select_folder_dialog_)
+  if (select_folder_dialog_) {
     select_folder_dialog_->ListenerDestroyed();
+  }
 }
 
 void DownloadsHandler::RegisterMessages() {
@@ -94,8 +95,9 @@ void DownloadsHandler::HandleResetAutoOpenFileTypes(
 void DownloadsHandler::HandleSelectDownloadLocation(
     const base::Value::List& args) {
   // Early return if the select folder dialog is already active.
-  if (select_folder_dialog_)
+  if (select_folder_dialog_) {
     return;
+  }
 
   PrefService* pref_service = profile_->GetPrefs();
   select_folder_dialog_ = ui::SelectFileDialog::Create(

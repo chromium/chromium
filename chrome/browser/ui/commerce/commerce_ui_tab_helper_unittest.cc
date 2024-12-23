@@ -85,8 +85,7 @@ class CommerceUiTabHelperTest : public testing::Test {
   }
 
   CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
-  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) =
-      delete;
+  CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) = delete;
   ~CommerceUiTabHelperTest() override = default;
 
   void SetUp() override {
@@ -163,8 +162,7 @@ class CommerceUiTabHelperTest : public testing::Test {
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityIfNoImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -189,8 +187,7 @@ TEST_F(CommerceUiTabHelperTest,
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailabilityWithImage) {
+TEST_F(CommerceUiTabHelperTest, TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),

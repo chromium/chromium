@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -14,9 +14,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,8 +32,9 @@
 namespace {
 
 content::WebContents* GetPickerWebContents() {
-  if (!ProfilePicker::GetWebViewForTesting())
+  if (!ProfilePicker::GetWebViewForTesting()) {
     return nullptr;
+  }
   return ProfilePicker::GetWebViewForTesting()->GetWebContents();
 }
 
@@ -101,15 +102,17 @@ ViewAddedWaiter::ViewAddedWaiter(views::View* view) : view_(view) {}
 ViewAddedWaiter::~ViewAddedWaiter() = default;
 
 void ViewAddedWaiter::Wait() {
-  if (view_->GetWidget())
+  if (view_->GetWidget()) {
     return;
+  }
   observation_.Observe(view_.get());
   run_loop_.Run();
 }
 
 void ViewAddedWaiter::OnViewAddedToWidget(views::View* observed_view) {
-  if (observed_view == view_)
+  if (observed_view == view_) {
     run_loop_.Quit();
+  }
 }
 
 // -- ViewDeletedWaiter --------------------------------------------------------
@@ -232,8 +235,9 @@ void ProfileManagementStepTestView::ShowAndWait(
   // UI elements to know when to stop waiting.
   run_loop_.Run();
 
-  if (view_size.has_value())
+  if (view_size.has_value()) {
     GetWidget()->SetSize(view_size.value());
+  }
 }
 
 std::unique_ptr<ProfileManagementFlowController>

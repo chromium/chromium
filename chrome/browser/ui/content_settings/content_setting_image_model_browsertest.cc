@@ -45,12 +45,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {
   // to the same setting.
   static constexpr ContentSettingImageModel::ImageType
       content_settings_to_test[] = {
-          ImageType::COOKIES,
-          ImageType::IMAGES,
-          ImageType::JAVASCRIPT,
-          ImageType::POPUPS,
-          ImageType::MIXEDSCRIPT,
-          ImageType::PROTOCOL_HANDLERS,
+          ImageType::COOKIES,     ImageType::IMAGES,
+          ImageType::JAVASCRIPT,  ImageType::POPUPS,
+          ImageType::MIXEDSCRIPT, ImageType::PROTOCOL_HANDLERS,
           ImageType::MIDI_SYSEX,
       };
 

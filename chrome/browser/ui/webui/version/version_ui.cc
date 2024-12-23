@@ -269,8 +269,9 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (auto iter = argv.begin(); iter != argv.end(); iter++)
+  for (auto iter = argv.begin(); iter != argv.end(); iter++) {
     command_line += " " + *iter;
+  }
   // TODO(viettrungluu): |command_line| could really have any encoding, whereas
   // below we assumes it's UTF-8.
   html_source->AddString(version_ui::kCommandLine, command_line);

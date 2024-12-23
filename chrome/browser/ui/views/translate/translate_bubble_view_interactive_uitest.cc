@@ -166,8 +166,9 @@ class TranslateBubbleViewUITest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != "/mock_translate_script.js")
+    if (request.GetURL().path() != "/mock_translate_script.js") {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -386,8 +387,9 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
   bool offline = false;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (!offline)
+        if (!offline) {
           return false;
+        }
         params->client->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED));
         return true;

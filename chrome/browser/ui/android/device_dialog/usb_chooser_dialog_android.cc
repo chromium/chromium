@@ -100,8 +100,9 @@ UsbChooserDialogAndroid::CreateInternal(
       std::move(create_java_dialog_callback)
           .Run(env, window_android, origin_string, helper->GetSecurityLevel(),
                j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
-  if (dialog->java_dialog_.is_null())
+  if (dialog->java_dialog_.is_null()) {
     return nullptr;
+  }
 
   return dialog;
 }
@@ -122,8 +123,9 @@ UsbChooserDialogAndroid::~UsbChooserDialogAndroid() {
 }
 
 void UsbChooserDialogAndroid::OnOptionsInitialized() {
-  for (size_t i = 0; i < controller_->NumOptions(); ++i)
+  for (size_t i = 0; i < controller_->NumOptions(); ++i) {
     OnOptionAdded(i);
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_UsbChooserDialog_setIdleState(env, java_dialog_);

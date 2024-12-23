@@ -155,8 +155,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
-  for (const auto& entry : kLocalizedStringsWithoutPlaceholders)
+  for (const auto& entry : kLocalizedStringsWithoutPlaceholders) {
     builder->Add(entry.name, entry.id);
+  }
 
   // TODO(crbug.com/964547): Refactor so that any change to these strings will
   // surface in both the OOBE and post-OOBE UIs without having to adjust both

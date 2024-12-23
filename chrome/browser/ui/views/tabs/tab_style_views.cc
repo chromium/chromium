@@ -514,8 +514,9 @@ float TabStyleViewsImpl::GetZValue() const {
   // This function doesn't handle active tabs, as they are normally painted by a
   // different code path (with z-value infinity).
   float sort_value = GetHoverAnimationValue();
-  if (tab_->IsSelected())
+  if (tab_->IsSelected()) {
     sort_value += 4.f;
+  }
   if (IsHovering()) {
     sort_value += 2.f;
   }
@@ -635,13 +636,15 @@ void TabStyleViewsImpl::SetHoverLocation(const gfx::Point& location) {
   // There's a "glow" that gets drawn over inactive tabs based on the mouse's
   // location. There is no glow for the active tab so don't update the hover
   // controller and incur a redraw.
-  if (hover_controller_ && !tab_->IsActive())
+  if (hover_controller_ && !tab_->IsActive()) {
     hover_controller_->SetLocation(location);
+  }
 }
 
 void TabStyleViewsImpl::ShowHover(TabStyle::ShowHoverStyle style) {
-  if (!hover_controller_)
+  if (!hover_controller_) {
     return;
+  }
 
   if (style == TabStyle::ShowHoverStyle::kSubtle) {
     hover_controller_->SetSubtleOpacityScale(
@@ -651,8 +654,9 @@ void TabStyleViewsImpl::ShowHover(TabStyle::ShowHoverStyle style) {
 }
 
 void TabStyleViewsImpl::HideHover(TabStyle::HideHoverStyle style) {
-  if (hover_controller_)
+  if (hover_controller_) {
     hover_controller_->Hide(style);
+  }
 }
 
 TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
@@ -716,8 +720,9 @@ TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
   float trailing_opacity = GetSeparatorOpacity(for_layout, false);
 
   // Return the opacities in physical order, rather than logical.
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     std::swap(leading_opacity, trailing_opacity);
+  }
   return {leading_opacity, trailing_opacity};
 }
 
@@ -828,11 +833,13 @@ float TabStyleViewsImpl::GetHoverOpacity() const {
 
 int TabStyleViewsImpl::GetStrokeThickness(bool should_paint_as_active) const {
   std::optional<tab_groups::TabGroupId> group = tab_->group();
-  if (group.has_value() && tab_->IsActive())
+  if (group.has_value() && tab_->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
+  }
 
-  if (tab_->IsActive() || should_paint_as_active)
+  if (tab_->IsActive() || should_paint_as_active) {
     return tab_->controller()->GetStrokeThickness();
+  }
 
   return 0;
 }
@@ -915,8 +922,9 @@ ShapeModifier TabStyleViewsImpl::GetShapeModifier(
                                  ShapeModifier modifier) {
       const Tab* adjacent_tab = tab->controller()->GetAdjacentTab(tab, offset);
       if (adjacent_tab && adjacent_tab->IsSelected() &&
-          !adjacent_tab->IsMouseHovered())
+          !adjacent_tab->IsMouseHovered()) {
         return modifier;
+      }
       return kNone;
     };
     shape_modifier |= check_adjacent_tab(tab_, -1, kNoLowerLeftArc);
@@ -1019,8 +1027,9 @@ void TabStyleViewsImpl::PaintBackgroundStroke(
   const bool is_active =
       selection_state == TabStyle::TabSelectionState::kActive;
   const int stroke_thickness = GetStrokeThickness(is_active);
-  if (!stroke_thickness)
+  if (!stroke_thickness) {
     return;
+  }
 
   SkPath outer_path =
       GetPath(TabStyle::PathType::kBorder, canvas->image_scale(), is_active,
@@ -1037,8 +1046,9 @@ void TabStyleViewsImpl::PaintBackgroundStroke(
 
 void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
   const auto separator_opacities = GetSeparatorOpacities(false);
-  if (!separator_opacities.left && !separator_opacities.right)
+  if (!separator_opacities.left && !separator_opacities.right) {
     return;
+  }
 
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();

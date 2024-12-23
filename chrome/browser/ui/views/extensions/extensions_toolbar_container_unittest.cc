@@ -110,8 +110,9 @@ ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
       base::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
         return action->view_controller()->GetId();
       });
-  if (it == actions.end())
+  if (it == actions.end()) {
     return nullptr;
+  }
   return *it;
 }
 

@@ -91,8 +91,7 @@ webapps::AppId WebAppBrowserTestBase::InstallWebApp(
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
-void WebAppBrowserTestBase::UninstallWebApp(
-    const webapps::AppId& app_id) {
+void WebAppBrowserTestBase::UninstallWebApp(const webapps::AppId& app_id) {
   web_app::test::UninstallWebApp(profile(), app_id);
 }
 
@@ -106,8 +105,7 @@ Browser* WebAppBrowserTestBase::LaunchWebAppBrowserAndWait(
   return web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
 }
 
-Browser*
-WebAppBrowserTestBase::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
+Browser* WebAppBrowserTestBase::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
     const webapps::AppId& app_id) {
   Browser* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   webapps::TestAppBannerManagerDesktop::FromWebContents(
@@ -121,9 +119,8 @@ Browser* WebAppBrowserTestBase::LaunchBrowserForWebAppInTab(
   return web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 
-bool WebAppBrowserTestBase::NavigateInRenderer(
-    content::WebContents* contents,
-    const GURL& url) {
+bool WebAppBrowserTestBase::NavigateInRenderer(content::WebContents* contents,
+                                               const GURL& url) {
   EXPECT_TRUE(
       content::ExecJs(contents, "window.location = '" + url.spec() + "';"));
   bool success = content::WaitForLoadStop(contents);
@@ -141,8 +138,7 @@ bool WebAppBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
   return manager->WaitForInstallableCheck();
 }
 
-Browser*
-WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
+Browser* WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
     const GURL& url) {
   Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile(), true));
@@ -151,8 +147,8 @@ WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
   return new_browser;
 }
 
-std::optional<webapps::AppId>
-WebAppBrowserTestBase::FindAppWithUrlInScope(const GURL& url) {
+std::optional<webapps::AppId> WebAppBrowserTestBase::FindAppWithUrlInScope(
+    const GURL& url) {
   // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
   // for correctness.
   return provider().registrar_unsafe().FindBestAppWithUrlInScope(
@@ -162,10 +158,9 @@ WebAppBrowserTestBase::FindAppWithUrlInScope(const GURL& url) {
            });
 }
 
-Browser* WebAppBrowserTestBase::OpenPopupAndWait(
-    Browser* browser,
-    const GURL& url,
-    const gfx::Size& popup_size) {
+Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
+                                                 const GURL& url,
+                                                 const gfx::Size& popup_size) {
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -261,8 +256,7 @@ void WebAppBrowserTestBase::TearDownOnMainThread() {
   WebAppBrowserTestBaseParent::TearDownOnMainThread();
 }
 
-void WebAppBrowserTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
+void WebAppBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);

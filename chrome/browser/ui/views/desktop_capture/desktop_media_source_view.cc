@@ -51,9 +51,7 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,
     DesktopMediaID source_id,
     DesktopMediaSourceViewStyle style)
-    : parent_(parent),
-      source_id_(source_id),
-      selected_(false) {
+    : parent_(parent), source_id_(source_id), selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
@@ -87,8 +85,9 @@ void DesktopMediaSourceView::SetIcon(const gfx::ImageSkia& icon) {
 }
 
 void DesktopMediaSourceView::SetSelected(bool selected) {
-  if (selected == selected_)
+  if (selected == selected_) {
     return;
+  }
   selected_ = selected;
 
   if (selected) {
@@ -132,8 +131,9 @@ bool DesktopMediaSourceView::GetSelected() const {
 }
 
 void DesktopMediaSourceView::ClearSelection() {
-  if (!GetSelected())
+  if (!GetSelected()) {
     return;
+  }
   SetSelected(false);
   parent_->OnSelectionChanged();
 }
@@ -141,15 +141,17 @@ void DesktopMediaSourceView::ClearSelection() {
 views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
   Views neighbours;
   parent()->GetViewsInGroup(group, &neighbours);
-  if (neighbours.empty())
+  if (neighbours.empty()) {
     return nullptr;
+  }
 
   for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
     DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
     DesktopMediaSourceView* source_view =
         static_cast<DesktopMediaSourceView*>(*i);
-    if (source_view->selected_)
+    if (source_view->selected_) {
       return source_view;
+    }
   }
   return nullptr;
 }

@@ -715,8 +715,7 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
 
   gfx::Point header_offset;
   views::View::ConvertPointToTarget(
-      browser_view(),
-      browser_view()->frame()->non_client_view()->frame_view(),
+      browser_view(), browser_view()->frame()->non_client_view()->frame_view(),
       &header_offset);
 
   // The position of the bottom of the header (the bar with the window

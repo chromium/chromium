@@ -129,10 +129,12 @@ void GetMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
   bool video = indicator->IsCapturingVideo(web_contents);
   bool audio = indicator->IsCapturingAudio(web_contents);
 
-  if (video)
+  if (video) {
     *media_state_out |= MediaCaptureState::kVideo;
-  if (audio)
+  }
+  if (audio) {
     *media_state_out |= MediaCaptureState::kAudio;
+  }
 }
 
 void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
@@ -145,11 +147,13 @@ void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
     TabStripModel* tab_strip_model = (*iter)->tab_strip_model();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      if (web_contents->GetBrowserContext() != context)
+      if (web_contents->GetBrowserContext() != context) {
         continue;
+      }
       GetMediaCaptureState(indicator, web_contents, media_state_out);
-      if (*media_state_out == MediaCaptureState::kAudioVideo)
+      if (*media_state_out == MediaCaptureState::kAudioVideo) {
         return;
+      }
     }
   }
 }
@@ -163,8 +167,9 @@ void GetAppMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
            apps.begin();
        iter != apps.end(); ++iter) {
     GetMediaCaptureState(indicator, (*iter)->web_contents(), media_state_out);
-    if (*media_state_out == MediaCaptureState::kAudioVideo)
+    if (*media_state_out == MediaCaptureState::kAudioVideo) {
       return;
+    }
   }
 }
 
@@ -176,18 +181,21 @@ void GetExtensionMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(host);
     // RFH may not have web contents.
-    if (!web_contents)
+    if (!web_contents) {
       continue;
+    }
     GetMediaCaptureState(indicator, web_contents, media_state_out);
-    if (*media_state_out == MediaCaptureState::kAudioVideo)
+    if (*media_state_out == MediaCaptureState::kAudioVideo) {
       return;
+    }
   }
 }
 
 MediaCaptureState GetMediaCaptureStateOfAllWebContents(
     content::BrowserContext* context) {
-  if (!context)
+  if (!context) {
     return MediaCaptureState::kNone;
+  }
 
   scoped_refptr<MediaStreamCaptureIndicator> indicator =
       MediaCaptureDevicesDispatcher::GetInstance()
@@ -196,13 +204,15 @@ MediaCaptureState GetMediaCaptureStateOfAllWebContents(
   MediaCaptureState media_state = MediaCaptureState::kNone;
   // Browser windows
   GetBrowserMediaCaptureState(indicator.get(), context, &media_state);
-  if (media_state == MediaCaptureState::kAudioVideo)
+  if (media_state == MediaCaptureState::kAudioVideo) {
     return MediaCaptureState::kAudioVideo;
+  }
 
   // App windows
   GetAppMediaCaptureState(indicator.get(), context, &media_state);
-  if (media_state == MediaCaptureState::kAudioVideo)
+  if (media_state == MediaCaptureState::kAudioVideo) {
     return MediaCaptureState::kAudioVideo;
+  }
 
   // Extensions
   GetExtensionMediaCaptureState(indicator.get(), context, &media_state);
@@ -277,8 +287,9 @@ MediaClientImpl::~MediaClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   g_media_client = nullptr;
 
-  if (media_controller_ && ash::MediaController::Get() == media_controller_)
+  if (media_controller_ && ash::MediaController::Get() == media_controller_) {
     media_controller_->SetClient(nullptr);
+  }
 
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
   BrowserList::RemoveObserver(this);
@@ -354,8 +365,9 @@ void MediaClientImpl::RequestCaptureState() {
   }
 
   const user_manager::User* primary_user = manager->GetPrimaryUser();
-  if (primary_user)
+  if (primary_user) {
     capture_states[primary_user->GetAccountId()] |= vm_media_capture_state_;
+  }
 
   media_controller_->NotifyCaptureState(std::move(capture_states));
 }
@@ -389,10 +401,12 @@ void MediaClientImpl::OnVmCameraMicActiveChanged(
     ash::VmCameraMicManager* manager) {
   using DeviceType = ash::VmCameraMicManager::DeviceType;
   vm_media_capture_state_ = MediaCaptureState::kNone;
-  if (manager->IsDeviceActive(DeviceType::kCamera))
+  if (manager->IsDeviceActive(DeviceType::kCamera)) {
     vm_media_capture_state_ |= MediaCaptureState::kVideo;
-  if (manager->IsDeviceActive(DeviceType::kMic))
+  }
+  if (manager->IsDeviceActive(DeviceType::kMic)) {
     vm_media_capture_state_ |= MediaCaptureState::kAudio;
+  }
 
   media_controller_->NotifyVmMediaNotificationState(
       manager->IsNotificationActive(
@@ -486,8 +500,9 @@ void MediaClientImpl::EnableCustomMediaKeyHandler(
 void MediaClientImpl::DisableCustomMediaKeyHandler(
     content::BrowserContext* context,
     ui::MediaKeysListener::Delegate* delegate) {
-  if (!base::Contains(media_key_delegates_, context))
+  if (!base::Contains(media_key_delegates_, context)) {
     return;
+  }
 
   auto it = media_key_delegates_.find(context);
   DCHECK_EQ(it->second, delegate);
@@ -500,8 +515,9 @@ void MediaClientImpl::DisableCustomMediaKeyHandler(
 void MediaClientImpl::UpdateForceMediaClientKeyHandling() {
   bool enabled = GetCurrentMediaKeyDelegate() != nullptr;
 
-  if (enabled == is_forcing_media_client_key_handling_)
+  if (enabled == is_forcing_media_client_key_handling_) {
     return;
+  }
 
   is_forcing_media_client_key_handling_ = enabled;
 
@@ -511,8 +527,9 @@ void MediaClientImpl::UpdateForceMediaClientKeyHandling() {
 ui::MediaKeysListener::Delegate* MediaClientImpl::GetCurrentMediaKeyDelegate()
     const {
   auto it = media_key_delegates_.find(active_context_);
-  if (it != media_key_delegates_.end())
+  if (it != media_key_delegates_.end()) {
     return it->second;
+  }
 
   return nullptr;
 }
@@ -526,13 +543,15 @@ void MediaClientImpl::HandleMediaAction(ui::KeyboardCode keycode) {
   // This API is used by Chrome apps so we should use the logged in user here.
   extensions::MediaPlayerAPI* player_api =
       extensions::MediaPlayerAPI::Get(ProfileManager::GetActiveUserProfile());
-  if (!player_api)
+  if (!player_api) {
     return;
+  }
 
   extensions::MediaPlayerEventRouter* router =
       player_api->media_player_event_router();
-  if (!router)
+  if (!router) {
     return;
+  }
 
   switch (keycode) {
     case ui::VKEY_MEDIA_NEXT_TRACK:

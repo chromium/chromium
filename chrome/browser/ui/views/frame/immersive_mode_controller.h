@@ -14,7 +14,7 @@ class BrowserView;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace views {
 class Widget;
@@ -38,10 +38,7 @@ class ImmersiveRevealedLock {
 // Currently, immersive mode is only available for Chrome OS and macOS.
 class ImmersiveModeController {
  public:
-  enum AnimateReveal {
-    ANIMATE_REVEAL_YES,
-    ANIMATE_REVEAL_NO
-  };
+  enum AnimateReveal { ANIMATE_REVEAL_YES, ANIMATE_REVEAL_NO };
 
   class Observer {
    public:

@@ -168,8 +168,9 @@ class CredentialProviderWebUIMessageHandler
 
   void AbortIfPossible() {
     // If the callback was already called, ignore.
-    if (!signin_callback_)
+    if (!signin_callback_) {
       return;
+    }
 
     // Build a result for the credential provider that includes only the abort
     // exit code.
@@ -230,8 +231,9 @@ class CredentialProviderWebUIMessageHandler
     // user presses Escape right after finishing the signin process, the
     // Escape is processed first by AbortIfPossible(), and the signin then
     // completes before WriteResultToHandleWithKeepAlive() executes.
-    if (!signin_callback_)
+    if (!signin_callback_) {
       return;
+    }
 
     int exit_code;
     base::Value::Dict signin_result = ParseArgs(args, &exit_code);
@@ -314,8 +316,9 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
           base_url, credential_provider::kShowTosSwitch, show_tos_);
     }
 
-    if (email_domains_.empty())
+    if (email_domains_.empty()) {
       return base_url;
+    }
 
     return net::AppendQueryParameter(
         base_url, credential_provider::kEmailDomainsSigninPromoParameter,
@@ -429,8 +432,9 @@ void EnableGcpwSigninDialogForTesting(bool enable) {
 
 bool CanStartGCPWSignin() {
 #if BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
-  if (g_enable_gcpw_signin_during_tests)
+  if (g_enable_gcpw_signin_during_tests) {
     return true;
+  }
 #endif  // BUILDFLAG(CAN_TEST_GCPW_SIGNIN_STARTUP)
   // Ensure that we are running under a "winlogon" desktop before starting the
   // gcpw sign in dialog.

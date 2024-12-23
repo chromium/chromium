@@ -99,4 +99,4 @@ class DefaultBrowserPromptManager : public BrowserTabStripTrackerDelegate,
   base::OneShotTimer app_menu_prompt_dismiss_timer_;
 };
 
-#endif // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_MANAGER_H_
+#endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_MANAGER_H_

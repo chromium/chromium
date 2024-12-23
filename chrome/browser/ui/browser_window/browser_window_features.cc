@@ -229,7 +229,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
     if (media_router::MediaRouterEnabled(browser_view->browser()->profile())) {
       cast_browser_controller_ =
-          std::make_unique<media_router::CastBrowserController>(browser_view->browser());
+          std::make_unique<media_router::CastBrowserController>(
+              browser_view->browser());
     }
   }
 }

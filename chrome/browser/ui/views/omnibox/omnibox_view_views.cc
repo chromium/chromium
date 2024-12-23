@@ -361,8 +361,9 @@ void OmniboxViewViews::Update() {
 
     // Only select all when we have focus.  If we don't have focus, selecting
     // all is unnecessary since the selection will change on regaining focus.
-    if (model()->has_focus())
+    if (model()->has_focus()) {
       SelectAll(true);
+    }
   } else {
     // If the text is unchanged, we still need to re-emphasize the text, as the
     // security state may be different from before the Update.
@@ -389,8 +390,9 @@ void OmniboxViewViews::SetAdditionalText(
   // between the OmniboxEditModel, which handles setting the omnibox match, and
   // LocationBarView. Perhaps, if we decide to launch rich autocompletion we'll
   // consider alternatives.
-  if (location_bar_view_)
+  if (location_bar_view_) {
     location_bar_view_->SetOmniboxAdditionalText(additional_text);
+  }
 }
 
 void OmniboxViewViews::EnterKeywordModeForDefaultSearchProvider() {
@@ -409,8 +411,9 @@ void OmniboxViewViews::GetSelectionBounds(
 
 size_t OmniboxViewViews::GetAllSelectionsLength() const {
   size_t sum = 0;
-  for (auto s : GetRenderText()->GetAllSelections())
+  for (auto s : GetRenderText()->GetAllSelections()) {
     sum += s.length();
+  }
   return sum;
 }
 
@@ -444,13 +447,15 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
 
   const bool omnibox_already_focused = HasFocus();
 
-  if (is_user_initiated)
+  if (is_user_initiated) {
     model()->Unelide();
+  }
 
   RequestFocus();
 
-  if (omnibox_already_focused)
+  if (omnibox_already_focused) {
     model()->ClearKeyword();
+  }
 
   // If the user initiated the focus, then we always select-all, even if the
   // omnibox is already focused. This can happen if the user pressed Ctrl+L
@@ -465,12 +470,14 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   //    finishes loading and then does a renderer-initiated focus, performing
   //    a select-all here would surprisingly overwrite the user's first few
   //    typed characters. https://crbug.com/924935.
-  if (is_user_initiated || !omnibox_already_focused)
+  if (is_user_initiated || !omnibox_already_focused) {
     SelectAll(true);
+  }
 
   // |is_user_initiated| is true for focus events from keyboard accelerators.
-  if (is_user_initiated)
+  if (is_user_initiated) {
     model()->StartZeroSuggestRequest();
+  }
 
   // Restore caret visibility if focus is explicitly requested. This is
   // necessary because if we already have invisible focus, the RequestFocus()
@@ -598,8 +605,9 @@ ui::TextInputType OmniboxViewViews::GetPreferredTextInputType() const {
   if (location_bar_view_) {
     ui::InputMethod* input_method =
         location_bar_view_->GetWidget()->GetInputMethod();
-    if (input_method && input_method->IsInputLocaleCJK())
+    if (input_method && input_method->IsInputLocaleCJK()) {
       return ui::TEXT_INPUT_TYPE_SEARCH;
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
   return ui::TEXT_INPUT_TYPE_URL;
@@ -702,8 +710,9 @@ void OmniboxViewViews::SetSelectedRanges(
   DCHECK(!ranges.empty());
 
   SetSelectedRange(ranges[0]);
-  for (size_t i = 1; i < ranges.size(); i++)
+  for (size_t i = 1; i < ranges.size(); i++) {
     AddSecondarySelectedRange(ranges[i]);
+  }
   UpdateAccessibleTextSelection();
 }
 
@@ -755,11 +764,13 @@ void OmniboxViewViews::OnOmniboxPaste() {
 bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
   // This must run before accelerator handling invokes a focus change on tab.
   // Note the parallel with SkipDefaultKeyEventProcessing above.
-  if (!views::FocusManager::IsTabTraversalKeyEvent(event))
+  if (!views::FocusManager::IsTabTraversalKeyEvent(event)) {
     return false;
+  }
 
-  if (!model()->PopupIsOpen())
+  if (!model()->PopupIsOpen()) {
     return false;
+  }
 
   model()->OnTabPressed(event.IsShiftDown());
 
@@ -779,11 +790,13 @@ void OmniboxViewViews::SetWindowTextAndCaretPos(const std::u16string& text,
   const gfx::Range range(caret_pos);
   SetTextAndSelectedRanges(text, {range});
 
-  if (update_popup)
+  if (update_popup) {
     UpdatePopup();
+  }
 
-  if (notify_text_changed)
+  if (notify_text_changed) {
     TextChanged();
+  }
 }
 
 void OmniboxViewViews::SetCaretPos(size_t caret_pos) {
@@ -808,8 +821,9 @@ void OmniboxViewViews::ApplyCaretVisibility() {
   // depending on whether or not the caret is visible, we have to resend a
   // "focused" notification. Remove this once we get rid of the concept of
   // "invisible focus".
-  if (location_bar_view_)
+  if (location_bar_view_) {
     location_bar_view_->OnOmniboxFocused();
+  }
 }
 
 void OmniboxViewViews::OnTemporaryTextMaybeChanged(
@@ -817,8 +831,9 @@ void OmniboxViewViews::OnTemporaryTextMaybeChanged(
     const AutocompleteMatch& match,
     bool save_original_selection,
     bool notify_text_changed) {
-  if (save_original_selection)
+  if (save_original_selection) {
     saved_temporary_selection_ = GetRenderText()->GetAllSelections();
+  }
 
   // SetWindowTextAndCaretPos will fire the accessibility notification,
   // so do not also generate redundant notification here.
@@ -834,8 +849,9 @@ void OmniboxViewViews::OnInlineAutocompleteTextMaybeChanged(
     std::vector<gfx::Range> selections,
     const std::u16string& prefix_autocompletion,
     const std::u16string& inline_autocompletion) {
-  if (display_text == GetText())
+  if (display_text == GetText()) {
     return;
+  }
 
   if (!IsIMEComposing()) {
     SetTextAndSelectedRanges(display_text, selections);
@@ -868,8 +884,9 @@ void OmniboxViewViews::OnRevertTemporaryText(const std::u16string& display_text,
 }
 
 void OmniboxViewViews::ClearAccessibilityLabel() {
-  if (friendly_suggestion_text_.empty())
+  if (friendly_suggestion_text_.empty()) {
     return;
+  }
   friendly_suggestion_text_.clear();
   friendly_suggestion_text_prefix_length_ = 0;
 
@@ -919,8 +936,9 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   // If everything is selected, the user likely does not intend to edit the URL.
   // But if the Home key is pressed, the user probably does want to interact
   // with the beginning of the URL - in which case we unelide.
-  if (IsSelectAll() && gesture != UnelisionGesture::HOME_KEY_PRESSED)
+  if (IsSelectAll() && gesture != UnelisionGesture::HOME_KEY_PRESSED) {
     return false;
+  }
 
   // Get the original selection bounds so we can adjust it later.
   size_t start, end;
@@ -929,8 +947,9 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   // Try to unelide. Early exit if there's no unelisions to perform.
   const std::u16string original_text = GetText();
   const std::u16string original_selected_text = GetSelectedText();
-  if (!model()->Unelide())
+  if (!model()->Unelide()) {
     return false;
+  }
 
   // Find the length of the prefix that was chopped off to form the elided URL.
   // This simple logic only works because we elide only prefixes from the full
@@ -961,10 +980,12 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
       // the new selection spans to the beginning of the unelided URL too.
       // i.e. google.com/maps => https://www.google.com/maps
       //      ^^^^^^^^^^         ^^^^^^^^^^^^^^^^^^^^^^
-      if (start != 0)
+      if (start != 0) {
         start += offset;
-      if (end != 0)
+      }
+      if (end != 0) {
         end += offset;
+      }
     } else {
       start += offset;
       end += offset;
@@ -1018,10 +1039,11 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   // But we still need to call EmphasizeURLComponents() to make sure the text
   // attributes are updated correctly.
   if (something_changed &&
-      (state_changes.text_differs || state_changes.keyword_differs))
+      (state_changes.text_differs || state_changes.keyword_differs)) {
     TextChanged();
-  else if (state_changes.selection_differs)
+  } else if (state_changes.selection_differs) {
     EmphasizeURLComponents();
+  }
 
   return something_changed;
 }
@@ -1051,14 +1073,16 @@ bool OmniboxViewViews::IsImeShowingPopup() const {
 }
 
 void OmniboxViewViews::ShowVirtualKeyboardIfEnabled() {
-  if (auto* input_method = GetInputMethod())
+  if (auto* input_method = GetInputMethod()) {
     input_method->SetVirtualKeyboardVisibilityIfEnabled(true);
+  }
 }
 
 void OmniboxViewViews::HideImeIfNeeded() {
   if (auto* input_method = GetInputMethod()) {
-    if (auto* keyboard = input_method->GetVirtualKeyboardController())
+    if (auto* keyboard = input_method->GetVirtualKeyboardController()) {
       keyboard->DismissVirtualKeyboard();
+    }
   }
 }
 
@@ -1070,20 +1094,23 @@ int OmniboxViewViews::GetOmniboxTextLength() const {
 void OmniboxViewViews::SetEmphasis(bool emphasize, const gfx::Range& range) {
   const SkColor color = GetColorProvider()->GetColor(
       emphasize ? kColorOmniboxText : kColorOmniboxTextDimmed);
-  if (range.IsValid())
+  if (range.IsValid()) {
     ApplyColor(color, range);
-  else
+  } else {
     SetColor(color);
+  }
 }
 
 void OmniboxViewViews::OnMouseMoved(const ui::MouseEvent& event) {
-  if (location_bar_view_)
+  if (location_bar_view_) {
     location_bar_view_->OnOmniboxHovered(true);
+  }
 }
 
 void OmniboxViewViews::OnMouseExited(const ui::MouseEvent& event) {
-  if (location_bar_view_)
+  if (location_bar_view_) {
     location_bar_view_->OnOmniboxHovered(false);
+  }
 }
 
 bool OmniboxViewViews::IsItemForCommandIdDynamic(int command_id) const {
@@ -1100,16 +1127,18 @@ std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
           ? std::u16string()
           : GetClipboardText(/*notify_if_restricted=*/false);
 
-  if (clipboard_text.empty())
+  if (clipboard_text.empty()) {
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
+  }
 
   std::u16string selection_text = gfx::TruncateString(
       clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
 
   AutocompleteMatch match;
   model()->ClassifyString(clipboard_text, &match, nullptr);
-  if (AutocompleteMatch::IsSearchType(match.type))
+  if (AutocompleteMatch::IsSearchType(match.type)) {
     return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
+  }
 
   // To ensure the search and url strings began to truncate at the exact same
   // number of characters, the pixel width at which the url begins to elide is
@@ -1158,14 +1187,16 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   // Show on-focus suggestions if either:
   //  - The textfield doesn't already have focus.
   //  - Or if the textfield is empty, to cover the NTP ZeroSuggest case.
-  if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty()))
+  if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty())) {
     model()->StartZeroSuggestRequest();
+  }
 
   const bool handled = views::Textfield::OnMousePressed(event);
 
   // Reset next double click length
-  if (event.GetClickCount() == 1)
+  if (event.GetClickCount() == 1) {
     next_double_click_selection_len_ = 0;
+  }
 
   if (!select_all_on_mouse_release_) {
     if (UnapplySteadyStateElisions(UnelisionGesture::OTHER)) {
@@ -1218,8 +1249,9 @@ bool OmniboxViewViews::OnMouseDragged(const ui::MouseEvent& event) {
     return true;
   }
 
-  if (HasTextBeingDragged())
+  if (HasTextBeingDragged()) {
     CloseOmniboxPopup();
+  }
 
   const bool handled = views::Textfield::OnMouseDragged(event);
 
@@ -1249,8 +1281,9 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
 
   // Make an unelision check on mouse release. This handles the drag selection
   // case, in which we defer uneliding until mouse release.
-  if (UnapplySteadyStateElisions(UnelisionGesture::MOUSE_RELEASE))
+  if (UnapplySteadyStateElisions(UnelisionGesture::MOUSE_RELEASE)) {
     TextChanged();
+  }
 }
 
 void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
@@ -1270,8 +1303,9 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   // Show on-focus suggestions if either:
   //  - The textfield is taking focus.
   //  - The textfield is focused but empty, to cover the NTP ZeroSuggest case.
-  if (gesture_should_take_focus || (HasFocus() && GetText().empty()))
+  if (gesture_should_take_focus || (HasFocus() && GetText().empty())) {
     model()->StartZeroSuggestRequest();
+  }
 
   views::Textfield::OnGestureEvent(event);
 
@@ -1308,8 +1342,9 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 
 bool OmniboxViewViews::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  if (GetReadOnly())
+  if (GetReadOnly()) {
     return Textfield::HandleAccessibleAction(action_data);
+  }
 
   if (action_data.action == ax::mojom::Action::kSetValue) {
     SetUserText(base::UTF8ToUTF16(action_data.value), true);
@@ -1368,8 +1403,9 @@ void OmniboxViewViews::OnFocus() {
   UpdateAccessibleTextOffsetsIfNeeded();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
-  if (location_bar_view_)
+  if (location_bar_view_) {
     location_bar_view_->OnOmniboxFocused();
+  }
 }
 
 void OmniboxViewViews::OnBlur() {
@@ -1454,9 +1490,10 @@ void OmniboxViewViews::OnBlur() {
 }
 
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
-  if (command_id == Textfield::kPaste)
+  if (command_id == Textfield::kPaste) {
     return !GetReadOnly() &&
            !GetClipboardText(/*notify_if_restricted=*/false).empty();
+  }
   if (command_id == IDC_PASTE_AND_GO) {
     return !GetReadOnly() && !IsClipboardDataMarkedAsConfidential() &&
            model()->CanPasteAndGo(
@@ -1529,8 +1566,9 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 
   base::AutoReset<bool> show_rejection_ui(&show_rejection_ui_if_any_, true);
 
-  if (!IsTextEditCommandEnabled(command))
+  if (!IsTextEditCommandEnabled(command)) {
     return;
+  }
 
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
@@ -1599,16 +1637,18 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
 
   if (event.type() == ui::EventType::kKeyReleased) {
     // The omnibox contents may change while the control key is pressed.
-    if (event.key_code() == ui::VKEY_CONTROL)
+    if (event.key_code() == ui::VKEY_CONTROL) {
       model()->OnControlKeyChanged(false);
+    }
 
     return false;
   }
 
   // Skip processing of [Alt]+<num-pad digit> Unicode alt key codes.
   // Otherwise, if num-lock is off, the events are handled as [Up], [Down], etc.
-  if (event.IsUnicodeKeyCode())
+  if (event.IsUnicodeKeyCode()) {
     return false;
+  }
 
   // Show a notification if the clipboard is restricted by the rules of the
   // data leak prevention policy. This state is used by the
@@ -1659,8 +1699,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
 
     case ui::VKEY_UP:
       // Shift-up is handled by the text field class to enable text selection.
-      if (shift)
+      if (shift) {
         return false;
+      }
 
       if (IsTextEditCommandEnabled(ui::TextEditCommand::MOVE_UP)) {
         ExecuteTextEditCommand(ui::TextEditCommand::MOVE_UP);
@@ -1670,8 +1711,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
 
     case ui::VKEY_DOWN:
       // Shift-down is handled by the text field class to enable text selection.
-      if (shift)
+      if (shift) {
         return false;
+      }
 
       if (IsTextEditCommandEnabled(ui::TextEditCommand::MOVE_DOWN)) {
         ExecuteTextEditCommand(ui::TextEditCommand::MOVE_DOWN);
@@ -1680,14 +1722,16 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_PRIOR:
-      if (control || alt || shift || GetReadOnly())
+      if (control || alt || shift || GetReadOnly()) {
         return false;
+      }
       model()->OnUpOrDownPressed(false, true);
       return true;
 
     case ui::VKEY_NEXT:
-      if (control || alt || shift || GetReadOnly())
+      if (control || alt || shift || GetReadOnly()) {
         return false;
+      }
       model()->OnUpOrDownPressed(true, true);
       return true;
 
@@ -1711,8 +1755,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       // No extra handling is needed in keyword search mode, if there is a
       // non-empty selection, or if the cursor is not leading the text.
       if (model()->is_keyword_hint() || model()->keyword().empty() ||
-          HasSelection() || GetCursorPosition() != 0)
+          HasSelection() || GetCursorPosition() != 0) {
         return false;
+      }
       model()->ClearKeyword();
       return true;
 
@@ -1820,8 +1865,9 @@ void OmniboxViewViews::OnWriteDragData(ui::OSExchangeData* data) {
   if (write_url) {
     gfx::Image favicon;
     std::u16string title = selected_text;
-    if (IsSelectAll())
+    if (IsSelectAll()) {
       model()->GetDataForURLExport(&url, &title, &favicon);
+    }
     button_drag_utils::SetURLAndDragImage(url, title, favicon.AsImageSkia(),
                                           nullptr, data);
     data->SetURL(url, title);
@@ -1834,8 +1880,9 @@ void OmniboxViewViews::OnGetDragOperationsForTextfield(int* drag_operations) {
   bool write_url;
   model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
                              &write_url);
-  if (write_url)
+  if (write_url) {
     *drag_operations |= ui::DragDropTypes::DRAG_LINK;
+  }
 }
 
 void OmniboxViewViews::AppendDropFormats(
@@ -1923,8 +1970,9 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
                                             base::TimeTicks start_time) {
   // Track the commit to completion. This state is necessary to ensure the ended
   // event we get is the one we're waiting for (and not for a previous paint).
-  if (latency_histogram_state_ == COMPOSITING_COMMIT)
+  if (latency_histogram_state_ == COMPOSITING_COMMIT) {
     latency_histogram_state_ = COMPOSITING_STARTED;
+  }
 }
 
 void OmniboxViewViews::OnDidPresentCompositorFrame(
@@ -1975,8 +2023,9 @@ void OmniboxViewViews::PerformDrop(
   }
 
   SetUserText(text);
-  if (!HasFocus())
+  if (!HasFocus()) {
     RequestFocus();
+  }
   SelectAll(false);
   output_drag_op = DragOperation::kCopy;
 }
@@ -2019,8 +2068,9 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
   // placeholders are not dim to draw attention to the omnibox and because the
   // omnibox is unfocused so there's less risk of confusion with user input.
   // Null in tests.
-  if (!GetColorProvider())
+  if (!GetColorProvider()) {
     return;
+  }
   set_placeholder_text_color(GetColorProvider()->GetColor(
       model()->keyword_placeholder().empty() ? kColorOmniboxText
                                              : kColorOmniboxTextDimmed));

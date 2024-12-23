@@ -164,8 +164,9 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
 }
 
 void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser_ == browser)
+  if (browser_ == browser) {
     browser_ = nullptr;
+  }
 }
 
 void SyncConfirmationHandler::RegisterMessages() {
@@ -461,6 +462,7 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
                                 this, &SyncConfirmationHandler::OnDeadline);
   }
 
-  if (browser_)
+  if (browser_) {
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
+  }
 }

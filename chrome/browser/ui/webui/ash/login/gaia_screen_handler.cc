@@ -226,8 +226,9 @@ void UpdateAuthParams(base::Value::Dict& params) {
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   // nosignup flow if new users are not allowed.
-  if (!allow_new_user)
+  if (!allow_new_user) {
     params.Set("flow", "nosignup");
+  }
 }
 
 // TODO(crbug.com/40239091)
@@ -335,8 +336,9 @@ GaiaScreenHandler::GaiaScreenHandler(
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {
-  if (is_security_token_pin_enabled_)
+  if (is_security_token_pin_enabled_) {
     GetLoginScreenPinDialogManager()->RemovePinDialogHost(this);
+  }
   HttpAuthDialog::RemoveObserver(this);
 }
 
@@ -422,8 +424,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("screenMode", screen_mode_);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty())
+  if (!app_locale.empty()) {
     params.Set("hl", app_locale);
+  }
 
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
@@ -461,8 +464,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("chromeType", GetChromeType());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
   params.Set("clientVersion", version_info::GetVersionNumber());
-  if (!platform_version->empty())
+  if (!platform_version->empty()) {
     params.Set("platformVersion", *platform_version);
+  }
   // Extended stable channel is not supported on Chrome OS Ash.
   params.Set("releaseChannel",
              chrome::GetChannelName(chrome::WithExtendedStable(false)));
@@ -512,8 +516,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
   // sending device statistics.
-  if (*collect_stats_consent)
+  if (*collect_stats_consent) {
     params.Set("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
+  }
 
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
@@ -1018,11 +1023,13 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   frame_state_ = FRAME_STATE_LOADED;
 
   const NetworkStateInformer::State state = network_state_informer_->state();
-  if (state == NetworkStateInformer::ONLINE)
+  if (state == NetworkStateInformer::ONLINE) {
     UpdateState(NetworkError::ERROR_REASON_UPDATE);
+  }
 
-  if (test_expects_complete_login_)
+  if (test_expects_complete_login_) {
     SubmitLoginFormForTest();
+  }
 
   if (LoginDisplayHost::default_host()) {
     LoginDisplayHost::default_host()->OnGaiaScreenReady();
@@ -1081,8 +1088,9 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
 
 void GaiaScreenHandler::HandleOnFatalError(int error_code,
                                            const base::Value::Dict& params) {
-  if (!LoginDisplayHost::default_host())
+  if (!LoginDisplayHost::default_host()) {
     return;
+  }
   LoginDisplayHost::default_host()
       ->GetWizardController()
       ->ShowSignInFatalErrorScreen(
@@ -1236,8 +1244,9 @@ void GaiaScreenHandler::Show() {
   enable_ash_httpauth_ = HttpAuthDialog::Enable();
 
   base::Value::Dict data;
-  if (LoginDisplayHost::default_host())
+  if (LoginDisplayHost::default_host()) {
     data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
+  }
   ShowInWebUI(std::move(data));
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   hidden_ = false;

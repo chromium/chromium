@@ -165,8 +165,9 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::Value::List& args) {
   DCHECK(args.empty());
   AllowJavascript();
-  if (scoped_observation_.IsObserving())
+  if (scoped_observation_.IsObserving()) {
     return;
+  }
 
   scoped_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
 }
@@ -179,14 +180,16 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::Value::List& args) {
   DCHECK_EQ(2u, args.size());
-  if (!args[0].is_string() || !args[1].is_string())
+  if (!args[0].is_string() || !args[1].is_string()) {
     return;
+  }
   const std::string& callback_id = args[0].GetString();
   const std::string& url_str = args[1].GetString();
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
+  }
 
   supervised_user::SupervisedUserURLFilter* filter =
       GetSupervisedUserService()->GetURLFilter();

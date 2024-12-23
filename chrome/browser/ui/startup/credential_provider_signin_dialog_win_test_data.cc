@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
-#include "chrome/credential_provider/common/gcp_strings.h"
 
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 
 const char
     CredentialProviderSigninDialogTestDataStorage::kInvalidTokenInfoResponse[] =
@@ -75,16 +75,21 @@ CredentialProviderSigninDialogTestDataStorage::MakeSignInResponseValue(
     const std::string& access_token,
     const std::string& refresh_token) {
   base::Value::Dict args;
-  if (!email.empty())
+  if (!email.empty()) {
     args.Set(credential_provider::kKeyEmail, email);
-  if (!password.empty())
+  }
+  if (!password.empty()) {
     args.Set(credential_provider::kKeyPassword, password);
-  if (!id.empty())
+  }
+  if (!id.empty()) {
     args.Set(credential_provider::kKeyId, id);
-  if (!refresh_token.empty())
+  }
+  if (!refresh_token.empty()) {
     args.Set(credential_provider::kKeyRefreshToken, refresh_token);
-  if (!access_token.empty())
+  }
+  if (!access_token.empty()) {
     args.Set(credential_provider::kKeyAccessToken, access_token);
+  }
 
   args.Set(credential_provider::kKeyExitCode,
            credential_provider::kUiecSuccess);

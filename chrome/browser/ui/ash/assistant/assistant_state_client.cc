@@ -49,8 +49,9 @@ void AssistantStateClient::NotifyLocaleChanged() {
 }
 
 void AssistantStateClient::ActiveUserChanged(user_manager::User* active_user) {
-  if (!active_user)
+  if (!active_user) {
     return;
+  }
 
   active_user->AddProfileCreatedObserver(
       base::BindOnce(&AssistantStateClient::SetProfileByUser,
@@ -69,14 +70,16 @@ void AssistantStateClient::SetProfileByUser(const user_manager::User* user) {
 }
 
 void AssistantStateClient::SetProfile(Profile* profile) {
-  if (profile_ == profile)
+  if (profile_ == profile) {
     return;
+  }
 
   profile_ = profile;
   pref_change_registrar_.reset();
 
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
   PrefService* prefs = profile->GetPrefs();
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();

@@ -15,7 +15,7 @@ namespace {
 
 const char kChromeWebStoreId[] = "ahfgeienlihckogmohjhadlkjgocpleb";
 const int kOneHour = 3600;
-} // namespace
+}  // namespace
 
 IdentityInternalsUIBrowserTest::IdentityInternalsUIBrowserTest() = default;
 

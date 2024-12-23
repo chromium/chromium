@@ -156,14 +156,13 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   // Unretained safe because button is (transitively) owned by `this`.
-  button_ =
-      button_container->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &DesktopMediaPermissionPaneViewMac::
-                  OpenScreenRecordingSettingsPane,
-              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
+  button_ = button_container->AddChildView(std::make_unique<
+                                           views::MdTextButton>(
+      base::BindRepeating(
+          &DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
   button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 

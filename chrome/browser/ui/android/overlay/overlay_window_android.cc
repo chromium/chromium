@@ -147,11 +147,13 @@ void OverlayWindowAndroid::Initialize(
   Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
                                                camera_on_);
 
-  if (!update_action_timer_->IsRunning())
+  if (!update_action_timer_->IsRunning()) {
     MaybeNotifyVisibleActionsChanged();
+  }
 
-  if (video_size_.IsEmpty())
+  if (video_size_.IsEmpty()) {
     return;
+  }
 
   Java_PictureInPictureActivity_updateVideoSize(
       env, java_ref_.get(env), video_size_.width(), video_size_.height());
@@ -195,8 +197,9 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
 
 void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env, bool toggleOn) {
   DCHECK(!controller_->IsPlayerActive());
-  if (toggleOn == (playback_state_ == PlaybackState::kPaused))
+  if (toggleOn == (playback_state_ == PlaybackState::kPaused)) {
     controller_->TogglePlayPause();
+  }
 }
 
 void OverlayWindowAndroid::NextTrack(JNIEnv* env) {
@@ -216,13 +219,15 @@ void OverlayWindowAndroid::PreviousSlide(JNIEnv* env) {
 }
 
 void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env, bool toggleOn) {
-  if (microphone_muted_ == toggleOn)
+  if (microphone_muted_ == toggleOn) {
     controller_->ToggleMicrophone();
+  }
 }
 
 void OverlayWindowAndroid::ToggleCamera(JNIEnv* env, bool toggleOn) {
-  if (!camera_on_ == toggleOn)
+  if (!camera_on_ == toggleOn) {
     controller_->ToggleCamera();
+  }
 }
 
 void OverlayWindowAndroid::HangUp(JNIEnv* env) {
@@ -242,8 +247,9 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
                                              jint width,
                                              jint height) {
   gfx::Size content_size(width, height);
-  if (bounds_.size() == content_size)
+  if (bounds_.size() == content_size) {
     return;
+  }
 
   bounds_.set_size(content_size);
   surface_layer_->SetBounds(content_size);
@@ -267,8 +273,9 @@ void OverlayWindowAndroid::Hide() {
 }
 
 void OverlayWindowAndroid::CloseInternal() {
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   DCHECK(window_android_);
   window_android_->RemoveObserver(this);
@@ -308,12 +315,14 @@ void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
 }
 
 void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
-  if (playback_state_ == playback_state)
+  if (playback_state_ == playback_state) {
     return;
+  }
 
   playback_state_ = playback_state;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
@@ -321,12 +330,14 @@ void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
 }
 
 void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
-  if (microphone_muted_ == muted)
+  if (microphone_muted_ == muted) {
     return;
+  }
 
   microphone_muted_ = muted;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
@@ -334,12 +345,14 @@ void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
 }
 
 void OverlayWindowAndroid::SetCameraState(bool turned_on) {
-  if (camera_on_ == turned_on)
+  if (camera_on_ == turned_on) {
     return;
+  }
 
   camera_on_ = turned_on;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
@@ -406,8 +419,9 @@ void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
 }
 
 void OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged() {
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_updateVisibleActions(
@@ -426,10 +440,11 @@ void OverlayWindowAndroid::MaybeUpdateVisibleAction(
     return;
   }
 
-  if (is_visible)
+  if (is_visible) {
     visible_actions_.insert(action_code);
-  else
+  } else {
     visible_actions_.erase(action_code);
+  }
 
   if (!update_action_timer_->IsRunning()) {
     update_action_timer_->Start(

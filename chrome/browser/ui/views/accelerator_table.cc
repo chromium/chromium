@@ -299,9 +299,10 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
     // contains Ctrl+Alt keys but we don't enable those for the public.
 #if DCHECK_IS_ON()
     constexpr int kCtrlAlt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
-    for (auto& mapping : *accelerators)
+    for (auto& mapping : *accelerators) {
       DCHECK((mapping.modifiers & kCtrlAlt) != kCtrlAlt)
           << "Accelerators with Ctrl+Alt are reserved by Windows.";
+    }
 #endif
 
     if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {

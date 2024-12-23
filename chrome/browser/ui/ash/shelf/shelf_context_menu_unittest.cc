@@ -483,8 +483,9 @@ TEST_F(ShelfContextMenuTest, ArcLauncherSuspendAppMenu) {
 TEST_F(ShelfContextMenuTest, ArcDeferredShelfContextMenuItemCheck) {
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.reserve(2);
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++) {
     apps.emplace_back(arc_test().fake_apps()[i]->Clone());
+  }
   SendRefreshAppList(apps);
   const std::string app_id1 = ArcAppTest::GetAppId(*apps[0]);
   const std::string app_id2 = ArcAppTest::GetAppId(*apps[1]);
@@ -599,8 +600,9 @@ TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
       GetContextMenu(item_delegate, primary_id);
 
   // Check that every menu item has an icon
-  for (size_t i = 0; i < menu->GetItemCount(); ++i)
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
+  }
 
   // Precisely which density option is shown is not important to us, we only
   // care that one is shown.
@@ -652,8 +654,9 @@ TEST_F(ShelfContextMenuTest, WebApp) {
       GetContextMenu(item_delegate, primary_id);
 
   // Check that every menu item has an icon
-  for (size_t i = 0; i < menu->GetItemCount(); ++i)
+  for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
+  }
 
   EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
   EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::SHOW_APP_INFO));

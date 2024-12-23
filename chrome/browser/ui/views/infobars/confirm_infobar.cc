@@ -125,17 +125,21 @@ void ConfirmInfoBar::Layout(PassKey) {
 }
 
 void ConfirmInfoBar::OkButtonPressed() {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
-  if (GetDelegate()->Accept())
+  }
+  if (GetDelegate()->Accept()) {
     RemoveSelf();
+  }
 }
 
 void ConfirmInfoBar::CancelButtonPressed() {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
-  if (GetDelegate()->Cancel())
+  }
+  if (GetDelegate()->Cancel()) {
     RemoveSelf();
+  }
 }
 
 ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {

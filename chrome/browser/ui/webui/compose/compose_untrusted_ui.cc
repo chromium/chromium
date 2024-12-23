@@ -119,9 +119,9 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
-  source->AddBoolean(
-    "enableUpfrontInputModes",
-    base::FeatureList::IsEnabled(compose::features::kComposeUpfrontInputModes));
+  source->AddBoolean("enableUpfrontInputModes",
+                     base::FeatureList::IsEnabled(
+                         compose::features::kComposeUpfrontInputModes));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

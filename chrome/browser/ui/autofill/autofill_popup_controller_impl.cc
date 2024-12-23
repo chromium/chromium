@@ -597,14 +597,16 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     view_ = nullptr;
   }
 
-  if (self_deletion_weak_ptr_factory_.HasWeakPtrs())
+  if (self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
     return;
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<AutofillPopupControllerImpl> weak_this) {
-                       if (weak_this)
+                       if (weak_this) {
                          delete weak_this.get();
+                       }
                      },
                      self_deletion_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -620,8 +622,9 @@ int AutofillPopupControllerImpl::GetPopupLevel() const {
 }
 
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
-  if (!accessibility_state_utils::IsScreenReaderEnabled())
+  if (!accessibility_state_utils::IsScreenReaderEnabled()) {
     return;
+  }
 
   // Retrieve the ax tree id associated with the current web contents.
   ui::AXTreeID tree_id;
@@ -633,13 +636,15 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // the AXPlatformNode for the web contents.
   ui::AXPlatformNode* root_platform_node =
       GetRootAXPlatformNodeForWebContents();
-  if (!root_platform_node)
+  if (!root_platform_node) {
     return;
+  }
 
   ui::AXPlatformNodeDelegate* root_platform_node_delegate =
       root_platform_node->GetDelegate();
-  if (!root_platform_node_delegate)
+  if (!root_platform_node_delegate) {
     return;
+  }
 
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
@@ -672,14 +677,16 @@ AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents() {
   }
 
   auto* rwhv = web_contents_->GetRenderWidgetHostView();
-  if (!rwhv)
+  if (!rwhv) {
     return nullptr;
+  }
 
   // RWHV gives us a NativeViewAccessible.
   gfx::NativeViewAccessible native_view_accessible =
       rwhv->GetNativeViewAccessible();
-  if (!native_view_accessible)
+  if (!native_view_accessible) {
     return nullptr;
+  }
 
   // NativeViewAccessible corresponds to an AXPlatformNode.
   return ui::AXPlatformNode::FromNativeViewAccessible(native_view_accessible);

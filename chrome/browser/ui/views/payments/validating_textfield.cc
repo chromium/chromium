@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 
 #include <utility>
+
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace payments {
 
@@ -20,17 +21,20 @@ void ValidatingTextfield::OnBlur() {
   was_blurred_ = true;
 
   // Do not validate if the view is being removed.
-  if (!being_removed_)
+  if (!being_removed_) {
     Validate();
+  }
 
-  if (!GetText().empty() && delegate_->ShouldFormat())
+  if (!GetText().empty() && delegate_->ShouldFormat()) {
     SetText(delegate_->Format(GetText()));
+  }
 }
 
 void ValidatingTextfield::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.child == this && !details.is_add)
+  if (details.child == this && !details.is_add) {
     being_removed_ = true;
+  }
 }
 
 void ValidatingTextfield::OnContentsChanged() {

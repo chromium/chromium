@@ -201,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, OmniboxViewViewsSize) {
   // so it's not possible to test the leading side).
   views::View* omnibox_view_views = GetLocationBarView()->omnibox_view();
   for (views::View* child : GetLocationBarView()->children()) {
-    if (child != omnibox_view_views)
+    if (child != omnibox_view_views) {
       child->SetVisible(false);
+    }
   }
 
   views::test::RunScheduledLayout(GetLocationBarView());
@@ -226,8 +227,9 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
   views::Label* ime_inline_autocomplete_view =
       GetLocationBarView()->ime_inline_autocomplete_view_;
   for (views::View* child : GetLocationBarView()->children()) {
-    if (child != omnibox_view_views)
+    if (child != omnibox_view_views) {
       child->SetVisible(false);
+    }
   }
   omnibox_view_views->SetText(u"谷");
   GetLocationBarView()->SetImeInlineAutocompletion(u"歌");

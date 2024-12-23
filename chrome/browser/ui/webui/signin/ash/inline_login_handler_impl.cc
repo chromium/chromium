@@ -472,15 +472,17 @@ void InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc(
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   for (const auto& account : accounts) {
-    if (account.key.account_type() != account_manager::AccountType::kGaia)
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
+    }
 
     if (!arc_accounts.contains(account)) {
       AccountInfo maybe_account_info =
           identity_manager->FindExtendedAccountInfoByGaiaId(
               GaiaId(account.key.id()));
-      if (maybe_account_info.IsEmpty())
+      if (maybe_account_info.IsEmpty()) {
         continue;
+      }
 
       result.Append(GaiaAccountToValue(account, maybe_account_info));
     }

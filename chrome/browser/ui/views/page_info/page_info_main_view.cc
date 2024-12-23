@@ -633,23 +633,21 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
           : l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-  auto about_this_site_button =
-      std::make_unique<RichHoverButton>(
-          base::BindRepeating(
-              [](PageInfoMainView* view, GURL more_info_url,
-                 bool has_description, const ui::Event& event) {
-                page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
-                    has_description);
-                view->presenter_->RecordPageInfoAction(
-                    page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-                view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
-                                                             event);
-                view->GetWidget()->Close();
-              },
-              this, GURL(info.more_about().url()), info.has_description()),
-          PageInfoViewFactory::GetImageModel(
-              PageInfoViewFactory::GetAboutThisSiteVectorIcon()),
-          title, description, PageInfoViewFactory::GetLaunchIcon());
+  auto about_this_site_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          [](PageInfoMainView* view, GURL more_info_url, bool has_description,
+             const ui::Event& event) {
+            page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
+                has_description);
+            view->presenter_->RecordPageInfoAction(
+                page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+            view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url, event);
+            view->GetWidget()->Close();
+          },
+          this, GURL(info.more_about().url()), info.has_description()),
+      PageInfoViewFactory::GetImageModel(
+          PageInfoViewFactory::GetAboutThisSiteVectorIcon()),
+      title, description, PageInfoViewFactory::GetLaunchIcon());
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);

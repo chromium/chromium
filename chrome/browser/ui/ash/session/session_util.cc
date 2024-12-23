@@ -30,8 +30,9 @@ const content::BrowserContext* GetBrowserContextForWindow(
   DCHECK(window);
   auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
   // Speculative fix for multi-profile crash. crbug.com/661821
-  if (!window_manager)
+  if (!window_manager) {
     return nullptr;
+  }
 
   const AccountId& account_id =
       presenting ? window_manager->GetUserPresentingWindow(window)

@@ -42,8 +42,8 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
   ~InlineLoginHandlerImpl() override;
 
-  using InlineLoginHandler::web_ui;
   using InlineLoginHandler::CloseDialogFromJavascript;
+  using InlineLoginHandler::web_ui;
 
   base::WeakPtr<InlineLoginHandlerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -151,8 +151,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
  private:
   // Overridden from GaiaAuthConsumer.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
-  void OnClientOAuthFailure(const GoogleServiceAuthError& error)
-      override;
+  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
   void OnClientOAuthSuccessAndBrowserOpened(const ClientOAuthResult& result);
 

@@ -163,13 +163,12 @@ class StartupBrowserCreator {
   // `restore_tabbed_browser` should only be flipped false by Ash full restore
   // code path, suppressing restoring a normal browser when there were only PWAs
   // open in previous session. See crbug.com/1463906.
-  void LaunchBrowser(
-      const base::CommandLine& command_line,
-      Profile* profile,
-      const base::FilePath& cur_dir,
-      chrome::startup::IsProcessStartup process_startup,
-      chrome::startup::IsFirstRun is_first_run,
-      bool restore_tabbed_browser);
+  void LaunchBrowser(const base::CommandLine& command_line,
+                     Profile* profile,
+                     const base::FilePath& cur_dir,
+                     chrome::startup::IsProcessStartup process_startup,
+                     chrome::startup::IsFirstRun is_first_run,
+                     bool restore_tabbed_browser);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
   // launches browser for `profile_info`. `restore_tabbed_browser` should

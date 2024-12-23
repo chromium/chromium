@@ -46,8 +46,9 @@ LocalCardMigrationBubbleControllerImpl::
 void LocalCardMigrationBubbleControllerImpl::ShowBubble(
     base::OnceClosure local_card_migration_bubble_closure) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_reshow_ = false;
   should_add_strikes_on_bubble_close_ = true;
@@ -61,8 +62,9 @@ void LocalCardMigrationBubbleControllerImpl::ShowBubble(
 }
 
 void LocalCardMigrationBubbleControllerImpl::ReshowBubble() {
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_reshow_ = true;
   autofill_metrics::LogLocalCardMigrationBubbleOfferMetric(

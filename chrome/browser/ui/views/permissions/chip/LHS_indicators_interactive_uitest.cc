@@ -352,7 +352,8 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_camera_blocked) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
+                       InvokeUi_camera_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
@@ -389,7 +390,8 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_PageInfo_camera) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
+                       InvokeUi_PageInfo_camera) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 

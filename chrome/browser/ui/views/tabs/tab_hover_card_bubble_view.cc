@@ -386,12 +386,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-    title_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
-        views::style::STYLE_BODY_3_EMPHASIS));
-    domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-    domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+  title_label_ = AddChildView(std::make_unique<FadeLabelView>(
+      kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
+      views::style::STYLE_BODY_3_EMPHASIS));
+  domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
+      1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+  domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
 
   if (bubble_params_.show_image_preview) {
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));

@@ -39,18 +39,21 @@ std::u16string MockTabModalConfirmDialogDelegate::GetDialogMessage() {
 }
 
 void MockTabModalConfirmDialogDelegate::OnAccepted() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnAccepted();
+  }
 }
 
 void MockTabModalConfirmDialogDelegate::OnCanceled() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnCanceled();
+  }
 }
 
 void MockTabModalConfirmDialogDelegate::OnClosed() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnClosed();
+  }
 }
 
 TabModalConfirmDialogTest::TabModalConfirmDialogTest()

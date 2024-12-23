@@ -76,8 +76,9 @@ class KeyboardVisibleWaiter : public ChromeKeyboardControllerClient::Observer {
 
   // ChromeKeyboardControllerClient::Observer
   void OnKeyboardVisibilityChanged(bool visible) override {
-    if (visible)
+    if (visible) {
       run_loop_.QuitWhenIdle();
+    }
   }
 
  private:
@@ -120,8 +121,9 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
 
  private:
   void QuitMessageLoop() {
-    if (message_loop_runner_.get())
+    if (message_loop_runner_.get()) {
       message_loop_runner_->Quit();
+    }
   }
 
   bool file_selected_ = false;
@@ -154,10 +156,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     use_file_type_filter_ = GetParam().file_type_filter;
   }
 
-  enum DialogButtonType {
-    DIALOG_BTN_OK,
-    DIALOG_BTN_CANCEL
-  };
+  enum DialogButtonType { DIALOG_BTN_OK, DIALOG_BTN_CANCEL };
 
   void SetUp() override {
     // Create the dialog wrapper and listener objects.
@@ -293,9 +292,9 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void ClickJsButton(content::RenderFrameHost* frame_host,
                      DialogButtonType button_type) {
-    std::string button_class =
-        (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
-                                         ".button-panel .cancel";
+    std::string button_class = (button_type == DIALOG_BTN_OK)
+                                   ? ".button-panel .ok"
+                                   : ".button-panel .cancel";
     std::u16string script = base::ASCIIToUTF16(
         "console.log(\'Test JavaScript injected.\');"
         "document.querySelector(\'" +
@@ -318,8 +317,9 @@ class BaseSelectFileDialogExtensionBrowserTest
     listener_->WaitForCalled();
 
     // Dialog no longer believes it is running.
-    if (owning_window)
+    if (owning_window) {
       ASSERT_FALSE(dialog_->IsRunning(owning_window));
+    }
   }
 
   bool UseFileTypeFilter() { return use_file_type_filter_; }
@@ -399,7 +399,6 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, CanResize) {
   // `SelectFileDialog::listener_` becomes dangling.
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
-
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
                        SelectFileAndCancel) {
@@ -628,9 +627,7 @@ INSTANTIATE_TEST_SUITE_P(SystemWebApp,
 // TODO(adanilo) factor out the unnecessary override of Setup().
 class SelectFileDialogExtensionFlagTest
     : public BaseSelectFileDialogExtensionBrowserTest {
-  void SetUp() override {
-    BaseSelectFileDialogExtensionBrowserTest::SetUp();
-  }
+  void SetUp() override { BaseSelectFileDialogExtensionBrowserTest::SetUp(); }
 };
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,

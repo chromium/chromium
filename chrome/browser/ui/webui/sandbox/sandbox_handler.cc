@@ -33,8 +33,9 @@ base::Value::List FetchBrowserChildProcesses() {
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
     // Only add processes that have already started, i.e. with valid handles.
-    if (!process_data.GetProcess().IsValid())
+    if (!process_data.GetProcess().IsValid()) {
       continue;
+    }
     base::Value::Dict proc;
     proc.Set("processId",
              base::strict_cast<double>(process_data.GetProcess().Pid()));
@@ -59,8 +60,9 @@ base::Value::List FetchRenderHostProcesses() {
        !it.IsAtEnd(); it.Advance()) {
     RenderProcessHost* host = it.GetCurrentValue();
     // Skip processes that might not have started yet.
-    if (!host->GetProcess().IsValid())
+    if (!host->GetProcess().IsValid()) {
       continue;
+    }
 
     base::Value::Dict proc;
     proc.Set("processId", base::strict_cast<double>(host->GetProcess().Pid()));

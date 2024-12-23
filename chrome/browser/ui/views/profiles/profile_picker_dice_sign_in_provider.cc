@@ -52,10 +52,12 @@ bool IsTwoFactorIntersitial(const GURL& url) {
 bool IsExternalURL(const GURL& url) {
   // Empty URL is used initially, about:blank is used to stop navigation after
   // sign-in succeeds.
-  if (url.is_empty() || url == GURL(url::kAboutBlankURL))
+  if (url.is_empty() || url == GURL(url::kAboutBlankURL)) {
     return false;
-  if (gaia::HasGaiaSchemeHostPort(url))
+  }
+  if (gaia::HasGaiaSchemeHostPort(url)) {
     return false;
+  }
   return true;
 }
 
@@ -125,8 +127,9 @@ void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
 }
 
 void ProfilePickerDiceSignInProvider::NavigateBack() {
-  if (!IsInitialized() || !contents())
+  if (!IsInitialized() || !contents()) {
     return;
+  }
 
   if (contents()->GetController().CanGoBack()) {
     contents()->GetController().GoBack();

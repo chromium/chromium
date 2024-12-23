@@ -40,8 +40,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void RefreshSuggestions() override;
   void RemoveSuggestions(
       const std::vector<base::FilePath>& absolute_file_paths) override;
-  void ShowItemInFolder(const HoldingSpaceItem& item,
-                        SuccessCallback) override;
+  void ShowItemInFolder(const HoldingSpaceItem& item, SuccessCallback) override;
   void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;
 
  private:

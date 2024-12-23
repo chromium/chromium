@@ -102,8 +102,9 @@ bool ImmersiveModeControllerChromeos::IsRevealed() const {
 
 int ImmersiveModeControllerChromeos::GetTopContainerVerticalOffset(
     const gfx::Size& top_container_size) const {
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return 0;
+  }
 
   return static_cast<int>(top_container_size.height() *
                           (visible_fraction_ - 1));
@@ -130,8 +131,9 @@ bool ImmersiveModeControllerChromeos::
 void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {
-  if (browser_view_->GetSupportsTabStrip())
+  if (browser_view_->GetSupportsTabStrip()) {
     return;
+  }
 
   if (!display::Screen::GetScreen()->InTabletMode()) {
     return;
@@ -188,15 +190,17 @@ void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
   visible_fraction_ = 0;
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnImmersiveRevealStarted();
+  }
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealEnded() {
   visible_fraction_ = 0;
   browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnImmersiveRevealEnded();
+  }
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
@@ -207,14 +211,16 @@ void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenExited() {
   browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnImmersiveFullscreenExited();
+  }
 }
 
 void ImmersiveModeControllerChromeos::SetVisibleFraction(
     double visible_fraction) {
-  if (visible_fraction_ == visible_fraction)
+  if (visible_fraction_ == visible_fraction) {
     return;
+  }
 
   // Sets the top inset only when the top-of-window views is fully visible. This
   // means some gesture may not be recognized well during the animation, but
@@ -253,8 +259,9 @@ ImmersiveModeControllerChromeos::GetVisibleBoundsInScreen() const {
 }
 
 void ImmersiveModeControllerChromeos::OnFullscreenStateChanged() {
-  if (!controller_.IsEnabled())
+  if (!controller_.IsEnabled()) {
     return;
+  }
 
   // Auto hide the shelf in immersive browser fullscreen.
   bool in_tab_fullscreen = browser_view_->browser()

@@ -93,7 +93,7 @@ namespace ui {
 class ColorProvider;
 class NativeTheme;
 class ThemeProvider;
-}
+}  // namespace ui
 
 namespace views {
 class Button;

@@ -93,9 +93,7 @@ class KeywordEditorController {
   // Return the TemplateURL corresponding to the |index| in the model.
   TemplateURL* GetTemplateURL(int index);
 
-  TemplateURLTableModel* table_model() {
-    return table_model_.get();
-  }
+  TemplateURLTableModel* table_model() { return table_model_.get(); }
 
  private:
   raw_ptr<TemplateURLService> url_model_;

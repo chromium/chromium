@@ -233,7 +233,6 @@ class ManagePasswordsUIController
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
-
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
   // manage passwords icon and bubble.

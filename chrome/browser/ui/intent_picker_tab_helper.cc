@@ -165,8 +165,9 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
 void IntentPickerTabHelper::ShowOrHideIcon(content::WebContents* web_contents,
                                            bool should_show_icon) {
   IntentPickerTabHelper* tab_helper = FromWebContents(web_contents);
-  if (!tab_helper)
+  if (!tab_helper) {
     return;
+  }
 
   if (apps::features::ShouldShowLinkCapturingUX()) {
     tab_helper->current_app_icon_ = ui::ImageModel();
@@ -258,10 +259,11 @@ void IntentPickerTabHelper::OnAppIconLoaded(
     ui::ImageModel app_icon) {
   apps[index].icon_model = app_icon;
 
-  if (index == apps.size() - 1)
+  if (index == apps.size() - 1) {
     std::move(callback).Run(std::move(apps));
-  else
+  } else {
     LoadAppIcon(std::move(apps), index + 1, std::move(callback));
+  }
 }
 
 void IntentPickerTabHelper::LoadAppIcon(
@@ -479,8 +481,9 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
           });
-  if (app_id == local_app_id)
+  if (app_id == local_app_id) {
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
+  }
 }
 
 void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {

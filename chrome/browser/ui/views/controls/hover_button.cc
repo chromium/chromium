@@ -287,8 +287,9 @@ void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
 
 void HoverButton::SetSubtitleTextStyle(int text_context,
                                        views::style::TextStyle text_style) {
-  if (!subtitle())
+  if (!subtitle()) {
     return;
+  }
 
   subtitle()->SetTextContext(text_context);
   subtitle()->SetTextStyle(text_style);
@@ -367,8 +368,9 @@ void HoverButton::StateChanged(ButtonState old_state) {
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
-  if (!HitTestPoint(point))
+  if (!HitTestPoint(point)) {
     return nullptr;
+  }
 
   // Let the secondary control handle it if it has a tooltip.
   if (secondary_view_) {

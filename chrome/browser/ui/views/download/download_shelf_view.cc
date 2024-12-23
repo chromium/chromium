@@ -137,8 +137,9 @@ gfx::Size DownloadShelfView::CalculatePreferredSize(
   adjust_size(close_button_);
   adjust_size(show_all_view_);
   // Add one download view to the preferred size.
-  if (!download_views_.empty())
+  if (!download_views_.empty()) {
     adjust_size(download_views_.front());
+  }
 
   prefsize.Enlarge(0, kTopPadding);
   return gfx::Tween::SizeValueBetween(shelf_animation_.GetCurrentValue(),
@@ -207,16 +208,18 @@ void DownloadShelfView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void DownloadShelfView::AnimationEnded(const gfx::Animation* animation) {
-  if (animation != &shelf_animation_)
+  if (animation != &shelf_animation_) {
     return;
+  }
 
   const bool shown = shelf_animation_.IsShowing();
   parent_->SetDownloadShelfVisible(shown);
 
   // If the shelf was explicitly closed by the user, there are further steps to
   // take to complete closing.
-  if (shown || is_hidden())
+  if (shown || is_hidden()) {
     return;
+  }
 
   // Remove all completed downloads.
   for (size_t i = 0; i < download_views_.size();) {
@@ -240,8 +243,9 @@ void DownloadShelfView::AnimationEnded(const gfx::Animation* animation) {
   // TODO(crbug.com/41390999): Fix AccessiblePaneView::SetVisible() or
   // FocusManager to make this unnecessary.
   auto* focus_manager = GetFocusManager();
-  if (focus_manager && Contains(focus_manager->GetFocusedView()))
+  if (focus_manager && Contains(focus_manager->GetFocusedView())) {
     parent_->contents_web_view()->RequestFocus();
+  }
   SetVisible(false);
 }
 
@@ -263,10 +267,11 @@ void DownloadShelfView::RemoveDownloadView(View* view) {
   CHECK(i != download_views_.end(), base::NotFatalUntil::M130);
   download_views_.erase(i);
   RemoveChildViewT(view);
-  if (download_views_.empty())
+  if (download_views_.empty()) {
     Close();
-  else
+  } else {
     AutoClose();
+  }
   InvalidateLayout();
 }
 
@@ -293,8 +298,9 @@ void DownloadShelfView::DoShowDownload(
   // we already have this many download views, one is removed.
   // TODO(pkasting): Maybe this should use a min width instead.
   constexpr size_t kMaxDownloadViews = 15;
-  if (download_views_.size() > kMaxDownloadViews)
+  if (download_views_.size() > kMaxDownloadViews) {
     RemoveDownloadView(download_views_.front());
+  }
 
   new_item_animation_.Reset();
   new_item_animation_.Show();

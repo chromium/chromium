@@ -107,8 +107,9 @@ AuthenticatorSelectionDialogViewAndroid::CreateJavaAuthenticatorOptions(
       Java_AuthenticatorSelectionDialogBridge_createAuthenticatorOptionList(
           env);
 
-  for (const auto& option : options)
+  for (const auto& option : options) {
     CreateJavaAuthenticatorOptionAndAddToList(env, jlist, option);
+  }
 
   return jlist;
 }

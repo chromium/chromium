@@ -159,10 +159,11 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       EXPECT_TRUE(state_is_set);
 
     } else {
-      if (name == "pause_close")
+      if (name == "pause_close") {
         ActiveView(name)->Close();
-      else
+      } else {
         ActiveView(name)->AcceptDialog();
+      }
     }
   }
 

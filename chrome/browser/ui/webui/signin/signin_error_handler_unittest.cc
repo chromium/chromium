@@ -39,10 +39,10 @@ class TestingSigninErrorHandler : public SigninErrorHandler {
     SigninErrorHandler::CloseBrowserModalSigninDialog();
   }
 
-  using SigninErrorHandler::HandleSwitchToExistingProfile;
   using SigninErrorHandler::HandleConfirm;
-  using SigninErrorHandler::HandleLearnMore;
   using SigninErrorHandler::HandleInitializedWithSize;
+  using SigninErrorHandler::HandleLearnMore;
+  using SigninErrorHandler::HandleSwitchToExistingProfile;
 
   bool browser_modal_dialog_did_close() {
     return browser_modal_dialog_did_close_;

@@ -27,8 +27,9 @@ namespace {
 struct Cmp {
   bool operator()(const AcceleratorMapping& lhs,
                   const AcceleratorMapping& rhs) const {
-    if (lhs.keycode != rhs.keycode)
+    if (lhs.keycode != rhs.keycode) {
       return lhs.keycode < rhs.keycode;
+    }
     return lhs.modifiers < rhs.modifiers;
     // Do not check |command_id|.
   }
@@ -85,8 +86,9 @@ TEST(AcceleratorTableTest, OpenFeedbackWithSearchBasedAccelerator) {
 TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
   base::flat_set<AcceleratorMapping, Cmp> accelerators(GetAcceleratorList());
   for (const ash::AcceleratorData& ash_entry : ash::kAcceleratorData) {
-    if (!ash_entry.trigger_on_press)
+    if (!ash_entry.trigger_on_press) {
       continue;  // kAcceleratorMap does not have any release accelerators.
+    }
     // A few shortcuts are defined in the browser as well as in ash so that web
     // contents can consume them. http://crbug.com/309915, 370019, 412435,
     // 321568.
@@ -174,8 +176,6 @@ class GetAcceleratorListTest : public ::testing::Test {
     ClearAcceleratorListForTesting();
   }
 };
-
-
 
 // Verify that the shortcuts for DevTools are enabled.
 TEST_F(GetAcceleratorListTest, DevToolsAreEnabled) {

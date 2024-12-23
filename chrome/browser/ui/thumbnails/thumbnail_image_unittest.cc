@@ -36,8 +36,9 @@ class CallbackWaiter {
   void Reset() { called_ = false; }
 
   void Wait() {
-    if (called_)
+    if (called_) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -46,8 +47,9 @@ class CallbackWaiter {
 
  private:
   void HandleCallback() {
-    if (quit_closure_)
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
     called_ = true;
   }
 

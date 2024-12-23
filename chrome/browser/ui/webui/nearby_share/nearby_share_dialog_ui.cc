@@ -57,8 +57,9 @@ enum class CloseReason {
 
 bool NearbyShareDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (browser_context->IsOffTheRecord())
+  if (browser_context->IsOffTheRecord()) {
     return false;
+  }
   return NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
       browser_context);
 }
@@ -191,8 +192,9 @@ void NearbyShareDialogUI::WebContentsCreated(
 }
 
 void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
-  if (!sharesheet_controller_)
+  if (!sharesheet_controller_) {
     return;
+  }
 
   CHECK_EQ(1u, args.size());
   CHECK_GE(args[0].GetInt(), 0);

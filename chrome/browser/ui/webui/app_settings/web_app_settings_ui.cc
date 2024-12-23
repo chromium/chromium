@@ -161,8 +161,9 @@ void WebAppSettingsUI::OnWebAppUninstalled(
   const webapps::AppId current_app_id =
       web_app::GetAppIdFromAppSettingsUrl(web_contents->GetURL());
 
-  if (app_id == current_app_id)
+  if (app_id == current_app_id) {
     web_contents->ClosePage();
+  }
 }
 
 void WebAppSettingsUI::OnWebAppInstallManagerDestroyed() {

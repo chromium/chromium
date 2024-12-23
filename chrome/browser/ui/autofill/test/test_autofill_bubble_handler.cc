@@ -19,8 +19,9 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller,
     bool is_user_gesture) {
-  if (!save_card_bubble_view_)
+  if (!save_card_bubble_view_) {
     save_card_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  }
   return save_card_bubble_view_.get();
 }
 
@@ -49,8 +50,9 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowOfferNotificationBubble(
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller,
     bool is_user_gesture) {
-  if (!offer_notification_bubble_view_)
+  if (!offer_notification_bubble_view_) {
     offer_notification_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  }
   return offer_notification_bubble_view_.get();
 }
 

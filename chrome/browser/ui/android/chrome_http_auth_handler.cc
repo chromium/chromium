@@ -110,8 +110,9 @@ void ChromeHttpAuthHandler::CancelAuth(JNIEnv* env,
 std::u16string ChromeHttpAuthHandler::GetMessageBody(
     JNIEnv* env,
     const JavaParamRef<jobject>&) {
-  if (explanation_.empty())
+  if (explanation_.empty()) {
     return authority_;
+  }
   return authority_ + u" " + explanation_;
 }
 

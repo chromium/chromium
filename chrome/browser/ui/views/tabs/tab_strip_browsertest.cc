@@ -61,16 +61,18 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
   std::vector<content::WebContents*> GetWebContentses() {
     std::vector<content::WebContents*> contentses;
-    for (int i = 0; i < tab_strip()->GetTabCount(); ++i)
+    for (int i = 0; i < tab_strip()->GetTabCount(); ++i) {
       contentses.push_back(tab_strip_model()->GetWebContentsAt(i));
+    }
     return contentses;
   }
 
   std::vector<content::WebContents*> GetWebContentsesInOrder(
       const std::vector<int>& order) {
     std::vector<content::WebContents*> contentses;
-    for (int i = 0; i < tab_strip()->GetTabCount(); ++i)
+    for (int i = 0; i < tab_strip()->GetTabCount(); ++i) {
       contentses.push_back(tab_strip_model()->GetWebContentsAt(order[i]));
+    }
     return contentses;
   }
 
@@ -1171,8 +1173,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   // Create five tabs.
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     AppendTab();
+  }
 
   ASSERT_EQ(5, tab_strip_model()->count());
 

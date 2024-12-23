@@ -20,9 +20,8 @@ namespace ash {
 class SecureDnsManager;
 }
 
-class ManagementUIHandlerChromeOS :
-    public BitmapFetcherDelegate,
-    public ManagementUIHandler {
+class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
+                                    public ManagementUIHandler {
  public:
   explicit ManagementUIHandlerChromeOS(Profile* profile);
   ManagementUIHandlerChromeOS(const ManagementUIHandlerChromeOS&) = delete;

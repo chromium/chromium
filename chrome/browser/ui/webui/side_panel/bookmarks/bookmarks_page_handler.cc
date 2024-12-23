@@ -191,8 +191,9 @@ BookmarksPageHandler::~BookmarksPageHandler() = default;
 
 void BookmarksPageHandler::BookmarkCurrentTabInFolder(int64_t folder_id) {
   Browser* browser = chrome::FindLastActive();
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   chrome::BookmarkCurrentTabInFolder(browser, folder_id);
 }
@@ -264,23 +265,26 @@ void BookmarksPageHandler::OpenBookmark(
     ui::mojom::ClickModifiersPtr click_modifiers,
     side_panel::mojom::ActionSource source) {
   Browser* browser = chrome::FindLastActive();
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser->profile());
   const bookmarks::BookmarkNode* bookmark_node =
       bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
-  if (!bookmark_node)
+  if (!bookmark_node) {
     return;
+  }
 
   WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
   chrome::OpenAllIfAllowed(browser, {bookmark_node}, open_location, false);
-  if (source == side_panel::mojom::ActionSource::kPriceTracking)
+  if (source == side_panel::mojom::ActionSource::kPriceTracking) {
     return;
+  }
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
   RecordBookmarkLaunch(
       parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
@@ -320,8 +324,9 @@ void BookmarksPageHandler::ShowContextMenu(
     const gfx::Point& point,
     side_panel::mojom::ActionSource source) {
   int64_t id;
-  if (!base::StringToInt64(id_string, &id))
+  if (!base::StringToInt64(id_string, &id)) {
     return;
+  }
 
   auto embedder =
       bookmarks_ui_ ? bookmarks_ui_->embedder() : reading_list_ui_->embedder();

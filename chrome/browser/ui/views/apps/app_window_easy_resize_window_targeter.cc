@@ -24,8 +24,9 @@ bool AppWindowEasyResizeWindowTargeter::GetHitTestRects(
   // window. Since maximized and fullscreen windows can't be resized anyway,
   // skip EasyResizeWindowTargeter so that the web contents receive all mouse
   // events.
-  if (native_app_window_->IsMaximized() || native_app_window_->IsFullscreen())
+  if (native_app_window_->IsMaximized() || native_app_window_->IsFullscreen()) {
     return WindowTargeter::GetHitTestRects(window, rect_mouse, rect_touch);
+  }
 
   return EasyResizeWindowTargeter::GetHitTestRects(window, rect_mouse,
                                                    rect_touch);

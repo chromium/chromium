@@ -625,7 +625,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           web_contents, optimization_guide_decider);
     }
   }
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   if (web_app::AreWebAppsUserInstallable(profile)) {
     webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents);
     webapps::AppBannerManagerDesktop::CreateForWebContents(web_contents);

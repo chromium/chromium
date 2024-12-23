@@ -16,11 +16,11 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/common/url_constants.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -99,8 +99,8 @@ class ProfilePreloadCandidateSelectorTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ProfilePreloadCandidateSelectorTest()
-    : registration1_(std::make_unique<TestWebUIConfig1>(enabled_webui_1_)),
-      registration2_(std::make_unique<TestWebUIConfig2>()) {}
+      : registration1_(std::make_unique<TestWebUIConfig1>(enabled_webui_1_)),
+        registration2_(std::make_unique<TestWebUIConfig2>()) {}
   ~ProfilePreloadCandidateSelectorTest() override = default;
   ProfilePreloadCandidateSelectorTest(
       const ProfilePreloadCandidateSelectorTest&) = delete;
@@ -217,8 +217,7 @@ TEST_F(ProfilePreloadCandidateSelectorTest, PreferHighEngagementWebUI) {
   EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
 }
 
-TEST_F(ProfilePreloadCandidateSelectorTest,
-       IgnoreDisabledWebUIs) {
+TEST_F(ProfilePreloadCandidateSelectorTest, IgnoreDisabledWebUIs) {
   // Set engagement scores to maximum, so that the selector won't reject a URL
   // due to its low engagemen score.
   SetEngagementScore(profile(), GURL(kWebUIUrl1),
@@ -226,7 +225,7 @@ TEST_F(ProfilePreloadCandidateSelectorTest,
   // Set URL2 to have a lower engagement score than URL1, so that when URL2 is
   // selected, it is not due to it having a higher engagement score.
   SetEngagementScore(profile(), GURL(kWebUIUrl2),
-                     SiteEngagementService::GetMaxPoints()-1);
+                     SiteEngagementService::GetMaxPoints() - 1);
 
   // By default no WebUI is present, selects either URL1 or URL2.
   EXPECT_TRUE(

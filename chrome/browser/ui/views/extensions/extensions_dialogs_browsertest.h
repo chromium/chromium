@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_BROWSERTEST_H_
 
 #include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 

@@ -232,8 +232,9 @@ void ShowBadFlagsInfoBar(content::WebContents* web_contents,
                          const char* flag) {
   std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(flag);
-  if (!switch_value.empty())
+  if (!switch_value.empty()) {
     switch_value = "=" + switch_value;
+  }
   ShowBadFlagsInfoBarHelper(web_contents, message_id,
                             std::string("--") + flag + switch_value);
 }

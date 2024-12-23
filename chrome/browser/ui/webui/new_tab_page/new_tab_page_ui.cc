@@ -649,8 +649,9 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
         pending_receiver) {
-  if (browser_command_factory_receiver_.is_bound())
+  if (browser_command_factory_receiver_.is_bound()) {
     browser_command_factory_receiver_.reset();
+  }
   browser_command_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -786,8 +787,9 @@ void NewTabPageUI::CreateHelpBubbleHandler(
 // should not directly access any member variables.
 void NewTabPageUI::OnColorProviderChanged() {
   base::Value::Dict update;
-  if (!web_contents() || !web_ui())
+  if (!web_contents() || !web_ui()) {
     return;
+  }
   const ui::ColorProvider& color_provider = web_contents()->GetColorProvider();
   auto background_color = color_provider.GetColor(kColorNewTabPageBackground);
   update.Set("backgroundColor", skia::SkColorToHexString(background_color));

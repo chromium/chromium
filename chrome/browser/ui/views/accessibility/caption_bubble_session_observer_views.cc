@@ -37,8 +37,9 @@ void CaptionBubbleSessionObserverViews::DidFinishNavigation(
 }
 
 void CaptionBubbleSessionObserverViews::WebContentsDestroyed() {
-  if (end_session_callback_)
+  if (end_session_callback_) {
     end_session_callback_.Run(web_contents_id_);
+  }
 }
 
 void CaptionBubbleSessionObserverViews::SetEndSessionCallback(

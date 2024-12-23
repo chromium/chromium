@@ -102,8 +102,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   void ExtensionEnableFlowFinished() override {
     const Extension* extension =
         registry_->enabled_extensions().GetByID(extension_id_);
-    if (!extension)
+    if (!extension) {
       return;
+    }
     std::move(callback_).Run();
     delete this;
   }
@@ -120,8 +121,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
 
 const Extension* GetExtension(Profile* profile,
                               const apps::AppLaunchParams& params) {
-  if (params.app_id.empty())
+  if (params.app_id.empty()) {
     return nullptr;
+  }
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   return registry->GetExtensionById(
       params.app_id, ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
@@ -130,11 +132,13 @@ const Extension* GetExtension(Profile* profile,
 
 bool IsAllowedToOverrideURL(const extensions::Extension* extension,
                             const GURL& override_url) {
-  if (extension->web_extent().MatchesURL(override_url))
+  if (extension->web_extent().MatchesURL(override_url)) {
     return true;
+  }
 
-  if (override_url.DeprecatedGetOriginAsURL() == extension->url())
+  if (override_url.DeprecatedGetOriginAsURL() == extension->url()) {
     return true;
+  }
 
   return false;
 }
@@ -172,8 +176,10 @@ ui::mojom::WindowShowState DetermineWindowShowState(
     Profile* profile,
     apps::LaunchContainer container,
     const Extension* extension) {
-  if (!extension || container != apps::LaunchContainer::kLaunchContainerWindow)
+  if (!extension ||
+      container != apps::LaunchContainer::kLaunchContainerWindow) {
     return ui::mojom::WindowShowState::kDefault;
+  }
 
   if (IsRunningInForcedAppMode()) {
     return ui::mojom::WindowShowState::kFullscreen;
@@ -229,8 +235,9 @@ WebContents* OpenApplicationTab(Profile* profile,
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
 
   int add_type = AddTabTypes::ADD_ACTIVE;
-  if (launch_type == extensions::LAUNCH_TYPE_PINNED)
+  if (launch_type == extensions::LAUNCH_TYPE_PINNED) {
     add_type |= AddTabTypes::ADD_PINNED;
+  }
 
   ui::PageTransition transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   NavigateParams params(browser, url, transition);
@@ -515,8 +522,9 @@ WebContents* OpenApplicationWindow(Profile* profile,
 void OpenApplicationWithReenablePrompt(Profile* profile,
                                        apps::AppLaunchParams&& params) {
   const Extension* extension = GetExtension(profile, params);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   ExtensionService* service =
       extensions::ExtensionSystem::Get(profile)->extension_service();

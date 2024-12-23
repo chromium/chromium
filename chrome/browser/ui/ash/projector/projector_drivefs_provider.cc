@@ -45,12 +45,14 @@ ProjectorDriveFsProvider::ProjectorDriveFsProvider(
     : on_drivefs_observation_change_(on_drivefs_observation_change) {
   session_manager::SessionManager* session_manager =
       session_manager::SessionManager::Get();
-  if (session_manager)
+  if (session_manager) {
     session_observation_.Observe(session_manager);
+  }
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager)
+  if (user_manager) {
     session_state_observation_.Observe(user_manager);
+  }
 }
 
 ProjectorDriveFsProvider::~ProjectorDriveFsProvider() = default;
@@ -64,14 +66,16 @@ void ProjectorDriveFsProvider::ActiveUserChanged(
     user_manager::User* active_user) {
   // After user login, the first ActiveUserChanged() might be called before
   // profile is loaded.
-  if (active_user->is_profile_created())
+  if (active_user->is_profile_created()) {
     OnProfileSwitch();
+  }
 }
 
 void ProjectorDriveFsProvider::OnProfileSwitch() {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!IsProjectorAllowedForProfile(profile))
+  if (!IsProjectorAllowedForProfile(profile)) {
     return;
+  }
 
   on_drivefs_observation_change_.Run();
 }

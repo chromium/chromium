@@ -63,8 +63,9 @@ class AutofillProgressDialogViewsBrowserTest
 
     base::WeakPtr<AutofillProgressDialogView> dialog_view =
         controller()->autofill_progress_dialog_view();
-    if (!dialog_view)
+    if (!dialog_view) {
       return nullptr;
+    }
 
     return static_cast<AutofillProgressDialogViews*>(dialog_view.get());
   }

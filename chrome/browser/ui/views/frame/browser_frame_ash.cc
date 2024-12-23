@@ -85,8 +85,9 @@ BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
 
   // Turn on auto window management if we don't need an explicit bounds.
   // This way the requested bounds are honored.
-  if (!browser->bounds_overridden() && !browser->is_session_restore())
+  if (!browser->bounds_overridden() && !browser->is_session_restore()) {
     SetWindowAutoManaged();
+  }
 }
 
 BrowserFrameAsh::~BrowserFrameAsh() = default;
@@ -154,8 +155,9 @@ void BrowserFrameAsh::GetWindowPlacement(
       }
     }
 
-    if (!used_window_state_restore_bounds)
+    if (!used_window_state_restore_bounds) {
       *bounds = GetWidget()->GetRestoredBounds();
+    }
     *show_state = window->GetProperty(aura::client::kShowStateKey);
   }
 
@@ -257,6 +259,7 @@ bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
 void BrowserFrameAsh::SetWindowAutoManaged() {
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
-  if (browser_view_->browser()->is_type_normal())
+  if (browser_view_->browser()->is_type_normal()) {
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
+  }
 }

@@ -47,8 +47,9 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
                Browser* test_browser = nullptr) {
     ExtensionInstalledWaiter::SetGivingUpCallbackForTesting(base::BindRepeating(
         &ExtensionInstalledWaiterTest::GivingUp, base::Unretained(this)));
-    if (!test_browser)
+    if (!test_browser) {
       test_browser = browser();
+    }
     ExtensionInstalledWaiter::WaitForInstall(
         extension, test_browser,
         base::BindOnce(&ExtensionInstalledWaiterTest::Done,

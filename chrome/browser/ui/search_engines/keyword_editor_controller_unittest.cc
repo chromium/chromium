@@ -49,10 +49,11 @@ class KeywordEditorControllerTest : public testing::Test,
         model_changed_count_(0) {}
 
   void SetUp() override {
-    if (simulate_load_failure_)
+    if (simulate_load_failure_) {
       util_.model()->OnWebDataServiceRequestDone(0, nullptr);
-    else
+    } else {
       util_.VerifyLoad();
+    }
 
     controller_ = std::make_unique<KeywordEditorController>(&profile_);
     controller_->table_model()->SetObserver(this);
@@ -125,8 +126,9 @@ TEST_F(KeywordEditorControllerTest, Add) {
 
   // Verify the observer was notified.
   VerifyChanged();
-  if (HasFatalFailure())
+  if (HasFatalFailure()) {
     return;
+  }
 
   // Verify the TableModel has the new data.
   ASSERT_EQ(original_row_count + 1, table_model()->RowCount());

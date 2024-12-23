@@ -19,38 +19,44 @@ ShelfExtensionAppUpdater::ShelfExtensionAppUpdater(
       extensions_only_(extensions_only) {
   StartObservingExtensionRegistry();
 
-  if (extensions_only)
+  if (extensions_only) {
     return;
+  }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser_context);
-  if (prefs)
+  if (prefs) {
     prefs->AddObserver(this);
+  }
 }
 
 ShelfExtensionAppUpdater::~ShelfExtensionAppUpdater() {
   StopObservingExtensionRegistry();
 
-  if (extensions_only_)
+  if (extensions_only_) {
     return;
+  }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser_context());
-  if (prefs)
+  if (prefs) {
     prefs->RemoveObserver(this);
+  }
 }
 
 void ShelfExtensionAppUpdater::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
-  if (ShouldHandleExtension(extension))
+  if (ShouldHandleExtension(extension)) {
     delegate()->OnAppInstalled(browser_context, extension->id());
+  }
 }
 
 void ShelfExtensionAppUpdater::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  if (!ShouldHandleExtension(extension))
+  if (!ShouldHandleExtension(extension)) {
     return;
+  }
 
   if (reason == extensions::UnloadedExtensionReason::UNINSTALL) {
     delegate()->OnAppUninstalledPrepared(browser_context, extension->id(),
@@ -65,8 +71,9 @@ void ShelfExtensionAppUpdater::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UninstallReason reason) {
-  if (ShouldHandleExtension(extension))
+  if (ShouldHandleExtension(extension)) {
     delegate()->OnAppUninstalled(browser_context, extension->id());
+  }
 }
 
 void ShelfExtensionAppUpdater::OnShutdown(
@@ -78,8 +85,9 @@ void ShelfExtensionAppUpdater::OnShutdown(
 void ShelfExtensionAppUpdater::OnPackageListInitialRefreshed() {
   const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser_context());
   const std::vector<std::string> package_names = prefs->GetPackagesFromPrefs();
-  for (const auto& package_name : package_names)
+  for (const auto& package_name : package_names) {
     UpdateEquivalentApp(package_name);
+  }
 }
 
 void ShelfExtensionAppUpdater::OnPackageInstalled(
@@ -99,8 +107,9 @@ void ShelfExtensionAppUpdater::StartObservingExtensionRegistry() {
 }
 
 void ShelfExtensionAppUpdater::StopObservingExtensionRegistry() {
-  if (!extension_registry_)
+  if (!extension_registry_) {
     return;
+  }
   extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
 }
@@ -114,8 +123,9 @@ void ShelfExtensionAppUpdater::UpdateEquivalentApp(
   const std::vector<std::string> extension_ids =
       extensions::util::GetEquivalentInstalledExtensions(browser_context(),
                                                          arc_package_name);
-  for (const auto& iter : extension_ids)
+  for (const auto& iter : extension_ids) {
     UpdateApp(iter);
+  }
 }
 
 bool ShelfExtensionAppUpdater::ShouldHandleExtension(

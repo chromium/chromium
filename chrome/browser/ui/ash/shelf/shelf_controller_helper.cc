@@ -114,8 +114,9 @@ std::u16string ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
 // static
 std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
                                                   const std::string& app_id) {
-  if (app_id.empty())
+  if (app_id.empty()) {
     return std::u16string();
+  }
 
   // Get the title if the app is an ARC app. ARC shortcuts could call this
   // function when it's created, so AppService can't be used for ARC shortcuts,
@@ -151,13 +152,15 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   // Get the title for the extension which is not managed by AppService.
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  if (!registry)
+  if (!registry) {
     return std::u16string();
+  }
 
   auto* extension = registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (extension && extension->is_extension())
+  if (extension && extension->is_extension()) {
     return base::UTF8ToUTF16(extension->name());
+  }
 
   return std::u16string();
 }
@@ -216,8 +219,9 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
                                                    const std::string& app_id) {
   ash::AppStatus status = ash::AppStatus::kReady;
 
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return status;
+  }
 
   if (ash::features::ArePromiseIconsEnabled()) {
     const apps::PromiseApp* promise_app =
@@ -333,8 +337,9 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(
     const std::string& app_id) const {
-  if (IsValidIDForArcApp(app_id))
+  if (IsValidIDForArcApp(app_id)) {
     return true;
+  }
 
   return IsValidIDFromAppService(app_id);
 }
@@ -394,13 +399,15 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
           app_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   if (!extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile_)) {
     // Do nothing if there is already a running enable flow.
-    if (extension_enable_flow_)
+    if (extension_enable_flow_) {
       return;
+    }
 
     extension_enable_flow_ =
         std::make_unique<ExtensionEnableFlow>(profile_, app_id, this);

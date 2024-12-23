@@ -90,8 +90,9 @@ ChromeBrowserMainExtraPartsViews* ChromeBrowserMainExtraPartsViews::Get() {
 void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
   // The delegate needs to be set before any UI is created so that windows
   // display the correct icon.
-  if (!views::ViewsDelegate::GetInstance())
+  if (!views::ViewsDelegate::GetInstance()) {
     views_delegate_ = std::make_unique<ChromeViewsDelegate>();
+  }
 
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
@@ -101,15 +102,17 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
 
   // TODO(pkasting): Try to move ViewsDelegate creation here as well;
   // see https://crbug.com/691894#c1
-  if (!views::LayoutProvider::Get())
+  if (!views::LayoutProvider::Get()) {
     layout_provider_ = ChromeLayoutProvider::CreateLayoutProvider();
+  }
 }
 
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // The Screen instance may already be set in tests.
-  if (!display::Screen::GetScreen())
+  if (!display::Screen::GetScreen()) {
     screen_ = views::CreateDesktopScreen();
+  }
 #endif
 }
 
@@ -136,20 +139,23 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   // On the Linux desktop, we want to prevent the user from logging in as root,
   // so that we don't destroy the profile. Now that we have some minimal ui
   // initialized, check to see if we're running as root and bail if we are.
-  if (geteuid() != 0)
+  if (geteuid() != 0) {
     return;
+  }
 
   // Allow running inside an unprivileged user namespace. In that case, the
   // root directory will be owned by an unmapped UID and GID (although this
   // may not be the case if a chroot is also being used).
   struct stat st;
-  if (stat("/", &st) == 0 && st.st_uid != 0)
+  if (stat("/", &st) == 0 && st.st_uid != 0) {
     return;
+  }
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(sandbox::policy::switches::kNoSandbox))
+  if (command_line.HasSwitch(sandbox::policy::switches::kNoSandbox)) {
     return;
+  }
 
   std::u16string title = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));

@@ -20,11 +20,11 @@ class SequencedTaskRunner;
 namespace gfx {
 class Animation;
 class Point;
-}
+}  // namespace gfx
 namespace views {
 class View;
 class Widget;
-}
+}  // namespace views
 
 // StatusBubble displays a bubble of text that fades in, hovers over the
 // browser chrome and fades away when not needed. It is primarily designed

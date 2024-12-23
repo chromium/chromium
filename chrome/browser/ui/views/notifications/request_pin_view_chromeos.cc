@@ -68,8 +68,9 @@ void RequestPinView::ContentsChanged(views::Textfield* sender,
 }
 
 bool RequestPinView::Accept() {
-  if (!textfield_->GetEnabled())
+  if (!textfield_->GetEnabled()) {
     return true;
+  }
   DCHECK(!textfield_->GetText().empty());
   DCHECK(!locked_);
 
@@ -95,13 +96,15 @@ bool RequestPinView::IsDialogButtonEnabled(
     case ui::mojom::DialogButton::kCancel:
       return true;
     case ui::mojom::DialogButton::kOk:
-      if (locked_)
+      if (locked_) {
         return false;
+      }
       // Not locked but the |textfield_| is not enabled. It's just a
       // notification to the user and [OK] button can be used to close the
       // dialog.
-      if (!textfield_->GetEnabled())
+      if (!textfield_->GetEnabled()) {
         return true;
+      }
       return textfield_->GetText().size() > 0;
     case ui::mojom::DialogButton::kNone:
       return true;
@@ -192,8 +195,9 @@ void RequestPinView::Init() {
 
 void RequestPinView::SetAcceptInput(bool accept_input) {
   textfield_->SetEnabled(accept_input);
-  if (accept_input)
+  if (accept_input) {
     textfield_->RequestFocus();
+  }
 }
 
 void RequestPinView::SetErrorMessage(

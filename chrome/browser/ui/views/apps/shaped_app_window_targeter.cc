@@ -16,8 +16,9 @@ ShapedAppWindowTargeter::~ShapedAppWindowTargeter() = default;
 
 std::unique_ptr<aura::WindowTargeter::HitTestRects>
 ShapedAppWindowTargeter::GetExtraHitTestShapeRects(aura::Window* target) const {
-  if (!app_window_->shape_rects())
+  if (!app_window_->shape_rects()) {
     return nullptr;
+  }
 
   auto shape_rects = std::make_unique<aura::WindowTargeter::HitTestRects>(
       *app_window_->shape_rects());

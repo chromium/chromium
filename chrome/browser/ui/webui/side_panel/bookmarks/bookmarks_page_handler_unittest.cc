@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
+
+#include <memory>
 
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

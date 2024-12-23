@@ -79,10 +79,12 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   State state() const {
     const double kOpenFraction = double{kOpenTimeMS} / kAnimationDurationMS;
     double state = static_cast<double>(value_) / kNumberOfSteps;
-    if (state < kOpenFraction)
+    if (state < kOpenFraction) {
       return GROWING;
-    if (state > (1.0 - kOpenFraction))
+    }
+    if (state > (1.0 - kOpenFraction)) {
       return SHRINKING;
+    }
     return STEADY;
   }
 
@@ -220,8 +222,9 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
         break;
       }
       case TestIconLabelBubbleView::State::STEADY: {
-        if (steady_reached_)
+        if (steady_reached_) {
           EXPECT_EQ(previous_width_, width());
+        }
         EXPECT_EQ(initial_image_x_, GetImageContainerBounds().x());
         EXPECT_LT(GetImageContainerBounds().right(), width());
         EXPECT_TRUE(IsLabelVisible());
@@ -231,10 +234,12 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
         break;
       }
       case TestIconLabelBubbleView::State::SHRINKING: {
-        if (shrinking_reached_)
+        if (shrinking_reached_) {
           EXPECT_LE(width(), previous_width_);
-        if (minimum_size_reached_)
+        }
+        if (minimum_size_reached_) {
           EXPECT_EQ(previous_width_, width());
+        }
 
         EXPECT_GE(GetImageContainerBounds().x(), 0);
         if (width() <= initial_image_x_ + kImageSize) {
@@ -249,8 +254,9 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
           EXPECT_LT(GetLabelBounds().right(), width());
         }
         shrinking_reached_ = true;
-        if (width() == kImageSize)
+        if (width() == kImageSize) {
           minimum_size_reached_ = true;
+        }
         break;
       }
     }

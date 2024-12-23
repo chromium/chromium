@@ -227,8 +227,9 @@ TEST_F(BrowserCommandControllerTest, AppFullScreen) {
 }
 
 TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
-  if (!profiles::IsMultipleProfilesEnabled())
+  if (!profiles::IsMultipleProfilesEnabled()) {
     return;
+  }
 
   TestingProfileManager* testing_profile_manager = profile_manager();
   ProfileManager* profile_manager = testing_profile_manager->profile_manager();

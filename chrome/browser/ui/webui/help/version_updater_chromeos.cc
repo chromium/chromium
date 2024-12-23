@@ -56,8 +56,9 @@ const bool kDefaultAutoUpdateDisabled = false;
 NetworkStatus GetNetworkStatus(bool interactive,
                                const ash::NetworkState* network,
                                bool metered) {
-  if (!network || !network->IsConnectedState())  // Offline state.
+  if (!network || !network->IsConnectedState()) {  // Offline state.
     return NETWORK_STATUS_OFFLINE;
+  }
 
   if (metered &&
       !help_utils_chromeos::IsUpdateOverCellularAllowed(interactive)) {
@@ -70,8 +71,9 @@ NetworkStatus GetNetworkStatus(bool interactive,
 bool IsAutoUpdateDisabled() {
   bool update_disabled = kDefaultAutoUpdateDisabled;
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (!settings)
+  if (!settings) {
     return update_disabled;
+  }
   const base::Value* update_disabled_value =
       settings->GetPref(ash::kUpdateDisabled);
   if (update_disabled_value) {
@@ -85,16 +87,20 @@ std::u16string GetConnectionTypeAsUTF16(const ash::NetworkState* network,
                                         bool metered) {
   const std::string type = network->type();
   if (ash::NetworkTypePattern::WiFi().MatchesType(type)) {
-    if (metered)
+    if (metered) {
       return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_METERED_WIFI);
+    }
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_WIFI);
   }
-  if (ash::NetworkTypePattern::Ethernet().MatchesType(type))
+  if (ash::NetworkTypePattern::Ethernet().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_ETHERNET);
-  if (ash::NetworkTypePattern::Mobile().MatchesType(type))
+  }
+  if (ash::NetworkTypePattern::Mobile().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_MOBILE_DATA);
-  if (ash::NetworkTypePattern::VPN().MatchesType(type))
+  }
+  if (ash::NetworkTypePattern::VPN().MatchesType(type)) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
+  }
   NOTREACHED();
 }
 
@@ -143,12 +149,14 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
   callback_ = std::move(callback);
 
   // User is not actively checking for updates.
-  if (!EnsureCanUpdate(false /* interactive */, callback_))
+  if (!EnsureCanUpdate(false /* interactive */, callback_)) {
     return;
+  }
 
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
-  if (!update_engine_client->HasObserver(this))
+  if (!update_engine_client->HasObserver(this)) {
     update_engine_client->AddObserver(this);
+  }
 
   this->UpdateStatusChanged(update_engine_client->GetLastStatus());
 }
@@ -168,12 +176,14 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
   callback_ = std::move(callback);
 
   // User is actively checking for updates.
-  if (!EnsureCanUpdate(true /* interactive */, callback_))
+  if (!EnsureCanUpdate(true /* interactive */, callback_)) {
     return;
+  }
 
   UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
-  if (!update_engine_client->HasObserver(this))
+  if (!update_engine_client->HasObserver(this)) {
     update_engine_client->AddObserver(this);
+  }
 
   if (update_engine_client->GetLastStatus().current_operation() !=
       update_engine::Operation::IDLE) {
@@ -198,8 +208,9 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
                 context_)
           : nullptr;
   // For local owner set the field in the policy blob.
-  if (service)
+  if (service) {
     service->SetString(ash::kReleaseChannel, channel);
+  }
   UpdateEngineClient::Get()->SetChannel(channel, is_powerwash_allowed);
 }
 
@@ -298,8 +309,9 @@ void VersionUpdaterCros::UpdateStatusChanged(
 
   // If the status change is for an installation, this means that DLCs are being
   // installed and has nothing to with the OS. Ignore this status change.
-  if (status.is_install())
+  if (status.is_install()) {
     return;
+  }
 
   // If the updater is currently idle, just show the last operation (unless it
   // was previously checking for an update -- in that case, the system is
@@ -399,6 +411,7 @@ void VersionUpdaterCros::OnUpdateCheck(
     UpdateEngineClient::UpdateCheckResult result) {
   // If version updating is not implemented, this binary is the most up-to-date
   // possible with respect to automatic updating.
-  if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED)
+  if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED) {
     callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
+  }
 }

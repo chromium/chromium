@@ -68,8 +68,9 @@ namespace {
 std::string GetAppId(const std::string& id) {
   const arc::ArcAppShelfId arc_app_shelf_id =
       arc::ArcAppShelfId::FromString(id);
-  if (!arc_app_shelf_id.valid() || !arc_app_shelf_id.has_shelf_group_id())
+  if (!arc_app_shelf_id.valid() || !arc_app_shelf_id.has_shelf_group_id()) {
     return id;
+  }
   return arc_app_shelf_id.app_id();
 }
 
@@ -84,8 +85,9 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
   aura::Env::GetInstance()->AddObserver(this);
   instance_registry_observation_.Observe(&proxy_->InstanceRegistry());
 
-  if (arc::IsArcAllowedForProfile(owner->profile()))
+  if (arc::IsArcAllowedForProfile(owner->profile())) {
     arc_tracker_ = std::make_unique<AppServiceAppWindowArcTracker>(this);
+  }
 
   if (crostini::CrostiniFeatures::Get()->CouldBeAllowed(owner->profile())) {
     crostini_tracker_ =
@@ -117,12 +119,14 @@ AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
 
 AppWindowShelfItemController*
 AppServiceAppWindowShelfController::ControllerForWindow(aura::Window* window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   auto it = aura_window_to_app_window_.find(window);
-  if (it == aura_window_to_app_window_.end())
+  if (it == aura_window_to_app_window_.end()) {
     return nullptr;
+  }
 
   AppWindowBase* const app_window = it->second.get();
   DCHECK(app_window);
@@ -147,8 +151,9 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
     }
   }
   app_service_instance_helper_->ActiveUserChanged();
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->ActiveUserChanged(user_email);
+  }
 }
 
 void AppServiceAppWindowShelfController::AdditionalUserAddedToSession(
@@ -167,38 +172,45 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   // is a top level views widget. Tooltips, menus, and other kinds of transient
   // windows that can't activate are filtered out.
   if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL ||
-      !window->delegate())
+      !window->delegate()) {
     return;
+  }
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-  if (!widget || !widget->is_top_level())
+  if (!widget || !widget->is_top_level()) {
     return;
+  }
 
   observed_windows_.AddObservation(window);
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->AddCandidateWindow(window);
+  }
 }
 
 void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->OnWindowPropertyChanged(window, key, old);
+  }
 }
 
 void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   // Skip OnWindowVisibilityChanged for ancestors/descendants.
-  if (!observed_windows_.IsObservingSource(window))
+  if (!observed_windows_.IsObservingSource(window)) {
     return;
+  }
 
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->HandleWindowVisibilityChanged(window);
+  }
 
   ash::ShelfID shelf_id = GetShelfId(window);
-  if (shelf_id.IsNull())
+  if (shelf_id.IsNull()) {
     return;
+  }
 
   if (app_service_instance_helper_->IsOpenedInBrowser(GetAppId(shelf_id.app_id),
                                                       window) ||
@@ -241,10 +253,12 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->RemoveCandidateWindow(window);
-  if (crostini_tracker_)
+  }
+  if (crostini_tracker_) {
     crostini_tracker_->OnWindowDestroying(window);
+  }
 
   // When the window is destroyed, we should search all proxies, because the
   // window could be teleported from the inactive user, and isn't saved in the
@@ -281,8 +295,9 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
   }
 
   auto app_window_it = aura_window_to_app_window_.find(window);
-  if (app_window_it == aura_window_to_app_window_.end())
+  if (app_window_it == aura_window_to_app_window_.end()) {
     return;
+  }
 
   RemoveAppWindowFromShelf(app_window_it->second.get());
 
@@ -295,8 +310,9 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
     aura::Window* old_active) {
   AppWindowShelfController::OnWindowActivated(reason, new_active, old_active);
 
-  if (arc_tracker_)
+  if (arc_tracker_) {
     arc_tracker_->HandleWindowActivatedChanged(new_active);
+  }
 
   if (new_active) {
     SetWindowActivated(new_active, /*active*/ true);
@@ -320,8 +336,9 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
     WindowList::iterator it = base::ranges::find(window_list_, update.Window());
-    if (it != window_list_.end())
+    if (it != window_list_.end()) {
       window_list_.erase(it);
+    }
     return;
   }
 
@@ -388,30 +405,34 @@ void AppServiceAppWindowShelfController::OnInstanceRegistryWillBeDestroyed(
 }
 
 int AppServiceAppWindowShelfController::GetActiveTaskId() const {
-  if (arc_tracker_)
+  if (arc_tracker_) {
     return arc_tracker_->active_task_id();
+  }
   return arc::kNoTaskId;
 }
 
 int AppServiceAppWindowShelfController::GetActiveSessionId() const {
-  if (arc_tracker_)
+  if (arc_tracker_) {
     return arc_tracker_->active_session_id();
+  }
   return arc::kNoTaskId;
 }
 
 void AppServiceAppWindowShelfController::UnregisterWindow(
     aura::Window* window) {
   auto app_window_it = aura_window_to_app_window_.find(window);
-  if (app_window_it == aura_window_to_app_window_.end())
+  if (app_window_it == aura_window_to_app_window_.end()) {
     return;
+  }
   UnregisterAppWindow(app_window_it->second.get());
 }
 
 void AppServiceAppWindowShelfController::AddWindowToShelf(
     aura::Window* window,
     const ash::ShelfID& shelf_id) {
-  if (base::Contains(aura_window_to_app_window_, window))
+  if (base::Contains(aura_window_to_app_window_, window)) {
     return;
+  }
 
   // TODO(jamescook): Clean up this block. The code is repetitive.
   AppWindowBase* app_window;
@@ -441,8 +462,9 @@ void AppServiceAppWindowShelfController::AddWindowToShelf(
 
 AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
     aura::Window* window) {
-  if (!base::Contains(aura_window_to_app_window_, window))
+  if (!base::Contains(aura_window_to_app_window_, window)) {
     return nullptr;
+  }
   return aura_window_to_app_window_[window].get();
 }
 
@@ -456,12 +478,14 @@ std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
 void AppServiceAppWindowShelfController::SetWindowActivated(
     aura::Window* window,
     bool active) {
-  if (!window || !observed_windows_.IsObservingSource(window))
+  if (!window || !observed_windows_.IsObservingSource(window)) {
     return;
+  }
 
   const ash::ShelfID shelf_id = GetShelfId(window);
-  if (shelf_id.IsNull())
+  if (shelf_id.IsNull()) {
     return;
+  }
 
   if (app_service_instance_helper_->IsOpenedInBrowser(GetAppId(shelf_id.app_id),
                                                       window) ||
@@ -482,8 +506,9 @@ void AppServiceAppWindowShelfController::RegisterWindow(
   // Skip when this window has been handled. This can happen when the window
   // becomes visible again.
   auto app_window_it = aura_window_to_app_window_.find(window);
-  if (app_window_it != aura_window_to_app_window_.end())
+  if (app_window_it != aura_window_to_app_window_.end()) {
     return;
+  }
 
   // For the ARC apps window, AttachControllerToWindow calls AddWindowToShelf,
   // so we don't need to call AddWindowToShelf again.
@@ -527,12 +552,14 @@ void AppServiceAppWindowShelfController::RegisterWindow(
 
 void AppServiceAppWindowShelfController::UnregisterAppWindow(
     AppWindowBase* app_window) {
-  if (!app_window)
+  if (!app_window) {
     return;
+  }
 
   AppWindowShelfItemController* const controller = app_window->controller();
-  if (controller)
+  if (controller) {
     controller->RemoveWindow(app_window);
+  }
 
   app_window->SetController(nullptr);
 }
@@ -595,14 +622,17 @@ void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(
     ash::ShelfItemDelegate* delegate) {
   for (auto& it : aura_window_to_app_window_) {
     AppWindowBase* app_window = it.second.get();
-    if (!app_window)
+    if (!app_window) {
       continue;
+    }
 
-    if (arc_tracker_)
+    if (arc_tracker_) {
       arc_tracker_->OnItemDelegateDiscarded(app_window->shelf_id(), delegate);
+    }
 
-    if (!app_window || app_window->controller() != delegate)
+    if (!app_window || app_window->controller() != delegate) {
       continue;
+    }
 
     VLOG(1) << "Item controller was released externally for the app "
             << delegate->shelf_id().app_id << ".";
@@ -627,27 +657,32 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
 
   if (crostini_tracker_) {
     shelf_app_id = crostini_tracker_->GetShelfAppId(window);
-    if (!shelf_app_id.empty())
+    if (!shelf_app_id.empty()) {
       return ash::ShelfID(shelf_app_id);
+    }
   }
 
-  if (plugin_vm::IsPluginVmAppWindow(window))
+  if (plugin_vm::IsPluginVmAppWindow(window)) {
     return ash::ShelfID(plugin_vm::kPluginVmShelfAppId);
+  }
 
   ash::ShelfID shelf_id;
-  if (arc_tracker_)
+  if (arc_tracker_) {
     shelf_id = arc_tracker_->GetShelfId(window);
+  }
 
-  if (!shelf_id.IsNull())
+  if (!shelf_id.IsNull()) {
     return shelf_id;
+  }
 
   // If the window exists in InstanceRegistry, get the shelf id from
   // InstanceRegistry.
   for (Profile* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     shelf_id = proxy->InstanceRegistry().GetShelfId(window);
-    if (!shelf_id.IsNull())
+    if (!shelf_id.IsNull()) {
       break;
+    }
   }
   if (shelf_id.IsNull()) {
     shelf_id = ash::ShelfID::Deserialize(window->GetProperty(ash::kShelfIDKey));
@@ -692,8 +727,9 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
   for (Profile* it : profile_list_) {
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(it);
-    if (proxy == proxy_)
+    if (proxy == proxy_) {
       continue;
+    }
     proxy->InstanceRegistry().ForEachInstance(
         [&other_window, &window, &shelf_id, &browser_context, &helper,
          &current_account_id](const apps::InstanceUpdate& update) {
@@ -705,8 +741,9 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
             other_window = update.Window();
           }
         });
-    if (other_window)
+    if (other_window) {
       break;
+    }
   }
   if (other_window) {
     MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(

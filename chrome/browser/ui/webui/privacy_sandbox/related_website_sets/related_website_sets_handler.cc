@@ -20,8 +20,7 @@ using related_website_sets::mojom::SiteType;
 namespace {
 
 constexpr char kNoServiceError[] = "Service error";
-constexpr char kServiceNotReadyError[] =
-    "Backend error, service not ready";
+constexpr char kServiceNotReadyError[] = "Backend error, service not ready";
 
 SiteType GetSiteType(const net::SiteType type) {
   switch (type) {

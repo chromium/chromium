@@ -109,10 +109,12 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
     ValidatingTextfield* textfield =
         static_cast<ValidatingTextfield*>(dialog_view()->GetViewByID(
             EditorViewController::GetInputFieldViewId(type)));
-    if (!textfield)
+    if (!textfield) {
       return false;
-    if (textfield_text)
+    }
+    if (textfield_text) {
       *textfield_text = textfield->GetText();
+    }
     return true;
   }
 
@@ -157,8 +159,9 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
       if (!accept_empty_phone_number) {
         EXPECT_EQ(u"+1 575-555-5555", textfield_text);
       } else if (textfield_text.empty()) {
-        if (unset_types)
+        if (unset_types) {
           unset_types->insert(autofill::PHONE_HOME_WHOLE_NUMBER);
+        }
       }
     } else if (unset_types) {
       unset_types->insert(autofill::PHONE_HOME_WHOLE_NUMBER);
@@ -190,8 +193,9 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
             country_combobox->GetModel());
     size_t i = 0;
     for (; i < country_model->GetItemCount(); i++) {
-      if (country_model->GetItemAt(i) == country_name)
+      if (country_model->GetItemAt(i) == country_name) {
         break;
+      }
     }
     country_combobox->SetSelectedRow(i);
     country_combobox->OnBlur();

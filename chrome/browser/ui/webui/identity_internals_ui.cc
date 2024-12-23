@@ -180,8 +180,9 @@ const std::string IdentityInternalsUIMessageHandler::GetExtensionName(
       extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()));
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(access_tokens_key.extension_id);
-  if (!extension)
+  if (!extension) {
     return std::string();
+  }
   return extension->name();
 }
 
@@ -242,8 +243,9 @@ void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
   extensions::IdentityAPI* api =
       extensions::IdentityAPI::GetFactoryInstance()->Get(
           Profile::FromWebUI(web_ui()));
-  if (api)
+  if (api) {
     tokens = api->token_cache()->access_tokens_cache();
+  }
   for (const auto& key_tokens : tokens) {
     for (const auto& token : key_tokens.second) {
       results.Append(GetInfoForToken(key_tokens.first, token));
@@ -308,7 +310,7 @@ void IdentityInternalsTokenRevoker::OnOAuth2RevokeTokenCompleted(
 }  // namespace
 
 IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
-  : content::WebUIController(web_ui) {
+    : content::WebUIController(web_ui) {
   // chrome://identity-internals source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(

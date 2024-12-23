@@ -38,11 +38,11 @@
 namespace ui {
 class ListSelectionModel;
 class PresentationTimeRecorder;
-}
+}  // namespace ui
 namespace views {
 class View;
 class ViewTracker;
-}
+}  // namespace views
 namespace tabs {
 class TabModel;
 }
@@ -254,7 +254,7 @@ class TabDragController : public views::WidgetObserver,
   class DraggedTabsClosedTracker;
 
   // Used to indicate the direction the mouse has moved when attached.
-  static const int kMovedMouseLeft  = 1 << 0;
+  static const int kMovedMouseLeft = 1 << 0;
   static const int kMovedMouseRight = 1 << 1;
 
   enum class DragState {
@@ -304,18 +304,11 @@ class TabDragController : public views::WidgetObserver,
   };
 
   // Enumeration of the possible positions the detached tab may detach from.
-  enum DetachPosition {
-    DETACH_BEFORE,
-    DETACH_AFTER,
-    DETACH_ABOVE_OR_BELOW
-  };
+  enum DetachPosition { DETACH_BEFORE, DETACH_AFTER, DETACH_ABOVE_OR_BELOW };
 
   // Specifies what should happen when a drag motion exits the tab strip region
   // in an attempt to detach a tab.
-  enum DetachBehavior {
-    DETACHABLE,
-    NOT_DETACHABLE
-  };
+  enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
 
   // Indicates what should happen after invoking DragBrowserToNewTabStrip().
   enum DragBrowserResultType {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
+
 #include "base/time/time.h"
 
 namespace safety_hub {

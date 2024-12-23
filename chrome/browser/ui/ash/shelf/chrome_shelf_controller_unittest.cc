@@ -258,15 +258,17 @@ int GetPrimaryDisplayId() {
 }
 
 bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
-  if (kSizeInDip != image.width() || kSizeInDip != image.height())
+  if (kSizeInDip != image.width() || kSizeInDip != image.height()) {
     return false;
+  }
 
   const std::vector<ui::ResourceScaleFactor>& scale_factors =
       ui::GetSupportedResourceScaleFactors();
   for (const auto scale_factor : scale_factors) {
     const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
-    if (!image.HasRepresentation(scale))
+    if (!image.HasRepresentation(scale)) {
       return false;
+    }
 
     const gfx::ImageSkiaRep& representation = image.GetRepresentation(scale);
     if (representation.is_null() ||
@@ -407,8 +409,9 @@ class TestShelfControllerHelper : public ShelfControllerHelper {
   bool IsValidIDForCurrentUser(const std::string& id) const override {
     for (TabToStringMap::const_iterator i = tab_id_map_.begin();
          i != tab_id_map_.end(); ++i) {
-      if (i->second == id)
+      if (i->second == id) {
         return true;
+      }
     }
     return false;
   }
@@ -470,18 +473,21 @@ void UpdateAppRegistryCache(Profile* profile,
       std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
   app->app_id = app_id;
 
-  if (block)
+  if (block) {
     app->readiness = apps::Readiness::kDisabledByPolicy;
-  else
+  } else {
     app->readiness = apps::Readiness::kReady;
+  }
 
-  if (pause)
+  if (pause) {
     app->paused = true;
-  else
+  } else {
     app->paused = false;
+  }
 
-  if (show_in_shelf.has_value())
+  if (show_in_shelf.has_value()) {
     app->show_in_shelf = show_in_shelf;
+  }
 
   apps.push_back(std::move(app));
 
@@ -560,8 +566,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         &(apps::AppServiceProxyFactory::GetForProfile(profile())
               ->AppRegistryCache()));
 
-    if (auto_start_arc_test_)
+    if (auto_start_arc_test_) {
       arc_test_.SetUp(profile());
+    }
 
     // Wait until |extension_system| is signaled as started.
     base::RunLoop run_loop;
@@ -602,8 +609,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
         Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
     extension_service_->AddExtension(extension_chrome_.get());
 
-    if (StartWebAppProviderForMainProfile())
+    if (StartWebAppProviderForMainProfile()) {
       StartWebAppProvider(profile());
+    }
   }
 
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
@@ -738,9 +746,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   // Destroy the controller instance and clear the local pointer.
-  void ResetShelfController() {
-    shelf_controller_.reset();
-  }
+  void ResetShelfController() { shelf_controller_.reset(); }
 
   // Destroy and recreate the controller; clear and reinitialize the ShelfModel.
   // Returns a pointer to the uninitialized controller, owned by shell delegate.
@@ -855,8 +861,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   syncer::StringOrdinal GeneratePinPosition(int position) {
     syncer::StringOrdinal ordinal_position =
         syncer::StringOrdinal::CreateInitialOrdinal();
-    for (int i = 0; i < position; ++i)
+    for (int i = 0; i < position; ++i) {
       ordinal_position = ordinal_position.CreateAfter();
+    }
     return ordinal_position;
   }
 
@@ -959,8 +966,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                        std::vector<std::string>* app_ids) {
     app_ids->clear();
     for (const auto& item : model_->items()) {
-      if (item.type == ash::TYPE_PINNED_APP)
+      if (item.type == ash::TYPE_PINNED_APP) {
         app_ids->push_back(item.id.app_id);
+      }
     }
   }
 
@@ -971,8 +979,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   std::string GetPinnedAppStatus() {
     std::string result;
     for (int i = 0; i < model_->item_count(); i++) {
-      if (!result.empty())
+      if (!result.empty()) {
         result.append(", ");
+      }
       switch (model_->items()[i].type) {
         case ash::TYPE_APP: {
           if (IsPlatformApp(model_->items()[i].id)) {
@@ -1074,8 +1083,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   // IDs matches the order of associated shelf items in the shelf model.
   std::vector<std::string> GetAppsShownInShelf() const {
     std::vector<std::string> app_ids;
-    for (auto& item : model_->items())
+    for (auto& item : model_->items()) {
       app_ids.push_back(item.id.app_id);
+    }
     return app_ids;
   }
 
@@ -3884,8 +3894,9 @@ void CheckAppMenu(ChromeShelfController* controller,
                   std::u16string expected_item_titles[]) {
   auto items = controller->GetAppMenuItemsForTesting(item);
   ASSERT_EQ(expected_item_count, items.size());
-  for (size_t i = 0; i < expected_item_count; i++)
+  for (size_t i = 0; i < expected_item_count; i++) {
     EXPECT_EQ(expected_item_titles[i], items[i].title);
+  }
 }
 
 // Check that browsers get reflected correctly in the shelf menu.
@@ -4953,8 +4964,9 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 
  protected:
   void SetUp() override {
-    if (GetParam())
+    if (GetParam()) {
       arc::SetArcAlwaysStartWithoutPlayStoreForTesting();
+    }
     // To prevent crash on test exit and pending decode request.
     ArcAppIcon::DisableSafeDecodingForTesting();
     ArcDefaultAppList::UseTestAppsDirectory();

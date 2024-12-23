@@ -187,10 +187,11 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
     case ash::TOGGLE_PIN:
-      if (controller_->IsAppPinned(item_.id.app_id))
+      if (controller_->IsAppPinned(item_.id.app_id)) {
         controller_->UnpinAppWithID(item_.id.app_id);
-      else
+      } else {
         controller_->shelf_model()->PinExistingItemWithID(item_.id.app_id);
+      }
       break;
     case ash::UNINSTALL:
       UninstallApp(controller_->profile(), item_.id.app_id);
@@ -205,10 +206,12 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     int string_id) const {
   switch (type) {
     case ash::LAUNCH_NEW:
-      if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_TAB)
+      if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_TAB) {
         return views::kNewTabIcon;
-      if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW)
+      }
+      if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW) {
         return views::kNewWindowIcon;
+      }
       return views::kOpenIcon;
     case ash::MENU_CLOSE:
       return views::kCloseIcon;
@@ -303,8 +306,9 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
                                             ash::CommandId type,
                                             int string_id) {
   // Do not include disabled items.
-  if (!IsCommandIdEnabled(type))
+  if (!IsCommandIdEnabled(type)) {
     return;
+  }
 
   const gfx::VectorIcon& icon = GetCommandIdVectorIcon(type, string_id);
   if (!icon.is_empty()) {

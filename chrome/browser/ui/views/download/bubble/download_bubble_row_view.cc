@@ -694,8 +694,9 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     return true;
   }
 
-  if (!drag_start_point_)
+  if (!drag_start_point_) {
     drag_start_point_ = event.location();
+  }
   if (!dragging_) {
     dragging_ = ExceededDragThreshold(event.location() - *drag_start_point_);
   } else if ((info_->model()->GetState() == download::DownloadItem::COMPLETE) &&

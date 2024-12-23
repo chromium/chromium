@@ -25,23 +25,23 @@
 namespace {
 class DefaultBrowserPromptManagerObserver
     : public DefaultBrowserPromptManager::Observer {
-public:
+ public:
   MOCK_METHOD(void, OnShowAppMenuPromptChanged, (), (override));
 };
 
 class InfoBarManagerObserver : public infobars::InfoBarManager::Observer {
-public:
+ public:
   MOCK_METHOD(void, OnInfoBarAdded, (infobars::InfoBar * infobar), (override));
 };
-} // namespace
+}  // namespace
 
 class DefaultBrowserPromptManagerTest : public BrowserWithTestWindowTest {
-public:
+ public:
   DefaultBrowserPromptManagerTest()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-protected:
+ protected:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -67,11 +67,12 @@ protected:
 
   void TestShouldShowInfoBarPrompt(
       std::optional<base::TimeDelta> last_declined_time_delta,
-      std::optional<int> declined_count, bool expect_infobar_exists) {
+      std::optional<int> declined_count,
+      bool expect_infobar_exists) {
     if (last_declined_time_delta.has_value()) {
-      local_state()->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
-                             base::Time::Now() -
-                                 last_declined_time_delta.value());
+      local_state()->SetTime(
+          prefs::kDefaultBrowserLastDeclinedTime,
+          base::Time::Now() - last_declined_time_delta.value());
     } else {
       local_state()->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
     }
@@ -85,7 +86,7 @@ protected:
     manager()->CloseAllPrompts(
         DefaultBrowserPromptManager::CloseReason::kAccept);
 
-    infobars::ContentInfoBarManager *infobar_manager =
+    infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(0));
     infobar_observation_.Observe(infobar_manager);
@@ -97,11 +98,11 @@ protected:
     infobar_observation_.Reset();
   }
 
-  PrefService *local_state() { return g_browser_process->local_state(); }
+  PrefService* local_state() { return g_browser_process->local_state(); }
 
-  DefaultBrowserPromptManager *manager() { return manager_; }
+  DefaultBrowserPromptManager* manager() { return manager_; }
 
-private:
+ private:
   raw_ptr<DefaultBrowserPromptManager> manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -140,7 +141,7 @@ TEST_F(DefaultBrowserPromptManagerTest, ShowsAppMenuItemWithParamEnabled) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
-  auto *manager = DefaultBrowserPromptManager::GetInstance();
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
   ASSERT_FALSE(manager->get_show_app_menu_item());
 
   manager->MaybeShowPrompt();
@@ -151,7 +152,7 @@ TEST_F(DefaultBrowserPromptManagerTest, HidesAppMenuItemWithParamDisabled) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kShowDefaultBrowserAppMenuItem.name, "false"}});
 
-  auto *manager = DefaultBrowserPromptManager::GetInstance();
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
   ASSERT_FALSE(manager->get_show_app_menu_item());
 
   manager->MaybeShowPrompt();
@@ -162,7 +163,7 @@ TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemHiddenOnPromptAccept) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
-  auto *manager = DefaultBrowserPromptManager::GetInstance();
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
   ASSERT_TRUE(manager->get_show_app_menu_item());
 
@@ -174,7 +175,7 @@ TEST_F(DefaultBrowserPromptManagerTest, AppMenuItemPersistsOnPromptDismissed) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
       {{features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
-  auto *manager = DefaultBrowserPromptManager::GetInstance();
+  auto* manager = DefaultBrowserPromptManager::GetInstance();
   manager->MaybeShowPrompt();
   ASSERT_TRUE(manager->get_show_app_menu_item());
 
@@ -373,9 +374,9 @@ TEST_F(DefaultBrowserPromptManagerTest, StopShowingIfFirstShownTimeTooOld) {
        {features::kRepromptDuration.name, "1d"}});
   local_state()->SetTime(prefs::kDefaultBrowserFirstShownTime,
                          base::Time::Now() - base::Seconds(1));
-  local_state()->SetTime(prefs::kDefaultBrowserLastDeclinedTime,
-                         base::Time::Now() - base::Days(1) -
-                             base::Microseconds(1));
+  local_state()->SetTime(
+      prefs::kDefaultBrowserLastDeclinedTime,
+      base::Time::Now() - base::Days(1) - base::Microseconds(1));
   local_state()->SetInteger(prefs::kDefaultBrowserDeclinedCount, 1);
   chrome::startup::default_prompt::MaybeResetAppMenuPromptPrefs(profile());
   manager()->MaybeShowPrompt();

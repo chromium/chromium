@@ -131,8 +131,9 @@ void SystemInfoUIHandler::HandleRequestSystemInfo(
 void SystemInfoUIHandler::OnSystemInfo(
     std::unique_ptr<SystemLogsResponse> sys_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!sys_info)
+  if (!sys_info) {
     return;
+  }
   base::Value::List data;
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {

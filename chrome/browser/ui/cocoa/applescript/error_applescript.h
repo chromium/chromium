@@ -36,6 +36,6 @@ enum class Error {
 
 // This function sets an error message to the currently executing command.
 void SetError(Error error_code);
-}
+}  // namespace AppleScript
 
 #endif  // CHROME_BROWSER_UI_COCOA_APPLESCRIPT_ERROR_APPLESCRIPT_H_

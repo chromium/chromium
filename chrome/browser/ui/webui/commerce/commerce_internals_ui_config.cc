@@ -27,8 +27,7 @@ CommerceInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
 
   Profile* profile = Profile::FromWebUI(web_ui);
   return std::make_unique<CommerceInternalsUI>(
-      web_ui,
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
+      web_ui, commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
 }
 
 }  // namespace commerce

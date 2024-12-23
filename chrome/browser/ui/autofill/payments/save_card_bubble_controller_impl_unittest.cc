@@ -583,8 +583,7 @@ class SaveCardBubbleSingletonTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          SaveCardBubbleSingletonTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(SaveCardBubbleSingletonTest, OnlyOneActiveBubble) {
   base::HistogramTester histogram_tester;

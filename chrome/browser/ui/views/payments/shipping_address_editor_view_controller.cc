@@ -65,8 +65,9 @@ ShippingAddressEditorViewController::ShippingAddressEditorViewController(
       profile_to_edit_(profile),
       chosen_country_index_(kInvalidCountryIndex),
       failed_to_load_region_data_(false) {
-  if (profile_to_edit_)
+  if (profile_to_edit_) {
     temporary_profile_ = *profile_to_edit_;
+  }
   UpdateCountries(/*model=*/nullptr);
   UpdateEditorFields();
 }
@@ -94,13 +95,15 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
   // is okay to initially build this profile with an empty country.
   autofill::AutofillProfile profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
-  if (!SaveFieldsToProfile(&profile, /*ignore_errors=*/false))
+  if (!SaveFieldsToProfile(&profile, /*ignore_errors=*/false)) {
     return false;
+  }
   if (!profile_to_edit_) {
     // Add the profile (will not add a duplicate).
-    if (!is_incognito())
+    if (!is_incognito()) {
       state()->GetPersonalDataManager()->address_data_manager().AddProfile(
           profile);
+    }
     std::move(on_added_).Run(profile);
     on_edited_.Reset();
   } else {
@@ -109,9 +112,10 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     bool success = SaveFieldsToProfile(profile_to_edit_,
                                        /*ignore_errors=*/false);
     DCHECK(success);
-    if (!is_incognito())
+    if (!is_incognito()) {
       state()->GetPersonalDataManager()->address_data_manager().UpdateProfile(
           *profile_to_edit_);
+    }
     state()->profile_comparator()->Invalidate(*profile_to_edit_);
     std::move(on_edited_).Run();
     on_added_.Reset();
@@ -137,8 +141,9 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       model->SetCountries(*state()->GetPersonalDataManager(),
                           base::RepeatingCallback<bool(const std::string&)>(),
                           state()->GetApplicationLocale());
-      if (model->countries().size() != countries_.size())
+      if (model->countries().size() != countries_.size()) {
         UpdateCountries(model.get());
+      }
       return model;
     }
     case autofill::ADDRESS_HOME_STATE: {
@@ -169,8 +174,9 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
 void ShippingAddressEditorViewController::OnPerformAction(
     ValidatingCombobox* sender) {
   EditorViewController::OnPerformAction(sender);
-  if (sender->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
+  if (sender->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)) {
     return;
+  }
   DCHECK(sender->GetSelectedIndex().has_value());
   if (chosen_country_index_ != sender->GetSelectedIndex()) {
     chosen_country_index_ = sender->GetSelectedIndex().value();
@@ -258,8 +264,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     TextfieldValueChanged(views::Textfield* textfield, bool was_blurred) {
-  if (!was_blurred)
+  if (!was_blurred) {
     return true;
+  }
 
   std::u16string error_message;
   bool is_valid = ValidateValue(textfield->GetText(), &error_message);
@@ -290,8 +297,9 @@ void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ValidateValue(const std::u16string& value, std::u16string* error_message) {
-  if (!controller_ || !controller_->spec())
+  if (!controller_ || !controller_->spec()) {
     return false;
+  }
 
   // Show errors from merchant's retry() call. Note that changing the selected
   // shipping address will clear the validation errors from retry().
@@ -301,8 +309,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
       value == controller_->GetValueForType(*invalid_shipping_profile,
                                             field_.type)) {
     *error_message = controller_->spec()->GetShippingAddressError(field_.type);
-    if (!error_message->empty())
+    if (!error_message->empty()) {
       return false;
+    }
   }
 
   if (!value.empty()) {
@@ -406,8 +415,9 @@ void ShippingAddressEditorViewController::UpdateCountries(
         autofill::ADDRESS_HOME_COUNTRY, state()->GetApplicationLocale()));
     for (chosen_country_index_ = 0; chosen_country_index_ < countries_.size();
          ++chosen_country_index_) {
-      if (chosen_country == countries_[chosen_country_index_].second)
+      if (chosen_country == countries_[chosen_country_index_].second) {
         break;
+      }
     }
     // Make sure the the country was actually found in |countries_| and was not
     // empty, otherwise set |chosen_country_index_| to index 0, which is the
@@ -433,8 +443,9 @@ void ShippingAddressEditorViewController::UpdateCountries(
 void ShippingAddressEditorViewController::UpdateEditorFields() {
   editor_fields_.clear();
   std::string chosen_country_code;
-  if (chosen_country_index_ < countries_.size())
+  if (chosen_country_index_ < countries_.size()) {
     chosen_country_code = countries_[chosen_country_index_].first;
+  }
 
   std::vector<std::vector<autofill::AutofillAddressUIComponent>> components;
   autofill::GetAddressComponents(
@@ -516,8 +527,9 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
         profile->SetInfo(autofill::ADDRESS_HOME_COUNTRY, country, locale);
     LOG_IF(ERROR, !success && !ignore_errors)
         << "Can't set profile country to: " << country;
-    if (!success && !ignore_errors)
+    if (!success && !ignore_errors) {
       return false;
+    }
   }
 
   bool success = true;
@@ -532,16 +544,18 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
     LOG_IF(ERROR, !success && !ignore_errors)
         << "Can't setinfo(" << field.second.type << ", "
         << field.first->GetText();
-    if (!success && !ignore_errors)
+    if (!success && !ignore_errors) {
       return false;
+    }
   }
   for (const auto& field : comboboxes()) {
     // ValidatingCombobox* is the key, EditorField is the value.
     ValidatingCombobox* validating_combobox = field.first;
     // The country has already been dealt with.
     if (validating_combobox->GetID() ==
-        GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
+        GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)) {
       continue;
+    }
     if (validating_combobox->IsValid()) {
       success =
           profile->SetInfo(field.second.type,
@@ -555,8 +569,9 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
         << "Can't setinfo(" << field.second.type << ", "
         << validating_combobox->GetTextForRow(
                validating_combobox->GetSelectedIndex().value());
-    if (!success && !ignore_errors)
+    if (!success && !ignore_errors) {
       return false;
+    }
   }
   profile->set_language_code(language_code_);
   return success;
@@ -564,12 +579,14 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
 
 void ShippingAddressEditorViewController::OnComboboxModelChanged(
     ValidatingCombobox* combobox) {
-  if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_STATE))
+  if (combobox->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_STATE)) {
     return;
+  }
   autofill::RegionComboboxModel* model =
       static_cast<autofill::RegionComboboxModel*>(combobox->GetModel());
-  if (model->IsPendingRegionDataLoad())
+  if (model->IsPendingRegionDataLoad()) {
     return;
+  }
   if (model->failed_to_load_data()) {
     failed_to_load_region_data_ = true;
     // It is safe to update synchronously since the change comes from the model

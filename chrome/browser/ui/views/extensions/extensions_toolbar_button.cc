@@ -130,8 +130,9 @@ void ExtensionsToolbarButton::OnBoundsChanged(
   // size and the preferred button size.
 
   const gfx::Size current_size = size();
-  if (current_size.IsEmpty())
+  if (current_size.IsEmpty()) {
     return;
+  }
   const int icon_size = GetIconSize();
   gfx::Insets new_insets;
   if (icon_size < current_size.width()) {

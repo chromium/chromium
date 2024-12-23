@@ -52,8 +52,7 @@ ui::ColorTransform IncreaseLightness(ui::ColorTransform input_transform,
     result.l += (1 - result.l) * percent;
     const SkColor result_color =
         color_utils::HSLToSkColor(result, SkColorGetA(color));
-    DVLOG(2) << "ColorTransform IncreaseLightness:"
-             << " Percent: " << percent
+    DVLOG(2) << "ColorTransform IncreaseLightness:" << " Percent: " << percent
              << " Transform Color: " << ui::SkColorName(color)
              << " Result Color: " << ui::SkColorName(result_color);
     return result_color;
@@ -228,7 +227,7 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                    /* 90% opacity */ 0.9 * SK_AlphaOPAQUE);
   mixer[kColorNewTabPageText] = SelectBasedOnDarkInput(
       element_background_color, gfx::kGoogleGrey200, gfx::kGoogleGrey900);
-      // Styling for Doodle Share Button.
+  // Styling for Doodle Share Button.
   mixer[kColorNewTabPageDoodleShareButtonBackground] = element_background_color;
   mixer[kColorNewTabPageDoodleShareButtonIcon] = primary_foreground_color;
 }
@@ -321,8 +320,10 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageTextLight] =
       IncreaseLightness(kColorNewTabPageText, 0.40);
 
-  mixer[kColorSearchboxAnswerIconBackground] = {SkColorSetRGB(0xD3, 0xE3, 0xFD)};
-  mixer[kColorSearchboxAnswerIconForeground] = {SkColorSetRGB(0x04, 0x1E, 0x49)};
+  mixer[kColorSearchboxAnswerIconBackground] = {
+      SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorSearchboxAnswerIconForeground] = {
+      SkColorSetRGB(0x04, 0x1E, 0x49)};
   mixer[kColorSearchboxBackground] = {SK_ColorWHITE};
   mixer[kColorSearchboxBackgroundHovered] = {SK_ColorWHITE};
   mixer[kColorSearchboxBorder] = {
@@ -339,7 +340,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       kColorSearchboxResultsBackgroundHovered};
 
   mixer[kColorSearchboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
-  mixer[kColorSearchboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorSearchboxResultsActionChipIcon] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
   mixer[kColorSearchboxResultsActionChipFocusOutline] = {
       SkColorSetRGB(0x0B, 0x57, 0xD0)};
   mixer[kColorSearchboxResultsDimSelected] = {gfx::kGoogleGrey700};

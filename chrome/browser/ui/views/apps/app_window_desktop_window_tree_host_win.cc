@@ -20,8 +20,7 @@ AppWindowDesktopWindowTreeHostWin::AppWindowDesktopWindowTreeHostWin(
     views::DesktopNativeWidgetAura* desktop_native_widget_aura)
     : DesktopWindowTreeHostWin(app_window->widget(),
                                desktop_native_widget_aura),
-      app_window_(app_window) {
-}
+      app_window_(app_window) {}
 
 AppWindowDesktopWindowTreeHostWin::~AppWindowDesktopWindowTreeHostWin() =
     default;

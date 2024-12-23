@@ -187,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 // OpenURLFromTab goes through a different code path than traditional popups
 // that use window.open(). Make sure the tracker is created in those cases.
 // Disabled due to flakiness. See crbug.com/1186441.
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker) {
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
+                       DISABLED_ControlClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
@@ -230,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker
 }
 
 // Disabled due to flakiness. See crbug.com/1186441.
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ShiftClick_HasTracker) {
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
+                       DISABLED_ShiftClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
@@ -568,9 +570,11 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 
 // TODO(crbug.com/40730174): Test is flaky on Lacros, Linux Ozone Wayland.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
+#define MAYBE_PopupNoRedirect_RedirectCountZero \
+  DISABLED_PopupNoRedirect_RedirectCountZero
 #else
-#define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
+#define MAYBE_PopupNoRedirect_RedirectCountZero \
+  PopupNoRedirect_RedirectCountZero
 #endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupNoRedirect_RedirectCountZero) {

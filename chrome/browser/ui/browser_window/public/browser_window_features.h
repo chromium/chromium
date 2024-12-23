@@ -198,8 +198,7 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<DataSharingOpenGroupHelper> data_sharing_open_group_helper_;
 
-  std::unique_ptr<media_router::CastBrowserController>
-      cast_browser_controller_;
+  std::unique_ptr<media_router::CastBrowserController> cast_browser_controller_;
 
 #if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicTabIndicatorHelper> glic_tab_indicator_helper_;

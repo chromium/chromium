@@ -171,17 +171,16 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   BrowserList* browsers = BrowserList::GetInstance();
   ASSERT_EQ(browsers->size(), 4u);
   // Verify the chrome browser.
-  EXPECT_TRUE(
-      base::ranges::any_of(*browsers, [](Browser* browser) {
-        TabStripModel* tab_strip_model = browser->tab_strip_model();
-        return tab_strip_model->count() == 3 &&
-               tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
-                   GURL("https://www.reddit.com/") &&
-               tab_strip_model->GetWebContentsAt(1)->GetVisibleURL() ==
-                   GURL("https://www.figma.com/") &&
-               tab_strip_model->GetWebContentsAt(2)->GetVisibleURL() ==
-                   GURL("https://www.notion.so/");
-      }));
+  EXPECT_TRUE(base::ranges::any_of(*browsers, [](Browser* browser) {
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    return tab_strip_model->count() == 3 &&
+           tab_strip_model->GetWebContentsAt(0)->GetVisibleURL() ==
+               GURL("https://www.reddit.com/") &&
+           tab_strip_model->GetWebContentsAt(1)->GetVisibleURL() ==
+               GURL("https://www.figma.com/") &&
+           tab_strip_model->GetWebContentsAt(2)->GetVisibleURL() ==
+               GURL("https://www.notion.so/");
+  }));
 
   // Verify the PWA.
   EXPECT_TRUE(base::ranges::any_of(*browsers, [](Browser* browser) {

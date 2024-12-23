@@ -29,8 +29,9 @@ class TabHoverCardBubbleViewFilenameEliderTest {
     auto render_text = gfx::RenderText::CreateRenderText();
     render_text->set_glyph_width_for_test(kGlyphWidth);
     render_text->set_glyph_height_for_test(kGlyphHeight);
-    if (!text.empty())
+    if (!text.empty()) {
       render_text->SetText(text);
+    }
     return render_text;
   }
 

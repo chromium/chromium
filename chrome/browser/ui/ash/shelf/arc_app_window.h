@@ -30,8 +30,7 @@ class Widget;
 class Profile;
 
 // A ui::BaseWindow for a chromeos launcher to control ARC applications.
-class ArcAppWindow : public AppWindowBase,
-                     public AppIconLoaderDelegate {
+class ArcAppWindow : public AppWindowBase, public AppIconLoaderDelegate {
  public:
   ArcAppWindow(const arc::ArcAppShelfId& app_shelf_id,
                views::Widget* widget,

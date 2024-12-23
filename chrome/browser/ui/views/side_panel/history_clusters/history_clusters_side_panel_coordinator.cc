@@ -147,8 +147,9 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
 
 GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
   std::string query;
-  if (history_clusters_ui_)
+  if (history_clusters_ui_) {
     query = history_clusters_ui_->GetLastQueryIssued();
+  }
 
   return query.empty() ? GURL(history_clusters::GetChromeUIHistoryClustersURL())
                        : history_clusters::GetFullJourneysUrlForQuery(query);

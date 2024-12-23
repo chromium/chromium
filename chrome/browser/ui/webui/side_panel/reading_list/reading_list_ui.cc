@@ -58,8 +58,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
       {"cancelA11yLabel", IDS_CANCEL},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
@@ -105,8 +106,9 @@ void ReadingListUI::BindInterface(
 void ReadingListUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
         pending_receiver) {
-  if (help_bubble_handler_factory_receiver_.is_bound())
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
     help_bubble_handler_factory_receiver_.reset();
+  }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -122,6 +124,7 @@ void ReadingListUI::CreateHelpBubbleHandler(
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {
-  if (page_handler_)
+  if (page_handler_) {
     page_handler_->SetActiveTabURL(url);
+  }
 }

@@ -288,7 +288,8 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     view->AddChildView(CreateRequestExpirationDateView());
   }
 
-  if (std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView()) {
+  if (std::unique_ptr<views::View> legal_message_view =
+          CreateLegalMessageView()) {
     legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
     view->AddChildView(std::move(legal_message_view));
   }
@@ -414,8 +415,9 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
 }
 
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {
-  if (controller())
+  if (controller()) {
     controller()->OnLegalMessageLinkClicked(url);
+  }
 }
 
 void SaveCardOfferBubbleViews::ShowThrobber() {

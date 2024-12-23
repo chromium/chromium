@@ -83,8 +83,9 @@ class MockPresentationRequestSourceObserver
   }
 
   ~MockPresentationRequestSourceObserver() override {
-    if (starter_)
+    if (starter_) {
       starter_->RemovePresentationRequestSourceObserver(this);
+    }
   }
 
   MOCK_METHOD(void, OnSourceUpdated, (std::u16string&));
@@ -348,8 +349,9 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
         media_route_starter()->CreateRouteParameters(sink.id(), cast_mode);
     EXPECT_TRUE(params);
 
-    if (cast_mode == MediaCastMode::DESKTOP_MIRROR)
+    if (cast_mode == MediaCastMode::DESKTOP_MIRROR) {
       set_screen_capture_allowed_for_testing(true);
+    }
 
     StartRoute(std::move(params));
   }

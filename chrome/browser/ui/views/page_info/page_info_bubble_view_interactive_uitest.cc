@@ -71,8 +71,9 @@ class FocusTracker {
   // is already in the desired state, returns immediately, otherwise waits until
   // it is.
   void WaitForFocus(bool target_state_is_focused) {
-    if (focused_ == target_state_is_focused)
+    if (focused_ == target_state_is_focused) {
       return;
+    }
     target_state_is_focused_ = target_state_is_focused;
     run_loop_.Run();
   }
@@ -83,14 +84,16 @@ class FocusTracker {
 
   void OnFocused() {
     focused_ = true;
-    if (run_loop_.running() && target_state_is_focused_ == focused_)
+    if (run_loop_.running() && target_state_is_focused_ == focused_) {
       run_loop_.Quit();
+    }
   }
 
   void OnBlurred() {
     focused_ = false;
-    if (run_loop_.running() && target_state_is_focused_ == focused_)
+    if (run_loop_.running() && target_state_is_focused_ == focused_) {
       run_loop_.Quit();
+    }
   }
 
  private:
@@ -124,10 +127,12 @@ class WebContentsFocusTracker : public FocusTracker,
  private:
   static bool IsWebContentsFocused(content::WebContents* web_contents) {
     Browser* const browser = chrome::FindBrowserWithTab(web_contents);
-    if (!browser)
+    if (!browser) {
       return false;
-    if (browser->tab_strip_model()->GetActiveWebContents() != web_contents)
+    }
+    if (browser->tab_strip_model()->GetActiveWebContents() != web_contents) {
       return false;
+    }
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->contents_web_view()
         ->HasFocus();

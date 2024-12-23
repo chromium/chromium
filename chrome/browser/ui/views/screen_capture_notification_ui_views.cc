@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/screen_capture_notification_ui.h"
-
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -11,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -63,16 +62,16 @@ class NotificationBarClientView : public views::ClientView {
 
  public:
   NotificationBarClientView(views::Widget* widget, views::View* view)
-      : views::ClientView(widget, view) {
-  }
+      : views::ClientView(widget, view) {}
   NotificationBarClientView(const NotificationBarClientView&) = delete;
   NotificationBarClientView& operator=(const NotificationBarClientView&) =
       delete;
   ~NotificationBarClientView() override = default;
 
   void SetClientRect(const gfx::Rect& rect) {
-    if (rect_ == rect)
+    if (rect_ == rect) {
       return;
+    }
     rect_ = rect;
     OnPropertyChanged(&rect_, views::kPropertyEffectsNone);
   }
@@ -80,11 +79,13 @@ class NotificationBarClientView : public views::ClientView {
 
   // views::ClientView:
   int NonClientHitTest(const gfx::Point& point) override {
-    if (!bounds().Contains(point))
+    if (!bounds().Contains(point)) {
       return HTNOWHERE;
+    }
     // The whole window is HTCAPTION, except the |rect_|.
-    if (rect_.Contains(gfx::PointAtOffsetFromOrigin(point - origin())))
+    if (rect_.Contains(gfx::PointAtOffsetFromOrigin(point - origin()))) {
       return HTCLIENT;
+    }
 
     return HTCAPTION;
   }

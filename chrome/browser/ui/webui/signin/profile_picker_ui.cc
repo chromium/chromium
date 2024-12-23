@@ -68,8 +68,9 @@ bool IsBrowserSigninAllowed() {
   const base::Value* browser_signin_value = policies.GetValue(
       policy::key::kBrowserSignin, base::Value::Type::INTEGER);
 
-  if (!browser_signin_value)
+  if (!browser_signin_value) {
     return true;
+  }
 
   return static_cast<policy::BrowserSigninMode>(
              browser_signin_value->GetInt()) !=
@@ -91,8 +92,9 @@ std::string GetManagedDeviceDisclaimer() {
   int managed_by_id =
       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION;
 #endif
-  if (!manager)
+  if (!manager) {
     return std::string();
+  }
   if (manager->empty()) {
     return l10n_util::GetStringUTF8(managed_id);
   }

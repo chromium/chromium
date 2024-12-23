@@ -96,8 +96,9 @@ bool CanShare() {
   for (NSSharingService* service in services) {
     // Don't include "Add to Reading List".
     if ([service.name
-            isEqualToString:NSSharingServiceNameAddToSafariReadingList])
+            isEqualToString:NSSharingServiceNameAddToSafariReadingList]) {
       continue;
+    }
     NSMenuItem* item = [self menuItemForService:service];
     [menu addItem:item];
   }

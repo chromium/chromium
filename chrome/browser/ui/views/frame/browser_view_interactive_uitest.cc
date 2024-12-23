@@ -151,8 +151,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
 #else
   // In immersive fullscreen mode, the top view should show up; otherwise, it
   // always hides.
-  if (browser_view->immersive_mode_controller()->IsEnabled())
+  if (browser_view->immersive_mode_controller()->IsEnabled()) {
     top_view_in_browser_fullscreen = true;
+  }
 #endif
   EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be enabled if top view is shown.
@@ -229,8 +230,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
 
   // If the bookmark bar is not showing, enable showing it so that we can check
   // its state.
-  if (!browser_view->IsBookmarkBarVisible())
+  if (!browser_view->IsBookmarkBarVisible()) {
     chrome::ToggleBookmarkBar(browser());
+  }
 #if BUILDFLAG(IS_MAC)
   // Disable showing toolbar in fullscreen mode to make its behavior similar to
   // other platforms.
@@ -287,16 +289,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
   // This event is asynchronous, it is emitted as a response to a system window
   // event. It is possible that we haven't received it yet when we run this test
   // and we need to explicitly wait for it.
-  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 0)
+  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 0) {
     ax_observer_.WaitForEvent(ax::mojom::Event::kWindowActivated);
+  }
   ASSERT_EQ(1, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 
   // Create a new browser window and wait for event again.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 1)
+  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 1) {
     ax_observer_.WaitForEvent(ax::mojom::Event::kWindowActivated);
+  }
   ASSERT_EQ(2, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 }
 #endif

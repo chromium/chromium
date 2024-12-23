@@ -272,8 +272,9 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::optional<int> response_code;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  }
 
   // Check for network or HTTP errors.
   if (url_loader->NetError() != net::OK || !response_body) {

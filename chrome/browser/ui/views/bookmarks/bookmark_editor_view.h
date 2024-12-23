@@ -31,7 +31,7 @@ namespace views {
 class LabelButton;
 class MenuRunner;
 class TreeView;
-}
+}  // namespace views
 
 class BookmarkEditorViewTest;
 class GURL;

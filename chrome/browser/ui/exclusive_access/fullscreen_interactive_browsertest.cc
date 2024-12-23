@@ -54,8 +54,9 @@ class FullscreenWebContentsObserver : public content::WebContentsObserver {
   }
 
   void Wait() {
-    if (!found_value_)
+    if (!found_value_) {
       run_loop_.Run();
+    }
   }
   void WaitForExit() {
     if (!did_exit_) {

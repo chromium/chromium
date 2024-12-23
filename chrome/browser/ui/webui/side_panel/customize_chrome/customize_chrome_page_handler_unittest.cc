@@ -336,7 +336,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   base::MockRepeatingCallback<void(const GURL& gurl)> mock_open_url_callback_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;
   raw_ptr<NtpCustomBackgroundServiceObserver>
-    ntp_custom_background_service_observer_;
+      ntp_custom_background_service_observer_;
   raw_ptr<NtpBackgroundServiceObserver> ntp_background_service_observer_;
 };
 

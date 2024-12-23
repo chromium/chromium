@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_CLIPBOARD_HISTORY_URL_TITLE_FETCHER_IMPL_H_
 
 #include "ash/clipboard/clipboard_history_url_title_fetcher.h"
-
 #include "base/task/cancelable_task_tracker.h"
 
 class GURL;

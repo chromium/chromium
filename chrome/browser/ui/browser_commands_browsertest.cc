@@ -147,18 +147,21 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ReloadSelectedTabs) {
     watcher_vec[i].SetWebContents(tab);
   }
 
-  for (ReloadObserver& watcher : watcher_vec)
+  for (ReloadObserver& watcher : watcher_vec) {
     EXPECT_EQ(0, watcher.load_count());
+  }
 
   // Add two tabs to the selection (the last one created remains selected) and
   // trigger a reload command on all of them.
-  for (int i = 0; i < kTabCount - 1; i++)
+  for (int i = 0; i < kTabCount - 1; i++) {
     browser()->tab_strip_model()->ToggleSelectionAt(i + 1);
+  }
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_RELOAD));
 
   int load_sum = 0;
-  for (ReloadObserver& watcher : watcher_vec)
+  for (ReloadObserver& watcher : watcher_vec) {
     load_sum += watcher.load_count();
+  }
   EXPECT_EQ(kTabCount, load_sum);
 }
 
@@ -222,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, DISABLED_ReloadBreakageUKM) {
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
   auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i)
+    for (unsigned int i = 0; i < num_tabs; ++i) {
       chrome::NewTab(browser);
+    }
   };
 
   // Single Tab Move to New Window.
@@ -255,8 +259,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
-    for (unsigned int i = 0; i < num_tabs; ++i)
+    for (unsigned int i = 0; i < num_tabs; ++i) {
       chrome::NewTab(browser);
+    }
   };
 
   // Create another window, and add tabs.

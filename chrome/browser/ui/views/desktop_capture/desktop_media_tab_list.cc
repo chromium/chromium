@@ -193,8 +193,9 @@ void TabListViewObserver::OnSelectionChanged() {
 
 void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (virtual_keycode == ui::VKEY_RETURN)
+  if (virtual_keycode == ui::VKEY_RETURN) {
     controller_->AcceptSource();
+  }
 }
 
 std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
@@ -351,8 +352,9 @@ void DesktopMediaTabList::OnThemeChanged() {
 std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::optional<size_t> row = table_->GetFirstSelectedRow();
-  if (!row.has_value())
+  if (!row.has_value()) {
     return std::nullopt;
+  }
   return controller_->GetSource(row.value()).id;
 }
 

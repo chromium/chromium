@@ -392,8 +392,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   void TearDown() override {
     if (profile_) {
       auto* partition = profile_->GetDefaultStoragePartition();
-      if (partition)
+      if (partition) {
         partition->WaitForDeletionTasksForTesting();
+      }
     }
   }
 
@@ -1803,9 +1804,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   // permissions are correctly transformed for usage by JS.
   const GURL url1("https://example.com");
   const GURL url2("http://example.com");
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   clock.Advance(base::Hours(2));
   clock.Advance(base::Hours(1));
@@ -1818,9 +1820,10 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
   permissions::PermissionDecisionAutoBlocker* incognito_auto_blocker =
       PermissionDecisionAutoBlockerFactory::GetForProfile(incognito_profile());
   incognito_auto_blocker->SetClockForTesting(&clock);
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     incognito_auto_blocker->RecordDismissAndEmbargo(
         url1, ContentSettingsType::NOTIFICATIONS, false);
+  }
 
   handler()->HandleGetRecentSitePermissions(get_recent_permissions_args);
   {
@@ -2407,7 +2410,7 @@ TEST_P(Reset3pcCategoryPermissionTest,
        RemovesTrackingProtectionExceptionsWhenFeatureIsOff) {
   constexpr char kOrigin[] = "https://www.test.com:443";
   base::Value::List set_args;
-  set_args.Append("*");        // Primary pattern.
+  set_args.Append("*");      // Primary pattern.
   set_args.Append(kOrigin);  // Secondary pattern.
   set_args.Append(kTrackingProtection);
   set_args.Append(
@@ -3190,8 +3193,9 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
                                                            GURL* tab_url) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(tab_index);
-    if (tab_url)
+    if (tab_url) {
       *tab_url = web_contents->GetLastCommittedURL();
+    }
     return infobars::ContentInfoBarManager::FromWebContents(web_contents);
   }
 
@@ -3470,8 +3474,9 @@ TEST_F(SiteSettingsHandlerTest, ExcludeWebUISchemesInLists) {
   });
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   // Verify the auto-granted permissions are registered, and they are indeed
   // provided by WebUIAllowlist.
@@ -3559,8 +3564,9 @@ TEST_F(SiteSettingsHandlerTest, IncludeWebUISchemesInGetOriginPermissions) {
   };
 
   WebUIAllowlist* allowlist = WebUIAllowlist::GetOrCreate(profile());
-  for (const url::Origin& origin : kWebUIOrigins)
+  for (const url::Origin& origin : kWebUIOrigins) {
     allowlist->RegisterAutoGrantedPermission(origin, content_settings_type);
+  }
 
   for (const url::Origin& origin : kWebUIOrigins) {
     base::Value::List get_origin_permissions_args;
@@ -4518,16 +4524,19 @@ class SiteSettingsHandlerChooserExceptionTest
   bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
                                              std::string_view origin) {
     const base::Value::List* sites = exception.FindList(site_settings::kSites);
-    if (!sites)
+    if (!sites) {
       return false;
+    }
 
     for (const auto& site : *sites) {
       const std::string* exception_origin =
           site.GetDict().FindString(site_settings::kOrigin);
-      if (!exception_origin)
+      if (!exception_origin) {
         continue;
-      if (*exception_origin == origin)
+      }
+      if (*exception_origin == origin) {
         return true;
+      }
     }
     return false;
   }
@@ -4542,8 +4551,9 @@ class SiteSettingsHandlerChooserExceptionTest
     for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
           exception.GetDict().FindString(site_settings::kDisplayName);
-      if (!exception_display_name)
+      if (!exception_display_name) {
         continue;
+      }
 
       if (*exception_display_name == display_name) {
         return ChooserExceptionContainsSiteException(exception.GetDict(),

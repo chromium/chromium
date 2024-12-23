@@ -28,8 +28,9 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   const std::vector<AcceleratorMapping> accelerators = GetAcceleratorList();
   for (const auto& entry : accelerators) {
     if (entry.keycode == accelerator.key_code() &&
-        entry.modifiers == accelerator.modifiers())
+        entry.modifiers == accelerator.modifiers()) {
       return true;
+    }
   }
 
   return false;

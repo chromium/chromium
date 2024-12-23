@@ -59,8 +59,7 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
                       SidePanelRegistry* side_panel_registry);
   ~CommerceUiTabHelper() override;
   CommerceUiTabHelper(const CommerceUiTabHelper& other) = delete;
-  CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) =
-      delete;
+  CommerceUiTabHelper& operator=(const CommerceUiTabHelper& other) = delete;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

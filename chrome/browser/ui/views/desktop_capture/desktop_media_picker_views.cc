@@ -401,8 +401,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
-        if (dialog->parent_)
+        if (dialog->parent_) {
           dialog->parent_->NotifyDialogResult(DesktopMediaID());
+        }
       },
       this));
 
@@ -675,8 +676,9 @@ void DesktopMediaPickerDialogView::RecordUmaDismissal() const {
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
-  if (previously_selected_category_ == index)
+  if (previously_selected_category_ == index) {
     return;
+  }
   ConfigureUIForNewPane(index);
   categories_[previously_selected_category_].controller->HideView();
   categories_[index].controller->FocusView();
@@ -984,8 +986,9 @@ bool DesktopMediaPickerDialogView::Accept() {
   RecordSourceCountsUma();
   RecordTabDiscardedStatusUma(source);
 
-  if (parent_)
+  if (parent_) {
     parent_->NotifyDialogResult(source);
+  }
 
   // Return true to close the window.
   return true;
@@ -1087,8 +1090,9 @@ void DesktopMediaPickerDialogView::OnCanReselectChanged(
   // working it's way back to us after we've switched controllers. If that's the
   // case, then the state will be updated the next time that controller is
   // active, but we shouldn't update it just now.
-  if (controller != GetSelectedController() || !reselect_button_)
+  if (controller != GetSelectedController() || !reselect_button_) {
     return;
+  }
 
   reselect_button_->SetEnabled(controller->can_reselect());
 }
@@ -1169,8 +1173,9 @@ void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
 
   DesktopMediaPickerManager::Get()->OnHideDialog();
 
-  if (callback_.is_null())
+  if (callback_.is_null()) {
     return;
+  }
 
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.

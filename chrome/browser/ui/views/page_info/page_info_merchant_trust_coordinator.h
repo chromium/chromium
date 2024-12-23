@@ -26,7 +26,6 @@ class PageInfoMerchantTrustCoordinator : public views::ViewObserver,
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
 
-
   std::unique_ptr<PageInfoMerchantTrustController> controller_;
   raw_ptr<PageInfoMerchantTrustContentView> content_view_;
 };

@@ -112,8 +112,9 @@ class FindBarMatchCountLabel : public views::Label {
   }
 
   void SetResult(const find_in_page::FindNotificationDetails& result) {
-    if (last_result_ && result == *last_result_)
+    if (last_result_ && result == *last_result_) {
       return;
+    }
 
     last_result_ = result;
     // TODO(crbug.com/40939931): Get NO_RESULTS to be announced under Orca and
@@ -408,8 +409,9 @@ bool FindBarView::OnMousePressed(const ui::MouseEvent& event) {
   const gfx::Rect focus_area(find_text_edge, find_previous_button_->y(),
                              find_previous_button_->x() - find_text_edge,
                              find_previous_button_->height());
-  if (!GetMirroredRect(focus_area).Contains(event.location()))
+  if (!GetMirroredRect(focus_area).Contains(event.location())) {
     return false;
+  }
   find_text_->RequestFocus();
   return true;
 }
@@ -437,8 +439,9 @@ void FindBarView::FocusAndSelectAll() {
 #if !BUILDFLAG(IS_WIN)
   GetWidget()->GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
 #endif
-  if (!find_text_->GetText().empty())
+  if (!find_text_->GetText().empty()) {
     find_text_->SelectAll(true);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -447,11 +450,13 @@ void FindBarView::FocusAndSelectAll() {
 bool FindBarView::HandleKeyEvent(views::Textfield* sender,
                                  const ui::KeyEvent& key_event) {
   // If the dialog is not visible, there is no reason to process keyboard input.
-  if (!find_bar_host_ || !find_bar_host_->IsVisible())
+  if (!find_bar_host_ || !find_bar_host_->IsVisible()) {
     return false;
+  }
 
-  if (find_bar_host_->MaybeForwardKeyEventToWebpage(key_event))
+  if (find_bar_host_->MaybeForwardKeyEventToWebpage(key_event)) {
     return true;  // Handled, we are done!
+  }
 
   if (key_event.key_code() == ui::VKEY_RETURN &&
       key_event.type() == ui::EventType::kKeyPressed) {
@@ -465,8 +470,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
       // Search forwards for enter, backwards for shift-enter.
       find_tab_helper->StartFinding(
           find_string, !key_event.IsShiftDown() /* forward_direction */,
-          false /* case_sensitive */,
-          true /* find_match */);
+          false /* case_sensitive */, true /* find_match */);
     }
     return true;
   }
@@ -477,8 +481,9 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
 void FindBarView::OnAfterUserAction(views::Textfield* sender) {
   // The composition text wouldn't be what the user is really looking for.
   // We delay the search until the user commits the composition text.
-  if (!sender->IsIMEComposing() && sender->GetText() != last_searched_text_)
+  if (!sender->IsIMEComposing() && sender->GetText() != last_searched_text_) {
     Find(sender->GetText());
+  }
 }
 
 void FindBarView::OnAfterPaste() {
@@ -496,8 +501,9 @@ void FindBarView::Find(const std::u16string& search_text) {
   // We must guard against a NULL web_contents, which can happen if the text
   // in the Find box is changed right after the tab is destroyed. Otherwise, it
   // can lead to crashes, as exposed by automation testing in issue 8048.
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
@@ -513,8 +519,9 @@ void FindBarView::Find(const std::u16string& search_text) {
 }
 
 void FindBarView::FindNext(bool reverse) {
-  if (!find_bar_host_)
+  if (!find_bar_host_) {
     return;
+  }
   if (!find_text_->GetText().empty()) {
     find_in_page::FindTabHelper* find_tab_helper =
         find_in_page::FindTabHelper::FromWebContents(
@@ -527,8 +534,9 @@ void FindBarView::FindNext(bool reverse) {
 }
 
 void FindBarView::EndFindSession() {
-  if (!find_bar_host_)
+  if (!find_bar_host_) {
     return;
+  }
   find_bar_host_->GetFindBarController()->EndFindSession(
       find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
 }

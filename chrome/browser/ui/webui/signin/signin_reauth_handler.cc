@@ -37,8 +37,9 @@ void SigninReauthHandler::RegisterMessages() {
 }
 
 void SigninReauthHandler::OnJavascriptAllowed() {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   SigninReauthViewController::GaiaReauthType gaia_reauth_type =
       controller_->gaia_reauth_type();
@@ -55,8 +56,9 @@ void SigninReauthHandler::OnReauthControllerDestroyed() {
 
 void SigninReauthHandler::OnGaiaReauthTypeDetermined(
     SigninReauthViewController::GaiaReauthType reauth_type) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   FireWebUIListener("reauth-type-determined");
 }
@@ -66,13 +68,15 @@ void SigninReauthHandler::HandleInitialize(const base::Value::List& args) {
 }
 
 void SigninReauthHandler::HandleConfirm(const base::Value::List& args) {
-  if (controller_)
+  if (controller_) {
     controller_->OnReauthConfirmed(BuildConsent(args));
+  }
 }
 
 void SigninReauthHandler::HandleCancel(const base::Value::List& args) {
-  if (controller_)
+  if (controller_) {
     controller_->OnReauthDismissed();
+  }
 }
 
 sync_pb::UserConsentTypes::AccountPasswordsConsent

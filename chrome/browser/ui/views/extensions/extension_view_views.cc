@@ -67,10 +67,11 @@ void ExtensionViewViews::VisibilityChanged(View* starting_from,
     content::RenderWidgetHostView* host_view =
         host_->main_frame_host()->GetView();
     if (host_view) {
-      if (is_visible)
+      if (is_visible) {
         host_view->Show();
-      else
+      } else {
         host_view->Hide();
+      }
     }
   }
 }
@@ -80,8 +81,9 @@ gfx::Size ExtensionViewViews::GetMinimumSize() const {
 }
 
 void ExtensionViewViews::SetMinimumSize(const gfx::Size& minimum_size) {
-  if (minimum_size_ && minimum_size_.value() == minimum_size)
+  if (minimum_size_ && minimum_size_.value() == minimum_size) {
     return;
+  }
   minimum_size_ = minimum_size;
   OnPropertyChanged(&minimum_size_,
                     views::kPropertyEffectsPreferredSizeChanged);
@@ -139,8 +141,9 @@ void ExtensionViewViews::OnLoaded() {
 
   // ExtensionPopup delegates showing the view to OnLoaded(). ExtensionDialog
   // handles visibility directly.
-  if (GetVisible())
+  if (GetVisible()) {
     return;
+  }
 
   SetVisible(true);
   ResizeDueToAutoResize(web_contents(), pending_preferred_size_);

@@ -54,7 +54,9 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   }
   bool CanStartDragForView(views::View* sender,
                            const gfx::Point& press_pt,
-                           const gfx::Point& p) override { return false; }
+                           const gfx::Point& p) override {
+    return false;
+  }
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
@@ -69,15 +71,12 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 class OpenMenuListener : public views::ContextMenuController {
  public:
   explicit OpenMenuListener(views::View* view)
-      : view_(view),
-        opened_menu_(false) {
+      : view_(view), opened_menu_(false) {
     view_->set_context_menu_controller(this);
   }
   OpenMenuListener(const OpenMenuListener&) = delete;
   OpenMenuListener& operator=(const OpenMenuListener&) = delete;
-  ~OpenMenuListener() override {
-    view_->set_context_menu_controller(nullptr);
-  }
+  ~OpenMenuListener() override { view_->set_context_menu_controller(nullptr); }
 
   void ShowContextMenuForViewImpl(
       views::View* source,

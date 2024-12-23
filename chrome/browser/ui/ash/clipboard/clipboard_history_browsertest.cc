@@ -99,8 +99,9 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
 
   void WaitFor(const ui::ClipboardData* clipboard_data) {
     base::AutoReset scoped_data(&clipboard_data_, clipboard_data);
-    if (BufferMatchesClipboardData())
+    if (BufferMatchesClipboardData()) {
       return;
+    }
 
     base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
         clipboard_observer_{this};
@@ -113,8 +114,9 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
  private:
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override {
-    if (BufferMatchesClipboardData())
+    if (BufferMatchesClipboardData()) {
       run_loop_->Quit();
+    }
   }
 
   bool BufferMatchesClipboardData() const {
@@ -122,8 +124,9 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
     ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
     const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
 
-    if ((clipboard_data == nullptr) != (clipboard_data_ == nullptr))
+    if ((clipboard_data == nullptr) != (clipboard_data_ == nullptr)) {
       return false;
+    }
 
     return clipboard_data == nullptr || *clipboard_data == *clipboard_data_;
   }
@@ -173,14 +176,16 @@ gfx::Rect GetClipboardHistoryMenuBoundsInScreen() {
 
 bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
   const std::list<ash::ClipboardHistoryItem>& items = GetClipboardItems();
-  if (items.size() != texts.size())
+  if (items.size() != texts.size()) {
     return false;
+  }
 
   auto items_iter = items.cbegin();
   const auto* texts_iter = texts.begin();
   while (items_iter != items.cend() && texts_iter != texts.end()) {
-    if (items_iter->data().text() != *texts_iter)
+    if (items_iter->data().text() != *texts_iter) {
       return false;
+    }
     ++items_iter;
     ++texts_iter;
   }
@@ -192,8 +197,9 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
 // If clipboard history is empty, returns whether the clipboard buffer is empty.
 bool VerifyClipboardBufferAndHistoryInSync() {
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  if (!clipboard)
+  if (!clipboard) {
     return false;
+  }
 
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* const clipboard_data = clipboard->GetClipboardData(&data_dst);
@@ -278,8 +284,9 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
 
   void ShowContextMenuViaAccelerator(bool wait_for_selection) {
     PressAndRelease(ui::KeyboardCode::VKEY_V, ui::EF_COMMAND_DOWN);
-    if (!wait_for_selection)
+    if (!wait_for_selection) {
       return;
+    }
 
     base::RunLoop run_loop;
     GetClipboardHistoryController()

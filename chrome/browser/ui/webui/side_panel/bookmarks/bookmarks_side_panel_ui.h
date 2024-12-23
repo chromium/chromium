@@ -27,7 +27,7 @@ namespace commerce {
 class ShoppingListContextMenuController;
 class ShoppingServiceHandler;
 class PriceTrackingHandler;
-}
+}  // namespace commerce
 
 namespace ui {
 class ColorChangeHandler;

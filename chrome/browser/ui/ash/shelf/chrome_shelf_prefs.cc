@@ -207,8 +207,9 @@ struct PinInfo {
 // This is required because tablet form factor devices do not sync app
 // positions and pin preferences.
 std::string GetShelfDefaultPinLayoutPref() {
-  if (ash::switches::IsTabletFormFactor())
+  if (ash::switches::IsTabletFormFactor()) {
     return prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
+  }
 
   return prefs::kShelfDefaultPinLayoutRolls;
 }
@@ -636,8 +637,9 @@ void ChromeShelfPrefs::SetPinPosition(
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   // Some unit tests may not have this service.
-  if (!syncable_service)
+  if (!syncable_service) {
     return;
+  }
 
   syncer::StringOrdinal position_before =
       app_id_before.empty() ? syncer::StringOrdinal()

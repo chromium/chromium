@@ -473,8 +473,9 @@ PluginVmInstallerView::~PluginVmInstallerView() {
   VLOG(2) << "PluginVmInstallerView destroyed";
   plugin_vm_installer_->RemoveObserver();
   // We call |Cancel()| if the user hasn't started installation to log to UMA.
-  if (state_ == State::kConfirmInstall || state_ == State::kInstalling)
+  if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
     plugin_vm_installer_->Cancel();
+  }
   g_plugin_vm_installer_view = nullptr;
 }
 
@@ -489,9 +490,10 @@ int PluginVmInstallerView::GetCurrentDialogButtons() const {
              static_cast<int>(ui::mojom::DialogButton::kOk);
     case State::kError:
       DCHECK(reason_);
-      if (ShowRetryButton(*reason_))
+      if (ShowRetryButton(*reason_)) {
         return static_cast<int>(ui::mojom::DialogButton::kCancel) |
                static_cast<int>(ui::mojom::DialogButton::kOk);
+      }
       return static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
 }
@@ -570,8 +572,9 @@ void PluginVmInstallerView::OnStateUpdated() {
 
   if (state_ == State::kCreated || state_ == State::kImported ||
       state_ == State::kError) {
-    if (finished_callback_for_testing_)
+    if (finished_callback_for_testing_) {
       std::move(finished_callback_for_testing_).Run(state_ != State::kError);
+    }
   }
 }
 
@@ -638,8 +641,9 @@ void PluginVmInstallerView::StartInstallation() {
   plugin_vm_installer_->SetObserver(this);
   std::optional<plugin_vm::PluginVmInstaller::FailureReason> failure_reason =
       plugin_vm_installer_->Start();
-  if (failure_reason)
+  if (failure_reason) {
     OnError(failure_reason.value());
+  }
 }
 
 BEGIN_METADATA(PluginVmInstallerView)

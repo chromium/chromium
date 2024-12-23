@@ -79,8 +79,9 @@ void ManagedUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 // Manually add/remove observers. ScopedObserver doesn't work with
 // PolicyService::Observer because AddObserver() takes 2 arguments.
 void ManagedUIHandler::AddObservers() {
-  if (has_observers_)
+  if (has_observers_) {
     return;
+  }
 
   has_observers_ = true;
 
@@ -96,8 +97,9 @@ void ManagedUIHandler::AddObservers() {
 }
 
 void ManagedUIHandler::RemoveObservers() {
-  if (!has_observers_)
+  if (!has_observers_) {
     return;
+  }
 
   has_observers_ = false;
 
@@ -124,8 +126,9 @@ base::Value::Dict ManagedUIHandler::GetDataSourceUpdate() const {
 
 void ManagedUIHandler::NotifyIfChanged() {
   bool managed = chrome::ShouldDisplayManagedUi(profile_);
-  if (managed == managed_)
+  if (managed == managed_) {
     return;
+  }
   managed_ = managed;
   FireWebUIListener("is-managed-changed", base::Value(managed));
   content::WebUIDataSource::Update(profile_, source_name_,

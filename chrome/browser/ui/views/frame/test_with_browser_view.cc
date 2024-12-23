@@ -54,8 +54,7 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
       std::make_unique<ChromeTemplateURLServiceClient>(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
-      base::RepeatingClosure()
-  );
+      base::RepeatingClosure());
 }
 
 std::unique_ptr<KeyedService> CreateAutocompleteClassifier(

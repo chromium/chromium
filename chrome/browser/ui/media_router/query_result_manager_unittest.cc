@@ -82,12 +82,14 @@ class QueryResultManagerTest : public ::testing::Test {
 
 // Requires that the elements of |expected| are unique.
 MATCHER_P(VectorSetEquals, expected, "") {
-  if (expected.size() != arg.size())
+  if (expected.size() != arg.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < expected.size(); ++i) {
-    if (!base::Contains(arg, expected[i]))
+    if (!base::Contains(arg, expected[i])) {
       return false;
+    }
   }
   return true;
 }

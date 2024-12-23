@@ -31,7 +31,7 @@ class VirtualDesktopHelper;
 namespace views {
 class DesktopNativeWidgetAura;
 class NativeMenuWin;
-}
+}  // namespace views
 
 class BrowserDesktopWindowTreeHostWin
     : public BrowserDesktopWindowTreeHost,

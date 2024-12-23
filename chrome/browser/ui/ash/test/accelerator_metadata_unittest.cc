@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
-
 #include <cstddef>
 
+#include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "base/hash/md5.h"
 #include "base/hash/md5_boringssl.h"
 #include "base/strings/stringprintf.h"

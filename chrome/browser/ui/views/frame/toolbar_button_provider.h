@@ -21,12 +21,12 @@ class ToolbarButton;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace views {
 class AccessiblePaneView;
 class View;
-}
+}  // namespace views
 
 // An interface implemented by a view contains and provides access to toolbar
 // buttons in a BrowserView.

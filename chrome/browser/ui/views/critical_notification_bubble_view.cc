@@ -117,8 +117,9 @@ void CriticalNotificationBubbleView::OnDialogCancelled() {
   // the user selects, for example, "Stay on this page" during an
   // onbeforeunload handler.
   PrefService* prefs = g_browser_process->local_state();
-  if (prefs->HasPrefPath(prefs::kRestartLastSessionOnShutdown))
+  if (prefs->HasPrefPath(prefs::kRestartLastSessionOnShutdown)) {
     prefs->ClearPref(prefs::kRestartLastSessionOnShutdown);
+  }
 }
 
 void CriticalNotificationBubbleView::OnDialogAccepted() {
@@ -150,8 +151,9 @@ void CriticalNotificationBubbleView::Init() {
 
 void CriticalNotificationBubbleView::ViewHierarchyChanged(
     const views::ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this)
+  if (details.is_add && details.child == this) {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  }
 }
 
 BEGIN_METADATA(CriticalNotificationBubbleView)

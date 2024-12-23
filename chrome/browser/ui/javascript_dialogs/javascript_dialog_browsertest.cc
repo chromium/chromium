@@ -121,9 +121,12 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
 
   // A subframe shows a dialog.
   std::string dialog_url = "data:text/html,<script>alert(\"hi\");</script>";
-  std::string script = "var iframe = document.createElement('iframe');"
-                       "iframe.src = '" + dialog_url + "';"
-                       "document.body.appendChild(iframe);";
+  std::string script =
+      "var iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      dialog_url +
+      "';"
+      "document.body.appendChild(iframe);";
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());

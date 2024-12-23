@@ -246,8 +246,9 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon");
   const ui::ImageModel& image = ChromeNativeAppWindowViews::GetWindowIcon();
-  if (image.IsEmpty())
+  if (image.IsEmpty()) {
     return ui::ImageModel();
+  }
 
   DCHECK(image.IsImage());
   const gfx::ImageSkia image_skia = image.Rasterize(nullptr);
@@ -256,8 +257,9 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
-  if (IsFrameless())
+  if (IsFrameless()) {
     return true;
+  }
 
   return HasFrameColor();
 }
@@ -280,8 +282,9 @@ gfx::RoundedCornersF ChromeNativeAppWindowViewsAuraAsh::GetWindowRadii() const {
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {
   gfx::Rect* bounds =
       GetNativeWindow()->GetProperty(ash::kRestoreBoundsOverrideKey);
-  if (bounds && !bounds->IsEmpty())
+  if (bounds && !bounds->IsEmpty()) {
     return *bounds;
+  }
 
   return ChromeNativeAppWindowViewsAura::GetRestoredBounds();
 }
@@ -301,8 +304,9 @@ ui::mojom::WindowShowState ChromeNativeAppWindowViewsAuraAsh::GetRestoredState()
         ash::kRestoreWindowStateTypeOverrideKey));
     is_fullscreen = restore_state == ui::mojom::WindowShowState::kFullscreen;
   } else {
-    if (IsMaximized())
+    if (IsMaximized()) {
       return ui::mojom::WindowShowState::kMaximized;
+    }
     is_fullscreen = IsFullscreen();
   }
 
@@ -330,8 +334,9 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
     const gfx::Point& p,
     ui::mojom::MenuSourceType source_type) {
   menu_model_ = CreateMultiUserContextMenu(GetNativeWindow());
-  if (!menu_model_)
+  if (!menu_model_) {
     return;
+  }
 
   // Only show context menu if point is in caption.
   gfx::Point point_in_view_coords(p);
@@ -358,8 +363,9 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
     views::Widget* widget) {
-  if (IsFrameless())
+  if (IsFrameless()) {
     return CreateNonStandardAppFrame();
+  }
 
   window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
 
@@ -372,8 +378,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
   UpdateImmersiveMode();
 
   if (HasFrameColor()) {
-    custom_frame_view->SetFrameColors(ActiveFrameColor(),
-                                      InactiveFrameColor());
+    custom_frame_view->SetFrameColors(ActiveFrameColor(), InactiveFrameColor());
   }
 
   return custom_frame_view;
@@ -502,8 +507,9 @@ bool ChromeNativeAppWindowViewsAuraAsh::IsExclusiveAccessBubbleDisplayed()
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnExclusiveAccessUserInput() {
-  if (exclusive_access_bubble_)
+  if (exclusive_access_bubble_) {
     exclusive_access_bubble_->OnUserInput();
+  }
 }
 
 content::WebContents*
@@ -578,10 +584,11 @@ void ChromeNativeAppWindowViewsAuraAsh::OnPostWindowStateTypeChange(
     // WindowState saves restore bounds *after* changing the property, and
     // enabling immersive mode will change the current bounds before the old
     // bounds can be saved.
-    if (window_state->IsFullscreen())
+    if (window_state->IsFullscreen()) {
       app_window()->OSFullscreen();
-    else
+    } else {
       app_window()->OnNativeWindowChanged();
+    }
   }
 }
 
@@ -589,8 +596,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (key != aura::client::kShowStateKey)
+  if (key != aura::client::kShowStateKey) {
     return;
+  }
 
   auto new_state = window->GetProperty(aura::client::kShowStateKey);
 
@@ -628,12 +636,14 @@ void ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed() {
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // No immersive mode for forced fullscreen or frameless windows.
-  if (app_window()->IsForcedFullscreen() || IsFrameless())
+  if (app_window()->IsForcedFullscreen() || IsFrameless()) {
     return false;
+  }
 
   // Always use immersive mode when fullscreen is set by the OS.
-  if (app_window()->IsOsFullscreen())
+  if (app_window()->IsOsFullscreen()) {
     return true;
+  }
 
   // Windows in tablet mode which are resizable have their title bars
   // hidden in ash for more size, so enable immersive mode so users
@@ -663,8 +673,9 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage");
-  if (!app_icon_image_skia_.isNull())
+  if (!app_icon_image_skia_.isNull()) {
     return gfx::Image(app_icon_image_skia_);
+  }
 
   return ChromeNativeAppWindowViews::GetAppIconImage();
 }
@@ -698,11 +709,13 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
 void ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon(
     apps::IconValuePtr icon_value) {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon");
-  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
+  }
 
   app_icon_image_skia_ = icon_value->uncompressed;
 
-  if (icon_value->is_placeholder_icon)
+  if (icon_value->is_placeholder_icon) {
     LoadAppIcon(false /* allow_placeholder_icon */);
+  }
 }

@@ -88,8 +88,9 @@ void BrowserAppMenuButton::SetTypeAndSeverity(
 }
 
 void BrowserAppMenuButton::ShowMenu(int run_types) {
-  if (IsMenuShowing())
+  if (IsMenuShowing()) {
     return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (auto* input_method = GetInputMethod()) {
@@ -116,8 +117,9 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
   Browser* browser = toolbar_view_->browser();
   BrowserWindow* browser_window = browser->window();
 
-  if (browser_window == nullptr)
+  if (browser_window == nullptr) {
     return AlertMenuItem::kNone;
+  }
 
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(browser->profile());

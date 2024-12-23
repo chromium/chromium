@@ -22,7 +22,7 @@ class Rect;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 class DownloadBubbleUIController;
 

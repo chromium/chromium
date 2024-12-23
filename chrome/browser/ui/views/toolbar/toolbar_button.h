@@ -40,7 +40,7 @@ class MenuModel;
 namespace views {
 class MenuModelAdapter;
 class MenuRunner;
-}
+}  // namespace views
 
 // This class provides basic drawing and mouse-over behavior for buttons
 // appearing in the toolbar.

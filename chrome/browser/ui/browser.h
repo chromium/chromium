@@ -100,7 +100,7 @@ class BrowserCommandController;
 namespace content {
 class NavigationHandle;
 class SessionStorageNamespace;
-}
+}  // namespace content
 
 namespace extensions {
 class BrowserExtensionWindowController;
@@ -1112,7 +1112,6 @@ class Browser : public TabStripModelObserver,
 
   // Overridden from ThemeServiceObserver:
   void OnThemeChanged() override;
-
 
   // Command and state updating ///////////////////////////////////////////////
 

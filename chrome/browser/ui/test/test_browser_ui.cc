@@ -181,10 +181,11 @@ void TestBrowserUi::ShowAndVerifyUi() {
 #endif  // BUILDFLAG(IS_WIN)
   ShowUi(NameFromTestCase());
   ASSERT_TRUE(VerifyUi());
-  if (IsInteractiveUi())
+  if (IsInteractiveUi()) {
     WaitForUserDismissal();
-  else
+  } else {
     DismissUi();
+  }
 }
 
 bool TestBrowserUi::IsInteractiveUi() const {

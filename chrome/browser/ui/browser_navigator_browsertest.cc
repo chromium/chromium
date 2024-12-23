@@ -166,8 +166,9 @@ bool BrowserNavigatorTest::OpenPOSTURLInNewForegroundTabAndGetTitle(
       base::as_byte_span(post_data));
 
   ui_test_utils::NavigateToURL(&param);
-  if (!param.navigated_or_inserted_contents)
+  if (!param.navigated_or_inserted_contents) {
     return false;
+  }
 
   // Navigate() should have opened the contents in new foreground tab in the
   // current Browser.
@@ -313,10 +314,11 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
   std::optional<content::CreateAndLoadWebContentsObserver> new_tab_observer;
   std::optional<content::LoadStopObserver> load_stop_observer;
   if (wait_for_navigation) {
-    if (expected_contents)
+    if (expected_contents) {
       load_stop_observer.emplace(expected_contents);
-    else
+    } else {
       new_tab_observer.emplace();
+    }
   }
 
   NavigateParams params(MakeNavigateParams(browser));
@@ -325,10 +327,12 @@ Browser* BrowserNavigatorTest::NavigateHelper(const GURL& url,
   params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&params);
 
-  if (load_stop_observer)
+  if (load_stop_observer) {
     load_stop_observer->Wait();
-  if (new_tab_observer)
+  }
+  if (new_tab_observer) {
     new_tab_observer->Wait();
+  }
 
   return params.browser;
 }

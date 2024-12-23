@@ -233,8 +233,9 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
     if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
-      if (SupportFallback())
+      if (SupportFallback()) {
         unsandboxed_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+      }
 
 #if BUILDFLAG(IS_WIN)
       // To test OOP for Windows, the Print Backend service and Data Decoder

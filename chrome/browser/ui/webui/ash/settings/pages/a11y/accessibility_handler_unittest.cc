@@ -48,9 +48,7 @@ class AccessibilityHandlerTest : public testing::Test {
     web_ui_->AddMessageHandler(std::move(handler));
   }
 
-  void TearDown() override {
-    web_ui_.reset();
-  }
+  void TearDown() override { web_ui_.reset(); }
 
  protected:
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }

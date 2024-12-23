@@ -80,8 +80,9 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   }
 
   std::string GetSourceLanguageCode() const override {
-    if (source_language_index_ == 0)
+    if (source_language_index_ == 0) {
       return "und";
+    }
     return "eng-US";
   }
 

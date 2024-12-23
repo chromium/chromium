@@ -31,8 +31,9 @@ void ExtensionKeybindingRegistryViews::AddExtensionKeybindings(
     const extensions::Extension* extension,
     const std::string& command_name) {
   // This object only handles named commands, not browser/page actions.
-  if (ShouldIgnoreCommand(command_name))
+  if (ShouldIgnoreCommand(command_name)) {
     return;
+  }
 
   extensions::CommandService* command_service =
       extensions::CommandService::Get(profile_);
@@ -40,16 +41,17 @@ void ExtensionKeybindingRegistryViews::AddExtensionKeybindings(
   // which are handled elsewhere).
   ui::CommandMap commands;
   if (!command_service->GetNamedCommands(
-          extension->id(),
-          extensions::CommandService::ACTIVE,
-          extensions::CommandService::REGULAR,
-          &commands))
+          extension->id(), extensions::CommandService::ACTIVE,
+          extensions::CommandService::REGULAR, &commands)) {
     return;
+  }
   ui::CommandMap::const_iterator iter = commands.begin();
   for (; iter != commands.end(); ++iter) {
-    if (!command_name.empty() && (iter->second.command_name() != command_name))
+    if (!command_name.empty() &&
+        (iter->second.command_name() != command_name)) {
       continue;
-    const ui::Accelerator &accelerator = iter->second.accelerator();
+    }
+    const ui::Accelerator& accelerator = iter->second.accelerator();
     if (!IsAcceleratorRegistered(accelerator)) {
       focus_manager_->RegisterAccelerator(accelerator,
                                           kExtensionAcceleratorPriority, this);

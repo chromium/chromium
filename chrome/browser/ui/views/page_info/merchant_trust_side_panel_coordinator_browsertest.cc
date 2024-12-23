@@ -49,8 +49,7 @@ page_info::MerchantData CreateValidMerchantData() {
 
 class MockMerchantTrustService : public page_info::MerchantTrustService {
  public:
- MockMerchantTrustService()
-      : MerchantTrustService(nullptr, false, nullptr) {}
+  MockMerchantTrustService() : MerchantTrustService(nullptr, false, nullptr) {}
   MOCK_METHOD(void,
               GetMerchantTrustInfo,
               (const GURL&, page_info::MerchantDataCallback),

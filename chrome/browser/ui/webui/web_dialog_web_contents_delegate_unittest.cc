@@ -24,9 +24,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+using content::BrowserContext;
 using content::OpenURLParams;
 using content::Referrer;
-using content::BrowserContext;
 using content::WebContents;
 using content::WebContentsTester;
 using ui::WebDialogWebContentsDelegate;

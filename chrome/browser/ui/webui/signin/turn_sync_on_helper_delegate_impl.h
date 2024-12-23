@@ -20,7 +20,7 @@ struct AccountInfo;
 namespace policy {
 class ProfileSeparationPolicies;
 class UserCloudSigninRestrictionPolicyFetcher;
-}
+}  // namespace policy
 
 // Default implementation for TurnSyncOnHelper::Delegate.
 class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,

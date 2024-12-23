@@ -26,19 +26,23 @@
 SigninUIError CanOfferSignin(Profile* profile,
                              const GaiaId& gaia_id,
                              const std::string& email) {
-  if (!profile)
+  if (!profile) {
     return SigninUIError::Other(email);
+  }
 
-  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     return SigninUIError::Other(email);
+  }
 
-  if (!ChromeSigninClient::ProfileAllowsSigninCookies(profile))
+  if (!ChromeSigninClient::ProfileAllowsSigninCookies(profile)) {
     return SigninUIError::Other(email);
+  }
 
   if (!email.empty()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    if (!identity_manager)
+    if (!identity_manager) {
       return SigninUIError::Other(email);
+    }
 
     // Make sure this username is not prohibited by policy.
     if (!signin::IsUsernameAllowedByPatternFromPrefs(
@@ -53,8 +57,9 @@ SigninUIError CanOfferSignin(Profile* profile,
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
     const bool same_email = gaia::AreEmailsSame(current_email, email);
-    if (!current_email.empty() && !same_email)
+    if (!current_email.empty() && !same_email) {
       return SigninUIError::WrongReauthAccount(email, current_email);
+    }
 
     // If some profile, not just the current one, is already connected to this
     // account, don't show the infobar.

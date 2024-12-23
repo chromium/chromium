@@ -20,7 +20,7 @@ class SidePanelUI;
 
 namespace views {
 class View;
-} // namespace views
+}  // namespace views
 
 // AboutThisSideSidePanelCoordinator handles the creation and registration of
 // the WebViewSidePanelView.

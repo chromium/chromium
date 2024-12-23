@@ -155,8 +155,9 @@ class ChromeOSTermsHandler
 
     const ash::StartupCustomizationDocument* customization =
         ash::StartupCustomizationDocument::GetInstance();
-    if (!customization->IsReady())
+    if (!customization->IsReady()) {
       return;
+    }
 
     base::FilePath oem_eula_file_path;
     if (net::FileURLToFilePath(GURL(customization->GetEULAPage(locale_)),
@@ -403,19 +404,19 @@ void AppendHeader(std::string* output, const std::string& unescaped_title) {
   }
 }
 
-void AppendBody(std::string *output) {
+void AppendBody(std::string* output) {
   output->append("</head>\n<body>\n");
 }
 
-void AppendFooter(std::string *output) {
+void AppendFooter(std::string* output) {
   output->append("</body>\n</html>\n");
 }
 
 }  // namespace about_ui
 
-using about_ui::AppendHeader;
 using about_ui::AppendBody;
 using about_ui::AppendFooter;
+using about_ui::AppendHeader;
 
 namespace {
 
@@ -473,7 +474,6 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
               ? base::StrCat({"<li><a href='", url, "/'>", url, "</a></li>\n"})
               : base::StrCat({"<li>", url, "</li>\n"});
     }
-
   }
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -484,7 +484,8 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
        chrome::kChromeUISessionServiceInternalsPath, "</a></li>\n"});
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
-  html += "</ul>\n<h2>For Debug</h2>\n"
+  html +=
+      "</ul>\n<h2>For Debug</h2>\n"
       "<p>The following pages are for debugging purposes only. Because they "
       "crash or hang the renderer, they're not linked directly; you can type "
       "them into the address bar if you need them.</p>\n<ul>";
@@ -561,8 +562,7 @@ CrostiniCreditsUI::CrostiniCreditsUI()
 
 AboutUIHTMLSource::AboutUIHTMLSource(const std::string& source_name,
                                      Profile* profile)
-    : source_name_(source_name),
-      profile_(profile) {}
+    : source_name_(source_name), profile_(profile) {}
 
 AboutUIHTMLSource::~AboutUIHTMLSource() = default;
 
@@ -583,10 +583,11 @@ void AboutUIHTMLSource::StartDataRequest(
     response = ChromeURLs(profile_);
   } else if (source_name_ == chrome::kChromeUICreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
-    if (path == kCreditsJsPath)
+    if (path == kCreditsJsPath) {
       idr = IDR_ABOUT_UI_CREDITS_JS;
-    else if (path == kCreditsCssPath)
+    } else if (path == kCreditsCssPath) {
       idr = IDR_ABOUT_UI_CREDITS_CSS;
+    }
     if (idr == IDR_ABOUT_UI_CREDITS_HTML) {
       response = about_ui::GetCredits(true /*include_scripts*/);
     } else {

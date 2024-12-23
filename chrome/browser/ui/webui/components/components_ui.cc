@@ -47,13 +47,13 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
   source->EnableReplaceI18nInJS();
 
   static constexpr webui::LocalizedString kStrings[] = {
-    {"componentsTitle", IDS_COMPONENTS_TITLE},
-    {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
-    {"componentVersion", IDS_COMPONENTS_VERSION},
-    {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
-    {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
-    {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
-    {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+      {"componentsTitle", IDS_COMPONENTS_TITLE},
+      {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
+      {"componentVersion", IDS_COMPONENTS_VERSION},
+      {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
+      {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
+      {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
+      {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
 

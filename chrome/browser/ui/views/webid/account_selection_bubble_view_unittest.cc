@@ -320,9 +320,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                         /*expect_privacy_policy=*/true);
   }
 
-  void TestMultipleAccounts(
-      const std::u16string& expected_title,
-      bool expect_idp_brand_icon_in_header) {
+  void TestMultipleAccounts(const std::u16string& expected_title,
+                            bool expect_idp_brand_icon_in_header) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
     CreateAndShowMultiAccountPicker(kAccountSuffixes);
 

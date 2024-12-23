@@ -230,8 +230,7 @@
 
     TabAppleScript* tab =
         [[TabAppleScript alloc] initWithWebContents:webContents];
-    [tab setContainer:self
-             property:AppleScript::kTabsProperty];
+    [tab setContainer:self property:AppleScript::kTabsProperty];
     [tabs addObject:tab];
   }
   return tabs;

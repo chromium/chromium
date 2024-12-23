@@ -462,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (!features::IsToolbarPinningEnabled()) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL("chrome://new-tab-page/")));
   }
   content::WaitForLoadStop(web_contents);
   EXPECT_TRUE(
@@ -478,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (!features::IsToolbarPinningEnabled()) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page/")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL("chrome://new-tab-page/")));
   }
   content::WaitForLoadStop(web_contents);
   EXPECT_TRUE(

@@ -20,13 +20,15 @@ ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
 }
 
 ScopedTabbedBrowserDisplayer::~ScopedTabbedBrowserDisplayer() {
-  if (!browser_)
+  if (!browser_) {
     return;
+  }
 
   // Make sure to restore the window, since window()->Show() will not unminimize
   // it.
-  if (browser_->window()->IsMinimized())
+  if (browser_->window()->IsMinimized()) {
     browser_->window()->Restore();
+  }
 
   browser_->window()->Show();
 }

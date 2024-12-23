@@ -74,14 +74,16 @@ std::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
 // This should be called off the UI thread because it can cause disk access.
 ArgType GetArgType(const std::wstring& arg) {
   GURL url(base::AsStringPiece16(arg));
-  if (url.is_valid() && !url.SchemeIsFile())
+  if (url.is_valid() && !url.SchemeIsFile()) {
     return ArgType::kProtocol;
+  }
   // This handles the case of "chrome.exe foo.html".
   if (!url.is_valid()) {
     url =
         url_formatter::FixupRelativeFile(base::FilePath(), base::FilePath(arg));
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       return ArgType::kInvalid;
+    }
   }
   return url.SchemeIsFile() ? ArgType::kFile : ArgType::kProtocol;
 }
@@ -93,8 +95,9 @@ ArgType GetArgType(const std::wstring& arg) {
 // This can be expensive and shouldn't be called from the UI thread.
 std::optional<std::wstring> GetShortcutPath(
     const base::CommandLine& command_line) {
-  if (command_line.HasSwitch(switches::kSourceShortcut))
+  if (command_line.HasSwitch(switches::kSourceShortcut)) {
     return command_line.GetSwitchValueNative(switches::kSourceShortcut);
+  }
   STARTUPINFOW si = {sizeof(si)};
   GetStartupInfoW(&si);
   return si.dwFlags & STARTF_TITLEISLINKNAME
@@ -139,8 +142,9 @@ std::optional<LaunchMode> GetLaunchModeSlow(
     // handler for a file extension or a protocol/url. Then, determine if
     // Chrome or a web app is handling the argument.
     std::vector<base::CommandLine::StringType> args = command_line.GetArgs();
-    if (args.size() < 1)
+    if (args.size() < 1) {
       return is_app_launch ? LaunchMode::kWebAppOther : LaunchMode::kOther;
+    }
     auto arg_type = GetArgType(args[0]);
     if (!is_app_launch) {
       if (arg_type == ArgType::kFile) {
@@ -153,14 +157,17 @@ std::optional<LaunchMode> GetLaunchModeSlow(
       }
     } else {
       // Should we check if single_argument_switch is present?
-      if (arg_type == ArgType::kFile)
+      if (arg_type == ArgType::kFile) {
         return LaunchMode::kWebAppFileTypeHandler;
-      if (arg_type == ArgType::kProtocol)
+      }
+      if (arg_type == ArgType::kProtocol) {
         return LaunchMode::kWebAppProtocolHandler;
+      }
     }
   } else {
-    if (shortcut_path.value().empty())
+    if (shortcut_path.value().empty()) {
       return LaunchMode::kShortcutNoName;
+    }
     std::optional<int> shortcut_location =
         GetShortcutLocation(shortcut_path.value());
     if (!shortcut_location.has_value()) {
@@ -208,8 +215,9 @@ std::optional<LaunchMode> GetLaunchModeFast(
       {switches::kNotificationLaunchId, LaunchMode::kWinPlatformNotification},
   };
   for (const auto& [switch_val, mode] : switch_to_mode) {
-    if (command_line.HasSwitch(switch_val))
+    if (command_line.HasSwitch(switch_val)) {
       return mode;
+    }
   }
   return std::nullopt;
 }
@@ -231,23 +239,28 @@ std::optional<LaunchMode> GetLaunchModeFast(
     return LaunchMode::kMacDockDMGStatusError;
   }
 
-  if (dock_launch_status == dock::ChromeInDockFailure)
+  if (dock_launch_status == dock::ChromeInDockFailure) {
     return LaunchMode::kMacDockStatusError;
+  }
 
-  if (dmg_launch_status == DiskImageStatusFailure)
+  if (dmg_launch_status == DiskImageStatusFailure) {
     return LaunchMode::kMacDMGStatusError;
+  }
 
   bool dmg_launch = dmg_launch_status == DiskImageStatusTrue;
   bool dock_launch = dock_launch_status == dock::ChromeInDockTrue;
 
-  if (dmg_launch && dock_launch)
+  if (dmg_launch && dock_launch) {
     return LaunchMode::kMacDockedDMGLaunch;
+  }
 
-  if (dmg_launch)
+  if (dmg_launch) {
     return LaunchMode::kMacUndockedDMGLaunch;
+  }
 
-  if (dock_launch)
+  if (dock_launch) {
     return LaunchMode::kMacDockedDiskLaunch;
+  }
 
   return LaunchMode::kMacUndockedDiskLaunch;
 }

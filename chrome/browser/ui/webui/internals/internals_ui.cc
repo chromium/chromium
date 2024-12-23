@@ -25,8 +25,9 @@ namespace {
 
 bool ShouldHandleWebUIRequestCallback(const std::string& path) {
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  if (SessionServiceInternalsHandler::ShouldHandleWebUIRequestCallback(path))
+  if (SessionServiceInternalsHandler::ShouldHandleWebUIRequestCallback(path)) {
     return true;
+  }
 #endif
   return false;
 }

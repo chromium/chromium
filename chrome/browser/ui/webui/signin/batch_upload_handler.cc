@@ -96,8 +96,7 @@ GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
     return favicon_url;
   }
 
-  if (absl::holds_alternative<syncer::LocalDataItemModel::FolderIcon>(
-          icon)) {
+  if (absl::holds_alternative<syncer::LocalDataItemModel::FolderIcon>(icon)) {
     return GURL(kFolderIconUrl);
   }
 

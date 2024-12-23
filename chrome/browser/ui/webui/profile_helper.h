@@ -23,6 +23,4 @@ void DeleteProfileAtPath(base::FilePath file_path,
 
 }  // namespace webui
 
-
-
 #endif  // CHROME_BROWSER_UI_WEBUI_PROFILE_HELPER_H_

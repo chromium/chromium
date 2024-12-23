@@ -68,8 +68,9 @@ void AddInternetStrings(content::WebUIDataSource* html_source) {
       {"networkProxyConnectionType",
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_CONNECTION_TYPE_DIALOG},
   };
-  for (const auto& entry : localized_strings)
+  for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
+  }
 }
 
 std::string GetNetworkName8(const NetworkState& network) {
@@ -113,10 +114,11 @@ void InternetDetailDialog::ShowDialog(const std::string& network_id,
                                       gfx::NativeWindow parent) {
   auto* network_state_handler = NetworkHandler::Get()->network_state_handler();
   const NetworkState* network;
-  if (!network_id.empty())
+  if (!network_id.empty()) {
     network = network_state_handler->GetNetworkStateFromGuid(network_id);
-  else
+  } else {
     network = network_state_handler->DefaultNetwork();
+  }
   if (!network) {
     LOG(ERROR) << "Network not found: " << network_id;
     return;

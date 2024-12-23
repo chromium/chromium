@@ -15,7 +15,7 @@
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 // Model for the combobox showing the list of folders to choose from. The
 // list always contains the Bookmarks Bar, Other Bookmarks and the parent

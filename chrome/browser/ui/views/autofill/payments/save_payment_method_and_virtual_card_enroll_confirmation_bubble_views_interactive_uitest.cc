@@ -56,7 +56,8 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
+    return static_cast<
+        SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetPaymentBubbleView());
   }
 
@@ -211,7 +212,8 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
   }
 
   SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews* BubbleView() {
-    return static_cast<SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
+    return static_cast<
+        SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews*>(
         GetController()->GetVirtualCardBubbleView());
   }
 

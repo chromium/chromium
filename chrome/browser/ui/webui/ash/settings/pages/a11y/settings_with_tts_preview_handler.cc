@@ -57,16 +57,19 @@ void SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice(
   const std::string& text = args[0].GetString();
   const std::string& voice_id = args[1].GetString();
 
-  if (text.empty() || voice_id.empty())
+  if (text.empty() || voice_id.empty()) {
     return;
+  }
 
   std::optional<base::Value> json = base::JSONReader::Read(voice_id);
   std::string name;
   std::string extension_id;
-  if (const std::string* ptr = json->GetDict().FindString("name"))
+  if (const std::string* ptr = json->GetDict().FindString("name")) {
     name = *ptr;
-  if (const std::string* ptr = json->GetDict().FindString("extension"))
+  }
+  if (const std::string* ptr = json->GetDict().FindString("extension")) {
     extension_id = *ptr;
+  }
 
   std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create(web_ui()->GetWebContents());

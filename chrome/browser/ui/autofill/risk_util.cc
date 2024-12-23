@@ -56,8 +56,9 @@ void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
 ui::BaseWindow* GetBaseWindowForWebContents(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser)
+  if (browser) {
     return browser->window();
+  }
 
   gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
   extensions::AppWindow* app_window =

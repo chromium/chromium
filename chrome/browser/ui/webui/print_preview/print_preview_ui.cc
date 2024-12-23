@@ -122,8 +122,9 @@ bool IsFirstInstanceSinceStartup() {
 
 void StopWorker(int document_cookie) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (document_cookie <= 0)
+  if (document_cookie <= 0) {
     return;
+  }
   scoped_refptr<PrintQueriesQueue> queue =
       g_browser_process->print_job_manager()->queue();
   std::unique_ptr<PrinterQuery> printer_query =
@@ -155,150 +156,155 @@ base::LazyInstance<base::IDMap<PrintPreviewUI*>>::DestructorAtExit
 
 void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"advancedSettingsDialogConfirm",
-     IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_CONFIRM},
-    {"advancedSettingsDialogTitle",
-     IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_TITLE},
-    {"advancedSettingsSearchBoxPlaceholder",
-     IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_SEARCH_BOX_PLACEHOLDER},
-    {"borderlessLabel", IDS_PRINT_PREVIEW_BORDERLESS_LABEL},
-    {"bottom", IDS_PRINT_PREVIEW_BOTTOM_MARGIN_LABEL},
-    {"cancel", IDS_CANCEL},
-    {"clearSearch", IDS_CLEAR_SEARCH},
-    {"copiesInstruction", IDS_PRINT_PREVIEW_COPIES_INSTRUCTION},
-    {"copiesLabel", IDS_PRINT_PREVIEW_COPIES_LABEL},
-    {"couldNotPrint", IDS_PRINT_PREVIEW_COULD_NOT_PRINT},
-    {"customMargins", IDS_PRINT_PREVIEW_CUSTOM_MARGINS},
-    {"defaultMargins", IDS_PRINT_PREVIEW_DEFAULT_MARGINS},
-    {"destinationLabel", IDS_PRINT_PREVIEW_DESTINATION_LABEL},
-    {"destinationSearchTitle", IDS_PRINT_PREVIEW_DESTINATION_SEARCH_TITLE},
-    {"dpiItemLabel", IDS_PRINT_PREVIEW_DPI_ITEM_LABEL},
-    {"dpiLabel", IDS_PRINT_PREVIEW_DPI_LABEL},
-    {"examplePageRangeText", IDS_PRINT_PREVIEW_EXAMPLE_PAGE_RANGE_TEXT},
-    {"extensionDestinationIconTooltip",
-     IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP},
-    {"goBackButton", IDS_PRINT_PREVIEW_BUTTON_GO_BACK},
-    {"invalidPrinterSettings", IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS},
-    {"layoutLabel", IDS_PRINT_PREVIEW_LAYOUT_LABEL},
-    {"left", IDS_PRINT_PREVIEW_LEFT_MARGIN_LABEL},
-    {"loading", IDS_PRINT_PREVIEW_LOADING},
-    {"manage", IDS_PRINT_PREVIEW_MANAGE},
+      {"advancedSettingsDialogConfirm",
+       IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_CONFIRM},
+      {"advancedSettingsDialogTitle",
+       IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_DIALOG_TITLE},
+      {"advancedSettingsSearchBoxPlaceholder",
+       IDS_PRINT_PREVIEW_ADVANCED_SETTINGS_SEARCH_BOX_PLACEHOLDER},
+      {"borderlessLabel", IDS_PRINT_PREVIEW_BORDERLESS_LABEL},
+      {"bottom", IDS_PRINT_PREVIEW_BOTTOM_MARGIN_LABEL},
+      {"cancel", IDS_CANCEL},
+      {"clearSearch", IDS_CLEAR_SEARCH},
+      {"copiesInstruction", IDS_PRINT_PREVIEW_COPIES_INSTRUCTION},
+      {"copiesLabel", IDS_PRINT_PREVIEW_COPIES_LABEL},
+      {"couldNotPrint", IDS_PRINT_PREVIEW_COULD_NOT_PRINT},
+      {"customMargins", IDS_PRINT_PREVIEW_CUSTOM_MARGINS},
+      {"defaultMargins", IDS_PRINT_PREVIEW_DEFAULT_MARGINS},
+      {"destinationLabel", IDS_PRINT_PREVIEW_DESTINATION_LABEL},
+      {"destinationSearchTitle", IDS_PRINT_PREVIEW_DESTINATION_SEARCH_TITLE},
+      {"dpiItemLabel", IDS_PRINT_PREVIEW_DPI_ITEM_LABEL},
+      {"dpiLabel", IDS_PRINT_PREVIEW_DPI_LABEL},
+      {"examplePageRangeText", IDS_PRINT_PREVIEW_EXAMPLE_PAGE_RANGE_TEXT},
+      {"extensionDestinationIconTooltip",
+       IDS_PRINT_PREVIEW_EXTENSION_DESTINATION_ICON_TOOLTIP},
+      {"goBackButton", IDS_PRINT_PREVIEW_BUTTON_GO_BACK},
+      {"invalidPrinterSettings", IDS_PRINT_PREVIEW_INVALID_PRINTER_SETTINGS},
+      {"layoutLabel", IDS_PRINT_PREVIEW_LAYOUT_LABEL},
+      {"left", IDS_PRINT_PREVIEW_LEFT_MARGIN_LABEL},
+      {"loading", IDS_PRINT_PREVIEW_LOADING},
+      {"manage", IDS_PRINT_PREVIEW_MANAGE},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"managePrintersLabel", IDS_PRINT_PREVIEW_MANAGE_PRINTERS_LABEL},
+      {"managePrintersLabel", IDS_PRINT_PREVIEW_MANAGE_PRINTERS_LABEL},
 #endif
-    {"managedSettings", IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT},
-    {"marginsLabel", IDS_PRINT_PREVIEW_MARGINS_LABEL},
-    {"mediaSizeLabel", IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL},
-    {"mediaTypeLabel", IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL},
-    {"minimumMargins", IDS_PRINT_PREVIEW_MINIMUM_MARGINS},
-    {"moreOptionsLabel", IDS_MORE_OPTIONS_LABEL},
-    {"newShowAdvancedOptions", IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS},
-    {"noAdvancedSettingsMatchSearchHint",
-     IDS_PRINT_PREVIEW_NO_ADVANCED_SETTINGS_MATCH_SEARCH_HINT},
-    {"noDestinationsMessage", IDS_PRINT_PREVIEW_NO_DESTINATIONS_MESSAGE},
-    {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
-    {"nonIsotropicDpiItemLabel",
-     IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
-    {"optionAllPages", IDS_PRINT_PREVIEW_OPTION_ALL_PAGES},
-    {"optionBackgroundColorsAndImages",
-     IDS_PRINT_PREVIEW_OPTION_BACKGROUND_COLORS_AND_IMAGES},
-    {"optionBw", IDS_PRINT_PREVIEW_OPTION_BW},
-    {"optionCollate", IDS_PRINT_PREVIEW_OPTION_COLLATE},
-    {"optionColor", IDS_PRINT_PREVIEW_OPTION_COLOR},
-    {"optionCustomPages", IDS_PRINT_PREVIEW_OPTION_CUSTOM_PAGES},
-    {"optionCustomScaling", IDS_PRINT_PREVIEW_OPTION_CUSTOM_SCALING},
-    {"optionDefaultScaling", IDS_PRINT_PREVIEW_OPTION_DEFAULT_SCALING},
-    {"optionEvenPages", IDS_PRINT_PREVIEW_OPTION_EVEN_PAGES},
-    {"optionFitToPage", IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAGE},
-    {"optionFitToPaper", IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAPER},
-    {"optionHeaderFooter", IDS_PRINT_PREVIEW_OPTION_HEADER_FOOTER},
-    {"optionLandscape", IDS_PRINT_PREVIEW_OPTION_LANDSCAPE},
-    {"optionLongEdge", IDS_PRINT_PREVIEW_OPTION_LONG_EDGE},
-    {"optionOddPages", IDS_PRINT_PREVIEW_OPTION_ODD_PAGES},
-    {"optionPortrait", IDS_PRINT_PREVIEW_OPTION_PORTRAIT},
-    {"optionRasterize", IDS_PRINT_PREVIEW_OPTION_RASTERIZE},
-    {"optionSelectionOnly", IDS_PRINT_PREVIEW_OPTION_SELECTION_ONLY},
-    {"optionShortEdge", IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE},
-    {"optionTwoSided", IDS_PRINT_PREVIEW_OPTION_TWO_SIDED},
-    {"optionsLabel", IDS_PRINT_PREVIEW_OPTIONS_LABEL},
-    {"pageDescription", IDS_PRINT_PREVIEW_DESCRIPTION},
-    {"pageRangeLimitInstructionWithValue",
-     IDS_PRINT_PREVIEW_PAGE_RANGE_LIMIT_INSTRUCTION_WITH_VALUE},
-    {"pageRangeSyntaxInstruction",
-     IDS_PRINT_PREVIEW_PAGE_RANGE_SYNTAX_INSTRUCTION},
-    {"pagesLabel", IDS_PRINT_PREVIEW_PAGES_LABEL},
-    {"pagesPerSheetLabel", IDS_PRINT_PREVIEW_PAGES_PER_SHEET_LABEL},
-    {"previewFailed", IDS_PRINT_PREVIEW_FAILED},
-    {"printOnBothSidesLabel", IDS_PRINT_PREVIEW_PRINT_ON_BOTH_SIDES_LABEL},
-    {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
-    {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
-    {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
+      {"managedSettings", IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT},
+      {"marginsLabel", IDS_PRINT_PREVIEW_MARGINS_LABEL},
+      {"mediaSizeLabel", IDS_PRINT_PREVIEW_MEDIA_SIZE_LABEL},
+      {"mediaTypeLabel", IDS_PRINT_PREVIEW_MEDIA_TYPE_LABEL},
+      {"minimumMargins", IDS_PRINT_PREVIEW_MINIMUM_MARGINS},
+      {"moreOptionsLabel", IDS_MORE_OPTIONS_LABEL},
+      {"newShowAdvancedOptions", IDS_PRINT_PREVIEW_NEW_SHOW_ADVANCED_OPTIONS},
+      {"noAdvancedSettingsMatchSearchHint",
+       IDS_PRINT_PREVIEW_NO_ADVANCED_SETTINGS_MATCH_SEARCH_HINT},
+      {"noDestinationsMessage", IDS_PRINT_PREVIEW_NO_DESTINATIONS_MESSAGE},
+      {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
+      {"nonIsotropicDpiItemLabel",
+       IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
+      {"optionAllPages", IDS_PRINT_PREVIEW_OPTION_ALL_PAGES},
+      {"optionBackgroundColorsAndImages",
+       IDS_PRINT_PREVIEW_OPTION_BACKGROUND_COLORS_AND_IMAGES},
+      {"optionBw", IDS_PRINT_PREVIEW_OPTION_BW},
+      {"optionCollate", IDS_PRINT_PREVIEW_OPTION_COLLATE},
+      {"optionColor", IDS_PRINT_PREVIEW_OPTION_COLOR},
+      {"optionCustomPages", IDS_PRINT_PREVIEW_OPTION_CUSTOM_PAGES},
+      {"optionCustomScaling", IDS_PRINT_PREVIEW_OPTION_CUSTOM_SCALING},
+      {"optionDefaultScaling", IDS_PRINT_PREVIEW_OPTION_DEFAULT_SCALING},
+      {"optionEvenPages", IDS_PRINT_PREVIEW_OPTION_EVEN_PAGES},
+      {"optionFitToPage", IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAGE},
+      {"optionFitToPaper", IDS_PRINT_PREVIEW_OPTION_FIT_TO_PAPER},
+      {"optionHeaderFooter", IDS_PRINT_PREVIEW_OPTION_HEADER_FOOTER},
+      {"optionLandscape", IDS_PRINT_PREVIEW_OPTION_LANDSCAPE},
+      {"optionLongEdge", IDS_PRINT_PREVIEW_OPTION_LONG_EDGE},
+      {"optionOddPages", IDS_PRINT_PREVIEW_OPTION_ODD_PAGES},
+      {"optionPortrait", IDS_PRINT_PREVIEW_OPTION_PORTRAIT},
+      {"optionRasterize", IDS_PRINT_PREVIEW_OPTION_RASTERIZE},
+      {"optionSelectionOnly", IDS_PRINT_PREVIEW_OPTION_SELECTION_ONLY},
+      {"optionShortEdge", IDS_PRINT_PREVIEW_OPTION_SHORT_EDGE},
+      {"optionTwoSided", IDS_PRINT_PREVIEW_OPTION_TWO_SIDED},
+      {"optionsLabel", IDS_PRINT_PREVIEW_OPTIONS_LABEL},
+      {"pageDescription", IDS_PRINT_PREVIEW_DESCRIPTION},
+      {"pageRangeLimitInstructionWithValue",
+       IDS_PRINT_PREVIEW_PAGE_RANGE_LIMIT_INSTRUCTION_WITH_VALUE},
+      {"pageRangeSyntaxInstruction",
+       IDS_PRINT_PREVIEW_PAGE_RANGE_SYNTAX_INSTRUCTION},
+      {"pagesLabel", IDS_PRINT_PREVIEW_PAGES_LABEL},
+      {"pagesPerSheetLabel", IDS_PRINT_PREVIEW_PAGES_PER_SHEET_LABEL},
+      {"previewFailed", IDS_PRINT_PREVIEW_FAILED},
+      {"printOnBothSidesLabel", IDS_PRINT_PREVIEW_PRINT_ON_BOTH_SIDES_LABEL},
+      {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
+      {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
+      {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"printerSetupInfoMessageDetailNoPrintersText",
-     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT},
-    {"printerSetupInfoMessageDetailPrinterOfflineText",
-     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_PRINTER_OFFLINE_TEXT},
-    {"printerSetupInfoMessageHeadingNoPrintersText",
-     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_NO_PRINTERS_TEXT},
-    {"printerSetupInfoMessageHeadingPrinterOfflineText",
-     IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_PRINTER_OFFLINE_TEXT},
-    {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
+      {"printerSetupInfoMessageDetailNoPrintersText",
+       IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_NO_PRINTERS_TEXT},
+      {"printerSetupInfoMessageDetailPrinterOfflineText",
+       IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_DETAIL_PRINTER_OFFLINE_TEXT},
+      {"printerSetupInfoMessageHeadingNoPrintersText",
+       IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_NO_PRINTERS_TEXT},
+      {"printerSetupInfoMessageHeadingPrinterOfflineText",
+       IDS_PRINT_PREVIEW_PRINTER_SETUP_INFO_MESSAGE_HEADING_PRINTER_OFFLINE_TEXT},
+      {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
 #endif
-    {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
-    {"printing", IDS_PRINT_PREVIEW_PRINTING},
+      {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
+      {"printing", IDS_PRINT_PREVIEW_PRINTING},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"resolveExtensionUSBDialogTitle",
-     IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_DIALOG_TITLE},
-    {"resolveExtensionUSBErrorMessage",
-     IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_ERROR_MESSAGE},
-    {"resolveExtensionUSBPermissionMessage",
-     IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_PERMISSION_MESSAGE},
+      {"resolveExtensionUSBDialogTitle",
+       IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_DIALOG_TITLE},
+      {"resolveExtensionUSBErrorMessage",
+       IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_ERROR_MESSAGE},
+      {"resolveExtensionUSBPermissionMessage",
+       IDS_PRINT_PREVIEW_RESOLVE_EXTENSION_USB_PERMISSION_MESSAGE},
 #endif
-    {"right", IDS_PRINT_PREVIEW_RIGHT_MARGIN_LABEL},
-    {"saveButton", IDS_PRINT_PREVIEW_SAVE_BUTTON},
-    {"saving", IDS_PRINT_PREVIEW_SAVING},
-    {"scalingInstruction", IDS_PRINT_PREVIEW_SCALING_INSTRUCTION},
-    {"scalingLabel", IDS_PRINT_PREVIEW_SCALING_LABEL},
-    {"searchBoxPlaceholder", IDS_PRINT_PREVIEW_SEARCH_BOX_PLACEHOLDER},
-    {"searchResultBubbleText", IDS_SEARCH_RESULT_BUBBLE_TEXT},
-    {"searchResultsBubbleText", IDS_SEARCH_RESULTS_BUBBLE_TEXT},
-    {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
-    {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
-    {"seeMoreDestinationsLabel", IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
+      {"right", IDS_PRINT_PREVIEW_RIGHT_MARGIN_LABEL},
+      {"saveButton", IDS_PRINT_PREVIEW_SAVE_BUTTON},
+      {"saving", IDS_PRINT_PREVIEW_SAVING},
+      {"scalingInstruction", IDS_PRINT_PREVIEW_SCALING_INSTRUCTION},
+      {"scalingLabel", IDS_PRINT_PREVIEW_SCALING_LABEL},
+      {"searchBoxPlaceholder", IDS_PRINT_PREVIEW_SEARCH_BOX_PLACEHOLDER},
+      {"searchResultBubbleText", IDS_SEARCH_RESULT_BUBBLE_TEXT},
+      {"searchResultsBubbleText", IDS_SEARCH_RESULTS_BUBBLE_TEXT},
+      {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
+      {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
+      {"seeMoreDestinationsLabel",
+       IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"serverSearchBoxPlaceholder",
-     IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
+      {"serverSearchBoxPlaceholder",
+       IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
 #endif
-    {"title", IDS_PRINT_PREVIEW_TITLE},
-    {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
+      {"title", IDS_PRINT_PREVIEW_TITLE},
+      {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
 #if BUILDFLAG(IS_CHROMEOS)
-    {"configuringFailedText", IDS_PRINT_CONFIGURING_FAILED_TEXT},
-    {"configuringInProgressText", IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT},
-    {"optionPin", IDS_PRINT_PREVIEW_OPTION_PIN},
-    {"pinErrorMessage", IDS_PRINT_PREVIEW_PIN_ERROR_MESSAGE},
-    {"pinPlaceholder", IDS_PRINT_PREVIEW_PIN_PLACEHOLDER},
-    {"printerEulaURL", IDS_PRINT_PREVIEW_EULA_URL},
-    {"printerStatusDeviceError", IDS_PRINT_PREVIEW_PRINTER_STATUS_DEVICE_ERROR},
-    {"printerStatusDoorOpen", IDS_PRINT_PREVIEW_PRINTER_STATUS_DOOR_OPEN},
-    {"printerStatusLowOnInk", IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_INK},
-    {"printerStatusLowOnPaper", IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_PAPER},
-    {"printerStatusOutOfInk", IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_INK},
-    {"printerStatusOutOfPaper", IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_PAPER},
-    {"printerStatusOutputAlmostFull",
-     IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_ALMOST_FULL},
-    {"printerStatusOutputFull", IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_FULL},
-    {"printerStatusPaperJam", IDS_PRINT_PREVIEW_PRINTER_STATUS_PAPER_JAM},
-    {"printerStatusPaused", IDS_PRINT_PREVIEW_PRINTER_STATUS_PAUSED},
-    {"printerStatusPrinterQueueFull",
-     IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_QUEUE_FULL},
-    {"printerStatusPrinterUnreachable",
-     IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_UNREACHABLE},
-    {"printerStatusStopped", IDS_PRINT_PREVIEW_PRINTER_STATUS_STOPPED},
-    {"printerStatusTrayMissing", IDS_PRINT_PREVIEW_PRINTER_STATUS_TRAY_MISSING},
+      {"configuringFailedText", IDS_PRINT_CONFIGURING_FAILED_TEXT},
+      {"configuringInProgressText", IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT},
+      {"optionPin", IDS_PRINT_PREVIEW_OPTION_PIN},
+      {"pinErrorMessage", IDS_PRINT_PREVIEW_PIN_ERROR_MESSAGE},
+      {"pinPlaceholder", IDS_PRINT_PREVIEW_PIN_PLACEHOLDER},
+      {"printerEulaURL", IDS_PRINT_PREVIEW_EULA_URL},
+      {"printerStatusDeviceError",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_DEVICE_ERROR},
+      {"printerStatusDoorOpen", IDS_PRINT_PREVIEW_PRINTER_STATUS_DOOR_OPEN},
+      {"printerStatusLowOnInk", IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_INK},
+      {"printerStatusLowOnPaper",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_LOW_ON_PAPER},
+      {"printerStatusOutOfInk", IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_INK},
+      {"printerStatusOutOfPaper",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_OUT_OF_PAPER},
+      {"printerStatusOutputAlmostFull",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_ALMOST_FULL},
+      {"printerStatusOutputFull", IDS_PRINT_PREVIEW_PRINTER_STATUS_OUPUT_FULL},
+      {"printerStatusPaperJam", IDS_PRINT_PREVIEW_PRINTER_STATUS_PAPER_JAM},
+      {"printerStatusPaused", IDS_PRINT_PREVIEW_PRINTER_STATUS_PAUSED},
+      {"printerStatusPrinterQueueFull",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_QUEUE_FULL},
+      {"printerStatusPrinterUnreachable",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_PRINTER_UNREACHABLE},
+      {"printerStatusStopped", IDS_PRINT_PREVIEW_PRINTER_STATUS_STOPPED},
+      {"printerStatusTrayMissing",
+       IDS_PRINT_PREVIEW_PRINTER_STATUS_TRAY_MISSING},
 #endif
 #if BUILDFLAG(IS_MAC)
-    {"openPdfInPreviewOption", IDS_PRINT_PREVIEW_OPEN_PDF_IN_PREVIEW_APP},
-    {"openingPDFInPreview", IDS_PRINT_PREVIEW_OPENING_PDF_IN_PREVIEW_APP},
+      {"openPdfInPreviewOption", IDS_PRINT_PREVIEW_OPEN_PDF_IN_PREVIEW_APP},
+      {"openingPDFInPreview", IDS_PRINT_PREVIEW_OPENING_PDF_IN_PREVIEW_APP},
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
@@ -478,8 +484,9 @@ bool PrintPreviewUI::IsBound() const {
 void PrintPreviewUI::ClearPreviewUIId() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!id_)
+  if (!id_) {
     return;
+  }
 
   receiver_.reset();
   PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
@@ -509,19 +516,22 @@ void PrintPreviewUI::NotifyUIPreviewPageReady(
     uint32_t page_index,
     int request_id,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
-  if (!data_bytes || !data_bytes->size())
+  if (!data_bytes || !data_bytes->size()) {
     return;
+  }
 
   // Don't bother notifying the UI if this request has been cancelled already.
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
 
   DCHECK_NE(page_index, kInvalidPageIndex);
   SetPrintPreviewDataForIndex(base::checked_cast<int>(page_index),
                               std::move(data_bytes));
 
-  if (g_test_delegate)
+  if (g_test_delegate) {
     g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
+  }
   handler_->SendPagePreviewReady(base::checked_cast<int>(page_index), *id_,
                                  request_id);
 }
@@ -529,12 +539,14 @@ void PrintPreviewUI::NotifyUIPreviewPageReady(
 void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     int request_id,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
-  if (!data_bytes || !data_bytes->size())
+  if (!data_bytes || !data_bytes->size()) {
     return;
+  }
 
   // Don't bother notifying the UI if this request has been cancelled already.
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
 
   if (!initial_preview_start_time_.is_null()) {
     base::TimeDelta display_time =
@@ -586,8 +598,9 @@ void PrintPreviewUI::OnCompositePdfPageDone(
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
 
   if (status != mojom::PrintCompositor::Status::kSuccess) {
     DLOG(ERROR) << "Compositing pdf failed with error " << status;
@@ -602,8 +615,9 @@ void PrintPreviewUI::OnCompositePdfPageDone(
   } else {
     AddPdfPageForNupConversion(std::move(region));
     uint32_t current_page_index = GetPageToNupConvertIndex(page_index);
-    if (current_page_index == kInvalidPageIndex)
+    if (current_page_index == kInvalidPageIndex) {
       return;
+    }
 
     if (((current_page_index + 1) % pages_per_sheet_) == 0 ||
         LastPageComposited(page_index)) {
@@ -615,12 +629,14 @@ void PrintPreviewUI::OnCompositePdfPageDone(
 
       gfx::Rect printable_rect =
           PageSetup::GetSymmetricalPrintableArea(page_size(), printable_area());
-      if (printable_rect.IsEmpty())
+      if (printable_rect.IsEmpty()) {
         return;
+      }
 
       WebContents* web_contents = GetInitiator(web_ui());
-      if (!web_contents)
+      if (!web_contents) {
         return;
+      }
 
       auto* client = PdfNupConverterClient::FromWebContents(web_contents);
       DCHECK(client);
@@ -661,8 +677,9 @@ void PrintPreviewUI::OnCompositeToPdfDone(
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
 
   if (status != mojom::PrintCompositor::Status::kSuccess) {
     DLOG(ERROR) << "Completion of document to pdf failed with error " << status;
@@ -676,16 +693,18 @@ void PrintPreviewUI::OnCompositeToPdfDone(
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
   } else {
     WebContents* web_contents = GetInitiator(web_ui());
-    if (!web_contents)
+    if (!web_contents) {
       return;
+    }
 
     auto* client = PdfNupConverterClient::FromWebContents(web_contents);
     DCHECK(client);
 
     gfx::Rect printable_rect =
         PageSetup::GetSymmetricalPrintableArea(page_size_, printable_area_);
-    if (printable_rect.IsEmpty())
+    if (printable_rect.IsEmpty()) {
       return;
+    }
 
     client->DoNupPdfDocumentConvert(
         document_cookie, pages_per_sheet_, page_size_, printable_rect,
@@ -703,11 +722,13 @@ void PrintPreviewUI::OnPrepareForDocumentToPdfDone(
     mojom::PrintCompositor::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
 
-  if (status != mojom::PrintCompositor::Status::kSuccess)
+  if (status != mojom::PrintCompositor::Status::kSuccess) {
     OnPrintPreviewFailed(request_id);
+  }
 }
 
 void PrintPreviewUI::OnNupPdfDocumentConvertDone(
@@ -730,8 +751,9 @@ void PrintPreviewUI::SetInitiatorTitle(const std::u16string& job_title) {
 }
 
 bool PrintPreviewUI::LastPageComposited(uint32_t page_index) const {
-  if (pages_to_render_.empty())
+  if (pages_to_render_.empty()) {
     return false;
+  }
 
   return page_index == pages_to_render_.back();
 }
@@ -761,8 +783,9 @@ bool PrintPreviewUI::ShouldCancelRequest(
     int request_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!preview_ui_id)
+  if (!preview_ui_id) {
     return true;
+  }
 
   auto& map = GetPrintPreviewRequestIdMap();
   auto it = map.find(*preview_ui_id);
@@ -777,8 +800,9 @@ void PrintPreviewUI::OnPrintPreviewDialogClosed() {
   WebContents* preview_dialog = web_ui()->GetWebContents();
   BackgroundPrintingManager* background_printing_manager =
       g_browser_process->background_printing_manager();
-  if (background_printing_manager->HasPrintPreviewDialog(preview_dialog))
+  if (background_printing_manager->HasPrintPreviewDialog(preview_dialog)) {
     return;
+  }
   OnClosePrintPreviewDialog();
 }
 
@@ -841,8 +865,9 @@ void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
   page_size_ = ToFlooredSize(params->page_size);
   ClearAllPreviewData();
 
-  if (g_test_delegate)
+  if (g_test_delegate) {
     g_test_delegate->DidGetPreviewPageCount(params->page_count);
+  }
   handler_->SendPageCountReady(base::checked_cast<int>(params->page_count),
                                params->fit_to_page_scaling, request_id);
 }
@@ -886,8 +911,9 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
 }
 
 bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_index) {
-  if (pages_to_render_index_ >= pages_to_render_.size())
+  if (pages_to_render_index_ >= pages_to_render_.size()) {
     return false;
+  }
 
   bool matched = page_index == pages_to_render_[pages_to_render_index_];
   ++pages_to_render_index_;
@@ -911,12 +937,14 @@ void PrintPreviewUI::OnHidePreviewDialog() {
   WebContents* preview_dialog = web_ui()->GetWebContents();
   BackgroundPrintingManager* background_printing_manager =
       g_browser_process->background_printing_manager();
-  if (background_printing_manager->HasPrintPreviewDialog(preview_dialog))
+  if (background_printing_manager->HasPrintPreviewDialog(preview_dialog)) {
     return;
+  }
 
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
   std::unique_ptr<content::WebContents> preview_contents =
       delegate->ReleaseWebContents();
   DCHECK_EQ(preview_dialog, preview_contents.get());
@@ -926,12 +954,14 @@ void PrintPreviewUI::OnHidePreviewDialog() {
 }
 
 void PrintPreviewUI::OnClosePrintPreviewDialog() {
-  if (dialog_closed_)
+  if (dialog_closed_) {
     return;
+  }
   dialog_closed_ = true;
   ConstrainedWebDialogDelegate* delegate = GetConstrainedDelegate();
-  if (!delegate)
+  if (!delegate) {
     return;
+  }
   delegate->GetWebDialogDelegate()->OnDialogClosed(std::string());
   delegate->OnDialogCloseFromWebUI();
 }
@@ -939,8 +969,9 @@ void PrintPreviewUI::OnClosePrintPreviewDialog() {
 void PrintPreviewUI::SetOptionsFromDocument(
     const mojom::OptionsFromDocumentParamsPtr params,
     int32_t request_id) {
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
   handler_->SendPrintPresetOptions(params->is_scaling_disabled, params->copies,
                                    params->duplex, request_id);
 }
@@ -955,22 +986,25 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
   }
 
   WebContents* web_contents = GetInitiator(web_ui());
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   // For case of print preview, page metafile is used to composite into
   // the document PDF at same time.  Need to indicate that this scenario
   // is at play for the compositor.
   auto* client = PrintCompositeClient::FromWebContents(web_contents);
   DCHECK(client);
-  if (client->GetIsDocumentConcurrentlyComposited(document_cookie))
+  if (client->GetIsDocumentConcurrentlyComposited(document_cookie)) {
     return;
+  }
 
   content::RenderFrameHost* render_frame_host =
       PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
   // |render_frame_host| could be null when the print preview dialog is closed.
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return;
+  }
 
   PRINTER_LOG(EVENT) << "Compositing for document type "
                      << GetCompositorDocumentType();
@@ -998,12 +1032,14 @@ void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
 
   if (ShouldUseCompositor()) {
     // Don't bother compositing if this request has been cancelled already.
-    if (ShouldCancelRequest(id_, request_id))
+    if (ShouldCancelRequest(id_, request_id)) {
       return;
+    }
 
     WebContents* web_contents = GetInitiator(web_ui());
-    if (!web_contents)
+    if (!web_contents) {
       return;
+    }
 
     auto* client = PrintCompositeClient::FromWebContents(web_contents);
     DCHECK(client);
@@ -1012,8 +1048,9 @@ void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
         PrintViewManager::FromWebContents(web_contents)->print_preview_rfh();
     // |render_frame_host| could be null when the print preview dialog is
     // closed.
-    if (!render_frame_host)
+    if (!render_frame_host) {
       return;
+    }
 
     // Use utility process to convert Skia metafile to PDF or XPS.
     client->CompositePage(
@@ -1046,8 +1083,9 @@ void PrintPreviewUI::MetafileReadyForPrinting(
   // the individual pages, so |metafile| should be invalid.
   // When it is inactive, the print document is composed from |metafile|.
   // So if this comparison succeeds, that means the renderer sent bad data.
-  if (composite_document_using_individual_pages == metafile.IsValid())
+  if (composite_document_using_individual_pages == metafile.IsValid()) {
     return;
+  }
 
   if (params->expected_pages_count == 0) {
     receiver_.ReportBadMessage(kInvalidPageCountForMetafileReadyForPrinting);
@@ -1056,16 +1094,18 @@ void PrintPreviewUI::MetafileReadyForPrinting(
 
   if (composite_document_using_individual_pages) {
     // Don't bother compositing if this request has been cancelled already.
-    if (ShouldCancelRequest(id_, request_id))
+    if (ShouldCancelRequest(id_, request_id)) {
       return;
+    }
 
     auto callback = base::BindOnce(&PrintPreviewUI::OnCompositeToPdfDone,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    params->document_cookie, request_id);
 
     WebContents* web_contents = GetInitiator(web_ui());
-    if (!web_contents)
+    if (!web_contents) {
       return;
+    }
 
     // Page metafile is used to composite into the document at same time.
     // Need to provide particulars of how many pages are required before
@@ -1087,8 +1127,9 @@ void PrintPreviewUI::MetafileReadyForPrinting(
 void PrintPreviewUI::PrintPreviewFailed(int32_t document_cookie,
                                         int32_t request_id) {
   StopWorker(document_cookie);
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
   OnPrintPreviewFailed(request_id);
 }
 
@@ -1096,16 +1137,18 @@ void PrintPreviewUI::PrintPreviewCancelled(int32_t document_cookie,
                                            int32_t request_id) {
   // Always need to stop the worker.
   StopWorker(document_cookie);
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
   handler_->OnPrintPreviewCancelled(request_id);
 }
 
 void PrintPreviewUI::PrinterSettingsInvalid(int32_t document_cookie,
                                             int32_t request_id) {
   StopWorker(document_cookie);
-  if (ShouldCancelRequest(id_, request_id))
+  if (ShouldCancelRequest(id_, request_id)) {
     return;
+  }
   handler_->OnInvalidPrinterSettings(request_id);
 }
 

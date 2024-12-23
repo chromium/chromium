@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 
 #include <gtest/gtest.h>
+
 #include <memory>
 #include <string>
 #include <utility>

@@ -474,20 +474,20 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
-      browser()->tab_strip_model()->AddToNewGroup({0});
+  browser()->tab_strip_model()->AddToNewGroup({0});
 
-      RunTestSequence(
-          FinishTabstripAnimations(), ShowBookmarksBar(),
-          PressButton(kToolbarAppMenuButtonElementId),
-          WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-          SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-          SelectMenuItem(STGEverythingMenu::kTabGroup),
-          EnsurePresent(STGEverythingMenu::kOpenGroup),
-          EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
-          EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
-          EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
-          EnsurePresent(SavedTabGroupUtils::kTabsTitleItem),
-          EnsurePresent(SavedTabGroupUtils::kTab));
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+      SelectMenuItem(STGEverythingMenu::kTabGroup),
+      EnsurePresent(STGEverythingMenu::kOpenGroup),
+      EnsurePresent(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      EnsurePresent(SavedTabGroupUtils::kTabsTitleItem),
+      EnsurePresent(SavedTabGroupUtils::kTab));
 }
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,

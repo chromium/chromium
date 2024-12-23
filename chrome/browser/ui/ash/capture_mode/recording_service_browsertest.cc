@@ -191,8 +191,9 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
     std::string file_content;
     EXPECT_TRUE(base::ReadFileToString(path, &file_content));
 
-    if (allow_empty && file_content.empty())
+    if (allow_empty && file_content.empty()) {
       return;
+    }
 
     EXPECT_FALSE(file_content.empty());
     EXPECT_TRUE(WebmVerifier().Verify(file_content));

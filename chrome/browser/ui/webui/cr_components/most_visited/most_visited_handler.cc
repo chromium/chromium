@@ -312,6 +312,7 @@ void MostVisitedHandler::OnMigrationRun() {
 }
 
 void MostVisitedHandler::OnDestroyed() {
-  if (preinstalled_web_app_observer_.IsObserving())
+  if (preinstalled_web_app_observer_.IsObserving()) {
     preinstalled_web_app_observer_.Reset();
+  }
 }

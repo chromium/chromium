@@ -539,25 +539,24 @@ bool ToolbarController::IsOverflowed(
     const ResponsiveElementInfo& element,
     const views::ProposedLayout* proposed_layout) const {
   return absl::visit(
-      base::Overloaded{[&](actions::ActionId id) {
-                         CHECK(!proposed_layout);
-                         return pinned_actions_delegate_ &&
-                                pinned_actions_delegate_->IsOverflowed(id);
-                       },
-                       [&](ToolbarController::ElementIdInfo id) {
-                         const auto* const toolbar_element =
-                             FindToolbarElementWithId(toolbar_container_view_,
-                                                      id.overflow_identifier);
-                         const views::FlexLayout* const flex_layout =
-                             static_cast<views::FlexLayout*>(
-                                 toolbar_container_view_->GetLayoutManager());
-                         return flex_layout->CanBeVisible(toolbar_element) &&
-                                !(proposed_layout
-                                      ? proposed_layout
-                                            ->GetLayoutFor(toolbar_element)
-                                            ->visible
-                                      : toolbar_element->GetVisible());
-                       }},
+      base::Overloaded{
+          [&](actions::ActionId id) {
+            CHECK(!proposed_layout);
+            return pinned_actions_delegate_ &&
+                   pinned_actions_delegate_->IsOverflowed(id);
+          },
+          [&](ToolbarController::ElementIdInfo id) {
+            const auto* const toolbar_element = FindToolbarElementWithId(
+                toolbar_container_view_, id.overflow_identifier);
+            const views::FlexLayout* const flex_layout =
+                static_cast<views::FlexLayout*>(
+                    toolbar_container_view_->GetLayoutManager());
+            return flex_layout->CanBeVisible(toolbar_element) &&
+                   !(proposed_layout
+                         ? proposed_layout->GetLayoutFor(toolbar_element)
+                               ->visible
+                         : toolbar_element->GetVisible());
+          }},
       element.overflow_id);
 }
 

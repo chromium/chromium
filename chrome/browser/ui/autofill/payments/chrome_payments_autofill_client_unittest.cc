@@ -32,7 +32,7 @@
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/ui_features.h"  // nogncheck
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif                                      // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
 using ::testing::AllOf;

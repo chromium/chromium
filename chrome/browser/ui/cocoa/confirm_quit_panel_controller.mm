@@ -166,8 +166,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 
 + (ConfirmQuitPanelController*)sharedController {
   if (!g_confirmQuitPanelController) {
-    g_confirmQuitPanelController =
-        [[ConfirmQuitPanelController alloc] init];
+    g_confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
   }
   return g_confirmQuitPanelController;
 }

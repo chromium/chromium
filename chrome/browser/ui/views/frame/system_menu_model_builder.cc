@@ -63,10 +63,11 @@ void SystemMenuModelBuilder::Init() {
 void SystemMenuModelBuilder::BuildMenu(ui::SimpleMenuModel* model) {
   // We add the menu items in reverse order so that insertion_index never needs
   // to change.
-  if (browser()->is_type_normal())
+  if (browser()->is_type_normal()) {
     BuildSystemMenuForBrowserWindow(model);
-  else
+  } else {
     BuildSystemMenuForAppOrPopupWindow(model);
+  }
 }
 
 void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
@@ -177,8 +178,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   gfx::NativeWindow window =
       menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window))
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
@@ -205,15 +207,17 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
   }
 
   // Don't show the menu for incognito windows.
-  if (browser()->profile()->IsOffTheRecord())
+  if (browser()->profile()->IsOffTheRecord()) {
     return;
+  }
 
   // To show the menu we need at least two logged in users.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::UserList logged_in_users =
       user_manager->GetLRULoggedInUsers();
-  if (logged_in_users.size() <= 1u)
+  if (logged_in_users.size() <= 1u) {
     return;
+  }
 
   // If this does not belong to a profile or there is no window, or the window
   // is not owned by anyone, we don't show the menu addition.
@@ -222,8 +226,9 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
   aura::Window* window = browser()->window()->GetNativeWindow();
   if (!account_id.is_valid() || !window ||
-      !window_manager->GetWindowOwner(window).is_valid())
+      !window_manager->GetWindowOwner(window).is_valid()) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   int command_id = IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT;

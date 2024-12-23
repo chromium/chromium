@@ -18,8 +18,9 @@ namespace {
 class ProfileTracker : public ProfileObserver {
  public:
   explicit ProfileTracker(Profile* profile) : profile_(profile) {
-    if (profile_)
+    if (profile_) {
       observation_.Observe(profile_.get());
+    }
   }
   ~ProfileTracker() override = default;
 

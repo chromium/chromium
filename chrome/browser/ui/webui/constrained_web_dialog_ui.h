@@ -18,7 +18,7 @@ class Size;
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class WebDialogDelegate;

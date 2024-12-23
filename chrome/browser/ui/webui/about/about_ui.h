@@ -139,8 +139,8 @@ namespace about_ui {
 
 // Helper functions
 void AppendHeader(std::string* output, const std::string& unescaped_title);
-void AppendBody(std::string *output);
-void AppendFooter(std::string *output);
+void AppendBody(std::string* output);
+void AppendFooter(std::string* output);
 
 }  // namespace about_ui
 

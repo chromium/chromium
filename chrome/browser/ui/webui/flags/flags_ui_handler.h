@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/flags/flags_ui.h"
-
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 #include "content/public/browser/web_ui_message_handler.h"

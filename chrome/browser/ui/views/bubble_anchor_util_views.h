@@ -12,7 +12,7 @@
 namespace views {
 class Button;
 class View;
-}
+}  // namespace views
 
 class Browser;
 

@@ -165,8 +165,9 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(int contents_width,
   *description_max_width = std::min(description_width, available_width);
 
   // If the description is empty, contents can get the full available width.
-  if (!description_width)
+  if (!description_width) {
     return;
+  }
 
   // If we want to display the description, we need to reserve enough space for
   // the separator.
@@ -406,8 +407,9 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
     // Usually, answer images are square. But if that's not the case, setting
     // answer_image_view_ size proportional to the image size preserves
     // the aspect ratio.
-    if (width == height)
+    if (width == height) {
       return;
+    }
     const int max = std::max(width, height);
     width = kUniformRowHeightIconSize * width / max;
     height = kUniformRowHeightIconSize * height / max;
@@ -570,8 +572,9 @@ int OmniboxMatchCellView::GetImageIndent() const {
   // This number is independent of other layout numbers; i.e., it's not meant to
   // align with any other UI; it's just arbitrarily chosen by UX. Hence, it's
   // not derived from other matches' `indent` below.
-  if (layout_style_ == LayoutStyle::IPH_SUGGESTION)
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     return 2;
+  }
 
   // The entity, answer, and icon images are horizontally centered within their
   // bounds. So their center-line will be at `image_x+kImageBoundsWidth/2`. This
@@ -605,8 +608,9 @@ int OmniboxMatchCellView::GetTextIndent() const {
 
   // Answers don't have an icon, and their text needs to line up with the icons
   // of other suggestions, so they need a smaller indent.
-  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER)
+  if (layout_style_ == LayoutStyle::HISTORY_EMBEDDING_ANSWER) {
     return 18;
+  }
 
   // For normal matches, the gap between the left edge of this view and the
   // left edge of its favicon or answer image.
@@ -617,8 +621,9 @@ int OmniboxMatchCellView::GetTextIndent() const {
   // to have inner padding, so the gap between the left edge of this
   // `OmniboxMatchCellView` and the IPH icon/text is actually larger than
   // `indent`.
-  if (layout_style_ == LayoutStyle::IPH_SUGGESTION)
+  if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     indent -= kIphOffset;
+  }
 
   return indent;
 }

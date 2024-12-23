@@ -1120,7 +1120,7 @@ class PageInfoBubbleViewMerchantTrustDialogBrowserTest
     : public DialogBrowserTest {
  public:
   PageInfoBubbleViewMerchantTrustDialogBrowserTest() {
-     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {page_info::kMerchantTrust,
          {{page_info::kMerchantTrustForceShowUIForTestingName, "true"}}},
         {page_info::kPageInfoAboutThisSiteMoreLangs, {}}};

@@ -134,8 +134,7 @@ CommerceUiTabHelper::CommerceUiTabHelper(
 CommerceUiTabHelper::~CommerceUiTabHelper() = default;
 
 // static
-void CommerceUiTabHelper::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
+void CommerceUiTabHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldShowPriceTrackFUEBubble, true);
 }
 
@@ -291,9 +290,9 @@ void CommerceUiTabHelper::HandleProductInfoResponse(
   if (shopping_service_->IsPriceInsightsEligible()) {
     if (!info->product_cluster_title.empty()) {
       shopping_service_->GetPriceInsightsInfoForUrl(
-          url, base::BindOnce(
-                   &CommerceUiTabHelper::HandlePriceInsightsInfoResponse,
-                   weak_ptr_factory_.GetWeakPtr()));
+          url,
+          base::BindOnce(&CommerceUiTabHelper::HandlePriceInsightsInfoResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
     } else {
       // If we were blocked because of the title, consider it a response of
       // false.
@@ -324,10 +323,10 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   }
 
   // Make sure we have responses from all the relevant features first.
-    if (!discounts_page_action_controller_->ShouldShowForNavigation()
-             .has_value()) {
-      return;
-    }
+  if (!discounts_page_action_controller_->ShouldShowForNavigation()
+           .has_value()) {
+    return;
+  }
 
   if (shopping_service_->IsPriceInsightsEligible() &&
       !got_insights_response_for_page_) {
@@ -506,9 +505,8 @@ void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kShoppingInsights,
-      base::BindRepeating(
-          &CommerceUiTabHelper::CreateShoppingInsightsWebView,
-          base::Unretained(this)));
+      base::BindRepeating(&CommerceUiTabHelper::CreateShoppingInsightsWebView,
+                          base::Unretained(this)));
   side_panel_registry_->Register(std::move(entry));
 }
 
@@ -604,11 +602,11 @@ void CommerceUiTabHelper::ComputePageActionToExpand() {
 
   // TODO(b:301440117): Splitting the triggering logic for each icon into
   //                    delegates would make this much easier to test.
-    if (discounts_page_action_controller_->WantsExpandedUi()) {
-      page_action_to_expand_ = PageActionIconType::kDiscounts;
-      MaybeRecordShoppingInformationUKM(PageActionIconType::kDiscounts);
-      return;
-    }
+  if (discounts_page_action_controller_->WantsExpandedUi()) {
+    page_action_to_expand_ = PageActionIconType::kDiscounts;
+    MaybeRecordShoppingInformationUKM(PageActionIconType::kDiscounts);
+    return;
+  }
 
   if (ShouldShowProductSpecificationsIconView()) {
     page_action_to_expand_ = PageActionIconType::kProductSpecifications;
@@ -665,8 +663,7 @@ CommerceUiTabHelper::GetPriceInsightsIconLabelTypeForPage() {
   }
 }
 
-bool CommerceUiTabHelper::ShouldExpandPageActionIcon(
-    PageActionIconType type) {
+bool CommerceUiTabHelper::ShouldExpandPageActionIcon(PageActionIconType type) {
   // Only allow the requesting icon to expand once. This prevents the icon from
   // expanding multiple times per page load.
   if (page_action_to_expand_.has_value() &&

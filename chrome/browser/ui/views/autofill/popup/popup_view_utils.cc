@@ -50,9 +50,9 @@ bool IsElementSufficientlyVisibleForAVerticalArrow(
 
   int visible_width =
       std::clamp(element_bounds.right(), content_area_bounds.x(),
-                  content_area_bounds.right()) -
+                 content_area_bounds.right()) -
       std::clamp(element_bounds.x(), content_area_bounds.x(),
-                  content_area_bounds.right());
+                 content_area_bounds.right());
 
   return visible_width > 3 * BubbleBorder::kVisibleArrowRadius;
 }
@@ -109,10 +109,10 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds) {
   int top_growth_end = std::clamp(element_bounds.y(), content_area_bounds.y(),
-                                   content_area_bounds.bottom());
+                                  content_area_bounds.bottom());
   int bottom_growth_start =
       std::clamp(element_bounds.bottom(), content_area_bounds.y(),
-                  content_area_bounds.bottom());
+                 content_area_bounds.bottom());
 
   int top_available = top_growth_end - content_area_bounds.y();
   int bottom_available = content_area_bounds.bottom() - bottom_growth_start;

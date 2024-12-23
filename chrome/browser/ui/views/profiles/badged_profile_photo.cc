@@ -91,8 +91,8 @@ class BadgeView : public views::ImageView {
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_PAUSED:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSyncPausedCircleIcon,
-            ui::kColorButtonBackgroundProminent, kBadgeIconSize));
+            kSyncPausedCircleIcon, ui::kColorButtonBackgroundProminent,
+            kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_DISABLED:
         SetImage(ui::ImageModel::FromVectorIcon(
@@ -134,8 +134,9 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
   profile_photo_view->SizeToPreferredSize();
   AddChildView(profile_photo_view);
 
-  if (badge_type != BADGE_TYPE_NONE)
+  if (badge_type != BADGE_TYPE_NONE) {
     AddChildView(std::make_unique<BadgeView>(badge_type));
+  }
 
   SetPreferredSize(
       gfx::Size(kBadgedProfilePhotoWidth, kBadgedProfilePhotoHeight));

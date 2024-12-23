@@ -28,11 +28,11 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
-} // namespace
+}  // namespace
 
 class DefaultBrowserPromptInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
-public:
+ public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh,
@@ -44,10 +44,10 @@ public:
     InteractiveBrowserTest::SetUp();
   }
 
-  static base::OnceCallback<bool(AppMenuButton *)>
+  static base::OnceCallback<bool(AppMenuButton*)>
   IsAppMenuChipDefaultBrowserPromptShowing(bool showing) {
     return base::BindOnce(
-        [](bool showing, AppMenuButton *app_menu_button) {
+        [](bool showing, AppMenuButton* app_menu_button) {
           return showing == (app_menu_button->GetText() ==
                              l10n_util::GetStringUTF16(
                                  IDS_APP_MENU_BUTTON_DEFAULT_PROMPT));
@@ -61,14 +61,14 @@ public:
         exists ? EnsurePresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)
                : EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem),
         WithView(kToolbarAppMenuButtonElementId,
-                 [](AppMenuButton *app_menu_button) {
+                 [](AppMenuButton* app_menu_button) {
                    app_menu_button->CloseMenu();
                  }));
   }
 
-  InteractiveTestApi::MultiStep
-  RemovesAllBrowserDefaultPromptsWhen(InteractiveTestApi::MultiStep steps,
-                                      bool preserve_app_menu_item = false) {
+  InteractiveTestApi::MultiStep RemovesAllBrowserDefaultPromptsWhen(
+      InteractiveTestApi::MultiStep steps,
+      bool preserve_app_menu_item = false) {
     return Steps(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                  WaitForShow(kToolbarAppMenuButtonElementId),
                  CheckView(kToolbarAppMenuButtonElementId,
@@ -86,7 +86,7 @@ public:
                  DoesAppMenuItemExist(preserve_app_menu_item));
   }
 
-private:
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
 
 class DefaultBrowserPromptInteractiveTestWithAppMenuDuration
     : public DefaultBrowserPromptInteractiveTest {
-public:
+ public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh,
@@ -147,7 +147,7 @@ public:
     InteractiveBrowserTest::SetUp();
   }
 
-private:
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

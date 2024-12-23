@@ -344,12 +344,14 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   // PromoService to base::Value. The middle-slot promo part is then reencoded
   // from base::Value to a JSON string stored in |data.middle_slot_json|.
   auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
-  if (!middle_slot.has_value())
+  if (!middle_slot.has_value()) {
     return nullptr;
+  }
 
   base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
-  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false))
+  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false)) {
     return nullptr;
+  }
 
   auto promo = new_tab_page::mojom::Promo::New();
   promo->id = data.promo_id;
@@ -682,8 +684,9 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
 void NewTabPageHandler::ChooseLocalCustomBackground(
     ChooseLocalCustomBackgroundCallback callback) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
@@ -744,8 +747,9 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   base::Value::List& list = update.Get();
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(list, module_id_value))
+    if (!base::Contains(list, module_id_value)) {
       list.Append(std::move(module_id_value));
+    }
   } else {
     list.EraseValue(module_id_value);
   }
@@ -1275,8 +1279,9 @@ void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE);
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
 
-  if (choose_local_custom_background_callback_)
+  if (choose_local_custom_background_callback_) {
     std::move(choose_local_custom_background_callback_).Run(true);
+  }
 }
 
 void NewTabPageHandler::FileSelectionCanceled() {
@@ -1286,8 +1291,9 @@ void NewTabPageHandler::FileSelectionCanceled() {
   // with the event.
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL);
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
-  if (choose_local_custom_background_callback_)
+  if (choose_local_custom_background_callback_) {
     std::move(choose_local_custom_background_callback_).Run(false);
+  }
 }
 
 void NewTabPageHandler::OnTabInterfaceChanged() {
@@ -1335,8 +1341,7 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.type, logo->dark_encoded_image->as_string(),
           logo->metadata.dark_mime_type, logo->metadata.dark_animated_url,
           logo->metadata.dark_width_px, logo->metadata.dark_height_px,
-          logo->metadata.dark_background_color,
-          logo->metadata.dark_log_url,
+          logo->metadata.dark_background_color, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
     if (logo->metadata.on_click_url.is_valid()) {

@@ -35,8 +35,9 @@ gfx::NativeWindow CreateWebDialogWidget(views::Widget::InitParams params,
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
 
-  if (show)
+  if (show) {
     widget->Show();
+  }
   return widget->GetNativeWindow();
 }
 
@@ -66,13 +67,15 @@ gfx::NativeWindow ShowWebDialogWithParams(
 #endif
 
   // If the corner radius is specified, set it to |views::DialogDelegate|.
-  if (extra_params && extra_params->corner_radius)
+  if (extra_params && extra_params->corner_radius) {
     view->set_corner_radius(*(extra_params->corner_radius));
+  }
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  if (extra_params)
+  if (extra_params) {
     params = std::move(*extra_params);
+  }
   params.delegate = view;
   params.parent = parent;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

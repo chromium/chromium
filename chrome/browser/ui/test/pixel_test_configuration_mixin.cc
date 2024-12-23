@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
+
 #include <string>
 
-#include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
 #include "ui/base/ui_base_switches.h"
 
 PixelTestConfigurationMixin::PixelTestConfigurationMixin(

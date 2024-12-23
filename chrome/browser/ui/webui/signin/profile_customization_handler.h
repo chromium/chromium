@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_CUSTOMIZATION_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_PROFILE_CUSTOMIZATION_HANDLER_H_
 
-#include "content/public/browser/web_ui_message_handler.h"
-
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;
 class ProfileAttributesEntry;

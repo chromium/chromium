@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -96,8 +97,9 @@ class AutomationEventWaiter
   // has ever been focused, otherwise spins a loop until that node is
   // focused.
   void WaitForNodeIdToBeFocused(ui::AXNodeID node_id) {
-    if (WasNodeIdFocused(node_id))
+    if (WasNodeIdFocused(node_id)) {
       return;
+    }
 
     node_id_to_wait_for_ = node_id;
     run_loop_->Run();
@@ -115,9 +117,11 @@ class AutomationEventWaiter
   }
 
   bool WasNodeIdFocused(int node_id) {
-    for (size_t i = 0; i < focused_node_ids_.size(); i++)
-      if (node_id == focused_node_ids_[i])
+    for (size_t i = 0; i < focused_node_ids_.size(); i++) {
+      if (node_id == focused_node_ids_[i]) {
         return true;
+      }
+    }
     return false;
   }
 
@@ -146,8 +150,9 @@ class AutomationEventWaiter
       }
     }
 
-    if (event_type_to_wait_for_ == ax::mojom::Event::kNone)
+    if (event_type_to_wait_for_ == ax::mojom::Event::kNone) {
       return;
+    }
 
     for (const ui::AXEvent& event : events) {
       if (event.event_type == event_type_to_wait_for_ &&
@@ -496,8 +501,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_TableView) {
     SCOPED_TRACE("Cell: " + cell_bounds.ToString());
 
     ui::AXNode* window = cell->parent();
-    while (window && window->GetRole() != ax::mojom::Role::kWindow)
+    while (window && window->GetRole() != ax::mojom::Role::kWindow) {
       window = window->parent();
+    }
     ASSERT_TRUE(window);
 
     gfx::RectF window_bounds = waiter.ax_tree()->GetTreeBounds(window);

@@ -40,8 +40,9 @@ bool IsAppBrowser(const Browser* browser) {
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model)
+    if (browser->tab_strip_model() == tab_strip_model) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -205,8 +206,9 @@ void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
 
   UpdateBrowserItemState();
 
-  if (app_service_instance_helper_)
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnBrowserRemoved();
+  }
 }
 
 void BrowserStatusMonitor::OnTabStripModelChanged(
@@ -272,11 +274,13 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
                   replace->new_contents);
   }
 
-  if (tab_strip_model->empty())
+  if (tab_strip_model->empty()) {
     return;
+  }
 
-  if (selection.active_tab_changed())
+  if (selection.active_tab_changed()) {
     OnActiveTabChanged(selection.old_contents, selection.new_contents);
+  }
 }
 
 void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
@@ -303,8 +307,9 @@ void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
   if (iter != browser_to_app_id_map_.end()) {
     std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
-    if (!IsAppBrowserInShelfWithAppId(app_id))
+    if (!IsAppBrowserInShelfWithAppId(app_id)) {
       shelf_controller_->SetAppStatus(app_id, ash::STATUS_CLOSED);
+    }
   }
 }
 
@@ -315,8 +320,9 @@ bool BrowserStatusMonitor::IsAppBrowserInShelf(Browser* browser) {
 bool BrowserStatusMonitor::IsAppBrowserInShelfWithAppId(
     const std::string& app_id) {
   for (const auto& iter : browser_to_app_id_map_) {
-    if (iter.second == app_id)
+    if (iter.second == app_id) {
       return true;
+    }
   }
   return false;
 }
@@ -373,8 +379,9 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
 
   AddWebContentsObserver(new_contents);
 
-  if (app_service_instance_helper_)
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabReplaced(old_contents, new_contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
@@ -391,16 +398,18 @@ void BrowserStatusMonitor::OnTabInserted(TabStripModel* tab_strip_model,
 
   AddWebContentsObserver(contents);
 
-  if (app_service_instance_helper_)
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabInserted(contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabClosing(content::WebContents* contents) {
   UpdateAppItemState(contents, true /*remove*/);
   RemoveWebContentsObserver(contents);
 
-  if (app_service_instance_helper_)
+  if (app_service_instance_helper_) {
     app_service_instance_helper_->OnTabClosing(contents);
+  }
 }
 
 void BrowserStatusMonitor::OnTabMoved(TabStripModel* tab_strip_model,

@@ -114,8 +114,9 @@ SharesheetTargetButton::SharesheetTargetButton(
 void SharesheetTargetButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  if (!vector_icon_)
+  if (!vector_icon_) {
     return;
+  }
 
   // TODO(b/284175205): Convert this to an ImageModel after Jelly launches.
   auto* color_provider = GetColorProvider();

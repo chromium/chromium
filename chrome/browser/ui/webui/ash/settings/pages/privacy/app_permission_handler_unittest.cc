@@ -138,9 +138,7 @@ class AppPermissionHandlerTest : public testing::Test {
     handler_->AddObserver(observer_->GenerateRemote());
   }
 
-  void TearDown() override {
-    handler_.reset();
-  }
+  void TearDown() override { handler_.reset(); }
 
  protected:
   AppPermissionHandlerTestObserver* observer() { return observer_.get(); }

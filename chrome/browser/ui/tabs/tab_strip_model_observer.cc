@@ -216,26 +216,22 @@ void TabStripModelObserver::OnTabGroupWillBeRemoved(
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
-                                         TabChangeType change_type) {
-}
+                                         TabChangeType change_type) {}
 
 void TabStripModelObserver::TabPinnedStateChanged(
     TabStripModel* tab_strip_model,
     WebContents* contents,
-    int index) {
-}
+    int index) {}
 
 void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
-                                                   int index) {
-}
+                                                   int index) {}
 
 void TabStripModelObserver::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
     tabs::TabInterface* tab,
     int index) {}
 
-void TabStripModelObserver::TabStripEmpty() {
-}
+void TabStripModelObserver::TabStripEmpty() {}
 
 void TabStripModelObserver::TabCloseCancelled(
     const content::WebContents* contents) {}

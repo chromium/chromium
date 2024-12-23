@@ -34,8 +34,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
       delete;
 
   ash::MultiUserWindowManager* GetMultiUserWindowManager() {
-    if (!MultiUserWindowManagerHelper::GetInstance())
+    if (!MultiUserWindowManagerHelper::GetInstance()) {
       MultiUserWindowManagerHelper::CreateInstanceForTest(test_account_id1_);
+    }
     return MultiUserWindowManagerHelper::GetWindowManager();
   }
 

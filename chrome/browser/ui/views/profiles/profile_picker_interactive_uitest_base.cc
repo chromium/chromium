@@ -35,7 +35,7 @@ ui::Accelerator WithProfilePickerInteractiveUiTestHelpers::GetAccelerator(
 #if BUILDFLAG(IS_MAC)
       return {ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN};  // Cmd-[
 #else
-      return {ui::VKEY_LEFT, ui::EF_ALT_DOWN};   // Alt-left
+      return {ui::VKEY_LEFT, ui::EF_ALT_DOWN};  // Alt-left
 #endif
 
     case IDC_FULLSCREEN:
@@ -43,7 +43,7 @@ ui::Accelerator WithProfilePickerInteractiveUiTestHelpers::GetAccelerator(
       return {ui::VKEY_F,
               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN};  // Cmd-Ctrl-F.
 #else
-      return {ui::VKEY_F11, ui::EF_NONE};        // F11.
+      return {ui::VKEY_F11, ui::EF_NONE};  // F11.
 #endif
 
 #if BUILDFLAG(IS_MAC)

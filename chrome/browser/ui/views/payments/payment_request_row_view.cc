@@ -29,22 +29,26 @@ namespace {
 // Right now this concatenates (with newlines) every Label inside the row to
 // ensure that no data is inaccessible.
 std::u16string GetAccessibleNameFromTree(views::View* view) {
-  if (views::IsViewClass<views::Label>(view))
+  if (views::IsViewClass<views::Label>(view)) {
     return static_cast<views::Label*>(view)
         ->GetViewAccessibility()
         .GetCachedName();
+  }
 
   std::u16string accessible_name;
   for (views::View* child : view->children()) {
     // Skip buttons they will be announced independently. This is used for
     // "more" items.
-    if (views::IsViewClass<views::Button>(child))
+    if (views::IsViewClass<views::Button>(child)) {
       continue;
+    }
     std::u16string child_accessible_name = GetAccessibleNameFromTree(child);
-    if (child_accessible_name.empty())
+    if (child_accessible_name.empty()) {
       continue;
-    if (!accessible_name.empty())
+    }
+    if (!accessible_name.empty()) {
       accessible_name += '\n';
+    }
     accessible_name += child_accessible_name;
   }
   return accessible_name;
@@ -76,8 +80,9 @@ bool PaymentRequestRowView::GetClickable() const {
   return clickable_;
 }
 void PaymentRequestRowView::SetClickable(bool clickable) {
-  if (clickable == clickable_)
+  if (clickable == clickable_) {
     return;
+  }
   clickable_ = clickable;
   UpdateButtonState();
   OnPropertyChanged(&clickable_, views::PropertyEffects::kPropertyEffectsPaint);
@@ -92,8 +97,9 @@ gfx::Insets PaymentRequestRowView::GetRowInsets() const {
 }
 
 void PaymentRequestRowView::SetRowInsets(const gfx::Insets& row_insets) {
-  if (row_insets == row_insets_)
+  if (row_insets == row_insets_) {
     return;
+  }
   row_insets_ = row_insets;
   UpdateBottomSeparatorVisualState();
   OnPropertyChanged(&row_insets_,
@@ -124,13 +130,15 @@ void PaymentRequestRowView::SetHighlighted(bool highlighted) {
     SetBackground(views::CreateThemedSolidBackground(
         kColorPaymentsRequestRowBackgroundHighlighted));
     SetBottomSeparatorVisible(false);
-    if (previous_row_)
+    if (previous_row_) {
       previous_row_->SetBottomSeparatorVisible(false);
+    }
   } else {
     SetBackground(nullptr);
     SetBottomSeparatorVisible(true);
-    if (previous_row_)
+    if (previous_row_) {
       previous_row_->SetBottomSeparatorVisible(true);
+    }
   }
 }
 
@@ -144,8 +152,9 @@ void PaymentRequestRowView::UpdateButtonState() {
 
 void PaymentRequestRowView::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
-  if (!GetClickable())
+  if (!GetClickable()) {
     return;
+  }
 
   SetHighlighted(GetState() == views::Button::STATE_HOVERED ||
                  GetState() == views::Button::STATE_PRESSED);
@@ -163,8 +172,9 @@ void PaymentRequestRowView::ViewHierarchyChanged(
 }
 
 void PaymentRequestRowView::OnFocus() {
-  if (GetClickable())
+  if (GetClickable()) {
     SetHighlighted(true);
+  }
   View::OnFocus();
   if (views::FocusRing* focus_ring = views::FocusRing::Get(this)) {
     focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -172,8 +182,9 @@ void PaymentRequestRowView::OnFocus() {
 }
 
 void PaymentRequestRowView::OnBlur() {
-  if (GetClickable())
+  if (GetClickable()) {
     SetHighlighted(false);
+  }
 }
 
 BEGIN_METADATA(PaymentRequestRowView)

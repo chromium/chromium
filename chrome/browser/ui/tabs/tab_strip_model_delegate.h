@@ -47,10 +47,7 @@ class TabGroupId;
 ///////////////////////////////////////////////////////////////////////////////
 class TabStripModelDelegate {
  public:
-  enum {
-    TAB_MOVE_ACTION = 1,
-    TAB_TEAROFF_ACTION = 2
-  };
+  enum { TAB_MOVE_ACTION = 1, TAB_TEAROFF_ACTION = 2 };
 
   virtual ~TabStripModelDelegate() = default;
 

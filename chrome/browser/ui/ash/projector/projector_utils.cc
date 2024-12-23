@@ -38,23 +38,27 @@ bool IsRealUserProfile(const Profile* profile) {
 
 bool IsProjectorAllowedForProfile(const Profile* profile) {
   DCHECK(profile);
-  if (!IsRealUserProfile(profile))
+  if (!IsRealUserProfile(profile)) {
     return false;
+  }
 
   auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
+  if (!user) {
     return false;
+  }
 
   return user->HasGaiaAccount();
 }
 
 bool IsProjectorAppEnabled(const Profile* profile) {
-  if (!IsProjectorAllowedForProfile(profile))
+  if (!IsProjectorAllowedForProfile(profile)) {
     return false;
+  }
 
   // Projector for regular consumer users.
-  if (!profile->GetProfilePolicyConnector()->IsManaged())
+  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
     return true;
+  }
 
   // Projector dogfood for supervised users is controlled by an enterprise
   // policy. When the feature is out of dogfood phase the policy will be
@@ -91,8 +95,9 @@ void SendFilesToProjectorApp(std::vector<base::FilePath> files) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   auto* web_ui = web_contents->GetWebUI();
-  if (!web_ui)
+  if (!web_ui) {
     return;
+  }
   if (!web_ui->GetController()->GetAs<ash::UntrustedProjectorUI>()) {
     // We only want to send files to the Projector SWA. Don't send files to the
     // wrong trusted context if it navigates away.

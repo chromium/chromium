@@ -123,8 +123,9 @@ GURL GetCustomDevToolsFrontendURL() {
 bool DevToolsDataSource::MaybeHandleCustomRequest(const std::string& path,
                                                   GotDataCallback* callback) {
   GURL custom_devtools_frontend = GetCustomDevToolsFrontendURL();
-  if (!custom_devtools_frontend.is_valid())
+  if (!custom_devtools_frontend.is_valid()) {
     return false;
+  }
   std::string stripped_path =
       StripDevToolsRevisionWithPrefix(path, "serve_rev/");
   stripped_path = StripDevToolsRevisionWithPrefix(stripped_path, "serve_file/");
@@ -382,6 +383,7 @@ DevToolsDataSource::PendingRequest::PendingRequest(PendingRequest&& other) =
     default;
 
 DevToolsDataSource::PendingRequest::~PendingRequest() {
-  if (callback)
+  if (callback) {
     std::move(callback).Run(CreateNotFoundResponse());
+  }
 }

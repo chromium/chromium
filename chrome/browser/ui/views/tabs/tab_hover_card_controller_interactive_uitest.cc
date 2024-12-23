@@ -194,15 +194,15 @@ class TabHoverCardInteractiveUiTest
 // Because this test depends on Aura event handling, it is not performed on Mac.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnAnyKeyPressInSameWindow) {
-  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
-                  NavigateWebContents(kFirstTabContents,
-                                      GURL(chrome::kChromeUINewTabURL)),
-                  HoverTabAt(0), CheckHovercardIsOpen(),
-                  Check(base::BindLambdaForTesting([=, this]() {
-                    return ui_test_utils::SendKeyPressSync(
-                        browser(), ui::VKEY_DOWN, false, false, false, false);
-                  })),
-                  CheckHovercardIsClosed());
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
+      HoverTabAt(0), CheckHovercardIsOpen(),
+      Check(base::BindLambdaForTesting([=, this]() {
+        return ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                               false, false, false);
+      })),
+      CheckHovercardIsClosed());
 }
 
 #endif
@@ -293,8 +293,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   // Cycle focus until it reaches a tab.
-  while (!tab_strip->IsFocusInTabs())
+  while (!tab_strip->IsFocusInTabs()) {
     browser()->command_controller()->ExecuteCommand(IDC_FOCUS_NEXT_PANE);
+  }
 
   WaitForHoverCardVisible(tab_strip);
 
@@ -767,9 +768,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_FALSE(footer_view->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TabHoverCardFadeFooterInteractiveUiTest,
-    BackgroundTabHoverCardContentsHaveCorrectDimensions) {
+IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
+                       BackgroundTabHoverCardContentsHaveCorrectDimensions) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));

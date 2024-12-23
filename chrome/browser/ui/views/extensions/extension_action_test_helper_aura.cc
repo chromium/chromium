@@ -16,8 +16,9 @@ namespace {
 
 aura::Window* GetPopupAuraWindow(aura::Window* current) {
   DCHECK(current);
-  while (current && (current->GetType() != aura::client::WINDOW_TYPE_POPUP))
+  while (current && (current->GetType() != aura::client::WINDOW_TYPE_POPUP)) {
     current = current->parent();
+  }
   return current;
 }
 
@@ -30,8 +31,9 @@ class AuraWindowObserver : public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    if (popup_window_ == window && visible)
+    if (popup_window_ == window && visible) {
       run_loop_->QuitWhenIdle();
+    }
   }
 
  private:

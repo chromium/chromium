@@ -49,8 +49,9 @@ class CardUnmaskOtpInputDialogBrowserTest
 
     base::WeakPtr<CardUnmaskOtpInputDialogView> dialog_view =
         controller_->GetDialogViewForTesting();
-    if (!dialog_view)
+    if (!dialog_view) {
       return nullptr;
+    }
 
     return static_cast<CardUnmaskOtpInputDialogViews*>(dialog_view.get());
   }

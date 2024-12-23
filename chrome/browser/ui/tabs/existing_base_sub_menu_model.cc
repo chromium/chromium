@@ -66,8 +66,9 @@ void ExistingBaseSubMenuModel::Build(
   int command_id = min_command_id_ + 1;
   for (size_t i = 0; i < menu_item_infos.size(); ++i) {
     const MenuItemInfo& item = menu_item_infos[i];
-    if (command_id > min_command_id_ + static_cast<int>(max_size))
+    if (command_id > min_command_id_ + static_cast<int>(max_size)) {
       break;
+    }
 
     if (item.target_index.has_value()) {
       command_id_to_target_index_[command_id] = item.target_index.value();
@@ -78,8 +79,9 @@ void ExistingBaseSubMenuModel::Build(
       }
     } else {
       // Add a spacing separator to further delineate menu item groupings.
-      if (i > 0)
+      if (i > 0) {
         AddSeparator(ui::SPACING_SEPARATOR);
+      }
 
       AddTitle(item.text);
     }

@@ -145,8 +145,9 @@ ChromeCaptureModeDelegate* ChromeCaptureModeDelegate::Get() {
 
 void ChromeCaptureModeDelegate::SetIsScreenCaptureLocked(bool locked) {
   is_screen_capture_locked_ = locked;
-  if (is_screen_capture_locked_)
+  if (is_screen_capture_locked_) {
     InterruptVideoRecordingIfAny();
+  }
 }
 
 bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
@@ -195,8 +196,9 @@ void ChromeCaptureModeDelegate::OpenScreenCaptureItem(
 void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
@@ -208,8 +210,9 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // TODO(afakhry): Consider moving |prefs::kUse24HourClock| to ash/public so
   // we can do this entirely in ash.
-  if (profile)
+  if (profile) {
     return profile->GetPrefs()->GetBoolean(prefs::kUse24HourClock);
+  }
   return base::GetHourClockType() == base::k24HourClock;
 }
 
@@ -285,14 +288,16 @@ void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
 
 bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
     base::FilePath* result) const {
-  if (!ash::LoginState::Get()->IsUserLoggedIn())
+  if (!ash::LoginState::Get()->IsUserLoggedIn()) {
     return false;
+  }
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
-  if (!integration_service || !integration_service->IsMounted())
+  if (!integration_service || !integration_service->IsMounted()) {
     return false;
+  }
 
   *result = integration_service->GetMountPointPath();
   return true;

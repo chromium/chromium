@@ -65,7 +65,6 @@ class IntentPickerTabHelper
 
   const ui::ImageModel& app_icon() const { return current_app_icon_; }
 
-
   // Sets a OnceClosure callback which will be called next time the icon is
   // updated. If include_latest_navigation is true, and the latest navigation
   // was finished, the callback is called immediately.

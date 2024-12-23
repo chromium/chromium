@@ -125,8 +125,9 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
   const GURL origin = search_url.DeprecatedGetOriginAsURL();
-  if (google_util::IsGoogleSearchUrl(search_url))
+  if (google_util::IsGoogleSearchUrl(search_url)) {
     return {SecondarySearchInfo::Type::kGoogle, origin};
+  }
 
   if (!template_url_service->ShowInDefaultList(secondary_search)) {
     // Found another search engine, but it's not one of the default options.
@@ -145,8 +146,9 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
       ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
-  if (!extension)
+  if (!extension) {
     return std::nullopt;
+  }
 
   // This preference tracks whether users have acknowledged the extension's
   // control, so that they are not warned twice about the same extension.
@@ -217,8 +219,9 @@ std::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile* profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
-  if (!extension)
+  if (!extension) {
     return std::nullopt;
+  }
 
   // For historical reasons, the search override preference is the same as the
   // one we use for the controlled home setting. We continue this so that

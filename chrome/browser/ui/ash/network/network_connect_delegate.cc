@@ -31,44 +31,50 @@ NetworkConnectDelegate::~NetworkConnectDelegate() = default;
 
 void NetworkConnectDelegate::ShowNetworkConfigure(
     const std::string& network_id) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return;
+  }
   SystemTrayClientImpl::Get()->ShowNetworkConfigure(network_id);
 }
 
 void NetworkConnectDelegate::ShowNetworkSettings(
     const std::string& network_id) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return;
+  }
   SystemTrayClientImpl::Get()->ShowNetworkSettings(network_id);
 }
 
 bool NetworkConnectDelegate::ShowEnrollNetwork(const std::string& network_id) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return false;
+  }
   return ash::enrollment::CreateEnrollmentDialog(network_id);
 }
 
 void NetworkConnectDelegate::ShowMobileSetupDialog(
     const std::string& network_id) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return;
+  }
   SystemTrayClientImpl::Get()->ShowSettingsCellularSetup(
       /*show_psim_flow=*/true);
 }
 
 void NetworkConnectDelegate::ShowCarrierAccountDetail(
     const std::string& network_id) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return;
+  }
   ash::cellular_setup::MobileSetupDialog::ShowByNetworkId(network_id);
 }
 
 void NetworkConnectDelegate::ShowPortalSignin(
     const std::string& network_id,
     ash::NetworkConnect::Source source) {
-  if (!IsUIAvailable())
+  if (!IsUIAvailable()) {
     return;
+  }
   ash::NetworkPortalSigninController::SigninSource signin_source;
   switch (source) {
     case ash::NetworkConnect::Source::kSettings:

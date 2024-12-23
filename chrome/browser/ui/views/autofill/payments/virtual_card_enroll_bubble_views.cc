@@ -83,8 +83,9 @@ bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
 }
 
 void VirtualCardEnrollBubbleViews::OnDialogDeclined() {
-  if (controller_)
+  if (controller_) {
     controller_->OnDeclineButton();
+  }
 }
 
 void VirtualCardEnrollBubbleViews::AddedToWidget() {

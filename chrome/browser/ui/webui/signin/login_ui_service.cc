@@ -49,8 +49,9 @@ void LoginUIService::LoginUIClosed(LoginUI* ui) {
 
 void LoginUIService::SyncConfirmationUIClosed(
     SyncConfirmationUIClosedResult result) {
-  for (Observer& observer : observer_list_)
+  for (Observer& observer : observer_list_) {
     observer.OnSyncConfirmationUIClosed(result);
+  }
 }
 
 void LoginUIService::DisplayLoginResult(Browser* browser,

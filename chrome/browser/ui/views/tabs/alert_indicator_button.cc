@@ -387,45 +387,45 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
   int image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH);
   switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
-        icon = &vector_icons::kVolumeUpChromeRefreshIcon;
+      icon = &vector_icons::kVolumeUpChromeRefreshIcon;
       break;
     case TabAlertState::AUDIO_MUTING:
-        icon = &vector_icons::kVolumeOffChromeRefreshIcon;
+      icon = &vector_icons::kVolumeOffChromeRefreshIcon;
       break;
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::AUDIO_RECORDING:
     case TabAlertState::VIDEO_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
-        icon = &vector_icons::kRadioButtonCheckedIcon;
+      icon = &vector_icons::kRadioButtonCheckedIcon;
       break;
     case TabAlertState::TAB_CAPTURING:
-        icon = &vector_icons::kCaptureIcon;
+      icon = &vector_icons::kCaptureIcon;
 
       // Tab capturing and presenting icon uses a different width compared to
       // the other tab alert indicator icons.
       image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH);
       break;
     case TabAlertState::BLUETOOTH_CONNECTED:
-        icon = &vector_icons::kBluetoothConnectedIcon;
+      icon = &vector_icons::kBluetoothConnectedIcon;
       break;
     case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-        icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
+      icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
       break;
     case TabAlertState::USB_CONNECTED:
-        icon = &vector_icons::kUsbChromeRefreshIcon;
+      icon = &vector_icons::kUsbChromeRefreshIcon;
       icon = &kTabUsbConnectedIcon;
       break;
     case TabAlertState::HID_CONNECTED:
-        icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
+      icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
       break;
     case TabAlertState::SERIAL_CONNECTED:
-        icon = &vector_icons::kSerialPortChromeRefreshIcon;
+      icon = &vector_icons::kSerialPortChromeRefreshIcon;
       break;
     case TabAlertState::PIP_PLAYING:
-        icon = &vector_icons::kPictureInPictureAltIcon;
+      icon = &vector_icons::kPictureInPictureAltIcon;
       break;
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
-        icon = &vector_icons::kCardboardIcon;
+      icon = &vector_icons::kCardboardIcon;
       break;
     case TabAlertState::GLIC_ACCESSING:
       icon = &vector_icons::kFitScreenIcon;

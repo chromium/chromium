@@ -94,8 +94,9 @@ void SaveCardBubbleViews::AddedToWidget() {
   // Use a custom title container if offering to upload a server card.
   // Done when this view is added to the widget, so the bubble frame
   // view is guaranteed to exist.
-  if (!controller_->IsUploadSave())
+  if (!controller_->IsUploadSave()) {
     return;
+  }
 
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(
@@ -252,11 +253,13 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
 
 void SaveCardBubbleViews::AssignIdsToDialogButtons() {
   auto* ok_button = GetOkButton();
-  if (ok_button)
+  if (ok_button) {
     ok_button->SetID(DialogViewId::OK_BUTTON);
+  }
   auto* cancel_button = GetCancelButton();
-  if (cancel_button)
+  if (cancel_button) {
     cancel_button->SetID(DialogViewId::CANCEL_BUTTON);
+  }
 }
 
 void SaveCardBubbleViews::Init() {

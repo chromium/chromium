@@ -11,8 +11,7 @@
 
 AuthenticatorClientPinEntrySheetView::AuthenticatorClientPinEntrySheetView(
     std::unique_ptr<AuthenticatorClientPinEntrySheetModel> sheet_model)
-    : AuthenticatorRequestSheetView(std::move(sheet_model)) {
-}
+    : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
 
 AuthenticatorClientPinEntrySheetView::~AuthenticatorClientPinEntrySheetView() =
     default;

@@ -386,8 +386,9 @@ void NavigateViaLinkClickToURLAndWait(Browser* browser,
     observer.WaitForNavigationFinished();
   }
 
-  if (!proceed_through_interstitial)
+  if (!proceed_through_interstitial) {
     return;
+  }
 
   {
     // Need a second TestNavigationObserver; the above one is spent.
@@ -432,11 +433,13 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
 
 Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile)
+    if (browser->profile() != profile) {
       continue;
+    }
 
-    if (AppBrowserController::IsForWebApp(browser, app_id))
+    if (AppBrowserController::IsForWebApp(browser, app_id)) {
       return browser;
+    }
   }
 
   return nullptr;
@@ -453,8 +456,9 @@ bool IsBrowserOpen(const Browser* test_browser) {
     if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
       continue;
     }
-    if (browser == test_browser)
+    if (browser == test_browser) {
       return true;
+    }
   }
   return false;
 }
@@ -490,20 +494,23 @@ Browser* BrowserWaiter::AwaitAdded(const base::Location& location) {
 }
 
 Browser* BrowserWaiter::AwaitRemoved(const base::Location& location) {
-  if (!removed_browser_)
+  if (!removed_browser_) {
     removed_run_loop_.Run(location);
+  }
   return removed_browser_;
 }
 
 void BrowserWaiter::OnBrowserAdded(Browser* browser) {
-  if (filter_ && browser != filter_)
+  if (filter_ && browser != filter_) {
     return;
+  }
   added_browser_ = browser;
   added_run_loop_.Quit();
 }
 void BrowserWaiter::OnBrowserRemoved(Browser* browser) {
-  if (filter_ && browser != filter_)
+  if (filter_ && browser != filter_) {
     return;
+  }
   removed_browser_ = browser;
   removed_run_loop_.Quit();
 }

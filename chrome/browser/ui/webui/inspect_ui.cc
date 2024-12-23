@@ -345,53 +345,60 @@ void InspectMessageHandler::HandleInspectCommand(
     const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->Inspect(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleInspectFallbackCommand(
     const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->InspectFallback(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleActivateCommand(
     const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->Activate(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleCloseCommand(const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->Close(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleReloadCommand(const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->Reload(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleOpenCommand(const base::Value::List& args) {
   std::string source_id;
   std::string browser_id;
   std::string url;
-  if (ParseStringArgs(args, &source_id, &browser_id, &url))
+  if (ParseStringArgs(args, &source_id, &browser_id, &url)) {
     inspect_ui_->Open(source_id, browser_id, url);
+  }
 }
 
 void InspectMessageHandler::HandlePauseCommand(const base::Value::List& args) {
   std::string source;
   std::string id;
-  if (ParseStringArgs(args, &source, &id))
+  if (ParseStringArgs(args, &source, &id)) {
     inspect_ui_->Pause(source, id);
+  }
 }
 
 void InspectMessageHandler::HandleInspectBrowserCommand(
@@ -400,8 +407,8 @@ void InspectMessageHandler::HandleInspectBrowserCommand(
   std::string browser_id;
   std::string front_end;
   if (ParseStringArgs(args, &source_id, &browser_id, &front_end)) {
-    inspect_ui_->InspectBrowserWithCustomFrontend(
-        source_id, browser_id, GURL(front_end));
+    inspect_ui_->InspectBrowserWithCustomFrontend(source_id, browser_id,
+                                                  GURL(front_end));
   }
 }
 
@@ -409,41 +416,48 @@ void InspectMessageHandler::HandleBooleanPrefChanged(
     const char* pref_name,
     const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
-  if (args.size() == 1 && args[0].is_bool())
+  if (args.size() == 1 && args[0].is_bool()) {
     profile->GetPrefs()->SetBoolean(pref_name, args[0].GetBool());
+  }
 }
 
 void InspectMessageHandler::HandlePortForwardingConfigCommand(
     const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   if (args.size() == 1) {
     const base::Value& src = args[0];
-    if (src.is_dict())
+    if (src.is_dict()) {
       profile->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig, src);
+    }
   }
 }
 
 void InspectMessageHandler::HandleTCPDiscoveryConfigCommand(
     const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
-  if (args.size() == 1u && args[0].is_list())
+  if (args.size() == 1u && args[0].is_list()) {
     profile->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig, args[0]);
+  }
 }
 
 void InspectMessageHandler::HandleOpenNodeFrontendCommand(
     const base::Value::List& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  if (!profile)
+  if (!profile) {
     return;
+  }
   DevToolsWindow::OpenNodeFrontendWindow(profile,
                                          DevToolsOpenedByAction::kInspectLink);
 }
@@ -459,16 +473,18 @@ void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
         ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance();
     server->SetOnSessionEnded(base::BindOnce([]() {
       if (ChromeBrowserMainExtraPartsViews::Get()
-              ->GetUiDevToolsServerInstance())
+              ->GetUiDevToolsServerInstance()) {
         ChromeBrowserMainExtraPartsViews::Get()->DestroyUiDevTools();
+      }
     }));
   }
   inspect_ui_->PopulateNativeUITargets(GetUiDevToolsTargets());
 
   std::vector<ui_devtools::UiDevToolsServer::NameUrlPair> pairs =
       ui_devtools::UiDevToolsServer::GetClientNamesAndUrls();
-  if (!pairs.empty())
+  if (!pairs.empty()) {
     CreateNativeUIInspectionSession(pairs[0].second);
+  }
 }
 
 void InspectMessageHandler::HandleSetBubbleLocking(
@@ -556,8 +572,9 @@ void InspectUI::InspectFallback(const std::string& source_id,
 void InspectUI::Activate(const std::string& source_id,
                          const std::string& target_id) {
   scoped_refptr<DevToolsAgentHost> target = FindTarget(source_id, target_id);
-  if (target)
+  if (target) {
     target->Activate();
+  }
 }
 
 void InspectUI::Close(const std::string& source_id,
@@ -566,24 +583,27 @@ void InspectUI::Close(const std::string& source_id,
   if (target) {
     target->Close();
     DevToolsTargetsUIHandler* handler = FindTargetHandler(source_id);
-    if (handler)
+    if (handler) {
       handler->ForceUpdate();
+    }
   }
 }
 
 void InspectUI::Reload(const std::string& source_id,
                        const std::string& target_id) {
   scoped_refptr<DevToolsAgentHost> target = FindTarget(source_id, target_id);
-  if (target)
+  if (target) {
     target->Reload();
+  }
 }
 
 void InspectUI::Open(const std::string& source_id,
                      const std::string& browser_id,
                      const std::string& url) {
   DevToolsTargetsUIHandler* handler = FindTargetHandler(source_id);
-  if (handler)
+  if (handler) {
     handler->Open(browser_id, url);
+  }
 }
 
 void InspectUI::Pause(const std::string& source_id,
@@ -597,10 +617,9 @@ void InspectUI::Pause(const std::string& source_id,
   }
 }
 
-void InspectUI::InspectBrowserWithCustomFrontend(
-    const std::string& source_id,
-    const std::string& browser_id,
-    const GURL& frontend_url) {
+void InspectUI::InspectBrowserWithCustomFrontend(const std::string& source_id,
+                                                 const std::string& browser_id,
+                                                 const GURL& frontend_url) {
   if (!frontend_url.SchemeIs(content::kChromeUIScheme) &&
       !frontend_url.SchemeIs(content::kChromeDevToolsScheme) &&
       frontend_url.host() != kInspectUiLocalHost) {
@@ -608,14 +627,16 @@ void InspectUI::InspectBrowserWithCustomFrontend(
   }
 
   DevToolsTargetsUIHandler* handler = FindTargetHandler(source_id);
-  if (!handler)
+  if (!handler) {
     return;
+  }
 
   // Fetch agent host from remote browser.
   scoped_refptr<content::DevToolsAgentHost> agent_host =
       handler->GetBrowserAgentHost(browser_id);
-  if (agent_host->IsAttached())
+  if (agent_host->IsAttached()) {
     return;
+  }
 
   // Create web contents for the front-end.
   WebContents* inspect_ui = web_ui()->GetWebContents();
@@ -643,8 +664,9 @@ void InspectUI::WebContentsDestroyed() {
 }
 
 void InspectUI::StartListeningNotifications() {
-  if (!target_handlers_.empty())  // Possible when reloading the page.
+  if (!target_handlers_.empty()) {  // Possible when reloading the page.
     StopListeningNotifications();
+  }
 
   Profile* profile = Profile::FromWebUI(web_ui());
 
@@ -696,8 +718,9 @@ void InspectUI::StartListeningNotifications() {
 }
 
 void InspectUI::StopListeningNotifications() {
-  if (target_handlers_.empty())
+  if (target_handlers_.empty()) {
     return;
+  }
 
   target_handlers_.clear();
 
@@ -747,8 +770,9 @@ void InspectUI::SetPortForwardingDefaults() {
 
   auto default_set =
       GetPrefValue(prefs::kDevToolsPortForwardingDefaultSet)->GetIfBool();
-  if (!default_set || default_set.value())
+  if (!default_set || default_set.value()) {
     return;
+  }
 
   // This is the first chrome://inspect invocation on a fresh profile or after
   // upgrade from a version that did not have kDevToolsPortForwardingDefaultSet.
@@ -756,17 +780,20 @@ void InspectUI::SetPortForwardingDefaults() {
 
   auto enabled =
       GetPrefValue(prefs::kDevToolsPortForwardingEnabled)->GetIfBool();
-  if (!enabled)
+  if (!enabled) {
     return;
+  }
 
   const base::Value::Dict* config =
       GetPrefValue(prefs::kDevToolsPortForwardingConfig)->GetIfDict();
-  if (!config)
+  if (!config) {
     return;
+  }
 
   // Do nothing if user already took explicit action.
-  if (enabled.value() || !config->empty())
+  if (enabled.value() || !config->empty()) {
     return;
+  }
 
   base::Value::Dict default_config;
   default_config.Set(kInspectUiPortForwardingDefaultPort,
@@ -793,10 +820,11 @@ DevToolsTargetsUIHandler* InspectUI::FindTargetHandler(
 }
 
 scoped_refptr<content::DevToolsAgentHost> InspectUI::FindTarget(
-    const std::string& source_id, const std::string& target_id) {
+    const std::string& source_id,
+    const std::string& target_id) {
   auto it = target_handlers_.find(source_id);
-  return it != target_handlers_.end() ?
-      it->second->GetTarget(target_id) : nullptr;
+  return it != target_handlers_.end() ? it->second->GetTarget(target_id)
+                                      : nullptr;
 }
 
 void InspectUI::PopulateTargets(const std::string& source,

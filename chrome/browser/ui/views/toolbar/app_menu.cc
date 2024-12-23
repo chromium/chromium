@@ -213,8 +213,9 @@ class InMenuButtonBackground : public views::Background {
       // We need to flip the canvas for RTL iff the button is not auto-flipping
       // already, so we end up flipping exactly once.
       gfx::ScopedCanvas scoped_canvas(canvas);
-      if (!view->GetFlipCanvasOnPaintForRTLUI())
+      if (!view->GetFlipCanvasOnPaintForRTLUI()) {
         scoped_canvas.FlipIfRTL(view->width());
+      }
       ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
       const gfx::Rect separator_bounds(gfx::Size(
           MenuConfig::instance().separator_thickness, view->height()));
@@ -255,14 +256,14 @@ class InMenuButtonBackground : public views::Background {
       menu_item.corner_radius = kCircularButtonSize / 2;
     }
     const auto* const color_provider = view->GetColorProvider();
-      cc::PaintFlags flags;
-      flags.setColor(color_provider->GetColor(
-          state == views::Button::STATE_NORMAL
-              ? ui::kColorMenuButtonBackground
-              : ui::kColorMenuButtonBackgroundSelected));
-      canvas->DrawRoundRect(gfx::RectF(bounds_rect), menu_item.corner_radius,
-                            flags);
-      return;
+    cc::PaintFlags flags;
+    flags.setColor(
+        color_provider->GetColor(state == views::Button::STATE_NORMAL
+                                     ? ui::kColorMenuButtonBackground
+                                     : ui::kColorMenuButtonBackgroundSelected));
+    canvas->DrawRoundRect(gfx::RectF(bounds_rect), menu_item.corner_radius,
+                          flags);
+    return;
   }
 
   const ButtonType type_;
@@ -481,10 +482,10 @@ class AppMenuView : public views::View {
     DCHECK(menu_);
 
     std::unique_ptr<views::Button> menu_button;
-      auto button = std::make_unique<InMenuImageButton>(std::move(callback));
-      button->Init(type, InMenuButtonBackground::ButtonShape::kCircular,
-                   image_model);
-      menu_button = std::move(button);
+    auto button = std::make_unique<InMenuImageButton>(std::move(callback));
+    button->Init(type, InMenuButtonBackground::ButtonShape::kCircular,
+                 image_model);
+    menu_button = std::move(button);
     menu_button->GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
         menu_model_, index, accessible_name_id, add_accelerator_text));
     menu_button->set_tag(index);
@@ -821,8 +822,9 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
     if (contents) {
       const auto* zoom_controller =
           zoom::ZoomController::FromWebContents(contents);
-      if (zoom_controller)
+      if (zoom_controller) {
         zoom = zoom_controller->GetZoomPercent();
+      }
       increment_button_->SetEnabled(zoom < contents->GetMaximumZoomPercent());
       decrement_button_->SetEnabled(zoom > contents->GetMinimumZoomPercent());
     }
@@ -1047,8 +1049,9 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
 }
 
 void AppMenu::CloseMenu() {
-  if (menu_runner_.get())
+  if (menu_runner_.get()) {
     menu_runner_->Cancel();
+  }
 }
 
 bool AppMenu::IsShowing() const {
@@ -1126,8 +1129,9 @@ views::View::DropCallback AppMenu::GetDropCallback(
     views::MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  if (!IsBookmarkCommand(menu->GetCommand()))
+  if (!IsBookmarkCommand(menu->GetCommand())) {
     return base::DoNothing();
+  }
 
   return bookmark_menu_delegate_->GetDropCallback(menu, position, event);
 }
@@ -1168,8 +1172,9 @@ int AppMenu::GetMaxWidthForMenu(MenuItemView* menu) {
 }
 
 bool AppMenu::IsItemChecked(int command_id) const {
-  if (IsBookmarkCommand(command_id))
+  if (IsBookmarkCommand(command_id)) {
     return false;
+  }
 
   const Entry& entry = command_id_to_entry_.find(command_id)->second;
   return entry.first->IsItemCheckedAt(entry.second);
@@ -1202,14 +1207,16 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if (command_id == IDC_SHARING_HUB_MENU)
+  if (command_id == IDC_SHARING_HUB_MENU) {
     return true;
+  }
 
   // The items representing the cut menu (cut/copy/paste), zoom menu
   // (increment/decrement/reset) and extension toolbar view are always enabled.
   // The child views of these items enabled state updates appropriately.
-  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU)
+  if (command_id == IDC_EDIT_MENU || command_id == IDC_ZOOM_MENU) {
     return true;
+  }
 
   // If `command_id` is not added to App Menu via MenuModel, you should handle
   // it in the code above. `command_id_to_entry_` traces only MenuModel entries.
@@ -1276,8 +1283,9 @@ bool AppMenu::GetAccelerator(int command_id,
   auto ix = command_id_to_entry_.find(command_id);
   const Entry& entry = ix->second;
   ui::Accelerator menu_accelerator;
-  if (!entry.first->GetAcceleratorAt(entry.second, &menu_accelerator))
+  if (!entry.first->GetAcceleratorAt(entry.second, &menu_accelerator)) {
     return false;
+  }
 
   *accelerator = ui::Accelerator(menu_accelerator.key_code(),
                                  menu_accelerator.modifiers());
@@ -1293,7 +1301,7 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
                               MENU_ACTION_SHOW_SAVED_TAB_GROUPS,
                               LIMIT_MENU_ACTION);
     stg_everything_menu_ =
-          std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
+        std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
     stg_everything_menu_->SetShowSubmenu(true);
     stg_everything_menu_->PopulateMenu(menu);
   } else if (IsTabGroupsCommand(menu->GetCommand())) {
@@ -1347,12 +1355,14 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (bookmark_menu_delegate_.get()) {
     BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-    if (model)
+    if (model) {
       model->RemoveObserver(this);
+    }
   }
 
-  if (selected_menu_model_)
+  if (selected_menu_model_) {
     selected_menu_model_->ActivatedAt(selected_index_);
+  }
 }
 
 bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
@@ -1383,15 +1393,17 @@ bool AppMenu::ShouldTryPositioningBesideAnchor() const {
 
 void AppMenu::BookmarkModelChanged() {
   DCHECK(bookmark_menu_delegate_.get());
-  if (!bookmark_menu_delegate_->is_mutating_model())
+  if (!bookmark_menu_delegate_->is_mutating_model()) {
     root_->Cancel();
+  }
 }
 
 void AppMenu::OnGlobalErrorsChanged() {
   // A change in the global errors list can add or remove items from the
   // menu. Close the menu to avoid have a stale menu on-screen.
-  if (root_)
+  if (root_) {
     root_->Cancel();
+  }
 }
 
 views::View* AppMenu::GetZoomAppMenuViewForTest() {
@@ -1432,20 +1444,19 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 
     switch (model->GetCommandIdAt(i)) {
       case IDC_PROFILE_MENU_IN_APP_MENU: {
-          add_menu_row_background(
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
-              ui::kColorAppMenuProfileRowBackground);
-          ProfileAttributesEntry* profile_attributes =
-              GetProfileAttributesFromProfile(browser_->profile());
-          if (profile_attributes &&
-              !profile_attributes->GetLocalProfileName().empty()) {
-            const MenuConfig& config = MenuConfig::instance();
-            AddSignedInChipToProfileMenuItem(
-                browser_->profile(), item,
-                config.arrow_to_edge_padding + config.arrow_size,
-                profile_menu_item_selected_subscription_list_);
-          }
+        add_menu_row_background(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                    DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
+                                ui::kColorAppMenuProfileRowBackground);
+        ProfileAttributesEntry* profile_attributes =
+            GetProfileAttributesFromProfile(browser_->profile());
+        if (profile_attributes &&
+            !profile_attributes->GetLocalProfileName().empty()) {
+          const MenuConfig& config = MenuConfig::instance();
+          AddSignedInChipToProfileMenuItem(
+              browser_->profile(), item,
+              config.arrow_to_edge_padding + config.arrow_size,
+              profile_menu_item_selected_subscription_list_);
+        }
         break;
       }
       case IDC_UPGRADE_DIALOG: {
@@ -1581,13 +1592,15 @@ void AppMenu::CancelAndEvaluate(ButtonMenuItemModel* model, size_t index) {
 }
 
 void AppMenu::CreateBookmarkMenu() {
-  if (bookmark_menu_delegate_.get())
+  if (bookmark_menu_delegate_.get()) {
     return;  // Already created the menu.
+  }
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-  if (!model->loaded())
+  if (!model->loaded()) {
     return;
+  }
 
   model->AddObserver(this);
 

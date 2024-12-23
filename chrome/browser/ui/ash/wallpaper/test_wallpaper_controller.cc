@@ -31,8 +31,9 @@ TestWallpaperController::~TestWallpaperController() = default;
 
 void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
   current_wallpaper = image;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnWallpaperChanged();
+  }
 }
 
 void TestWallpaperController::ClearCounts() {
@@ -118,8 +119,9 @@ void TestWallpaperController::SetGooglePhotosWallpaper(
 void TestWallpaperController::SetGooglePhotosDailyRefreshAlbumId(
     const AccountId& account_id,
     const std::string& album_id) {
-  if (!wallpaper_info_)
+  if (!wallpaper_info_) {
     wallpaper_info_ = ash::WallpaperInfo();
+  }
   wallpaper_info_->type = ash::WallpaperType::kDailyGooglePhotos;
   wallpaper_info_->collection_id = album_id;
 }
@@ -343,8 +345,9 @@ TestWallpaperController::GetWallpaperInfoForAccountId(
 void TestWallpaperController::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {
-  if (!wallpaper_info_)
+  if (!wallpaper_info_) {
     wallpaper_info_ = ash::WallpaperInfo();
+  }
   wallpaper_info_->type = ash::WallpaperType::kDaily;
   wallpaper_info_->collection_id = collection_id;
 }

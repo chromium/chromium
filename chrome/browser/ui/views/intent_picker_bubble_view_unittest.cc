@@ -56,9 +56,9 @@
 
 using AppInfo = apps::IntentPickerAppInfo;
 using BubbleType = apps::IntentPickerBubbleType;
-using content::WebContents;
 using content::OpenURLParams;
 using content::Referrer;
+using content::WebContents;
 
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
@@ -73,8 +73,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   void TearDown() override {
     // Make sure the bubble is destroyed before the profile to avoid a crash.
-    if (bubble_)
+    if (bubble_) {
       bubble_->GetWidget()->CloseNow();
+    }
 
     TestWithBrowserView::TearDown();
   }
@@ -90,8 +91,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     anchor_view_ =
         browser_view->toolbar()->AddChildView(std::make_unique<views::View>());
 
-    if (use_icons)
+    if (use_icons) {
       FillAppListWithDummyIcons();
+    }
 
     // We create |web_contents| since the Bubble UI has an Observer that
     // depends on this, otherwise it wouldn't work.
@@ -131,8 +133,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     ui::ImageModel dummy_icon_model =
         ui::ImageModel::FromImage(rb.GetImageNamed(IDR_CLOSE));
-    for (auto& app : app_info_)
+    for (auto& app : app_info_) {
       app.icon_model = dummy_icon_model;
+    }
   }
 
   views::Button* GetButtonAtIndex(size_t index) {

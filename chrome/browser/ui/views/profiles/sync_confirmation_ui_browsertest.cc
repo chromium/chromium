@@ -454,9 +454,8 @@ std::string SyncConfirmationUITestParamToTestSuffix(
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
-    testing::Combine(
-        testing::Bool(),
-        testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
-                        SyncConfirmationUIAction::kGoToSettings),
-        testing::Values("", "pl")),
+    testing::Combine(testing::Bool(),
+                     testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
+                                     SyncConfirmationUIAction::kGoToSettings),
+                     testing::Values("", "pl")),
     &SyncConfirmationUITestParamToTestSuffix);

@@ -1580,8 +1580,7 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
 
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_MenuStaysVisibleAfterDelete \
-    DISABLED_MenuStaysVisibleAfterDelete
+#define MAYBE_MenuStaysVisibleAfterDelete DISABLED_MenuStaysVisibleAfterDelete
 #else
 #define MAYBE_MenuStaysVisibleAfterDelete MenuStaysVisibleAfterDelete
 #endif
@@ -1737,10 +1736,10 @@ class BookmarkBarViewTest18 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest18_SiblingMenu \
-    DISABLED_BookmarkBarViewTest18_SiblingMenu
+  DISABLED_BookmarkBarViewTest18_SiblingMenu
 #else
 #define MAYBE_BookmarkBarViewTest18_SiblingMenu \
-    BookmarkBarViewTest18_SiblingMenu
+  BookmarkBarViewTest18_SiblingMenu
 #endif
 VIEW_TEST(BookmarkBarViewTest18, MAYBE_BookmarkBarViewTest18_SiblingMenu)
 
@@ -1801,10 +1800,10 @@ class BookmarkBarViewTest19 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BookmarkBarViewTest19_SiblingMenu \
-    DISABLED_BookmarkBarViewTest19_SiblingMenu
+  DISABLED_BookmarkBarViewTest19_SiblingMenu
 #else
 #define MAYBE_BookmarkBarViewTest19_SiblingMenu \
-    BookmarkBarViewTest19_SiblingMenu
+  BookmarkBarViewTest19_SiblingMenu
 #endif
 VIEW_TEST(BookmarkBarViewTest19, MAYBE_BookmarkBarViewTest19_SiblingMenu)
 
@@ -2258,10 +2257,10 @@ class BookmarkBarViewTest27 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-    DISABLED_MiddleClickOnFolderOpensAllBookmarks
+  DISABLED_MiddleClickOnFolderOpensAllBookmarks
 #else
 #define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-    MiddleClickOnFolderOpensAllBookmarks
+  MiddleClickOnFolderOpensAllBookmarks
 #endif
 VIEW_TEST(BookmarkBarViewTest27, MAYBE_MiddleClickOnFolderOpensAllBookmarks)
 
@@ -2293,10 +2292,10 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
 // TODO(crbug.com/40947483): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-    DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
+  DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
 #else
 #define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-    ClickWithModifierOnFolderOpensAllBookmarks
+  ClickWithModifierOnFolderOpensAllBookmarks
 #endif
 
 VIEW_TEST(BookmarkBarViewTest28,

@@ -56,8 +56,9 @@ TabGroupViews::~TabGroupViews() {
 
 void TabGroupViews::UpdateBounds() {
   // If we're tearing down we should ignore events.
-  if (InTearDown())
+  if (InTearDown()) {
     return;
+  }
 
   auto [leading_group_view, trailing_group_view] =
       GetLeadingTrailingGroupViews();
@@ -103,8 +104,9 @@ void TabGroupViews::UpdateBounds() {
 void TabGroupViews::OnGroupVisualsChanged() {
   // If we're tearing down we should ignore events. (We can still receive them
   // here if the editor bubble was open when the tab group was closed.)
-  if (InTearDown())
+  if (InTearDown()) {
     return;
+  }
 
   header_->VisualsChanged();
   underline_->SchedulePaint();
@@ -169,8 +171,9 @@ TabGroupViews::GetLeadingTrailingGroupViews(
   for (views::View* child : children) {
     TabSlotView* tab_slot_view = views::AsViewClass<TabSlotView>(child);
     if (!tab_slot_view || tab_slot_view->group() != group_ ||
-        !tab_slot_view->GetVisible())
+        !tab_slot_view->GetVisible()) {
       continue;
+    }
 
     gfx::Rect child_widget_bounds =
         child->ConvertRectToWidget(child->GetLocalBounds());

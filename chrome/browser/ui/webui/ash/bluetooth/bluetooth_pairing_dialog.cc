@@ -48,8 +48,9 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
   };
-  for (const auto& entry : localized_strings)
+  for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
+  }
   bluetooth::AddLoadTimeData(html_source);
 }
 

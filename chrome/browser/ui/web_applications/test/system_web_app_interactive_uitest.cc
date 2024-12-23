@@ -918,15 +918,14 @@ class SystemWebAppNewWindowMenuItemTest
     auto app_id = GetManager().GetAppIdForSystemApp(GetAppType()).value();
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->AppRegistryCache()
-        .ForOneApp(
-            app_id, [profile, &item](const apps::AppUpdate& update) {
-              item = std::make_unique<AppServiceAppItem>(
-                  profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr,
-                  update);
+        .ForOneApp(app_id, [profile, &item](const apps::AppUpdate& update) {
+          item = std::make_unique<AppServiceAppItem>(
+              profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr,
+              update);
 
-              // Because model updater is null, set position manually.
-              item->SetChromePosition(item->CalculateDefaultPositionForTest());
-            });
+          // Because model updater is null, set position manually.
+          item->SetChromePosition(item->CalculateDefaultPositionForTest());
+        });
     return item;
   }
 

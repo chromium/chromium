@@ -47,15 +47,18 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   BrowserFrame* browser_frame = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   view = new BrowserViewAsh(std::move(browser));
-  if (view->browser()->is_type_custom_tab())
+  if (view->browser()->is_type_custom_tab()) {
     browser_frame = new CustomTabBrowserFrame(view);
+  }
 #else
   view = new BrowserView(std::move(browser));
 #endif
-  if (!browser_frame)
+  if (!browser_frame) {
     browser_frame = new BrowserFrame(view);
-  if (in_tab_dragging)
+  }
+  if (in_tab_dragging) {
     browser_frame->SetTabDragKind(TabDragKind::kAllTabs);
+  }
   browser_frame->InitBrowserFrame();
 
 #if BUILDFLAG(IS_MAC)

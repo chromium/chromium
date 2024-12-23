@@ -91,8 +91,9 @@ class DeprecatedAppsDialogViewBrowserTest
       const DeprecatedAppsDialogViewBrowserTest&) = delete;
 
   bool IsDialogShown() {
-    if (test_dialog_view_)
+    if (test_dialog_view_) {
       return true;
+    }
     return false;
   }
 
@@ -103,8 +104,9 @@ class DeprecatedAppsDialogViewBrowserTest
   }
 
   void WaitForDialogToBeDestroyed() {
-    if (!test_dialog_view_)
+    if (!test_dialog_view_) {
       return;
+    }
 
     DeprecatedAppDialogWidgetObserver dialog_observer(
         test_dialog_view_.get()->GetWidget());

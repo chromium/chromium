@@ -79,11 +79,13 @@ void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
 
 void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
                                     ui::mojom::MenuSourceType source_type) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return;
+  }
 
-  if (!PreRunCallback().is_null())
+  if (!PreRunCallback().is_null()) {
     std::move(PreRunCallback()).Run();
+  }
 
   // width/height don't matter here.
   menu_runner_->RunMenuAt(parent_widget_, nullptr,
@@ -115,8 +117,9 @@ bool BookmarkContextMenu::ShouldCloseAllMenusOnExecute(int id) {
 }
 
 void BookmarkContextMenu::OnMenuClosed(views::MenuItemView* menu) {
-  if (observer_)
+  if (observer_) {
     observer_->OnContextMenuClosed();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -131,11 +134,13 @@ void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         bookmarks) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id))
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
     observer_->WillRemoveBookmarks(bookmarks);
+  }
 }
 
 void BookmarkContextMenu::DidExecuteCommand(int command_id) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id))
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
     observer_->DidRemoveBookmarks();
+  }
 }

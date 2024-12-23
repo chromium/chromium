@@ -145,8 +145,9 @@ bool PriceTrackingIconView::ShouldShow() {
     return false;
   }
   auto* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
   auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents)
                          ->GetTabFeatures()
                          ->commerce_ui_tab_helper();
@@ -210,8 +211,9 @@ void PriceTrackingIconView::SetOneShotTimerForTesting(
 }
 
 void PriceTrackingIconView::EnablePriceTracking(bool enable) {
-  if (IsPriceTracking() == enable)
+  if (IsPriceTracking() == enable) {
     return;
+  }
 
   if (enable && ShouldShowFirstUseExperienceBubble()) {
     profile_->GetPrefs()->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble,
@@ -251,17 +253,17 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
 }
 
 void PriceTrackingIconView::SetVisualState(bool enable) {
-    icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
-                   : &omnibox::kPriceTrackingDisabledRefreshIcon;
+  icon_ = enable ? &omnibox::kPriceTrackingEnabledRefreshIcon
+                 : &omnibox::kPriceTrackingDisabledRefreshIcon;
   // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
   // we can return label()->GetText() instead.
-    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-        enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE));
 
-    SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
-                                              : IDS_OMNIBOX_TRACK_PRICE));
-    SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
-    UpdateIconImage();
+  SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
+                                            : IDS_OMNIBOX_TRACK_PRICE));
+  SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
+  UpdateIconImage();
 }
 
 void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
@@ -273,8 +275,9 @@ void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
 }
 
 bool PriceTrackingIconView::IsPriceTracking() const {
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return false;
+  }
 
   auto* tab_helper = tabs::TabInterface::GetFromContents(GetWebContents())
                          ->GetTabFeatures()

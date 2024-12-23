@@ -105,8 +105,9 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
                           std::unique_ptr<flags_ui::FlagsStorage> storage,
                           flags_ui::FlagAccess access) {
   // If the flags_ui has gone away, there's nothing to do.
-  if (!flags_ui)
+  if (!flags_ui) {
     return;
+  }
 
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.

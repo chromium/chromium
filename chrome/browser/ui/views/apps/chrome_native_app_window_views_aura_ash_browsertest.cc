@@ -44,8 +44,9 @@ class ViewBoundsChangeWaiter : public views::ViewObserver {
   ViewBoundsChangeWaiter& operator=(const ViewBoundsChangeWaiter&) = delete;
 
   static void VerifyY(views::View* view, int y) {
-    if (y != view->bounds().y())
+    if (y != view->bounds().y()) {
       ViewBoundsChangeWaiter(view).run_loop_.Run();
+    }
 
     EXPECT_EQ(y, view->bounds().y());
   }

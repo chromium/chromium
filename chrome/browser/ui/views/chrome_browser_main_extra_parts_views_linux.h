@@ -17,7 +17,7 @@ class LinuxUiGetter;
 #if BUILDFLAG(USE_DBUS)
 class DarkModeManagerLinux;
 #endif
-}
+}  // namespace ui
 
 // Extra parts, which are used by both Ozone/X11/Wayland and inherited by the
 // non-ozone X11 extra parts.

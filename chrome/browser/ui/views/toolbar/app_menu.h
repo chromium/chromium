@@ -29,7 +29,7 @@ namespace views {
 class MenuButtonController;
 class MenuItemView;
 class MenuRunner;
-}
+}  // namespace views
 
 // AppMenu adapts the AppMenuModel to view's menu related classes.
 class AppMenu final : public views::MenuDelegate,
@@ -116,12 +116,11 @@ class AppMenu final : public views::MenuDelegate,
   class ZoomView;
 
   typedef std::pair<ui::MenuModel*, size_t> Entry;
-  typedef std::map<int,Entry> CommandIDToEntry;
+  typedef std::map<int, Entry> CommandIDToEntry;
 
   // Populates |parent| with all the child menus in |model|. Recursively invokes
   // |PopulateMenu| for any submenu.
-  void PopulateMenu(views::MenuItemView* parent,
-                    ui::MenuModel* model);
+  void PopulateMenu(views::MenuItemView* parent, ui::MenuModel* model);
 
   // Adds a new menu item to |parent| at |menu_index| to represent the item in
   // |model| at |model_index|:

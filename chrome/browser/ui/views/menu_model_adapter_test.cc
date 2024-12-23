@@ -90,9 +90,7 @@ class SubMenuModel final : public CommonMenuModel {
 
   ~SubMenuModel() override = default;
 
-  bool showing() const {
-    return showing_;
-  }
+  bool showing() const { return showing_; }
 
  private:
   // ui::MenuModel implementation.
@@ -128,9 +126,7 @@ class TopMenuModel final : public CommonMenuModel {
 
   ~TopMenuModel() override = default;
 
-  bool IsSubmenuShowing() {
-    return sub_menu_model_.showing();
-  }
+  bool IsSubmenuShowing() { return sub_menu_model_.showing(); }
 
  private:
   // ui::MenuModel implementation.

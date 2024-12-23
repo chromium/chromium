@@ -120,7 +120,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-
   // policy::PolicyService::Observer
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,
                        const policy::PolicyMap& previous,

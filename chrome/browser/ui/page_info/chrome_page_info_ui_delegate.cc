@@ -155,8 +155,9 @@ bool ChromePageInfoUiDelegate::ShouldShowAsk(ContentSettingsType type) {
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromePageInfoUiDelegate::ShouldShowSiteSettings(int* link_text_id,
                                                       int* tooltip_text_id) {
-  if (GetProfile()->IsGuestSession())
+  if (GetProfile()->IsGuestSession()) {
     return false;
+  }
 
   if (web_app::GetLabelIdsForAppManagementLinkInPageInfo(
           web_contents_, link_text_id, tooltip_text_id)) {

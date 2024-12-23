@@ -87,8 +87,9 @@ void HungPagesTableModel::InitForWebContents(
   widget_observation_.Observe(render_widget_host_.get());
 
   // The world is different.
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void HungPagesTableModel::Reset() {
@@ -98,13 +99,15 @@ void HungPagesTableModel::Reset() {
   render_widget_host_ = nullptr;
 
   // Inform the table model observers that we cleared the model.
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 void HungPagesTableModel::RestartHangMonitorTimeout() {
-  if (hang_monitor_restarter_)
+  if (hang_monitor_restarter_) {
     hang_monitor_restarter_.Run();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,13 +164,15 @@ void HungPagesTableModel::TabDestroyed(WebContentsObserverImpl* tab) {
   // Clean up tab_observers_ and notify our observer.
   size_t index = 0;
   for (; index < tab_observers_.size(); ++index) {
-    if (tab_observers_[index].get() == tab)
+    if (tab_observers_[index].get() == tab) {
       break;
+    }
   }
   DCHECK(index < tab_observers_.size());
   tab_observers_.erase(tab_observers_.begin() + index);
-  if (observer_)
+  if (observer_) {
     observer_->OnItemsRemoved(index, 1);
+  }
 
   // Notify the delegate.
   delegate_->TabDestroyed();
@@ -186,8 +191,9 @@ HungPagesTableModel::WebContentsObserverImpl::WebContentsObserverImpl(
 void HungPagesTableModel::WebContentsObserverImpl::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
-  if (!new_host->IsInPrimaryMainFrame())
+  if (!new_host->IsInPrimaryMainFrame()) {
     return;
+  }
 
   // If |new_host| is currently responsive dismiss this dialog, otherwise
   // let the model know the tab has been updated. Updating the tab will
@@ -234,11 +240,13 @@ void HungRendererDialogView::Show(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  if (logging::DialogsAreSuppressed())
+  if (logging::DialogsAreSuppressed()) {
     return;
+  }
 
-  if (IsShowingForWebContents(contents))
+  if (IsShowingForWebContents(contents)) {
     return;
+  }
 
   // Only show for WebContents in a browser window.
   if (!chrome::FindBrowserWithTab(contents)) {
@@ -265,13 +273,15 @@ void HungRendererDialogView::Show(
 void HungRendererDialogView::Hide(
     WebContents* contents,
     content::RenderWidgetHost* render_widget_host) {
-  if (logging::DialogsAreSuppressed())
+  if (logging::DialogsAreSuppressed()) {
     return;
+  }
 
   DialogHolder* dialog_holder = static_cast<DialogHolder*>(
       contents->GetUserData(&kDialogHolderUserDataKey));
-  if (dialog_holder)
+  if (dialog_holder) {
     dialog_holder->dialog->EndDialog(render_widget_host);
+  }
 }
 
 // static
@@ -344,8 +354,9 @@ HungRendererDialogView::GetInstanceForWebContentsForTests(
     WebContents* contents) {
   DialogHolder* dialog_holder = static_cast<DialogHolder*>(
       contents->GetUserData(&kDialogHolderUserDataKey));
-  if (dialog_holder)
+  if (dialog_holder) {
     return dialog_holder->dialog;
+  }
   return nullptr;
 }
 

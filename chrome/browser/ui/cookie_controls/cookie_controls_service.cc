@@ -69,10 +69,12 @@ bool CookieControlsService::ShouldEnforceCookieControls() {
 CookieControlsEnforcement
 CookieControlsService::GetCookieControlsEnforcement() {
   auto* pref = profile_->GetPrefs()->FindPreference(prefs::kCookieControlsMode);
-  if (pref->IsManaged())
+  if (pref->IsManaged()) {
     return CookieControlsEnforcement::kEnforcedByPolicy;
-  if (pref->IsExtensionControlled())
+  }
+  if (pref->IsExtensionControlled()) {
     return CookieControlsEnforcement::kEnforcedByExtension;
+  }
   if (regular_cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return CookieControlsEnforcement::kEnforcedByCookieSetting;
   }
@@ -85,13 +87,15 @@ bool CookieControlsService::GetToggleCheckedValue() {
 
 void CookieControlsService::OnThirdPartyCookieBlockingChanged(
     bool block_third_party_cookies) {
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnThirdPartyCookieBlockingPrefChanged();
+  }
 }
 
 void CookieControlsService::OnThirdPartyCookieBlockingPolicyChanged(
     const base::Value* previous,
     const base::Value* current) {
-  for (Observer& obs : observers_)
+  for (Observer& obs : observers_) {
     obs.OnThirdPartyCookieBlockingPolicyChanged();
+  }
 }

@@ -106,27 +106,32 @@ void TryAddingMetadata(
   const base::Value::Dict* browser_tab_metadata =
       browser_tab_status_dict->FindDict(key);
 
-  if (!browser_tab_metadata)
+  if (!browser_tab_metadata) {
     return;
+  }
 
   const std::string* url = browser_tab_metadata->FindString("url");
-  if (!url || url->empty())
+  if (!url || url->empty()) {
     return;
+  }
 
   const std::string* title = browser_tab_metadata->FindString("title");
-  if (!title)
+  if (!title) {
     return;
+  }
 
   // JavaScript time stamps don't fit in int.
   std::optional<double> last_accessed_timestamp =
       browser_tab_metadata->FindDouble("lastAccessedTimeStamp");
-  if (!last_accessed_timestamp)
+  if (!last_accessed_timestamp) {
     return;
+  }
 
   int favicon_image_type_as_int =
       browser_tab_metadata->FindInt("favicon").value_or(0);
-  if (!favicon_image_type_as_int)
+  if (!favicon_image_type_as_int) {
     return;
+  }
 
   auto favicon_image_type = static_cast<ImageType>(favicon_image_type_as_int);
   gfx::Image favicon = gfx::Image::CreateFrom1xBitmap(
@@ -152,8 +157,9 @@ const SkBitmap RGB_Bitmap(U8CPU r, U8CPU g, U8CPU b, int size) {
 MultidevicePhoneHubHandler::MultidevicePhoneHubHandler() = default;
 
 MultidevicePhoneHubHandler::~MultidevicePhoneHubHandler() {
-  if (fake_phone_hub_manager_)
+  if (fake_phone_hub_manager_) {
     EnableRealPhoneHubManager();
+  }
 }
 
 void MultidevicePhoneHubHandler::RegisterMessages() {
@@ -344,8 +350,9 @@ void MultidevicePhoneHubHandler::HandleSetTetherStatus(
 void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
   // If no FakePhoneHubManager is active, return early. This ensures that we
   // don't unnecessarily re-initialize the Phone Hub UI.
-  if (!fake_phone_hub_manager_)
+  if (!fake_phone_hub_manager_) {
     return;
+  }
 
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -359,8 +366,9 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
 
 void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
   // Don't create FakePhoneHubManager if it already exists to prevent UAF.
-  if (fake_phone_hub_manager_)
+  if (fake_phone_hub_manager_) {
     return;
+  }
 
   PA_LOG(VERBOSE) << "Setting fake Phone Hub Manager";
   fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
@@ -533,14 +541,16 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
 
   std::optional<std::u16string> opt_title;
   const std::string* title = notification_data_value.FindString("title");
-  if (title && !title->empty())
+  if (title && !title->empty()) {
     opt_title = base::UTF8ToUTF16(*title);
+  }
 
   std::optional<std::u16string> opt_text_content;
   if (const std::string* text_content =
           notification_data_value.FindString("textContent")) {
-    if (!text_content->empty())
+    if (!text_content->empty()) {
       opt_text_content = base::UTF8ToUTF16(*text_content);
+    }
   }
 
   std::optional<gfx::Image> opt_shared_image;

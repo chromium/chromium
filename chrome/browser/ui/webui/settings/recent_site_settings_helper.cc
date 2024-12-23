@@ -41,8 +41,9 @@ constexpr int GetPriorityForType(ContentSettingsType type) {
 base::Time GetMostRecentTimestamp(const RecentSitePermissions& x) {
   auto most_recent = base::Time();
   for (const auto& setting : x.settings) {
-    if (setting.timestamp > most_recent)
+    if (setting.timestamp > most_recent) {
       most_recent = setting.timestamp;
+    }
   }
   return most_recent;
 }

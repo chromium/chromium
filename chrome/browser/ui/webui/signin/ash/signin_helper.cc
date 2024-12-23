@@ -47,8 +47,9 @@ bool SigninHelper::ArcHelper::IsAvailableInArc() const {
 void SigninHelper::ArcHelper::OnAccountAdded(
     const account_manager::Account& account) {
   // Don't change ARC availability after reauthentication.
-  if (!is_account_addition_)
+  if (!is_account_addition_) {
     return;
+  }
 
   account_apps_availability_->SetIsAccountAvailableInArc(account,
                                                          is_available_in_arc_);

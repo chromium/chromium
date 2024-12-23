@@ -25,9 +25,8 @@ using aura::Window;
 ///////////////////////////////////////////////////////////////////////////////
 // DesktopBrowserFrameAura, public:
 
-DesktopBrowserFrameAura::DesktopBrowserFrameAura(
-    BrowserFrame* browser_frame,
-    BrowserView* browser_view)
+DesktopBrowserFrameAura::DesktopBrowserFrameAura(BrowserFrame* browser_frame,
+                                                 BrowserView* browser_view)
     : views::DesktopNativeWidgetAura(browser_frame),
       browser_view_(browser_view),
       browser_frame_(browser_frame),
@@ -52,10 +51,7 @@ void DesktopBrowserFrameAura::InitNativeWidget(
     views::Widget::InitParams params) {
   browser_desktop_window_tree_host_ =
       BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
-          browser_frame_,
-          this,
-          browser_view_,
-          browser_frame_);
+          browser_frame_, this, browser_view_, browser_frame_);
   params.desktop_window_tree_host =
       browser_desktop_window_tree_host_->AsDesktopWindowTreeHost();
   DesktopNativeWidgetAura::InitNativeWidget(std::move(params));
@@ -63,8 +59,7 @@ void DesktopBrowserFrameAura::InitNativeWidget(
   visibility_controller_ = std::make_unique<wm::VisibilityController>();
   aura::client::SetVisibilityClient(GetNativeView()->GetRootWindow(),
                                     visibility_controller_.get());
-  wm::SetChildWindowVisibilityChangesAnimated(
-      GetNativeView()->GetRootWindow());
+  wm::SetChildWindowVisibilityChangesAnimated(GetNativeView()->GetRootWindow());
 }
 
 void DesktopBrowserFrameAura::OnOcclusionStateChanged(
@@ -111,12 +106,13 @@ void DesktopBrowserFrameAura::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   *bounds = GetWidget()->GetRestoredBounds();
-  if (IsMaximized())
+  if (IsMaximized()) {
     *show_state = ui::mojom::WindowShowState::kMaximized;
-  else if (IsMinimized())
+  } else if (IsMinimized()) {
     *show_state = ui::mojom::WindowShowState::kMinimized;
-  else
+  } else {
     *show_state = ui::mojom::WindowShowState::kNormal;
+  }
 }
 
 content::KeyboardEventProcessingResult

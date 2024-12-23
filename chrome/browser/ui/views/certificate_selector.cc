@@ -245,16 +245,18 @@ ui::TableModel* CertificateSelector::table_model_for_testing() const {
 
 net::ClientCertIdentity* CertificateSelector::GetSelectedCert() const {
   const std::optional<size_t> selected = table_->GetFirstSelectedRow();
-  if (!selected.has_value())
+  if (!selected.has_value()) {
     return nullptr;
+  }
   DCHECK_LT(selected.value(), identities_.size());
   return identities_[selected.value()].get();
 }
 
 bool CertificateSelector::Accept() {
   const std::optional<size_t> selected = table_->GetFirstSelectedRow();
-  if (!selected.has_value())
+  if (!selected.has_value()) {
     return false;
+  }
 
   DCHECK_LT(selected.value(), identities_.size());
   AcceptCertificate(std::move(identities_[selected.value()]));
@@ -277,8 +279,9 @@ views::View* CertificateSelector::GetInitiallyFocusedView() {
 
 void CertificateSelector::ViewCertButtonPressed() {
   net::ClientCertIdentity* const cert = GetSelectedCert();
-  if (!cert)
+  if (!cert) {
     return;
+  }
   ShowCertificateViewerForClientAuth(web_contents_,
                                      web_contents_->GetTopLevelNativeWindow(),
                                      cert->certificate());
@@ -289,8 +292,9 @@ void CertificateSelector::OnSelectionChanged() {
 }
 
 void CertificateSelector::OnDoubleClick() {
-  if (GetSelectedCert())
+  if (GetSelectedCert()) {
     AcceptDialog();
+  }
 }
 
 BEGIN_METADATA(CertificateSelector)

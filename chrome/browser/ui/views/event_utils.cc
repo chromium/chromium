@@ -9,8 +9,8 @@
 namespace event_utils {
 
 bool IsPossibleDispositionEvent(const ui::Event& event) {
-  return event.IsMouseEvent() && (event.flags() &
-             (ui::EF_LEFT_MOUSE_BUTTON | ui::EF_MIDDLE_MOUSE_BUTTON));
+  return event.IsMouseEvent() && (event.flags() & (ui::EF_LEFT_MOUSE_BUTTON |
+                                                   ui::EF_MIDDLE_MOUSE_BUTTON));
 }
 
 }  // namespace event_utils

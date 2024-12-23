@@ -30,7 +30,7 @@ enum class DevToolsOpenedByAction;
 namespace content {
 class NavigationHandle;
 class WebContents;
-}
+}  // namespace content
 
 namespace chrome {
 

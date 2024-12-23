@@ -164,8 +164,9 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
 
 // static
 void TaskManagerView::Hide() {
-  if (g_task_manager_view)
+  if (g_task_manager_view) {
     g_task_manager_view->GetWidget()->Close();
+  }
 }
 
 bool TaskManagerView::IsColumnVisible(int column_id) const {
@@ -190,8 +191,9 @@ bool TaskManagerView::IsTableSorted() const {
 }
 
 TableSortDescriptor TaskManagerView::GetSortDescriptor() const {
-  if (!IsTableSorted())
+  if (!IsTableSorted()) {
     return TableSortDescriptor();
+  }
 
   const auto& descriptor = tab_table_->sort_descriptors().front();
   return TableSortDescriptor(descriptor.column_id, descriptor.ascending);
@@ -306,8 +308,9 @@ void TaskManagerView::OnDoubleClick() {
 }
 
 void TaskManagerView::OnKeyDown(ui::KeyboardCode keycode) {
-  if (keycode == ui::VKEY_RETURN)
+  if (keycode == ui::VKEY_RETURN) {
     ActivateSelectedTab();
+  }
 }
 
 void TaskManagerView::ShowContextMenuForViewImpl(
@@ -692,8 +695,9 @@ void TaskManagerView::InitAlwaysOnTopState() {
 void TaskManagerView::ActivateSelectedTab() {
   const std::optional<size_t> active_row =
       tab_table_->selection_model().active();
-  if (active_row.has_value())
+  if (active_row.has_value()) {
     table_model_->ActivateTask(active_row.value());
+  }
 }
 
 void TaskManagerView::SelectTaskOfActiveTab(Browser* browser) {
@@ -706,8 +710,9 @@ void TaskManagerView::SelectTaskOfActiveTab(Browser* browser) {
 void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   is_always_on_top_ = false;
 
-  if (!g_browser_process->local_state())
+  if (!g_browser_process->local_state()) {
     return;
+  }
 
   const base::Value::Dict& dictionary =
       g_browser_process->local_state()->GetDict(GetWindowName());

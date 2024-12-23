@@ -127,8 +127,9 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  if (!allow_powerwash)
+  if (!allow_powerwash) {
     return;
+  }
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kFactoryResetRequested, true);

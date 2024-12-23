@@ -137,8 +137,8 @@ constexpr const char kAppDotComManifest[] =
 constexpr const char kExampleURL[] = "https://www.example.com/empty.html";
 
 enum class AppType {
-  HOSTED_APP,    // Using HostedAppBrowserController
-  WEB_APP,       // Using WebAppBrowserController, WebAppRegistrar
+  HOSTED_APP,  // Using HostedAppBrowserController
+  WEB_APP,     // Using WebAppBrowserController, WebAppRegistrar
 };
 
 std::string AppTypeParamToString(
@@ -857,8 +857,9 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
 // redirects to a platform app.  https://crbug.com/721949.
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, SubframeRedirectsToHostedApp) {
   // This test only applies to hosted apps.
-  if (app_type() != AppType::HOSTED_APP)
+  if (app_type() != AppType::HOSTED_APP) {
     return;
+  }
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1056,8 +1057,9 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     WebContents* web_contents = WebContents::FromRenderFrameHost(parent_rfh);
     content::TestNavigationObserver nav_observer(web_contents, 1);
     std::string script = "var f = document.createElement('iframe');";
-    if (!element_id.empty())
+    if (!element_id.empty()) {
       script += "f.id = '" + element_id + "';";
+    }
     script += "f.src = '" + url.spec() + "';";
     script += "document.body.appendChild(f);";
     EXPECT_TRUE(ExecJs(parent_rfh, script));
@@ -1202,10 +1204,11 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   EXPECT_EQ(diff_dir->GetProcess(), app->GetProcess());
   EXPECT_EQ(same_site->GetProcess(), app->GetProcess());
   EXPECT_NE(isolated->GetProcess(), app->GetProcess());
-  if (should_swap_for_cross_site_)
+  if (should_swap_for_cross_site_) {
     EXPECT_NE(cross_site->GetProcess(), app->GetProcess());
-  else
+  } else {
     EXPECT_EQ(cross_site->GetProcess(), app->GetProcess());
+  }
 
   // The isolated origin iframe's process should be in the ProcessMap, since
   // the isolated origin is covered by the app's extent.
@@ -1214,9 +1217,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
 
   // If we swapped processes for the |cross_site| iframe, its process should
   // not be on the ProcessMap.
-  if (should_swap_for_cross_site_)
+  if (should_swap_for_cross_site_) {
     EXPECT_FALSE(
         process_map_->Contains(cross_site->GetProcess()->GetDeprecatedID()));
+  }
 
   // Verify that |same_dir| and |diff_dir| can script each other.
   // (they should - they have the same origin).
@@ -2030,12 +2034,15 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
 
       bool IsJitDisabledForSite(content::BrowserContext* browser_context,
                                 const GURL& site_url) override {
-        if (site_url.is_empty())
+        if (site_url.is_empty()) {
           return is_jit_disabled_by_default_;
-        if (site_url.DomainIs("jit-disabled.com"))
+        }
+        if (site_url.DomainIs("jit-disabled.com")) {
           return true;
-        if (site_url.DomainIs("jit-enabled.com"))
+        }
+        if (site_url.DomainIs("jit-enabled.com")) {
           return false;
+        }
         return is_jit_disabled_by_default_;
       }
 
@@ -2528,10 +2535,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppTestWithAutoupgradesDisabled,
                          ::testing::Values(AppType::HOSTED_APP));
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HostedAppProcessModelTest,
-    ::testing::Values(AppType::HOSTED_APP));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppProcessModelTest,
+                         ::testing::Values(AppType::HOSTED_APP));
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppProcessModelFencedFrameTest,
@@ -2541,15 +2547,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HostedAppOriginIsolationTest,
                          ::testing::Values(AppType::HOSTED_APP));
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HostedAppIsolatedOriginTest,
-    ::testing::Values(AppType::HOSTED_APP));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppIsolatedOriginTest,
+                         ::testing::Values(AppType::HOSTED_APP));
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HostedAppSitePerProcessTest,
-    ::testing::Values(AppType::HOSTED_APP));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HostedAppSitePerProcessTest,
+                         ::testing::Values(AppType::HOSTED_APP));
 
 #if BUILDFLAG(ENABLE_PDF)
 INSTANTIATE_TEST_SUITE_P(All,

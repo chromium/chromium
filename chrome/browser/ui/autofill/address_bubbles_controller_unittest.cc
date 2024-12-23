@@ -40,8 +40,7 @@ class AddressBubblesControllerTest : public TestWithBrowserView {
   }
 
   AddressBubblesController* controller() {
-    return AddressBubblesController::FromWebContents(
-        web_contents());
+    return AddressBubblesController::FromWebContents(web_contents());
   }
 
  protected:
@@ -54,8 +53,7 @@ class AddressBubblesControllerTest : public TestWithBrowserView {
   }
 };
 
-TEST_F(AddressBubblesControllerTest,
-       DialogAcceptedInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
@@ -69,8 +67,7 @@ TEST_F(AddressBubblesControllerTest,
       AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
 }
 
-TEST_F(AddressBubblesControllerTest,
-       DialogCancelledInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
@@ -87,8 +84,7 @@ TEST_F(AddressBubblesControllerTest,
 // This is testing that closing all tabs (which effectively destroys the web
 // contents) will trigger the save callback with kIgnored decions if the users
 // hasn't interacted with the prompt already.
-TEST_F(AddressBubblesControllerTest,
-       WebContentsDestroyedInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(

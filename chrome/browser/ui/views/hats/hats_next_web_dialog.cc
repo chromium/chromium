@@ -437,10 +437,12 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // Append any Product Specific Data to the query. This will be interpreted
   // by the wrapper website and provided to the HaTS backend service.
   base::Value::Dict dict;
-  for (const auto& field_value : product_specific_bits_data_)
+  for (const auto& field_value : product_specific_bits_data_) {
     dict.Set(field_value.first, field_value.second ? "true" : "false");
-  for (const auto& field_value : product_specific_string_data_)
+  }
+  for (const auto& field_value : product_specific_string_data_) {
     dict.Set(field_value.first, field_value.second);
+  }
 
   std::string product_specific_data_json;
   base::JSONWriter::Write(dict, &product_specific_data_json);

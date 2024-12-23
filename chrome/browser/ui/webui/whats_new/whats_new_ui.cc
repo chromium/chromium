@@ -124,8 +124,9 @@ void WhatsNewUI::DidStartNavigation(
 void WhatsNewUI::BindInterface(
     mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
         pending_receiver) {
-  if (browser_command_factory_receiver_.is_bound())
+  if (browser_command_factory_receiver_.is_bound()) {
     browser_command_factory_receiver_.reset();
+  }
   browser_command_factory_receiver_.Bind(std::move(pending_receiver));
 }
 

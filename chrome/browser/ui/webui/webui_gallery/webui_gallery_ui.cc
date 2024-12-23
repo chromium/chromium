@@ -27,10 +27,8 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWebuiGalleryHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::span(kWebuiGalleryResources),
-      IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
+  webui::SetupWebUIDataSource(source, base::span(kWebuiGalleryResources),
+                              IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");

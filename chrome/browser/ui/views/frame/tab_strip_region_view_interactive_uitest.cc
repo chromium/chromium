@@ -32,9 +32,7 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
       const TabStripRegionViewBrowserBaseTest&) = delete;
   ~TabStripRegionViewBrowserBaseTest() override = default;
 
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, false); }
 
@@ -95,8 +93,9 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   const auto move_forward_over_tab = [&](Tab* tab) {
     // When skipping over tabs two right presses are needed if the close button
     // is showing.
-    if (tab->showing_close_button_for_testing())
+    if (tab->showing_close_button_for_testing()) {
       press_right();
+    }
     press_right();
   };
 
@@ -139,8 +138,9 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
   const auto move_back_to_tab = [&](Tab* tab) {
     // When skipping back to the previous tab two left presses are needed if the
     // close button is showing.
-    if (tab->showing_close_button_for_testing())
+    if (tab->showing_close_button_for_testing()) {
       press_left();
+    }
     press_left();
   };
 
@@ -198,14 +198,14 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
     EXPECT_TRUE(tab_0->HasFocus());
 
 #if !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
-      tab_strip_region_view()->end_key()));
-  EXPECT_TRUE(tab_search_button()->HasFocus());
+    EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
+        tab_strip_region_view()->end_key()));
+    EXPECT_TRUE(tab_search_button()->HasFocus());
 #endif  // !BUILDFLAG(IS_WIN)
 
-  EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
-      tab_strip_region_view()->home_key()));
-  EXPECT_TRUE(tab_0->HasFocus());
+    EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
+        tab_strip_region_view()->home_key()));
+    EXPECT_TRUE(tab_0->HasFocus());
   }
 }
 

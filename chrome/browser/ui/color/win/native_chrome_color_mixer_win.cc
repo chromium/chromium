@@ -84,8 +84,9 @@ void FrameColorHelper::AddNativeChromeColors(
 
   auto get_theme_color = [key](int id) -> std::optional<SkColor> {
     SkColor theme_color;
-    if (key.custom_theme && key.custom_theme->GetColor(id, &theme_color))
+    if (key.custom_theme && key.custom_theme->GetColor(id, &theme_color)) {
       return theme_color;
+    }
     return std::nullopt;
   };
 
@@ -199,8 +200,9 @@ color_utils::HSL FrameColorHelper::GetTint(
     int id,
     const ui::ColorProviderKey& key) const {
   color_utils::HSL hsl;
-  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl))
+  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl)) {
     return hsl;
+  }
   // Always pass false for |incognito| here since the ColorProvider is treating
   // incognito mode as dark mode. If this needs to change, that information will
   // need to propagate into the ColorProviderKey.
@@ -347,14 +349,16 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarButtonIcon] = {kColorToolbarText};
   const bool platform_high_contrast_ink_drop = base::FeatureList::IsEnabled(
       views::features::kEnablePlatformHighContrastInkDrop);
-  if (platform_high_contrast_ink_drop)
+  if (platform_high_contrast_ink_drop) {
     mixer[kColorToolbarButtonIconHovered] = {ui::kColorNativeHighlightText};
-  else
+  } else {
     mixer[kColorToolbarButtonIconHovered] = {kColorToolbarText};
+  }
   mixer[kColorToolbarButtonIconInactive] = {ui::kColorNativeGrayText};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarText};
-  if (platform_high_contrast_ink_drop)
+  if (platform_high_contrast_ink_drop) {
     mixer[kColorToolbarInkDrop] = {ui::kColorNativeHighlight};
+  }
   mixer[kColorToolbarSeparator] = {ui::kColorNativeWindowText};
   mixer[kColorToolbarText] = {ui::kColorNativeBtnText};
   mixer[kColorToolbarTopSeparatorFrameActive] = {kColorToolbarSeparator};

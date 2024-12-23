@@ -305,8 +305,9 @@ base::Value::List WebRtcLogsDOMHandler::UpdateUIWithTextLogs() const {
     // If we haven't set |value_w| above, we fall back on the upload time, which
     // was already in the variable. In case it's empty set the string to
     // inform that the time is unknown.
-    if (value_w.empty())
+    if (value_w.empty()) {
       value_w = std::u16string(u"(unknown time)");
+    }
     upload_value.Set("capture_time", value_w);
 
     result.Append(std::move(upload_value));

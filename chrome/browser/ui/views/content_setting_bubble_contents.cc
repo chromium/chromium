@@ -205,8 +205,9 @@ void ContentSettingBubbleContents::ListItemContainer::RemoveRowAtIndex(
 
   // As TableLayout can't remove rows, we have to rebuild it entirely.
   ResetLayout();
-  for (auto& row : list_item_views_)
+  for (auto& row : list_item_views_) {
     AddRowToLayout(row);
+  }
 }
 
 void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
@@ -224,8 +225,9 @@ void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
   auto* scroll_view = views::ScrollView::GetScrollViewForContents(this);
   // When this function is called from the constructor, the view has not yet
   // been placed into a ScrollView.
-  if (scroll_view)
+  if (scroll_view) {
     scroll_view->ClipHeightTo(-1, -1);
+  }
 }
 
 void ContentSettingBubbleContents::ListItemContainer::AddRowToLayout(
@@ -339,15 +341,17 @@ void ContentSettingBubbleContents::OnListItemRemovedAt(int index) {
 int ContentSettingBubbleContents::GetSelectedRadioOption() {
   for (RadioGroup::const_iterator i(radio_group_.begin());
        i != radio_group_.end(); ++i) {
-    if ((*i)->GetChecked())
+    if ((*i)->GetChecked()) {
       return i - radio_group_.begin();
+    }
   }
   NOTREACHED();
 }
 
 std::u16string ContentSettingBubbleContents::GetWindowTitle() const {
-  if (!content_setting_bubble_model_)
+  if (!content_setting_bubble_model_) {
     return std::u16string();
+  }
   return content_setting_bubble_model_->bubble_content().title;
 }
 
@@ -539,8 +543,9 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   // invoke a separate management UI related to the dialog content.
   if (ShouldShowManageButton(bubble_content)) {
     std::u16string title = bubble_content.manage_text;
-    if (title.empty())
+    if (title.empty()) {
       title = l10n_util::GetStringUTF16(IDS_MANAGE);
+    }
     auto manage_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(
             [](ContentSettingBubbleContents* bubble) {
@@ -556,16 +561,19 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
     manage_button_ = manage_button.get();
     extra_views.push_back(std::move(manage_button));
   }
-  if (extra_views.empty())
+  if (extra_views.empty()) {
     return nullptr;
-  if (extra_views.size() == 1)
+  }
+  if (extra_views.size() == 1) {
     return std::move(extra_views.front());
+  }
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       layout->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
-  for (auto& extra_view : extra_views)
+  for (auto& extra_view : extra_views) {
     container->AddChildView(std::move(extra_view));
+  }
   return container;
 }
 
@@ -590,8 +598,9 @@ void ContentSettingBubbleContents::PrimaryPageChanged(content::Page& page) {
 
 void ContentSettingBubbleContents::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     GetWidget()->Close();
+  }
 }
 
 void ContentSettingBubbleContents::WebContentsDestroyed() {

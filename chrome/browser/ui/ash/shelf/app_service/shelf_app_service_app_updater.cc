@@ -20,8 +20,9 @@ ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
                      ->AppRegistryCache();
 
   cache->ForEachApp([this](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::Readiness::kReady)
+    if (update.Readiness() == apps::Readiness::kReady) {
       this->installed_apps_.insert(update.AppId());
+    }
   });
   app_registry_cache_observer_.Observe(cache);
 }
@@ -73,8 +74,9 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
     }
   }
 
-  if (update.PolicyIdsChanged())
+  if (update.PolicyIdsChanged()) {
     delegate()->OnAppInstalled(browser_context(), app_id);
+  }
 
   if (update.ShowInShelfChanged()) {
     if (apps_util::IsDisabled(update.Readiness())) {
@@ -91,8 +93,9 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  if (update.ShortNameChanged())
+  if (update.ShortNameChanged()) {
     delegate()->OnAppUpdated(browser_context(), app_id, /*reload_icon=*/false);
+  }
 }
 
 void ShelfAppServiceAppUpdater::OnAppRegistryCacheWillBeDestroyed(

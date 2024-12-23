@@ -20,7 +20,7 @@ class WebContents;
 namespace infobars {
 class InfoBarManager;
 class InfoBar;
-}
+}  // namespace infobars
 
 class TabSharingUI;
 

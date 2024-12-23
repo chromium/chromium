@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/i18n/base_i18n_switches.h"
 #include "chrome/app/chrome_command_ids.h"
-#import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -23,8 +24,9 @@ namespace {
 void AddAcceleratorItemsToArray(NSMenu* menu, NSMutableArray* array) {
   for (NSMenuItem* item in menu.itemArray) {
     NSMenu* submenu = item.submenu;
-    if (submenu)
+    if (submenu) {
       AddAcceleratorItemsToArray(submenu, array);
+    }
 
     // If the tag or key equivalent is zero, then either this is a macOS menu
     // item that we don't care about, or it's a chrome accelerator with non
@@ -32,8 +34,9 @@ void AddAcceleratorItemsToArray(NSMenu* menu, NSMutableArray* array) {
     // these, so we just ignore them. Also as of macOS Monterey the AppKit
     // adds a tag to the Start Dictation... menu item - skip it as well.
     if (item.tag == 0 || item.keyEquivalent.length == 0 ||
-        item.action == @selector(startDictation:))
+        item.action == @selector(startDictation:)) {
       continue;
+    }
 
     [array addObject:item];
   }
@@ -58,8 +61,9 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
     if (submenu) {
       NSMenuItem* result =
           MenuContainsAccelerator(submenu, key_equivalent, modifier_mask);
-      if (result)
+      if (result) {
         return result;
+      }
     }
 
     if ([item.keyEquivalent isEqual:key_equivalent]) {
@@ -67,13 +71,15 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
       // which are special.
       if (item.tag == IDC_SELECT_NEXT_TAB ||
           item.tag == IDC_SELECT_PREVIOUS_TAB) {
-        if (modifier_mask == item.keyEquivalentModifierMask)
+        if (modifier_mask == item.keyEquivalentModifierMask) {
           return item;
+        }
         continue;
       }
 
-      if (MenuItemHasModifierMask(item, modifier_mask))
+      if (MenuItemHasModifierMask(item, modifier_mask)) {
         return item;
+      }
     }
   }
   return nil;

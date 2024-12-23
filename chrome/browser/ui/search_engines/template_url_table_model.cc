@@ -152,8 +152,9 @@ void TemplateURLTableModel::Reload() {
   std::move(extension_entries.begin(), extension_entries.end(),
             std::back_inserter(entries_));
 
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 size_t TemplateURLTableModel::RowCount() {
@@ -169,9 +170,10 @@ std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
     // since those should always be displayed LTR. Please refer to
     // http://crbug.com/6726 for more information.
     base::i18n::AdjustStringForLocaleDirection(&url_short_name);
-    return (template_url_service_->GetDefaultSearchProvider() == url) ?
-        l10n_util::GetStringFUTF16(IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE,
-                                   url_short_name) : url_short_name;
+    return (template_url_service_->GetDefaultSearchProvider() == url)
+               ? l10n_util::GetStringFUTF16(
+                     IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE, url_short_name)
+               : url_short_name;
   }
 
   DCHECK_EQ(IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN, col_id);
@@ -239,8 +241,9 @@ TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
 std::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
     const TemplateURL* template_url) {
   for (auto i = entries_.begin(); i != entries_.end(); ++i) {
-    if (*i == template_url)
+    if (*i == template_url) {
       return static_cast<size_t>(i - entries_.begin());
+    }
   }
   return std::nullopt;
 }
@@ -253,8 +256,9 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(
   TemplateURL* keyword = GetTemplateURL(index);
   const TemplateURL* current_default =
       template_url_service_->GetDefaultSearchProvider();
-  if (current_default == keyword)
+  if (current_default == keyword) {
     return;
+  }
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(keyword,
                                                               choice_location);

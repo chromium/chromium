@@ -156,24 +156,26 @@ ChromeLabsItemView::ChromeLabsItemView(
   experiment_name_->GetViewAccessibility().SetIsIgnored(true);
   experiment_description->GetViewAccessibility().SetIsIgnored(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  if (!lab.visible_name.empty())
+  if (!lab.visible_name.empty()) {
     GetViewAccessibility().SetName(lab.visible_name,
                                    ax::mojom::NameFrom::kAttribute);
+  }
 
-    // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
-    // does not announce the accessible description for groups
-    // (crbug.com/1197159). The MacOS specific code here provides a temporary
-    // mitigation for screen reader users and moves announcing the description
-    // to when the user interacts with the combobox of that experiment. Don’t
-    // add an accessible description for now to prevent the screen reader from
-    // announcing the description twice in the time between when the VoiceOver
-    // bug is fixed and this code gets removed.
-    // TODO(elainechien): Remove MacOS specific code for experiment description
-    // when VoiceOver bug is fixed.
+  // There is currently a MacOS VoiceOver screen reader bug where VoiceOver
+  // does not announce the accessible description for groups
+  // (crbug.com/1197159). The MacOS specific code here provides a temporary
+  // mitigation for screen reader users and moves announcing the description
+  // to when the user interacts with the combobox of that experiment. Don’t
+  // add an accessible description for now to prevent the screen reader from
+  // announcing the description twice in the time between when the VoiceOver
+  // bug is fixed and this code gets removed.
+  // TODO(elainechien): Remove MacOS specific code for experiment description
+  // when VoiceOver bug is fixed.
 
 #if !BUILDFLAG(IS_MAC)
-  if (!lab.visible_description.empty())
+  if (!lab.visible_description.empty()) {
     GetViewAccessibility().SetDescription(lab.visible_description);
+  }
 #endif
 
   AddChildView(

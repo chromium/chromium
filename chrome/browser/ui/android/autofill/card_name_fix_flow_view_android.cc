@@ -42,8 +42,9 @@ void CardNameFixFlowViewAndroid::PromptDismissed(
 
 void CardNameFixFlowViewAndroid::Show() {
   auto java_object = GetOrCreateJavaObject();
-  if (!java_object)
+  if (!java_object) {
     return;
+  }
 
   java_object_.Reset(java_object);
 
@@ -64,18 +65,21 @@ void CardNameFixFlowViewAndroid::ControllerGone() {
 }
 
 CardNameFixFlowViewAndroid::~CardNameFixFlowViewAndroid() {
-  if (controller_)
+  if (controller_) {
     controller_->OnConfirmNameDialogClosed();
+  }
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
 CardNameFixFlowViewAndroid::GetOrCreateJavaObject() {
-  if (java_object_internal_)
+  if (java_object_internal_) {
     return java_object_internal_;
+  }
 
   if (web_contents_->GetNativeView() == nullptr ||
-      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr)
+      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr) {
     return nullptr;  // No window attached (yet or anymore).
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();

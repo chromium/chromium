@@ -31,8 +31,9 @@ void GlowHoverController::SetAnimationContainer(
 
 void GlowHoverController::SetLocation(const gfx::Point& location) {
   location_ = location;
-  if (ShouldDraw())
+  if (ShouldDraw()) {
     view_->SchedulePaint();
+  }
 }
 
 void GlowHoverController::SetSubtleOpacityScale(double opacity_scale) {
@@ -63,8 +64,9 @@ void GlowHoverController::Hide(TabStyle::HideHoverStyle style) {
       animation_.Hide();
       break;
     case TabStyle::HideHoverStyle::kImmediate:
-      if (ShouldDraw())
+      if (ShouldDraw()) {
         view_->SchedulePaint();
+      }
       animation_.Reset();
       break;
   }

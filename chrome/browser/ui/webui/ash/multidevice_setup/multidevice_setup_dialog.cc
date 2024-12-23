@@ -87,8 +87,9 @@ MultiDeviceSetupDialog::MultiDeviceSetupDialog()
                               std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
-  for (auto& callback : on_close_callbacks_)
+  for (auto& callback : on_close_callbacks_) {
     std::move(callback).Run();
+  }
 }
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
@@ -140,8 +141,9 @@ void MultiDeviceSetupDialogUI::BindInterface(
   MultiDeviceSetupService* service =
       MultiDeviceSetupServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
-  if (service)
+  if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
+  }
 }
 
 void MultiDeviceSetupDialogUI::BindInterface(

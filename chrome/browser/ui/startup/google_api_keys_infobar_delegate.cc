@@ -23,8 +23,7 @@ void GoogleApiKeysInfoBarDelegate::Create(
 }
 
 GoogleApiKeysInfoBarDelegate::GoogleApiKeysInfoBarDelegate()
-    : ConfirmInfoBarDelegate() {
-}
+    : ConfirmInfoBarDelegate() {}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 GoogleApiKeysInfoBarDelegate::GetIdentifier() const {

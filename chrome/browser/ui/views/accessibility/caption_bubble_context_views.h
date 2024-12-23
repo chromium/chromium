@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 
-#include "chrome/browser/accessibility/caption_bubble_context_browser.h"
-
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 
 namespace content {
 class WebContents;

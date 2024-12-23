@@ -35,14 +35,17 @@ TabStripScrollSessionWithTimer::TabStripScrollSessionWithTimer(
 TabStripScrollSessionWithTimer::~TabStripScrollSessionWithTimer() = default;
 
 void TabStripScrollSessionWithTimer::MaybeStart() {
-  if (!tab_drag_with_scroll_manager_->GetAttachedContext() || IsRunning())
+  if (!tab_drag_with_scroll_manager_->GetAttachedContext() || IsRunning()) {
     return;
+  }
 
   const TabStripScrollSession::TabScrollDirection scroll_direction =
       GetTabScrollDirection();
 
-  if (scroll_direction != TabStripScrollSession::TabScrollDirection::kNoScroll)
+  if (scroll_direction !=
+      TabStripScrollSession::TabScrollDirection::kNoScroll) {
     Start(scroll_direction);
+  }
 }
 
 void TabStripScrollSessionWithTimer::Start(TabScrollDirection direction) {
@@ -100,13 +103,12 @@ int TabStripScrollSessionWithTimer::CalculateSpeed() {
       return tab_scroll_offset;
     case TabStripScrollSessionWithTimer::ScrollSessionTimerType::kVariableTimer:
       if (scroll_direction_ == TabScrollDirection::kScrollTowardsTrailingTabs) {
-        return ceil(
-            std::clamp(GetRatioInScrollableRegion() * tab_scroll_offset, 0.0,
-                        CalculateBaseScrollOffset() * 3));
+        return ceil(std::clamp(GetRatioInScrollableRegion() * tab_scroll_offset,
+                               0.0, CalculateBaseScrollOffset() * 3));
       } else {
         return floor(
             std::clamp(GetRatioInScrollableRegion() * tab_scroll_offset,
-                        CalculateBaseScrollOffset() * -3, 0.0));
+                       CalculateBaseScrollOffset() * -3, 0.0));
       }
     default:
       NOTREACHED();

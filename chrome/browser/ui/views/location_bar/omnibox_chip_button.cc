@@ -123,8 +123,9 @@ void OmniboxChipButton::UpdateBackgroundColor() {
 }
 
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
-  if (animation != animation_.get())
+  if (animation != animation_.get()) {
     return;
+  }
 
   OnAnimationValueMaybeChanged();
 
@@ -202,10 +203,10 @@ void OmniboxChipButton::OnAnimationValueMaybeChanged() {
 }
 
 int OmniboxChipButton::GetIconSize() const {
-    // Mimic the sizing for other trailing icons.
-    return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
-                                 ? LOCATION_BAR_TRAILING_ICON_SIZE
-                                 : LOCATION_BAR_CHIP_ICON_SIZE);
+  // Mimic the sizing for other trailing icons.
+  return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
+                               ? LOCATION_BAR_TRAILING_ICON_SIZE
+                               : LOCATION_BAR_CHIP_ICON_SIZE);
 }
 
 void OmniboxChipButton::AddObserver(Observer* observer) {
