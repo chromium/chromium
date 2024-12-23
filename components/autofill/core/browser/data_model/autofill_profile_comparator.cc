@@ -230,7 +230,8 @@ AutofillProfileComparator::GetSettingsVisibleProfileDifference(
 
 bool AutofillProfileComparator::Compare(std::u16string_view text1,
                                         std::u16string_view text2,
-                                        WhitespaceSpec whitespace_spec) const {
+                                        WhitespaceSpec whitespace_spec,
+                                        std::optional<FieldType> type) const {
   if (text1.empty() && text2.empty()) {
     return true;
   }
@@ -241,6 +242,17 @@ bool AutofillProfileComparator::Compare(std::u16string_view text1,
       RemoveDiacriticsAndConvertToLowerCase(text1);
   std::u16string normalized_text2 =
       RemoveDiacriticsAndConvertToLowerCase(text2);
+
+  // Japanese alternative names are stored in hiragana only. We transliterate
+  // katarana to ensure correct comparison.
+  if (type.has_value() && IsAlternativeNameType(type.value()) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    normalized_text1 = TransliterateAlternativeName(
+        normalized_text1, TransliterationId::kKatakanaToHiragana);
+    normalized_text2 = TransliterateAlternativeName(
+        normalized_text2, TransliterationId::kKatakanaToHiragana);
+  }
 
   NormalizingIterator normalizing_iter1{normalized_text1, whitespace_spec};
   NormalizingIterator normalizing_iter2{normalized_text2, whitespace_spec};

@@ -171,8 +171,13 @@ TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
 
   test::VerifyFormGroupValues(name, expectation);
 
+  // Both "あおい" and "アオイ" are semantically equal.
   FieldTypeSet matching_types;
   name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+
+  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
                                           nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
 }

@@ -47,8 +47,9 @@ class AutofillProfileComparator {
   // techniques are applied to the given texts before comparing.
   //
   // (1) Diacritics are removed, e.g. حَ to ح, ビ to ヒ, and é to e;
-  // (2) Leading and trailing whitespace and punctuation are ignored; and
-  // (3) Characters are converted to lowercase.
+  // (2) Leading and trailing whitespace and punctuation are ignored;
+  // (3) Characters are converted to lowercase;
+  // (4) For alternative name types, katakana is converted to hiragana.
   //
   // If |whitespace_spec| is DISCARD_WHITESPACE, then punctuation and whitespace
   // are discarded. For example, the postal codes "B15 3TR" and "B153TR" and
@@ -59,7 +60,8 @@ class AutofillProfileComparator {
   // St" are because trailing whitespace and punctuation are ignored.
   bool Compare(std::u16string_view text1,
                std::u16string_view text2,
-               WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
+               WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE,
+               std::optional<FieldType> type = std::nullopt) const;
 
   // Returns true if two AutofillProfiles |p1| and |p2| have at least one
   // settings-visible value that is different.
