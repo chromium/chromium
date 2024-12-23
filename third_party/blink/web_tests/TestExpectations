@@ -8897,3 +8897,6 @@ crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.su
 
 # Gardener 2024-12-20
 crbug.com/379003901 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-cover-video.html [ Failure Pass ]
+
+# Gardener 2024-12-23
+crbug.com/385571958 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-none-video.html [ Failure Pass ]
