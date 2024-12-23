@@ -56,6 +56,8 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 
 }  // namespace
 
+constexpr int kMinBoundsForInstallDialog = 50;
+
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
   std::u16string normalized = title;
   if (base::StartsWith(normalized, u"https://")) {
@@ -71,8 +73,9 @@ bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget) {
   const gfx::Size& current_size = widget->GetSize();
   const gfx::Size& preferred_size =
       widget->GetContentsView()->GetPreferredSize();
-  return current_size.width() < preferred_size.width() ||
-         current_size.height() < preferred_size.height();
+  int min_width = preferred_size.width() - kMinBoundsForInstallDialog;
+  int min_height = preferred_size.height() - kMinBoundsForInstallDialog;
+  return current_size.width() < min_width || current_size.height() < min_height;
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppInstallDialogDelegate,
