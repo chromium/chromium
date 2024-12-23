@@ -170,9 +170,6 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
       sampling_profiler::ProfilerThreadType thread,
       std::optional<version_info::Channel> release_channel) const override;
 
-  bool IsSupportedForChannel(
-      std::optional<version_info::Channel> release_channel) const override;
-
  private:
   // Whether profiling is enabled on a thread type for Android DEV channel.
   const base::flat_map<sampling_profiler::ProfilerThreadType, bool>
@@ -306,25 +303,6 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     }
     case version_info::Channel::CANARY:
       return true;
-    default:
-      return false;
-  }
-}
-
-bool AndroidPlatformConfiguration::IsSupportedForChannel(
-    std::optional<version_info::Channel> release_channel) const {
-  // The profiler is always supported for local builds and the CQ.
-  if (!release_channel) {
-    return true;
-  }
-
-  // All channels are supported in release builds.
-  switch (*release_channel) {
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-    case version_info::Channel::BETA:
-      return true;
-
     default:
       return false;
   }
