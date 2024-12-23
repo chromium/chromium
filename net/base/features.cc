@@ -158,10 +158,6 @@ BASE_FEATURE(kPostQuantumKyber,
 
 BASE_FEATURE(kUseMLKEM, "UseMLKEM", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNetUnusedIdleSocketTimeout,
-             "NetUnusedIdleSocketTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold,
              "ShortLaxAllowUnsafeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
