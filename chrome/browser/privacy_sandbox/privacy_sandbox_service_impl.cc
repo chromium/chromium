@@ -77,6 +77,7 @@ namespace {
 
 using PromptAction = ::PrivacySandboxService::PromptAction;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
+using PromptStartupState = ::PrivacySandboxService::PromptStartupState;
 using NoticeQueueState = ::PrivacySandboxService::NoticeQueueState;
 using FakeNoticePromptSuppressionReason =
     ::PrivacySandboxService::FakeNoticePromptSuppressionReason;
@@ -1238,6 +1239,20 @@ bool PrivacySandboxServiceImpl::IsRelatedWebsiteSetsDataAccessManaged() const {
       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
+void PrivacySandboxServiceImpl::RecordPromptStartupStateHistograms(
+    PromptStartupState state) {
+  std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
+
+  if (!profile_bucket.empty()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Settings.PrivacySandbox.", profile_bucket,
+                      ".PromptStartupState"}),
+        state);
+    base::UmaHistogramEnumeration("Settings.PrivacySandbox.PromptStartupState",
+                                  state);
+  }
+}
+
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
 PrivacySandboxServiceImpl::GetSampleRelatedWebsiteSets() const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
@@ -1386,9 +1401,6 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
       "Settings.PrivacySandbox.AdMeasurement.Enabled",
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
 
-  const std::string privacy_sandbox_prompt_startup_histogram =
-      "Settings.PrivacySandbox.PromptStartupState";
-
   const bool user_reported_restricted =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
   const bool user_is_currently_unrestricted =
@@ -1406,44 +1418,38 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
     }
 
     case PromptSuppressedReason::kRestricted: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kPromptNotShownDueToPrivacySandboxRestricted);
       return;
     }
 
     case PromptSuppressedReason::kThirdPartyCookiesBlocked: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kPromptNotShownDueTo3PCBlocked);
       return;
     }
 
     case PromptSuppressedReason::kTrialsConsentDeclined: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kPromptNotShownDueToTrialConsentDeclined);
       return;
     }
 
     case PromptSuppressedReason::kTrialsDisabledAfterNotice: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::
               kPromptNotShownDueToTrialsDisabledAfterNoticeShown);
       return;
     }
 
     case PromptSuppressedReason::kPolicy: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kPromptNotShownDueToManagedState);
       return;
     }
 
     case PromptSuppressedReason::kEEAFlowCompletedBeforeRowMigration: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           topics_enabled
               ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
               : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
@@ -1452,8 +1458,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
 
     case PromptSuppressedReason::
         kROWFlowCompletedAndTopicsDisabledBeforeEEAMigration: {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kROWNoticeFlowCompleted);
       return;
     }
@@ -1462,8 +1467,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
       // Check for users waiting for graduation: If a user was ever reported as
       // restricted and is currently unrestricted it means they are ready for
       // graduation.
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           user_reported_restricted && user_is_currently_unrestricted
               ? PromptStartupState::
                     kWaitingForGraduationRestrictedNoticeFlowNotCompleted
@@ -1478,8 +1482,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
 
   // Check if prompt was suppressed implicitly.
   if (IsM1PrivacySandboxEffectivelyManaged(pref_service_)) {
-    base::UmaHistogramEnumeration(
-        privacy_sandbox_prompt_startup_histogram,
+    RecordPromptStartupStateHistograms(
         PromptStartupState::kPromptNotShownDueToManagedState);
     return;
   }
@@ -1491,8 +1494,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   // restricted and is currently unrestricted it means they are ready for
   // graduation.
   if (user_reported_restricted && user_is_currently_unrestricted) {
-    base::UmaHistogramEnumeration(
-        privacy_sandbox_prompt_startup_histogram,
+    RecordPromptStartupStateHistograms(
         restricted_notice_acknowledged
             ? PromptStartupState::
                   kWaitingForGraduationRestrictedNoticeFlowCompleted
@@ -1514,15 +1516,13 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
     // Acknowledgement of any of the prompt types implies acknowledgement of the
     // restricted notice as well.
     if (row_notice_acknowledged || eaa_notice_acknowledged) {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::
               kRestrictedNoticeNotShownDueToFullNoticeAcknowledged);
 
       return;
     }
-    base::UmaHistogramEnumeration(
-        privacy_sandbox_prompt_startup_histogram,
+    RecordPromptStartupStateHistograms(
         restricted_notice_acknowledged
             ? PromptStartupState::kRestrictedNoticeFlowCompleted
             : PromptStartupState::kRestrictedNoticePromptWaiting);
@@ -1534,8 +1534,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
     // Consent decision not made
     if (!pref_service_->GetBoolean(
             prefs::kPrivacySandboxM1ConsentDecisionMade)) {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kEEAConsentPromptWaiting);
       return;
     }
@@ -1544,14 +1543,12 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
 
     // Notice Acknowledged
     if (eaa_notice_acknowledged) {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           topics_enabled
               ? PromptStartupState::kEEAFlowCompletedWithTopicsAccepted
               : PromptStartupState::kEEAFlowCompletedWithTopicsDeclined);
     } else {
-      base::UmaHistogramEnumeration(
-          privacy_sandbox_prompt_startup_histogram,
+      RecordPromptStartupStateHistograms(
           PromptStartupState::kEEANoticePromptWaiting);
     }
     return;
@@ -1559,8 +1556,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
 
   // ROW
   if (privacy_sandbox::IsNoticeRequired()) {
-    base::UmaHistogramEnumeration(
-        privacy_sandbox_prompt_startup_histogram,
+    RecordPromptStartupStateHistograms(
         row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
                                 : PromptStartupState::kROWNoticePromptWaiting);
     return;

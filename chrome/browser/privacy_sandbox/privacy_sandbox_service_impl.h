@@ -283,33 +283,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
     kMaxValue = kNoPromptRequiredDisabled,
   };
 
-  // Contains the possible states of the prompt start up states for m1.
-  // Must be kept in sync with SettingsPrivacySandboxPromptStartupState in
-  // histograms/enums.xml
-  enum class PromptStartupState {
-    kEEAConsentPromptWaiting = 0,
-    kEEANoticePromptWaiting = 1,
-    kROWNoticePromptWaiting = 2,
-    kEEAFlowCompletedWithTopicsAccepted = 3,
-    kEEAFlowCompletedWithTopicsDeclined = 4,
-    kROWNoticeFlowCompleted = 5,
-    kPromptNotShownDueToPrivacySandboxRestricted = 6,
-    kPromptNotShownDueTo3PCBlocked = 7,
-    kPromptNotShownDueToTrialConsentDeclined = 8,
-    kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
-    kPromptNotShownDueToManagedState = 10,
-    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
-    kRestrictedNoticePromptWaiting = 12,
-    kRestrictedNoticeFlowCompleted = 13,
-    kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
-    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
-    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
-
-    // Add values above this line with a corresponding label in
-    // tools/metrics/histograms/enums.xml
-    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
-  };
-
   // Helper function to log first party sets state.
   void RecordFirstPartySetsStateHistogram(FirstPartySetsState state);
 
@@ -400,6 +373,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
   // Record user action metrics based on the |action|.
   void RecordPromptActionMetrics(PrivacySandboxService::PromptAction action);
+
+  // Record user startup state metrics on both client and profile level.
+  void RecordPromptStartupStateHistograms(
+      PrivacySandboxService::PromptStartupState state);
 
   // Called when the Topics preference is changed.
   void OnTopicsPrefChanged();

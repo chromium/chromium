@@ -189,6 +189,30 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kNoticeShownToGuardian,
   };
 
+  // Contains the possible states of the prompt start up states for m1.
+  // LINT.IfChange(SettingsPrivacySandboxPromptStartupState)
+  enum class PromptStartupState {
+    kEEAConsentPromptWaiting = 0,
+    kEEANoticePromptWaiting = 1,
+    kROWNoticePromptWaiting = 2,
+    kEEAFlowCompletedWithTopicsAccepted = 3,
+    kEEAFlowCompletedWithTopicsDeclined = 4,
+    kROWNoticeFlowCompleted = 5,
+    kPromptNotShownDueToPrivacySandboxRestricted = 6,
+    kPromptNotShownDueTo3PCBlocked = 7,
+    kPromptNotShownDueToTrialConsentDeclined = 8,
+    kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
+    kPromptNotShownDueToManagedState = 10,
+    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
+    kRestrictedNoticePromptWaiting = 12,
+    kRestrictedNoticeFlowCompleted = 13,
+    kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
+    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
+    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
+    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacySandboxPromptStartupState)
+
   // Returns whether |url| is suitable to display the Privacy Sandbox prompt
   // over. Only about:blank and certain chrome:// URLs are considered
   // suitable.

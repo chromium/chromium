@@ -466,6 +466,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Browser not a normal tabbed browser"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsPrivacySandboxPromptStartupState) -->
+
 <enum name="SettingsPrivacySandboxPromptStartupState">
   <int value="0" label="EEA consent prompt waiting to show"/>
   <int value="1" label="EEA notice prompt waiting to show"/>
@@ -494,6 +496,8 @@ chromium-metrics-reviews@google.com.
   <int value="16"
       label="User is waiting for graduation and notice flow is completed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:SettingsPrivacySandboxPromptStartupState) -->
 
 <enum name="SettingsPrivacySandboxStartupStates">
   <int value="0" label="Prompt waiting to show"/>

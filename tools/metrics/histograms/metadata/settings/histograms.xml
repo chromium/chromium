@@ -22,6 +22,29 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
+Regular profiles start at bucket 1. Incognito profiles count towards the original profile. -->
+
+<!-- LINT.IfChange(Profile) -->
+
+<variants name="ProfileBucketName">
+  <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
+  <variant name="Profile_2" summary="Profile bucket 2 for a client."/>
+  <variant name="Profile_3" summary="Profile bucket 3 for a client."/>
+  <variant name="Profile_4" summary="Profile bucket 4 for a client."/>
+  <variant name="Profile_5" summary="Profile bucket 5 for a client."/>
+  <variant name="Profile_6" summary="Profile bucket 6 for a client."/>
+  <variant name="Profile_7" summary="Profile bucket 7 for a client."/>
+  <variant name="Profile_8" summary="Profile bucket 8 for a client."/>
+  <variant name="Profile_9" summary="Profile bucket 9 for a client."/>
+  <variant name="Profile_10" summary="Profile bucket 10 for a client."/>
+  <variant name="Profile_11+"
+      summary="All profiles with a bucket of 11+ will be bucketed here, 11
+               inclusive."/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/histograms.xml:Profile) -->
+
 <variants name="SafetyHubDashboardModuleType">
   <variant name="BrowserState"/>
   <variant name="NotificationReview"/>
@@ -575,6 +598,17 @@ chromium-metrics-reviews@google.com.
     Records the startup state of the topics API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
   </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.{Profile}.PromptStartupState"
+    enum="SettingsPrivacySandboxPromptStartupState" expires_after="2025-11-11">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the startup state of the privacy sandbox prompt on a {Profile} for
+    Privacy Sandbox GA M1. This is recorded during the prompt start up.
+  </summary>
+  <token key="Profile" variants="ProfileBucketName"/>
 </histogram>
 
 <histogram name="Settings.SafetyCheck.Interactions"

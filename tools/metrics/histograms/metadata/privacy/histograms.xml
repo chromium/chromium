@@ -85,6 +85,8 @@ reviewer.
 <!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
 Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
+<!-- LINT.IfChange(Profile) -->
+
 <variants name="Profile">
   <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
   <variant name="Profile_2" summary="Profile bucket 2 for a client."/>
@@ -100,6 +102,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
       summary="All profiles with a bucket greater than 10 will be bucketed
                here."/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/settings/histograms.xml:Profile) -->
 
 <variants name="PSNotice">
   <variant name="MeasurementNoticeModal"
