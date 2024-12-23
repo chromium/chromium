@@ -101,6 +101,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.docked@reven-vmtest",
   "inputs.VirtualKeyboardHandwriting.floating@reven-vmtest",
 
+  # b/385643386
+  "apps.LaunchHelpAppFromLauncher.stable_fieldtrial_testing_config_on@betty",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
