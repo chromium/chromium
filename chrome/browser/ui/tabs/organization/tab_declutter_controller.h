@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom-forward.h"
 #include "url/gurl.h"
 
+class TabStripActionContainer;
 class TabStripModel;
-class TabGlicContainer;
 class TabSearchContainer;
 class BrowserWindowInterface;
 
@@ -79,7 +79,7 @@ class TabDeclutterController {
   base::TimeDelta nudge_timer_interval() const { return nudge_timer_interval_; }
 
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
-  void OnActionUIDismissed(base::PassKey<TabGlicContainer>);
+  void OnActionUIDismissed(base::PassKey<TabStripActionContainer>);
 
   void SetTimerForTesting(const base::TickClock* tick_clock,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);

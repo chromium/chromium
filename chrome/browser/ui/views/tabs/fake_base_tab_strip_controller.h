@@ -102,6 +102,9 @@ class FakeBaseTabStripController : public TabStripController {
   Profile* GetProfile() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   const Browser* GetBrowser() const override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 

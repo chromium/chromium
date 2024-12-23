@@ -19,7 +19,7 @@ namespace views {
 class Button;
 }
 class NewTabButton;
-class TabGlicContainer;
+class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
 class TabStripComboButton;
@@ -63,7 +63,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   TabSearchContainer* GetTabSearchContainer();
 
-  TabGlicContainer* GetTabGlicContainer();
+  TabStripActionContainer* GetTabStripActionContainer();
 
   TabStripComboButton* tab_strip_combo_button() {
     return tab_strip_combo_button_;
@@ -144,13 +144,13 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void AdjustViewBoundsRect(View* view, int offset);
 
   raw_ptr<const Profile> profile_ = nullptr;
+  raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> tab_strip_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
-  raw_ptr<TabGlicContainer> tab_glic_container_ = nullptr;
   raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
 

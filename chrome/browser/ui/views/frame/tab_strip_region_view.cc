@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_glic_container.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -126,7 +126,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   // Add and configure the TabSearchContainer, TabStripComboButton, and
   // ProductSpecificationsButton.
   std::unique_ptr<TabSearchContainer> tab_search_container;
-  std::unique_ptr<TabGlicContainer> tab_glic_container;
+  std::unique_ptr<TabStripActionContainer> tab_strip_action_container;
   std::unique_ptr<TabStripComboButton> tab_strip_combo_button;
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
   if (browser &&
@@ -155,12 +155,12 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
           views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
     }
     if (features::IsTabstripComboButtonEnabled()) {
-      tab_glic_container = std::make_unique<TabGlicContainer>(
+      tab_strip_action_container = std::make_unique<TabStripActionContainer>(
           tab_strip_->controller(), this,
           browser->GetFeatures().tab_declutter_controller());
-      tab_glic_container->SetProperty(views::kCrossAxisAlignmentKey,
-                                      views::LayoutAlignment::kCenter);
-      tab_glic_container->SetProperty(
+      tab_strip_action_container->SetProperty(views::kCrossAxisAlignmentKey,
+                                              views::LayoutAlignment::kCenter);
+      tab_strip_action_container->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
     }
@@ -264,13 +264,21 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
   }
 
-  if (tab_glic_container) {
-    tab_glic_container_ = AddChildView(std::move(tab_glic_container));
+  if (tab_strip_action_container) {
+    tab_strip_action_container_ =
+        AddChildView(std::move(tab_strip_action_container));
   }
   UpdateTabStripMargin();
 }
 
-TabStripRegionView::~TabStripRegionView() = default;
+TabStripRegionView::~TabStripRegionView() {
+  // TabStripActionContainer has a pointer to TabStripController , which is
+  // also destoroyed by this class.
+  // This enusres that the action container is destroyed first.
+  if (tab_strip_action_container_) {
+    RemoveChildViewT(std::exchange(tab_strip_action_container_, nullptr));
+  }
+}
 
 bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
   const auto get_target_rect = [&](views::View* target) {
@@ -361,9 +369,9 @@ views::Button* TabStripRegionView::GetNewTabButton() {
 }
 
 glic::GlicButton* TabStripRegionView::GetGlicButton() {
-  if (tab_glic_container_) {
+  if (tab_strip_action_container_) {
 #if BUILDFLAG(ENABLE_GLIC)
-    return tab_glic_container_->GetGlicButton();
+    return tab_strip_action_container_->GetGlicButton();
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
   return nullptr;
@@ -377,8 +385,8 @@ TabSearchContainer* TabStripRegionView::GetTabSearchContainer() {
   }
 }
 
-TabGlicContainer* TabStripRegionView::GetTabGlicContainer() {
-  return tab_glic_container_;
+TabStripActionContainer* TabStripRegionView::GetTabStripActionContainer() {
+  return tab_strip_action_container_;
 }
 
 views::View::Views TabStripRegionView::GetChildrenInZOrder() {
@@ -404,8 +412,8 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
     children.emplace_back(product_specifications_button_.get());
   }
 
-  if (tab_glic_container_) {
-    children.emplace_back(tab_glic_container_.get());
+  if (tab_strip_action_container_) {
+    children.emplace_back(tab_strip_action_container_.get());
   }
 
   if (reserved_grab_handle_space_) {

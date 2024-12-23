@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_glic_container.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 
 #include <memory>
 
@@ -43,14 +43,15 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
 };
 
-class TabGlicContainerTest : public ChromeViewsTestBase {
+class TabStripActionContainerTest : public ChromeViewsTestBase {
  public:
-  TabGlicContainerTest()
+  TabStripActionContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
-  TabGlicContainerTest(const TabGlicContainerTest&) = delete;
-  TabGlicContainerTest& operator=(const TabGlicContainerTest&) = delete;
-  ~TabGlicContainerTest() override = default;
+  TabStripActionContainerTest(const TabStripActionContainerTest&) = delete;
+  TabStripActionContainerTest& operator=(const TabStripActionContainerTest&) =
+      delete;
+  ~TabStripActionContainerTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -60,7 +61,7 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     ChromeViewsTestBase::TearDown();
-    tab_glic_container_.reset();
+    tab_strip_action_container_.reset();
   }
 
   void BuildGlicContainer(bool use_otr_profile) {
@@ -84,7 +85,7 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
 
     locked_expansion_view_ = std::make_unique<views::View>();
 
-    tab_glic_container_ = std::make_unique<TabGlicContainer>(
+    tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
         tab_strip_->controller(), locked_expansion_view_.get(),
         tab_declutter_controller_.get());
   }
@@ -97,8 +98,8 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
   TestTabStripModelDelegate tab_strip_model_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::View> locked_expansion_view_;
-  std::unique_ptr<TabGlicContainer> tab_glic_container_;
   std::unique_ptr<FakeGlicTabStripController> controller_;
+  std::unique_ptr<TabStripActionContainer> tab_strip_action_container_;
 
  private:
   // Owned by TabStrip.
@@ -106,25 +107,28 @@ class TabGlicContainerTest : public ChromeViewsTestBase {
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
-TEST_F(TabGlicContainerTest, GlicButtonDrawing) {
+TEST_F(TabStripActionContainerTest, GlicButtonDrawing) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  EXPECT_TRUE(tab_glic_container_->GetGlicButton());
+  EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_F(TabGlicContainerTest, GlicButtonUnsupportedProfile) {
+TEST_F(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
   BuildGlicContainer(/*use_otr_profile=*/true);
-  EXPECT_FALSE(tab_glic_container_->GetGlicButton());
+  EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-TEST_F(TabGlicContainerTest, OrdersButtonsCorrectly) {
+TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  ASSERT_EQ(tab_glic_container_->tab_declutter_button(),
-            tab_glic_container_->children()[0]);
+  ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
+            tab_strip_action_container_->children()[0]);
+
+  ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
+            tab_strip_action_container_->children()[1]);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  ASSERT_EQ(tab_glic_container_->GetGlicButton(),
-            tab_glic_container_->children()[1]);
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+            tab_strip_action_container_->children()[2]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }

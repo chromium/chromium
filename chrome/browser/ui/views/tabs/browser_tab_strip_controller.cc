@@ -264,6 +264,15 @@ int BrowserTabStripController::GetCount() const {
   return model_->count();
 }
 
+bool BrowserTabStripController::CanShowModalUI() const {
+  return model_->CanShowModalUI();
+}
+
+std::unique_ptr<ScopedTabStripModalUI>
+BrowserTabStripController::ShowModalUI() {
+  return model_->ShowModalUI();
+}
+
 bool BrowserTabStripController::IsValidIndex(int index) const {
   return model_->ContainsIndex(index);
 }

@@ -390,7 +390,7 @@ void TabDeclutterController::OnActionUIDismissed(
 }
 
 void TabDeclutterController::OnActionUIDismissed(
-    base::PassKey<TabGlicContainer>) {
+    base::PassKey<TabStripActionContainer>) {
   ResetAndDoubleNudgeTimer();
 }
 

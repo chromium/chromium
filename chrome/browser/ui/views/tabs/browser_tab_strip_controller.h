@@ -66,6 +66,8 @@ class BrowserTabStripController : public TabStripController,
   // TabStripController implementation:
   const ui::ListSelectionModel& GetSelectionModel() const override;
   int GetCount() const override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() override;
   bool IsValidIndex(int model_index) const override;
   bool IsActiveTab(int model_index) const override;
   std::optional<int> GetActiveIndex() const override;

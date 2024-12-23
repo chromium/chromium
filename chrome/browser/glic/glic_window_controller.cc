@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/glic/glic_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
-#include "chrome/browser/ui/views/tabs/tab_glic_container.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
