@@ -20,8 +20,7 @@ namespace infobars {
 
 const int InfoBarDelegate::kNoIconID = 0;
 
-InfoBarDelegate::~InfoBarDelegate() {
-}
+InfoBarDelegate::~InfoBarDelegate() {}
 
 int InfoBarDelegate::GetIconId() const {
   return kNoIconID;
@@ -35,9 +34,10 @@ const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
 ui::ImageModel InfoBarDelegate::GetIcon() const {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   const gfx::VectorIcon& vector_icon = GetVectorIcon();
-  if (!vector_icon.is_empty())
+  if (!vector_icon.is_empty()) {
     return ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorInfoBarIcon,
                                           20);
+  }
 #endif
 
   int icon_id = GetIconId();
@@ -62,13 +62,13 @@ bool InfoBarDelegate::EqualsDelegate(InfoBarDelegate* delegate) const {
 
 bool InfoBarDelegate::ShouldExpire(const NavigationDetails& details) const {
   return details.is_navigation_to_different_page &&
-      !details.did_replace_entry &&
-      // This next condition ensures a navigation that passes the above
-      // conditions doesn't dismiss infobars added while that navigation was
-      // already in process.  We carve out an exception for reloads since we
-      // want reloads to dismiss infobars, but they will have unchanged entry
-      // IDs.
-      ((nav_entry_id_ != details.entry_id) || details.is_reload);
+         !details.did_replace_entry &&
+         // This next condition ensures a navigation that passes the above
+         // conditions doesn't dismiss infobars added while that navigation was
+         // already in process.  We carve out an exception for reloads since we
+         // want reloads to dismiss infobars, but they will have unchanged entry
+         // IDs.
+         ((nav_entry_id_ != details.entry_id) || details.is_reload);
 }
 
 bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
@@ -76,8 +76,7 @@ bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   return false;
 }
 
-void InfoBarDelegate::InfoBarDismissed() {
-}
+void InfoBarDelegate::InfoBarDismissed() {}
 
 bool InfoBarDelegate::IsCloseable() const {
   return true;
@@ -97,13 +96,13 @@ InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
 }
 
 ThemeInstalledInfoBarDelegate*
-    InfoBarDelegate::AsThemePreviewInfobarDelegate() {
+InfoBarDelegate::AsThemePreviewInfobarDelegate() {
   return nullptr;
 }
 
 #if BUILDFLAG(IS_IOS)
 translate::TranslateInfoBarDelegate*
-    InfoBarDelegate::AsTranslateInfoBarDelegate() {
+InfoBarDelegate::AsTranslateInfoBarDelegate() {
   return nullptr;
 }
 #endif

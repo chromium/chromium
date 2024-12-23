@@ -32,8 +32,7 @@ class InfoBarManager {
 
     virtual void OnInfoBarAdded(InfoBar* infobar);
     virtual void OnInfoBarRemoved(InfoBar* infobar, bool animate);
-    virtual void OnInfoBarReplaced(InfoBar* old_infobar,
-                                   InfoBar* new_infobar);
+    virtual void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar);
     virtual void OnManagerShuttingDown(InfoBarManager* manager);
   };
 

@@ -80,8 +80,9 @@ void InfoBar::CloseSoon() {
 }
 
 void InfoBar::RemoveSelf() {
-  if (owner_)
+  if (owner_) {
     owner_->RemoveInfoBar(this);
+  }
 }
 
 void InfoBar::SetTargetHeight(int height) {
@@ -110,8 +111,9 @@ void InfoBar::RecalculateHeight(bool force_notify) {
   // with bogus sizes, because if we're ever re-added to a container, it will
   // call Show(false) while re-adding us, which will compute a correct set of
   // sizes.
-  if (!container_ || !container_->delegate())
+  if (!container_ || !container_->delegate()) {
     return;
+  }
 
   int old_height = height_;
   height_ = animation_.CurrentValueBetween(0, target_height_);
@@ -119,17 +121,20 @@ void InfoBar::RecalculateHeight(bool force_notify) {
   // Don't re-layout if nothing has changed, e.g. because the animation step was
   // not large enough to actually change the height by at least a pixel.
   bool height_differs = old_height != height_;
-  if (height_differs)
+  if (height_differs) {
     PlatformSpecificOnHeightRecalculated();
+  }
 
-  if (height_differs || force_notify)
+  if (height_differs || force_notify) {
     container_->OnInfoBarStateChanged(animation_.is_animating());
+  }
 }
 
 void InfoBar::MaybeDelete() {
   if (!owner_ && (animation_.GetCurrentValue() == 0.0)) {
-    if (container_)
+    if (container_) {
       container_->RemoveInfoBar(this);
+    }
     delete this;
   }
 }

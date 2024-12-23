@@ -32,7 +32,7 @@ class TranslateInfoBarDelegate;
 namespace gfx {
 class Image;
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace ui {
 class ImageModel;

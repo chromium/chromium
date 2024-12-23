@@ -66,23 +66,27 @@ ScopedJavaLocalRef<jobject> ConfirmInfoBar::CreateRenderInfoBar(
 
 void ConfirmInfoBar::OnLinkClicked(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj) {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
+  }
 
-  if (GetDelegate()->LinkClicked(WindowOpenDisposition::NEW_FOREGROUND_TAB))
+  if (GetDelegate()->LinkClicked(WindowOpenDisposition::NEW_FOREGROUND_TAB)) {
     RemoveSelf();
+  }
 }
 
 void ConfirmInfoBar::ProcessButton(int action) {
-  if (!owner())
+  if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.
+  }
 
   DCHECK((action == InfoBarAndroid::ACTION_OK) ||
          (action == InfoBarAndroid::ACTION_CANCEL));
   ConfirmInfoBarDelegate* delegate = GetDelegate();
   if ((action == InfoBarAndroid::ACTION_OK) ? delegate->Accept()
-                                            : delegate->Cancel())
+                                            : delegate->Cancel()) {
     RemoveSelf();
+  }
 }
 
 }  // namespace infobars
