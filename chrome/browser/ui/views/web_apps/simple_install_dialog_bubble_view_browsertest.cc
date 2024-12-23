@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -35,8 +38,11 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -67,12 +73,58 @@ std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
 }
 
 constexpr char kInstallDialogName[] = "WebAppSimpleInstallDialog";
+
+// Waits for a pop-up web contents to open.
+class PopupObserver : public content::WebContentsObserver {
+ public:
+  explicit PopupObserver(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void Wait() { run_loop_.Run(); }
+  content::WebContents* popup() { return popup_; }
+
+ private:
+  // WebContentsObserver overrides:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override {
+    if (!popup_ && disposition == WindowOpenDisposition::NEW_POPUP) {
+      popup_ = new_contents;
+      run_loop_.Quit();
+    }
+  }
+
+  raw_ptr<content::WebContents> popup_ = nullptr;
+  base::RunLoop run_loop_;
+};
+
 class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
  public:
   SimpleInstallDialogBubbleViewBrowserTest()
       : prevent_close_on_deactivate_(
             web_app::SetDontCloseOnDeactivateForTesting()) {}
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
+
+  // Open a popup window with the given URL and return its WebContents.
+  base::expected<content::WebContents*, std::string> OpenPopup(
+      const GURL& url) {
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    PopupObserver observer(web_contents);
+    if (!content::ExecJs(
+            web_contents,
+            content::JsReplace(
+                "window.open($1, '', 'popup=true, width=200, height=100')",
+                url))) {
+      return base::unexpected("window.open failed");
+    }
+    observer.Wait();
+    return observer.popup();
+  }
 
  private:
   base::AutoReset<bool> prevent_close_on_deactivate_;
@@ -275,6 +327,70 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
   ASSERT_TRUE(test_future.Wait());
   EXPECT_FALSE(test_future.Get<bool>());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+// TODO(dibyapal): `ui_test_utils::SetAndWaitForBounds()` does not seem to be
+// resizing the browser window on Mac.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       WindowSizeLoweringClosesDialog) {
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  ShowSimpleInstallDialogForWebApps(
+      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      std::move(install_tracker), test_future.GetCallback());
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_FALSE(test_future.IsReady());
+
+  base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  // Make the size of the browser window too small for the dialog.
+  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(100, 100));
+  destroy_waiter.Wait();
+
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       SmallPopupClosesWindowAutomatically) {
+  auto popup_value = OpenPopup(GURL("https://www.example.com"));
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(popup_browser);
+
+  base::HistogramTester histograms;
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+
+  base::RunLoop run_loop;
+  widget_observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == kInstallDialogName) {
+          run_loop.Quit();
+        }
+      }));
+  ShowSimpleInstallDialogForWebApps(popup_contents, GetAppInfo(),
+                                    std::move(install_tracker),
+                                    base::DoNothing());
+  run_loop.Run();
 
   histograms.ExpectUniqueSample(
       "WebApp.InstallConfirmation.CloseReason",
