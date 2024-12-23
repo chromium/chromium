@@ -1469,6 +1469,13 @@ source_set("extensions") {
         "//components/enterprise/data_controls/core/browser",
       ]
     }
+
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic:enabling",
+        "//chrome/browser/glic:glic",
+      ]
+    }
   }  # if (enable_extensions)
 }
 

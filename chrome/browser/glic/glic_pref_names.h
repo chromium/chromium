@@ -10,6 +10,7 @@ namespace glic::prefs {
 // ************* LOCAL STATE PREFS ***************
 // These prefs are per-Chrome-installation
 
+// Boolean pref that enables or disables the launcher.
 inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 
 // Dictionary pref that keeps track of the registered hotkey for Glic.

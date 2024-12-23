@@ -82,14 +82,20 @@
             </settings-privacy-page>
           </settings-section>
         </template>
-        <template is="dom-if"
-            if="[[showGlicPage_(pageVisibility.glic)]]"
+<if expr="enable_glic">
+        <template is="dom-if" if="[[showGlicPage_(pageVisibility.glic)]]"
             restamp>
-          <settings-section page-title="$i18n{glicPageTitle}" section="glic">
-            <!-- TODO(crbug.com/379166610): Fill out page in follow up -->
-            <p>Glic</p>
+          <settings-section page-title="$i18n{glicPreferencesSection}"
+              section="glic">
+            <settings-glic-page prefs="{{prefs}}"></settings-glic-page>
+          </settings-section>
+          <settings-section page-title="$i18n{glicDataSection}"
+              section="glicData" nest-under-section="glic">
+            <settings-glic-data-page prefs="{{prefs}}">
+            </settings-glic-data-page>
           </settings-section>
         </template>
+</if>
         <template is="dom-if"
             if="[[showPage_(pageVisibility.performance)]]"
             restamp>

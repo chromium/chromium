@@ -4621,6 +4621,49 @@
   <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" translateable="false" desc="Name of the Glic settings page.">
     Glic
   </message>
+  <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" translateable="false" desc="Name of the Glic settings section for general preferences.">
+    Preferences
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_SECTION" translateable="false" desc="Name of the Glic settings section related to user data.">
+    Data
+  </message>
+  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" translateable="false" desc="Name of the Glic setting for the toggle enabling feature in the menu.">
+    Feature in your menu
+  </message>
+  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" translateable="false" desc="Subheading for the 'feature in your menu' toggle.">
+    Access feature on the toolbar
+  </message>
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" translateable="false" desc="Name of the Glic setting for the keyboard shortcut.">
+    Keyboard shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" translateable="false" desc="Subheading for the 'keyboard shortcut' toggle.">
+    Open with shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
+    Location
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable location sharing' setting.">
+    Use your location to allow enhanced accuracy
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE" translateable="false" desc="Name of the 'enable microphone' setting.">
+    Microphone
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'enable microphone' setting.">
+    Enable use of your microphone
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE" translateable="false" desc="Name of the 'enable tab access' setting.">
+    Current tab access
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE_SUBLABEL" translateable="false" desc="Sublabel describing the 'tab access' setting.">
+    Allow feature
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON" translateable="false" desc="Name of the 'activity' button.">
+    Activity
+  </message>
+  <message name="IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing the 'activity' button.">
+    View and manage your activity
+  </message>
+
 
 
   <!-- Security settings toast confirmation -->

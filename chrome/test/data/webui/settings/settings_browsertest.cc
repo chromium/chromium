@@ -326,6 +326,27 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
   RunTest("settings/settings_pref_util_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+class SettingsGlicPageTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicPageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicSettingsPage) {
+  RunTest("settings/glic_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageTest, GlicDataSettingsPage) {
+  RunTest("settings/glic_data_page_test.js", "mocha.run()");
+}
+#endif
+
 class PeoplePageSyncPageTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

@@ -109,6 +109,7 @@ suite('SettingsMenu', function() {
     assertEquals('/ai', selector.selected.toString());
   });
 
+  // <if expr="enable_glic">
   test('noGlic', async function() {
     loadTimeData.overrideValues({showGlicSettings: false});
     resetRouterForTesting();
@@ -135,6 +136,7 @@ suite('SettingsMenu', function() {
     assertTrue(!!selector.selected);
     assertEquals('/glic', selector.selected.toString());
   });
+  // </if>
 
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden: boolean) {

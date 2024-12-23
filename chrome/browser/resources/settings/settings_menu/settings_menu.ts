@@ -76,10 +76,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
       },
 
+      // <if expr="enable_glic">
       glicEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showGlicSettings'),
       },
+      // </if>
     };
   }
 
@@ -91,7 +93,9 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private aiPageTitle_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  // <if expr="enable_glic">
   private glicEnabled_: boolean;
+  // </if>
 
   override ready() {
     super.ready();
@@ -103,10 +107,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         (!this.pageVisibility || this.pageVisibility.ai !== false);
   }
 
+  // <if expr="enable_glic">
   private showGlicMenuItem_(): boolean {
     return this.glicEnabled_ &&
         (!this.pageVisibility || this.pageVisibility.glic !== false);
   }
+  // </if>
 
   private computeAiPageIcon_(): string {
     return this.enableAiSettingsPageRefresh_ ? 'settings20:magic' :

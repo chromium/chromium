@@ -724,6 +724,26 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 void AddGlicStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
+      {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
+      {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
+      {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},
+      {"glicOsWidgetToggleSublabel",
+       IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL},
+      {"glicKeyboardShortcut", IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT},
+      {"glicKeyboardShortcutSublabel",
+       IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
+      {"glicLocationToggle", IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE},
+      {"glicLocationToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL},
+      {"glicMicrophoneToggle", IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE},
+      {"glicMicrophoneToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE_SUBLABEL},
+      {"glicTabAccessToggle", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE},
+      {"glicTabAccessToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE_SUBLABEL},
+      {"glicActivityButton", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON},
+      {"glicActivityButtonSublabel",
+       IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

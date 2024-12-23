@@ -204,6 +204,13 @@ build_webui("build") {
     "site_settings_page/site_settings_page.ts",
   ]
 
+  if (enable_glic) {
+    web_component_files += [
+      "glic_page/glic_data_page.ts",
+      "glic_page/glic_page.ts",
+    ]
+  }
+
   if (!is_chromeos_ash) {
     web_component_files += [
       "languages_page/add_languages_dialog.ts",
