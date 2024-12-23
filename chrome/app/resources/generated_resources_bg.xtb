@@ -4618,6 +4618,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4220648711404560261">При активирането възникна грешка.</translation>
 <translation id="4222917615373664617">Проследяването на цената е активирано. Цената е <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Достъпът до микрофона не е разрешен</translation>
+<translation id="4224541845943007092">Четене и запазване на въведен с клавиатурата текст от адресната лента</translation>
 <translation id="4225397296022057997">На всички сайтове</translation>
 <translation id="4228071595943929139">Използване на имейл адреса на организацията ви</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Това разширение не е разрешено}other{Някои разширения не са разрешени}}</translation>

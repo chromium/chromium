@@ -388,6 +388,7 @@
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
 <translation id="5947104538377036631">Пряк път към Chrome</translation>
 <translation id="5953954252731207958">Не сте посещавали този сайт наскоро. Chrome премахна разрешението „<ph name="PERMISSION" />“</translation>
+<translation id="5980111191913430208">Разширения, приложения и теми от неизвестни източници могат да навредят на устройството ви. Chrome препоръчва да инсталирате такива само от <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Изтегля се... Оставащо време: <ph name="HOURS" /> ч</translation>
 <translation id="6014316319780893079">С помощта на <ph name="BEGIN_LINK" />инструментите от Chrome<ph name="END_LINK" /> можете да сърфирате безопасно и да запазите контрол</translation>
 <translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
@@ -606,6 +607,7 @@
 <translation id="842386925677997438">Инструменти за безопасност на Chrome</translation>
 <translation id="8425765582779547329">За да сърфирате по-безопасно онлайн с избраните от родителя ви настройки, влезте в Chrome</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8429214465555795676">За да продължите, трябва да влезете в Chrome чрез <ph name="EMAIL" />. Това гарантира спазване на правилата на организацията ви.</translation>
 <translation id="8433638294851456451">За да изпратите номер от тук до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8451192282033883849">Профилът ви се управлява от <ph name="MANAGER_NAME" />. Администраторът ви може да вижда и редактира този потребителски профил в браузъра Chrome, както и данните му – например отметките, историята и паролите.</translation>
 <translation id="8496177819998570653">Google Мениджър на пароли</translation>

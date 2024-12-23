@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">ピクチャー イン ピクチャーの自動開始</translation>
 <translation id="1100782917270858593">[ジャーニーを再開] ボタンです。Enter キーを押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="1101672080107056897">エラー アクション</translation>
+<translation id="1101902632743388185">比較表</translation>
 <translation id="1104409666019087579">一部の必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="1104860668737945357">[パスワードを管理] ボタンです。実行すると、Chrome の設定でパスワードを表示、管理できます</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">プロキシは自動設定になっています。</translation>
 <translation id="2025891858974379949">安全でないコンテンツ</translation>
 <translation id="2027465737841872819">プラスチック</translation>
+<translation id="2027707238798802149">使用できないカード</translation>
 <translation id="2029735183873159415">先祖、家系</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />プロキシとファイアウォールを確認する<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> で定義されたデフォルトの検索プロバイダのキーワードと同じショートカットを指定することはできません: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">住まい、園芸</translation>
 <translation id="2515629240566999685">電波状況を確認する</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで Touch ID による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="LINK_TEXT" /> を行うことができます。</translation>
+<translation id="2518584823165598232">このカードは使用できません。カード発行会社にお問い合わせください。</translation>
 <translation id="2521385132275182522">ステープル（右下）</translation>
 <translation id="2521736961081452453">フォームを作成</translation>
 <translation id="2523886232349826891">カードはこのデバイスのみに保存されます</translation>
@@ -3342,6 +3345,7 @@
 <translation id="7003322000677139268">自動車部品、アクセサリー</translation>
 <translation id="7004499039102548441">最近使ったタブ</translation>
 <translation id="7006930604109697472">このまま送信</translation>
+<translation id="7009364359744329733">このカードは現在使用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="7010658264061801199">食品、飲料</translation>
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7013835112918108252">マウスのロックと使用を要求できます</translation>

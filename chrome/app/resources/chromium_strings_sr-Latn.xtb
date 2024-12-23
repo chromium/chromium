@@ -114,6 +114,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2483889755041906834">U Chromium-u</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2513154137948333830">Potrebno je restartovanje: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Da biste nastavili, morate da se prijavite u Chromium pomoću naloga <ph name="EMAIL" />. Ovo obezbeđuje usklađenost sa smernicama organizacije.</translation>
 <translation id="2542968102051442371">Izaberite tekst pomoću pretrage slika</translation>
 <translation id="2554739539410784893">Chromium pokušava da zameni postojeće lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="2560420686485554789">Chromium traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>

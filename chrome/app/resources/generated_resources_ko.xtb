@@ -4621,6 +4621,7 @@
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4222917615373664617">가격 추적이 사용 설정되었습니다. 가격은 <ph name="CURRENT_PRICE" />입니다.</translation>
 <translation id="4223404254440398437">마이크가 허용되지 않음</translation>
+<translation id="4224541845943007092">주소 표시줄의 키보드 입력 읽기 및 저장</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4228071595943929139">조직의 이메일 주소 사용</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>

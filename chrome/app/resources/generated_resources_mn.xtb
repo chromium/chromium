@@ -8626,6 +8626,7 @@
 <translation id="7134951043985383439">Аюултай файл татсан</translation>
 <translation id="7135729336746831607">Bluetooth-г асаах уу?</translation>
 <translation id="7136694880210472378">Байнга ашиглагдах болгох</translation>
+<translation id="7137277889990479760"><ph name="EMAIL" />-р үргэлжлүүлэх</translation>
 <translation id="7137771508221868414">Энэ нь сайтууд болон суулгасан аппуудын хадгалсан <ph name="TOTAL_USAGE" />-н өгөгдлийг устгана</translation>
 <translation id="7138678301420049075">Бусад</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> таны микрофоныг ашиглаж байна</translation>
@@ -9204,6 +9205,7 @@
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7561759921596375678">Дууг асаах</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
+<translation id="7563970324931922582">[орлуулагч текст]</translation>
 <translation id="756445078718366910">Хөтөч цонхыг нээх</translation>
 <translation id="7564847347806291057">Процессийг дуусга</translation>
 <translation id="756503097602602175">Та нэвтэрсэн Google Бүртгэлүүдийг <ph name="LINK_BEGIN" />Тохиргоо<ph name="LINK_END" /> хэсэгт удирдах боломжтой. Таны вебсайтууд болон аппуудад өгсөн зөвшөөрөл нь бүх бүртгэлд хэрэгжиж болзошгүй. Хэрэв та сайтууд болон аппуудыг таны бүртгэлийн мэдээлэлд хандахыг хүсэхгүй байвал <ph name="DEVICE_TYPE" />-д зочноор нэвтрэх эсвэл <ph name="LINK_2_BEGIN" />Нууцлалтай цонх<ph name="LINK_2_END" />-оор веб үзэх боломжтой.</translation>
@@ -10893,6 +10895,7 @@
 <translation id="8737966899544698733">Байршлын нарийвчлал (зөвхөн Android)</translation>
 <translation id="8738418093147087440">Улс, хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="8740086188450289493">Google Бүртгэлийн нууц үгийг ашиглах</translation>
+<translation id="874023689350909633">Үүнийг туршиж үзэх</translation>
 <translation id="8740247629089392745">Та энэ Chromebook-г <ph name="SUPERVISED_USER_NAME" />-д өгч болно. Тохируулга бараг дуусаж, одоо судлах цаг боллоо.</translation>
 <translation id="8740672167979365981">ChromeOS Flex-г шинэчлэх шаардлагатай</translation>
 <translation id="8741944563400125534">Сэлгүүрийн тохируулгын хөтөч</translation>

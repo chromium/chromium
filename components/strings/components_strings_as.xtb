@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">স্বয়ংক্ৰিয় picture-in-picture</translation>
 <translation id="1100782917270858593">যাত্ৰা পুনৰ আৰম্ভ কৰক বুটাম, আপোনাৰ যাত্ৰা পুনৰ আৰম্ভ কৰিবলৈ আৰু আপোনাৰ Chromeৰ ইতিহাসত প্ৰাসংগিক কাৰ্যকলাপ চাবলৈ এণ্টাৰ টিপক</translation>
 <translation id="1101672080107056897">আসোঁৱাহ সম্পৰ্কীয় কাৰ্য</translation>
+<translation id="1101902632743388185">আপোনাৰ তুলনা কৰা তালিকা</translation>
 <translation id="1104409666019087579">কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।</translation>
 <translation id="1104860668737945357">পাছৱৰ্ডসমূহ পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত আপোনাৰ পাছৱৰ্ডসমূহ চাবলৈ আৰু পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">প্ৰক্সী স্বয়ংক্ৰিয়ভাৱে কনফিগাৰ কৰা হিচাপে ছেট কৰা আছে।</translation>
 <translation id="2025891858974379949">অসুৰক্ষিত সমল</translation>
 <translation id="2027465737841872819">প্লাষ্টিক</translation>
+<translation id="2027707238798802149">কাৰ্ড উপলব্ধ নহয়</translation>
 <translation id="2029735183873159415">পূৰ্বপুৰুষ আৰু বংশাৱলী</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />প্ৰক্সি আৰু ফায়াৰৱাল পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">শ্বৰ্টকাটটো <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />এ সংজ্ঞাবদ্ধ কৰা ডিফ'ল্ট সন্ধান প্ৰদানকাৰীৰ কীৱৰ্ডটোৰ সৈতে একেই হ'ব নোৱাৰে: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">ঘৰ আৰু বাগিচা</translation>
 <translation id="2515629240566999685">আপোনাৰ অঞ্চলৰ ছিংগনেল পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2515761554693942801">আপুনি <ph name="PROVIDER_ORIGIN" /> ব্যৱহাৰ কৰা ৱেবছাইটসমূহত স্পৰ্শ আইডিৰ জৰিয়তে সত্যাপন কৰিবলৈ বাছনি কৰিছে। এই প্ৰদানকাৰীয়ে হয়তো আপোনাৰ পৰিশোধ পদ্ধতিৰ বিষয়ে তথ্য ষ্ট’ৰ কৰি ৰাখিব পাৰে, যিটো আপুনি <ph name="LINK_TEXT" /> পাৰে।</translation>
+<translation id="2518584823165598232">এই কাৰ্ডখন উপলব্ধ নহয়। অনুগ্ৰহ কৰি আপোনাৰ কাৰ্ড প্ৰদানকাৰীৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="2521385132275182522">তলৰ অংশৰ সোঁফালে ষ্টে'পল কৰক</translation>
 <translation id="2521736961081452453">ফ’ৰ্ম সৃষ্টি কৰক</translation>
 <translation id="2523886232349826891">কেৱল এই ডিভাইচটোত ছেভ কৰা হয়</translation>
@@ -3337,6 +3340,7 @@
 <translation id="7003322000677139268">বাহনৰ অংশ আৰু আনুষংগিক সামগ্ৰী</translation>
 <translation id="7004499039102548441">শেহতীয়া টেব</translation>
 <translation id="7006930604109697472">তথাপি পঠিয়াওক</translation>
+<translation id="7009364359744329733">এই মুহূৰ্তত এই কাৰ্ডখন উপলব্ধ নহয়। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7010658264061801199">খাদ্য আৰু পানীয়</translation>
 <translation id="7012363358306927923">China Union Pay</translation>
 <translation id="7013835112918108252">আপোনাৰ মাউছ লক আৰু ব্যৱহাৰ কৰিবলৈ ক’ব পাৰে</translation>

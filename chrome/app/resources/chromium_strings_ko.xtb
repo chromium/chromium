@@ -113,6 +113,7 @@
 <translation id="2483889755041906834">Chromium에서</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2513154137948333830">재부팅 필요: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">계속하려면 <ph name="EMAIL" /> 계정으로 Chromium에 로그인해야 합니다. 이렇게 하면 조직의 정책을 준수할 수 있습니다.</translation>
 <translation id="2542968102051442371">이미지 검색으로 텍스트 선택</translation>
 <translation id="2554739539410784893">Chromium에서 기존 비밀번호를 바꾸려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2560420686485554789">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 있어야 합니다</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">자동 PIP 모드</translation>
 <translation id="1100782917270858593">탐색 여정 재개 버튼, 탐색 여정을 재개하고 Chrome 방문 기록에서 관련 활동을 보려면 Enter를 누르세요</translation>
 <translation id="1101672080107056897">오류 작업</translation>
+<translation id="1101902632743388185">비교 표</translation>
 <translation id="1104409666019087579">일부 필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.</translation>
 <translation id="1104860668737945357">비밀번호 관리 버튼, Chrome 설정에서 비밀번호를 확인하고 관리하려면 활성화하세요.</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">프록시가 자동 설정되도록 지정됩니다.</translation>
 <translation id="2025891858974379949">안전하지 않은 콘텐츠</translation>
 <translation id="2027465737841872819">플라스틱</translation>
+<translation id="2027707238798802149">카드를 사용할 수 없음</translation>
 <translation id="2029735183873159415">조상 찾기 및 족보</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">바로가기는 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />에서 정의한 기본 검색 공급자 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">주택/조경</translation>
 <translation id="2515629240566999685">현재 지역의 신호 확인</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> 주소를 사용하는 웹사이트의 인증 방식으로 Touch ID를 선택했습니다. 이 제공업체에서 내 결제 수단 정보를 저장했을 수 있으며 직접 <ph name="LINK_TEXT" />할 수 있습니다.</translation>
+<translation id="2518584823165598232">이 카드는 사용할 수 없습니다. 카드 제공업체에 문의해 주세요.</translation>
 <translation id="2521385132275182522">오른쪽 하단 스테이플</translation>
 <translation id="2521736961081452453">양식 만들기</translation>
 <translation id="2523886232349826891">이 기기에만 저장됨</translation>
@@ -3291,6 +3294,7 @@
 <translation id="6925267999184670015">북미 B+</translation>
 <translation id="6926216138694948720">바디아트</translation>
 <translation id="692638818576287323">상업용 차량</translation>
+<translation id="6933282894115597956">조직에서 로그인을 요구합니다</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />기본 검색엔진을 사용하면 웹을 검색할 수 있으며 Chrome 기능<ph name="END_BOLD" />(예: 주소 표시줄 및 웹페이지의 이미지 검색)을 사용할 수 있습니다. 선택한 검색엔진에서 지원하지 않는 기능은 사용하지 못할 수도 있습니다.</translation>
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>
 <translation id="6935082727755903526">회계 및 금융직</translation>
@@ -3342,6 +3346,7 @@
 <translation id="7003322000677139268">차량 부품 및 액세서리</translation>
 <translation id="7004499039102548441">최근 탭</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
+<translation id="7009364359744329733">현재 이 카드를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="7010658264061801199">식음료</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">마우스 잠금 및 사용을 요청할 수 있음</translation>

@@ -250,6 +250,7 @@ Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan hardware di per
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, halaman web akan menggunakan WebGL API dan plugin akan menggunakan Pepper 3D API, tetapi setelan browser default mungkin masih memerlukan argumen command line untuk menggunakan API ini.</translation>
 <translation id="1198458955128279215">Gunakan perilaku default rencana peluncuran fitur.</translation>
 <translation id="1202216683470826356">Tampilkan kartu di Halaman Tab Baru</translation>
+<translation id="1203676252390737801">Penanganan IP WebRTC per URL</translation>
 <translation id="1204263402976895730">Mengaktifkan printer perusahaan</translation>
 <translation id="1207301487141109411">Cegah pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="1209096923317019235">Menetapkan aplikasi sebagai pengendali default untuk ekstensi file yang ditentukan</translation>
@@ -673,6 +674,13 @@ Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.go
 Jika kebijakan ini disetel ke Aktif, Pemilih emoji akan mendukung emoji GIF.
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, Pemilih emoji tidak akan mendukung emoji GIF.
 Jika kebijakan ini tidak disetel, Pemilih emoji akan diaktifkan untuk pengguna normal, tetapi dinonaktifkan untuk pengguna terkelola.</translation>
+<translation id="1493245040983394029">Kebijakan ini mengontrol setelan fitur Pengeditan Foto AI Generatif untuk <ph name="PRODUCT_OS_NAME" />.
+
+Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan mungkin mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini mungkin ditinjau secara manual dengan tujuan meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
+
+Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Nilai 2 = Menonaktifkan fitur.</translation>
 <translation id="1494138678487405397">Nonaktifkan kontras tinggi di layar login</translation>
 <translation id="1497797462580613666">Pengelola download akan memiliki opsi untuk menyimpan file ke <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs mana yang otomatis ditolak aksesnya ke printer lokal melalui WebPrinting API.
@@ -1652,6 +1660,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="2204753382813641270">Kontrol sembunyi otomatis rak</translation>
 <translation id="2208976000652006649">Parameter untuk URL penelusuran yang menggunakan POST</translation>
 <translation id="2212011154693551439">Halaman histori Chrome yang diatur ke dalam grup akan dapat dilihat di chrome://history/grouped secara default.</translation>
+<translation id="2212207215880394506">Jangan izinkan Pengeditan Foto AI Generatif.</translation>
 <translation id="221287948061571053">Sembunyikan badge perusahaan yang diperluas di toolbar</translation>
 <translation id="2213059592185933570">Izinkan pembuatan profil roaming</translation>
 <translation id="2213342458177721585">Mengaktifkan Tata Letak Inscript Hindi di seluruh perangkat.</translation>
@@ -2204,6 +2213,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, log tidak akan dapat dita
 
       Jika kebijakan disetel ke 'UserOnly' (nilai 1), pengguna akan dapat mengelola sertifikat pengguna, tetapi bukan sertifikat di seluruh perangkat.</translation>
 <translation id="2593762551209145088">Safe Browsing selalu tidak aktif.</translation>
+<translation id="2594773358911436070">Setelan WebRtc</translation>
 <translation id="26023406105317310">Konfigurasikan akun Kerberos</translation>
 <translation id="2603237557651009842">Memblokir WebPrinting API di situs ini</translation>
 <translation id="2603382859270873566">Mengaktifkan dukungan untuk PPB_VideoDecoder(Dev) API.</translation>
@@ -2321,6 +2331,7 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       Jika kebijakan ditetapkan dan login otomatis diaktifkan (lihat kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> dan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), sesi terkelola akan menggunakan lokal yang direkomendasikan pertama dan tata letak keyboard yang cocok terpopuler.
 
       Tata letak keyboard yang sudah otomatis dipilih selalu menjadi tata letak terpopuler yang cocok dengan lokal yang sudah otomatis dipilih. Pengguna selalu dapat memilih lokal apa pun yang didukung oleh <ph name="PRODUCT_OS_NAME" /> untuk sesi mereka.</translation>
+<translation id="269274821351405808">Setelan untuk fitur Pengeditan Foto AI Generatif</translation>
 <translation id="2693108589792503178">Mengonfigurasi URL ubah sandi.</translation>
 <translation id="2694143893026486692">Kaca pembesar tersemat diaktifkan</translation>
 <translation id="2696077732471707315">
@@ -2493,6 +2504,7 @@ Laporan berisi status dan informasi penggunaan profil, termasuk tetapi tidak ter
 Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation>
 <translation id="2846689894646472396">Interval pemeriksaan aktivitas jaringan dalam milidetik.</translation>
 <translation id="2847788524147474533">Kebijakan perangkat platform lebih diutamakan daripada kebijakan perangkat cloud</translation>
+<translation id="2849051159985119151">Izinkan Pengeditan Foto AI Generatif tanpa meningkatkan kualitas model AI.</translation>
 <translation id="2849275596224278787">Sembunyikan opsi aksesibilitas di menu area notifikasi layar login</translation>
 <translation id="2853649500575897584">Jangan blokir titik ekstensi lama dalam Proses browser</translation>
 <translation id="2853757230661166968">Mengizinkan aplikasi mengambil dan mengganti pintasan sistem default.</translation>
@@ -3259,6 +3271,7 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
       Jika kebijakan ini disetel ke "tersembunyi", fitur yang dinonaktifkan tidak akan dapat digunakan dan tidak terlihat oleh pengguna.
 
       Jika kebijakan in tidak disetel atau disetel ke nilai yang tidak valid, mode nonaktif dari fitur sistem akan menjadi "diblokir".</translation>
+<translation id="3411947169047929182">Mengontrol konfigurasi terkait WebRtc</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
       Jika kebijakan ini dinonaktifkan, proses audio akan berjalan dengan prioritas normal.
@@ -4684,6 +4697,7 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4467952432486360968">Blokir cookie pihak ketiga</translation>
 <translation id="4472740647327683596">Lebar halaman dalam mikrometer.</translation>
 <translation id="4474167089968829729">Aktifkan penyimpanan sandi di pengelola sandi</translation>
+<translation id="447692108909279121">Penanganan IP WebRTC</translation>
 <translation id="4478248026668918517">Blokir deteksi cakupan Kebijakan.</translation>
 <translation id="4479671363221255277">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta akses baca ke file atau direktori di sistem file pada sistem operasi host melalui File System API.
 
@@ -5833,6 +5847,23 @@ Jika tidak disetel, nilai default adalah 0 derajat dan pengguna dapat mengubahny
 
       Jika kebijakan tidak disetel, atau jika disetel menjadi string kosong maupun rentang port yang tidak valid, WebRTC diizinkan untuk menggunakan port UDP lokal mana pun yang tersedia.</translation>
 <translation id="5288776487100096897">Mengizinkan kebijakan cloud pengguna mengabaikan kebijakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="5289330879750533981">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia untuk setiap pola URL tertentu.
+
+Kebijakan ini menerima daftar pasangan pola URL dan jenis penanganan. Pola URL diperiksa secara berurutan dan kecocokan pertama akan mengonfigurasi penanganan yang digunakan oleh WebRTC untuk domain. Jika URL dokumen saat ini tidak cocok dengan entri apa pun, dokumen tersebut akan menggunakan konfigurasi yang ditetapkan oleh kebijakan <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Untuk informasi selengkapnya tentang pola input yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.
+
+Nilai penanganan yang valid:
+
+* default - WebRTC menggunakan semua antarmuka jaringan.
+
+* default_public_and_private_interfaces - WebRTC menggunakan semua antarmuka publik dan pribadi.
+
+* default_public_interface_only - WebRTC menggunakan semua antarmuka publik, tetapi tidak menggunakan antarmuka pribadi.
+
+* disable_non_proxied_udp - WebRTC menggunakan proxy SOCKS UDP atau akan beralih ke proxy TCP.
+
+Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) untuk melihat deskripsi terperinci tentang semua nilai penanganan.</translation>
 <translation id="5290940294294002042">Tentukan daftar plugin yang dapat diaktifkan atau dinonaktifkan pengguna</translation>
 <translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
 <translation id="5293619885162445352">Izinkan <ph name="PEPPER_NAME" /> menggunakan dekoder video baru.</translation>
@@ -6953,6 +6984,7 @@ kebijakan ini saat browser berjalan.</translation>
       Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan menggunakan versi maksimum default.
 
       Jika kebijakan dikonfigurasi, kebijakan dapat disetel ke salah satu nilai berikut: "tls1.2" atau "tls1.3". Jika disetel, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS yang lebih besar dari versi yang ditentukan. Nilai yang tidak dikenali akan diabaikan.</translation>
+<translation id="6120909112796019291">Izinkan Pengeditan Foto AI Generatif dan tingkatkan kualitas model AI.</translation>
 <translation id="6123052603197028610">Jangan izinkan kueri ke server Google untuk mengambil stempel waktu</translation>
 <translation id="6130360423841559818">Mengontrol perilaku baru untuk dialog pembatalan yang dihasilkan oleh peristiwa beforeunload</translation>
 <translation id="6131803221304830537">Nonaktifkan Integritas Kode Perender</translation>
@@ -7406,6 +7438,7 @@ di layar <ph name="LOG_IN" />.</translation>
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
 <translation id="6368011194414932347">Konfigurasikan URL halaman beranda</translation>
 <translation id="6368403635025849609">Izinkan JavaScript di situs ini</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Setelan Set Situs Terkait</translation>
 <translation id="6371561334154580937">Tampilkan dialog logout saat jendela terakhir ditutup.</translation>
 <translation id="6372105930898423193">Mengizinkan fitur AppCache untuk diaktifkan ulang meskipun dinonaktifkan secara default</translation>
@@ -9898,6 +9931,21 @@ Kebijakan ini diterapkan dalam mode Samaran. Artinya, mode Samaran harus diaktif
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="8239143983379015783">Memaksa pengaktifan kuota persisten</translation>
+<translation id="8240976615241583524">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia.
+
+Nilai yang valid:
+
+* default - WebRTC menggunakan semua antarmuka jaringan yang tersedia.
+
+* default_public_and_private_interfaces - WebRTC menggunakan semua antarmuka publik dan pribadi.
+
+* default_public_interface_only - WebRTC menggunakan semua antarmuka publik, tetapi tidak menggunakan antarmuka pribadi.
+
+* disable_non_proxied_udp - WebRTC menggunakan proxy SOCKS UDP atau akan beralih ke proxy TCP.
+
+Jika tidak ditetapkan, semua antarmuka jaringan yang tersedia akan digunakan secara default.
+
+Lihat RFC 8828 bagian 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) untuk melihat deskripsi terperinci tentang semua nilai penanganan.</translation>
 <translation id="8244171102276095471">Mengaktifkan paket penyandian RC4 di TLS</translation>
 <translation id="8244525275280476362">Penundaan mengambil maksimum setelah kebijakan invalidasi</translation>
 <translation id="8244828501034607035">Kebijakan ini mengontrol visibilitas Kartu Outlook di Halaman Tab Baru. Kartu ini hanya akan ditampilkan di Halaman Tab Baru jika kebijakan ini disetel ke aktif dan organisasi Anda mengizinkan penggunaan data Kalender Outlook di browser.

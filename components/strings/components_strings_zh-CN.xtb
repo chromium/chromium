@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">自动进入画中画模式</translation>
 <translation id="1100782917270858593">“继续您的历程”按钮，按 Enter 键即可继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="1101672080107056897">错误操作</translation>
+<translation id="1101902632743388185">您的对照表</translation>
 <translation id="1104409666019087579">某些必填字段是空的。请先填写这些字段，然后再保存。</translation>
 <translation id="1104860668737945357">“管理密码”按钮，激活它即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">代理已设为自动配置。</translation>
 <translation id="2025891858974379949">不安全内容</translation>
 <translation id="2027465737841872819">塑料</translation>
+<translation id="2027707238798802149">卡不可用</translation>
 <translation id="2029735183873159415">血统与宗谱</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />检查代理服务器和防火墙<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">下述快捷字词不能与 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 所定义的默认搜索服务提供商关键字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">家居与园艺</translation>
 <translation id="2515629240566999685">检查您所在区域的网络信号</translation>
 <translation id="2515761554693942801">您已选择在使用 <ph name="PROVIDER_ORIGIN" /> 的网站上通过触控 ID 来验证身份。此提供商可能已存储您的付款方式信息，不过您可以<ph name="LINK_TEXT" />相应信息。</translation>
+<translation id="2518584823165598232">此卡不可用，请与发卡机构联系。</translation>
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2521736961081452453">创建表单</translation>
 <translation id="2523886232349826891">仅会保存在此设备上</translation>
@@ -3337,6 +3340,7 @@
 <translation id="7003322000677139268">车辆零配件</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
 <translation id="7006930604109697472">仍然发送</translation>
+<translation id="7009364359744329733">此卡目前不可用，请稍后再试。</translation>
 <translation id="7010658264061801199">餐饮</translation>
 <translation id="7012363358306927923">中国银联</translation>
 <translation id="7013835112918108252">可以请求锁定和使用您的鼠标</translation>
