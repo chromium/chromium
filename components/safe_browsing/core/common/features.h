@@ -217,9 +217,6 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // how often the checks are triggered (they are still not in real time).
 BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
 
-// Enable logging of the account enhanced protection setting in Protego pings.
-BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
-
 // Killswitch for fetching and executing the notification content detection
 // model. This also gates logging metrics related to this model.
 BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);
