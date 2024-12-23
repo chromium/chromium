@@ -58,8 +58,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -70,7 +68,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -708,33 +705,10 @@ public class ChromeBackupAgentTest {
 
     /**
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
-     * syncing user only.
-     */
-    @Test
-    @DisableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
-    public void testOnRestore_withSyncUser_signInRestoreDisabled() throws IOException {
-        executeNormalRestoreAndCheckPrefs(
-                /* withSyncingUser= */ true,
-                /* withSignedInUser= */ false,
-                /* withAccountSettings= */ true);
-
-        verifyRestoreFinishWithSignin();
-        verifySyncTypeBoolPrefsRestored(true);
-        verifyAccountSettingsBackupRestored(false);
-        // Verify that bool prefs are not migrated to account settings, since account settings
-        // restore flag is disabled.
-        verifyBoolPrefsMigratedToAccountSettings(false);
-    }
-
-    /**
-     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
      * signed-in user only.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSignInUser_signInRestoreEnabled() throws IOException {
+    public void testOnRestore_withSignInUser() throws IOException {
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ false,
                 /* withSignedInUser= */ true,
@@ -753,11 +727,7 @@ public class ChromeBackupAgentTest {
      * signed-in user only, and does not contain account settings backup.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSignInUser_signInRestoreEnabled_noAccountSettings()
-            throws IOException {
+    public void testOnRestore_withSignInUser_noAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ false,
                 /* withSignedInUser= */ true,
@@ -776,10 +746,7 @@ public class ChromeBackupAgentTest {
      * signed-in user only.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSignInUser() throws IOException {
+    public void testOnRestore_withSignInUser_isManaged() throws IOException {
         mIsAccountManaged = true;
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ false,
@@ -799,9 +766,6 @@ public class ChromeBackupAgentTest {
      * signed-in user only.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
     public void testOnRestore_withSignInUser_notManaged() throws IOException {
         mIsAccountManaged = false;
         executeNormalRestoreAndCheckPrefs(
@@ -822,10 +786,7 @@ public class ChromeBackupAgentTest {
      * previously signed-in user and another for the syncing user.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSignInAndSyncUser_signInRestoreEnabled() throws IOException {
+    public void testOnRestore_withSignInAndSyncUser() throws IOException {
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ true,
                 /* withSignedInUser= */ true,
@@ -845,11 +806,7 @@ public class ChromeBackupAgentTest {
      * previously signed-in user and another for the syncing user, and no account settings.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSignInAndSyncUser_signInRestoreEnabled_noAccountSettings()
-            throws IOException {
+    public void testOnRestore_withSignInAndSyncUser_noAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ true,
                 /* withSignedInUser= */ true,
@@ -866,34 +823,10 @@ public class ChromeBackupAgentTest {
 
     /**
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
-     * previously signed-in user and another for the syncing user.
-     */
-    @Test
-    @DisableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
-    public void testOnRestore_withSignInAndSyncUser_signInRestoreDisabled() throws IOException {
-        executeNormalRestoreAndCheckPrefs(
-                /* withSyncingUser= */ true,
-                /* withSignedInUser= */ true,
-                /* withAccountSettings= */ true);
-
-        verifyRestoreFinishWithSignin();
-        verifySyncTypeBoolPrefsRestored(true);
-        verifyAccountSettingsBackupRestored(false);
-        // Verify that bool prefs are not migrated to account settings, since account settings
-        // restore flag is disabled.
-        verifyBoolPrefsMigratedToAccountSettings(false);
-    }
-
-    /**
-     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously syncing user, and a record for account settings.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSyncUserAndAccountSettings_signInRestoreEnabled()
-            throws IOException {
+    public void testOnRestore_withSyncUserAndAccountSettings() throws IOException {
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ true,
                 /* withSignedInUser= */ false,
@@ -923,11 +856,7 @@ public class ChromeBackupAgentTest {
      * previously syncing user only, and the backup value for SYNC_KEEP_EVERYTHING_SYNCED is true.
      */
     @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-    })
-    public void testOnRestore_withSyncUser_syncEverything_signInRestoreEnabled()
-            throws IOException {
+    public void testOnRestore_withSyncUser_syncEverything() throws IOException {
         mNativeBoolPrefBackupValues.put(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED, true);
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ true,
@@ -948,8 +877,7 @@ public class ChromeBackupAgentTest {
      * signed-in, the restore should be skipped.
      */
     @Test
-    @EnableFeatures({SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP})
-    public void testOnRestore_badUser_signedInRestoreEnabled() throws IOException {
+    public void testOnRestore_badUser() throws IOException {
         BackupDataInput backupData =
                 createMockBackupData(
                         /* hasSyncingUser= */ true,
