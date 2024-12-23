@@ -762,7 +762,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
     public static final CachedFlag sTabStateFlatBuffer =
-            newCachedFlag(TAB_STATE_FLAT_BUFFER, false);
+            newCachedFlag(
+                    TAB_STATE_FLAT_BUFFER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripIncognitoMigration =
             newCachedFlag(
                     TAB_STRIP_INCOGNITO_MIGRATION,
