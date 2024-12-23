@@ -212,6 +212,15 @@ public class EdgeToEdgeUtils {
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
 
+    /** Return whether there's any safe area constraint found for the given tab. */
+    static boolean hasSafeAreaConstraintForTab(Tab tab) {
+        if (tab == null) return false;
+
+        SafeAreaInsetsTracker safeAreaInsetsTracker =
+                DisplayCutoutController.getSafeAreaInsetsTracker(tab);
+        return safeAreaInsetsTracker != null && safeAreaInsetsTracker.hasSafeAreaConstraint();
+    }
+
     /** Whether a native tab will be drawn edge to to edge. */
     static boolean isNativeTabDrawingToEdge(Tab activeTab) {
         // sDrawNativeEdgeToEdge will draw all native page to edge forcefully.

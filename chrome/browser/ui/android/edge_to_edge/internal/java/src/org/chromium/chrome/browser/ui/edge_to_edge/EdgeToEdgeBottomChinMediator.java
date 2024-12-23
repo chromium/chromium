@@ -60,6 +60,7 @@ class EdgeToEdgeBottomChinMediator
     private @LayerVisibility int mLatestLayerVisibility;
 
     private boolean mIsKeyboardVisible;
+    private boolean mHasSafeAreaConstraint;
 
     private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @NonNull LayoutManager mLayoutManager;
@@ -192,6 +193,15 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
+    public void onSafeAreaConstraintChanged(boolean hasConstraint) {
+        if (mHasSafeAreaConstraint == hasConstraint) return;
+        // mHasSafeAreaConstraint impacts scroll behavior which changes the min height of browser
+        // controls layers. Request an update to refresh the calculated height in the stacker.
+        mHasSafeAreaConstraint = hasConstraint;
+        mBottomControlsStacker.requestLayerUpdate(false);
+    }
+
+    @Override
     public void onNavigationBarColorChanged(int color) {
         if (!isVisible()) {
             mNavigationBarColor = color;
@@ -241,7 +251,9 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public int getScrollBehavior() {
-        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+        return mHasSafeAreaConstraint
+                ? LayerScrollBehavior.NEVER_SCROLL_OFF
+                : LayerScrollBehavior.DEFAULT_SCROLL_OFF;
     }
 
     @Override

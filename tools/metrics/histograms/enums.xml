@@ -24578,6 +24578,7 @@ from previous Chrome versions.
   <int value="1646498561" label="OfflineBookmarks:disabled"/>
   <int value="1646500529" label="BacklightOcr:enabled"/>
   <int value="1649121568" label="DynamicTcmallocTuning:disabled"/>
+  <int value="1649168777" label="EdgeToEdgeSafeAreaConstraint:disabled"/>
   <int value="1649624189" label="PhoneHubFeatureSetupErrorHandling:disabled"/>
   <int value="1649986740" label="PrintManagementJelly:disabled"/>
   <int value="1650453540" label="ChipLocationIconOverride:disabled"/>
@@ -24705,6 +24706,7 @@ from previous Chrome versions.
   <int value="1696139514" label="enable-ble-advertising-in-apps"/>
   <int value="1696579117"
       label="ForceOnDeviceAppControlsForAllRegions:enabled"/>
+  <int value="1696961375" label="EdgeToEdgeSafeAreaConstraint:enabled"/>
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
   <int value="1697576315" label="ZeroSuggestPrefetchingOnWeb:enabled"/>
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>

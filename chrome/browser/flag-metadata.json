@@ -2292,6 +2292,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "edge-to-edge-safe-area-constraint",
+    "owners": ["wenyufu@chromium.org", "clhager@google.com", "twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "edge-to-edge-web-opt-in",
     "owners": ["clhager@google.com", "wenyufu@chromium.org","twellington@chromium.org", "edge-to-edge@chromium.org"],
     "expiry_milestone": 142

@@ -305,6 +305,26 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
+    public void testUpdateSafeAreaConstraint() {
+        assertEquals(
+                "The chin should be DEFAULT_SCROLL_OFF.",
+                BottomControlsStacker.LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                mMediator.getScrollBehavior());
+
+        mMediator.onSafeAreaConstraintChanged(true);
+        assertEquals(
+                "The chin should NEVER_SCROLL_OFF when safe area constraint presents.",
+                BottomControlsStacker.LayerScrollBehavior.NEVER_SCROLL_OFF,
+                mMediator.getScrollBehavior());
+
+        mMediator.onSafeAreaConstraintChanged(false);
+        assertEquals(
+                "The chin should change back to DEFAULT_SCROLL_OFF once constraint removed.",
+                BottomControlsStacker.LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                mMediator.getScrollBehavior());
+    }
+
+    @Test
     public void testOnBrowserControlsOffsetUpdate() {
         enableDispatchYOffset();
 

@@ -19,6 +19,7 @@ import org.chromium.base.TerminationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
@@ -358,6 +359,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
+            // TODO(wenyufu): Create a setSafeAreaConstraint method.
+            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
+                DisplayCutoutTabHelper.from(mTab)
+                        .setSafeAreaConstraint(value == ViewportFit.CONTAIN);
+            }
         }
 
         @Override

@@ -2635,6 +2635,9 @@ extern const char kEdgeToEdgeBottomChinDescription[];
 extern const char kEdgeToEdgeEverywhereName[];
 extern const char kEdgeToEdgeEverywhereDescription[];
 
+extern const char kEdgeToEdgeSafeAreaConstraintName[];
+extern const char kEdgeToEdgeSafeAreaConstraintDescription[];
+
 extern const char kEdgeToEdgeWebOptInName[];
 extern const char kEdgeToEdgeWebOptInDescription[];
 

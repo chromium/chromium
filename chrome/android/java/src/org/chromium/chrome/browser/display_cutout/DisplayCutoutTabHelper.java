@@ -147,6 +147,15 @@ public class DisplayCutoutTabHelper implements UserData {
         mCutoutController.setViewportFit(value);
     }
 
+    /**
+     * Set whether there are safe area constraint on the current web page.
+     *
+     * @param hasConstraint Whether there are safe area constraint for the page.
+     */
+    public void setSafeAreaConstraint(boolean hasConstraint) {
+        mCutoutController.setSafeAreaConstraint(hasConstraint);
+    }
+
     @Override
     public void destroy() {
         mTab.removeObserver(mTabObserver);

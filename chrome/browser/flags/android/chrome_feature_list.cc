@@ -261,6 +261,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
+    &kEdgeToEdgeSafeAreaConstraint,
     &kEdgeToEdgeWebOptIn,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
@@ -774,6 +775,10 @@ BASE_FEATURE(kEdgeToEdgeBottomChin,
 
 BASE_FEATURE(kEdgeToEdgeEverywhere,
              "EdgeToEdgeEverywhere",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEdgeToEdgeSafeAreaConstraint,
+             "EdgeToEdgeSafeAreaConstraint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEdgeToEdgeWebOptIn,

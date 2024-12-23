@@ -76,8 +76,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     public interface SafeAreaInsetsTracker {
 
-        /** @return whether this Tracker was created for a web page set to Cover. */
+        /**
+         * @return whether this Tracker was created for a web page set to Cover.
+         */
         boolean isViewportFitCover();
+
+        /** Return whether the safe area is constrained on the current web page. */
+        boolean hasSafeAreaConstraint();
     }
 
     /**
@@ -86,6 +91,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      */
     private static class SafeAreaInsetsTrackerImpl implements SafeAreaInsetsTracker {
         private boolean mIsViewportFitCover;
+        private boolean mHasSafeAreaConstraint;
 
         /** Sets whether this Tracker was created for a web page set to Cover. */
         public void setIsViewportFitCover(boolean isViewportFitCover) {
@@ -95,6 +101,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         @Override
         public boolean isViewportFitCover() {
             return mIsViewportFitCover;
+        }
+
+        /** Sets whether there are safe area constraint for the web page. */
+        public void setSafeAreaConstraint(boolean hasConstraint) {
+            mHasSafeAreaConstraint = hasConstraint;
+        }
+
+        @Override
+        public boolean hasSafeAreaConstraint() {
+            return mHasSafeAreaConstraint;
         }
     }
 
@@ -310,6 +326,16 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             // from recent tabs) the insets may be incorrect and outdated.
             maybePushSafeAreaInsets(mCachedSafeAreaInsets);
         }
+    }
+
+    /**
+     * Set whether there are safe area constraint on the current web page.
+     *
+     * @param hasConstraint whether the safe area is constrained on the current web page.
+     */
+    public void setSafeAreaConstraint(boolean hasConstraint) {
+        Log.i(TAG, "setSafeAreaConstraint: %b", hasConstraint);
+        mSafeAreaInsetsTracker.setSafeAreaConstraint(hasConstraint);
     }
 
     /**
