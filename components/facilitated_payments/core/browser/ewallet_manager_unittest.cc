@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -22,6 +23,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/test/test_sync_service.h"
@@ -80,12 +82,18 @@ class EwalletManagerTest : public testing::Test {
                 FacilitatedPaymentsInitiatePaymentRequestDetails>());
   }
 
+  void FastForwardBy(base::TimeDelta duration) {
+    task_environment_.FastForwardBy(duration);
+  }
+
   MockFacilitatedPaymentsApiClient& GetApiClient() {
     return *static_cast<MockFacilitatedPaymentsApiClient*>(
         test_api(*ewallet_manager_).GetApiClient());
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockFacilitatedPaymentsClient client_;
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   // Order matters here because `ewallet_manager_` keeps a reference
@@ -703,10 +711,10 @@ TEST_F(EwalletManagerTest, RegisterEwalletAllowlist) {
 // Test that API availability is invoked for websites in the allowlist.
 TEST_F(EwalletManagerTest,
        TriggerEwalletPushPayment_UrlInAllowlist_ApiAvailabilityInvoked) {
-  GURL url("https://example.com/");
+  GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(autofill::Ewallet(
       /*instrument_id=*/100, u"nickname",
-      /*display_icon_url=*/url, u"ewallet_name", u"account_display_name",
+      /*display_icon_url=*/page_url, u"ewallet_name", u"account_display_name",
       /*supported_payment_link_uris=*/
       {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
        u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
@@ -718,7 +726,7 @@ TEST_F(EwalletManagerTest,
   EXPECT_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
-          testing::Eq(url),
+          testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
@@ -726,7 +734,7 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kTrue));
   EXPECT_CALL(GetApiClient(), IsAvailable);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, url);
+  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
 }
 
 // Test that API availability is not invoked for webpages not in the
@@ -734,7 +742,7 @@ TEST_F(EwalletManagerTest,
 TEST_F(EwalletManagerTest,
        TriggerEwalletPushPayment_UrlNotInAllowlist_ApiAvailabilityNotInvoked) {
   base::HistogramTester histogram_tester;
-  GURL url("https://example.com/");
+  GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -750,7 +758,7 @@ TEST_F(EwalletManagerTest,
   EXPECT_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
-          testing::Eq(url),
+          testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
@@ -758,7 +766,7 @@ TEST_F(EwalletManagerTest,
           optimization_guide::OptimizationGuideDecision::kFalse));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, url);
+  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Ewallet.PayflowExitedReason",
@@ -775,7 +783,7 @@ TEST_F(EwalletManagerTest,
 TEST_F(
     EwalletManagerTest,
     TriggerEwalletPushPayment_AllowlistNotAvailable_ApiAvailabilityNotInvoked) {
-  GURL url("https://example.com/");
+  GURL page_url("https://example.com/");
   payments_data_manager_.AddEwalletForTest(
       autofill::Ewallet(/*instrument_id=*/100, u"nickname",
                         /*display_icon_url=*/GURL("http://www.example.com"),
@@ -791,7 +799,7 @@ TEST_F(
   EXPECT_CALL(
       optimization_guide_decider_,
       CanApplyOptimization(
-          testing::Eq(url),
+          testing::Eq(page_url),
           testing::Eq(optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST),
           testing::Matcher<optimization_guide::OptimizationMetadata*>(
               testing::Eq(nullptr))))
@@ -799,7 +807,203 @@ TEST_F(
           optimization_guide::OptimizationGuideDecision::kUnknown));
   EXPECT_CALL(GetApiClient(), IsAvailable).Times(0);
 
-  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, url);
+  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+}
+
+// Test that when the eWallet FOP selector is shown, its latency is logged.
+TEST_F(EwalletManagerTest, FopSelectorShown_LatencyHistogramLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::Ewallet supported_ewallet(
+      /*instrument_id=*/100, u"nickname",
+      /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
+      u"account_display_name",
+      /*supported_payment_link_uris=*/
+      {u"^shopeepay:\\/\\/shopeepay\\.com\\.my\\?code=.*$",
+       u"^tngd:\\/\\/tngdigital\\.com\\.my\\?code=.*$"},
+      /*is_fido_enrolled=*/true);
+  payments_data_manager_.AddEwalletForTest(supported_ewallet);
+  GURL page_url("https://example.com/");
+  GURL supported_payment_link(
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+
+  // Simulate eWallet payment flow is triggered.
+  ewallet_manager_->TriggerEwalletPushPayment(supported_payment_link, page_url);
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+  // Simulate that the FOP selector was shown successfully.
+  test_api(*ewallet_manager_)
+      .ShowEwalletPaymentPrompt({supported_ewallet}, base::DoNothing());
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+
+  // Verify that when the eWallet FOP selector is shown, latency histogram is
+  // logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.FopSelectorShown."
+      "LatencyAfterDetectingPaymentLink.ShopeePay",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+class EwalletManagerTestForUiScreens
+    : public EwalletManagerTest,
+      public testing::WithParamInterface<UiState> {
+ public:
+  void SetUp() override {
+    // Default state.
+    EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+
+    switch (ui_state()) {
+      case UiState::kFopSelector: {
+        const std::vector<autofill::Ewallet> ewallets = {
+            autofill::test::CreateEwalletAccount(100L)};
+        test_api(*ewallet_manager_)
+            .ShowEwalletPaymentPrompt(std::move(ewallets), base::DoNothing());
+        break;
+      }
+      case UiState::kProgressScreen:
+        test_api(*ewallet_manager_).ShowProgressScreen();
+        break;
+      case UiState::kErrorScreen:
+        test_api(*ewallet_manager_).ShowErrorScreen();
+        break;
+      case UiState::kHidden:
+        NOTREACHED();
+    }
+  }
+
+  UiState ui_state() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(EwalletManagerTest,
+                         EwalletManagerTestForUiScreens,
+                         testing::Values(UiState::kFopSelector,
+                                         UiState::kProgressScreen,
+                                         UiState::kErrorScreen));
+
+// Test that when a new screen is shown, UI state reflects the current UI being
+// shown.
+TEST_P(EwalletManagerTestForUiScreens, NewScreenShown) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate new screen was shown successfully.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+
+  // Verify feature has updated the UI state.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), ui_state());
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.UiScreenShown",
+      /*sample=*/ui_state(),
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.UiScreenShown.ShopeePay",
+      /*sample=*/ui_state(),
+      /*expected_bucket_count=*/1);
+}
+
+// Test that when a new screen could not be shown, UI state is updated.
+TEST_P(EwalletManagerTestForUiScreens, NewScreenCouldNotBeShown) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate new screen could not be shown.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+
+  // Verify that the UI state is hidden.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+}
+
+// Test that when the UI screen is closed, but it was not due to a user action,
+// the feature updates the UI state.
+TEST_P(EwalletManagerTestForUiScreens, ScreenClosedNotByUser) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate new screen was shown successfully.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  // Simulate UI screen was closed, but it was not due to a user action.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+
+  // Verify that the UI state is hidden.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedNotByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+}
+
+// Test that when the UI screen is closed by the user, the feature updates the
+// UI state.
+TEST_P(EwalletManagerTestForUiScreens, ScreenClosedByUser) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate new screen was shown successfully.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  // Simulate UI screen was closed by the user.
+  test_api(*ewallet_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+
+  // Verify that the UI state is hidden.
+  EXPECT_EQ(test_api(*ewallet_manager_).ui_state(), UiState::kHidden);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason.ShopeePay",
+      /*sample=*/EwalletFlowExitedReason::kFopSelectorClosedByUser,
+      /*expected_bucket_count=*/ui_state() == UiState::kFopSelector ? 1 : 0);
+}
+
+// Test that when Chrome fails to invoke purchase action, the error screen is
+// shown.
+TEST_F(EwalletManagerTest,
+       OnTransactionResult_CouldNotInvoke_ErrorScreenShown) {
+  EXPECT_CALL(client_, ShowErrorScreen);
+
+  test_api(*ewallet_manager_)
+      .OnTransactionResult(PurchaseActionResult::kCouldNotInvoke);
+}
+
+// Test that when Chrome is successful in invoking the purchase action, the UI
+// screen is dismissed.
+TEST_F(EwalletManagerTest, OnTransactionResult_ResultOk_UiScreenDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is
+  // received, and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
+
+  test_api(*ewallet_manager_)
+      .OnTransactionResult(PurchaseActionResult::kResultOk);
+}
+
+// Test that when Chrome is successful in invoking the purchase action, the UI
+// screen is dismissed.
+TEST_F(EwalletManagerTest,
+       OnTransactionResult_ResultCanceled_UiScreenDismissed) {
+  // `DismissPrompt` is called once when the purchase action result is
+  // received, and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(client_, DismissPrompt).Times(2);
+
+  test_api(*ewallet_manager_)
+      .OnTransactionResult(PurchaseActionResult::kResultCanceled);
 }
 
 }  // namespace payments::facilitated

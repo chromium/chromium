@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
 
@@ -108,6 +109,24 @@ class EwalletManager {
   // payment.
   void OnTransactionResult(PurchaseActionResult result);
 
+  // Called by the view to communicate UI events.
+  void OnUiEvent(UiEvent ui_event_type);
+
+  // Updates the `ui_state_` value and triggers dismissal.
+  void DismissPrompt();
+
+  // Updates the `ui_state_` value and triggers showing the eWallet payment
+  // prompt.
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Updates the `ui_state_` value and triggers showing the progress screen.
+  void ShowProgressScreen();
+
+  // Updates the `ui_state_` value and triggers showing the error screen.
+  void ShowErrorScreen();
+
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
   //
@@ -146,6 +165,14 @@ class EwalletManager {
   // creates a new instance.
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
+
+  // Represents the current state of the UI or the UI state that is intended. In
+  // the latter case, the UI state is always updated to reflect the current
+  // state via a callback.
+  UiState ui_state_ = UiState::kHidden;
+
+  // Stores the time when eWallet payment flow is triggered.
+  base::TimeTicks payment_flow_triggered_timestamp_;
 
   base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
 };

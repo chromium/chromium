@@ -54,7 +54,13 @@ enum class EwalletFlowExitedReason {
   kActionTokenNotAvailable = 9,
   // The user has logged out after selecting a payment method.
   kUserLoggedOut = 10,
-  kMaxValue = kUserLoggedOut
+  // The FOP selector either wasn't shown, or was dismissed not as a result of a
+  // user action.
+  kFopSelectorClosedNotByUser = 11,
+  // The FOP selector was dismissed by a user action e.g., swiping down, tapping
+  // on the webpage behind the FOP selector, or tapping on the omnibox.
+  kFopSelectorClosedByUser = 12,
+  kMaxValue = kFopSelectorClosedByUser
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
 
@@ -203,11 +209,22 @@ void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,
                                         ukm::SourceId ukm_source_id);
 
 // Logs showing a new UI screen.
-void LogUiScreenShown(UiState ui_screen);
+// The `scheme` parameter is required for the 'kEwallet' payment type and should
+// not be `kInvalid`.
+void LogUiScreenShown(
+    FacilitatedPaymentsType payment_type,
+    UiState ui_screen,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
-// Logs the latency for seeing the Pix FOP selector after a user has copied the
-// Pix payment code on the browser.
-void LogPixFopSelectorShownLatency(base::TimeDelta latency);
+// Logs the latency for displaying the FOP selector
+// - Pix: Measures latency from Pix payment code copy to FOP selector display.
+// - Ewallet: Measures latency from payment link detection to FOP selector
+// display. The `scheme` parameter is required for the 'kEwallet' payment type
+// and should not be `kInvalid`.
+void LogFopSelectorShownLatency(
+    FacilitatedPaymentsType payment_type,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
 }  // namespace payments::facilitated
 

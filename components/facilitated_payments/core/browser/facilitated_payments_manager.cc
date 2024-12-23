@@ -329,10 +329,10 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);
-      LogUiScreenShown(ui_state_);
+      LogUiScreenShown(kPaymentsType, ui_state_);
       if (ui_state_ == UiState::kFopSelector) {
-        LogPixFopSelectorShownLatency(base::TimeTicks::Now() -
-                                      pix_code_copied_timestamp_);
+        LogFopSelectorShownLatency(
+            kPaymentsType, base::TimeTicks::Now() - pix_code_copied_timestamp_);
         LogFopSelectorShownUkm(ukm_source_id_);
       }
       break;

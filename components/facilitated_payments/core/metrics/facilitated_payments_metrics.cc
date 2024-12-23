@@ -37,6 +37,16 @@ std::string PaymentTypeToString(FacilitatedPaymentsType payment_type) {
   }
 }
 
+std::string PaymentTypeToFopSelectorLatencyString(
+    FacilitatedPaymentsType payment_type) {
+  switch (payment_type) {
+    case FacilitatedPaymentsType::kPix:
+      return "LatencyAfterCopy";
+    case FacilitatedPaymentsType::kEwallet:
+      return "LatencyAfterDetectingPaymentLink";
+  }
+}
+
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
   switch (scheme) {
     case PaymentLinkValidator::Scheme::kDuitNow:
@@ -255,14 +265,44 @@ void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,
       .Record(ukm::UkmRecorder::Get());
 }
 
-void LogUiScreenShown(UiState ui_screen) {
-  base::UmaHistogramEnumeration("FacilitatedPayments.Pix.UiScreenShown",
+void LogUiScreenShown(FacilitatedPaymentsType payment_type,
+                      UiState ui_screen,
+                      std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramEnumeration(base::StrCat({
+                                    "FacilitatedPayments.",
+                                    PaymentTypeToString(payment_type),
+                                    ".UiScreenShown",
+                                }),
                                 ui_screen);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"FacilitatedPayments.Ewallet.UiScreenShown.",
+                      SchemeToString(*scheme)}),
+        ui_screen);
+  }
 }
 
-void LogPixFopSelectorShownLatency(base::TimeDelta latency) {
+void LogFopSelectorShownLatency(
+    FacilitatedPaymentsType payment_type,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy", latency);
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".FopSelectorShown.",
+                    PaymentTypeToFopSelectorLatencyString(payment_type)}),
+      latency);
+
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.FopSelectorShown."
+                      "LatencyAfterDetectingPaymentLink.",
+                      SchemeToString(*scheme)}),
+        latency);
+  }
 }
 
 }  // namespace payments::facilitated

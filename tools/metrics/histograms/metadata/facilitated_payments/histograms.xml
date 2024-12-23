@@ -42,6 +42,39 @@ reviewer.
 </variants>
 
 <histogram
+    name="FacilitatedPayments.Ewallet.FopSelectorShown.LatencyAfterDetectingPaymentLink"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the FOP selector since a payment link was detected. [Frequency]
+    Logged once per payflow. Ewallet payflow is triggered at most once per page
+    load. [Trigger] The histogram is logged when the eWallet FOP selector is
+    shown.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.FopSelectorShown.LatencyAfterDetectingPaymentLink.{Scheme}"
+    units="ms" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    seeing the FOP selector since a payment link was detected. The payment is
+    supported by {Scheme}. [Frequency] Logged once per payflow. Ewallet payflow
+    is triggered at most once per page load. [Trigger] The histogram is logged
+    when the eWallet FOP selector is shown.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.Ewallet.GetClientToken.{Result}.Latency.{Scheme}"
     units="ms" expires_after="2025-07-01">
   <owner>junhuihe@google.com</owner>
@@ -172,6 +205,22 @@ reviewer.
   <token key="Scheme" variants="EwalletScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.UiScreenShown.{Scheme}"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>qihuizhao@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the UI screens
+    being shown to the user. The payment is supported by {Scheme}. [Frequency]
+    Each enum value is logged at most once per payflow. [Trigger] The browser
+    gets signal that a {Scheme} payment link exists on the page, and the user
+    clicks on the UI screens to proceed with payment.
+  </summary>
+  <token key="Scheme" variants="EwalletScheme"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
@@ -275,22 +324,6 @@ reviewer.
     UI. [Trigger] User copies a likely Pix code to the clipboard. [Frequency]
     Logged once per Pix payflow. Pix payflow is triggered at most once per page
     load.
-  </summary>
-</histogram>
-
-<histogram name="FacilitatedPayments.Pix.UiShown"
-    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the UI screens being shown to the user. [Frequency] Each enum value is
-    logged at most once per Pix payflow. Pix payflow is triggered at most once
-    per page load. [Trigger] The Pix payflow could be triggered on pages that
-    have loaded, and the main frame contains a valid payment code for Pix. The
-    screens are shown during the payflow based on internal logic.
   </summary>
 </histogram>
 
@@ -430,6 +463,22 @@ reviewer.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
   <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiScreenShown"
+    enum="FacilitatedPayments.UiScreen" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage that is eligible for facilitated payments, this histogram logs
+    the UI screens being shown to the user. [Frequency] Each enum value is
+    logged at most once per {FacilitatedPaymentsType} payflow. [Trigger] The
+    browser gets signal that a {FacilitatedPaymentsType} code exists on the
+    page, and the user clicks on the UI screens to proceed with payment.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
 
 </histograms>
