@@ -274,7 +274,7 @@ class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
                     bool event_processed));
 
   MOCK_METHOD2(RequestDecode,
-               void(const cc::PaintImage&, base::OnceCallback<void(bool)>));
+               void(const cc::DrawImage&, base::OnceCallback<void(bool)>));
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {

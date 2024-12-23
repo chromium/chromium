@@ -194,6 +194,10 @@ class CORE_EXPORT ImageResourceContent final
   void SetImageResourceInfo(ImageResourceInfo*);
 
   void UpdateResourceInfoFromObservers();
+  gfx::Size MaxSize() const { return cached_info_.max_size_; }
+  InterpolationQuality MaxInterpolationQuality() const {
+    return cached_info_.max_interpolation_quality_;
+  }
 
   // Returns priority information to be used for setting the Resource's
   // priority. This is NOT the current Resource's priority.
@@ -265,6 +269,8 @@ class CORE_EXPORT ImageResourceContent final
   struct {
     ResourcePriority priority_;
     ResourcePriority priority_excluding_image_loader_;
+    gfx::Size max_size_;
+    InterpolationQuality max_interpolation_quality_;
   } cached_info_;
 
   // Keep one-byte members together to avoid wasting space on padding.
