@@ -536,20 +536,6 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetLastChild() const {
   return FromNativeViewAccessible(delegate_->GetLastChild());
 }
 
-bool AXPlatformNodeBase::IsDescendant(AXPlatformNodeBase* node) {
-  if (!delegate_)
-    return false;
-  if (!node)
-    return false;
-  if (node == this)
-    return true;
-  gfx::NativeViewAccessible native_parent = node->GetParent();
-  if (!native_parent)
-    return false;
-  AXPlatformNodeBase* parent = FromNativeViewAccessible(native_parent);
-  return IsDescendant(parent);
-}
-
 ax::mojom::Role AXPlatformNodeBase::GetRole() const {
   if (!delegate_)
     return ax::mojom::Role::kUnknown;
@@ -2043,8 +2029,9 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   DCHECK_LT(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
   if (IsLeaf()) {
-    if (IsText())
+    if (IsText()) {
       return GetDelegate()->CreateTextPositionAt(hypertext_offset);
+    }
     return GetDelegate()->CreatePositionAt(hypertext_offset);
   }
 
@@ -2059,7 +2046,7 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
           base::checked_cast<int>(child_iter->GetHypertext().size());
 
     if (current_hypertext_offset < child_text_len) {
-      int endpoint_offset = child_text_len - current_hypertext_offset;
+      int endpoint_offset = current_hypertext_offset;
       if (child_iter->IsText())
         return child_iter->GetDelegate()->CreateTextPositionAt(endpoint_offset);
       return child_iter->GetDelegate()->CreatePositionAt(endpoint_offset);

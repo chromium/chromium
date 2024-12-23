@@ -110,6 +110,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
 
   AXPlatformNodeDelegate* GetDelegate() const override;
   bool IsDescendantOf(AXPlatformNode* ancestor) const override;
+  bool IsDescendant(AXPlatformNodeBase* descendant) {
+    return descendant->IsDescendantOf(this);
+  }
 
   // Helpers.
   AXPlatformNodeBase* GetPlatformParent() const;
@@ -117,7 +120,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeBase* GetNextSibling() const;
   AXPlatformNodeBase* GetFirstChild() const;
   AXPlatformNodeBase* GetLastChild() const;
-  bool IsDescendant(AXPlatformNodeBase* descendant);
 
   AXNodeID GetNodeId() const;
   AXPlatformNodeBase* GetActiveDescendant() const;
