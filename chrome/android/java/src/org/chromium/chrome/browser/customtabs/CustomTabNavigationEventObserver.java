@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.customtabs;
 
 import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,7 +23,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     // An operation was aborted (due to user action). Should match the value in net_error_list.h.
     private static final int NET_ERROR_ABORTED = -3;
 
-    private final CustomTabsSessionToken mSessionToken;
+    private final SessionHolder<?> mSessionToken;
     private final CustomTabsConnection mConnection;
     private boolean mIsPrerender;
 
@@ -32,7 +32,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     private boolean mPageLoadFinished;
     private Integer mPageLoadFailed;
 
-    public CustomTabNavigationEventObserver(CustomTabsSessionToken session, boolean forPrerender) {
+    public CustomTabNavigationEventObserver(SessionHolder<?> session, boolean forPrerender) {
         mSessionToken = session;
         mConnection = CustomTabsConnection.getInstance();
         // Kill-switch for reporting events for prerendered navigations.

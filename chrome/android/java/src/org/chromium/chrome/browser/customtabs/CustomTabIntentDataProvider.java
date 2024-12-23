@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -273,7 +274,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
 
     private final Intent mIntent;
-    private final CustomTabsSessionToken mSession;
+    private final SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
     private final Intent mKeepAliveServiceIntent;
     private Bundle mAnimationBundle;
@@ -343,22 +344,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     /**
-     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are
-     * from a trusted source. Trusted in this case means from the app itself or
-     * via a first-party application.
+     * Evaluates whether the passed Intent and/or CustomTabsSessionToken are from a trusted source.
+     * Trusted in this case means from the app itself or via a first-party application.
      *
      * @param intent The Intent used to start the custom tabs activity, or null.
      * @param session The connected session for the custom tabs activity, or null.
      * @return True if the intent or session are trusted.
      */
-    public static boolean isTrustedCustomTab(Intent intent, CustomTabsSessionToken session) {
+    public static boolean isTrustedCustomTab(Intent intent, SessionHolder<?> session) {
         if (IntentHandler.wasIntentSenderChrome(intent)) return true;
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         return CustomTabsConnection.getInstance().isFirstParty(packageName);
     }
 
     static @Nullable String getClientPackageNameFromSessionOrCallingActivity(
-            Intent intent, CustomTabsSessionToken session) {
+            Intent intent, SessionHolder<?> session) {
         String packageNameFromSession =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (!TextUtils.isEmpty(packageNameFromSession)) return packageNameFromSession;
@@ -372,7 +372,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        CustomTabsSessionToken session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
         boolean isTrustedCustomTab = isTrustedCustomTab(intent, session);
         String packageName = getClientPackageNameFromSessionOrCallingActivity(intent, session);
         @Px
@@ -489,7 +489,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (intent == null) assert false;
         mIntent = intent;
 
-        mSession = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        mSession = token != null ? new SessionHolder<>(token) : null;
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
 
         mAnimationBundle =
@@ -1158,7 +1159,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<CustomTabsSessionToken> getSession() {
         return mSession;
     }
 

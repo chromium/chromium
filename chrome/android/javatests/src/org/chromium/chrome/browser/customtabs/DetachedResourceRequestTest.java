@@ -37,6 +37,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -94,9 +95,10 @@ public class DetachedResourceRequestTest {
     @SmallTest
     public void testCanDoParallelRequest() {
         CustomTabsSessionToken session = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(session);
         Assert.assertTrue(mConnection.newSession(session));
         ThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertFalse(mConnection.canDoParallelRequest(session, ORIGIN)));
+                () -> Assert.assertFalse(mConnection.canDoParallelRequest(sessionHolder, ORIGIN)));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     String packageName = mContext.getPackageName();
@@ -104,7 +106,7 @@ public class DetachedResourceRequestTest {
                             packageName,
                             Origin.create(ORIGIN.toString()),
                             CustomTabsService.RELATION_USE_AS_ORIGIN);
-                    Assert.assertTrue(mConnection.canDoParallelRequest(session, ORIGIN));
+                    Assert.assertTrue(mConnection.canDoParallelRequest(sessionHolder, ORIGIN));
                 });
     }
 
@@ -112,6 +114,7 @@ public class DetachedResourceRequestTest {
     @SmallTest
     public void testCanDoResourcePrefetch() throws Exception {
         CustomTabsSessionToken session = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(session);
         Assert.assertTrue(mConnection.newSession(session));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -125,21 +128,27 @@ public class DetachedResourceRequestTest {
                 prepareIntentForResourcePrefetch(
                         Arrays.asList(Uri.parse("https://foo.bar")), ORIGIN);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent)));
+                () ->
+                        Assert.assertEquals(
+                                0, mConnection.maybePrefetchResources(sessionHolder, intent)));
 
         CustomTabsTestUtils.warmUpAndWait();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent)));
+                () ->
+                        Assert.assertEquals(
+                                0, mConnection.maybePrefetchResources(sessionHolder, intent)));
 
-        mConnection.mClientManager.setAllowResourcePrefetchForSession(session, true);
+        mConnection.mClientManager.setAllowResourcePrefetchForSession(sessionHolder, true);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(1, mConnection.maybePrefetchResources(session, intent)));
+                () ->
+                        Assert.assertEquals(
+                                1, mConnection.maybePrefetchResources(sessionHolder, intent)));
     }
 
     @Test
     @SmallTest
     public void testStartParallelRequestValidation() throws Exception {
-        CustomTabsSessionToken session = prepareSession();
+        var sessionHolder = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -149,7 +158,8 @@ public class DetachedResourceRequestTest {
                             HistogramWatcher.newSingleRecordWatcher(
                                     "CustomTabs.ParallelRequestStatusOnStart", expected);
                     Assert.assertEquals(
-                            expected, mConnection.handleParallelRequest(session, new Intent()));
+                            expected,
+                            mConnection.handleParallelRequest(sessionHolder, new Intent()));
                     histogram.assertExpected();
 
                     expected = CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_URL;
@@ -162,7 +172,7 @@ public class DetachedResourceRequestTest {
                     Assert.assertEquals(
                             "Should not allow android-app:// scheme",
                             expected,
-                            mConnection.handleParallelRequest(session, intent));
+                            mConnection.handleParallelRequest(sessionHolder, intent));
                     histogram.assertExpected();
 
                     expected = CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_URL;
@@ -173,7 +183,7 @@ public class DetachedResourceRequestTest {
                     Assert.assertEquals(
                             "Should not allow an empty URL",
                             expected,
-                            mConnection.handleParallelRequest(session, intent));
+                            mConnection.handleParallelRequest(sessionHolder, intent));
                     histogram.assertExpected();
 
                     expected =
@@ -188,7 +198,7 @@ public class DetachedResourceRequestTest {
                     Assert.assertEquals(
                             "Should not allow an arbitrary origin",
                             expected,
-                            mConnection.handleParallelRequest(session, intent));
+                            mConnection.handleParallelRequest(sessionHolder, intent));
                     histogram.assertExpected();
 
                     expected = CustomTabsConnection.ParallelRequestStatus.SUCCESS;
@@ -197,7 +207,7 @@ public class DetachedResourceRequestTest {
                                     "CustomTabs.ParallelRequestStatusOnStart", expected);
                     intent = prepareIntent(Uri.parse("HTTPS://foo.bar"), ORIGIN);
                     Assert.assertEquals(
-                            expected, mConnection.handleParallelRequest(session, intent));
+                            expected, mConnection.handleParallelRequest(sessionHolder, intent));
                     histogram.assertExpected();
                 });
     }
@@ -205,36 +215,42 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     public void testStartResourcePrefetchUrlsValidation() throws Exception {
-        CustomTabsSessionToken session = prepareSession();
+        var sessionHolder = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            0, mConnection.maybePrefetchResources(session, new Intent()));
+                            0, mConnection.maybePrefetchResources(sessionHolder, new Intent()));
 
                     ArrayList<Uri> urls = new ArrayList<>();
                     Intent intent = prepareIntentForResourcePrefetch(urls, ORIGIN);
-                    Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            0, mConnection.maybePrefetchResources(sessionHolder, intent));
 
                     urls.add(Uri.parse("android-app://this.is.an.android.app"));
                     intent = prepareIntentForResourcePrefetch(urls, ORIGIN);
-                    Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            0, mConnection.maybePrefetchResources(sessionHolder, intent));
 
                     urls.add(Uri.parse(""));
                     intent = prepareIntentForResourcePrefetch(urls, ORIGIN);
-                    Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            0, mConnection.maybePrefetchResources(sessionHolder, intent));
 
                     urls.add(Uri.parse("https://foo.bar"));
                     intent = prepareIntentForResourcePrefetch(urls, ORIGIN);
-                    Assert.assertEquals(1, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            1, mConnection.maybePrefetchResources(sessionHolder, intent));
 
                     urls.add(Uri.parse("https://bar.foo"));
                     intent = prepareIntentForResourcePrefetch(urls, ORIGIN);
-                    Assert.assertEquals(2, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            2, mConnection.maybePrefetchResources(sessionHolder, intent));
 
                     intent = prepareIntentForResourcePrefetch(urls, Uri.parse("wrong://origin"));
-                    Assert.assertEquals(0, mConnection.maybePrefetchResources(session, intent));
+                    Assert.assertEquals(
+                            0, mConnection.maybePrefetchResources(sessionHolder, intent));
                 });
     }
 
@@ -261,7 +277,7 @@ public class DetachedResourceRequestTest {
                 CustomTabsConnection.ParallelRequestStatus.FAILURE_INVALID_REFERRER_FOR_SESSION;
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(url, status, 0);
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
         CustomTabsTestUtils.warmUpAndWait();
 
         PostTask.runOrPostTask(
@@ -270,7 +286,7 @@ public class DetachedResourceRequestTest {
                     Assert.assertEquals(
                             status,
                             mConnection.handleParallelRequest(
-                                    session,
+                                    sessionHolder,
                                     prepareIntent(url, Uri.parse("http://not-the-right-origin"))));
                 });
         customTabsCallback.waitForRequest(0, 1);
@@ -295,11 +311,11 @@ public class DetachedResourceRequestTest {
                         url,
                         CustomTabsConnection.ParallelRequestStatus.SUCCESS,
                         Math.abs(NetError.ERR_EMPTY_RESPONSE));
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
+                () -> mConnection.onHandledIntent(sessionHolder, prepareIntent(url, ORIGIN)));
         CustomTabsTestUtils.warmUpAndWait();
         customTabsCallback.waitForRequest(0, 1);
         cb.waitForCallback(0, 1);
@@ -309,7 +325,7 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     public void testCanStartResourcePrefetch() throws Exception {
-        CustomTabsSessionToken session = prepareSession();
+        var sessionHolder = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
 
         final CallbackHelper cb = new CallbackHelper();
@@ -333,7 +349,7 @@ public class DetachedResourceRequestTest {
                     Assert.assertEquals(
                             urls.size(),
                             mConnection.maybePrefetchResources(
-                                    session, prepareIntentForResourcePrefetch(urls, ORIGIN)));
+                                    sessionHolder, prepareIntentForResourcePrefetch(urls, ORIGIN)));
                 });
         cb.waitForCallback(0, urls.size());
     }
@@ -408,12 +424,13 @@ public class DetachedResourceRequestTest {
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
-                            mConnection.handleParallelRequest(session, prepareIntent(url, ORIGIN)));
+                            mConnection.handleParallelRequest(
+                                    sessionHolder, prepareIntent(url, ORIGIN)));
                 });
         customTabsCallback.waitForRequest(0, 1);
         customTabsCallback.waitForCompletion(0, 1);
@@ -459,12 +476,13 @@ public class DetachedResourceRequestTest {
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
-                            mConnection.handleParallelRequest(session, prepareIntent(url, ORIGIN)));
+                            mConnection.handleParallelRequest(
+                                    sessionHolder, prepareIntent(url, ORIGIN)));
                 });
         customTabsCallback.waitForRequest(0, 1);
         customTabsCallback.waitForCompletion(0, 1);
@@ -499,13 +517,14 @@ public class DetachedResourceRequestTest {
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
-        CustomTabsSessionToken session = prepareSession(origin, customTabsCallback);
+        var sessionHolder = prepareSession(origin, customTabsCallback);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             CustomTabsConnection.ParallelRequestStatus.SUCCESS,
-                            mConnection.handleParallelRequest(session, prepareIntent(url, origin)));
+                            mConnection.handleParallelRequest(
+                                    sessionHolder, prepareIntent(url, origin)));
                 });
         customTabsCallback.waitForRequest(0, 1);
         customTabsCallback.waitForCompletion(0, 1);
@@ -542,16 +561,16 @@ public class DetachedResourceRequestTest {
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_URL_KEY, url);
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_REFERRER_KEY, ORIGIN);
 
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        Assert.assertTrue(mConnection.newSession(token));
-        mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
+        Assert.assertTrue(mConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+        mConnection.mClientManager.setAllowParallelRequestForSession(sessionHolder, true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeOriginVerifier.addVerificationOverride(
                             mContext.getPackageName(),
                             Origin.create(ORIGIN.toString()),
                             CustomTabsService.RELATION_USE_AS_ORIGIN);
-                    Assert.assertTrue(mConnection.canDoParallelRequest(token, ORIGIN));
+                    Assert.assertTrue(mConnection.canDoParallelRequest(sessionHolder, ORIGIN));
                 });
 
         // Launching a CCT and loading a URL takes more time than usual. Gives a longer timeout.
@@ -579,12 +598,12 @@ public class DetachedResourceRequestTest {
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
 
         if (afterNative) CustomTabsTestUtils.warmUpAndWait();
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
+                () -> mConnection.onHandledIntent(sessionHolder, prepareIntent(url, ORIGIN)));
         if (!afterNative) CustomTabsTestUtils.warmUpAndWait();
 
         customTabsCallback.waitForRequest(0, 1);
@@ -599,11 +618,11 @@ public class DetachedResourceRequestTest {
         DetachedResourceRequestCheckCallback customTabsCallback =
                 new DetachedResourceRequestCheckCallback(
                         url, CustomTabsConnection.ParallelRequestStatus.SUCCESS, NET_OK);
-        CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
         if (afterNative) CustomTabsTestUtils.warmUpAndWait();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
+                () -> mConnection.onHandledIntent(sessionHolder, prepareIntent(url, ORIGIN)));
 
         if (!afterNative) CustomTabsTestUtils.warmUpAndWait();
         customTabsCallback.waitForRequest(0, 1);
@@ -623,11 +642,11 @@ public class DetachedResourceRequestTest {
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-        CustomTabsSessionToken session = prepareSession();
+        var sessionHolder = prepareSession();
 
         String cacheable = "/cachetime";
         CallbackHelper readFromSocketCallback =
-                waitForDetachedRequest(session, cacheable, afterNative);
+                waitForDetachedRequest(sessionHolder, cacheable, afterNative);
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
         try {
@@ -666,27 +685,27 @@ public class DetachedResourceRequestTest {
         }
     }
 
-    private CustomTabsSessionToken prepareSession() throws Exception {
+    private SessionHolder<?> prepareSession() throws Exception {
         return prepareSession(ORIGIN, null);
     }
 
-    private CustomTabsSessionToken prepareSession(Uri origin, CustomTabsCallback callback)
+    private SessionHolder<?> prepareSession(Uri origin, CustomTabsCallback callback)
             throws Exception {
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(callback).session;
         Intent intent = new CustomTabsIntent.Builder(session).build().intent;
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        Assert.assertTrue(mConnection.newSession(token));
-        mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
-        mConnection.mClientManager.setAllowResourcePrefetchForSession(token, true);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
+        Assert.assertTrue(mConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+        mConnection.mClientManager.setAllowParallelRequestForSession(sessionHolder, true);
+        mConnection.mClientManager.setAllowResourcePrefetchForSession(sessionHolder, true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeOriginVerifier.addVerificationOverride(
                             mContext.getPackageName(),
                             Origin.create(origin.toString()),
                             CustomTabsService.RELATION_USE_AS_ORIGIN);
-                    Assert.assertTrue(mConnection.canDoParallelRequest(token, origin));
+                    Assert.assertTrue(mConnection.canDoParallelRequest(sessionHolder, origin));
                 });
-        return token;
+        return sessionHolder;
     }
 
     private void setUpTestServerWithListener(EmbeddedTestServer.ConnectionListener listener) {
@@ -698,7 +717,7 @@ public class DetachedResourceRequestTest {
     }
 
     private CallbackHelper waitForDetachedRequest(
-            CustomTabsSessionToken session, String relativeUrl, boolean afterNative)
+            SessionHolder<?> session, String relativeUrl, boolean afterNative)
             throws TimeoutException {
         // Count the number of times data is read from the socket.
         // We expect 1 for the detached request.

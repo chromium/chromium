@@ -26,7 +26,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -39,6 +38,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -573,17 +573,16 @@ public class IntentHandler {
     /**
      * Extracts referrer URL string. The extra is used if we received it from a first party app or
      * if the referrer_extra is specified as android-app://package style URL.
+     *
      * @param intent The intent from which to extract the URL.
      * @return The URL string or null if none should be used.
      */
     private static String getReferrerUrl(Intent intent) {
         Uri referrerExtra = getReferrer(intent);
-        CustomTabsSessionToken customTabsSession =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
-        if (referrerExtra == null && customTabsSession != null) {
+        SessionHolder<?> session = SessionHolder.getSessionHolderFromIntent(intent);
+        if (referrerExtra == null && session != null) {
             Referrer referrer =
-                    CustomTabsConnection.getInstance()
-                            .getDefaultReferrerForSession(customTabsSession);
+                    CustomTabsConnection.getInstance().getDefaultReferrerForSession(session);
             if (referrer != null) {
                 referrerExtra = Uri.parse(referrer.getUrl());
             }
@@ -594,7 +593,7 @@ public class IntentHandler {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
                 || SessionDataHolder.getInstance()
-                        .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
+                        .canActiveHandlerUseReferrer(session, referrerExtra)) {
             return referrerExtra.toString();
         }
         return null;

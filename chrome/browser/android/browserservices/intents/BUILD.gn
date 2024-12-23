@@ -7,10 +7,12 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/intents/BitmapHelper.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserCallbackWrapper.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/BrowserServicesIntentDataProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/ColorProvider.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/CustomButtonParams.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/MergedWebappInfo.java",
+    "java/src/org/chromium/chrome/browser/browserservices/intents/SessionHolder.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkExtras.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebApkShareTarget.java",
     "java/src/org/chromium/chrome/browser/browserservices/intents/WebappConstants.java",
@@ -30,6 +32,7 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
     "//services/device/public/mojom:mojom_java",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/blink/public/mojom:mojom_platform_java",

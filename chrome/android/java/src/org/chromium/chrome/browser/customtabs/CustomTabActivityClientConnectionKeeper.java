@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.customtabs;
 
 import androidx.annotation.IntDef;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -75,7 +75,7 @@ public class CustomTabActivityClientConnectionKeeper implements StartStopWithNat
         String packageName = tab == null ? null : TabAssociatedApp.getAppId(tab);
         if (packageName == null) return; // No associated package
 
-        CustomTabsSessionToken session = mIntentDataProvider.getSession();
+        SessionHolder<?> session = mIntentDataProvider.getSession();
         boolean isConnected =
                 packageName.equals(
                         CustomTabsConnection.getInstance().getClientPackageNameForSession(session));

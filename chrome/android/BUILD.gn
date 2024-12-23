@@ -2818,6 +2818,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_cast_framework_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/payments/content/android:service_java",
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_browser_browser_java",
     ]
 

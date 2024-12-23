@@ -22,7 +22,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
 import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.core.os.BuildCompat;
 
@@ -34,6 +33,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -367,8 +367,7 @@ public class LaunchIntentDispatcher {
      */
     private boolean launchCustomTabActivity() {
         CustomTabsConnection.getInstance()
-                .onHandledIntent(
-                        CustomTabsSessionToken.getSessionTokenFromIntent(mIntent), mIntent);
+                .onHandledIntent(SessionHolder.getSessionHolderFromIntent(mIntent), mIntent);
 
         boolean isCustomTab = true;
         if (IntentHandler.shouldIgnoreIntent(mIntent, mActivity, isCustomTab)) {

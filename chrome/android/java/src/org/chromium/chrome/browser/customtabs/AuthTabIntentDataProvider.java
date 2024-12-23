@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.browser.auth.AuthTabIntent;
+import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -20,6 +21,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -37,6 +39,7 @@ import org.chromium.url.GURL;
 public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final @NonNull Intent mIntent;
     private final @Nullable String mClientPackageName;
+    private final SessionHolder<AuthTabSessionToken> mSession;
     private final @NonNull ColorProvider mColorProvider;
     private final @NonNull Drawable mCloseButtonIcon;
     private final @Nullable String mRedirectScheme;
@@ -62,6 +65,8 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
             Intent intent, Context context, @CustomTabsIntent.ColorScheme int colorScheme) {
         assert intent != null;
         mIntent = intent;
+        AuthTabSessionToken token = AuthTabSessionToken.getSessionTokenFromIntent(intent);
+        mSession = token != null ? new SessionHolder<>(token) : null;
         mClientPackageName =
                 IntentUtils.safeGetStringExtra(
                         intent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
@@ -112,6 +117,12 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     @Override
     public Intent getIntent() {
         return mIntent;
+    }
+
+    @Nullable
+    @Override
+    public SessionHolder<AuthTabSessionToken> getSession() {
+        return mSession;
     }
 
     @Override

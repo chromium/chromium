@@ -928,7 +928,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver =
                 new RealtimeEngagementSignalObserver(
                         env.tabObserverRegistrar,
-                        env.session,
+                        env.session.getSessionAsCustomTab(),
                         mEngagementSignalsCallback,
                         hadScrollDown);
         verify(env.tabObserverRegistrar).registerActivityTabObserver(mEngagementSignalObserver);

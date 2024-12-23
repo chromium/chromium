@@ -33,6 +33,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -518,8 +519,9 @@ public class StartupLoadingMetricsTest {
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
         mConnectionToCleanup = connection;
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         connection.newSession(token);
-        connection.setCanUseHiddenTabForSession(token, false);
+        connection.setCanUseHiddenTabForSession(sessionHolder, false);
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, getTestPage());
 

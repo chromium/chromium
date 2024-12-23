@@ -17,6 +17,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 
 /**
@@ -29,7 +30,7 @@ public class SessionDataHolder {
 
     @Nullable private SessionHandler mActiveSessionHandler;
 
-    @Nullable private Callback<CustomTabsSessionToken> mSessionDisconnectCallback;
+    @Nullable private Callback<SessionHolder<?>> mSessionDisconnectCallback;
 
     private static SessionDataHolder sInstance = new SessionDataHolder();
 
@@ -48,14 +49,13 @@ public class SessionDataHolder {
 
     /** Data associated with a {@link SessionHandler} necessary to pass new intents to it. */
     private static class SessionData {
-        public final CustomTabsSessionToken session;
+        public final SessionHolder<?> session;
 
         // Session handlers can reside in Activities of different types, so we need to store the
         // Activity class to be able to route new intents into it.
         public final Class<? extends Activity> activityClass;
 
-        private SessionData(
-                CustomTabsSessionToken session, Class<? extends Activity> activityClass) {
+        private SessionData(SessionHolder<?> session, Class<? extends Activity> activityClass) {
             this.session = session;
             this.activityClass = activityClass;
         }
@@ -63,11 +63,12 @@ public class SessionDataHolder {
 
     /**
      * Sets the currently active {@link SessionHandler} in focus.
+     *
      * @param sessionHandler {@link SessionHandler} to set.
      */
     public void setActiveHandler(@NonNull SessionHandler sessionHandler) {
         mActiveSessionHandler = sessionHandler;
-        CustomTabsSessionToken session = sessionHandler.getSession();
+        SessionHolder<?> session = sessionHandler.getSession();
         if (session == null) return;
 
         mTaskIdToSessionData.append(
@@ -99,7 +100,7 @@ public class SessionDataHolder {
         SessionData handlerDataInCurrentTask = mTaskIdToSessionData.get(taskId);
         if (handlerDataInCurrentTask == null
                 || !handlerDataInCurrentTask.session.equals(
-                        CustomTabsSessionToken.getSessionTokenFromIntent(intent))) {
+                        SessionHolder.getSessionHolderFromIntent(intent))) {
             return null;
         }
         return handlerDataInCurrentTask.activityClass;
@@ -119,22 +120,22 @@ public class SessionDataHolder {
     }
 
     /** Returns whether the given session is the currently active session. */
-    public boolean isActiveSession(@Nullable CustomTabsSessionToken session) {
+    public boolean isActiveSession(@Nullable SessionHolder<?> session) {
         return getActiveHandler(session) != null;
     }
 
     /**
      * Returns the active session handler if it is associated with given session, null otherwise.
      */
-    public @Nullable SessionHandler getActiveHandler(@Nullable CustomTabsSessionToken session) {
+    public @Nullable SessionHandler getActiveHandler(@Nullable SessionHolder<?> session) {
         if (mActiveSessionHandler == null) return null;
-        CustomTabsSessionToken activeSession = mActiveSessionHandler.getSession();
+        SessionHolder<?> activeSession = mActiveSessionHandler.getSession();
         if (activeSession == null || !activeSession.equals(session)) return null;
         return mActiveSessionHandler;
     }
 
     private @Nullable SessionHandler getActiveHandlerForIntent(Intent intent) {
-        return getActiveHandler(CustomTabsSessionToken.getSessionTokenFromIntent(intent));
+        return getActiveHandler(SessionHolder.getSessionHolderFromIntent(intent));
     }
 
     /**
@@ -143,14 +144,14 @@ public class SessionDataHolder {
      * currently in focus custom tab and also the related client should have a verified relationship
      * with the referrer origin. This can only be true for https:// origins.
      *
-     * @param token The session token specified in the activity launch intent.
+     * @param session The {@link SessionHolder} holding the session token specified in the activity
+     *     launch intent.
      * @param referrer The referrer url that is to be used.
-     * @return Whether the given referrer is a valid first party url to the client that launched
-     *         the activity.
+     * @return Whether the given referrer is a valid first party url to the client that launched the
+     *     activity.
      */
-    public boolean canActiveHandlerUseReferrer(
-            @Nullable CustomTabsSessionToken token, Uri referrer) {
-        SessionHandler handler = getActiveHandler(token);
+    public boolean canActiveHandlerUseReferrer(@Nullable SessionHolder<?> session, Uri referrer) {
+        SessionHandler handler = getActiveHandler(session);
         return handler != null && handler.canUseReferrer(referrer);
     }
 

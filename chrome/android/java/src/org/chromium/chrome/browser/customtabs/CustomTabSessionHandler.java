@@ -15,7 +15,6 @@ import android.widget.RemoteViews;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
@@ -23,6 +22,7 @@ import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
@@ -81,7 +81,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     }
 
     @Override
-    public CustomTabsSessionToken getSession() {
+    public SessionHolder<?> getSession() {
         return mIntentDataProvider.getSession();
     }
 
@@ -155,7 +155,7 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
     @Override
     public boolean canUseReferrer(Uri referrer) {
-        CustomTabsSessionToken session = mIntentDataProvider.getSession();
+        SessionHolder<?> session = mIntentDataProvider.getSession();
         String packageName =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(session);
         if (TextUtils.isEmpty(packageName)) return false;

@@ -43,6 +43,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -185,8 +186,9 @@ public class CustomTabsConnectionTest {
     public void testHiddenTabTakessSpareRenderer() throws Exception {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         mCustomTabsConnection.newSession(token);
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
         assertWarmupAndMayLaunchUrl(token, URL, true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -216,10 +218,11 @@ public class CustomTabsConnectionTest {
         CustomTabsTestUtils.warmUpAndWait();
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
 
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
-        mCustomTabsConnection.setCanUseHiddenTabForSession(token, false);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
+        mCustomTabsConnection.setCanUseHiddenTabForSession(sessionHolder, false);
         Assert.assertTrue(mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertSpareWebContentsNotNullAndDestroy());
@@ -241,8 +244,9 @@ public class CustomTabsConnectionTest {
     public void testOnlyOneHiddenTab() throws Exception {
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setCanUseHiddenTabForSession(token, true);
+        mCustomTabsConnection.setCanUseHiddenTabForSession(sessionHolder, true);
 
         // First hidden tab, add an observer to check that it's destroyed.
         Assert.assertTrue(
@@ -299,8 +303,9 @@ public class CustomTabsConnectionTest {
     public void testKillHiddenTabRenderer() throws Exception {
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
         Assert.assertTrue(
                 "Failed first mayLaunchUrl()",
                 mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
@@ -390,8 +395,9 @@ public class CustomTabsConnectionTest {
     public void testStillHighConfidenceMayLaunchUrlWithSeveralUrls() {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
         List<Bundle> urls = new ArrayList<>();
         Bundle urlBundle = new Bundle();
         urlBundle.putParcelable(CustomTabsService.KEY_URL, Uri.parse(URL));
@@ -466,13 +472,19 @@ public class CustomTabsConnectionTest {
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
         Intent intent2 =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPageUrl);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent2);
-        Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setCanUseHiddenTabForSession(token, true);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent2);
+        Assert.assertTrue(
+                "Failed newSession()",
+                mCustomTabsConnection.newSession(sessionHolder.getSessionAsCustomTab()));
+        mCustomTabsConnection.setCanUseHiddenTabForSession(sessionHolder, true);
 
         Assert.assertTrue(
                 "Failed first mayLaunchUrl()",
-                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(mTestPageUrl), null, null));
+                mCustomTabsConnection.mayLaunchUrl(
+                        sessionHolder.getSessionAsCustomTab(),
+                        Uri.parse(mTestPageUrl),
+                        null,
+                        null));
 
         CriteriaHelper.pollUiThread(
                 () ->
@@ -505,7 +517,11 @@ public class CustomTabsConnectionTest {
         mCustomTabsConnection.resetThrottling(Process.myUid());
         Assert.assertTrue(
                 "Failed second mayLaunchUrl()",
-                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(mTestPageUrl), null, null));
+                mCustomTabsConnection.mayLaunchUrl(
+                        sessionHolder.getSessionAsCustomTab(),
+                        Uri.parse(mTestPageUrl),
+                        null,
+                        null));
 
         CriteriaHelper.pollUiThread(
                 () ->
@@ -754,8 +770,9 @@ public class CustomTabsConnectionTest {
         mCustomTabsConnection.ban(Process.myUid());
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
 
         Assert.assertTrue(mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
         ThreadUtils.runOnUiThreadBlocking(
@@ -773,8 +790,9 @@ public class CustomTabsConnectionTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testCellularPrerenderingDoesntOverrideSettings() throws Exception {
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
         CustomTabsTestUtils.warmUpAndWait();
 
         // Needs the browser process to be initialized.
@@ -807,8 +825,9 @@ public class CustomTabsConnectionTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testHiddenTabTakesSpareRenderer() throws Exception {
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(token, true);
+        mCustomTabsConnection.setShouldSpeculateLoadOnCellularForSession(sessionHolder, true);
         CustomTabsTestUtils.warmUpAndWait();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
             ThreadUtils.runOnUiThreadBlocking(
@@ -961,8 +980,9 @@ public class CustomTabsConnectionTest {
         String packageName = "app";
 
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(sessionHolder, packageName);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
@@ -977,14 +997,15 @@ public class CustomTabsConnectionTest {
                         .setSourceOrigin(Uri.parse(invalidSourceOrigin))
                         .build();
 
-        Assert.assertFalse(mCustomTabsConnection.isValidForPrefetchSourceOrigin(token, null));
+        Assert.assertFalse(
+                mCustomTabsConnection.isValidForPrefetchSourceOrigin(sessionHolder, null));
         Assert.assertTrue(
                 mCustomTabsConnection.isValidForPrefetchSourceOrigin(
-                        token,
+                        sessionHolder,
                         Origin.create(prefetchOptionsValidSourceOrigin.sourceOrigin.toString())));
         Assert.assertFalse(
                 mCustomTabsConnection.isValidForPrefetchSourceOrigin(
-                        token,
+                        sessionHolder,
                         Origin.create(prefetchOptionsInvalidSourceOrigin.sourceOrigin.toString())));
     }
 
@@ -1005,8 +1026,9 @@ public class CustomTabsConnectionTest {
         String packageName = "app";
 
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(sessionHolder, packageName);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
@@ -1036,8 +1058,9 @@ public class CustomTabsConnectionTest {
         String packageName = "app";
 
         CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        var sessionHolder = new SessionHolder<>(token);
         Assert.assertTrue(mCustomTabsConnection.newSession(token));
-        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(sessionHolder, packageName);
         mCustomTabsConnection.prefetch(
                 token,
                 List.of(Uri.parse(prefetchUrl)),

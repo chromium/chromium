@@ -9,11 +9,11 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
@@ -83,13 +83,13 @@ public class CustomTabIntentHandler {
     /**
      * Called from Activity#onNewIntent.
      *
-     * @param intentDataProvider Data provider built from the new intent. It's different from
-     * the injectable instance of {@link BrowserServicesIntentDataProvider} - that one is always
-     * built from the initial intent.
+     * @param intentDataProvider Data provider built from the new intent. It's different from the
+     *     injectable instance of {@link BrowserServicesIntentDataProvider} - that one is always
+     *     built from the initial intent.
      */
     public boolean onNewIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         Intent intent = intentDataProvider.getIntent();
-        CustomTabsSessionToken session = intentDataProvider.getSession();
+        SessionHolder<?> session = intentDataProvider.getSession();
         WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         if (webappExtras != null) {
             // Don't navigate if the purpose of the intent was to bring the webapp to the

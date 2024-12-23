@@ -14,7 +14,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -32,6 +34,7 @@ import android.os.Bundle;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
+import androidx.browser.customtabs.PostMessageServiceConnection;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,8 +56,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -69,13 +74,17 @@ import org.chromium.chrome.browser.tab.Tab;
 public class CustomTabsConnectionUnitTest {
 
     @Mock private SessionHandler mSessionHandler;
-    @Mock private CustomTabsSessionToken mSession;
+
     @Mock private CustomTabsCallback mCallback;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private EngagementSignalsCallback mEngagementSignalsCallback;
     @Mock private Tab mTab;
 
     private CustomTabsConnection mConnection;
+    private SessionHolder<?> mSessionHolder;
+    private CustomTabsSessionToken mSession;
+    private PostMessageServiceConnection mPostMessageServiceConnection;
+    private PostMessageHandler mPostMessageHandler;
 
     @Implements(UmaSessionStats.class)
     public static class ShadowUmaSessionStats {
@@ -104,10 +113,14 @@ public class CustomTabsConnectionUnitTest {
         CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
         mConnection.setIsDynamicFeaturesEnabled(true);
+        mSession = spy(CustomTabsSessionToken.createMockSessionTokenForTesting());
+        mSessionHolder = new SessionHolder<>(mSession);
         when(mSession.getCallback()).thenReturn(mCallback);
-        when(mSessionHandler.getSession()).thenReturn(mSession);
+        doReturn(mSessionHolder).when(mSessionHandler).getSession();
         SessionDataHolder.getInstance().setActiveHandler(mSessionHandler);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
+        mPostMessageServiceConnection = new PostMessageServiceConnection(mSession) {};
+        mPostMessageHandler = new PostMessageHandler(mPostMessageServiceConnection);
     }
 
     @After
@@ -146,7 +159,7 @@ public class CustomTabsConnectionUnitTest {
 
         initSession();
         mConnection.onActivityLayout(
-                mSession, left, top, right, bottom, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET);
+                mSessionHolder, left, top, right, bottom, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET);
 
         verify(mCallback).extraCallback(eq(ON_ACTIVITY_LAYOUT_CALLBACK), refEq(bundle));
     }
@@ -180,7 +193,7 @@ public class CustomTabsConnectionUnitTest {
                         mSession, mEngagementSignalsCallback, Bundle.EMPTY));
         assertEquals(
                 mEngagementSignalsCallback,
-                mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSession));
+                mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSessionHolder));
     }
 
     @Test
@@ -190,20 +203,21 @@ public class CustomTabsConnectionUnitTest {
         assertFalse(
                 mConnection.setEngagementSignalsCallback(
                         mSession, mEngagementSignalsCallback, Bundle.EMPTY));
-        assertNull(mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSession));
+        assertNull(
+                mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSessionHolder));
     }
 
     @Test
     public void testOnMinimized() {
         initSession();
-        mConnection.onMinimized(mSession);
+        mConnection.onMinimized(mSessionHolder);
         verify(mCallback).onMinimized(any(Bundle.class));
     }
 
     @Test
     public void testOnUnminimized() {
         initSession();
-        mConnection.onUnminimized(mSession);
+        mConnection.onUnminimized(mSessionHolder);
         verify(mCallback).onUnminimized(any(Bundle.class));
     }
 
@@ -213,7 +227,13 @@ public class CustomTabsConnectionUnitTest {
         shadowOf(RuntimeEnvironment.getApplication().getApplicationContext().getPackageManager())
                 .setPackagesForUid(uid, "test.package.name");
         var handler = new EngagementSignalsHandler(mSession);
-        mConnection.mClientManager.newSession(mSession, uid, null, null, null, handler);
+        mConnection.mClientManager.newSession(
+                mSessionHolder,
+                uid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                handler);
     }
 
     @Test
@@ -273,7 +293,7 @@ public class CustomTabsConnectionUnitTest {
     public void notifyOpenInBrowser() {
         initSession();
 
-        mConnection.notifyOpenInBrowser(mSession, mTab);
+        mConnection.notifyOpenInBrowser(mSessionHolder, mTab);
 
         verify(mCallback)
                 .extraCallback(

@@ -12,23 +12,24 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Interface to handle browser services calls whenever the session id matched.
- * TODO(yusufo): Add a way to handle mayLaunchUrl as well.
+ * Interface to handle browser services calls whenever the session id matched. TODO(yusufo): Add a
+ * way to handle mayLaunchUrl as well.
  */
 public interface SessionHandler {
 
     /**
      * @return The session this {@link SessionHandler} is associated with.
      */
-    CustomTabsSessionToken getSession();
+    SessionHolder<?> getSession();
 
     /**
      * Finds the action button with the given id, and updates it with the new content.
+     *
      * @return Whether the action button has been updated.
      */
     boolean updateCustomButton(int id, Bitmap bitmap, String description);

@@ -13,10 +13,10 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
@@ -38,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 /** A {@link TabObserver} that also handles custom tabs specific logging and messaging. */
 public class CustomTabObserver extends EmptyTabObserver {
     private final CustomTabsConnection mCustomTabsConnection;
-    private final CustomTabsSessionToken mSession;
+    private final SessionHolder<?> mSession;
     private final boolean mOpenedByChrome;
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
@@ -93,7 +93,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public CustomTabObserver(boolean openedByChrome, CustomTabsSessionToken token) {
+    public CustomTabObserver(boolean openedByChrome, SessionHolder<?> token) {
         mOpenedByChrome = openedByChrome;
         mCustomTabsConnection = mOpenedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;

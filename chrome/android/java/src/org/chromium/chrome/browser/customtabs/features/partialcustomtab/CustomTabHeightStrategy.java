@@ -9,10 +9,10 @@ import android.view.View;
 
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -55,7 +55,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             return new CustomTabHeightStrategy();
         }
 
-        CustomTabsSessionToken session = intentData.getSession();
+        SessionHolder<?> session = intentData.getSession();
         OnResizedCallback resizeCallback =
                 (height, width) ->
                         CustomTabsConnection.getInstance().onResized(session, height, width);

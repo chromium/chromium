@@ -27,7 +27,6 @@ import android.graphics.Color;
 import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -54,6 +53,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -145,7 +145,7 @@ public class CustomTabActivityEphemeralTest {
                 });
     }
 
-    private void setCanUseHiddenTabForSession(CustomTabsSessionToken token, boolean useHiddenTab) {
+    private void setCanUseHiddenTabForSession(SessionHolder<?> token, boolean useHiddenTab) {
         // Save the connection. In case the hidden tab is not consumed by the test, ensure that it
         // is properly cleaned up after the test.
         CustomTabsConnection.getInstance().mClientManager.setHideDomainForSession(token, true);
@@ -269,11 +269,11 @@ public class CustomTabActivityEphemeralTest {
         // allowed in OTR profiles. (crbug.com/1106757)
         Intent intent = createEphemeralCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        final var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
+        final var token = sessionHolder.getSessionAsCustomTab();
         Assert.assertTrue(connection.newSession(token));
         // Passes the launch intent to the connection.
-        setCanUseHiddenTabForSession(token, true);
+        setCanUseHiddenTabForSession(sessionHolder, true);
         Assert.assertFalse(
                 connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
         CriteriaHelper.pollUiThread(
