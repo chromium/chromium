@@ -135,6 +135,7 @@ following arguments:
 target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
 use_remoteexec = true  # Enables distributed builds. See "Faster Builds".
+android_static_analysis = "build_server"  # Does static checks in background. See "Faster Builds".
 ```
 
 * You only have to run this once for each new build directory, Ninja will
