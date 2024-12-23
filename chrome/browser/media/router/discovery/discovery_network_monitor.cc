@@ -102,8 +102,8 @@ DiscoveryNetworkMonitor::DiscoveryNetworkMonitor(NetworkInfoFunction strategy)
       network_info_function_(strategy) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  content::GetNetworkConnectionTracker()
-      ->AddLeakyNetworkConnectionObserver(this);
+  content::GetNetworkConnectionTracker()->AddLeakyNetworkConnectionObserver(
+      this);
 
   // If the current connection type is available, call UpdateNetworkInfo,
   // otherwise let OnConnectionChanged call it when the connection type is

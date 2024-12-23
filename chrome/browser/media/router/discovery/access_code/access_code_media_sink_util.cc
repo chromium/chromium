@@ -40,16 +40,21 @@ constexpr char kDefaultAccessCodeModelName[] = "Chromecast Cast Moderator";
 CastDeviceCapabilitySet ConvertDeviceCapabilities(
     chrome_browser_media::proto::DeviceCapabilities proto) {
   CastDeviceCapabilitySet capabilities;
-  if (proto.video_out())
+  if (proto.video_out()) {
     capabilities.Put(CastDeviceCapability::kVideoOut);
-  if (proto.video_in())
+  }
+  if (proto.video_in()) {
     capabilities.Put(CastDeviceCapability::kVideoIn);
-  if (proto.audio_out())
+  }
+  if (proto.audio_out()) {
     capabilities.Put(CastDeviceCapability::kAudioOut);
-  if (proto.audio_in())
+  }
+  if (proto.audio_in()) {
     capabilities.Put(CastDeviceCapability::kAudioIn);
-  if (proto.dev_mode())
+  }
+  if (proto.dev_mode()) {
     capabilities.Put(CastDeviceCapability::kDevMode);
+  }
   return capabilities;
 }
 
@@ -173,24 +178,29 @@ base::Value::Dict CreateValueDictFromMediaSinkInternal(
 std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
     const base::Value::Dict& value_dict) {
   const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
-  if (!extra_data_dict)
+  if (!extra_data_dict) {
     return std::nullopt;
+  }
 
   net::IPAddress ip_address;
   const std::string* ip_address_string =
       extra_data_dict->FindString(kIpAddressKey);
-  if (!ip_address_string)
+  if (!ip_address_string) {
     return std::nullopt;
-  if (!ip_address.AssignFromIPLiteral(*ip_address_string))
+  }
+  if (!ip_address.AssignFromIPLiteral(*ip_address_string)) {
     return std::nullopt;
+  }
 
   std::optional<int> port = extra_data_dict->FindInt(kPortKey);
-  if (!port.has_value())
+  if (!port.has_value()) {
     return std::nullopt;
+  }
 
   std::optional<int> capabilities = extra_data_dict->FindInt(kCapabilitiesKey);
-  if (!capabilities.has_value())
+  if (!capabilities.has_value()) {
     return std::nullopt;
+  }
 
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
@@ -202,14 +212,17 @@ std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
       model_name ? *model_name : kDefaultAccessCodeModelName;
 
   const auto* sink_dict = value_dict.FindDict(kSinkDictKey);
-  if (!sink_dict)
+  if (!sink_dict) {
     return std::nullopt;
+  }
   const std::string* sink_id = sink_dict->FindString(kSinkIdKey);
-  if (!sink_id)
+  if (!sink_id) {
     return std::nullopt;
+  }
   const std::string* display_name = sink_dict->FindString(kDisplayNameKey);
-  if (!display_name)
+  if (!display_name) {
     return std::nullopt;
+  }
 
   MediaSink sink(*sink_id, *display_name,
                  GetCastSinkIconType(extra_data.capabilities),

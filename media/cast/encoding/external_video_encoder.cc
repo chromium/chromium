@@ -98,10 +98,9 @@ struct InProgressExternalVideoFrameEncode {
   // of the CastEnvironment clock, the latter of which might be simulated.
   const base::TimeTicks start_time;
 
-  InProgressExternalVideoFrameEncode(
-      scoped_refptr<VideoFrame> v_frame,
-      base::TimeTicks r_time,
-      int bit_rate)
+  InProgressExternalVideoFrameEncode(scoped_refptr<VideoFrame> v_frame,
+                                     base::TimeTicks r_time,
+                                     int bit_rate)
       : video_frame(std::move(v_frame)),
         reference_time(r_time),
         target_bit_rate(bit_rate),
@@ -288,8 +287,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         base::BindOnce(status_change_cb_, status, STATUS_CODEC_RUNTIME_ERROR));
 
     // Flush all in progress frames to avoid any getting stuck.
-    while (!in_progress_frame_encodes_.empty())
+    while (!in_progress_frame_encodes_.empty()) {
       AbortLatestEncodeAttemptDueToErrors();
+    }
   }
 
   void AllocateInputBuffer(size_t size) {
@@ -509,8 +509,9 @@ class ExternalVideoEncoder::VEAClientImpl final
   ~VEAClientImpl() final {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    while (!in_progress_frame_encodes_.empty())
+    while (!in_progress_frame_encodes_.empty()) {
       AbortLatestEncodeAttemptDueToErrors();
+    }
 
     // According to the media::VideoEncodeAccelerator interface, Destroy()
     // should be called instead of invoking its private destructor.
@@ -556,8 +557,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         case H264NALU::kNonIDRSlice: {
           H264SliceHeader slice_header;
           if (h264_parser_.ParseSliceHeader(nalu, &slice_header) !=
-              H264Parser::kOk)
+              H264Parser::kOk) {
             return -1;
+          }
           const H264PPS* pps =
               h264_parser_.GetPPS(slice_header.pic_parameter_set_id);
           if (!pps) {

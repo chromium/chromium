@@ -57,27 +57,32 @@ bool DeserializeCastMessage(std::string_view buffer,
                             std::string* message_namespace,
                             std::string* message) {
   std::optional<base::Value> converted_value = base::JSONReader::Read(buffer);
-  if (!converted_value)
+  if (!converted_value) {
     return false;
+  }
 
-  if (!converted_value->is_dict())
+  if (!converted_value->is_dict()) {
     return false;
+  }
 
   const base::Value::Dict& converted_dict = converted_value->GetDict();
   const std::string* sender_id_value = converted_dict.FindString(kKeySenderId);
-  if (!sender_id_value)
+  if (!sender_id_value) {
     return false;
+  }
   *sender_id = *sender_id_value;
 
   const std::string* message_namespace_value =
       converted_dict.FindString(kKeyNamespace);
-  if (!message_namespace_value)
+  if (!message_namespace_value) {
     return false;
+  }
   *message_namespace = *message_namespace_value;
 
   const std::string* message_value = converted_dict.FindString(kKeyData);
-  if (!message_value)
+  if (!message_value) {
     return false;
+  }
   *message = *message_value;
 
   return true;

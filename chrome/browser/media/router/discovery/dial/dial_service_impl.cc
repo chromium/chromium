@@ -139,8 +139,9 @@ void InsertBestBindAddressChromeOS(const ash::NetworkTypePattern& type,
   const ash::NetworkState* state = ash::NetworkHandler::Get()
                                        ->network_state_handler()
                                        ->ConnectedNetworkByType(type);
-  if (!state)
+  if (!state) {
     return;
+  }
   std::string state_ip_address = state->GetIpAddress();
   IPAddress bind_ip_address;
   if (bind_ip_address.AssignFromIPLiteral(state_ip_address) &&
@@ -270,18 +271,21 @@ void DialServiceImpl::DialSocket::OnSocketWrite(int send_buffer_size,
                                                 int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_writing_ = false;
-  if (!CheckResult("OnSocketWrite", result))
+  if (!CheckResult("OnSocketWrite", result)) {
     return;
+  }
   dial_service_->NotifyOnDiscoveryRequest();
 }
 
 bool DialServiceImpl::DialSocket::ReadSocket() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!socket_)
+  if (!socket_) {
     return false;
+  }
 
-  if (is_reading_)
+  if (is_reading_) {
     return false;
+  }
 
   int result = net::OK;
   bool result_ok = true;
@@ -292,8 +296,9 @@ bool DialServiceImpl::DialSocket::ReadSocket() {
         base::BindOnce(&DialServiceImpl::DialSocket::OnSocketRead,
                        base::Unretained(this)));
     result_ok = CheckResult("RecvFrom", result);
-    if (result != net::ERR_IO_PENDING)
+    if (result != net::ERR_IO_PENDING) {
       is_reading_ = false;
+    }
     if (result_ok && result > 0) {
       // Synchronous read.
       HandleResponse(result);
@@ -305,10 +310,12 @@ bool DialServiceImpl::DialSocket::ReadSocket() {
 void DialServiceImpl::DialSocket::OnSocketRead(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_reading_ = false;
-  if (!CheckResult("OnSocketRead", result))
+  if (!CheckResult("OnSocketRead", result)) {
     return;
-  if (result > 0)
+  }
+  if (result > 0) {
     HandleResponse(result);
+  }
 
   // Await next response.
   ReadSocket();
@@ -326,8 +333,9 @@ void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
 
   // Attempt to parse response, notify client if successful.
   DialDeviceData parsed_device;
-  if (ParseResponse(response, response_time, &parsed_device))
+  if (ParseResponse(response, response_time, &parsed_device)) {
     dial_service_->NotifyOnDeviceDiscovered(parsed_device);
+  }
 }
 
 bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
@@ -507,8 +515,9 @@ void DialServiceImpl::DiscoverOnAddresses(
 
 void DialServiceImpl::BindAndAddSocket(const IPAddress& bind_ip_address) {
   std::unique_ptr<DialServiceImpl::DialSocket> dial_socket(CreateDialSocket());
-  if (dial_socket->CreateAndBindSocket(bind_ip_address, net_log_))
+  if (dial_socket->CreateAndBindSocket(bind_ip_address, net_log_)) {
     dial_sockets_.push_back(std::move(dial_socket));
+  }
 }
 
 std::unique_ptr<DialServiceImpl::DialSocket>
@@ -524,8 +533,9 @@ void DialServiceImpl::SendOneRequest() {
   }
   num_requests_sent_++;
   for (const auto& socket : dial_sockets_) {
-    if (!socket->IsClosed())
+    if (!socket->IsClosed()) {
       socket->SendOneRequest(send_address_, send_buffer_);
+    }
   }
 }
 
@@ -575,8 +585,9 @@ void DialServiceImpl::FinishDiscovery() {
 
 bool DialServiceImpl::HasOpenSockets() {
   for (const auto& socket : dial_sockets_) {
-    if (!socket->IsClosed())
+    if (!socket->IsClosed()) {
       return true;
+    }
   }
   return false;
 }

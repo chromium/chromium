@@ -65,8 +65,9 @@ std::string& Replace(std::string& input,
                      const std::string& from,
                      const std::string& to) {
   size_t pos = input.find(from);
-  if (pos == std::string::npos)
+  if (pos == std::string::npos) {
     return input;
+  }
 
   return input.replace(pos, from.size(), to);
 }

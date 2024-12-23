@@ -20,9 +20,9 @@ RawEventSubscriberBundleForStream::RawEventSubscriberBundleForStream(
       event_subscriber_(
           is_audio ? AUDIO_EVENT : VIDEO_EVENT,
           is_audio ? kMaxAudioEventEntries : kMaxVideoEventEntries),
-      stats_subscriber_(
-          is_audio ? AUDIO_EVENT : VIDEO_EVENT,
-          cast_environment->Clock(), offset_estimator) {
+      stats_subscriber_(is_audio ? AUDIO_EVENT : VIDEO_EVENT,
+                        cast_environment->Clock(),
+                        offset_estimator) {
   cast_environment_->logger()->Subscribe(&event_subscriber_);
   cast_environment_->logger()->Subscribe(&stats_subscriber_);
 }
@@ -47,8 +47,9 @@ RawEventSubscriberBundle::RawEventSubscriberBundle(
     : cast_environment_(cast_environment) {}
 
 RawEventSubscriberBundle::~RawEventSubscriberBundle() {
-  if (receiver_offset_estimator_.get())
+  if (receiver_offset_estimator_.get()) {
     cast_environment_->logger()->Unsubscribe(receiver_offset_estimator_.get());
+  }
 }
 
 void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
@@ -58,8 +59,9 @@ void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
     cast_environment_->logger()->Subscribe(receiver_offset_estimator_.get());
   }
   auto it = subscribers_.find(is_audio);
-  if (it != subscribers_.end())
+  if (it != subscribers_.end()) {
     return;
+  }
 
   subscribers_.insert(std::make_pair(
       is_audio,
@@ -69,8 +71,9 @@ void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
 
 void RawEventSubscriberBundle::RemoveEventSubscribers(bool is_audio) {
   auto it = subscribers_.find(is_audio);
-  if (it == subscribers_.end())
+  if (it == subscribers_.end()) {
     return;
+  }
 
   subscribers_.erase(it);
   if (subscribers_.empty()) {
@@ -79,15 +82,15 @@ void RawEventSubscriberBundle::RemoveEventSubscribers(bool is_audio) {
   }
 }
 
-EncodingEventSubscriber*
-RawEventSubscriberBundle::GetEncodingEventSubscriber(bool is_audio) {
+EncodingEventSubscriber* RawEventSubscriberBundle::GetEncodingEventSubscriber(
+    bool is_audio) {
   auto it = subscribers_.find(is_audio);
   return it == subscribers_.end() ? nullptr
                                   : it->second->GetEncodingEventSubscriber();
 }
 
-StatsEventSubscriber*
-RawEventSubscriberBundle::GetStatsEventSubscriber(bool is_audio) {
+StatsEventSubscriber* RawEventSubscriberBundle::GetStatsEventSubscriber(
+    bool is_audio) {
   auto it = subscribers_.find(is_audio);
   return it == subscribers_.end() ? nullptr
                                   : it->second->GetStatsEventSubscriber();

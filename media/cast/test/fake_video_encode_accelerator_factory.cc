@@ -27,8 +27,9 @@ void FakeVideoEncodeAcceleratorFactory::SetInitializationWillSucceed(
 void FakeVideoEncodeAcceleratorFactory::SetAutoRespond(bool auto_respond) {
   auto_respond_ = auto_respond;
   if (auto_respond_) {
-    if (!vea_response_callback_.is_null())
+    if (!vea_response_callback_.is_null()) {
       RespondWithVideoEncodeAccelerator();
+    }
   }
 }
 
@@ -42,8 +43,9 @@ void FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator(
   vea->SetWillInitializationSucceed(will_init_succeed_);
   next_response_vea_.reset(vea);
   vea_response_callback_ = std::move(callback);
-  if (auto_respond_)
+  if (auto_respond_) {
     RespondWithVideoEncodeAccelerator();
+  }
 }
 
 void FakeVideoEncodeAcceleratorFactory::RespondWithVideoEncodeAccelerator() {

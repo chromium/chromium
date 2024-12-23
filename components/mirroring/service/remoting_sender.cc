@@ -323,8 +323,9 @@ void RemotingSender::OnRemotingDataStreamError() {
   // NOTE: This method must be idemptotent as it may be called more than once.
   decoder_buffer_reader_.reset();
   stream_sender_.reset();
-  if (!error_callback_.is_null())
+  if (!error_callback_.is_null()) {
     std::move(error_callback_).Run();
+  }
 }
 
 void RemotingSender::ClearCurrentFrame() {

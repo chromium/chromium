@@ -36,15 +36,18 @@ void DialDeviceData::set_ip_address(const net::IPAddress& ip_address) {
 }
 
 bool DialDeviceData::IsValidUrl(const GURL& url) const {
-  if (!url.is_valid() || url.is_empty() || !url.SchemeIsHTTPOrHTTPS())
+  if (!url.is_valid() || url.is_empty() || !url.SchemeIsHTTPOrHTTPS()) {
     return false;
+  }
 
   net::IPAddress host_address;
-  if (!net::ParseURLHostnameToAddress(url.host(), &host_address))
+  if (!net::ParseURLHostnameToAddress(url.host(), &host_address)) {
     return false;
+  }
 
-  if (host_address.IsPubliclyRoutable())
+  if (host_address.IsPubliclyRoutable()) {
     return false;
+  }
 
   return host_address == ip_address_;
 }

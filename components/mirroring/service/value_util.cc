@@ -10,8 +10,9 @@ bool GetString(const base::Value& value,
                const std::string& key,
                std::string* result) {
   auto* found = value.GetDict().Find(key);
-  if (!found || found->is_none())
+  if (!found || found->is_none()) {
     return true;
+  }
   if (found->is_string()) {
     *result = found->GetString();
     return true;

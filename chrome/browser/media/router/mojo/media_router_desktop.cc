@@ -127,8 +127,9 @@ MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context)
 
 MediaRouterDesktop::~MediaRouterDesktop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (media_sink_service_)
+  if (media_sink_service_) {
     media_sink_service_->RemoveLogger(GetLogger());
+  }
 }
 
 void MediaRouterDesktop::Initialize() {

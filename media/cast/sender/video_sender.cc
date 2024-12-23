@@ -233,8 +233,9 @@ void VideoSender::InsertRawVideoFrame(
       // session to watching animating content while being limited by end-to-end
       // delay.
       VLOG(1) << "Ensure playout time is at least " << min_playout_delay_;
-      if (new_target_delay < min_playout_delay_)
+      if (new_target_delay < min_playout_delay_) {
         new_target_delay = min_playout_delay_;
+      }
       VLOG(1) << "New target delay: " << new_target_delay.InMilliseconds();
       playout_delay_change_cb_.Run(new_target_delay);
     }
@@ -289,8 +290,8 @@ void VideoSender::InsertRawVideoFrame(
   } else {
     VLOG(1) << "Encoder rejected a frame.  Skipping...";
     TRACE_EVENT_INSTANT1("cast.stream", "Video Encode Reject",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "rtp_timestamp", rtp_timestamp.lower_32_bits());
+                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
+                         rtp_timestamp.lower_32_bits());
   }
 }
 
@@ -363,8 +364,9 @@ void VideoSender::OnEncodedVideoFrame(
     feedback.resource_utilization = encoded_frame->is_key_frame
                                         ? std::min(1.0, attenuated_utilization)
                                         : attenuated_utilization;
-    if (feedback_cb_)
+    if (feedback_cb_) {
       feedback_cb_.Run(feedback);
+    }
   }
 
   const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;

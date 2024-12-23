@@ -12,8 +12,9 @@ PresentationServiceDelegateObservers::PresentationServiceDelegateObservers() =
     default;
 
 PresentationServiceDelegateObservers::~PresentationServiceDelegateObservers() {
-  for (auto& observer_pair : observers_)
+  for (auto& observer_pair : observers_) {
     observer_pair.second->OnDelegateDestroyed();
+  }
 }
 
 void PresentationServiceDelegateObservers::AddObserver(

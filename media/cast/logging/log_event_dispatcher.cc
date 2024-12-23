@@ -105,24 +105,28 @@ LogEventDispatcher::Impl::~Impl() {
 
 void LogEventDispatcher::Impl::DispatchFrameEvent(
     std::unique_ptr<FrameEvent> event) const {
-  for (RawEventSubscriber* s : subscribers_)
+  for (RawEventSubscriber* s : subscribers_) {
     s->OnReceiveFrameEvent(*event);
+  }
 }
 
 void LogEventDispatcher::Impl::DispatchPacketEvent(
     std::unique_ptr<PacketEvent> event) const {
-  for (RawEventSubscriber* s : subscribers_)
+  for (RawEventSubscriber* s : subscribers_) {
     s->OnReceivePacketEvent(*event);
+  }
 }
 
 void LogEventDispatcher::Impl::DispatchBatchOfEvents(
     std::unique_ptr<std::vector<FrameEvent>> frame_events,
     std::unique_ptr<std::vector<PacketEvent>> packet_events) const {
   for (RawEventSubscriber* s : subscribers_) {
-    for (const FrameEvent& e : *frame_events)
+    for (const FrameEvent& e : *frame_events) {
       s->OnReceiveFrameEvent(e);
-    for (const PacketEvent& e : *packet_events)
+    }
+    for (const PacketEvent& e : *packet_events) {
       s->OnReceivePacketEvent(e);
+    }
   }
 }
 

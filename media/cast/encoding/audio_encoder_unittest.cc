@@ -100,8 +100,9 @@ struct TestScenario {
   std::string ToString() const {
     std::ostringstream out;
     for (size_t i = 0; i < num_durations; ++i) {
-      if (i > 0)
+      if (i > 0) {
         out << ", ";
+      }
       out << durations_in_ms[i];
     }
     return out.str();

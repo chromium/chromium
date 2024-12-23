@@ -28,7 +28,7 @@ int64_t InMilliseconds(base::TimeTicks event_time) {
   return (event_time - base::TimeTicks()).InMilliseconds();
 }
 
-}
+}  // namespace
 
 namespace media {
 namespace cast {
@@ -50,13 +50,14 @@ class EncodingEventSubscriberTest : public ::testing::Test {
   }
 
   ~EncodingEventSubscriberTest() override {
-    if (event_subscriber_)
+    if (event_subscriber_) {
       cast_environment_->logger()->Unsubscribe(event_subscriber_.get());
+    }
   }
 
   void GetEventsAndReset() {
-    event_subscriber_->GetEventsAndReset(
-        &metadata_, &frame_events_, &packet_events_);
+    event_subscriber_->GetEventsAndReset(&metadata_, &frame_events_,
+                                         &packet_events_);
     first_rtp_timestamp_ =
         RtpTimeTicks().Expand(metadata_.first_rtp_timestamp());
   }
@@ -229,8 +230,7 @@ TEST_F(EncodingEventSubscriberTest, EventFiltering) {
   const AggregatedFrameEvent* frame_event = it->get();
 
   ASSERT_EQ(1, frame_event->event_type_size());
-  EXPECT_EQ(media::cast::proto::FRAME_DECODED,
-            frame_event->event_type(0));
+  EXPECT_EQ(media::cast::proto::FRAME_DECODED, frame_event->event_type(0));
 
   GetEventsAndReset();
 
@@ -467,8 +467,7 @@ TEST_F(EncodingEventSubscriberTest, PacketEvent) {
   const BasePacketEvent& base_event = event->base_packet_event(0);
   EXPECT_EQ(packet_id, base_event.packet_id());
   ASSERT_EQ(1, base_event.event_type_size());
-  EXPECT_EQ(media::cast::proto::PACKET_RECEIVED,
-            base_event.event_type(0));
+  EXPECT_EQ(media::cast::proto::PACKET_RECEIVED, base_event.event_type(0));
   ASSERT_EQ(1, base_event.event_timestamp_ms_size());
   EXPECT_EQ(InMilliseconds(now), base_event.event_timestamp_ms(0));
   EXPECT_EQ(size, base_event.size());
@@ -524,8 +523,7 @@ TEST_F(EncodingEventSubscriberTest, MultiplePacketEventsForPacket) {
   ASSERT_EQ(2, base_event.event_type_size());
   EXPECT_EQ(media::cast::proto::PACKET_SENT_TO_NETWORK,
             base_event.event_type(0));
-  EXPECT_EQ(media::cast::proto::PACKET_RETRANSMITTED,
-            base_event.event_type(1));
+  EXPECT_EQ(media::cast::proto::PACKET_RETRANSMITTED, base_event.event_type(1));
   ASSERT_EQ(2, base_event.event_timestamp_ms_size());
   EXPECT_EQ(InMilliseconds(now1), base_event.event_timestamp_ms(0));
   EXPECT_EQ(InMilliseconds(now2), base_event.event_timestamp_ms(1));

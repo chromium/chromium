@@ -46,7 +46,7 @@ class DesktopMediaPickerController;
 namespace content {
 class BrowserContext;
 struct DesktopMediaID;
-}
+}  // namespace content
 
 namespace media {
 class FlingingController;

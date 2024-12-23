@@ -65,7 +65,6 @@ namespace mirroring {
 
 namespace {
 
-
 const openscreen::cast::Answer kAnswerWithConstraints{
     1234,
     // Send indexes and SSRCs are set later.
@@ -373,8 +372,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   void NegotiateMirroring() { session_host_->NegotiateMirroring(); }
 
   void StopSession() {
-    if (video_host_)
+    if (video_host_) {
       EXPECT_CALL(*video_host_, OnStopped());
+    }
     EXPECT_CALL(*this, DidStop());
     session_host_.reset();
     task_environment_.RunUntilIdle();
@@ -509,8 +509,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     ASSERT_EQ(cast_mode_, "remoting");
     const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
     EXPECT_CALL(remoting_source_, OnStopped(reason));
-    if (video_host_)
+    if (video_host_) {
       EXPECT_CALL(*video_host_, OnStopped());
+    }
     EXPECT_CALL(*this, DidStop());
     remoter_->Stop(reason);
     task_environment_.RunUntilIdle();
@@ -868,14 +869,13 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareVp8EncodingIfSupported) {
 
   // We should have put a video config for VP8 with hardware enabled in the last
   // offered configs.
-  EXPECT_TRUE(std::any_of(LastOfferedVideoConfigs().begin(),
-                          LastOfferedVideoConfigs().end(),
+  EXPECT_TRUE(std::any_of(
+      LastOfferedVideoConfigs().begin(), LastOfferedVideoConfigs().end(),
 
-                          [](const media::cast::FrameSenderConfig& config) {
-                            return config.video_codec() ==
-                                       media::VideoCodec::kVP8 &&
-                                   config.use_hardware_encoder;
-                          }));
+      [](const media::cast::FrameSenderConfig& config) {
+        return config.video_codec() == media::VideoCodec::kVP8 &&
+               config.use_hardware_encoder;
+      }));
 }
 
 TEST_F(OpenscreenSessionHostTest,
@@ -964,14 +964,13 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
 
   // We should have put a video config for H264 with hardware enabled in the
   // last offered configs.
-  EXPECT_TRUE(std::any_of(LastOfferedVideoConfigs().begin(),
-                          LastOfferedVideoConfigs().end(),
+  EXPECT_TRUE(std::any_of(
+      LastOfferedVideoConfigs().begin(), LastOfferedVideoConfigs().end(),
 
-                          [](const media::cast::FrameSenderConfig& config) {
-                            return config.video_codec() ==
-                                       media::VideoCodec::kH264 &&
-                                   config.use_hardware_encoder;
-                          }));
+      [](const media::cast::FrameSenderConfig& config) {
+        return config.video_codec() == media::VideoCodec::kH264 &&
+               config.use_hardware_encoder;
+      }));
 #endif
 }
 

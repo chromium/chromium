@@ -84,8 +84,9 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
 
   std::vector<std::string> get_presentation_ids() {
     std::vector<std::string> presentation_ids;
-    for (auto& element : presentation_ids_to_routes_)
+    for (auto& element : presentation_ids_to_routes_) {
       presentation_ids.push_back(element.first);
+    }
     return presentation_ids;
   }
 

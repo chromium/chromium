@@ -62,13 +62,15 @@ void CastActivity::RemoveClient(const std::string& client_id) {
   // Don't erase by key here as the |client_id| may be referring to the
   // client being deleted.
   auto it = connected_clients_.find(client_id);
-  if (it != connected_clients_.end())
+  if (it != connected_clients_.end()) {
     connected_clients_.erase(it);
+  }
 }
 
 CastSession* CastActivity::GetSession() const {
-  if (!session_id_)
+  if (!session_id_) {
     return nullptr;
+  }
   CastSession* session = session_tracker_->GetSessionById(*session_id_);
   if (!session) {
     // TODO(crbug.com/41426190): Add UMA metrics for this and other error
@@ -119,19 +121,22 @@ void CastActivity::SendMessageToClient(
 void CastActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
     std::optional<int> request_id) {
-  for (auto& client : connected_clients_)
+  for (auto& client : connected_clients_) {
     client.second->SendMediaMessageToClient(media_status, request_id);
+  }
 }
 
 void CastActivity::ClosePresentationConnections(
     blink::mojom::PresentationConnectionCloseReason close_reason) {
-  for (auto& client : connected_clients_)
+  for (auto& client : connected_clients_) {
     client.second->CloseConnection(close_reason);
+  }
 }
 
 void CastActivity::TerminatePresentationConnections() {
-  for (auto& client : connected_clients_)
+  for (auto& client : connected_clients_) {
     client.second->TerminateConnection();
+  }
 }
 
 std::optional<int> CastActivity::SendMediaRequestToReceiver(
@@ -190,8 +195,9 @@ void CastActivity::HandleLeaveSession(const std::string& client_id) {
   std::vector<std::string> leaving_client_ids;
   for (const auto& pair : connected_clients_) {
     if (pair.second->MatchesAutoJoinPolicy(client.origin(),
-                                           client.frame_tree_node_id()))
+                                           client.frame_tree_node_id())) {
       leaving_client_ids.push_back(pair.first);
+    }
   }
 
   for (const auto& leaving_client_id : leaving_client_ids) {

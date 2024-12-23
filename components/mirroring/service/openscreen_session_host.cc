@@ -293,8 +293,9 @@ class OpenscreenSessionHost::AudioCapturingCallback final
     std::string error_message = base::StrCat(
         {"AudioCaptureError occurred, code: ",
          base::NumberToString(static_cast<int>(code)), ", message: ", message});
-    if (!error_callback_.is_null())
+    if (!error_callback_.is_null()) {
       std::move(error_callback_).Run(error_message);
+    }
   }
 
   void OnCaptureMuted(bool is_muted) override {
@@ -415,8 +416,9 @@ void OpenscreenSessionHost::OnNegotiated(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::SenderSession::ConfiguredSenders senders,
     Recommendations capture_recommendations) {
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   const media::AudioCodec audio_codec =
       media::cast::ToAudioCodec(senders.audio_config.codec);
@@ -633,8 +635,9 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
   // mojom interface. Generally speaking, receivers do not update their remoting
   // capabilities during a single session.
   DCHECK(!media_remoter_);
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   InitMediaRemoter(capabilities);
 }
@@ -678,15 +681,17 @@ void OpenscreenSessionHost::OnError(const std::string& message) {
 }
 
 void OpenscreenSessionHost::RequestRefreshFrame() {
-  if (video_capture_client_)
+  if (video_capture_client_) {
     video_capture_client_->RequestRefreshFrame();
+  }
 }
 
 void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
   DCHECK_NE(state_, State::kInitializing);
-  if (callback.is_null())
+  if (callback.is_null()) {
     return;
+  }
 
   std::unique_ptr<media::VideoEncodeAccelerator> mojo_vea;
   if (gpu_ && !supported_profiles_.empty()) {
@@ -722,16 +727,18 @@ void OpenscreenSessionHost::ConnectToRemotingSource(
 void OpenscreenSessionHost::RequestRemotingStreaming() {
   DCHECK(media_remoter_);
   DCHECK_EQ(State::kMirroring, state_);
-  if (video_capture_client_)
+  if (video_capture_client_) {
     video_capture_client_->Pause();
+  }
   StopStreaming();
   state_ = State::kRemoting;
   Negotiate();
 }
 
 void OpenscreenSessionHost::RestartMirroringStreaming() {
-  if (state_ != State::kRemoting)
+  if (state_ != State::kRemoting) {
     return;
+  }
 
   // Stop session instead of switching to mirroring when in Remote Playback
   // mode.
@@ -746,8 +753,9 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
 }
 
 void OpenscreenSessionHost::SwitchSourceTab() {
-  if (observer_)
+  if (observer_) {
     observer_->OnSourceChanged();
+  }
 
   if (state_ == State::kRemoting) {
     switching_tab_source_ = true;
@@ -772,8 +780,9 @@ void OpenscreenSessionHost::SwitchSourceTab() {
     audio_input_device_->Start();
   }
 
-  if (media_remoter_)
+  if (media_remoter_) {
     media_remoter_->OnMirroringResumed(true);
+  }
 }
 
 void OpenscreenSessionHost::OnAsyncInitialized(
@@ -789,8 +798,9 @@ void OpenscreenSessionHost::OnAsyncInitialized(
   state_ = State::kMirroring;
 
   Negotiate();
-  if (!initialized_cb_.is_null())
+  if (!initialized_cb_.is_null()) {
     std::move(initialized_cb_).Run();
+  }
 }
 
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
@@ -806,8 +816,9 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
   }
 
   // Report the error and stop this session.
-  if (observer_)
+  if (observer_) {
     observer_->OnError(error);
+  }
 
   StopSession();
 }
@@ -816,8 +827,9 @@ void OpenscreenSessionHost::StopStreaming() {
   logger_.LogInfo(
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
-  if (!cast_environment_)
+  if (!cast_environment_) {
     return;
+  }
 
   if (audio_input_device_) {
     audio_input_device_->Stop();
@@ -836,8 +848,9 @@ void OpenscreenSessionHost::StopSession() {
   logger_.LogInfo(
       base::StrCat({"stopped session. state=",
                     base::NumberToString(static_cast<int>(state_))}));
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   state_ = State::kStopped;
   StopStreaming();

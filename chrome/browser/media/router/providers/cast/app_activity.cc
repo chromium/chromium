@@ -48,8 +48,9 @@ AppActivity::AppActivity(const MediaRoute& route,
 AppActivity::~AppActivity() = default;
 
 void AppActivity::OnSessionSet(const CastSession& session) {
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetSession(session);
+  }
 }
 
 void AppActivity::OnSessionUpdated(const CastSession& session,
@@ -58,8 +59,9 @@ void AppActivity::OnSessionUpdated(const CastSession& session,
     client.second->SendMessageToClient(
         CreateUpdateSessionMessage(session, client.first, sink_, hash_token));
   }
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetSession(session);
+  }
 }
 
 cast_channel::Result AppActivity::SendAppMessageToReceiver(
@@ -97,8 +99,9 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
 std::optional<int> AppActivity::SendMediaRequestToReceiver(
     const CastInternalMessage& cast_message) {
   CastSession* session = GetSession();
-  if (!session)
+  if (!session) {
     return std::nullopt;
+  }
   return message_handler_->SendMediaRequest(
       cast_channel_id(), cast_message.v2_message_body(),
       cast_message.client_id(), session->destination_id());
@@ -116,8 +119,9 @@ void AppActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
     std::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
-  if (media_controller_)
+  if (media_controller_) {
     media_controller_->SetMediaStatus(media_status);
+  }
 }
 
 void AppActivity::BindMediaController(
@@ -181,11 +185,13 @@ void AppActivity::OnInternalMessage(
 }
 
 bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
-  if (!cast_source.ContainsApp(app_id()))
+  if (!cast_source.ContainsApp(app_id())) {
     return false;
+  }
 
-  if (base::Contains(connected_clients_, cast_source.client_id()))
+  if (base::Contains(connected_clients_, cast_source.client_id())) {
     return false;
+  }
 
   return true;
 }

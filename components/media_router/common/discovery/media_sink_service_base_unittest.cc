@@ -57,13 +57,15 @@ class MediaSinkServiceBaseTest : public ::testing::Test {
   void PopulateSinks(const std::vector<MediaSinkInternal>& old_sinks,
                      const std::vector<MediaSinkInternal>& new_sinks) {
     media_sink_service_.previous_sinks_.clear();
-    for (const auto& old_sink : old_sinks)
+    for (const auto& old_sink : old_sinks) {
       media_sink_service_.previous_sinks_.emplace(old_sink.sink().id(),
                                                   old_sink);
+    }
 
     media_sink_service_.sinks_.clear();
-    for (const auto& new_sink : new_sinks)
+    for (const auto& new_sink : new_sinks) {
       media_sink_service_.sinks_.emplace(new_sink.sink().id(), new_sink);
+    }
   }
 
   void TestOnDiscoveryComplete(

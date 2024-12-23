@@ -67,8 +67,7 @@ class RawEventSubscriberBundle {
 
   void AddEventSubscribers(bool is_audio);
   void RemoveEventSubscribers(bool is_audio);
-  EncodingEventSubscriber* GetEncodingEventSubscriber(
-      bool is_audio);
+  EncodingEventSubscriber* GetEncodingEventSubscriber(bool is_audio);
   StatsEventSubscriber* GetStatsEventSubscriber(bool is_audio);
 
  private:

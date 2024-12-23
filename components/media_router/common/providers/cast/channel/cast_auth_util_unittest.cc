@@ -69,8 +69,9 @@ class CastAuthUtilTest : public testing::Test {
     AuthResponse response;
 
     response.set_client_auth_certificate(chain[0]);
-    for (size_t i = 1; i < chain.size(); ++i)
+    for (size_t i = 1; i < chain.size(); ++i) {
       response.add_intermediate_certificate(chain[i]);
+    }
 
     response.set_hash_algorithm(digest_algorithm);
     switch (digest_algorithm) {
@@ -440,16 +441,18 @@ AuthResult TestVerifyRevocation(
 
   if (certificate_chain.size() > 0) {
     response.set_client_auth_certificate(certificate_chain[0]);
-    for (size_t i = 1; i < certificate_chain.size(); ++i)
+    for (size_t i = 1; i < certificate_chain.size(); ++i) {
       response.add_intermediate_certificate(certificate_chain[i]);
+    }
   }
 
   response.set_crl(crl_bundle);
 
   cast_certificate::CRLPolicy crl_policy =
       cast_certificate::CRLPolicy::CRL_REQUIRED;
-  if (!crl_required && crl_bundle.empty())
+  if (!crl_required && crl_bundle.empty()) {
     crl_policy = cast_certificate::CRLPolicy::CRL_OPTIONAL;
+  }
   AuthResult result = VerifyCredentialsForTest(
       response, "", crl_policy, crl_trust_store, verification_time);
   // This test doesn't set the signature so it will just fail there.

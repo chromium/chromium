@@ -150,8 +150,9 @@ class AudioEncoder::ImplBase
       src_pos += num_samples_to_xfer;
       buffer_fill_end_ += num_samples_to_xfer;
 
-      if (buffer_fill_end_ < samples_per_frame_)
+      if (buffer_fill_end_ < samples_per_frame_) {
         break;
+      }
 
       auto audio_frame = std::make_unique<SenderEncodedFrame>();
       audio_frame->is_key_frame = true;

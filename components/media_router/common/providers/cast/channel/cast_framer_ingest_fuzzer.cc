@@ -24,8 +24,9 @@ google::protobuf::LogSilencer log_silencer;
 namespace cast_channel {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size > MessageFramer::MessageHeader::max_message_size())
+  if (size > MessageFramer::MessageHeader::max_message_size()) {
     return 0;
+  }
 
   scoped_refptr<net::GrowableIOBuffer> buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
