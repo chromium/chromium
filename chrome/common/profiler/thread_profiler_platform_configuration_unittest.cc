@@ -79,7 +79,11 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::BETA));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
+#else   // BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   EXPECT_TRUE(config()->IsSupported(std::nullopt));
 #endif
