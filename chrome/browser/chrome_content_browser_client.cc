@@ -3665,18 +3665,6 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
-  return dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
-                                              url, storage_key);
-}
-
-// TODO: crbug.com/369813097 - Move this implementation into
-// ChromeContentBrowserClient::IsFullCookieAccessAllowed() after DIPS migrates
-// to //content.
-namespace dips_move {
-bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               const blink::StorageKey& storage_key) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile);
@@ -3688,7 +3676,6 @@ bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
       url::Origin::Create(storage_key.top_level_site().GetURL()),
       cookie_settings->SettingOverridesForStorage());
 }
-}  // namespace dips_move
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
     content::BrowserContext* browser_context,
@@ -3696,19 +3683,6 @@ void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
     const net::SchemefulSite& accessing_site,
     base::TimeDelta ttl,
     bool ignore_schemes) {
-  dips_move::GrantCookieAccessDueToHeuristic(
-      browser_context, top_frame_site, accessing_site, ttl, ignore_schemes);
-}
-
-// TODO: crbug.com/369813097 - Move this implementation into
-// ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic() after DIPS
-// migrates to //content.
-namespace dips_move {
-void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                     const net::SchemefulSite& top_frame_site,
-                                     const net::SchemefulSite& accessing_site,
-                                     base::TimeDelta ttl,
-                                     bool ignore_schemes) {
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
@@ -3720,7 +3694,6 @@ void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
       accessing_site.GetURL(), top_frame_site.GetURL(), ttl,
       /*use_schemeless_patterns=*/ignore_schemes);
 }
-}  // namespace dips_move
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(

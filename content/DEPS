@@ -27,6 +27,7 @@ include_rules = [
   "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/content_settings/core/common",
   "+components/input",
   "+components/memory_pressure",
   # components/performance_manager sits between chrome/ and content/, except for
