@@ -25,6 +25,13 @@ ScopedOrtMemoryInfo::~ScopedOrtMemoryInfo() {
   GetOrtApi()->ReleaseMemoryInfo(*pptr_);
 }
 
+ScopedOrtOpAttr::ScopedOrtOpAttr() {
+  pptr_ = std::make_unique<OrtOpAttr*>(nullptr);
+}
+ScopedOrtOpAttr::~ScopedOrtOpAttr() {
+  GetOrtApi()->ReleaseOpAttr(*pptr_);
+}
+
 ScopedOrtGraph::ScopedOrtGraph() {
   pptr_ = std::make_unique<OrtGraph*>(nullptr);
 }

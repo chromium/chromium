@@ -18,6 +18,7 @@ namespace webnn {
 namespace {
 
 constexpr char kOrtDomainName[] = "";
+constexpr int32_t kOrtOpsetVersion = 18;
 
 // Element-wise binary
 constexpr char kOpTypeAdd[] = "Add";
@@ -61,7 +62,7 @@ constexpr char kOpTypeReciprocal[] = "Reciprocal";
 
 constexpr char kOpTypeRelu[] = "Relu";
 // constexpr char kOpTypeReshape[] = "Reshape";
-// constexpr char kOpTypeSoftmax[] = "Softmax";
+constexpr char kOpTypeSoftmax[] = "Softmax";
 
 // constexpr char kBuildGraphError[] = "Failed to build graph.";
 
@@ -263,7 +264,22 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
 
 template <typename T>
 void GraphBuilderOrt::AddBinaryOperation(const T& operation,
-                                         std::string op_type) {}
+                                         std::string op_type) {
+  const std::string node_name = GetNodeName(operation.label);
+  const std::string lhs_name = GetOperandName(operation.lhs_operand_id);
+  const std::string rhs_name = GetOperandName(operation.rhs_operand_id);
+  const std::string output_name = GetOperandName(operation.output_operand_id);
+
+  std::array<const char*, 2> input_names = {lhs_name.c_str(), rhs_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      op_type.data(), kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
 
 void GraphBuilderOrt::AddElementWiseBinaryOperation(
     const mojom::ElementWiseBinary& element_wise_binary) {
@@ -412,7 +428,28 @@ void GraphBuilderOrt::AddLogicalNotOperation(
 
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {}
 
-void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {}
+void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
+  const std::string node_name = GetNodeName(softmax.label);
+  const std::string input_name = GetOperandName(softmax.input_operand_id);
+  const std::string output_name = GetOperandName(softmax.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_axis;
+  int64_t axis = static_cast<int64_t>(softmax.axis);
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"axis", &axis, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_axis.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 1> attributes = {attr_axis.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeSoftmax, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
 
 // TODO: Post to thread pool?
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -420,7 +457,7 @@ GraphBuilderOrt::BuildModel() {
   ScopedOrtModel& model = result_->model;
 
   std::vector<const char*> domain_names = {kOrtDomainName};
-  std::vector<int32_t> opset_versions = {18};
+  std::vector<int32_t> opset_versions = {kOrtOpsetVersion};
   CHECK_STATUS(
       GetOrtGraphApi()->CreateModel(domain_names.data(), opset_versions.data(),
                                     domain_names.size(), model.get_pptr()));

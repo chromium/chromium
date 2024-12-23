@@ -35,6 +35,18 @@ class ScopedOrtMemoryInfo {
   std::unique_ptr<OrtMemoryInfo*> pptr_;
 };
 
+class ScopedOrtOpAttr {
+ public:
+  ScopedOrtOpAttr();
+  ~ScopedOrtOpAttr();
+
+  OrtOpAttr* get_ptr() { return *pptr_; }
+  OrtOpAttr** get_pptr() { return pptr_.get(); }
+
+ private:
+  std::unique_ptr<OrtOpAttr*> pptr_;
+};
+
 class ScopedOrtGraph {
  public:
   ScopedOrtGraph();
