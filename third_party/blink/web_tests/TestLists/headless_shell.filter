@@ -178,8 +178,6 @@
 -external/wpt/css/css-backgrounds/css3-border-image-repeat-repeat.html
 -external/wpt/css/css-backgrounds/table-cell-background-local-003.html
 -external/wpt/css/css-borders/border-radius-greater-than-width.html
-# Known to be very flaky: https://crbug.com/377818367
--external/wpt/css/css-break/*
 -external/wpt/css/css-color/color-mix-basic-001.html
 -external/wpt/css/css-color/composited-filters-under-opacity.html
 -external/wpt/css/css-color/deprecated-sameas-010.html
