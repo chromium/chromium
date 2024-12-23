@@ -244,12 +244,6 @@ public class UmaSessionStats {
         prefManager.syncUsageAndCrashReportingPrefs();
     }
 
-    public static void registerExternalExperiment(String fallbackStudyName, int[] experimentIds) {
-        // TODO(crbug.com/40142802): Remove this method once all callers have moved onto
-        // the overload below.
-        registerExternalExperiment(experimentIds, true);
-    }
-
     public static void registerExternalExperiment(
             int[] experimentIds, boolean overrideExistingIds) {
         assert isMetricsServiceAvailable();
