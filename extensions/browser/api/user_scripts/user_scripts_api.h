@@ -99,6 +99,24 @@ class UserScriptsUpdateFunction : public ExtensionFunction {
   void OnUserScriptsUpdated(const std::optional<std::string>& error);
 };
 
+class UserScriptsExecuteFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.execute", USERSCRIPTS_EXECUTE)
+
+  UserScriptsExecuteFunction() = default;
+  UserScriptsExecuteFunction(const UserScriptsExecuteFunction&) = delete;
+  const UserScriptsExecuteFunction& operator=(
+      const UserScriptsExecuteFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsExecuteFunction() override = default;
+
+  api::user_scripts::UserScriptInjection injection_;
+};
+
 class UserScriptsConfigureWorldFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("userScripts.configureWorld",

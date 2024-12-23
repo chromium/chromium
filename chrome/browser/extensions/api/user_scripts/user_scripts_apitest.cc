@@ -90,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, UpdateUserScripts) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/update")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, ExecuteUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/execute")) << message_;
+}
+
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests".
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_ConfigureWorld DISABLED_ConfigureWorld

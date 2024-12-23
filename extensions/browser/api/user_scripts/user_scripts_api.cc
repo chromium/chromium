@@ -38,8 +38,15 @@ constexpr char kEmptySourceError[] =
 constexpr char kInvalidSourceError[] =
     "User script with ID '*' must specify exactly one of 'code' or 'file' as a "
     "js source.";
+constexpr char kInvalidSourceWithoutIdError[] =
+    "User script must specify exactly one of 'code' or 'file' as a js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
+constexpr char kInvalidAllFramesError[] =
+    "User script must not specify injection to 'all frames' when it has a "
+    "specific set of 'frameIds' to inject into.";
+constexpr char kInvalidInjectionTargetIdsError[] =
+    "User script must not specify both 'documentIds' and 'frameIds'.";
 
 // Sanitizes the given `world_id`, updating it if necessary.
 // Returns true on success; on failure, returns false and populates `error_out`.
@@ -630,6 +637,32 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
     config_manager->SetUserScriptWorldInfo(*extension(), std::move(world_info));
   }
 
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
+  std::optional<api::user_scripts::Execute::Params> params(
+      api::user_scripts::Execute::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  injection_ = std::move(params->injection);
+
+  if ((injection_.js.code && injection_.js.file) ||
+      (!injection_.js.code && !injection_.js.file)) {
+    return RespondNow(Error(kInvalidSourceWithoutIdError));
+  }
+
+  if (injection_.target.frame_ids &&
+      injection_.target.all_frames.value_or(false)) {
+    return RespondNow(Error(kInvalidAllFramesError));
+  }
+
+  if (injection_.target.document_ids && injection_.target.frame_ids) {
+    return RespondNow(Error(kInvalidInjectionTargetIdsError));
+  }
+
+  // TODO(crbug.com/326657581): Execute script with the given parameters.
   return RespondNow(NoArguments());
 }
 
