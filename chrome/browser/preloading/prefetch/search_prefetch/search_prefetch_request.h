@@ -35,8 +35,9 @@ enum class SearchPrefetchStatus {
   // fetcher (as of now).
   kNotStarted = 0,
 
-  // The request is on the network and may move to any other state.
-  kInFlight = 1,
+  // The request is on the network and may move to any other state. Removed
+  // after https://crbug.com/40217275 is implemented.
+  // kInFlight = 1,
 
   // The request can be served to the navigation stack, but may still encounter
   // errors and move to |kRequestFailed| or it may complete and move to
@@ -110,9 +111,6 @@ class SearchPrefetchRequest {
 
   // Called on the URL loader receives servable response.
   void OnServableResponseCodeReceived();
-
-  // Update the status when the request is serveable.
-  void MarkPrefetchAsServable();
 
   // Update the status when the request is complete.
   void MarkPrefetchAsComplete();

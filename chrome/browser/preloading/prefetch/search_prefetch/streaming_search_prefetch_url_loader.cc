@@ -281,7 +281,6 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   CHECK(streaming_prefetch_request_);
-  streaming_prefetch_request_->MarkPrefetchAsServable();
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
   // that extensions can be informed of any prefetches.

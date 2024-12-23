@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SearchPrefetchStatus">
   <int value="0" label="Not started"/>
-  <int value="1" label="In flight"/>
+  <int value="1" label="In flight (Obsolete)"/>
   <int value="2" label="Headers received (for streaming responses)"/>
   <int value="3"
       label="Headers received and user navigated to search terms (for
