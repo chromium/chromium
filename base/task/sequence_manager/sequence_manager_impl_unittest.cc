@@ -4998,14 +4998,9 @@ TEST_P(SequenceManagerTest, DescribeAllPendingTasks) {
   PostTaskC(queues[2]->task_runner());
 
   std::string description = sequence_manager()->DescribeAllPendingTasks();
-#if defined(OFFICIAL_BUILD)
-  // Function names are omitted from FROM_HERE in official builds.
-  EXPECT_THAT(description, HasSubstr("(unknown)@"));
-#else
   EXPECT_THAT(description, HasSubstr("PostTaskA@"));
   EXPECT_THAT(description, HasSubstr("PostTaskB@"));
   EXPECT_THAT(description, HasSubstr("PostTaskC@"));
-#endif  // defined(OFFICIAL_BUILD)
 }
 
 TEST_P(SequenceManagerTest, TaskPriortyInterleaving) {

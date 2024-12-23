@@ -1167,10 +1167,18 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
 
     const std::optional<base::Location>& ownership_location =
         web_contents_with_dangling_ptr_to_browser_context->ownership_location();
-    SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/owner",
-                               ownership_location
-                                   ? ownership_location->ToString()
-                                   : std::string("unknown"));
+    std::string owner;
+    if (ownership_location) {
+      if (ownership_location->has_source_info()) {
+        owner = std::string(ownership_location->function_name()) + "@" +
+                ownership_location->file_name();
+      } else {
+        owner = "no_source_info";
+      }
+    } else {
+      owner = "unknown";
+    }
+    SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/owner", owner);
 
 #if BUILDFLAG(IS_ANDROID)
     // On Android, also report the Java stack trace from WebContents's

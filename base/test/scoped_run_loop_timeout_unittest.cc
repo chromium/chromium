@@ -125,13 +125,7 @@ constexpr char kErrorMessage[] = "I like kittens!";
 std::string GetExpectedTimeoutMessage(const Location& from,
                                       const char* expected_message) {
   std::ostringstream oss;
-  oss << "RunLoop::Run() timed out. Timeout set at " <<
-#if defined(OFFICIAL_BUILD)
-      // Function names are omitted from FROM_HERE in official builds.
-      "(unknown)"
-#else
-      from.function_name()
-#endif  // defined(OFFICIAL_BUILD)
+  oss << "RunLoop::Run() timed out. Timeout set at " << from.function_name()
       << "@" << from.file_name() << ":" << from.line_number() << ".\n"
       << expected_message;
   return oss.str();
