@@ -613,15 +613,17 @@ void FullRestoreService::MaybeShowRestoreNotification(
     return;
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  const bool last_session_crashed =
+      dialog_type == InformedRestoreContentsData::DialogType::kCrash;
+
+  if (last_session_crashed &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           kForceFullRestoreAndSessionRestoreAfterCrash)) {
     LOG(WARNING) << "Full session restore was forced by a debug flag.";
     Restore();
     return;
   }
 
-  const bool last_session_crashed =
-      dialog_type == InformedRestoreContentsData::DialogType::kCrash;
   const std::string id = last_session_crashed ? kRestoreForCrashNotificationId
                                               : kRestoreNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
