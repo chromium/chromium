@@ -11,6 +11,7 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A delegate used to populate the menu. */
+// TODO(crbug.com/339864862): Rename to ListMenuHostDelegate.
 @NullMarked
 public interface ListMenuButtonDelegate {
     /**
