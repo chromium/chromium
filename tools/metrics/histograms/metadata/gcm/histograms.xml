@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.MessageValid" enum="BooleanSuccess"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>smaier@chromium.org</owner>
   <summary>
     Records whether or not a received GCM message is valid and will proceed to
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2025-04-13">
+    enum="GCMRegistrationRequestStatus" expires_after="2025-06-22">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error

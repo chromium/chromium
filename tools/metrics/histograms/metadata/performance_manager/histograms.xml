@@ -179,7 +179,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2025-04-20">
+    units="%" expires_after="2025-06-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -210,7 +210,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
-    units="pages" expires_after="2025-04-13">
+    units="pages" expires_after="2025-06-22">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.QuiescentPageCount" units="pages"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
