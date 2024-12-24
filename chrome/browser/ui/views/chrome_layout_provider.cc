@@ -81,6 +81,10 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // label button because it behaves like a menu control.
       return gfx::Insets::VH(insets.height(), horizontal_padding);
     }
+    case INSETS_RECENT_ACTIVITY_IMAGE_MARGIN:
+      return gfx::Insets::TLBR(0, 0, 0, 10);
+    case INSETS_RECENT_ACTIVITY_ROW_MARGIN:
+      return gfx::Insets::TLBR(10, 5, 5, 5);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -197,6 +201,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 10;
     case DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL:
       return 16;
+    case DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE:
+      return 32;
   }
   NOTREACHED();
 }

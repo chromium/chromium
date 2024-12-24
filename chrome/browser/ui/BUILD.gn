@@ -4653,6 +4653,8 @@ static_library("ui") {
       "views/tabs/new_tab_button.h",
       "views/tabs/overflow_view.cc",
       "views/tabs/overflow_view.h",
+      "views/tabs/recent_activity_bubble_dialog_view.cc",
+      "views/tabs/recent_activity_bubble_dialog_view.h",
       "views/tabs/tab.cc",
       "views/tabs/tab.h",
       "views/tabs/tab_close_button.cc",

@@ -5,16 +5,22 @@
 #include "chrome/browser/ui/views/tabs/collaboration_messaging_page_action_icon_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
+using collaboration::messaging::ActivityLogItem;
+using collaboration::messaging::ActivityLogQueryParams;
 using collaboration::messaging::CollaborationEvent;
 
 CollaborationMessagingPageActionIconView::
@@ -26,7 +32,8 @@ CollaborationMessagingPageActionIconView::
                          0,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "CollaborationMessaging") {
+                         "CollaborationMessaging"),
+      profile_(browser->profile()) {
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
   SetProperty(views::kElementIdentifierKey,
               kCollaborationMessagingPageActionIconElementId);
@@ -97,14 +104,44 @@ void CollaborationMessagingPageActionIconView::UpdateContent(
   UpdateIconImage();
 }
 
+std::vector<ActivityLogItem>
+CollaborationMessagingPageActionIconView::GetActivityLog() {
+  auto* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
+  CHECK(tab_group_sync_service);
+  auto* messaging_service =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile_);
+  CHECK(messaging_service);
+
+  auto* tab = tabs::TabInterface::GetFromContents(GetWebContents());
+  auto group = tab->GetGroup();
+  CHECK(group.has_value());
+
+  auto saved_tab_group = tab_group_sync_service->GetGroup(group.value());
+  CHECK(saved_tab_group);
+  auto collaboration_id = saved_tab_group->collaboration_id();
+
+  // A message should never be delivered to a tab that is not shared.
+  CHECK(collaboration_id.has_value());
+
+  ActivityLogQueryParams activity_log_params;
+  activity_log_params.result_length =
+      RecentActivityBubbleDialogView::kMaxNumberRows;
+  activity_log_params.collaboration_id =
+      data_sharing::GroupId(collaboration_id.value().value());
+
+  return messaging_service->GetActivityLog(activity_log_params);
+}
+
 void CollaborationMessagingPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  // TODO(crbug.com/383361891): Trigger RecentActivity dialog
+  bubble_coordinator_.Show(this, GetWebContents(), GetActivityLog(), profile_);
 }
 
 views::BubbleDialogDelegate*
 CollaborationMessagingPageActionIconView::GetBubble() const {
-  return nullptr;
+  return bubble_coordinator_.GetBubble();
 }
 
 const gfx::VectorIcon& CollaborationMessagingPageActionIconView::GetVectorIcon()
