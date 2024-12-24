@@ -248,6 +248,7 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL, et les plug-ins peuvent utiliser l'API Pepper 3D. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
 <translation id="1198458955128279215">Utiliser le comportement par défaut selon le calendrier de déploiement des fonctionnalités</translation>
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
+<translation id="1203676252390737801">Gestion des adresses IP WebRTC par URL</translation>
 <translation id="1204263402976895730">Imprimantes d'entreprise activées</translation>
 <translation id="1207301487141109411">Empêcher la sélection de l'avatar de l'utilisateur à partir du système de fichiers local, de l'appareil photo et du profil Google</translation>
 <translation id="1209096923317019235">Affecte les applis en tant que gestionnaires par défaut pour les extensions de fichier spécifiées</translation>
@@ -643,6 +644,13 @@ Pour en savoir plus sur les formats d'URL valides, consultez https://cloud.googl
 Si cette règle est activée, le sélecteur d'emoji prend en charge les emoji GIF.
 Si cette règle est désactivée ou n'est pas configurée, le sélecteur d'emoji ne sera pas compatible avec les emoji GIF.
 Si cette règle n'est pas configurée, l'outil de sélection d'emoji est activé pour les utilisateurs standards, mais désactivé pour les utilisateurs gérés.</translation>
+<translation id="1493245040983394029">Cette règle contrôle les paramètres de la fonctionnalité de retouche photo par IA générative pour <ph name="PRODUCT_OS_NAME" />.
+
+0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Désactiver la fonctionnalité.</translation>
 <translation id="1494138678487405397">Désactiver le contraste élevé sur l'écran de connexion</translation>
 <translation id="1497797462580613666">Le gestionnaire de téléchargement proposera l'option d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Permet de lister les formats d'URL indiquant les sites dont l'accès aux imprimantes locales est automatiquement refusé via l'API WebPrinting.
@@ -1591,6 +1599,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="2204753382813641270">Règle pour masquer automatiquement l'étagère</translation>
 <translation id="2208976000652006649">Paramètres pour l'URL de recherche utilisant POST</translation>
 <translation id="2212011154693551439">La page de l'historique Chrome organisée par groupes sera visible par défaut sur chrome://history/grouped.</translation>
+<translation id="2212207215880394506">Ne pas autoriser la retouche photo par IA générative.</translation>
 <translation id="221287948061571053">Masquer la version développée du badge d'entreprise dans la barre d'outils</translation>
 <translation id="2213059592185933570">Activer la création de profils itinérants</translation>
 <translation id="2213342458177721585">Activer la disposition de clavier Hindi Inscript pour tout l'appareil.</translation>
@@ -2115,6 +2124,7 @@ Si cette règle est désactivée ou si elle n'est pas configurée, les journaux 
 
       Si cette règle est définie sur "UserOnly" (valeur 1), les utilisateurs peuvent gérer les certificats utilisateur, mais pas ceux au niveau de l'appareil.</translation>
 <translation id="2593762551209145088">La navigation sécurisée n'est jamais active.</translation>
+<translation id="2594773358911436070">Paramètres WebRTC</translation>
 <translation id="26023406105317310">Configurer les comptes Kerberos</translation>
 <translation id="2603237557651009842">Bloquer l'API WebPrinting sur ces sites</translation>
 <translation id="2603382859270873566">Activer la prise en charge de l'API PPB_VideoDecoder(Dev).</translation>
@@ -2219,6 +2229,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si vous configurez cette règle et activez la connexion automatique (voir les règles <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> et <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), la première langue recommandée et la disposition de clavier correspondante la plus populaire sont utilisées pour la session gérée.
 
       La disposition de clavier présélectionnée est toujours la plus populaire pour la langue présélectionnée. Enfin, les utilisateurs pourront toujours choisir une langue parmi celles compatibles avec <ph name="PRODUCT_OS_NAME" /> pour leur session.</translation>
+<translation id="269274821351405808">Paramètres de la fonctionnalité de retouche photo par IA générative</translation>
 <translation id="2693108589792503178">Configurez l'URL de modification de mot de passe.</translation>
 <translation id="2694143893026486692">Loupe ancrée activée</translation>
 <translation id="2696077732471707315">
@@ -2390,6 +2401,7 @@ Le rapport contient l'état du profil ainsi que des informations sur l'utilisati
 Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="2846689894646472396">Fréquence de vérification des événements réseau en millisecondes.</translation>
 <translation id="2847788524147474533">Prioriser les règles de plate-forme relatives à la machine avant celles de cloud</translation>
+<translation id="2849051159985119151">Autoriser la retouche photo par IA générative sans améliorer les modèles d'IA.</translation>
 <translation id="2849275596224278787">Masquer les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
 <translation id="2853649500575897584">Ne pas bloquer les anciens points d'extension du processus du navigateur</translation>
 <translation id="2853757230661166968">Permet aux applis de prendre des captures et de remplacer les raccourcis système par défaut.</translation>
@@ -3144,6 +3156,7 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
       Si elle est configurée sur "masqué", les utilisateurs ne peuvent ni les voir, ni les utiliser.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur une valeur non valide, le mode de désactivation des fonctionnalités du système est défini sur "bloqué".</translation>
+<translation id="3411947169047929182">Contrôle la configuration liée à WebRTC</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
       Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
       Si cette règle est désactivée, le processus audio s'exécutera avec une priorité normale.
@@ -4492,6 +4505,7 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4467952432486360968">Bloquer les cookies tiers</translation>
 <translation id="4472740647327683596">Largeur de la page en micromètres.</translation>
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
+<translation id="447692108909279121">Gestion des adresses IP WebRTC</translation>
 <translation id="4478248026668918517">Bloquez la détection du champ d'application des règles.</translation>
 <translation id="4479671363221255277">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs l'accès en lecture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte via l'API File System.
 
@@ -5601,6 +5615,23 @@ Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, e
 
       Si cette règle n'est pas définie, ou si elle est définie sur la chaîne vide ou sur une portée de port non valide, WebRTC peut utiliser n'importe quel port UDP local disponible.</translation>
 <translation id="5288776487100096897">Autoriser les règles cloud utilisateur à ignorer les règles <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="5289330879750533981">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour essayer d'identifier la meilleure connexion disponible pour chaque format d'URL spécifique.
+
+Elle accepte une liste de paires de formats d'URL et de types de gestion. Les formats d'URL sont vérifiés dans l'ordre. Le premier qui correspond détermine quelle gestion est utilisée par WebRTC pour le domaine. Lorsque l'URL du document actuel ne correspond à aucune entrée, elle utilise la configuration définie par la règle <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Pour en savoir plus sur les formats d'entrée valides, rendez-vous sur https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
+
+Valeurs de gestion valides :
+
+* default : WebRTC utilise toutes les interfaces réseau.
+
+* default_public_and_private_interfaces : WebRTC utilise toutes les interfaces publiques et privées.
+
+* default_public_interface_only : WebRTC utilise toutes les interfaces publiques, mais pas les interfaces privées.
+
+* disable_non_proxied_udp : WebRTC utilise le proxy UDP SOCKS ou bascule sur le proxy TCP.
+
+Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) pour obtenir une description détaillée de toutes les valeurs de gestion.</translation>
 <translation id="5290940294294002042">Répertorier les plug-ins pouvant être activés ou désactivés par l'utilisateur</translation>
 <translation id="5293285950307241933">Effacer toutes les données utilisateur locales</translation>
 <translation id="5293619885162445352">Autoriser <ph name="PEPPER_NAME" /> à utiliser le nouveau décodeur vidéo.</translation>
@@ -6057,7 +6088,6 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
 
       Si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut pour interdire les hachages non sécurisés. Si elle est activée, <ph name="PRODUCT_NAME" /> autorise un serveur à utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Si elle est désactivée, <ph name="PRODUCT_NAME" /> interdit à un serveur d'utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS.</translation>
 <translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
-<translation id="5612770822986069057">Autoriser les utilisateurs à activer ou désactiver le paramètre "IP Protection" de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="561480358503796257">URL d'une image qui servira de badge d'entreprise pour un profil géré. L'URL doit renvoyer vers une image.
 
 Cette règle ne peut être configurée que comme règle relative aux utilisateurs.
@@ -6693,6 +6723,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise la version maximale par défaut.
 
       Sinon, il est possible de définir l'une des valeurs suivantes : "tls1.2" ou "tls1.3". Une fois cette option définie, <ph name="PRODUCT_NAME" /> n'utilise pas les versions SSL/TLS supérieures à la version spécifiée. Une valeur non reconnue sera ignorée.</translation>
+<translation id="6120909112796019291">Autoriser la retouche photo par IA générative et améliorer les modèles d'IA.</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6130360423841559818">Contrôler le nouveau comportement de la boîte de dialogue d'annulation générée par l'événement beforeunload</translation>
 <translation id="6131803221304830537">Désactiver l'intégrité du code du moteur de rendu</translation>
@@ -7084,6 +7115,7 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
 <translation id="6368011194414932347">Configurer l'URL de la page d'accueil</translation>
 <translation id="6368403635025849609">Autoriser JavaScript sur ces sites</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Paramètres de la fonctionnalité d'ensembles de sites Web associés</translation>
 <translation id="6371561334154580937">Afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
 <translation id="6372105930898423193">Permet de réactiver le cache des applications même s'il est désactivé par défaut.</translation>
@@ -8221,17 +8253,6 @@ Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés e
       Les identifiants des types de connexion reconnus sont <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> et <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Ne pas exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>
 <translation id="7151366515472588710">Le client ne doit pas interpréter ces données et doit les transmettre textuellement. Le DMServer utilise policy_version pour vérifier que l'affichage du DMServer spécifié dans la règle correspond à celui de l'appareil Chrome OS.</translation>
-<translation id="7152605873936173525">Permet de contrôler le mode du résolveur DNS-over-HTTPS. Veuillez noter que cette règle ne définit que le mode par défaut pour chaque requête. Ce mode peut être ignoré pour les requêtes spéciales, telles que celles visant à résoudre un nom d'hôte de serveur DNS-over-HTTPS.
-
-      Le mode <ph name="SECURE_DNS_MODE_OFF" /> désactive DNS-over-HTTPS.
-
-      Le mode <ph name="SECURE_DNS_MODE_AUTOMATIC" /> envoie d'abord des requêtes DNS-over-HTTPS si un serveur DNS-over-HTTPS est disponible. Il peut, en solution de secours, envoyer des requêtes à risque en cas d'erreur.
-
-      Le mode <ph name="SECURE_DNS_MODE_SECURE" /> n'envoie que les requêtes DNS-over-HTTPS et ne permet pas de résoudre les erreurs.
-
-      Sur <ph name="ANDROID_VERSION" /> et versions ultérieures, si DNS-over-TLS est activé, <ph name="PRODUCT_NAME" /> n'envoie pas les requêtes DNS à risque.
-
-      Si cette règle n'est pas définie, le navigateur peut envoyer des requêtes DNS-over-HTTPS à un résolveur associé au résolveur configuré du système.</translation>
 <translation id="7152640356717355643">Activer les rapports sur l'interface réseau de l'appareil</translation>
 <translation id="7153786895642570081">Cette règle contrôle l'activation de la fonctionnalité EphemeralNetworkPolicies.
 Lorsque cette règle est définie sur "True", les entrées RecommendedValuesAreEphemeral et UserCreatedNetworkConfigurationsAreEphemeral de DeviceOpenNetworkConfiguration seront respectées.
@@ -8969,13 +8990,6 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
 <translation id="7777535871204167559">Traiter les appareils de stockage externe en lecture seule</translation>
 <translation id="7781452670568828399">Modifier la configuration <ph name="PRODUCT_OS_NAME" /> recommandée.</translation>
 <translation id="7784062550705119230">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
-<translation id="7785199109546027763">Règle permettant de contrôler si la fonctionnalité IP Protection de <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée.
-
-Si la règle est désactivée, la fonctionnalité IP Protection sera désactivée et les utilisateurs ne pourront pas l'activer via les paramètres de l'UI.
-Si la règle est activée, la fonctionnalité IP Protection sera activée et les utilisateurs ne pourront pas la désactiver via les paramètres de l'UI.
-Si la règle n'est pas configurée, les utilisateurs pourront activer ou désactiver la fonctionnalité IP Protection sur leur appareil via les paramètres de l'UI.
-
-Remarque : Le comportement de la fonctionnalité IP Protection pour les utilisateurs de la version Enterprise peut varier au fil du temps quand la règle est activée ou quand elle n'est pas configurée et que la fonctionnalité est activée via les paramètres de l'UI.</translation>
 <translation id="7788511847830146438">Par profil</translation>
 <translation id="7790221177424764797">Permet de déterminer si les instructions de la règle "SiteList" d'<ph name="IE_PRODUCT_NAME" /> doivent être ou non chargées.
 
@@ -9289,11 +9303,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8030228699677851043">Adapter le comportement de l'URL blob SharedWorker à la spécification</translation>
 <translation id="8031651557770840616">Ne pas autoriser le fond d'écran par IA générative</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
-<translation id="8036284429246268475">Si cette règle est activée, les utilisateurs peuvent faire en sorte que <ph name="PRODUCT_NAME" /> contrôle si les noms d'utilisateur et les mots de passe saisis ont fait l'objet d'une fuite.
-
-      Si cette règle est définie, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas définie, la vérification de fuite d'identifiants est autorisée, mais l'utilisateur peut la désactiver. 
-
-      Ce comportement ne se déclenchera pas si la navigation sécurisée est désactivée (soit par la règle, soit par l'utilisateur). Pour forcer l'activation de la navigation sécurisée, utilisez la règle <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Désactiver <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
@@ -9504,6 +9513,21 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8238421250255592181">Flag booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
 <translation id="8239109177194627162">Désactiver la saisie automatique pour les cartes de crédit</translation>
 <translation id="8239143983379015783">Forcer l'activation du quota persistant</translation>
+<translation id="8240976615241583524">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible.
+
+Valeurs valides :
+
+* default : WebRTC utilise toutes les interfaces réseau disponibles.
+
+* default_public_and_private_interfaces : WebRTC utilise toutes les interfaces publiques et privées.
+
+* default_public_interface_only : WebRTC utilise toutes les interfaces publiques, mais pas les interfaces privées.
+
+* disable_non_proxied_udp : WebRTC utilise le proxy UDP SOCKS ou bascule sur le proxy TCP.
+
+Lorsqu'elle n'est pas définie, elle utilise par défaut toutes les interfaces réseau disponibles.
+
+Consultez la section 5.2 du document RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2) pour obtenir une description détaillée de toutes les valeurs de gestion.</translation>
 <translation id="8244171102276095471">Activer des suites de chiffrement RC4 dans TLS</translation>
 <translation id="8244525275280476362">Délai maximal de récupération après le rejet d'une règle</translation>
 <translation id="8244828501034607035">Cette règle contrôle la visibilité de la carte Outlook sur la page "Nouvel onglet". La carte ne s'affiche sur la page "Nouvel onglet" que si la règle est activée et si votre organisation a autorisé l'utilisation des données de l'agenda Outlook dans le navigateur.

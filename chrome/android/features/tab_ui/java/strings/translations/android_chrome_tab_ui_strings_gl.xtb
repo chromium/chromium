@@ -77,7 +77,6 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestana cambiada. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> pestanas cambiadas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
-<translation id="4590027107044272416">Agora a opción para abrir pestanas novas está aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Queres pechar 1 pestana inactiva?}other{Queres pechar <ph name="TAB_COUNT_MANY" /> pestanas inactivas?}}</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Pechar despois de 1 día}other{Pechar despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>

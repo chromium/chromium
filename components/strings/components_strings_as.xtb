@@ -2471,6 +2471,7 @@
 <translation id="5425082381151187189">ঘৰ আৰু ভিতৰৰ অংশ সজোৱা</translation>
 <translation id="5426179911063097041"><ph name="SITE" />এ আপোনালৈ জাননী পঠিয়াব বিচাৰে</translation>
 <translation id="5430298929874300616">বুকমার্ক আঁতৰাওক</translation>
+<translation id="5431318178759467895">ৰং</translation>
 <translation id="5433756542371550806">কামাণ্ড লাইনৰ ৰূপভেদ</translation>
 <translation id="5434798570900738152">Chromiumএ <ph name="BEGIN_EMPHASIS" />এইসমূহ ছেভ নকৰিব<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3289,6 +3290,7 @@
 <translation id="6925267999184670015">উত্তৰ আমেৰিকাৰ B+</translation>
 <translation id="6926216138694948720">বডি আৰ্ট</translation>
 <translation id="692638818576287323">বাণিজ্যিক বাহন</translation>
+<translation id="6933282894115597956">আপোনাৰ প্ৰতিষ্ঠানে ছাইন-ইন বাধ্যতামূলক কৰিছে</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিনে আপোনাক ৱেব সন্ধান কৰিবলৈ দিয়ে আৰু Chromeৰ সুবিধাসমূহক আগবঢ়ায়<ph name="END_BOLD" /> যেনে, ঠিকনাৰ বাৰৰ পৰা আৰু ৱেব পৃষ্ঠাসমূহত প্ৰতিচ্ছবিৰ পৰা সন্ধান কৰা। আপোনাৰ সন্ধানৰ ইঞ্জিনে কোনো সুবিধা সমৰ্থন নকৰিলে সেইটো উপলব্ধ নহ’ব পাৰে।</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
 <translation id="6935082727755903526">একাউণ্টিং আৰু বিত্তীয় বিভাগৰ চাকৰি</translation>
@@ -3782,7 +3784,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeত ফণ্টৰ আকাৰ আৰু টাইপফেচ কাষ্টমাইজ কৰক</translation>
 <translation id="7752995774971033316">পৰিচালনা নকৰা</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />ৰ সৈতে চাট কৰক</translation>
 <translation id="7754587126786572336">আপডে’ট আৰম্ভ হ’লে আপোনাৰ Chromeৰ টেব আৰু এপ্‌সমূহ বন্ধ হ’ব</translation>
 <translation id="7755287808199759310">আপোনাৰ অভিভাৱকে এই ছাইটটো আপোনাৰ বাবে অৱৰোধৰ পৰা আঁতৰাব পাৰে</translation>
 <translation id="7755624218968747854">প্ৰাথমিক ৰোল</translation>
@@ -3922,6 +3923,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsত ক্ষিপ্ৰভাৱে এখন নতুন ফ’ৰ্ম সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="8028892419725165118">অনানুষ্ঠানিক গে’ম</translation>
 <translation id="8028960012888758725">কামৰ পাছত ট্ৰিম কৰক</translation>
+<translation id="8028993641010258682">আকাৰ</translation>
 <translation id="8029829038322015001">ৰঙা ১</translation>
 <translation id="8030729864112325446">বৃত্তি সম্পৰ্কীয় শিক্ষা আৰু শিক্ষা অব্যাহত ৰখা</translation>
 <translation id="8032546467100845887">স্বচ্ছতা</translation>
@@ -3977,7 +3979,6 @@
 <translation id="8116925261070264013">মিউট আছে</translation>
 <translation id="8118489163946903409">পৰিশোধ পদ্ধতি</translation>
 <translation id="8118506371121007279">মতামত দিয়ক</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" />ৰ সৈতে চাট কৰক</translation>
 <translation id="8127301229239896662">আপোনাৰ কম্পিউটাৰ বা নেটৱৰ্কত "<ph name="SOFTWARE_NAME" />" ভালকৈ ইনষ্টল কৰা হোৱা নাছিল। আপোনাৰ আইটি প্ৰশাসকক এই সমস্যাটোৰ সমাধান বিচাৰক</translation>
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8133495915926741232">বিষয়বস্তুৰ কোনবোৰ বিস্তৃত শিতান বিজ্ঞাপন ব্যক্তিগতকৰণ কৰাত সহায় কৰিবলৈ ব্যৱহাৰ কৰিব পাৰি সেয়া বাছনি কৰক। কোনো বিস্তৃত শিতান অফ কৰাটোৱে ইয়াৰ সৈতে সম্পৰ্কিত বিষয়বস্তুও অৱৰোধ কৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>

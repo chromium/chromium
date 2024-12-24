@@ -19,6 +19,7 @@
 <translation id="107147699690128016">如果您更改文件扩展名，此文件可能会在另一应用中打开并对您的设备造成危害。</translation>
 <translation id="1080365971383768617">在所有设备上使用您的密码</translation>
 <translation id="1082920045291562218">已关闭分享摘要反馈工作表</translation>
+<translation id="1087176310396019910">可能是垃圾内容</translation>
 <translation id="1089606299949659462">查看完毕！</translation>
 <translation id="1094555143448724771">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录</translation>
 <translation id="1095761715416917775">确保您可以随时访问自己的同步数据</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
+<translation id="3301936297336370235">密码建议确认</translation>
 <translation id="3302615849591357577">将标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）恢复为新的背景标签页分组。</translation>
 <translation id="3303414029551471755">要开始下载该内容吗？</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196315980958524839">系统会将密码保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="6202812185118613467">重新登录即可开始同步</translation>
+<translation id="6204781143409202534">Chrome 检测到 <ph name="DOMAIN" /> 可能发送了垃圾内容。</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>

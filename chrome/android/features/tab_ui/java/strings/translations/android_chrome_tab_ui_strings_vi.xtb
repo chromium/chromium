@@ -77,7 +77,6 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Đã thay đổi <ph name="ONE_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}other{Đã thay đổi <ph name="MANY_CHANGED" /> thẻ, đã đóng <ph name="ANY_CLOSED" /> thẻ}}</translation>
 <translation id="4371591986692297148">Không hoạt động</translation>
 <translation id="4460014764210899310">Tách nhóm</translation>
-<translation id="4590027107044272416">Hiện bạn có thể mở một thẻ mới tại đây</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Đóng 1 thẻ không hoạt động?}other{Đóng <ph name="TAB_COUNT_MANY" /> thẻ không hoạt động?}}</translation>
 <translation id="4686942373615810936">Vừa tạo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sẽ đóng sau 1 ngày}other{Sẽ đóng sau <ph name="DAY_COUNT_MANY" /> ngày}}</translation>

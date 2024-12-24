@@ -2476,6 +2476,7 @@
 <translation id="5425082381151187189">گھر اور داخلی سجاوٹ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> آپ کو اطلاعات بھیجنا چاہتی ہے</translation>
 <translation id="5430298929874300616">بُک مارک کو ہٹائیں</translation>
+<translation id="5431318178759467895">رنگ</translation>
 <translation id="5433756542371550806">کمانڈ لائن کے تغیرات</translation>
 <translation id="5434798570900738152">‏Chromium درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -3296,6 +3297,7 @@
 <translation id="6925267999184670015">‏شمالی امریکی B+</translation>
 <translation id="6926216138694948720">باڈی آرٹ</translation>
 <translation id="692638818576287323">تجارتی گاڑیاں</translation>
+<translation id="6933282894115597956">آپ کی تنظیم آپ سے سائن ان کرنے کا تقاضہ کرتی ہے</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />آپ کا ڈیفالٹ سرچ انجن آپ کو ویب پر تلاش کرنے دیتا ہے اور Chrome کی خصوصیات کو طاقت دیتا ہے<ph name="END_BOLD" /> جیسے ایڈریس بار اور ویب صفحات پر موجود تصاویر سے تلاش کرنا۔ اگر آپ کا سرچ انجن کسی خصوصیت کو سپورٹ نہیں کرتا ہے تو ممکن ہے کہ یہ خصوصیت دستیاب نہ ہو۔</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
 <translation id="6935082727755903526">اکاؤنٹنگ اور فائنانس والی جابز</translation>
@@ -3789,7 +3791,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">‏Chrome میں فونٹ کے سائز اور ٹائپ فیسز کو حسب ضرورت بنائیں</translation>
 <translation id="7752995774971033316">غیر نظم کردہ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> کے ساتھ چیٹ کریں</translation>
 <translation id="7754587126786572336">‏اپ ڈیٹ شروع ہونے پر آپ کے Chrome کے ٹیبز اور ایپس بند ہو جائیں گی</translation>
 <translation id="7755287808199759310">آپ کے والدین آپ کیلئے اسے غیر مسدود کر سکتے ہیں</translation>
 <translation id="7755624218968747854">بنیادی رول</translation>
@@ -3929,6 +3930,7 @@
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Forms میں تیزی سے ایک نیا فارم تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="8028892419725165118">آرام دہ گیم</translation>
 <translation id="8028960012888758725">جاب کے بعد تراشیں</translation>
+<translation id="8028993641010258682">سائز</translation>
 <translation id="8029829038322015001">سرخ 1</translation>
 <translation id="8030729864112325446">پیشہ ورانہ اور جاری تعلیم</translation>
 <translation id="8032546467100845887">شفافیت</translation>
@@ -3984,7 +3986,6 @@
 <translation id="8116925261070264013">‏خاموش کردہ</translation>
 <translation id="8118489163946903409">ادائیگی کا طریقہ</translation>
 <translation id="8118506371121007279">تاثرات دیں</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> کے ساتھ چیٹ کریں</translation>
 <translation id="8127301229239896662">‏"<ph name="SOFTWARE_NAME" />" آپ کے کمپیوٹر یا نیٹ ورک پر مناسب طریقے سے انسٹال نہیں ہوا تھا۔ اس مسئلے کو حل کرنے کے لیے اپنے IT منتظم سے کہیں۔</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8133495915926741232">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں۔ ایک وسیع زمرہ کو آف کرنے سے اس سے متعلقہ موضوعات بھی مسدود ہو جائیں گے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>

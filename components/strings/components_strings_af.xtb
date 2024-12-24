@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">outomatiese prent-in-prent</translation>
 <translation id="1100782917270858593">Knoppie om jou reis te hervat. Druk Enter om jou reis te hervat en relevante aktiwiteit in jou Chrome-geskiedenis te sien</translation>
 <translation id="1101672080107056897">Fouthandeling</translation>
+<translation id="1101902632743388185">Jou vergelykingtabelle</translation>
 <translation id="1104409666019087579">Sommige vereiste velde is leeg. Vul hulle in voordat jy stoor.</translation>
 <translation id="1104860668737945357">Knoppie om wagwoorde te bestuur; aktiveer om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2025186561304664664">Instaanbediener is gestel om outomaties op te stel.</translation>
 <translation id="2025891858974379949">Onveilige inhoud</translation>
 <translation id="2027465737841872819">Plastiek</translation>
+<translation id="2027707238798802149">Kaart is nie beskikbaar nie</translation>
 <translation id="2029735183873159415">Voorouers en genealogie</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Die instaanbediener en brandmuur nagaan<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Kortpad kan nie dieselfde wees as die versteksoekverskaffer-sleutelwoord wat deur <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gedefinieer is nie: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2514548229949738417">Huis en tuin</translation>
 <translation id="2515629240566999685">Die sein in jou omgewing nagaan</translation>
 <translation id="2515761554693942801">Jy het gekies om met Raak-ID te verifieer op webwerwe wat <ph name="PROVIDER_ORIGIN" /> gebruik. Hierdie verskaffer het dalk inligting oor jou betaalmetode geberg, wat jy kan <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Hierdie kaart is nie beskikbaar nie. Kontak jou kaartverskaffer.</translation>
 <translation id="2521385132275182522">Kram regs onder</translation>
 <translation id="2521736961081452453">Skep vorm</translation>
 <translation id="2523886232349826891">Net op hierdie toestel gestoor</translation>
@@ -2472,6 +2475,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5425082381151187189">Huis en binnenshuise dekor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil vir jou kennisgewings stuur</translation>
 <translation id="5430298929874300616">Verwyder boekmerk</translation>
+<translation id="5431318178759467895">Kleur</translation>
 <translation id="5433756542371550806">Bevellynvariasies</translation>
 <translation id="5434798570900738152">Chromium sal die volgende<ph name="BEGIN_EMPHASIS" /> nie stoor nie<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3342,6 +3346,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7003322000677139268">Voertuigonderdele en -bykomstighede</translation>
 <translation id="7004499039102548441">Onlangse oortjies</translation>
 <translation id="7006930604109697472">Stuur in elk geval</translation>
+<translation id="7009364359744329733">Hierdie kaart is nie nou beskikbaar nie. Probeer later weer.</translation>
 <translation id="7010658264061801199">Kos en drinkgoed</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Kan vra om jou muis te sluit en te gebruik</translation>
@@ -3783,7 +3788,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Pasmaak lettertipegroottes en lettersoorte in Chrome</translation>
 <translation id="7752995774971033316">Onbestuurd</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Klets met <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Jou Chrome-oortjies en programme sal toemaak wanneer die opdatering begin</translation>
 <translation id="7755287808199759310">Jou ouer kan dit vir jou deblokkeer</translation>
 <translation id="7755624218968747854">Primêre rol</translation>
@@ -3923,6 +3927,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe vorm in Google Vorms te skep</translation>
 <translation id="8028892419725165118">Informele speletjies</translation>
 <translation id="8028960012888758725">Knip ná taak</translation>
+<translation id="8028993641010258682">Grootte</translation>
 <translation id="8029829038322015001">Rooi 1</translation>
 <translation id="8030729864112325446">Beroeps- en voortgesette onderwys</translation>
 <translation id="8032546467100845887">Deursigtigheid</translation>
@@ -3978,7 +3983,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8116925261070264013">Gedemp</translation>
 <translation id="8118489163946903409">Betalingmetode</translation>
 <translation id="8118506371121007279">Gee terugvoer</translation>
-<translation id="8124085000247609808">Klets met <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" is nie behoorlik op jou rekenaar of netwerk geïnstalleer nie. Vra jou IT-administrateur om hierdie probleem op te los.</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8133495915926741232">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer. As ’n breër kategorie afgeskakel word, sal dit ook die verwante onderwerpe van die kategorie blokkeer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>

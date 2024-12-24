@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> қойынды өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_CHANGED" /> қойынды өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
 <translation id="4460014764210899310">Топты тарату</translation>
-<translation id="4590027107044272416">Енді жаңа қойындыны осы жерден аша аласыз.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 әрекетсіз қойындыны жабу керек пе?}other{<ph name="TAB_COUNT_MANY" /> әрекетсіз қойындыны жабу керек пе?}}</translation>
 <translation id="4686942373615810936">Жаңа ғана жасалды.</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 күннен кейін жабу}other{<ph name="DAY_COUNT_MANY" /> күннен кейін жабу}}</translation>

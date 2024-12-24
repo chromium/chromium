@@ -396,6 +396,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Kad atrakintumėte „Chromebook“, naudokite kontrolinį kodą arba atrakinkite telefoną</translation>
 <translation id="240545663114741956">Dukart paspauskite <ph name="ACCELERATOR" />, kad atsijungtumėte.</translation>
 <translation id="2405664212338326887">Neprijungta</translation>
+<translation id="2406710117564540804">Įjungti / išjungti netrukdymo režimą</translation>
 <translation id="2408955596600435184">Įveskite PIN kodą</translation>
 <translation id="2412593942846481727">Pasiekiamas naujinys</translation>
 <translation id="2416438829169535743">Išeiti iš rodinio?</translation>
@@ -1647,6 +1648,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6539852571005954999">Atsisiųsti nuskaitomą „<ph name="FILENAME" />“</translation>
 <translation id="6542521951477560771">Perduodama į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6542891623636520977">Jaustukai, GIF ir daugiau</translation>
+<translation id="6543942526104794893">Ar tikrai norite išjungti veido gestus?</translation>
 <translation id="6545382064335350438">Vis tiek nepavyko patvirtinti PIN kodo. Bandykite dar kartą.</translation>
 <translation id="6555373427270923730">Įveskite žiniatinklio adresą adreso juostoje, tada paspauskite <ph name="MODIFIER" /> <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
 <translation id="8860366331836346216">Pridėti „eSIM“ kortelę</translation>
+<translation id="8869149849311827122">Ar tikrai norite išjungti pelės žymeklio valdymą?</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
 <translation id="8873203135446552888">Patvirtinkite, kad norite išjungti įtaisytąją jutiklinę dalį</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>

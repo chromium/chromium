@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">автоматичний перехід у режим "Картинка в картинці"</translation>
 <translation id="1100782917270858593">Кнопка "Відновити сеанс"; натисніть Enter, щоб відновити сеанс і переглянути релевантні дії в історії Chrome.</translation>
 <translation id="1101672080107056897">Помилка дії</translation>
+<translation id="1101902632743388185">Ваші порівняльні таблиці</translation>
 <translation id="1104409666019087579">Деякі обов’язкові поля порожні. Заповніть їх, перш ніж зберегти.</translation>
 <translation id="1104860668737945357">Кнопка "Керувати паролями"; активуйте, щоб переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Проксі-сервер установлено на автоматичне налаштування.</translation>
 <translation id="2025891858974379949">Незахищений контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
+<translation id="2027707238798802149">Картка недоступна</translation>
 <translation id="2029735183873159415">Походження й генеалогія</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />перевірити проксі-сервер і брандмауер<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Швидка команда не може збігатися з ключовим словом пошукової системи за умовчанням, визначеним правилом <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Дім і сад</translation>
 <translation id="2515629240566999685">перевірити сигнал у своїй місцевості</translation>
 <translation id="2515761554693942801">Ви вибрали підтвердження за допомогою Touch ID на веб-сайтах, які використовують <ph name="PROVIDER_ORIGIN" />. У цього постачальника могла зберегтись інформація про ваш спосіб оплати, але ви можете надіслати <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Ця картка недоступна. Зв’яжіться з її постачальником.</translation>
 <translation id="2521385132275182522">Скріпити внизу праворуч</translation>
 <translation id="2521736961081452453">Створити форму</translation>
 <translation id="2523886232349826891">Збережено лише на цьому пристрої</translation>
@@ -2472,6 +2475,7 @@
 <translation id="5425082381151187189">Домашній декор і декор інтер’єру</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
+<translation id="5431318178759467895">Колір</translation>
 <translation id="5433756542371550806">Варіанти командного рядка</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3342,6 +3346,7 @@
 <translation id="7003322000677139268">Запасні частини й аксесуари для транспортних засобів</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
+<translation id="7009364359744329733">Ця картка зараз недоступна. Повторіть спробу пізніше.</translation>
 <translation id="7010658264061801199">Їжа й напої</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Може запитувати дозвіл блокувати й використовувати мишу</translation>
@@ -3784,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Налаштуйте розміри та гарнітури шрифтів у Chrome</translation>
 <translation id="7752995774971033316">Некерований клієнт</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – чат із <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Коли оновлення почнеться, вкладки й додатки Chrome закриються</translation>
 <translation id="7755287808199759310">Хтось із батьків може розблокувати його</translation>
 <translation id="7755624218968747854">Основний рулон</translation>
@@ -3924,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову форму в Google Формах</translation>
 <translation id="8028892419725165118">Казуальні ігри</translation>
 <translation id="8028960012888758725">Обрізати після завдання</translation>
+<translation id="8028993641010258682">Розмір</translation>
 <translation id="8029829038322015001">Червоний 1</translation>
 <translation id="8030729864112325446">Професійно-технічна й післядипломна освіта</translation>
 <translation id="8032546467100845887">Прозорість</translation>
@@ -3979,7 +3984,6 @@
 <translation id="8116925261070264013">Звук вимкнено</translation>
 <translation id="8118489163946903409">Спосіб оплати</translation>
 <translation id="8118506371121007279">Надіслати відгук</translation>
-<translation id="8124085000247609808">Чат із <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> неправильно встановлено на вашому комп’ютері або в мережі. Попросіть IT-адміністратора вирішити цю проблему.</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8133495915926741232">Виберіть загальні категорії тем, які можна використовувати для персоналізації реклами. Якщо вимкнути ширшу категорію, пов’язані з нею теми також буде заблоковано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1396327438254055134">Lubage saidil V8 optimeerijat kasutada.</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
+<translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sait}other{<ph name="SITE_COUNT" /> saiti}}</translation>
 <translation id="1500473259453106018">Peida hinnaalandused vahelehtede kaardil</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Lubasite sellel saidil ajutiselt kasutada kolmanda osapoole küpsisefaile, mis tähendab väiksemat sirvimiskaitset, kuid saidi funktsioonid töötavad tõenäolisemalt ootuspäraselt. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
+<translation id="2445311670906052406">Chrome jagab nüüd teie hiljutisi vahelehti teie seadmega. Näete neid oma seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
+<translation id="2814830417943086299">Chrome kuvab nüüd teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
 <translation id="2870560284913253234">Sait</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">isithombe-esithombeni esizenzakalelayo</translation>
 <translation id="1100782917270858593">Inkinobho yokuqhubeka nohambo lwakho, cindezela u-Enter ukuqhubeka nohambo lwakho futhi ubone umsebenzi ohambisanayo kumlando wakho we-Chrome</translation>
 <translation id="1101672080107056897">Isenzo sephutha</translation>
+<translation id="1101902632743388185">Amathebula akho okuqhathanisa</translation>
 <translation id="1104409666019087579">Ezinye izinkambu ezidingekayo azinalutho. Wagcwalise ngaphambi kokulondoloza.</translation>
 <translation id="1104860668737945357">Phatha inkinobho yamaphasiwedi, yenza kusebenze ukuze ubuke futhi uphathe amaphasiwedi wakho kumasethingi we-Chrome</translation>
 <translation id="1108464073729874771">I-A3x4</translation>
@@ -583,6 +584,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2025186561304664664">Ummeleli usethelwe ekulungiselelweni okuzenzakalelayo.</translation>
 <translation id="2025891858974379949">Okuqukethwe okungavikelekile</translation>
 <translation id="2027465737841872819">Ipulastiki</translation>
+<translation id="2027707238798802149">Alitholakali ikhadi</translation>
 <translation id="2029735183873159415">Indabuko Nozalo</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Ukuhlola i-proxy ne-firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Isinqamuleli asikwazi ukufana negama elingukhiye lomhlinzeki wosesho elichazwe yi-<ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2514548229949738417">Ikhaya Nengadi</translation>
 <translation id="2515629240566999685">Ukuhlola isignali endaweni yakho</translation>
 <translation id="2515761554693942801">Ukhethe ukuqinisekisa nge-Touch ID kumawebhusayithi asebenzisa i-<ph name="PROVIDER_ORIGIN" />. Lo mhlinzeki kungenzeka ukuthi ulondoloze ulwazi olumayelana nendlela yakho yokukhokha, ongakwazi uku-<ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Alitholakali leli khadi. Sicela uxhumane nabahlinzeki bekhadi lakho.</translation>
 <translation id="2521385132275182522">Namathisela phansi kwesokudla</translation>
 <translation id="2521736961081452453">Dala ifomu</translation>
 <translation id="2523886232349826891">Kulondolozwe kule divayisi kuphela</translation>
@@ -2469,6 +2472,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5425082381151187189">Ukuhlobisa Kwasekhaya Nangaphakathi</translation>
 <translation id="5426179911063097041">I-<ph name="SITE" /> ifuna ukukuthumelela izaziso</translation>
 <translation id="5430298929874300616">Susa ibhukhimakhi</translation>
+<translation id="5431318178759467895">Umbala</translation>
 <translation id="5433756542371550806">Ukwahluka Komugqa Womyalo</translation>
 <translation id="5434798570900738152">I-Chromium <ph name="BEGIN_EMPHASIS" />ngeke ilondoloze<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3339,6 +3343,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="7003322000677139268">Izingxenye Zemoto Nezisetshenziswa</translation>
 <translation id="7004499039102548441">Amathebhu wakamuva</translation>
 <translation id="7006930604109697472">Thumela noma kunjalo</translation>
+<translation id="7009364359744329733">Leli khadi alitholakali okwamanje. Sicela uzame futhi ngemva kwesikhathi.</translation>
 <translation id="7010658264061801199">Ukudla Nesiphuzo</translation>
 <translation id="7012363358306927923">I-China UnionPay</translation>
 <translation id="7013835112918108252">Ingacela ukukhiya nokusebenzisa imouse yakho</translation>
@@ -3780,7 +3785,6 @@ Imininingwane engeziwe:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Enza ngendlela oyifisayo osayizi befonti nama-typeface ku-Chrome</translation>
 <translation id="7752995774971033316">Akuphethwe</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Xoxa ne-<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Amathebhu wakho we-Chrome nama-app azovala uma isibuyekezo siqala</translation>
 <translation id="7755287808199759310">Umzali wakho angakuvulela yona</translation>
 <translation id="7755624218968747854">Umqulu Oyinhloko</translation>
@@ -3920,6 +3924,7 @@ Imininingwane engeziwe:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, cindezela u-Tab bese u-Enter ukuze udale ifomu elisha ngokushesha ku-Google Forms</translation>
 <translation id="8028892419725165118">Amageyimu angavamile</translation>
 <translation id="8028960012888758725">Sika ngemuva komsebenzi</translation>
+<translation id="8028993641010258682">Usayizi</translation>
 <translation id="8029829038322015001">Okubomvu 1</translation>
 <translation id="8030729864112325446">Imfundo Yezandla Neqhubekayo</translation>
 <translation id="8032546467100845887">Ukubonisa ngale</translation>
@@ -3975,7 +3980,6 @@ Imininingwane engeziwe:
 <translation id="8116925261070264013">Kuthulisiwe</translation>
 <translation id="8118489163946903409">Indlela yokukhokha</translation>
 <translation id="8118506371121007279">Nika impendulo</translation>
-<translation id="8124085000247609808">Xoxa ne-<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ayifakiwe kahle kwikhompyutha yakho. Cela umlawuli wakho we-IT ukuthi axazulule le nkinga.</translation>
 <translation id="8131740175452115882">Qinisekisa</translation>
 <translation id="8133495915926741232">Khetha ukuthi yiziphi izigaba ezibanzi zezihloko ezingasetshenziswa ukusiza ukuqondanisa izikhangiso nomuntu siqu. Ukuvala isigaba esibanzi kuzophinde kuvimbe izihloko zaso ezihlobene. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>

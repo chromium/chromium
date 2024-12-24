@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">picture-in-picture automático</translation>
 <translation id="1100782917270858593">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação de erro</translation>
+<translation id="1101902632743388185">Suas tabelas de comparação</translation>
 <translation id="1104409666019087579">Alguns campos obrigatórios estão em branco. Preencha antes de salvar.</translation>
 <translation id="1104860668737945357">Botão "Gerenciar senhas". Ative para conferir e gerenciar suas senhas nas configurações do Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2025186561304664664">O proxy está configurado em configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo não seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
+<translation id="2027707238798802149">Card indisponível</translation>
 <translation id="2029735183873159415">Ancestralidade e genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e o firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">O atalho não pode ser igual à palavra-chave do provedor de pesquisa padrão definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2514548229949738417">Casa e jardim</translation>
 <translation id="2515629240566999685">Verificar o sinal na sua área</translation>
 <translation id="2515761554693942801">Você escolheu fazer a verificação com o Touch ID em sites que usam o provedor <ph name="PROVIDER_ORIGIN" />. Esse provedor pode ter armazenado informações sobre sua forma de pagamento, mas você pode <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Este card não está disponível. Entre em contato com o emissor dele.</translation>
 <translation id="2521385132275182522">Grampo na parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
 <translation id="2523886232349826891">Salvo apenas neste dispositivo</translation>
@@ -2472,6 +2475,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5425082381151187189">Decoração de casas e interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
 <translation id="5430298929874300616">Remover favorito</translation>
+<translation id="5431318178759467895">Colorido</translation>
 <translation id="5433756542371550806">Variações de linha de comando</translation>
 <translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3342,6 +3346,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7003322000677139268">Peças e acessórios de veículos</translation>
 <translation id="7004499039102548441">Guias recentes</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
+<translation id="7009364359744329733">Este card não está disponível no momento. Tente novamente mais tarde.</translation>
 <translation id="7010658264061801199">Comidas e bebidas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Pode pedir para bloquear e usar o mouse</translation>
@@ -3784,7 +3789,6 @@ Mais detalhes:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalizar tamanhos e fontes no Chrome</translation>
 <translation id="7752995774971033316">Não gerenciado</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" />: conversar com <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">As guias e os apps do Chrome serão fechados quando a atualização for iniciada</translation>
 <translation id="7755287808199759310">Seu responsável pode desbloqueá-lo para você</translation>
 <translation id="7755624218968747854">Rolo principal</translation>
@@ -3924,6 +3928,7 @@ Mais detalhes:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Formulários Google</translation>
 <translation id="8028892419725165118">Jogos casuais</translation>
 <translation id="8028960012888758725">Cortar ao término da impressão</translation>
+<translation id="8028993641010258682">Tamanho</translation>
 <translation id="8029829038322015001">Vermelho 1</translation>
 <translation id="8030729864112325446">Ensino técnico</translation>
 <translation id="8032546467100845887">Transparência</translation>
@@ -3979,7 +3984,6 @@ Mais detalhes:
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8118506371121007279">Enviar feedback</translation>
-<translation id="8124085000247609808">Conversar com <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">O software "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao administrador de TI para resolver o problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios. Desativar uma categoria mais ampla também bloqueia os temas relacionados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

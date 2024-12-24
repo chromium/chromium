@@ -2474,6 +2474,7 @@
 <translation id="5425082381151187189">घर आणि त्यासंबंधित इंटिरीयर डेकोरेशन</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
 <translation id="5430298929874300616">बुकमार्क काढून टाका</translation>
+<translation id="5431318178759467895">रंग</translation>
 <translation id="5433756542371550806">कमांड लाइन व्हेरिएशन</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3788,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" />, <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करा</translation>
 <translation id="7752995774971033316">व्यवस्थापित न केलेले</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> वापरून चॅट करा</translation>
 <translation id="7754587126786572336">अपडेट सुरू झाल्यावर तुमचे Chrome टॅब आणि अ‍ॅप्स बंद होतील</translation>
 <translation id="7755287808199759310">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
 <translation id="7755624218968747854">प्राथमिक रोल</translation>
@@ -3928,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms मध्ये नवीन फॉर्म झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="8028892419725165118">साधे गेम</translation>
 <translation id="8028960012888758725">जॉबनंतर ट्रिम करा</translation>
+<translation id="8028993641010258682">आकार</translation>
 <translation id="8029829038322015001">लाल १</translation>
 <translation id="8030729864112325446">व्‍यावसायिक आणि प्रौढ शिक्षण</translation>
 <translation id="8032546467100845887">ट्रान्स्परसी</translation>
@@ -3983,7 +3984,6 @@
 <translation id="8116925261070264013">म्यूट केले</translation>
 <translation id="8118489163946903409">पेमेंट पद्धत</translation>
 <translation id="8118506371121007279">फीडबॅक द्या</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> सोबत चॅट करा</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" तुमच्या काँप्युटरवर किंवा नेटवर्कवर योग्य रीतीने इंस्टॉल केले नव्हते. तुमच्या अ‍ॅडमिनिस्ट्रेटरला ही समस्या सोडवण्यास सांगा.</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8133495915926741232">जाहिराती पर्सनलाइझ करण्यात मदत व्हावी, यासाठी विषयांच्या कोणत्या व्यापक वर्गवाऱ्या वापरल्या जाऊ शकतात हे निवडा. व्यापक वर्गवारी बंद केल्याने त्यासंबंधित विषयदेखील ब्लॉक केले जातील. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

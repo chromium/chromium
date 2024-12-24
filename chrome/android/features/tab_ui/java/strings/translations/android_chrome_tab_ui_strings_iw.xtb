@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{כרטיסייה אחת (<ph name="ONE_CHANGED" />) התעדכנה, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
 <translation id="4371591986692297148">לא פעיל</translation>
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
-<translation id="4590027107044272416">כאן אפשר עכשיו לפתוח כרטיסייה חדשה</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{לסגור את הכרטיסייה הלא פעילה?}one{לסגור <ph name="TAB_COUNT_MANY" /> כרטיסיות לא פעילות?}two{לסגור <ph name="TAB_COUNT_MANY" /> כרטיסיות לא פעילות?}other{לסגור <ph name="TAB_COUNT_MANY" /> כרטיסיות לא פעילות?}}</translation>
 <translation id="4686942373615810936">נוצרה עכשיו</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ייסגרו אחרי יום אחד}one{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}two{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}other{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}}</translation>

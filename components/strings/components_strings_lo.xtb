@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">ຕົກລົງ, ສືບຕໍ່</translation>
 <translation id="2690699652723742414">30 ມື້ທີ່ຜ່ານມາ</translation>
 <translation id="2691924980723297736">ຄຳເຕືອນຄວາມປອດໄພ</translation>
+<translation id="2697248912349197812">ຖາມ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">ສາມາດໃຊ້ເມນູຍ່ອຍໄດ້, ໃຊ້ <ph name="SHORTCUT" /> ເພື່ອນຳທາງໄປຫາຕົວເລືອກເພີ່ມເຕີມ.</translation>
 <translation id="2701514975700770343">ຂວ້າມລົງ</translation>
 <translation id="2702592986366989640">ຕົວເລືອກລາຄາຕ່ຳ</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">ປຸ່ມປິດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ, ເປີດນຳໃຊ້ເພື່ອປິດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດທີ່ເປີດຢູ່</translation>
 <translation id="4691093235373904540">ມຸງຫຼັງຄາ</translation>
 <translation id="4692623383562244444">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - ຖາມ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">ກິລາຕໍ່ສູ້</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ດ້ານຂ້າງ</translation>
@@ -2478,6 +2480,7 @@
 <translation id="5425082381151187189">ການຈັດເຮືອນ ແລະ ຕົບແຕ່ງພາຍໃນ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
 <translation id="5430298929874300616">ເອົາບຸກມາກຄ໌ອອກໄປ</translation>
+<translation id="5431318178759467895">ສີ</translation>
 <translation id="5433756542371550806">ແຖວຄຳສັ່ງຮູບແບບຕ່າງໆ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ຈະບໍ່ບັນທຶກ<ph name="END_EMPHASIS" /> ຂໍ້ມູນຕໍ່ໄປນີ້:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3795,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">ປັບແຕ່ງຟອນ ແລະ ແບບອັກສອນໃນ Chrome</translation>
 <translation id="7752995774971033316">ບໍ່ໄດ້ຈັດການ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - ສົນທະນາກັບ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">ແຖບ ແລະ ແອັບ Chrome ຂອງທ່ານຈະປິດລົງເມື່ອການອັບເດດເລີ່ມຕົ້ນຂຶ້ນ</translation>
 <translation id="7755287808199759310">ພໍ່ແມ່ຂອງທ່ານສາມາດຍົກເລີກການບລັອກມັນໃຫ້ທ່ານໄດ້</translation>
 <translation id="7755624218968747854">ມ້ວນຫຼັກ</translation>
@@ -3932,6 +3934,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງແບບຟອມໃໝ່ໃນ Google Forms ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="8028892419725165118">ເກມສະບາຍໆ</translation>
 <translation id="8028960012888758725">ຕັດອອກຫຼັງຈາກສຳເລັດວຽກ</translation>
+<translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="8029829038322015001">ສີແດງທີ 1</translation>
 <translation id="8030729864112325446">ວິຊາຊີບ ແລະ ການສຶກສາຕໍ່</translation>
 <translation id="8032546467100845887">ຄວາມໂປ່ງແສງ</translation>
@@ -3987,7 +3990,6 @@
 <translation id="8116925261070264013">ປິດສຽງແລ້ວ</translation>
 <translation id="8118489163946903409">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="8118506371121007279">ສົ່ງຄຳຕິຊົມ</translation>
-<translation id="8124085000247609808">ສົນທະນາກັບ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ບໍ່ໄດ້ຖືກຕິດຕັ້ງຢ່າງຖືກຕ້ອງໃນຄອມພິວເຕີ ຫຼື ເຄືອຂ່າຍຂອງທ່ານ. ກະລຸນາຮ້ອງຂໍໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານແກ້ໄຂບັນຫານີ້.</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8133495915926741232">ເລືອກໝວດໝູ່ກວ້າງໆຂອງຫົວຂໍ້ທີ່ສາມາດໃຊ້ໃນການຊ່ວຍປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ການປິດໝວດໝູ່ທີ່ກວ້າງຂຶ້ນຈະບລັອກຫົວຂໍ້ທີ່ກ່ຽວຂ້ອງນຳ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

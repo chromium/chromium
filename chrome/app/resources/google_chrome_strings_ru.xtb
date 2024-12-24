@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Закрыть экран перевода</translation>
 <translation id="2139300032719313227">Перезапустите Chrome OS</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
-<translation id="2163089732491971196">Чтобы использовать и сохранять данные Chrome в аккаунте Google, введите кодовую фразу.</translation>
 <translation id="2174917724755363426">Установка не завершена. Отменить ее?</translation>
 <translation id="2186206192313702726">Google Объектив</translation>
 <translation id="2190166659037789668">Ошибка проверки обновлений: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -385,6 +384,7 @@
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
 <translation id="5947104538377036631">Ярлык Chrome</translation>
 <translation id="5953954252731207958">Вы давно не посещали сайт. Браузер Chrome отозвал разрешение "<ph name="PERMISSION" />".</translation>
+<translation id="5980111191913430208">Расширения, приложения и темы из неизвестных источников могут навредить устройству. Чтобы устанавливать подобное ПО, рекомендуем использовать этот сервис (<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />).</translation>
 <translation id="6003112304606738118">Скачивание… Осталось: <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Инструменты Chrome<ph name="END_LINK" /> защищают ваши данные при работе в интернете</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
@@ -603,6 +603,7 @@
 <translation id="842386925677997438">Инструменты безопасности Chrome</translation>
 <translation id="8425765582779547329">Чтобы тебе было безопаснее пользоваться интернетом благодаря родительским настройкам, войди в Chrome.</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8429214465555795676">Чтобы продолжить, войдите в Chrome, используя <ph name="EMAIL" />. Это необходимо согласно правилам организации.</translation>
 <translation id="8433638294851456451">Чтобы отправить номер на телефон Android, войдите в Chrome на обоих устройствах.</translation>
 <translation id="8451192282033883849">Вашим аккаунтом управляет <ph name="MANAGER_NAME" />. Администратор может просматривать и изменять этот профиль Chrome и данные в нем, включая закладки, историю и пароли.</translation>
 <translation id="8496177819998570653">Google Менеджер &amp;паролей</translation>

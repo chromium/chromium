@@ -463,6 +463,7 @@
 <translation id="1777422078676229054">រូបថត (បណ្ណសារ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ដំឡើងកម្មវិធីវេបឬ?</translation>
+<translation id="1791415068765905273">បង្ហាញ​តារាង​ប្រៀបធៀប​ទាំងអស់</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បីគ្រប់គ្រង​ព័ត៌មាន ឯកជនភាព និង​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="1793631236004319016">បានប្រើ​ចុងក្រោយ <ph name="NUM_HOURS_MINUTES_SECONDS" />មុន</translation>
@@ -2201,6 +2202,7 @@
 <translation id="4918221908152712722">ដំឡើង <ph name="APP_NAME" /> (មិនតម្រូវ​ឱ្យទាញយកទេ)</translation>
 <translation id="4920457992177678649">កន្លែងជួល​លំហែកាយ និង​ការស្នាក់នៅ​រយៈពេលខ្លី</translation>
 <translation id="4920710383559189047">ស្រោម</translation>
+<translation id="4920921410507315601">តារាង​ប្រៀបធៀប</translation>
 <translation id="4922104989726031751">ដើម្បីប្រើប្រាស់កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ជាមួយនឹងប្រព័ន្ធ​ប្រតិបត្តិការរបស់អ្នក សូមចាប់ផ្ដើម Chromium ឡើងវិញ និងអនុញ្ញាតឱ្យចូលប្រើប្រាស់កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់របស់កុំព្យូទ័រអ្នក។ ផ្ទាំង​របស់អ្នក​នឹងបើក​ឡើងវិញ បន្ទាប់ពី​ចាប់ផ្តើម​ឡើងវិញ។</translation>
 <translation id="4923459931733593730">ការបង់ប្រាក់</translation>
 <translation id="4926049483395192435">ត្រូវតែបញ្ជាក់</translation>
@@ -2394,6 +2396,7 @@
 <translation id="5278778426231952189">បង្ហោះឥឡូវនេះ</translation>
 <translation id="5279286380302340275">គ្រប់គ្រង​ការទាញយក</translation>
 <translation id="5280963125494874678">កម្មវិធីវេប</translation>
+<translation id="5282008206326321696">{count,plural, =0{ចំណាំ #}=1{ចំណាំ #}other{ចំណាំ #}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">លក្ខណៈសម្បត្តិ​របស់ឯកសារ</translation>
 <translation id="528468243742722775">បញ្ចប់</translation>
@@ -2479,6 +2482,7 @@
 <translation id="5425082381151187189">ការតុបតែង​ផ្ទះ និង​ផ្នែក​ខាងក្នុង</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ចង់​ផ្ញើ​ការជូន​ដំណឹងទៅអ្នក</translation>
 <translation id="5430298929874300616">ដកចំណាំចេញ</translation>
+<translation id="5431318178759467895">ពណ៌</translation>
 <translation id="5433756542371550806">កំណែប្រែនៃឃ្លាបញ្ជា</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />នឹងមិន​រក្សាទុក<ph name="END_EMPHASIS" />៖
           <ph name="BEGIN_LIST" />
@@ -2588,6 +2592,7 @@
 <translation id="561165882404867731">បកប្រែទំព័រនេះដោយប្រើ Google បកប្រែ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ចង់ប្រើ​ទីតាំង​កុំព្យូទ័រ​របស់អ្នក</translation>
 <translation id="5614520971155863709">ហ្គេម​បៀ</translation>
+<translation id="5617785978844309968">បង្ហាញ​តារាង​ប្រៀបធៀប​ទាំងអស់</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> បានប្តូរទិសដៅរបស់អ្នកជាច្រើនដងពេកហើយ</translation>
 <translation id="5619721953841297650">កំណត់ជាមុន</translation>
 <translation id="5624120631404540903">គ្រប់គ្រងពាក្យសម្ងាត់</translation>
@@ -3793,7 +3798,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">ប្ដូរទំហំ​ពុម្ពអក្សរ និងពុម្ពអក្សរ​តាមបំណង​នៅក្នុង Chrome</translation>
 <translation id="7752995774971033316">មិនបានគ្រប់គ្រង</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - ជជែកជាមួយ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">ផ្ទាំង និងកម្មវិធី Chrome របស់អ្នកនឹងបិទ នៅពេលការដំឡើងកំណែចាប់ផ្តើម</translation>
 <translation id="7755287808199759310">មាតាបិតារបស់អ្នកអាចលុបការរារាំងទំព័រនេះសម្រាប់អ្នកបាន</translation>
 <translation id="7755624218968747854">ដុំចម្បង</translation>
@@ -3934,6 +3938,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួចចុច Enter ដើម្បី​បង្កើតទម្រង់បែបបទថ្មី​នៅក្នុង Google ទម្រង់បែបបទ​បានរហ័ស</translation>
 <translation id="8028892419725165118">ហ្គេមធម្មតា</translation>
 <translation id="8028960012888758725">តម្រឹម​បន្ទាប់ពី​ធ្វើរួច</translation>
+<translation id="8028993641010258682">ទំហំ</translation>
 <translation id="8029829038322015001">ក្រហមទី 1</translation>
 <translation id="8030729864112325446">ការអប់រំបន្ត និង​វិជ្ជាជីវៈ</translation>
 <translation id="8032546467100845887">ភាពថ្លា</translation>
@@ -3989,7 +3994,6 @@
 <translation id="8116925261070264013">បានបិទសំឡេង</translation>
 <translation id="8118489163946903409">វិធីបង់ប្រាក់</translation>
 <translation id="8118506371121007279">ផ្ដល់មតិកែលម្អ</translation>
-<translation id="8124085000247609808">ជជែក​ជាមួយ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" មិនបានដំឡើងត្រឹមត្រូវនៅលើកុំព្យូទ័រ ឬបណ្តាញរបស់អ្នកទេ។ សូមស្នើឱ្យអ្នកគ្រប់គ្រងផ្នែកព័ត៌មានវិទ្យារបស់អ្នកដោះស្រោយបញ្ហានេះ។</translation>
 <translation id="8131740175452115882">អះអាង</translation>
 <translation id="8133495915926741232">ជ្រើសរើស​ប្រភេទ​ប្រធានបទ​ទូលំទូលាយ​ដែល​អាច​ត្រូវ​បាន​ប្រើ​ដើម្បី​ជួយ​កំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យមានលក្ខណៈផ្ទាល់ខ្លួន។ ការបិទប្រភេទកាន់តែទូលំទូលាយក៏នឹង​ទប់ស្កាត់ប្រធានបទ​ទាក់ទងរបស់វាផងដែរ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>

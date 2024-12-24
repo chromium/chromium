@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Si canvies l'extensió del fitxer, pot ser que el fitxer s'obri en una altra aplicació i pot arribar a ser perillós per al dispositiu.</translation>
 <translation id="1080365971383768617">Contrasenyes en tots els teus dispositius</translation>
 <translation id="1082920045291562218">Full per compartir comentaris sobre el resum tancat</translation>
+<translation id="1087176310396019910">Possible contingut brossa</translation>
 <translation id="1089606299949659462">Revisió completada</translation>
 <translation id="1094555143448724771">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial</translation>
 <translation id="1095761715416917775">Assegura't de poder accedir a les dades sincronitzades en qualsevol moment</translation>
@@ -508,6 +509,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="3293181007446299124">L'historial de navegació es desa en privat al teu dispositiu i els informes s'envien amb retard per protegir la teva identitat</translation>
+<translation id="3301936297336370235">Confirmació del suggeriment de contrasenya</translation>
 <translation id="3302615849591357577">Restaura el grup de pestanyes <ph name="TITLE_OF_GROUP" />, de color <ph name="COLOR_NAME" />, com un nou grup de pestanyes en segon pla.</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
@@ -972,6 +974,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5444999712122199445">Torna al lloc web</translation>
 <translation id="544776284582297024">Per obrir pestanyes i visitar diverses pàgines al mateix temps, toca el botó de pestanyes obertes</translation>
 <translation id="5454166040603940656">amb <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Quan el dispositiu està plegat, pots triar una opció o mantenir premuda la barra d'adreces per canviar la posició.</translation>
 <translation id="5458366071038729214">Aquí veuràs els llocs web que segueixes</translation>
 <translation id="5468068603361015296">Vols baixar <ph name="FILE_NAME" /> igualment?</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
@@ -1135,6 +1138,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6196315980958524839">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="6202812185118613467">Torna a iniciar la sessió per començar la sincronització</translation>
+<translation id="6204781143409202534">Chrome ha detectat possible contingut brossa de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privadesa d'anuncis</translation>
 <translation id="6210748933810148297">No ets <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Es previsualitza aquesta pàgina</translation>

@@ -2477,6 +2477,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5425082381151187189">Dom i unutarnje uređenje</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi vam slati obavijesti</translation>
 <translation id="5430298929874300616">Ukloni oznaku</translation>
+<translation id="5431318178759467895">Boja</translation>
 <translation id="5433756542371550806">Varijacije naredbenog retka</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3793,6 @@ Dodatne pojedinosti:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prilagodite veličine i vrste fontova u Chromeu</translation>
 <translation id="7752995774971033316">Nema upravitelja</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – chatajte s uslugom <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Vaše će se Chromeove kartice i aplikacije zatvoriti kada započne ažuriranje</translation>
 <translation id="7755287808199759310">Roditelj je može deblokirati</translation>
 <translation id="7755624218968747854">Primarni kolut</translation>
@@ -3932,6 +3932,7 @@ Dodatne pojedinosti:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novi obrazac u Google obrascima</translation>
 <translation id="8028892419725165118">Jednostavne igre</translation>
 <translation id="8028960012888758725">Obreži nakon zadatka</translation>
+<translation id="8028993641010258682">Veličina</translation>
 <translation id="8029829038322015001">crvena 1</translation>
 <translation id="8030729864112325446">Strukovno obrazovanje i nastavak obrazovanja</translation>
 <translation id="8032546467100845887">Transparentnost</translation>
@@ -3987,7 +3988,6 @@ Dodatne pojedinosti:
 <translation id="8116925261070264013">Bez zvuka</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
-<translation id="8124085000247609808">Chat s: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Softver "<ph name="SOFTWARE_NAME" />" nije ispravno instaliran na vašem računalu ili mreži. Obratite se IT administratoru za rješavanje tog problema.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite koje se široke kategorije tema mogu upotrebljavati za personalizaciju oglasa. Ako isključite širu kategoriju, blokirat će se i s njom povezane teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

@@ -981,7 +981,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1663698992894057019">Segurtasun eta software berrienak lortzeko, bertsio-berritu Chromebook berri batera</translation>
 <translation id="1665328953287874063">Erabili pasahitz edo PIN bat <ph name="DEVICE_TYPE" /> gailua desblokeatzeko</translation>
 <translation id="1665859804801131136">Espresionismoa</translation>
-<translation id="1666232093776384142">Desgaitu gailu periferikoen datuetarako sarbidearen babesa</translation>
 <translation id="1667842670298352129">Entzun ozen testu zati zehatz bat. Lehenik eta behin, aukeratu "Hautatu ozen irakurtzeko" eginbidearen ikonoa pantailaren behealdean; ondoren, nabarmendu testua. Lasterbide bat ere erabil dezakezu: nabarmendu testua eta, ondoren, sakatu Bilaketa + S.</translation>
 <translation id="1668435968811469751">Erregistratu eskuz</translation>
 <translation id="1668804837842452164">Gorde <ph name="BRAND" /> zerbitzuan <ph name="EMAIL" /> helbide elektronikorako</translation>
@@ -2852,7 +2851,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2975761176769946178">URL bat behar da</translation>
 <translation id="2975845084271617886">Sartu eta ireki</translation>
 <translation id="2976547701881428815">Tresnak eta ekintzak</translation>
-<translation id="2976557544729462544">Zenbait gailuk datuetarako sarbidearen babesa desgaitzeko eskatzen dute, behar bezala edo ahalik eta errendimendu handienarekin funtzionatu ahal izateko.</translation>
 <translation id="2976639738101799892">Erabili Google Bilaketa eta Google-ren eginbide aurreratuak sarea arakatzen duzun bakoitzean</translation>
 <translation id="2977480621796371840">Kendu taldetik</translation>
 <translation id="2979493931538961252">Chromebook-a deskonektatuta dagoenean eta wifi-guneak erabilgarri daudenean</translation>
@@ -2978,7 +2976,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3053273573829329829">Gaitu erabiltzailearen PINa</translation>
 <translation id="3053274730492362225">Ez egin keinurik</translation>
 <translation id="3054011216223858553">Desaktibatuta • Erabili eguneroko hizkera arakatze-historian bilaketak egiteko eta bisitatu dituzun webguneak aurkitzeko</translation>
-<translation id="3054766768827382232">Babesa desgaituz gero, gailu periferikoen errendimendua hobe daiteke, baina baliteke datu pertsonalak ikusgai geratzea gailuok baimenik gabe erabiltzen direnean.</translation>
 <translation id="3058498974290601450">Sinkronizazioa aktibatzeko, joan ezarpenetara</translation>
 <translation id="3058517085907878899">Jarri izena gailuari</translation>
 <translation id="3060952009917586498">Aldatu gailuaren hizkuntza. Oraingo hizkuntza <ph name="LANGUAGE" /> da.</translation>
@@ -3725,7 +3722,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3619294456800709762">Webguneek automatikoki ireki dezakete pantaila txiki gainjarria</translation>
 <translation id="3620136223548713675">Geokokapena</translation>
 <translation id="3621202678540785336">Idazketa</translation>
-<translation id="3621807901162200696">Lagundu Chrome OS-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikazio bat}other{# aplikazio}}</translation>
 <translation id="3622820753353315928">Pantailako argi-jakinarazpenen kolorea</translation>
 <translation id="362333465072914957">Ziurtagiri-emaileak ziurtagiria jaulkitzeko zain</translation>
@@ -3805,7 +3801,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3675683621636519363">Bidali hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak ChromeOS Flex-era</translation>
 <translation id="367645871420407123">Utzi hutsik erroko pasahitza testu-irudiaren balio lehenetsi gisa ezarri nahi baduzu</translation>
 <translation id="3677911431265050325">Eskatu mugikorretarako webgunea</translation>
-<translation id="3677959414150797585">Aplikazioak, web-orriak eta beste gauza batzuk sartzen dira. Iradokizunak hobetzeko balio duten estatistikak bidaltzen dira erabilera-datuak partekatzea aukeratu baduzu soilik.</translation>
 <translation id="3678156199662914018">Luzapena: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Leiho honetan ikusten dituzun orriak ez dira arakatze-historian agertuko eta ez dute ordenagailuan beste inolako aztarnarik utziko (adibidez, cookieak) saioa itxi ondoren. Ez dira gordeko deskargatzen dituzun fitxategiak eta sortzen dituzun laster-markak.</translation>
 <translation id="3679126865530709868">Ukipen-panel integratua</translation>
@@ -6524,7 +6519,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5613074282491265467">Chrome-n saioa hasita daukazunean, gordetzen dituzun pasahitzak Google-ko kontuan (<ph name="USER_EMAIL" />) biltegiratzen dira. Aukera hori desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="5614190747811328134">Erabiltzaileentzako oharra</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
-<translation id="5614625640221885312">Hasi saioa laster-markak, pasahitzak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Azkenaldian bisitatu dituzun eta arakatzen duzun bitartean beste webguneei iragarkiak iradoki ahal dizkieten webguneen zerrenda</translation>
 <translation id="5616571005307953937">Zaharrenak</translation>
@@ -6826,7 +6820,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5841270259333717135">Konfiguratu Etherneta</translation>
 <translation id="5842497610951477805">Gaitu Bluetootha</translation>
 <translation id="5844284118433003733">Saioa hasita daukazunean, datuak Google-ko kontuarekin lotzen dira Google-ren zerbitzu guztietan babestuta egon zaitezen; adibidez, Gmail-en babesa handiagotzen da segurtasun-gertakariren bat izan bada.</translation>
-<translation id="5844574845205796324">Iradoki arakatzeko eduki berria</translation>
 <translation id="5844685625984052392">Aholkua</translation>
 <translation id="5846200638699387931">Erlazio-sintaxiaren errorea: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ez dago itzalik</translation>
@@ -10111,7 +10104,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8203152941016626022">Nearby Share-ko gailuaren izena</translation>
 <translation id="8203732864715032075">Jaso jakinarazpenak eta ezarri ordenagailua lehenetsi gisa Mezuak aplikazioan gogoratzeko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Egin klik eskuineko botoiarekin</translation>
-<translation id="8205432712228803050">Pantailak eta gailu periferikoak une batez berrabiarazi egingo dira agian. Aldaketak eragina izan dezan, deskonektatu eta konektatu berriro gailu periferikoak.</translation>
 <translation id="8205478243727418828">Exekutatzeko tresnaren tekla + behera egiteko gezi-tekla</translation>
 <translation id="820568752112382238">Gehien bisitatutako webguneak</translation>
 <translation id="8206267832882844324">Editatu oharra</translation>
@@ -10730,7 +10722,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> edo <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Gaueko argiaren koloreen tenperatura</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> webguneak hauetarako baimena nahi du: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, etab.</translation>
-<translation id="864892689521194669">Lagundu ChromeOS Flex-en eginbideak eta errendimendua hobetzen</translation>
 <translation id="8649026945479135076">Bisitatzen dituzun webguneek interesatzen zaizkizun gauzak gogoratu ohi dituzte zerbitzua pertsonalizatzeko. Webguneek zure interesei buruzko informazioa ere gorde dezakete Chrome-n.</translation>
 <translation id="8650543407998814195">Ezin duzu atzitu jada profil zaharra, baina baduzu hura kentzeko aukera.</translation>
 <translation id="8651585100578802546">Behartu orria berriro kargatzera.</translation>

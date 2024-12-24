@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">Picture-in-picture automatique</translation>
 <translation id="1100782917270858593">Bouton "Reprendre votre parcours", appuyez sur Entrée pour reprendre votre parcours et voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
+<translation id="1101902632743388185">Vos tableaux comparatifs</translation>
 <translation id="1104409666019087579">Renseignez les champs obligatoires avant d'enregistrer.</translation>
 <translation id="1104860668737945357">Bouton "Gérer les mots de passe" à activer pour afficher et gérer vos mots de passe dans les paramètres Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2025186561304664664">Le proxy est défini sur la configuration automatique.</translation>
 <translation id="2025891858974379949">Contenu non sécurisé</translation>
 <translation id="2027465737841872819">Plastique</translation>
+<translation id="2027707238798802149">Carte non disponible</translation>
 <translation id="2029735183873159415">Ascendance et généalogie</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Vérifier le proxy et le pare-feu<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Le raccourci ne peut pas être identique au mot clé du moteur de recherche par défaut défini par <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> : <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2514548229949738417">Maison et jardinage</translation>
 <translation id="2515629240566999685">Vérifiez le signal dans votre zone.</translation>
 <translation id="2515761554693942801">Vous avez choisi la validation avec Touch ID sur les sites Web utilisant <ph name="PROVIDER_ORIGIN" />. Il est possible que ce fournisseur ait stocké des informations sur votre mode de paiement. Vous pouvez <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Cette carte n'est pas disponible. Veuillez contacter l'émetteur de votre carte.</translation>
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
 <translation id="2521736961081452453">Créer un formulaire</translation>
 <translation id="2523886232349826891">Enregistrée sur cet appareil uniquement</translation>
@@ -2472,6 +2475,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5425082381151187189">Décoration de maison et d'intérieur</translation>
 <translation id="5426179911063097041">"<ph name="SITE" />" souhaite vous envoyer des notifications</translation>
 <translation id="5430298929874300616">Supprimer le favori</translation>
+<translation id="5431318178759467895">Couleur</translation>
 <translation id="5433756542371550806">Variations de ligne de commande</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />n'enregistrera pas<ph name="END_EMPHASIS" /> ce qui suit :
           <ph name="BEGIN_LIST" />
@@ -3291,6 +3295,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6925267999184670015">B+ nord-américain</translation>
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
+<translation id="6933282894115597956">Votre organisation exige que vous vous connectiez</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente des fonctionnalités Chrome<ph name="END_BOLD" /> telles que la recherche à partir de la barre d'adresse et d'images issues de pages Web. Une fonctionnalité peut ne pas être disponible si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
 <translation id="6935082727755903526">Emplois dans la finance ou la comptabilité</translation>
@@ -3342,6 +3347,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7003322000677139268">Pièces et accessoires pour véhicule</translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006930604109697472">Envoyer quand même</translation>
+<translation id="7009364359744329733">Cette carte n'est pas disponible pour le moment. Veuillez réessayer plus tard.</translation>
 <translation id="7010658264061801199">Alimentation et boissons</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Peut demander à verrouiller et utiliser votre souris</translation>
@@ -3785,7 +3791,6 @@ Informations supplémentaires :
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personnalisez la taille des polices et les polices de caractères dans Chrome</translation>
 <translation id="7752995774971033316">Non géré</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Discuter avec <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Vos onglets et applis Chrome se fermeront au lancement de la mise à jour</translation>
 <translation id="7755287808199759310">Ton parent peut te le débloquer</translation>
 <translation id="7755624218968747854">Rouleau principal</translation>
@@ -3925,6 +3930,7 @@ Informations supplémentaires :
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement un formulaire dans Google Forms</translation>
 <translation id="8028892419725165118">Jeux grand public</translation>
 <translation id="8028960012888758725">Couper après la tâche</translation>
+<translation id="8028993641010258682">Taille</translation>
 <translation id="8029829038322015001">Rouge 1</translation>
 <translation id="8030729864112325446">Formation professionnelle et continue</translation>
 <translation id="8032546467100845887">Transparence</translation>
@@ -3980,7 +3986,6 @@ Informations supplémentaires :
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="8118489163946903409">Mode de paiement</translation>
 <translation id="8118506371121007279">Ajouter un commentaire</translation>
-<translation id="8124085000247609808">Discuter avec <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Le logiciel "<ph name="SOFTWARE_NAME" />" n'a pas été installé correctement sur votre ordinateur ou sur votre réseau. Demandez à l'administrateur informatique de résoudre le problème.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8133495915926741232">Sélectionnez les grandes catégories de thèmes à utiliser pour personnaliser les annonces. Si vous désactivez une catégorie plus grande, les thèmes associés seront aussi bloqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

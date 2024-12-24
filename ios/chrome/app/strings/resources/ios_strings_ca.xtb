@@ -108,6 +108,7 @@
 <translation id="143681031165817424">L'adreça només s'ha desat en aquest dispositiu</translation>
 <translation id="1445276840641906250">Totes les pestanyes en un navegador</translation>
 <translation id="1450170672351507823">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
+<translation id="1454615514353469963">Les contrasenyes, les claus d'accés i altres dades se suprimiran permanentment del gestor de contrasenyes de Google</translation>
 <translation id="1455660774629812862">No amaguis</translation>
 <translation id="1460751212339734034">Estalvia temps, escriu menys</translation>
 <translation id="1466035273550360103">No hi ha pestanyes obertes</translation>
@@ -1396,6 +1397,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7248046129087111453">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google.</translation>
 <translation id="7253951228444156601">S'estan comprovant les contrasenyes…</translation>
 <translation id="7261217796641151584">Comparteix el grup</translation>
+<translation id="7266578100016339897">Això t'ajuda a mantenir l'organització. Pots canviar-ho en qualsevol moment a la configuració.</translation>
 <translation id="7271220006028561438">Permet les actualitzacions automàtiques de les claus d'accés</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
@@ -1590,6 +1592,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8080028325999236607">Tanca totes les pestanyes</translation>
 <translation id="8084285576995584326">Controla les dades del teu Compte de Google</translation>
 <translation id="809543534949702122">Historial de cerques</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Les pestanyes que no utilitzis es mouran aquí al cap d’{COUNT} dia}other{Les pestanyes que no utilitzis es mouran aquí al cap de {COUNT} dies}}</translation>
 <translation id="8101409298456377967">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">La baixada de fitxers està disponible. Opcions disponibles a la part inferior de la pantalla.</translation>

@@ -962,6 +962,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2688969097326701645">Sì, continua</translation>
 <translation id="2690699652723742414">Ultimi 30 giorni</translation>
 <translation id="2691924980723297736">Avviso di sicurezza</translation>
+<translation id="2697248912349197812">Chiedi a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sottomenu disponibile, usa <ph name="SHORTCUT" /> per passare alle opzioni aggiuntive.</translation>
 <translation id="2701514975700770343">A faccia in giù</translation>
 <translation id="2702592986366989640">Opzione prezzo basso</translation>
@@ -2063,6 +2064,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="469028408546145398">Pulsante Chiudi le finestre di navigazione in incognito, attiva per chiudere tutte le finestre di navigazione in incognito aperte al momento</translation>
 <translation id="4691093235373904540">Installazione e riparazione di tetti</translation>
 <translation id="4692623383562244444">Motori di ricerca</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Chiedi a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Sport di combattimento</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lato</translation>
@@ -2475,6 +2477,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5425082381151187189">Arredamento e decorazione di interni</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
 <translation id="5430298929874300616">Rimuovi preferito</translation>
+<translation id="5431318178759467895">A colori</translation>
 <translation id="5433756542371550806">Varianti nella riga di comando</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />non salverà quanto segue<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3789,7 +3792,6 @@ Ulteriori dettagli:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> alle ore <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalizza le dimensioni dei caratteri e i caratteri tipografici in Chrome</translation>
 <translation id="7752995774971033316">Non gestito</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Prova <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">All'avvio dell'aggiornamento, le schede e le app di Chrome verranno chiuse</translation>
 <translation id="7755287808199759310">Il tuo genitore può sbloccarlo per te</translation>
 <translation id="7755624218968747854">Rullo principale</translation>
@@ -3929,6 +3931,7 @@ Ulteriori dettagli:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo modulo in Moduli Google</translation>
 <translation id="8028892419725165118">Casual game</translation>
 <translation id="8028960012888758725">Taglia al completamento del lavoro</translation>
+<translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8029829038322015001">Rosso 1</translation>
 <translation id="8030729864112325446">Corsi di formazione e aggiornamento</translation>
 <translation id="8032546467100845887">Trasparenza</translation>
@@ -3984,7 +3987,6 @@ Ulteriori dettagli:
 <translation id="8116925261070264013">Con audio disattivato</translation>
 <translation id="8118489163946903409">Metodo di pagamento</translation>
 <translation id="8118506371121007279">Invia feedback</translation>
-<translation id="8124085000247609808">Prova <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" non è stato installato correttamente sul computer o sulla rete. Chiedi all'amministratore IT di risolvere il problema.</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8133495915926741232">Scegli quali ampie categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>

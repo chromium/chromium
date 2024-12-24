@@ -1647,6 +1647,7 @@
 <translation id="6539852571005954999">스캔 중인 <ph name="FILENAME" /> 파일 다운로드</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
 <translation id="6542891623636520977">이모티콘, GIF 등</translation>
+<translation id="6543942526104794893">얼굴 동작을 사용 중지하시겠어요?</translation>
 <translation id="6545382064335350438">계속 PIN을 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="6555373427270923730">주소 표시줄에 웹 주소를 입력한 후 <ph name="MODIFIER" /><ph name="KEY" /> 키 누르기</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@
 <translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>
 <translation id="8860366331836346216">eSIM 추가</translation>
+<translation id="8869149849311827122">마우스 커서 제어를 사용 중지하시겠어요?</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
 <translation id="8873203135446552888">내장 터치패드를 사용 중지할 것임을 확인합니다</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>

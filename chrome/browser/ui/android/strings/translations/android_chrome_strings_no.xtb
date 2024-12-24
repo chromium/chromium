@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
 <translation id="1080365971383768617">Passord på alle enhetene dine</translation>
 <translation id="1082920045291562218">Arket for tilbakemelding om deling med sammendrag er lukket</translation>
+<translation id="1087176310396019910">Mulig nettsøppel</translation>
 <translation id="1089606299949659462">Gjennomgangen er fullført.</translation>
 <translation id="1094555143448724771">For å se faner fra de andre enhetene dine, synkroniser fanene dine og loggen din</translation>
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
@@ -508,6 +509,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> faner}}</translation>
 <translation id="3293181007446299124">Nettleserloggen din holdes privat på enheten din, og rapporter sendes med en forsinkelse for å beskytte identiteten din</translation>
+<translation id="3301936297336370235">Bekreftelse av passordforslag</translation>
 <translation id="3302615849591357577">Gjenopprett fanegruppen <ph name="TITLE_OF_GROUP" />, med fargen <ph name="COLOR_NAME" />, som en ny bakgrunnsfanegruppe.</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
@@ -1136,6 +1138,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196315980958524839">Passord lagres i Google Passordlagring på denne enheten</translation>
 <translation id="6202812185118613467">Logg på igjen for å starte synkroniseringen</translation>
+<translation id="6204781143409202534">Chrome har oppdaget mulig nettsøppel fra <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>

@@ -1597,6 +1597,17 @@ Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà d
 <translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Falso o se non viene configurato, i criteri non vengono sostituiti.</translation>
+<translation id="2158028663273824412">Consente di controllare la modalità del resolver di DNS over HTTPS. Tieni presente che questo criterio imposta solo la modalità predefinita per ciascuna query. La modalità può essere ignorata per tipi speciali di query, ad esempio le richieste di risoluzione del nome host del server DNS over HTTPS.
+
+La modalità <ph name="SECURE_DNS_MODE_OFF" /> disattiverà DNS over HTTPS.
+
+La modalità <ph name="SECURE_DNS_MODE_AUTOMATIC" /> invierà prima le query DNS over HTTPS se è disponibile un server DNS over HTTPS e potrebbe eseguire il fallback inviando query non sicure in caso di errore.
+
+La modalità <ph name="SECURE_DNS_MODE_SECURE" /> invierà solo query DNS over HTTPS e non sarà in grado fornire una risoluzione in caso di errore.
+
+Su <ph name="ANDROID_VERSION" /> e versioni successive, se DNS over TLS è attivo, <ph name="PRODUCT_NAME" /> non invierà richieste DNS non sicure.
+
+Se questo criterio non viene configurato, le query DNS over HTTPS non verranno inviate per i dispositivi gestiti. In caso contrario, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="2158741059065130266">Se il criterio viene impostato su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
 
       Se il criterio viene impostato su False, i file che si trovavano nel cestino continueranno a essere disponibili visualizzando i file nascosti e cercando la directory .Trash nella cartella I miei file o Download.</translation>
@@ -1702,6 +1713,11 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2202787915587511214">Attiva NTLMv2</translation>
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
+<translation id="2208092773610663977">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> controlla se nomi utente e password inseriti dagli utenti sono stati resi noti.
+
+Se viene impostato disattivato, gli utenti non possono utilizzare questa funzionalità.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo della divulgazione delle credenziali, ma l'utente può disattivarlo.</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
 <translation id="2212207215880394506">Non consentire l'editing di foto con AI generativa.</translation>
@@ -6119,6 +6135,13 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="545817252640069915">Attiva l'intercettazione dell'accesso</translation>
 <translation id="5460797984317417682">Attiva avviso schermo intero</translation>
 <translation id="5462898272514237681">Controlla l'accesso di <ph name="PRODUCT_OS_NAME" /> ai Servizi di geolocalizzazione di Google</translation>
+<translation id="5464786290880338716">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
+
+Se il criterio viene disattivato, la funzionalità di protezione IP verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
+Se il criterio viene attivato, la funzionalità di protezione IP verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
+Se il criterio non viene configurato, la funzionalità di protezione IP verrà disattivata per gli utenti il cui browser o dispositivo viene gestito e non potranno attivare la funzionalità tramite le impostazioni della UI. Gli utenti su browser e dispositivi non gestiti potranno attivare o disattivare la funzionalità di protezione IP sul proprio dispositivo tramite le impostazioni della UI.
+
+Nota: il comportamento della funzionalità di protezione IP per gli utenti aziendali potrebbe variare nel tempo se il criterio viene attivato o se non viene configurato e la funzionalità viene attivata tramite le impostazioni della UI.</translation>
 <translation id="5464816904705580310">Configurazione delle impostazioni per gli utenti gestiti.</translation>
 <translation id="5466596281866046569">Segnala informazioni sulle applicazioni</translation>
 <translation id="5467175549232776406">La pagina di test dei criteri è accessibile</translation>
@@ -6321,7 +6344,6 @@ Se il criterio non viene configurato o se viene impostato un elenco vuoto, all'u
 
       Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> segue la procedura di implementazione predefinita per non consentire gli hash non sicuri. Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake. Se viene disattivato, <ph name="PRODUCT_NAME" /> non consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake.</translation>
 <translation id="5611869109049836323">Forza l'applicazione di vincoli nei trust anchor aggiunti localmente</translation>
-<translation id="5612770822986069057">Consenti agli utenti di attivare o disattivare l'impostazione Protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo.</translation>
 <translation id="561480358503796257">L'URL di un'immagine che verrà utilizzata come badge aziendale per un profilo gestito. L'URL deve indirizzare a un'immagine.
 
 Questa policy può essere impostata soltanto come policy per gli utenti.
@@ -8575,17 +8597,6 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
       Gli identificatori dei tipi di connessione riconosciuti sono <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Non richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="7151366515472588710">Il client non dovrebbe interpretare questi dati e dovrebbe inoltrarli esattamente come sono. DMServer usa policy_version per verificare che la visualizzazione dei criteri di DMServer corrisponda a quella del dispositivo ChromeOS.</translation>
-<translation id="7152605873936173525">Consente di controllare la modalità del resolver di DNS over HTTPS. Tieni presente che questo criterio imposta solo la modalità predefinita per ciascuna query. La modalità può essere ignorata per tipi speciali di query, ad esempio le richieste di risoluzione del nome host del server DNS over HTTPS.
-
-      La modalità <ph name="SECURE_DNS_MODE_OFF" /> disattiverà DNS over HTTPS.
-
-      La modalità <ph name="SECURE_DNS_MODE_AUTOMATIC" /> invierà prima le query DNS over HTTPS se è disponibile un server DNS over HTTPS e potrebbe eseguire il fallback inviando query non sicure in caso di errore.
-
-      La modalità <ph name="SECURE_DNS_MODE_SECURE" /> invierà solo query DNS over HTTPS e non sarà in grado fornire una risoluzione in caso di errore.
-
-      Su <ph name="ANDROID_VERSION" /> e versioni successive, se DNS over TLS è attivo, <ph name="PRODUCT_NAME" /> non invierà richieste DNS non sicure.
-
-      Se questo criterio non viene impostato, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="7152640356717355643">Attiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="7153786895642570081">Questo criterio consente di controllare l'attivazione della funzionalità EphemeralNetworkPolicies.
 Se questo criterio viene impostato su true, le voci di DeviceOpenNetworkConfiguration RecommendedValuesAreEphemeral e UserCreatedNetworkConfigurationsAreEphemeral verranno rispettate.
@@ -8616,6 +8627,7 @@ certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto att
 <translation id="7177293255621000064">L'impostazione del criterio su True rende tutti i tipi di supporti di archiviazione esterni (unità flash USB, dischi rigidi esterni, schede di memoria SD e di altro tipo, memorie ottiche) non disponibili nel browser di file. L'impostazione del criterio su False o la mancata impostazione implica che gli utenti possano utilizzare spazi di archiviazione esterni sul loro dispositivo.
 
       Nota: il criterio non interessa Google Drive e la memoria interna. Gli utenti possono comunque accedere ai file salvati nella cartella Download.</translation>
+<translation id="7177645313697913767">Consenti agli utenti di attivare o disattivare l'impostazione Protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo se il browser e il dispositivo non sono gestiti.</translation>
 <translation id="7177857088692019405">Sblocco rapido</translation>
 <translation id="7179157174254421614">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
 
@@ -9324,13 +9336,6 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
-<translation id="7785199109546027763">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
-
-Se il criterio viene disattivato, la funzionalità di protezione IP verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
-Se il criterio viene attivato, la funzionalità di protezione IP verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
-Se il criterio non viene configurato, gli utenti potranno attivare o disattivare la funzionalità di protezione IP sul proprio dispositivo tramite le impostazioni della UI.
-
-Nota: il comportamento della funzionalità di protezione IP per gli utenti aziendali potrebbe variare nel tempo se il criterio viene attivato o se non viene configurato e la funzionalità viene attivata tramite le impostazioni della UI.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="7790221177424764797">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
@@ -9644,11 +9649,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8030228699677851043">Allinea il comportamento dell'URL blob di SharedWorker alle specifiche</translation>
 <translation id="8031651557770840616">Non consentire Sfondo AI generativa</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
-<translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo di fughe di credenziali, ma l'utente può disattivarlo.
-
-      Questo comportamento non viene attivato se la Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per forzare l'attivazione della Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Disattiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>

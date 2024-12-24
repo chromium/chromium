@@ -96,7 +96,6 @@
 <translation id="2137162749895930932">Затворите екран за превођење</translation>
 <translation id="2139300032719313227">Рестартујте Chrome ОС</translation>
 <translation id="2151406531797534936">Поново покрените Chrome</translation>
-<translation id="2163089732491971196">Да бисте користили и чували Chrome податке на Google налогу, унесите приступну фразу</translation>
 <translation id="2174917724755363426">Инсталација није довршена. Желите стварно да је откажете?</translation>
 <translation id="2186206192313702726">Google објектив</translation>
 <translation id="2190166659037789668">Грешка са провером ажурирања: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -246,6 +245,7 @@
 <translation id="3889417619312448367">Деинсталирај Google Chrome</translation>
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3941890832296813527">Грешка при инсталацији: Назив фајла програма за инсталацију је неважећи или није подржан.</translation>
+<translation id="3968962723676998462">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome жели да избрише податке из Google менаџера лозинки. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="398236277091248993">Chrome остаје брз уз функције за побољшање перформанси</translation>
 <translation id="3999683152997576765">Можете да видите и уклоните теме интересовања које сајтови користе да би вам приказивали огласе. Chrome процењује ваша интересовања на основу недавне историје прегледања.</translation>
@@ -310,6 +310,7 @@
 <translation id="4728575227883772061">Инсталација није успела због неодређене грешке. Ако је Google Chrome тренутно отворен, затворите га и покушајте поново.</translation>
 <translation id="4741235124132242877">Закачено је. Поново користите Google објектив са траке с алаткама</translation>
 <translation id="4747730611090640388">Chrome може да процени ваша интересовања.  Сајт који касније посетите може да затражи од Chrome-а приступ вашим интересовањима да би персонализовао огласе који вам се приказују.</translation>
+<translation id="475321580758063259">Ажурирајте Chrome да бисте наставили да користите Chrome податке на Google налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Користи исту проверу правописа као Google претрага. Текст који унесете у прегледач се шаље Google-у. То увек можете да промените у подешавањима.</translation>
 <translation id="4793679854893018356">Сазнајте како вас Chrome штити</translation>
@@ -586,6 +587,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8077579734294125741">Други Chrome профили</translation>
 <translation id="8086881907087796310">Инсталирање није успело зато што рачунар не испуњава минималне захтеве за хардвер.</translation>
 <translation id="8111297389482307122">Chrome мора да верификује да сте то ви да би неки подаци могли да се чувају на Google налогу и користе на свим уређајима. Ако се одјавите, ти подаци ће остати на овом уређају.</translation>
+<translation id="8113883687556086139">Потврдите идентитет да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Пошаљите повратне информације за претрагу помоћу Објектива</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
 <translation id="813913629614996137">Покреће се…</translation>

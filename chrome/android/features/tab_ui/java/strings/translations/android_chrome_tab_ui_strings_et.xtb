@@ -77,7 +77,6 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
-<translation id="4590027107044272416">Nüüd saate uue vahekaardi avada siin</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Kas sulgeda üks inaktiivne vaheleht?}other{Kas sulgeda <ph name="TAB_COUNT_MANY" /> inaktiivset vahelehte?}}</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sule 1 päeva pärast}other{Sule <ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>

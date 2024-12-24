@@ -539,6 +539,7 @@
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">若要在其他设备上使用这些密码，请将它们保存到您的 Google 账号</translation>
 <translation id="1370384480654163477">查看和修改您上次访问此网站时的文件：</translation>
+<translation id="1372259917802609049">删除约束条件时出错</translation>
 <translation id="1372841398847029212">同步到您的账号中</translation>
 <translation id="1373176046406139583">您可指定设备的公开范围，从而控制哪些人员能在您的屏幕处于解锁状态时与您分享内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">网络“<ph name="NETWORK_NAME" />”所需的证书尚未安装或已无效。请获取新的证书并尝试重新连接。</translation>
@@ -976,7 +977,6 @@
 <translation id="1663698992894057019">要想获得最新安全功能和软件，请改用新款 Chromebook</translation>
 <translation id="1665328953287874063">使用密码或 PIN 码解锁您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表现主义</translation>
-<translation id="1666232093776384142">停用“外围设备数据访问保护”设置</translation>
 <translation id="1667842670298352129">让系统大声朗读特定文字。首先，选择屏幕底部的“随选朗读”图标，然后突出显示文字。您也可以使用键盘快捷键：突出显示文字，然后按搜索键 + S。</translation>
 <translation id="1668435968811469751">手动注册</translation>
 <translation id="1668804837842452164">保存到 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
@@ -1472,6 +1472,7 @@
     这不会影响其他设备上的应用或内容。</translation>
 <translation id="2018189721942291407">不确定是否应注册？</translation>
 <translation id="2018352199541442911">抱歉，系统目前不支持您的外部存储设备。</translation>
+<translation id="2019213483156307334">添加约束条件时出错</translation>
 <translation id="2019718679933488176">在新标签页中打开音频(&amp;O)</translation>
 <translation id="2020183425253392403">显示网络地址设置</translation>
 <translation id="2020225359413970060">扫描文件</translation>
@@ -2844,7 +2845,6 @@
 <translation id="2975761176769946178">必须提供网址</translation>
 <translation id="2975845084271617886">加入并打开</translation>
 <translation id="2976547701881428815">工具和操作</translation>
-<translation id="2976557544729462544">某些设备需要停用数据访问保护设置才能正常运行或马力全开。</translation>
 <translation id="2976639738101799892">每次浏览时都可畅享 Google 搜索功能和 Google 智能工具</translation>
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="2979493931538961252">当 Chromebook 处于离线状态且热点可用时</translation>
@@ -2970,7 +2970,6 @@
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
 <translation id="3053274730492362225">不闪烁</translation>
 <translation id="3054011216223858553">已关闭 • 使用日常用语搜索您的浏览记录，并查找您访问过的网站</translation>
-<translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
@@ -3132,6 +3131,7 @@
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{有 1 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}other{有 {PASSWORD_COUNT} 个密码和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192586965067888278">详细描述问题。反馈将发送给 Google 进行人工审核，并可能会用于改进或开发 Google 产品和服务。</translation>
 <translation id="3192947282887913208">音频文件</translation>
@@ -3602,6 +3602,7 @@
 <translation id="3537881477201137177">日后需要时，您可在“设置”中修改</translation>
 <translation id="3538066758857505094">卸载 Linux 时出错。请重试。</translation>
 <translation id="3539537154248488260">隐藏/显示灵感示例</translation>
+<translation id="3539791442352537591">保存信任状态更改时出错</translation>
 <translation id="3540173484406326944">未通过“<ph name="HOST_DEVICE_NAME" />”连接到网络</translation>
 <translation id="354060433403403521">交流电源适配器</translation>
 <translation id="354068948465830244">可读取和更改网站数据</translation>
@@ -3717,7 +3718,6 @@
 <translation id="3619294456800709762">网站可以自动进入画中画模式</translation>
 <translation id="3620136223548713675">地理定位</translation>
 <translation id="3621202678540785336">输入</translation>
-<translation id="3621807901162200696">帮助改进 ChromeOS 的功能和性能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 款应用}other{# 款应用}}</translation>
 <translation id="3622820753353315928">屏幕闪烁颜色</translation>
 <translation id="362333465072914957">正在等待 CA 颁发证书</translation>
@@ -3797,7 +3797,6 @@
 <translation id="3675683621636519363">向 ChromeOS Flex 发送崩溃报告以及诊断信息和使用情况数据</translation>
 <translation id="367645871420407123">如果您要将根密码设为默认的测试图片值，则将此字段留空</translation>
 <translation id="3677911431265050325">请求切换到移动版网站</translation>
-<translation id="3677959414150797585">包括应用、网页等。仅当您已选择分享使用情况数据时，才会发送统计信息以完善建议。</translation>
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">当您退出访客模式后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。系统不会保留您下载的文件和创建的书签。</translation>
 <translation id="3679126865530709868">内置触控板</translation>
@@ -4789,6 +4788,7 @@
 <translation id="4361745360460842907">作为标签页打开</translation>
 <translation id="4363262124589131906">您在“我的云端硬盘”中保存的新文件将停止自动同步到此 Chromebook</translation>
 <translation id="4364327530094270451">甜瓜</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {ITEM_COUNT} 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共享窗口。</translation>
 <translation id="4364830672918311045">显示通知</translation>
 <translation id="4367971618859387374">显示名称</translation>
@@ -5710,6 +5710,7 @@
 <translation id="5029287942302939687">您的密码已设置完毕</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{地址}=1{地址（{SELECTED_ITEMS} 个）}other{地址（{SELECTED_ITEMS} 个）}}</translation>
 <translation id="5032430150487044192">无法创建二维码</translation>
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
 <translation id="5035846135112863536">选择下方的“更多详情”可从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
@@ -6458,6 +6459,7 @@
 <translation id="5568069709869097550">无法登录</translation>
 <translation id="5568525251731145240">为 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用删除网站数据和权限？</translation>
 <translation id="5568602038816065197">网站无需显示标准“打印”提示，即可使用您的设备可访问的任何打印机的高级功能</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{密码}=1{密码（{SELECTED_ITEMS} 个）}other{密码（{SELECTED_ITEMS} 个）}}</translation>
 <translation id="5571066253365925590">蓝牙已启用</translation>
 <translation id="5571092938913434726">全局媒体控件</translation>
 <translation id="5571832155627049070">自定义您的个人资料</translation>
@@ -6515,7 +6517,6 @@
 <translation id="5613074282491265467">登录 Chrome 后，您保存的密码会保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。如需关闭此设置，请前往“设置”部分。</translation>
 <translation id="5614190747811328134">用户须知</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
-<translation id="5614625640221885312">登录后即可将您的书签、密码等信息同步到您的所有设备上</translation>
 <translation id="5614947000616625327">iCloud 钥匙串</translation>
 <translation id="561552177910095306">网站列表，这些网站是您近期访问过的，且可在您继续浏览时向其他网站建议广告</translation>
 <translation id="5616571005307953937">最早</translation>
@@ -6817,7 +6818,6 @@
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5842497610951477805">蓝牙开关</translation>
 <translation id="5844284118433003733">当您登录后，这些数据将与您的 Google 账号关联，以便在各种 Google 服务中保护您，例如：于安全事件发生后在 Gmail 中加强对您的保护力度。</translation>
-<translation id="5844574845205796324">建议新内容以供探索</translation>
 <translation id="5844685625984052392">提示</translation>
 <translation id="5846200638699387931">相关语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">没有阴影</translation>
@@ -6960,6 +6960,7 @@
 <translation id="5941153596444580863">添加用户…</translation>
 <translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {PASSWORD_COUNT} 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="594221546068848596">使用<ph name="VISUAL_SEARCH_PROVIDER" />搜索网页</translation>
 <translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5943127421590245687">验证成功。若要解锁并恢复您的本地数据，请输入您的旧 <ph name="DEVICE_TYPE" />的密码。</translation>
@@ -8476,6 +8477,7 @@
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="7037157058268992880">忘记了 PIN 码</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
+<translation id="7037633074390821254">DNS 或 CIDR 约束条件</translation>
 <translation id="7038632520572155338">开关控制</translation>
 <translation id="7038710352229712897">为<ph name="USER_NAME" />再添加一个 Google 账号</translation>
 <translation id="7039326228527141150">访问来自<ph name="VENDOR_NAME" />的 USB 设备</translation>
@@ -8724,6 +8726,7 @@
 <translation id="7231260028442989757">查看、关闭和回复手机中收到的通知</translation>
 <translation id="7231347196745816203">使用手机解锁 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="7232750842195536390">重命名失败</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{有 1 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}other{有 {BOOKMARK_COUNT} 个书签和其他内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="723343421145275488">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
 <translation id="7234010996000898150">正在取消 Linux 恢复</translation>
 <translation id="7235305658956131898">由设备管理员安装的 Android 应用。</translation>
@@ -8850,6 +8853,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 调试。重启 <ph name="DEVICE_TYPE" /> 后，您将无法旁加载应用。</translation>
 <translation id="7328119182036084494">已保存到“<ph name="WEB_DRIVE" />”</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{有 1 个书签只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 {BOOKMARK_COUNT} 个书签只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="7328867076235380839">无效的组合</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />的设备的“<ph name="FEATURE_NAME" />”设置，通过账号 <ph name="USER_EMAIL" /> 分享。</translation>
@@ -10105,7 +10109,6 @@
 <translation id="8203152941016626022">“附近分享”功能的设备名称</translation>
 <translation id="8203732864715032075">向您发送通知，并默认记住这台计算机以便在您收到短信时向其发送通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
-<translation id="8205432712228803050">您的显示屏和外围设备可能很快就会重置。若要让此更改生效，请拔出并重新插上您的外围设备。</translation>
 <translation id="8205478243727418828">启动器键 + 向下键</translation>
 <translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8206267832882844324">修改备注</translation>
@@ -10393,6 +10396,7 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8399282673057829204">查看密码</translation>
 <translation id="839949601275221554">设备出现错误。请重新启动设备，然后重试。</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{书签}=1{书签（{SELECTED_ITEMS} 个）}other{书签（{SELECTED_ITEMS} 个）}}</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
 <translation id="8403807918453631441">您需要先保存密码，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
@@ -10724,7 +10728,6 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">护眼模式色温</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />、<ph name="SECOND_PERMISSION" />，等等</translation>
-<translation id="864892689521194669">帮助改进 ChromeOS Flex 功能和性能</translation>
 <translation id="8649026945479135076">您访问的网站经常会记住您感兴趣的内容，以便为您提供个性化体验。网站还可以将您的兴趣信息存储在 Chrome 中。</translation>
 <translation id="8650543407998814195">既然您已无法再访问自己的旧个人资料，不妨将其移除。</translation>
 <translation id="8651585100578802546">强制重新加载此页</translation>
@@ -11647,6 +11650,7 @@
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>
+<translation id="982083952953998237">添加约束条件</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />，您好</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 摄像头正在录像且麦克风正在录音</translation>

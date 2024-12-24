@@ -2472,6 +2472,7 @@
 <translation id="5425082381151187189">ಮನೆ ಮತ್ತು ಒಳಾಂಗಣ ಅಲಂಕಾರ</translation>
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="5430298929874300616">ಬುಕ್‌ಮಾರ್ಕ್‌ ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="5431318178759467895">ಬಣ್ಣ</translation>
 <translation id="5433756542371550806">ಕಮಾಂಡ್‌-ಲೈನ್‌ ವೇರಿಯೇಶನ್‌</translation>
 <translation id="5434798570900738152">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chromium <ph name="BEGIN_EMPHASIS" />ಸೇವ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3291,6 +3292,7 @@
 <translation id="6925267999184670015">ಉತ್ತರ ಅಮೇರಿಕನ್ B+</translation>
 <translation id="6926216138694948720">ಬಾಡಿ ಆರ್ಟ್</translation>
 <translation id="692638818576287323">ವಾಣಿಜ್ಯ ವಾಹನಗಳು</translation>
+<translation id="6933282894115597956">ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ನೀವು ಸೈನ್-ಇನ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6934236486840930310">ವಿಳಾಸ ಪಟ್ಟಿಯಿಂದ ಮತ್ತು ವೆಬ್ ಪುಟಗಳಲ್ಲಿನ ಚಿತ್ರಗಳ ಮೂಲಕ ಹುಡುಕುವಂತಹ <ph name="BEGIN_BOLD" />Chrome ಫೀಚರ್‌ಗಳನ್ನು ಒದಗಿಸುವುದು ಹಾಗೂ ವೆಬ್ ಅನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ<ph name="END_BOLD" />. ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್ ಅದನ್ನು ಬೆಂಬಲಿಸದಿದ್ದರೆ ಈ ಫೀಚರ್ ಲಭ್ಯವಿಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="6934672428414710184">ಈ ಹೆಸರು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಬಂದಿದೆ</translation>
 <translation id="6935082727755903526">ಅಕೌಂಟಿಂಗ್ ಮತ್ತು ಹಣಕಾಸು ಉದ್ಯೋಗಗಳು</translation>
@@ -3784,7 +3786,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome ನಲ್ಲಿ ಫಾಂಟ್ ಗಾತ್ರಗಳು ಮತ್ತು ಟೈಪ್‌ಫೇಸ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="7752995774971033316">ನಿರ್ವಹಣೆಯಲ್ಲಿಲ್ಲ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ಜೊತೆಗೆ ಚಾಟ್ ಮಾಡಿ</translation>
 <translation id="7754587126786572336">ಅಪ್‌ಡೇಟ್‌ ಪ್ರಾರಂಭವಾದಾಗ ನಿಮ್ಮ Chrome ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
 <translation id="7755287808199759310">ನಿಮ್ಮ ಪೋಷಕರು ನಿಮಗಾಗಿ ಅದನ್ನು ಅನಿರ್ಬಂಧಿಸಬಹುದಾಗಿದೆ</translation>
 <translation id="7755624218968747854">ಪ್ರಾಥಮಿಕ ರೋಲ್</translation>
@@ -3924,6 +3925,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms ನಲ್ಲಿ ಹೊಸ ಫಾರ್ಮ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="8028892419725165118">ಸಾಮಾನ್ಯ ಆಟಗಳು</translation>
 <translation id="8028960012888758725">ಕೆಲಸದ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
+<translation id="8028993641010258682">ಗಾತ್ರ</translation>
 <translation id="8029829038322015001">ಕೆಂಪು 1</translation>
 <translation id="8030729864112325446">ವೃತ್ತಿಪರ ಮತ್ತು ನಿರಂತರ ವಿದ್ಯಾಭ್ಯಾಸ</translation>
 <translation id="8032546467100845887">ಪಾರದರ್ಶಕತೆ</translation>
@@ -3979,7 +3981,6 @@
 <translation id="8116925261070264013">ಮ್ಯೂಟ್‌ ಆಗಿರುವುದು</translation>
 <translation id="8118489163946903409">ಪಾವತಿ ವಿಧಾನ</translation>
 <translation id="8118506371121007279">ಪ್ರತಿಕ್ರಿಯೆ ನೀಡಿ</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> ಜೊತೆಗೆ ಚಾಟ್ ಮಾಡಿ</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ನೆಟ್‌ವರ್ಕ್ ನಲ್ಲಿ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿಲ್ಲ: ಈ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ನಿಮ್ಮ IT ನಿರ್ವಾಹಕರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8133495915926741232">ಆ್ಯಡ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು ಯಾವ ವಿಶಾಲ ವರ್ಗದ ವಿಷಯವನ್ನು ಬಳಸಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ. ವಿಶಾಲ ವರ್ಗವನ್ನು ಆಫ್ ಮಾಡುವುದರಿಂದ ಅದರ ಸಂಬಂಧಿತ ವಿಷಯಗಳನ್ನು ಸಹ ನಿರ್ಬಂಧಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>

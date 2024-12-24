@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">अपने-आप 'पिक्चर में पिक्चर' मोड में जाने की सेटिंग</translation>
 <translation id="1100782917270858593">'Chrome इतिहास' में आपकी गतिविधि फिर से शुरू करने का बटन, अपनी गतिविधि फिर से शुरू करने के लिए, Enter दबाएं. इससे आपको 'Chrome इतिहास' में आपके काम की गतिविधि दिखेगी</translation>
 <translation id="1101672080107056897">गड़बड़ी पर कार्रवाई</translation>
+<translation id="1101902632743388185">प्रॉडक्ट की तुलना करने वाली टेबल</translation>
 <translation id="1104409666019087579">कुछ ज़रूरी फ़ील्ड खाली हैं. सेव करने से पहले इन्हें भरें.</translation>
 <translation id="1104860668737945357">'पासवर्ड मैनेज करें' बटन, Chrome की सेटिंग में पासवर्ड देखने और उन्हें मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -584,6 +585,7 @@
 <translation id="2025186561304664664">प्रॉक्‍सी अपने-आप कॉन्‍फ़‍िगर पर सेट है.</translation>
 <translation id="2025891858974379949">असुरक्षित कॉन्टेंट</translation>
 <translation id="2027465737841872819">प्लास्टिक</translation>
+<translation id="2027707238798802149">कार्ड उपलब्ध नहीं है</translation>
 <translation id="2029735183873159415">पूर्वज और वंशावली</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फ़ायरवॉल की जांच करें<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">शॉर्टकट और <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> की ओर से तय किया गया, खोज की सेवा देने वाली डिफ़ॉल्ट कंपनी का कीवर्ड, एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
@@ -867,6 +869,7 @@
 <translation id="2514548229949738417">घर और बागबानी</translation>
 <translation id="2515629240566999685">अपने इलाके में सिग्नल की जाँच करें</translation>
 <translation id="2515761554693942801">आपने <ph name="PROVIDER_ORIGIN" /> का इस्तेमाल करने वाली वेबसाइटों पर, Touch ID की मदद से पुष्टि करने का विकल्प चुना है. हो सकता है कि सेवा उपलब्ध कराने वाली इस कंपनी ने आपके पैसे चुकाने के तरीके से जुड़ी जानकारी सेव की हो, जिसे <ph name="LINK_TEXT" /> किया जा सकता है.</translation>
+<translation id="2518584823165598232">यह कार्ड उपलब्ध नहीं है. कृपया कार्ड जारी करने वाली कंपनी से संपर्क करें.</translation>
 <translation id="2521385132275182522">नीचे दाईं ओर स्टेपल</translation>
 <translation id="2521736961081452453">फ़ॉर्म बनाएं</translation>
 <translation id="2523886232349826891">सिर्फ़ इस डिवाइस पर सेव किया गया</translation>
@@ -2472,6 +2475,7 @@
 <translation id="5425082381151187189">होम और इंटीरियर डेकोरेशन</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
+<translation id="5431318178759467895">रंग</translation>
 <translation id="5433756542371550806">अलग-अलग तरह की कमांड-लाइन</translation>
 <translation id="5434798570900738152">Chromium यह जानकारी <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3291,6 +3295,7 @@
 <translation id="6925267999184670015">नॉर्थ अमेरिकन B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहन</translation>
+<translation id="6933282894115597956">आपके संगठन के मुताबिक, साइन इन करना ज़रूरी है</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />आपका डिफ़ॉल्ट सर्च इंजन आपको वेब पर खोज करने और Chrome की सुविधाएं इस्तेमाल करने की अनुमति देता है.<ph name="END_BOLD" /> जैसे, पता बार से और वेब पेजों पर मौजूद इमेज की मदद से खोज करना. अगर आपका सर्च इंजन, किसी सुविधा के साथ काम नहीं करता, तो हो सकता है कि वह सुविधा उपलब्ध न हो.</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
 <translation id="6935082727755903526">अकाउंटिंग और वित्तीय सेक्टर की नौकरियां</translation>
@@ -3342,6 +3347,7 @@
 <translation id="7003322000677139268">वाहनों के पुर्ज़े और ऐक्सेसरी</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
+<translation id="7009364359744329733">फ़िलहाल, यह कार्ड उपलब्ध नहीं है. कृपया फिर से कोशिश करें.</translation>
 <translation id="7010658264061801199">खाने-पीने की चीज़ें</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">साइट, माउस पॉइंटर को लॉक करने और उससे मिले इनपुट का इस्तेमाल करने की अनुमति मांग सकती है</translation>
@@ -3784,7 +3790,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाएं</translation>
 <translation id="7752995774971033316">अप्रबंधित</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> के साथ चैट करें</translation>
 <translation id="7754587126786572336">अपडेट शुरू होते ही, आपके Chrome टैब और ऐप्लिकेशन बंद हो जाएंगे</translation>
 <translation id="7755287808199759310">आपका अभिभावक इसे आपके लिए अनवरोधित कर सकता है</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
@@ -3924,6 +3929,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="8028892419725165118">कैज़ुअल गेम</translation>
 <translation id="8028960012888758725">जॉब के बाद ट्रिम करें</translation>
+<translation id="8028993641010258682">आकार</translation>
 <translation id="8029829038322015001">रेड 1</translation>
 <translation id="8030729864112325446">वोकेशनल ट्रेनिंग और शिक्षा जारी रखना</translation>
 <translation id="8032546467100845887">ट्रांसपेरेंसी</translation>
@@ -3979,7 +3985,6 @@
 <translation id="8116925261070264013">आवाज़ बंद की गई</translation>
 <translation id="8118489163946903409">भुगतान का तरीका</translation>
 <translation id="8118506371121007279">सुझाव, शिकायत या राय दें</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> के साथ चैट करें</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" आपके कंप्यूटर या नेटवर्क पर ठीक से इंस्टॉल नहीं हुआ था. अपने आईटी व्यवस्थापक से इस समस्या को ठीक करने के लिए कहें.</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8133495915926741232">चुनें कि दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जा सकता है. विषयों की इन कैटगरी को बंद करने से, मिलते-जुलते विषय भी ब्लॉक हो जाएंगे. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">picture-in-picture मोडमा स्वतः प्रवेश गर्ने सेटिङ</translation>
 <translation id="1100782917270858593">"खोज्ने क्रम सुचारु गर्नुहोस्" नामक बटन, तपाईं खोज्ने क्रम सुचारु गर्न र Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न चाहनुहुन्छ भने इन्टर थिच्नुहोस्</translation>
 <translation id="1101672080107056897">त्रुटिसम्बन्धी कार्य</translation>
+<translation id="1101902632743388185">उत्पादनहरूका तुलनात्मक तालिकाहरू</translation>
 <translation id="1104409666019087579">भर्नु पर्ने केही क्षेत्रहरू खाली छाडिएका छन्। भर्नु पर्ने क्षेत्रहरू भरेपछि मात्र सेभ गर्नुहोस्।</translation>
 <translation id="1104860668737945357">पासवर्डहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना पासवर्डहरू हेर्न तथा व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -460,6 +461,7 @@
 <translation id="1777422078676229054">फोटो (अर्काइभल)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">वेब एपहरू इन्स्टल गर्ने हो?</translation>
+<translation id="1791415068765905273">तुलनात्मक जानकारी भएका सबै तालिकाहरू देखाउनुहोस्</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1793631236004319016">पछिल्लो पटक <ph name="NUM_HOURS_MINUTES_SECONDS" /> अघि प्रयोग गरिएको</translation>
@@ -583,6 +585,7 @@
 <translation id="2025186561304664664">प्रोक्सीलाई स्वत: कन्फिगरमा सेट गरिएको छ।</translation>
 <translation id="2025891858974379949">असुरक्षित सामग्री</translation>
 <translation id="2027465737841872819">प्लास्टिक</translation>
+<translation id="2027707238798802149">कार्ड उपलब्ध छैन</translation>
 <translation id="2029735183873159415">पूर्वज तथा वंशावली</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रोक्सी र फायरवाललाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">यो सर्टकट र <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ले परिभाषित गरिएको खोज प्रदायकको डिफल्ट किवर्ड एउटै हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +869,7 @@
 <translation id="2514548229949738417">घर तथा उद्यान</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2515761554693942801">तपाईंले <ph name="PROVIDER_ORIGIN" /> प्रयोग गर्ने वेबसाइटमा Touch ID मार्फत पुष्टि गर्ने विकल्प छनौट गर्नुभएको छ। यो प्रदायकले तपाईंको भुक्तानी विधिसम्बन्धी जानकारी भण्डारण गरेको हुन सक्छ, तपाईं सो जानकारी <ph name="LINK_TEXT" /> गर्न सक्नुहुन्छ।</translation>
+<translation id="2518584823165598232">यो कार्ड उपलब्ध छैन। कृपया आफ्नो कार्ड प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
 <translation id="2521736961081452453">फाराम बनाउनुहोस्</translation>
 <translation id="2523886232349826891">यो डिभाइसमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
@@ -958,6 +962,7 @@
 <translation id="2688969097326701645">अँ, जारी राख्नुहोस्</translation>
 <translation id="2690699652723742414">विगत ३० दिनदेखिका</translation>
 <translation id="2691924980723297736">सुरक्षासम्बन्धी चेतावनी</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> लाई सोध्नुहोस्</translation>
 <translation id="2699273987028089219">सब मेनु उपलब्ध छ। अतिरिक्त विकल्पहरूमा जान <ph name="SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="2701514975700770343">तलतिर फर्केको</translation>
 <translation id="2702592986366989640">सस्तो मूल्यको विकल्प</translation>
@@ -2060,6 +2065,7 @@
 <translation id="469028408546145398">इन्कोग्निटो विन्डो बन्द गर्ने बटन, हाल खोलिएका सबै इन्कोग्निटो विन्डो बन्द गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="4691093235373904540">छानो मर्मत गर्ने सेवा</translation>
 <translation id="4692623383562244444">खोज इन्धनहरू</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> लाई सोध्नुहोस्</translation>
 <translation id="4698692901173737941">लडाइँ गर्ने गेमहरू</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">सतह</translation>
@@ -2192,6 +2198,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> स्थापना गर्नुहोस् (डाउनलोड गरिराख्नु पर्दैन)</translation>
 <translation id="4920457992177678649">भाडामा उपलब्ध आवास तथा छोटो अवधिको बसाइँ</translation>
 <translation id="4920710383559189047">स्लिभ</translation>
+<translation id="4920921410507315601">तुलनात्मक जानकारी भएका तालिकाहरू</translation>
 <translation id="4922104989726031751">अपरेटिङ सिस्टममा पासवर्ड म्यानेजर प्रयोग गर्न Chromium रिलन्च गर्नुहोस् र कम्प्युटरको पासवर्ड म्यानेजर प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="4923459931733593730">भुक्तानी</translation>
 <translation id="4926049483395192435">निर्दिष्ट हुनु पर्छ।</translation>
@@ -2385,6 +2392,7 @@
 <translation id="5278778426231952189">अहिले नै अपलोड गर्नुहोस्</translation>
 <translation id="5279286380302340275">डाउनलोड गरिएका सामग्री व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5280963125494874678">वेब एपहरू</translation>
+<translation id="5282008206326321696">{count,plural, =0{# वटा बुकमार्क}=1{# बुकमार्क}other{# वटा बुकमार्क}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">डकुमेन्टका विशेषताहरू</translation>
 <translation id="528468243742722775">समाप्त</translation>
@@ -2470,6 +2478,7 @@
 <translation id="5425082381151187189">घर तथा घरको भित्री भागको सजाव</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> तपाईंलाई सूचनाहरू पठाउन चाहन्छ</translation>
 <translation id="5430298929874300616">पुस्तकचिनो हटाउनुहोस्</translation>
+<translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5433756542371550806">कमान्ड-लाइन भेरिएसनहरू</translation>
 <translation id="5434798570900738152">Chromium ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2579,6 +2588,7 @@
 <translation id="561165882404867731">Google अनुवादकका सहायताले यो पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="5612720917913232150"><ph name="URL" /> तपाईंको कम्प्युटरको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="5614520971155863709">ताससम्बन्धी गेमहरू</translation>
+<translation id="5617785978844309968">तुलनात्मक जानकारी भएका सबै तालिकाहरू देखाउनुहोस्</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ले तपाईँलाई धेरै पटक रिडिरेक्ट गर्यो।</translation>
 <translation id="5619721953841297650">पूर्वनिर्धारित</translation>
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -3340,6 +3350,7 @@
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
+<translation id="7009364359744329733">यो कार्ड हाल उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7010658264061801199">खाना तथा पेय पदार्थ</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
 <translation id="7013835112918108252">यसले तपाईंको माउस लक गरी प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
@@ -3781,7 +3792,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="7752995774971033316">अव्यवस्थित</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> सँग च्याट गर्नुहोस्</translation>
 <translation id="7754587126786572336">अपडेट सुरु भएपछि तपाईंका Chrome ट्याब तथा एपहरू बन्द हुने छन्</translation>
 <translation id="7755287808199759310">तपाईंको अभिभावकले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
 <translation id="7755624218968747854">मुख्य रोल</translation>
@@ -3921,6 +3931,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8028892419725165118">क्याजुअल गेमहरू</translation>
 <translation id="8028960012888758725">काम सकेपछि छाँटकाँट गर्नुहोस्</translation>
+<translation id="8028993641010258682">आकार</translation>
 <translation id="8029829038322015001">रातो १</translation>
 <translation id="8030729864112325446">व्यावसायिक तथा निरन्तर शिक्षा</translation>
 <translation id="8032546467100845887">ट्रान्स्परेन्सी</translation>
@@ -3976,7 +3987,6 @@
 <translation id="8116925261070264013">म्युट गरियो</translation>
 <translation id="8118489163946903409">भुक्तानी विधि</translation>
 <translation id="8118506371121007279">प्रतिक्रिया दिनुहोस्</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> सँग कुराकानी गर्नुहोस्</translation>
 <translation id="8127301229239896662">तपाईंको कम्प्युटर वा नेटवर्कमा "<ph name="SOFTWARE_NAME" />" सही ढङ्गले स्थापना भएन। आफ्नो IT प्रशासकलाई यो समस्या समाधान गर्न लगाउनुहोस्‌।</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8133495915926741232">विज्ञापनहरू पर्सनलाइज गर्न कुन कुन बृहत् विषयहरू प्रयोग गर्न दिने भन्ने कुरा छनौट गर्नुहोस्। तपाईंले कुनै बृहत् विषय अफ गर्नुभयो भने त्यससँग सम्बन्धित विषयहरू पनि ब्लक हुने छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

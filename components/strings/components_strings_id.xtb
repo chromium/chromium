@@ -2475,6 +2475,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5425082381151187189">Dekorasi Rumah &amp; Interior</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ingin mengirimkan notifikasi kepada Anda</translation>
 <translation id="5430298929874300616">Buang bookmark</translation>
+<translation id="5431318178759467895">Warna</translation>
 <translation id="5433756542371550806">Variasi Command Line</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3294,6 +3295,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6926216138694948720">Seni Rajah dan Tindik</translation>
 <translation id="692638818576287323">Kendaraan Niaga</translation>
+<translation id="6933282894115597956">Login diwajibkan oleh organisasi Anda</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mesin telusur default memungkinkan Anda menelusuri web dan mendukung fitur Chrome<ph name="END_BOLD" /> seperti menelusuri dari kolom URL dan dari gambar di halaman web. Fitur mungkin tidak tersedia jika mesin telusur tidak mendukungnya.</translation>
 <translation id="6934672428414710184">Nama ini dari Akun Google Anda</translation>
 <translation id="6935082727755903526">Pekerjaan Akuntansi &amp; Keuangan</translation>
@@ -3786,7 +3788,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Sesuaikan ukuran font dan rupa huruf di Chrome</translation>
 <translation id="7752995774971033316">Tidak dikelola</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Chat dengan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Tab dan aplikasi Chrome Anda akan ditutup saat update dimulai</translation>
 <translation id="7755287808199759310">Orang tua dapat berhenti memblokirnya untukmu</translation>
 <translation id="7755624218968747854">Rol Utama</translation>
@@ -3926,6 +3927,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat formulir baru di Google Formulir dengan cepat</translation>
 <translation id="8028892419725165118">Game Kasual</translation>
 <translation id="8028960012888758725">Trim setelah seluruh tugas tercetak</translation>
+<translation id="8028993641010258682">Ukuran</translation>
 <translation id="8029829038322015001">Merah 1</translation>
 <translation id="8030729864112325446">Pendidikan Keterampilan &amp; Berkelanjutan</translation>
 <translation id="8032546467100845887">Transparansi</translation>
@@ -3981,7 +3983,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8116925261070264013">Dinonaktifkan</translation>
 <translation id="8118489163946903409">Metode pembayaran</translation>
 <translation id="8118506371121007279">Beri masukan</translation>
-<translation id="8124085000247609808">Mulai percakapan dengan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak diinstal dengan benar di komputer atau jaringan Anda. Mintalah administrator IT untuk menyelesaikan masalah ini.</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8133495915926741232">Pilih kategori topik luas mana yang dapat digunakan untuk membantu mempersonalisasi iklan. Menonaktifkan kategori yang lebih luas juga akan memblokir topik terkait. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>

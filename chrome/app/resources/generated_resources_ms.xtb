@@ -983,7 +983,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1663698992894057019">Tingkatkan kepada Chromebook baharu untuk mendapatkan kemaskinian keselamatan dan perisian terkini</translation>
 <translation id="1665328953287874063">Gunakan kata laluan atau PIN untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1665859804801131136">Ekspresionisme</translation>
-<translation id="1666232093776384142">Lumpuhkan perlindungan akses data untuk peranti persisian</translation>
 <translation id="1667842670298352129">Dengar teks tertentu dibaca dengan suara lantang. Mula-mula, pilih ikon Pilih untuk bercakap di bahagian bawah skrin anda, kemudian serlahkan teks. Anda juga boleh menggunakan pintasan papan kekunci: Serlahkan teks, kemudian tekan Cari + S.</translation>
 <translation id="1668435968811469751">Daftar secara manual</translation>
 <translation id="1668804837842452164">Simpan ke <ph name="BRAND" /> untuk <ph name="EMAIL" /></translation>
@@ -2867,7 +2866,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2975761176769946178">URL diperlukan</translation>
 <translation id="2975845084271617886">Sertai dan Buka</translation>
 <translation id="2976547701881428815">Alatan dan tindakan</translation>
-<translation id="2976557544729462544">Sesetengah peranti menghendaki perlindungan akses data dilumpuhkan agar dapat berfungsi dengan baik atau memberikan prestasi maksimum.</translation>
 <translation id="2976639738101799892">Dapatkan Google Search dan ciri pintar Google setiap kali anda menyemak imbas</translation>
 <translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
 <translation id="2979493931538961252">Apabila Chromebook anda luar talian dan tempat liputan tersedia</translation>
@@ -2993,7 +2991,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3053273573829329829">Dayakan PIN pengguna</translation>
 <translation id="3053274730492362225">Jangan berkelip</translation>
 <translation id="3054011216223858553">Dimatikan • Gunakan bahasa harian untuk mencari sejarah penyemakan imbas anda dan temukan laman yang telah anda lawati</translation>
-<translation id="3054766768827382232">Tindakan melumpuhkan perlindungan akses data boleh menjadikan peranti persisian anda berfungsi dengan lebih baik, tetapi mungkin mendedahkan data peribadi anda melalui penggunaan yang tidak dibenarkan.</translation>
 <translation id="3058498974290601450">Anda boleh mematikan penyegerakan pada bila-bila masa dalam tetapan</translation>
 <translation id="3058517085907878899">Namakan peranti</translation>
 <translation id="3060952009917586498">Tukar bahasa peranti. Bahasa semasa ialah <ph name="LANGUAGE" />.</translation>
@@ -3744,7 +3741,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3619294456800709762">Laman dapat memasukkan gambar dalam gambar secara automatik</translation>
 <translation id="3620136223548713675">Geolokasi</translation>
 <translation id="3621202678540785336">Input</translation>
-<translation id="3621807901162200696">Bantu kami memperbaik ciri dan prestasi Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{satu apl}other{# apl}}</translation>
 <translation id="3622820753353315928">Warna denyaran skrin</translation>
 <translation id="362333465072914957">Menunggu CA mengeluarkan sijil</translation>
@@ -3824,7 +3820,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3675683621636519363">Hantar laporan dan diagnostik ranap serta data penggunaan kepada ChromeOS Flex</translation>
 <translation id="367645871420407123">biarkan kosong jika anda ingin menetapkan kata laluan akar kepada nilai imej ujian lalai</translation>
 <translation id="3677911431265050325">Minta tapak mudah alih</translation>
-<translation id="3677959414150797585">Termasuk apl, halaman web dan pelbagai lagi. Menghantar statistik untuk meningkatkan cadangan hanya sekiranya anda telah memilih untuk berkongsi data penggunaan.</translation>
 <translation id="3678156199662914018">Sambungan: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Halaman yang anda lihat dalam tetingkap ini tidak akan dipaparkan dalam sejarah penyemak imbas dan halaman ini tidak akan meninggalkan surih lain, seperti kuki, pada komputer selepas anda log keluar. Fail yang anda muat turun dan penanda halaman yang anda buat tidak akan dikekalkan.</translation>
 <translation id="3679126865530709868">Pad sentuh terbina dalam</translation>
@@ -6549,7 +6544,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5613074282491265467">Apabila anda log masuk ke Chrome, kata laluan yang anda simpan akan disimpan pada Google Account anda, <ph name="USER_EMAIL" />. Untuk mematikan ciri ini, akses tetapan.</translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
-<translation id="5614625640221885312">Log masuk untuk mendapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Senarai laman terbaharu yang anda lawati yang boleh mencadangkan iklan ke laman lain jika anda terus menyemak imbas</translation>
 <translation id="5616571005307953937">Paling lama</translation>
@@ -6853,7 +6847,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5841270259333717135">Konfigurasikan Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth didayakan</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
-<translation id="5844574845205796324">Cadangkan kandungan baharu untuk diterokai</translation>
 <translation id="5844685625984052392">Pembayang</translation>
 <translation id="5846200638699387931">Ralat sintaks hubungan: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Tiada bebayang</translation>
@@ -10148,7 +10141,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8203152941016626022">Nama peranti Kongsi Berdekatan</translation>
 <translation id="8203732864715032075">Hantar pemberitahuan kepada anda dan tetapkan mengingati komputer ini untuk Messages sebagai pilihan lalai. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Klik kanan</translation>
-<translation id="8205432712228803050">Peranti paparan dan persisian anda mungkin ditetapkan semula sebentar. Untuk membolehkan perubahan ini diterapkan, cabut dan palamkan semula peranti persisian anda.</translation>
 <translation id="8205478243727418828">pelancar + anak panah ke bawah</translation>
 <translation id="820568752112382238">Tapak yang paling kerap dilawati</translation>
 <translation id="8206267832882844324">Edit nota</translation>
@@ -10769,7 +10761,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> atau <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Suhu warna Cahaya Malam</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> ingin: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dan pelbagai lagi</translation>
-<translation id="864892689521194669">Bantu tingkatkan ciri dan prestasi Chrome OS Flex</translation>
 <translation id="8649026945479135076">Menjadi kebiasaan bagi laman yang anda lawati mengingati perkara yang anda minati, untuk memeribadikan pengalaman anda. Laman boleh menyimpan maklumat tentang minat anda menggunakan Chrome.</translation>
 <translation id="8650543407998814195">Walaupun anda tidak dapat mengakses profil lama anda lagi, anda masih boleh mengalih keluar profil tersebut.</translation>
 <translation id="8651585100578802546">Paksa Muatkan Semula Halaman Ini</translation>

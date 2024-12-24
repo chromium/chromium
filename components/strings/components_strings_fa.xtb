@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">عکس (آرشیوی)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">برنامه‌های وب نصب شود؟</translation>
+<translation id="1791415068765905273">نمایش همه جدول‌های مقایسه</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507">‏<ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1793631236004319016">آخرین‌بار <ph name="NUM_HOURS_MINUTES_SECONDS" /> قبل استفاده شده است</translation>
@@ -2197,6 +2198,7 @@
 <translation id="4918221908152712722">نصب <ph name="APP_NAME" /> (بارگیری لازم نیست)</translation>
 <translation id="4920457992177678649">اقامتگاه‌های اجاره‌ای و اقامت کوتاه‌مدت</translation>
 <translation id="4920710383559189047">جلد</translation>
+<translation id="4920921410507315601">جدول‌های مقایسه</translation>
 <translation id="4922104989726031751">‏برای استفاده از «مدیر گذرواژه» در سیستم‌عامل خود، برنامه Chromium را مجدداً راه‌اندازی کنید و دسترسی به مدیر گذرواژه رایانه‌تان را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="4923459931733593730">پرداخت</translation>
 <translation id="4926049483395192435">باید مشخص شود.</translation>
@@ -2390,6 +2392,7 @@
 <translation id="5278778426231952189">اکنون بارگذاری شود</translation>
 <translation id="5279286380302340275">مدیریت بارگیری‌ها</translation>
 <translation id="5280963125494874678">برنامه‌های وب</translation>
+<translation id="5282008206326321696">{count,plural, =0{‫# نشانک}=1{‫# نشانک}one{‫# نشانک}other{‫# نشانک}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">مشخصات سند</translation>
 <translation id="528468243742722775">پایان</translation>
@@ -2475,6 +2478,7 @@
 <translation id="5425082381151187189">دکوراسیون داخلی و خانه</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
 <translation id="5430298929874300616">حذف نشانک</translation>
+<translation id="5431318178759467895">رنگ</translation>
 <translation id="5433756542371550806">گونه‌های خط فرمان</translation>
 <translation id="5434798570900738152">‏Chromium <ph name="BEGIN_EMPHASIS" />این‌ها را ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2584,6 +2588,7 @@
 <translation id="561165882404867731">‏این صفحه را با «ترجمه Google» ترجمه کنید</translation>
 <translation id="5612720917913232150"><ph name="URL" /> می‌خواهد از موقعیت مکانی رایانه شما استفاده کند</translation>
 <translation id="5614520971155863709">بازی‌های کارتی</translation>
+<translation id="5617785978844309968">نمایش همه جدول‌های مقایسه</translation>
 <translation id="5617949217645503996">تعداد دفعاتی که <ph name="HOST_NAME" /> شما را به نشانی‌های دیگر هدایت کرده بیش از حد است.</translation>
 <translation id="5619721953841297650">پیش‌تنظیم</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
@@ -3789,7 +3794,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">‏سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome</translation>
 <translation id="7752995774971033316">مدیریت نشده</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - گپ زدن با <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">‏هنگام شروع به‌روزرسانی، برنامه‌ها و برگه‌های Chrome بسته خواهد شد</translation>
 <translation id="7755287808199759310">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
 <translation id="7755624218968747854">رول اصلی</translation>
@@ -3929,6 +3933,7 @@
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع فرم جدید در «فرم‌نگار Google»، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="8028892419725165118">بازی‌های نامرتب</translation>
 <translation id="8028960012888758725">برش زدن بعد از چاپ</translation>
+<translation id="8028993641010258682">اندازه</translation>
 <translation id="8029829038322015001">قرمز ۱</translation>
 <translation id="8030729864112325446">آموزش شغلی و مداوم</translation>
 <translation id="8032546467100845887">شفافیت</translation>
@@ -3984,7 +3989,6 @@
 <translation id="8116925261070264013">صامت‌شده</translation>
 <translation id="8118489163946903409">روش پرداخت</translation>
 <translation id="8118506371121007279">ارائه بازخورد</translation>
-<translation id="8124085000247609808">گپ زدن با <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» به‌درستی در رایانه یا شبکه‌تان پیکربندی نشد. از سرپرست فناوری اطلاعات خود بخواهید این مشکل را حل کند.</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8133495915926741232">انتخاب کنید کدام دسته‌های گسترده از موضوع‌ها می‌توانند برای شخصی‌سازی آگهی‌ها استفاده شوند. خاموش کردن یکی از دسته‌های گسترده باعث مسدود شدن موضوع‌های مرتبط با آن نیز می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

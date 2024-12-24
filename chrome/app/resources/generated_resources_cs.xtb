@@ -983,7 +983,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1663698992894057019">Pokud chcete mít nejnovější zabezpečení a software, upgradujte na nový Chromebook</translation>
 <translation id="1665328953287874063">Odemykejte svůj <ph name="DEVICE_TYPE" /> heslem nebo kódem PIN</translation>
 <translation id="1665859804801131136">Expresionismus</translation>
-<translation id="1666232093776384142">Deaktivace ochrany přístupu k datům pro periferní zařízení</translation>
 <translation id="1667842670298352129">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text. Můžete také použít klávesovou zkratku: zvýrazněte text a potom stiskněte klávesu Hledat + S.</translation>
 <translation id="1668435968811469751">Zaregistrovat ručně</translation>
 <translation id="1668804837842452164">Uložit do <ph name="BRAND" /> pro účet <ph name="EMAIL" /></translation>
@@ -2854,7 +2853,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2975761176769946178">Adresa URL je povinná</translation>
 <translation id="2975845084271617886">Přidat se a otevřít</translation>
 <translation id="2976547701881428815">Nástroje a akce</translation>
-<translation id="2976557544729462544">Některá zařízení vyžadují deaktivaci ochrany přístupu k datům, aby mohla fungovat správně nebo s plným výkonem.</translation>
 <translation id="2976639738101799892">Mějte při procházení internetu vždy k dispozici Vyhledávání Google a chytré funkce Google</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="2979493931538961252">Když je Chromebook offline a jsou dostupné hotspoty</translation>
@@ -2980,7 +2978,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Zapnout uživatelský PIN</translation>
 <translation id="3053274730492362225">Neblikat</translation>
 <translation id="3054011216223858553">Vypnuto • Vyhledávat běžným jazykem v historii prohlížení a najít tak navštívené weby</translation>
-<translation id="3054766768827382232">Po deaktivaci mohou mít periferní zařízení lepší výkon, ale vaše osobní údaje mohou být vyzrazeny v rámci neoprávněného použití.</translation>
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3058517085907878899">Zadejte název zařízení</translation>
 <translation id="3060952009917586498">Změňte název zařízení. Stávající jazyk je <ph name="LANGUAGE" />.</translation>
@@ -3727,7 +3724,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3619294456800709762">Weby mohou automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="3620136223548713675">Geolokace</translation>
 <translation id="3621202678540785336">Vstup</translation>
-<translation id="3621807901162200696">Pomoci vylepšovat funkce a výkon systému ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="3622820753353315928">Barva blikání obrazovky</translation>
 <translation id="362333465072914957">Čeká se, než certifikační autorita vydá certifikát</translation>
@@ -3807,7 +3803,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3675683621636519363">Odesílat zprávy o selhání, diagnostická data a údaje o využití do systému ChromeOS Flex</translation>
 <translation id="367645871420407123">Chcete-li heslo uživatele root nastavit na výchozí hodnotu testovacího obrazu, ponechte toto pole prázdné.</translation>
 <translation id="3677911431265050325">Požadovat mobilní web</translation>
-<translation id="3677959414150797585">Zahrnuje aplikace, weby apod. Statistiky za účelem vylepšení návrhů budou odesílány, pouze pokud jste se rozhodli sdílet údaje o využití.</translation>
 <translation id="3678156199662914018">Rozšíření: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Stránky, které otevřete v tomto okně, nebudou uvedeny v historii prohlížeče a po odhlášení v počítači nezanechají žádné stopy, např. soubory cookie. Zachovány nezůstanou ani stažené soubory či vytvořené záložky.</translation>
 <translation id="3679126865530709868">Vestavěný touchpad</translation>
@@ -6525,7 +6520,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5613074282491265467">Když jste v Chromu přihlášeni, uložená hesla se ukládají do vašeho účtu Google <ph name="USER_EMAIL" />. Tuto funkci můžete vypnout v nastavení.</translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
-<translation id="5614625640221885312">Přihlaste se a používejte záložky, hesla a další obsah na všech svých zařízeních</translation>
 <translation id="5614947000616625327">Klíčenka na iCloudu</translation>
 <translation id="561552177910095306">Seznam nedávno navštívených webů, které mohou při procházení internetu navrhovat reklamy pro jiné weby</translation>
 <translation id="5616571005307953937">Nejstarší</translation>
@@ -6827,7 +6821,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5841270259333717135">Nakonfigurovat ethernet</translation>
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
 <translation id="5844284118433003733">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
-<translation id="5844574845205796324">Navrhovat nový obsah k objevování</translation>
 <translation id="5844685625984052392">Náznak</translation>
 <translation id="5846200638699387931">Chyba syntaxe vztahu: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Žádný stín</translation>
@@ -10118,7 +10111,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8203152941016626022">Název zařízení pro sdílení nablízko</translation>
 <translation id="8203732864715032075">Odesílat vám oznámení a zapamatovat si tento počítač pro Zprávy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>
-<translation id="8205432712228803050">Displeje a periferní zařízení se mohou nakrátko resetovat. Pokud chcete, aby se tato změna projevila, odpojte periferní zařízení a poté je znovu připojte.</translation>
 <translation id="8205478243727418828">spouštěč + šipka dolů</translation>
 <translation id="820568752112382238">Nejnavštěvovanější weby</translation>
 <translation id="8206267832882844324">Upravit poznámku</translation>
@@ -10737,7 +10729,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> nebo <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Teplota barev nočního režimu</translation>
 <translation id="8648544143274677280">Web <ph name="SITE_NAME" /> žádá o tato oprávnění: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> a další</translation>
-<translation id="864892689521194669">Pomozte zlepšit funkce a výkon systému ChromeOS Flex</translation>
 <translation id="8649026945479135076">Je běžné, že si navštívené weby pamatují, co vás zajímá, aby pro vás personalizovaly svůj obsah. Weby mohou v prohlížeči Chrome ukládat také informace o vašich zájmech.</translation>
 <translation id="8650543407998814195">Ačkoliv svůj starý profil již nemůžete používat, můžete jej odstranit.</translation>
 <translation id="8651585100578802546">Vynutit opětovné načtení této stránky</translation>

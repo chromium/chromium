@@ -1647,6 +1647,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6539852571005954999">Nedlastingen skannes: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojier, GIF-er med mer</translation>
+<translation id="6543942526104794893">Er du sikker på at du vil slå av ansiktsbevegelser?</translation>
 <translation id="6545382064335350438">PIN-koden kunne fremdeles ikke verifiseres. Prøv på nytt.</translation>
 <translation id="6555373427270923730">Skriv inn en nettadresse i adressefeltet, og trykk deretter på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8855885154700222542">Tast for fullskjermmodus</translation>
 <translation id="8858369206579825206">Personverninnstillinger</translation>
 <translation id="8860366331836346216">Legg til eSIM-kort</translation>
+<translation id="8869149849311827122">Er du sikker på at du vil slå av musepekerkontroll?</translation>
 <translation id="8870509716567206129">Appen støtter ikke delt skjerm.</translation>
 <translation id="8873203135446552888">Bekreft at du vil deaktivere den innebygde styreflaten.</translation>
 <translation id="8874184842967597500">Ikke tilkoblet</translation>

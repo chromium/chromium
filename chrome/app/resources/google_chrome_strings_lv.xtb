@@ -94,7 +94,6 @@
 <translation id="2137162749895930932">Aizvērt tulkošanas ekrānu</translation>
 <translation id="2139300032719313227">Chrome OS restartēšana</translation>
 <translation id="2151406531797534936">Lūdzu, nekavējoties restartējiet pārlūku Chrome</translation>
-<translation id="2163089732491971196">Lai izmantotu un saglabātu Chrome datus savā Google kontā, ievadiet ieejas frāzi</translation>
 <translation id="2174917724755363426">Instalēšana nav pabeigta. Vai tiešām vēlaties atcelt?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Atjauninājumu pārbaudes kļūda: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -389,6 +388,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5941830788786076944">Izveidot Google Chrome par noklusējuma pārlūku</translation>
 <translation id="5947104538377036631">Chrome saīsne</translation>
 <translation id="5953954252731207958">Pēdējā laikā neesat apmeklējis šo vietni. Pārlūkā Chrome tika noņemta atļauja <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chrome komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Notiek lejupielāde... Atlikušais laiks: <ph name="HOURS" /> stunda(-as).</translation>
 <translation id="6014316319780893079">Izmantojot <ph name="BEGIN_LINK" />Chrome rīkus<ph name="END_LINK" />, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
 <translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
@@ -607,6 +607,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="842386925677997438">Chrome drošības rīki</translation>
 <translation id="8425765582779547329">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pierakstieties pārlūkā Chrome.</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
+<translation id="8429214465555795676">Lai turpinātu, jums jāpierakstās pārlūkā Chrome, izmantojot kontu <ph name="EMAIL" />. Tādējādi tiek nodrošināta atbilstība jūsu organizācijas politikām.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8451192282033883849">Jūsu kontu pārvalda <ph name="MANAGER_NAME" />. Administrators var skatīt un rediģēt šo Chrome profilu un tā datus, piemēram, grāmatzīmes, vēsturi un paroles.</translation>
 <translation id="8496177819998570653">Google p&amp;aroļu pārvaldnieks</translation>

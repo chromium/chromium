@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
 <translation id="1080365971383768617">Slaptažodžiai visuose jūsų įrenginiuose</translation>
 <translation id="1082920045291562218">Bendrinimas su suvestinės atsiliepimų lapu uždarytas</translation>
+<translation id="1087176310396019910">Galimas šlamštas</translation>
 <translation id="1089606299949659462">Peržiūra baigta!</translation>
 <translation id="1094555143448724771">Jei norite peržiūrėti kitų įrenginių skirtukus, sinchronizuokite skirtukus ir istoriją</translation>
 <translation id="1095761715416917775">Galimybė visada pasiekti sinchronizuotus duomenis</translation>
@@ -508,6 +509,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> skirtukas}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukas}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukai}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtuko}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="3293181007446299124">Naršymo istorija saugoma privačiai įrenginyje, o ataskaitos siunčiamos su delsa, siekiant apsaugoti jūsų tapatybę</translation>
+<translation id="3301936297336370235">Slaptažodžio pasiūlymo patvirtinimas</translation>
 <translation id="3302615849591357577">Atkurkite skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, kaip naują foninę skirtukų grupę.</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
@@ -1136,6 +1138,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
 <translation id="6196315980958524839">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje</translation>
 <translation id="6202812185118613467">Prisijunkite vėl ir pradėkite sinchronizuoti</translation>
+<translation id="6204781143409202534">„Chrome“ aptiko galimą šlamštą iš <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Su skelbimais susijęs privatumas</translation>
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an deinem Gerät verursachen.</translation>
 <translation id="1080365971383768617">Deine Passwörter auf allen deinen Geräten abrufen</translation>
 <translation id="1082920045291562218">Tabellenblatt zum Teilen von zusammenfassendem Feedback geschlossen</translation>
+<translation id="1087176310396019910">Möglicherweise Spam</translation>
 <translation id="1089606299949659462">Fertig!</translation>
 <translation id="1094555143448724771">Wenn du Tabs von deinen anderen Geräten sehen möchtest, synchronisiere deine Tabs und den Verlauf</translation>
 <translation id="1095761715416917775">Du solltest jederzeit auf deine synchronisierten Daten zugreifen können</translation>
@@ -508,6 +509,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> Tabs}}</translation>
 <translation id="3293181007446299124">Dein Browserverlauf wird sicher auf deinem Gerät gespeichert und Berichte werden mit einer Verzögerung gesendet, um deine Identität zu schützen</translation>
+<translation id="3301936297336370235">Bestätigung des Passwortvorschlags</translation>
 <translation id="3302615849591357577">Tabgruppe <ph name="TITLE_OF_GROUP" /> mit der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
@@ -972,6 +974,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5444999712122199445">Zurück zur Website</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Wenn dein Gerät zugeklappt ist, kannst du unten eine Option auswählen oder die Adressleiste gedrückt halten, um die Position zu ändern.</translation>
 <translation id="5458366071038729214">Hier erscheinen Websites, denen du folgst</translation>
 <translation id="5468068603361015296">Möchtest du <ph name="FILE_NAME" /> trotzdem herunterladen?</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
@@ -1135,6 +1138,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196315980958524839">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert</translation>
 <translation id="6202812185118613467">Melde dich wieder an, um die Synchronisierung zu starten</translation>
+<translation id="6204781143409202534">Chrome hat möglicherweise Spam von <ph name="DOMAIN" /> erkannt.</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht deine E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>

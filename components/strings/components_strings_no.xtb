@@ -461,6 +461,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1777422078676229054">Foto (arkiv)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vil du installere nettapper?</translation>
+<translation id="1791415068765905273">Vis alle sammenligningstabeller</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="1793631236004319016">Sist brukt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden.</translation>
@@ -2197,6 +2198,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (ingen nedlasting nødvendig)</translation>
 <translation id="4920457992177678649">Ferieboliger og korte opphold</translation>
 <translation id="4920710383559189047">Omslag</translation>
+<translation id="4920921410507315601">Sammenligningstabeller</translation>
 <translation id="4922104989726031751">For å bruke Passordlagring med operativsystemet ditt, start Chromium på nytt og gi tilgang til passordlagringen på datamaskinen. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="4923459931733593730">Betaling</translation>
 <translation id="4926049483395192435">Må angis.</translation>
@@ -2390,6 +2392,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5278778426231952189">Last opp nå</translation>
 <translation id="5279286380302340275">Administrer nedlastinger</translation>
 <translation id="5280963125494874678">nettapper</translation>
+<translation id="5282008206326321696">{count,plural, =0{# bokmerker}=1{# bokmerke}other{# bokmerker}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
 <translation id="528468243742722775">Avslutt</translation>
@@ -2475,6 +2478,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5425082381151187189">Hjemme- og interiørdekor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
 <translation id="5430298929874300616">Fjern bokmerke</translation>
+<translation id="5431318178759467895">Farge</translation>
 <translation id="5433756542371550806">Variasjoner i kommandolinjen</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" />
           <ph name="BEGIN_LIST" />
@@ -2584,6 +2588,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="561165882404867731">Oversett denne siden med Google Oversetter</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ber om å bruke posisjonen til enheten din</translation>
 <translation id="5614520971155863709">Kortspill</translation>
+<translation id="5617785978844309968">Vis alle sammenligningstabeller</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> viderekoblet deg for mange ganger.</translation>
 <translation id="5619721953841297650">Forhåndsinnstilling</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
@@ -3787,7 +3792,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Tilpass skriftstørrelser og -typer i Chrome</translation>
 <translation id="7752995774971033316">Administreres ikke</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Chat med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Chrome-fanene og -appene dine lukkes når oppdateringen starter</translation>
 <translation id="7755287808199759310">Forelderen din kan oppheve blokkeringen for deg</translation>
 <translation id="7755624218968747854">Hovedrull</translation>
@@ -3927,6 +3931,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt skjema i Google Skjemaer raskt</translation>
 <translation id="8028892419725165118">Enkle spill</translation>
 <translation id="8028960012888758725">Beskjær etter jobben</translation>
+<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8029829038322015001">Rød 1</translation>
 <translation id="8030729864112325446">Yrkesopplæring og videreutdanning</translation>
 <translation id="8032546467100845887">Gjennomsiktighet</translation>
@@ -3982,7 +3987,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8116925261070264013">Kuttet lyd</translation>
 <translation id="8118489163946903409">Betalingsmåte</translation>
 <translation id="8118506371121007279">Gi tilbakemelding</translation>
-<translation id="8124085000247609808">Chat med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» er ikke riktig installert på datamaskinen eller på nettverket. Be IT-administratoren din om å løse problemet.</translation>
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8133495915926741232">Velg hvilke generelle emnekategorier som kan brukes til å tilpasse annonser personlig. Hvis du slår av en mer generell kategori, blokkeres også de relaterte emnene. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

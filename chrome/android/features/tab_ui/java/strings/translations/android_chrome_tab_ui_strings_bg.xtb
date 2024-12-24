@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Променихте <ph name="ONE_CHANGED" /> раздел и затворихте <ph name="ANY_CLOSED" />}other{Променихте <ph name="MANY_CHANGED" /> раздела и затворихте <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>
-<translation id="4590027107044272416">Вече можете да отворите нов раздел оттук</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Искате ли да затворите 1 неактивен раздел?}other{Искате ли да затворите <ph name="TAB_COUNT_MANY" /> неактивни раздела?}}</translation>
 <translation id="4686942373615810936">Създадено току-що</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затваряне след 1 ден}other{Затваряне след <ph name="DAY_COUNT_MANY" /> дни}}</translation>

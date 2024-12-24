@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ଟାବକୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}other{<ph name="MANY_CHANGED" /> ଟାବକୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି, <ph name="ANY_CLOSED" /> ବନ୍ଦ କରାଯାଇଛି}}</translation>
 <translation id="4371591986692297148">ନିଷ୍କ୍ରିୟ</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
-<translation id="4590027107044272416">ଏଠାରେ ଆପଣ ବର୍ତ୍ତମାନ ଏକ ନୂଆ ଟାବ ଖୋଲିପାରିବେ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରିବେ?}other{<ph name="TAB_COUNT_MANY" /> ନିଷ୍କ୍ରିୟ ଟାବକୁ ବନ୍ଦ କରିବେ?}}</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 ଦିନ ପରେ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="DAY_COUNT_MANY" /> ଦିନ ପରେ ବନ୍ଦ କରନ୍ତୁ}}</translation>

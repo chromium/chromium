@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">ปิดหน้าจอแปลภาษา</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
-<translation id="2163089732491971196">โปรดป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="2174917724755363426">การติดตั้งไม่สมบูรณ์ คุณแน่ใจไหมว่าต้องการยกเลิก</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ข้อผิดพลาดในการตรวจสอบการอัปเดต: <ph name="UPDATE_CHECK_ERROR" /></translation>
@@ -385,6 +384,7 @@
 <translation id="5941830788786076944">ทำให้ Google Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="5947104538377036631">ทางลัดของ Chrome</translation>
 <translation id="5953954252731207958">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chrome นำสิทธิ์เข้าถึง<ph name="PERMISSION" />ออกแล้ว</translation>
+<translation id="5980111191913430208">ส่วนขยาย แอป และธีมจากแหล่งที่มาที่ไม่รู้จักอาจเป็นอันตรายต่ออุปกรณ์ของคุณ ขอแนะนำให้ติดตั้ง Chrome จาก <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />เท่านั้น</translation>
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />เครื่องมือจาก Chrome<ph name="END_LINK" /> ช่วยให้คุณท่องเว็บได้อย่างปลอดภัยและควบคุมได้ตามความต้องการ</translation>
 <translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
@@ -603,6 +603,7 @@
 <translation id="842386925677997438">เครื่องมือด้านความปลอดภัยของ Chrome</translation>
 <translation id="8425765582779547329">หากต้องการท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยตัวเลือกของผู้ปกครอง ให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
+<translation id="8429214465555795676">หากต้องการดำเนินการต่อ คุณจะต้องลงชื่อเข้าใช้ Chrome ด้วย <ph name="EMAIL" /> ซึ่งจะเป็นไปตามนโยบายขององค์กร</translation>
 <translation id="8433638294851456451">หากต้องการส่งหมายเลขจากที่นี่ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์ทั้งสองเครื่อง</translation>
 <translation id="8451192282033883849">บัญชีของคุณจัดการโดย <ph name="MANAGER_NAME" /> ผู้ดูแลระบบสามารถดูและแก้ไขโปรไฟล์เบราว์เซอร์ Chrome นี้ รวมถึงข้อมูลในโปรไฟล์อย่างเช่นบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านได้</translation>
 <translation id="8496177819998570653">เครื่องมือจัดการรหัสผ่านบน Google</translation>

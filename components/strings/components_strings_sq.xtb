@@ -2472,6 +2472,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5425082381151187189">Shtëpia dhe dekori i brendshëm</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
+<translation id="5431318178759467895">Ngjyra</translation>
 <translation id="5433756542371550806">Variantet e rreshtit të komandës</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3782,7 +3783,6 @@ Detaje shtesë:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalizo madhësitë e fonteve dhe llojin e karaktereve në Chrome</translation>
 <translation id="7752995774971033316">I pamenaxhuar</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Bisedo me <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Skedat e Chrome dhe aplikacionet do të mbyllen kur të fillojë përditësimi</translation>
 <translation id="7755287808199759310">Prindi yt mund ta zhbllokojë atë për ty</translation>
 <translation id="7755624218968747854">Ruli parësor</translation>
@@ -3922,6 +3922,7 @@ Detaje shtesë:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një formular të ri te "Formulari i Google"</translation>
 <translation id="8028892419725165118">Lojëra rastësore</translation>
 <translation id="8028960012888758725">Prerje pas detyrës</translation>
+<translation id="8028993641010258682">Madhësia</translation>
 <translation id="8029829038322015001">E kuqe 1</translation>
 <translation id="8030729864112325446">Arsimi profesional dhe i vazhdueshëm</translation>
 <translation id="8032546467100845887">Fletë transparente</translation>
@@ -3977,7 +3978,6 @@ Detaje shtesë:
 <translation id="8116925261070264013">Zëri i çaktivizuar</translation>
 <translation id="8118489163946903409">Mënyra e pagesës</translation>
 <translation id="8118506371121007279">Dërgo komente</translation>
-<translation id="8124085000247609808">Bisedo me <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nuk është instaluar mirë në kompjuter ose në rrjet. Kërkoji administratorit të TI-së që të zgjidhë këtë problem.</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8133495915926741232">Zgjidh se cilat kategori të gjera të temave mund të përdoren për të ndihmuar në personalizimin e reklamave. Çaktivizimi i një kategorie më të gjerë do të bllokojë gjithashtu temat e ngjashme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>

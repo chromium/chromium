@@ -962,6 +962,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2688969097326701645">Da, nastavi</translation>
 <translation id="2690699652723742414">Poslednjih 30 dana</translation>
 <translation id="2691924980723297736">Bezbednosno upozorenje</translation>
+<translation id="2697248912349197812">Pitajte <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Podmeni je dostupan. Koristite <ph name="SHORTCUT" /> da biste došli do dodatnih opcija.</translation>
 <translation id="2701514975700770343">Sa odštampanom stranom nadole</translation>
 <translation id="2702592986366989640">Opcija niske cene</translation>
@@ -2066,6 +2067,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="469028408546145398">Dugme Zatvori prozore bez arhiviranja, aktivirajte ga da biste zatvorili sve prozore bez arhiviranja koji su trenutno otvoreni</translation>
 <translation id="4691093235373904540">Krovni radovi</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Pitajte <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Borilački sportovi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strana</translation>
@@ -2478,6 +2480,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5425082381151187189">Dekoracija kuće i enterijera</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
 <translation id="5430298929874300616">Uklonite obeleživač</translation>
+<translation id="5431318178759467895">U boji</translation>
 <translation id="5433756542371550806">Varijacije komandne linije</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3795,6 @@ Dodatni detalji:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prilagodite veličine i izgled fontova u Chrome-u</translation>
 <translation id="7752995774971033316">Ne upravlja</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Ćaskajte sa uslugom <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Chrome kartice i aplikacije će se zatvoriti kada ažuriranje počne</translation>
 <translation id="7755287808199759310">Roditelj može da ga odblokira za tebe</translation>
 <translation id="7755624218968747854">Primarni kotur</translation>
@@ -3932,6 +3934,7 @@ Dodatni detalji:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili nov upitnik u Google upitnicima</translation>
 <translation id="8028892419725165118">Igre za opuštanje</translation>
 <translation id="8028960012888758725">Skrati posle zadatka</translation>
+<translation id="8028993641010258682">Veličina</translation>
 <translation id="8029829038322015001">Crvena 1</translation>
 <translation id="8030729864112325446">Stručno osposobljavanje i kontinuirano obrazovanje</translation>
 <translation id="8032546467100845887">Transparentnost</translation>
@@ -3987,7 +3990,6 @@ Dodatni detalji:
 <translation id="8116925261070264013">Zvuk je isključen</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> – ćaskajte</translation>
 <translation id="8127301229239896662">Softver „<ph name="SOFTWARE_NAME" />“ nije pravilno instaliran na računaru ili mreži. Zatražite od IT administratora da reši ovaj problem.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite široke kategorije tema koje mogu da se koriste za personalizaciju oglasa. Ako isključite širu kategoriju, blokiraćete i srodne teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

@@ -114,6 +114,7 @@
 <translation id="2483889755041906834">Chromium-д</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2513154137948333830">Дахин асаах шаардлагатай: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Үргэлжлүүлэхийн тулд та <ph name="EMAIL" />-р Chromium-д нэвтрэх шаардлагатай болно. Энэ нь танай байгууллагын бодлогыг дагаж мөрдөж байгааг баталгаажуулна.</translation>
 <translation id="2542968102051442371">Зурган хайлтаар текст сонгоно уу</translation>
 <translation id="2554739539410784893">Chromium одоо байгаа нууц үгнүүдийг солихоор оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="2560420686485554789">Файл татахын тулд Chromium-д сангийн хандалт шаардлагатай</translation>
@@ -253,7 +254,6 @@
 <translation id="4438870983368648614"><ph name="MANAGER" /> Chromium-г удирддаг</translation>
 <translation id="444069871276811466">Chromium-н профайл нэмэх</translation>
 <translation id="4447409407328223819">Chrome for Testing-н тухай</translation>
-<translation id="4470974262661801543">Google Бүртгэлийнхээ Chromium-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="4493028449971051158">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар дахин ажиллуулна уу.</translation>
 <translation id="4501471624619070934">Энэ улсад хандалтыг хязгаарласан тул суулгаж чадсангүй.</translation>
 <translation id="4510853178268397146">Энэ өргөтгөл өгөгдлийг хэрхэн цуглуулж, ашигладаг гэх мэт нууцлалын практикаа нийтлээгүй байна. Chromium танд үүнийг хасахыг зөвлөж байна.</translation>

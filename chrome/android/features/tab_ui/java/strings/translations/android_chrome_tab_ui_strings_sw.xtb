@@ -77,7 +77,6 @@ Ukikifuta, papo hapo kila mtu hataweza kufikia kikundi cha vichupo cha "<ph name
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Kichupo <ph name="ONE_CHANGED" /> kimebadilishwa, <ph name="ANY_CLOSED" /> vimefungwa}other{Vichupo <ph name="MANY_CHANGED" /> vimebadilishwa, <ph name="ANY_CLOSED" /> vimefungwa}}</translation>
 <translation id="4371591986692297148">Haitumiki</translation>
 <translation id="4460014764210899310">Ondoa kwenye kundi</translation>
-<translation id="4590027107044272416">Sasa unaweza kufungua kichupo kipya hapa</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Ungependa kufunga kichupo 1 kisichotumika?}other{Ungependa kufunga vichupo <ph name="TAB_COUNT_MANY" /> visivyotumika?}}</translation>
 <translation id="4686942373615810936">Kimeundwa sasa hivi</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Funga baada ya siku 1}other{Funga baada ya siku <ph name="DAY_COUNT_MANY" />}}</translation>

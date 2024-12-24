@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
-<translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -242,6 +241,7 @@
 <translation id="3889417619312448367">Poista Google Chromen asennus</translation>
 <translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
+<translation id="3968962723676998462">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome haluaa poistaa Google Salasanat ‐datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="398236277091248993">Chrome pysyy nopeana suorituskykyä parantavilla ominaisuuksilla</translation>
 <translation id="3999683152997576765">Voit tarkistaa ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chrome arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
@@ -306,6 +306,7 @@
 <translation id="4728575227883772061">Asennus epäonnistui tuntemattoman virheen takia. Jos Google Chrome on tällä hetkellä käynnissä, sulje ohjelma ja yritä uudelleen.</translation>
 <translation id="4741235124132242877">Kiinnitetty! Käytä Google Lensia uudelleen yläpalkista</translation>
 <translation id="4747730611090640388">Chrome voi arvioida sinua kiinnostavia aiheita.  Sivut, joilla käyt, voivat myöhemmin pyytää Chromelta tietoa kiinnostuksen kohteistasi ja personoida näkemiäsi mainoksia.</translation>
+<translation id="475321580758063259">Päivitä Chrome, jotta voit jatkaa Chrome-datan käyttöä Google-tilillä: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (saapuva mDNS)</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4793679854893018356">Katso, miten Chrome pitää sinut turvassa</translation>
@@ -386,6 +387,7 @@
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="5947104538377036631">Chrome-pikanäppäin</translation>
 <translation id="5953954252731207958">Sivut, joilla et ole käynyt viime aikoina. Chrome poisti luvan: <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
 <translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
@@ -577,6 +579,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8111297389482307122">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos, data säilyy tällä laitteella.</translation>
+<translation id="8113883687556086139">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Lähetä palautetta Lensillä hakemisesta</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
@@ -604,6 +607,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="842386925677997438">Chromen turvallisuustyökalut</translation>
 <translation id="8425765582779547329">Jos haluat käyttää vanhempasi valitsemia asetuksia, kirjaudu Chromeen</translation>
 <translation id="8428213095426709021">Asetukset</translation>
+<translation id="8429214465555795676">Jatkaaksesi sinun on kirjauduttava Chromeen tilillä <ph name="EMAIL" />. Näin varmistetaan organisaatiosi käytäntöjen noudattaminen.</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chrome-selainprofiilin ja sen datan (esim. kirjanmerkit, historian ja salasanat) sekä muokata niitä.</translation>
 <translation id="8496177819998570653">Google S&amp;alasanat</translation>

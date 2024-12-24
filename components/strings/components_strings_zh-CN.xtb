@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">相纸（存档用）</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">要安装 Web 应用吗？</translation>
+<translation id="1791415068765905273">显示所有比较表格</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="1793631236004319016">上次使用时间：<ph name="NUM_HOURS_MINUTES_SECONDS" />前</translation>
@@ -2193,6 +2194,7 @@
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
 <translation id="4920457992177678649">民宿与短期住宿</translation>
 <translation id="4920710383559189047">套筒</translation>
+<translation id="4920921410507315601">比较表格</translation>
 <translation id="4922104989726031751">若要在您的操作系统中使用密码管理工具，请重新启动 Chromium 并允许使用计算机的密码管理工具。待 Chromium 重新启动后，您的标签页会自动重新打开。</translation>
 <translation id="4923459931733593730">付款</translation>
 <translation id="4926049483395192435">必须指定。</translation>
@@ -2386,6 +2388,7 @@
 <translation id="5278778426231952189">立即上传</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
 <translation id="5280963125494874678">Web 应用</translation>
+<translation id="5282008206326321696">{count,plural, =0{# 个书签}=1{# 个书签}other{# 个书签}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
@@ -2471,6 +2474,7 @@
 <translation id="5425082381151187189">家居与室内装潢</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5430298929874300616">移除书签</translation>
+<translation id="5431318178759467895">彩色</translation>
 <translation id="5433756542371550806">命令行变体</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
@@ -2580,6 +2584,7 @@
 <translation id="561165882404867731">使用 Google 翻译来翻译此页面</translation>
 <translation id="5612720917913232150"><ph name="URL" /> 想使用您计算机的位置信息</translation>
 <translation id="5614520971155863709">卡牌游戏</translation>
+<translation id="5617785978844309968">显示所有比较表格</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 将您重定向的次数过多。</translation>
 <translation id="5619721953841297650">预设</translation>
 <translation id="5624120631404540903">管理密码</translation>
@@ -3783,7 +3788,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - 与 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="7754587126786572336">开始更新时，您的 Chrome 标签页和应用会关闭</translation>
 <translation id="7755287808199759310">你的家长可为你取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
@@ -3923,6 +3927,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 表单中快速创建新表单</translation>
 <translation id="8028892419725165118">休闲游戏</translation>
 <translation id="8028960012888758725">完成任务后裁切</translation>
+<translation id="8028993641010258682">大小</translation>
 <translation id="8029829038322015001">红色 1</translation>
 <translation id="8030729864112325446">职业教育与继续教育</translation>
 <translation id="8032546467100845887">透明</translation>
@@ -3978,7 +3983,6 @@
 <translation id="8116925261070264013">已静音</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8118506371121007279">提供反馈</translation>
-<translation id="8124085000247609808">与 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8133495915926741232">选择可用于帮助展示个性化广告的大类主题。如果停用某个更宽泛的类别，系统也会屏蔽其相关主题。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

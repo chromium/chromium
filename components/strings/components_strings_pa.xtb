@@ -2472,6 +2472,7 @@
 <translation id="5425082381151187189">ਘਰ ਅਤੇ ਅੰਦਰੂਨੀ ਸਜਾਵਟ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5430298929874300616">ਬੁੱਕਮਾਰਕ ਹਟਾਓ</translation>
+<translation id="5431318178759467895">ਰੰਗ</translation>
 <translation id="5433756542371550806">ਕਮਾਂਡ-ਲਾਈਨ ਕਿਸਮਾਂ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3783,7 +3784,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome ਵਿੱਚ ਫ਼ੌਂਟ ਦੇ ਆਕਾਰਾਂ ਅਤੇ ਟਾਈਪਫੇਸਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7752995774971033316">ਬਿਨਾਂ ਵਿਵਸਥਿਤ ਕੀਤਾ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ਨਾਲ ਚੈਟ ਕਰੋ</translation>
 <translation id="7754587126786572336">ਅੱਪਡੇਟ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਤੁਹਾਡੀਆਂ Chrome ਟੈਬਾਂ ਅਤੇ ਐਪਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ</translation>
 <translation id="7755287808199759310">ਤੁਹਾਡਾ ਮਾਤਾ-ਪਿਤਾ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="7755624218968747854">ਪ੍ਰਾਇਮਰੀ ਰੋਲ</translation>
@@ -3923,6 +3923,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਫ਼ਾਰਮ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="8028892419725165118">ਬੇਕਾਇਦਾ ਗੇਮਾਂ</translation>
 <translation id="8028960012888758725">ਜੌਬ ਤੋਂ ਬਾਅਦ ਕਟਾਈ</translation>
+<translation id="8028993641010258682">ਆਕਾਰ</translation>
 <translation id="8029829038322015001">ਲਾਲ 1</translation>
 <translation id="8030729864112325446">ਵੋਕੇਸ਼ਨਲ ਅਤੇ ਅਗਲੇਰੀ ਸਿੱਖਿਆ</translation>
 <translation id="8032546467100845887">ਪਾਰਦਰਸ਼ਤਾ</translation>
@@ -3978,7 +3979,6 @@
 <translation id="8116925261070264013">ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8118489163946903409">ਭੁਗਤਾਨ ਵਿਧੀ</translation>
 <translation id="8118506371121007279">ਵਿਚਾਰ ਦਿਓ</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> ਨਾਲ ਚੈਟ ਕਰੋ</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਜਾਂ ਨੈੱਟਵਰਕ 'ਤੇ ਚੰਗੀ ਤਰ੍ਹਾਂ ਸਥਾਪਤ ਨਹੀਂ ਹੋਇਆ। ਆਪਣੇ ਆਈ.ਟੀ. ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਕਹੋ।</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8133495915926741232">ਚੁਣੋ ਕਿ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਲਈ ਵਿਸ਼ਿਆਂ ਦੀਆਂ ਕਿਹੜੀਆਂ ਵਿਸਤ੍ਰਿਤ ਸ਼੍ਰੇਣੀਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਕਿਸੇ ਵਿਸਤ੍ਰਿਤ ਸ਼੍ਰੇਣੀ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਉਸਦੇ ਨਾਲ ਸੰਬੰਧਿਤ ਵਿਸ਼ੇ ਵੀ ਬਲਾਕ ਕੀਤੇ ਜਾਣਗੇ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>

@@ -1647,6 +1647,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6539852571005954999">Genomsökning av filen <ph name="FILENAME" /> som laddas ned</translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, giffar med mera</translation>
+<translation id="6543942526104794893">Vill du inaktivera ansiktsrörelser?</translation>
 <translation id="6545382064335350438">Det gick fortfarande inte att verifiera pinkoden. Försök igen.</translation>
 <translation id="6555373427270923730">Ange en webbadress i adressfältet och tryck sedan på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8860366331836346216">Lägg till eSIM</translation>
+<translation id="8869149849311827122">Vill du inaktivera markörstyrning med musen?</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8873203135446552888">Bekräfta att du vill inaktivera den inbyggda styrplattan</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>

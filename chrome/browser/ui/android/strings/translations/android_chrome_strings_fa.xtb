@@ -19,6 +19,7 @@
 <translation id="107147699690128016">اگر پسوند فایل را تغییر دهید، ممکن است فایل در برنامه دیگری باز شود و به‌طور بالقوه برای دستگاه مضر باشد.</translation>
 <translation id="1080365971383768617">گذرواژه‌ها در همه دستگاه‌ها دردسترس است</translation>
 <translation id="1082920045291562218">برگ هم‌رسانی بازخورد درباره خلاصه بسته شد</translation>
+<translation id="1087176310396019910">هرزنامه احتمالی</translation>
 <translation id="1089606299949659462">بازبینی تکمیل شد!</translation>
 <translation id="1094555143448724771">برای دیدن برگه‌های دستگاه‌های دیگرتان، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="1095761715416917775">مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_ONE" /> برگه}one{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> برگه}other{‫<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> برگه}}</translation>
 <translation id="3293181007446299124">سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگه داشته می‌شود و گزارش‌ها برای محافظت از هویتتان با تأخیر ارسال می‌شود</translation>
+<translation id="3301936297336370235">تأیید پیشنهاد گذرواژه</translation>
 <translation id="3302615849591357577">بازیابی کردن گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه برگه جدید پس‌زمینه.</translation>
 <translation id="3303414029551471755">ادامه می‌دهید و محتوا را بارگیری می‌کنید؟</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">انتخاب برگه‌ها</translation>
 <translation id="6196315980958524839">‏گذرواژه‌ها در «مدیر گذرواژه Google» در این دستگاه ذخیره می‌شوند</translation>
 <translation id="6202812185118613467">برای شروع همگام‌سازی دوباره به سیستم وارد شوید</translation>
+<translation id="6204781143409202534">‏‫Chrome هرزنامه احتمالی از <ph name="DOMAIN" /> شناسایی کرده است.</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
 <translation id="6211386937064921208">درحال پیش‌نمایش این صفحه</translation>

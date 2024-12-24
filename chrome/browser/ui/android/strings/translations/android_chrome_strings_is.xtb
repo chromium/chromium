@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ef þú breytir skráarendingunni gæti skráin opnast í öðru forriti og hugsanlega valdið skaða á tækinu.</translation>
 <translation id="1080365971383768617">Aðgangsorð í öllum tækjum</translation>
 <translation id="1082920045291562218">Deila með samantektarblaði fyrir ábendingar lokað</translation>
+<translation id="1087176310396019910">Mögulegt ruslefni</translation>
 <translation id="1089606299949659462">Yfirferð lokið!</translation>
 <translation id="1094555143448724771">Samstilltu flipana þína og ferilinn til að sjá flipa úr hinum tækjunum þínum</translation>
 <translation id="1095761715416917775">Vertu viss um að hafa alltaf aðgang að samtilltu gögnunum þínum</translation>
@@ -508,6 +509,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flipi}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flipar}}</translation>
 <translation id="3293181007446299124">Aðeins þú getur séð vafraferilinn þinn í tækinu og sendingum skýrslna er seinkað til að vernda auðkenni þitt</translation>
+<translation id="3301936297336370235">Staðfesting á tillögu að aðgangsorði</translation>
 <translation id="3302615849591357577">Endurheimta flipahópinn „<ph name="TITLE_OF_GROUP" />“ í litnum „<ph name="COLOR_NAME" />“ sem nýjan flipahóp í bakgrunni.</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
@@ -1136,6 +1138,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6196315980958524839">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
 <translation id="6202812185118613467">Skráðu þig aftur inn til að hefja samstillingu</translation>
+<translation id="6204781143409202534">Chrome greindi mögulegt ruslefni frá <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
 <translation id="6210748933810148297">Ekki <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forskoðun á þessari síðu.</translation>

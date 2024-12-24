@@ -108,6 +108,7 @@
 <translation id="143681031165817424">Osoite on tallennettu vain tälle laitteelle</translation>
 <translation id="1445276840641906250">Kaikki välilehdet yhdessä selaimessa</translation>
 <translation id="1450170672351507823">Perustason suojaus on päällä. Käytä parannettua suojausta, jos haluat lisäsuojaa.</translation>
+<translation id="1454615514353469963">Salasanat, avainkoodit ja muu data poistetaan pysyvästi Google Salasanoista</translation>
 <translation id="1455660774629812862">Älä piilota</translation>
 <translation id="1460751212339734034">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="1466035273550360103">Ei avoimia välilehtiä</translation>
@@ -1203,6 +1204,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6418346271604475326">Valmistellaan</translation>
 <translation id="6429213933892582367">Avaa Salasana-asetukset</translation>
 <translation id="6434591244308415567">Tapahtui virhe, yritä myöhemmin uudelleen.</translation>
+<translation id="6435307030888827407">Pysy uloskirjautuneena</translation>
 <translation id="6436318499800111867">Jaettu minulle <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Irrota välilehti</translation>
 <translation id="6443118737398455446">Virheellinen viimeinen voimassaolopäivä</translation>
@@ -1396,6 +1398,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Hakuhistoriaa<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi.</translation>
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
 <translation id="7261217796641151584">Jaa ryhmä</translation>
+<translation id="7266578100016339897">Näin pysyt järjestyksessä. Voit muuttaa tätä asetuksista koska tahansa.</translation>
 <translation id="7271220006028561438">Salli automaattiset avainkoodipäivitykset</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
@@ -1590,6 +1593,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8080028325999236607">Sulje kaikki välilehdet</translation>
 <translation id="8084285576995584326">Hallinnoi Google-tilin dataa</translation>
 <translation id="809543534949702122">Hae historiasta</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Välilehdet, joita et käytä, siirretään tänne {COUNT} päivän kuluttua}other{Välilehdet, joita et käytä, siirretään tänne {COUNT} päivän kuluttua}}</translation>
 <translation id="8101409298456377967">Luo, tallenna ja ylläpidä salasanoja, jotta voit kirjautua helposti sivustoille ja sovelluksiin <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">U</translation>
 <translation id="8114753159095730575">Ladattava tiedosto on saatavilla. Ruudun alaosassa on käytettävissä valintoja.</translation>

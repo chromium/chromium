@@ -96,7 +96,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2137162749895930932">Cau'r sgrîn cyfieithu</translation>
 <translation id="2139300032719313227">Ailgychwyn ChromeOS</translation>
 <translation id="2151406531797534936">Ailgychwynnwch Chrome nawr</translation>
-<translation id="2163089732491971196">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd</translation>
 <translation id="2174917724755363426">Gosod heb ei gwblhau. Ydych chi'n siŵr eich bod am ganslo?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Gwall gwiriad diweddaru: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -246,6 +245,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3889417619312448367">Dadosod Google Chrome</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
 <translation id="3941890832296813527">Gwall gosod: Mae enw ffeil y gosodwr yn annilys neu heb ei gefnogi.</translation>
+<translation id="3968962723676998462">Rhowch eich cyfrin-ymadrodd i'w ddefnyddio a chadwch ddata Chrome yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Mae Google Chrome eisiau dileu eich data Rheolwr Cyfrineiriau Google. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="398236277091248993">Mae Chrome yn aros yn gyflym gyda nodweddion sy'n rhoi hwb i berfformiad</translation>
 <translation id="3999683152997576765">Gallwch weld a dileu pynciau o ddiddordeb y mae gwefannau'n eu defnyddio i ddangos hysbysebion i chi. Mae Chrome yn amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori diweddar.</translation>
@@ -310,6 +310,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4728575227883772061">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Google Chrome yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4741235124132242877">Piniwyd! Defnyddiwch Google Lens eto o'r bar offer</translation>
 <translation id="4747730611090640388">Gall Chrome amcangyfrif eich diddordebau.  Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chrome weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld.</translation>
+<translation id="475321580758063259">Diweddarwch Chrome i barhau i ddefnyddio'r data Chrome yn eich Cyfrif Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Mae hwn yn defnyddio'r un gwiriwr sillafu â'r un sy'n cael ei ddefnyddio yn Google Search. Anfonir testun rydych yn ei deipio yn y porwr at Google. Gallwch newid yr ymddygiad hwn yn y gosodiadau ar unrhyw adeg.</translation>
 <translation id="4793679854893018356">Dysgu sut mae Chrome yn eich cadw'n ddiogel</translation>
@@ -586,6 +587,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8077579734294125741">Proffiliau Chrome Eraill</translation>
 <translation id="8086881907087796310">Wedi methu â gosod oherwydd nad yw'ch cyfrifiadur yn bodloni'r gofynion caledwedd sylfaenol.</translation>
 <translation id="8111297389482307122">Mae angen i Chrome gadarnhau mai chi sydd yno cyn y gellir cadw rhywfaint o ddata yn eich Cyfrif Google a'i ddefnyddio ar eich holl ddyfeisiau. Os byddwch yn allgofnodi, bydd y data hyn yn aros ar y ddyfais hon.</translation>
+<translation id="8113883687556086139">Cadarnhewch mai chi sydd yno i ddefnyddio a chadw data Chrome yn eich cyfrif,<ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Anfon adborth ar gyfer chwilio gyda Lens</translation>
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>

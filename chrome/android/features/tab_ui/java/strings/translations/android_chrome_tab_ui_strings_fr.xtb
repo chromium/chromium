@@ -77,7 +77,6 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_CHANGED" /> onglets modifiés, <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
-<translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif ?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif ?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs ?}}</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>

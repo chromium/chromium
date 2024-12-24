@@ -2475,6 +2475,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5425082381151187189">Nyumba na Mapambo ya Ndani</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> inataka kukutumia arifa</translation>
 <translation id="5430298929874300616">Ondoa alamisho</translation>
+<translation id="5431318178759467895">Rangi</translation>
 <translation id="5433756542371550806">Chaguo za Kuweka Amri</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />haitahifadhi<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -3294,6 +3295,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6925267999184670015">Ukubwa wa North American B+</translation>
 <translation id="6926216138694948720">Sanaa ya Mwili</translation>
 <translation id="692638818576287323">Magari ya Biashara</translation>
+<translation id="6933282894115597956">Shirika lako linakuhitaji uingie katika akaunti</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mtambo wako chaguomsingi wa kutafuta hukuwezesha kutafuta kwenye wavuti na huendesha vipengele vya Chrome<ph name="END_BOLD" /> kama vile kutafuta kwenye sehemu ya anwani na katika picha zilizo kwenye kurasa za wavuti. Huenda kipengele kisipatikane ikiwa hakitumiki kwenye mtambo wako wa kutafuta.</translation>
 <translation id="6934672428414710184">Jina hili linatoka kwenye Akaunti yako ya Google</translation>
 <translation id="6935082727755903526">Kazi za Uhasibu na Fedha</translation>
@@ -3786,7 +3788,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Weka mapendeleo ya ukubwa wa fonti na miundo ya maandishi katika Chrome</translation>
 <translation id="7752995774971033316">Haidhibitiwi</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Piga gumzo na <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Vichupo na programu za Chrome zitajifunga sasisho litakapoanza</translation>
 <translation id="7755287808199759310">Mzazi wako anaweza kukuondolea kizuizi</translation>
 <translation id="7755624218968747854">Gombo la Msingi</translation>
@@ -3926,6 +3927,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uunde fomu mpya katika huduma ya Fomu za Google kwa haraka</translation>
 <translation id="8028892419725165118">Michezo ya Kawaida</translation>
 <translation id="8028960012888758725">Punguza baada ya kamaliza</translation>
+<translation id="8028993641010258682">Ukubwa</translation>
 <translation id="8029829038322015001">Nyekundu ya 1</translation>
 <translation id="8030729864112325446">Elimu ya Ufundi na Elimu ya Kujiendeleza</translation>
 <translation id="8032546467100845887">Uwazi</translation>
@@ -3981,7 +3983,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8116925261070264013">Imezimwa</translation>
 <translation id="8118489163946903409">Njia ya kulipa</translation>
 <translation id="8118506371121007279">Toa maoni</translation>
-<translation id="8124085000247609808">Piga gumzo na <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Haikusakinisha "<ph name="SOFTWARE_NAME" />" kwa njia sahihi kwenye mtandao au kompyuta yako. Mweleze msimamizi wako wa TEHAMA asuluhishe tatizo hili.</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
 <translation id="8133495915926741232">Chagua ni aina gani pana za mada zinazoweza kutumiwa kusaidia kuwekea matangazo mapendeleo. Hatua ya kuzima aina pana zaidi, itazuia pia mada zinazohusiana. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>

@@ -978,7 +978,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1663698992894057019">Përmirësoje me një pajisje të re Chromebook për sigurinë dhe softuerët më të fundit</translation>
 <translation id="1665328953287874063">Përdor një fjalëkalim ose kod PIN për ta shkyçur pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Ekspresionizëm</translation>
-<translation id="1666232093776384142">Çaktivizo mbrojtjen e qasjes te të dhënat për pajisjet periferike</translation>
 <translation id="1667842670298352129">Dëgjoje tekstin specifik të lexuar me zë të lartë. Në fillim zgjidh ikonën e veçorisë "Zgjidh që të thuhet" në fund të ekranit dhe më pas thekso tekstin. Mund të përdorësh një shkurtore të tastierës: Thekso tekstin dhe më pas shtyp "Kërko" + S.</translation>
 <translation id="1668435968811469751">Regjistrohu manualisht</translation>
 <translation id="1668804837842452164">Ruaj te "<ph name="BRAND" />" për <ph name="EMAIL" /></translation>
@@ -2850,7 +2849,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2975761176769946178">Kërkohet një URL</translation>
 <translation id="2975845084271617886">Bashkohu dhe hap</translation>
 <translation id="2976547701881428815">Veglat dhe veprimet</translation>
-<translation id="2976557544729462544">Disa pajisje kërkojnë që të çaktivizosh mbrojtjen e qasjes te të dhënat për të funksionuar siç duhet ose me cilësi funksionimi të plotë.</translation>
 <translation id="2976639738101799892">Merr veçoritë inteligjente të Google dhe "Kërko me Google" sa herë që shfleton</translation>
 <translation id="2977480621796371840">Hiq nga grupi</translation>
 <translation id="2979493931538961252">Kur Chromebook është offline dhe ofrohen zonat e qasjes për internet</translation>
@@ -2976,7 +2974,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3053273573829329829">Aktivizo kodin PIN të përdoruesit</translation>
 <translation id="3053274730492362225">Mos pulso</translation>
 <translation id="3054011216223858553">Joaktiv • Përdor gjuhën e përditshme për të kërkuar te historiku i shfletimit dhe për të gjetur sajtet që ke vizituar</translation>
-<translation id="3054766768827382232">Çaktivizimi mund t'i bëjë pajisjet tuaja periferike të kenë cilësi funksionimi më të mirë, por mund të ekspozojë të dhënat e tua personale përmes përdorimit të paautorizuar.</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
 <translation id="3058517085907878899">Emërto pajisjen</translation>
 <translation id="3060952009917586498">Ndrysho gjuhën e pajisjes. Gjuha aktuale është <ph name="LANGUAGE" />.</translation>
@@ -3723,7 +3720,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3619294456800709762">Sajtet mund të kalojnë automatikisht në modalitetin "figurë brenda figurës"</translation>
 <translation id="3620136223548713675">Vendndodhja gjeografike</translation>
 <translation id="3621202678540785336">Hyrje</translation>
-<translation id="3621807901162200696">Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{një aplikacion}other{# aplikacione}}</translation>
 <translation id="3622820753353315928">Ekrani i blicit të ekranit</translation>
 <translation id="362333465072914957">Në pritje të lëshimit të certifikatës nga autoriteti i certifikatave</translation>
@@ -3803,7 +3799,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3675683621636519363">Dërgo raporte të ndërprerjeve aksidentale dhe të dhëna diagnostikuese e të përdorimit te ChromeOS Flex</translation>
 <translation id="367645871420407123">lëre bosh nëse dëshiron ta caktosh fjalëkalimin rrënjë në vlerën e parazgjedhur të imazhit testues</translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
-<translation id="3677959414150797585">Përfshin aplikacionet, faqet e uebit dhe më shumë. Dërgon statistika për të përmirësuar sugjerimet vetëm nëse ke zgjedhur të ndash të dhënat e përdorimit.</translation>
 <translation id="3678156199662914018">Shtesa: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Faqet që shikon në këtë dritare nuk do të shfaqen në historikun e shfletuesit dhe nuk do të lenë në kompjuter gjurmë të tjera, si kuki, pasi del. Skedarët që shkarkon dhe faqeshënuesit që krijon nuk do të ruhen.</translation>
 <translation id="3679126865530709868">Blloku me prekje i integruar</translation>
@@ -6522,7 +6517,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5613074282491265467">Kur je i identifikuar në Chrome, fjalëkalimet që ruan do të shkojnë te "Llogaria jote e Google", <ph name="USER_EMAIL" />. Për ta çaktivizuar këtë, shko te cilësimet.</translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
-<translation id="5614625640221885312">Identifikohu për të marrë faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Lista e sajteve të fundit që ke vizituar që mund të sugjerojnë reklama për sajtet e tjera ndërkohë që ti shfleton</translation>
 <translation id="5616571005307953937">Më e vjetra</translation>
@@ -6826,7 +6820,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5841270259333717135">Konfiguro eternetin</translation>
 <translation id="5842497610951477805">Aktivizo Bluetooth-in</translation>
 <translation id="5844284118433003733">Kur je i identifikuar, këto të dhëna lidhen me "Llogarinë tënde të Google" për të të mbrojtur nëpër shërbimet e Google, p.sh. duke rritur mbrojtjen në Gmail pas një incidenti sigurie.</translation>
-<translation id="5844574845205796324">Sugjero përmbajtje të re për të eksploruar</translation>
 <translation id="5844685625984052392">Sugjerim</translation>
 <translation id="5846200638699387931">Gabim i sintaksës së marrëdhënies: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Pa hije</translation>
@@ -10112,7 +10105,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8203152941016626022">Emri i pajisjes së "Ndarjes në afërsi"</translation>
 <translation id="8203732864715032075">Të dërgon njoftime dhe kthen parazgjedhjen për të kujtuar këtë kompjuter për "Mesazhet". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Klikimi me butonin djathtas</translation>
-<translation id="8205432712228803050">Ekranet dhe pajisjet e tua periferike mund të rivendosen shkurtimisht. Që të zbatohet ky ndryshim, hiqi dhe rilidhi pajisjet periferike.</translation>
 <translation id="8205478243727418828">nisësi + shigjeta poshtë</translation>
 <translation id="820568752112382238">Sajtet më të vizituara</translation>
 <translation id="8206267832882844324">Redakto shënimin</translation>
@@ -10731,7 +10723,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ose <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura e ngjyrës së "Dritës së natës"</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> kërkon që: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> dhe më shumë</translation>
-<translation id="864892689521194669">Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex</translation>
 <translation id="8649026945479135076">Zakonisht, sajtet që ti viziton i kujtojnë gjërat që të interesojnë për të personalizuar përvojën tënde. Gjithashtu, sajtet mund të ruajnë informacione për interesat e tua në Chrome.</translation>
 <translation id="8650543407998814195">Megjithëse nuk mund të qasesh më te profili yt i vjetër, mund ta heqësh atë përsëri.</translation>
 <translation id="8651585100578802546">Ringarkoje me detyrim këtë faqe</translation>

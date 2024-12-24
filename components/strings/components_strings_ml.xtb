@@ -2474,6 +2474,7 @@
 <translation id="5425082381151187189">വീട്, ഇന്റീരിയർ ഡെക്കറേഷൻ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
+<translation id="5431318178759467895">വര്‍ണ്ണം</translation>
 <translation id="5433756542371550806">കമാൻഡ്-ലൈൻ വ്യതിയാനങ്ങൾ</translation>
 <translation id="5434798570900738152">Chromium ഇനിപ്പറയുന്നവ <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3293,6 +3294,7 @@
 <translation id="6925267999184670015">നോർത്ത് അമേരിക്കൻ B+</translation>
 <translation id="6926216138694948720">ബോഡി ആർട്ട്</translation>
 <translation id="692638818576287323">വാണിജ്യാവശ്യങ്ങൾക്കുള്ള വാഹനങ്ങൾ</translation>
+<translation id="6933282894115597956">സ്ഥാപനം നിങ്ങളോട് സൈൻ ഇൻ ചെയ്യാൻ ആവശ്യപ്പെടുന്നു</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രം വെബിൽ തിരയാൻ നിങ്ങളെ അനുവദിക്കുകയും Chrome ഫീച്ചറുകളെ പിന്തുണയ്ക്കുകയും ചെയ്യുന്നു<ph name="END_BOLD" /> ഉദാഹരണത്തിന്, വിലാസ ബാറിൽ നിന്നും വെബ് പേജുകളിലെ ചിത്രങ്ങളിൽ നിന്നും തിരയുന്നത് പോലുള്ളവ. നിങ്ങളുടെ തിരയൽ യന്ത്രം ഒരു ഫീച്ചറിനെ പിന്തുണയ്ക്കുന്നില്ലെങ്കിൽ അത് ലഭ്യമായേക്കില്ല.</translation>
 <translation id="6934672428414710184">ഈ പേര് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ നിന്നുള്ളതാണ്</translation>
 <translation id="6935082727755903526">അക്കൗണ്ടിംഗ്, ഫിനാൻസ് ജോലികൾ</translation>
@@ -3785,7 +3787,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome-ൽ ഫോണ്ട് വലുപ്പങ്ങളും ടൈപ്പ്ഫേസുകളും ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7752995774971033316">നിയന്ത്രിക്കാനാകാത്തത്</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> എന്നതുമായി ചാറ്റ് ചെയ്യുക</translation>
 <translation id="7754587126786572336">അപ്‌ഡേറ്റ് ചെയ്യാൻ തുടങ്ങുമ്പോൾ, നിങ്ങളുടെ Chrome ടാബുകളും ആപ്പുകളും അടയ്‌ക്കും</translation>
 <translation id="7755287808199759310">നിങ്ങൾക്ക് വേണ്ടി ഇത് അൺബ്ലോക്ക് ചെയ്യാൻ രക്ഷിതാവിന് കഴിയും</translation>
 <translation id="7755624218968747854">പ്രാഥമിക റോൾ</translation>
@@ -3925,6 +3926,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-ൽ പുതിയൊരു ഫോം വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="8028892419725165118">കാഷ്വൽ ഗെയിമുകൾ</translation>
 <translation id="8028960012888758725">ജോലിക്ക് ശേഷം ട്രിം ചെയ്യുക</translation>
+<translation id="8028993641010258682">വലുപ്പം</translation>
 <translation id="8029829038322015001">ചുവപ്പ് 1</translation>
 <translation id="8030729864112325446">തൊഴിലധിഷ്ഠിത, തുടർ വിദ്യാഭ്യാസം</translation>
 <translation id="8032546467100845887">സുതാര്യത</translation>
@@ -3980,7 +3982,6 @@
 <translation id="8116925261070264013">മ്യൂട്ടുചെയ്‌തു</translation>
 <translation id="8118489163946903409">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8118506371121007279">ഫീഡ്ബാക്ക് നൽകുക</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> എന്നയാളുമായി ചാറ്റ് ചെയ്യുക</translation>
 <translation id="8127301229239896662">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ അല്ലെങ്കിൽ നെറ്റ്‍വര്‍ക്കിൽ "<ph name="SOFTWARE_NAME" />" ശരിയായി ഇൻസ്‌റ്റാൾ ചെയ്‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ നിങ്ങളുടെ ഐടി അഡ്‌മിനോട് ആവശ്യപ്പെടുക.</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8133495915926741232">പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സഹായിക്കുന്നതിന്, ഏതൊക്കെ വിശാലമായ വിഷയ വിഭാഗങ്ങളാണ് ഉപയോഗിക്കേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക. വിപുലമായ വിഭാഗങ്ങൾ ഓഫാക്കുന്നത്, അവയുടെ അനുബന്ധ വിഷയങ്ങളെയും ബ്ലോക്ക് ചെയ്യും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>

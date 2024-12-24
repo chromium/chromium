@@ -94,7 +94,6 @@
 <translation id="2137162749895930932">ಅನುವಾದದ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="2139300032719313227">ChromeOS ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2151406531797534936">ಇದೀಗ Chrome ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="2163089732491971196">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸೇವ್ ಮಾಡಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2174917724755363426">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ನೀವು ಖಂಡಿತವಾಗಿಯೂ ರದ್ದುಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ಅಪ್‌ಡೇಟ್‌‌ ಪರಿಶೀಲನೆ ದೋಷ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -388,6 +387,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="5941830788786076944">Google Chrome ಅನ್ನು ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿಸು</translation>
 <translation id="5947104538377036631">Chrome ಶಾರ್ಟ್‌ಕಟ್</translation>
 <translation id="5953954252731207958">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ</translation>
+<translation id="5980111191913430208">ಅಜ್ಞಾತ ಮೂಲಗಳಲ್ಲಿನ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಥೀಮ್‌ಗಳು ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಹಾನಿಯುಂಟು ಮಾಡಬಹುದು. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ನಿಂದ ಮಾತ್ರ ಅವುಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="6003112304606738118">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ… <ph name="HOURS" /> ಗಂಟೆ(ಗಳು) ಬಾಕಿಯಿವೆ.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿನ ಟೂಲ್‌ಗಳ<ph name="END_LINK" /> ಮೂಲಕ ನೀವು ಸುರಕ್ಷಿತವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು ಮತ್ತು ನಿಯಂತ್ರಣದಲ್ಲಿರಬಹುದು</translation>
 <translation id="6022659036123304283">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಿ</translation>
@@ -606,6 +606,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="842386925677997438">Chrome ನ ಸುರಕ್ಷತೆ ಟೂಲ್‌ಗಳು</translation>
 <translation id="8425765582779547329">ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳೊಂದಿಗೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8429214465555795676">ಮುಂದುವರಿಸಲು, ನೀವು <ph name="EMAIL" /> ಮೂಲಕ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ. ಇದು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳ ಅನುಸರಣೆಯನ್ನು ಖಚಿತಪಡಿಸುತ್ತದೆ.</translation>
 <translation id="8433638294851456451">ಇಲ್ಲಿಂದ ನಿಮ್ಮ Android ಫೋನ್‌ಗೆ ಸಂಖ್ಯೆಯನ್ನು ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="8451192282033883849">ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="MANAGER_NAME" /> ಅವರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ Chrome ಬ್ರೌಸರ್ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಅದರ ಡೇಟಾವನ್ನು ನೋಡಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

@@ -2475,6 +2475,7 @@
 <translation id="5425082381151187189">Casă și decorațiuni interioare</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dorește să îți trimită notificări</translation>
 <translation id="5430298929874300616">Elimină marcajul</translation>
+<translation id="5431318178759467895">Color</translation>
 <translation id="5433756542371550806">Variații ale liniilor de comandă</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3788,7 +3789,6 @@ Detalii suplimentare:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalizează dimensiunea și tipul fontului în Chrome</translation>
 <translation id="7752995774971033316">Negestionat</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Conversează prin chat cu <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Filele și aplicațiile Chrome se vor închide când începe actualizarea</translation>
 <translation id="7755287808199759310">Părintele tău îl poate debloca pentru tine</translation>
 <translation id="7755624218968747854">Rola principală</translation>
@@ -3928,6 +3928,7 @@ Detalii suplimentare:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid un formular în Formulare Google</translation>
 <translation id="8028892419725165118">Jocuri ocazionale</translation>
 <translation id="8028960012888758725">Decupare după sarcină</translation>
+<translation id="8028993641010258682">Dimensiune</translation>
 <translation id="8029829038322015001">Roșu 1</translation>
 <translation id="8030729864112325446">Educație vocațională și continuă</translation>
 <translation id="8032546467100845887">Transparență</translation>
@@ -3983,7 +3984,6 @@ Detalii suplimentare:
 <translation id="8116925261070264013">Cu sunetul dezactivat</translation>
 <translation id="8118489163946903409">Metodă de plată</translation>
 <translation id="8118506371121007279">Trimite feedback</translation>
-<translation id="8124085000247609808">Conversează prin chat cu <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />” nu a fost instalat corect pe computer sau în rețea. Contactează administratorul IT pentru a remedia această problemă.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8133495915926741232">Alege categoriile vaste de subiecte care pot fi folosite pentru a personaliza anunțurile. Dacă dezactivezi o categorie mai vastă, vei bloca și subiectele conexe. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>

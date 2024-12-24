@@ -94,7 +94,6 @@
 <translation id="2137162749895930932">Sulgege tõlkeekraan</translation>
 <translation id="2139300032719313227">Taaskäivitage Chrome OS</translation>
 <translation id="2151406531797534936">Käivitage Chrome kohe uuesti</translation>
-<translation id="2163089732491971196">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool</translation>
 <translation id="2174917724755363426">Installimine ei ole lõpetatud. Kas soovite kindlasti tühistada?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Värskenduse kontrolli viga: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -390,6 +389,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5941830788786076944">Tee Google Chrome vaikebrauseriks</translation>
 <translation id="5947104538377036631">Chrome'i otsetee</translation>
 <translation id="5953954252731207958">Te pole hiljuti külastanud. Chrome eemaldas <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab need installida ainult järgmisest poest: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Allalaadimine … <ph name="HOURS" /> tund(i) on jäänud</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome'i tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
 <translation id="6022659036123304283">Isikupärastage Chrome'i</translation>
@@ -608,6 +608,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="842386925677997438">Chrome'i ohutustööriistad</translation>
 <translation id="8425765582779547329">Selleks et end veebis vanema valikute abil kaitata, logi Chrome'i sisse</translation>
 <translation id="8428213095426709021">Seaded</translation>
+<translation id="8429214465555795676">Jätkamiseks peate kontoga <ph name="EMAIL" /> Chrome'i sisse logima. See tagab teie organisatsiooni eeskirjade järgimise.</translation>
 <translation id="8433638294851456451">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8451192282033883849">Teie kontot haldab <ph name="MANAGER_NAME" />. Administraator saab seda Chrome'i brauseri profiili ja selle andmeid (nt järjehoidjaid, ajalugu ja paroole) vaadata ning muuta.</translation>
 <translation id="8496177819998570653">Google'i p&amp;aroolihaldur</translation>

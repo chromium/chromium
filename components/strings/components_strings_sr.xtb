@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">Да, настави</translation>
 <translation id="2690699652723742414">Последњих 30 дана</translation>
 <translation id="2691924980723297736">Безбедносно упозорење</translation>
+<translation id="2697248912349197812">Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Подмени је доступан. Користите <ph name="SHORTCUT" /> да бисте дошли до додатних опција.</translation>
 <translation id="2701514975700770343">Са одштампаном страном надоле</translation>
 <translation id="2702592986366989640">Опција ниске цене</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">Дугме Затвори прозоре без архивирања, активирајте га да бисте затворили све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="4691093235373904540">Кровни радови</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Борилачки спортови</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
@@ -2478,6 +2480,7 @@
 <translation id="5425082381151187189">Декорација куће и ентеријера</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> жели да вам шаље обавештења</translation>
 <translation id="5430298929874300616">Уклоните обележивач</translation>
+<translation id="5431318178759467895">У боји</translation>
 <translation id="5433756542371550806">Варијације командне линије</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не чува<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3795,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Прилагодите величине и изглед фонтова у Chrome-у</translation>
 <translation id="7752995774971033316">Не управља</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Ћаскајте са услугом <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Chrome картице и апликације ће се затворити када ажурирање почне</translation>
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7755624218968747854">Примарни котур</translation>
@@ -3932,6 +3934,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нов упитник у Google упитницима</translation>
 <translation id="8028892419725165118">Игре за опуштање</translation>
 <translation id="8028960012888758725">Скрати после задатка</translation>
+<translation id="8028993641010258682">Величина</translation>
 <translation id="8029829038322015001">Црвена 1</translation>
 <translation id="8030729864112325446">Стручно оспособљавање и континуирано образовање</translation>
 <translation id="8032546467100845887">Транспарентност</translation>
@@ -3987,7 +3990,6 @@
 <translation id="8116925261070264013">Звук је искључен</translation>
 <translation id="8118489163946903409">Начин плаћања</translation>
 <translation id="8118506371121007279">Пошаљите повратне информације</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> – ћаскајте</translation>
 <translation id="8127301229239896662">Софтвер „<ph name="SOFTWARE_NAME" />“ није правилно инсталиран на рачунару или мрежи. Затражите од ИТ администратора да реши овај проблем.</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8133495915926741232">Одаберите широке категорије тема које могу да се користе за персонализацију огласа. Ако искључите ширу категорију, блокираћете и сродне теме. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>

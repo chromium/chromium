@@ -96,7 +96,6 @@
 <translation id="2137162749895930932">വിവർത്തന സ്ക്രീൻ അടയ്ക്കുക</translation>
 <translation id="2139300032719313227">ChromeOS റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2151406531797534936">Chrome ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
-<translation id="2163089732491971196">നിങ്ങളുടെ Google Account-ലെ Chrome ഡാറ്റ സംരക്ഷിക്കാനും അത് ഉപയോഗിക്കാനും, നിങ്ങളുടെ പാസ്ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="2174917724755363426">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായിട്ടില്ല. റദ്ദാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">അപ്ഡേറ്റ് പരിശോധനയിലെ പിശക്: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@
 <translation id="5941830788786076944">Google Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കുക</translation>
 <translation id="5947104538377036631">Chrome കുറുക്കുവഴി</translation>
 <translation id="5953954252731207958">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION" /> എന്ന അനുമതി Chrome നീക്കം ചെയ്തു</translation>
+<translation id="5980111191913430208">അറിയാത്ത ഉറവിടങ്ങളിൽ നിന്നുള്ള വിപുലീകരണങ്ങൾ, ആപ്പുകൾ, തീമുകൾ എന്നിവ നിങ്ങളുടെ ഉപകരണത്തിന് ദോഷകരമാകാം. അവ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> എന്നതിൽ നിന്ന് മാത്രം ഇൻസ്റ്റാൾ ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു</translation>
 <translation id="6003112304606738118">ഡൗൺലോഡ് ചെയ്യുന്നു... <ph name="HOURS" /> മണിക്കൂർ ശേഷിക്കുന്നു</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ൽ നിന്നുള്ള ടൂളുകൾ<ph name="END_LINK" /> ഉപയോഗിച്ച്, നിങ്ങൾക്ക് സുരക്ഷിതമായി ബ്രൗസ് ചെയ്യാനും നിയന്ത്രണത്തിൽ തുടരാനുമാകും</translation>
 <translation id="6022659036123304283">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
@@ -612,6 +612,7 @@
 <translation id="842386925677997438">Chrome-ന്റെ സുരക്ഷാ ടൂളുകൾ</translation>
 <translation id="8425765582779547329">നിങ്ങളുടെ രക്ഷിതാവിന്റെ ചോയ്‌സുകൾ ഉപയോഗിച്ച് ഓൺലൈനിൽ സുരക്ഷിതരായിരിക്കാൻ, Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
+<translation id="8429214465555795676">തുടരുന്നതിന്, <ph name="EMAIL" /> ഉപയോഗിച്ച് നിങ്ങൾ Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്. ഇത്, നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ പാലിക്കുന്നുവെന്ന് ഉറപ്പാക്കുന്നു.</translation>
 <translation id="8433638294851456451">ഇവിടെ നിന്ന് നിങ്ങളുടെ Android ഫോണിലേക്ക് ഒരു നമ്പർ അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിൽ നിന്നും Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="8451192282033883849">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_NAME" /> ആണ്. നിങ്ങളുടെ അഡ്‌മിന് ഈ Chrome ബ്രൗസർ പ്രൊഫൈലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവ പോലുള്ള അതിലെ ഡാറ്റയും കാണാനും എഡിറ്റ് ചെയ്യാനുമാകും.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

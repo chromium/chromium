@@ -981,7 +981,6 @@
 <translation id="1663698992894057019">‏تازہ ترین سیکیورٹی اور سافٹ ویئر کے لیے نئے Chromebook میں اپ گریڈ کریں</translation>
 <translation id="1665328953287874063">‏اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کے لیے پاس ورڈ یا PIN کا استعمال کریں</translation>
 <translation id="1665859804801131136">اظہار پسندی</translation>
-<translation id="1666232093776384142">پیریفیرلز کے لئے ڈیٹا تک رسائی کے تحفظ کو غیر فعال کریں</translation>
 <translation id="1667842670298352129">‏کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔ آپ کی بورڈ شارٹ کٹ بھی استعمال کر سکتے ہیں: ٹیکسٹ نمایاں کریں، پھر Search + S کو دبائیں۔</translation>
 <translation id="1668435968811469751">دستی طور پر اندراج کریں</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> کے لیے <ph name="BRAND" /> میں محفوظ کریں</translation>
@@ -2854,7 +2853,6 @@
 <translation id="2975761176769946178">‏ایک URL درکار ہے</translation>
 <translation id="2975845084271617886">شامل ہوں اور کھولیں</translation>
 <translation id="2976547701881428815">ٹولز اور کارروائیاں</translation>
-<translation id="2976557544729462544">کچھ آلات کو مناسب طریقے سے یا مکمل کارکردگی کے ساتھ کام کرنے کے لئے ڈیٹا تک رسائی کے تحفظ کو غیر فعال کرنے کی ضرورت ہوتی ہے۔</translation>
 <translation id="2976639738101799892">‏ہر بار براؤز کرتے وقت Google تلاش اور Google اسمارٹس کی سہولت حاصل کریں</translation>
 <translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
 <translation id="2979493931538961252">‏جب آپ کی Chromebook آف لائن ہو اور ہاٹ اسپاٹس دستیاب ہوں</translation>
@@ -2980,7 +2978,6 @@
 <translation id="3053273573829329829">صارف کا پن فعال کریں</translation>
 <translation id="3053274730492362225">کرسر بلنک نہیں کرتا ہے</translation>
 <translation id="3054011216223858553">آف • اپنی براؤزنگ کی سرگزشت تلاش کرنے کے لیے روزمرہ کی زبان کا استعمال کریں اور ان سائٹس کو تلاش کریں جن کو آپ نے ملاحظہ کیا</translation>
-<translation id="3054766768827382232">غیر فعال کرنے سے آپ کے پیریفیرلز بہتر کام انجام دے سکتے ہیں لیکن غیر مجاز استعمال کے ذریعے آپ کے ذاتی ڈیٹا کو ظاہر کیا جا سکتا ہے۔</translation>
 <translation id="3058498974290601450">آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں</translation>
 <translation id="3058517085907878899">آلہ کا نام</translation>
 <translation id="3060952009917586498">آلہ کی زبان تبدیل کریں۔ موجودہ زبان <ph name="LANGUAGE" /> ہے۔</translation>
@@ -3727,7 +3724,6 @@
 <translation id="3619294456800709762">سائٹس خودکار طور پر تصویر میں تصویر داخل کر سکتی ہیں</translation>
 <translation id="3620136223548713675">جغرافیائی مقام</translation>
 <translation id="3621202678540785336">ان پٹ</translation>
-<translation id="3621807901162200696">‏ChromeOS کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ایک ایپ}other{# ایپس}}</translation>
 <translation id="3622820753353315928">فلیش اسکرین کا رنگ</translation>
 <translation id="362333465072914957">‏سرٹیفیکیٹ جاری کرنے کے لیے CA کا انتظار</translation>
@@ -3807,7 +3803,6 @@
 <translation id="3675683621636519363">‏کریش رپورٹس، ڈائیگناسٹک اور استعمال کا ڈیٹا ChromeOS Flex کو بھیجیں</translation>
 <translation id="367645871420407123">‏خالی چھوڑیں اگر آپ root پاس ورڈ کو ڈیفالٹ ٹیسٹ تصویر کی قدر میں سیٹ کرنا چاہتے ہیں۔</translation>
 <translation id="3677911431265050325">موبائل سائٹ کی درخواست کریں</translation>
-<translation id="3677959414150797585">ایپس، ویب صفحات اور مزید شامل ہے۔ یہ تجاویز کو بہتر بنانے کے لیے اعداد و شمار صرف تب بھیجتا ہے جب آپ نے استعمال کے ڈیٹا کا اشتراک کرنے کو منتخب کیا ہو۔</translation>
 <translation id="3678156199662914018">ایکسٹینشن: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">آپ اس ونڈو میں جو صفحات دیکھتے ہیں وہ براؤزر کی سرگزشت میں ظاہر نہیں ہوں گے اور وہ آپ کے سائن آؤٹ ہو جانے کے بعد کوکیز جیسے دیگر نشانات کمپیوٹر پر نہیں چھوڑیں گے۔ آپ جو فائلیں ڈاؤن لوڈ کرتے ہیں اور جو بُک مارکس بناتے ہیں انہیں برقرار نہیں رکھا جائے گا۔</translation>
 <translation id="3679126865530709868">Built-in Touchpad</translation>
@@ -4608,6 +4603,7 @@
 <translation id="4220648711404560261">فعال کرتے وقت ایک خرابی پیش آ گئی۔</translation>
 <translation id="4222917615373664617">قیمت ٹریک کرنا فعال ہے۔ قیمت <ph name="CURRENT_PRICE" /> ہے۔</translation>
 <translation id="4223404254440398437">مائیکروفون کی اجازت نہیں ہے</translation>
+<translation id="4224541845943007092">ایڈریس بار سے کی بورڈ ان پٹ کو پڑھیں اور محفوظ کریں</translation>
 <translation id="4225397296022057997">تمام سائٹس پر</translation>
 <translation id="4228071595943929139">اپنی تنظیم کا ای میل پتہ استعمال کریں</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{اس ایکسٹینشن کی اجازت نہیں ہے}other{کچھ ایکسٹینشنز کی اجازت نہیں ہے}}</translation>
@@ -6525,7 +6521,6 @@
 <translation id="5613074282491265467">‏آپ کے Chrome میں سائن ان کرنے پر آپ جو پاس ورڈز محفوظ کریں گے وہ آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں چلے جائیں گے۔ اسے آف کرنے کے لیے، ترتیبات پر جائیں۔</translation>
 <translation id="5614190747811328134">صارف نوٹس</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
-<translation id="5614625640221885312">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="5614947000616625327">‏iCloud کی چین</translation>
 <translation id="561552177910095306">حال ہی میں آپ کی ملاحظہ کردہ سائٹس کی فہرست جو آپ کے براؤزنگ جاری رکھنے پر دوسری سائٹ کو اشتہارات تجویز کر سکتی ہے</translation>
 <translation id="5616571005307953937">سب سے پرانا</translation>
@@ -6829,7 +6824,6 @@
 <translation id="5841270259333717135">ایتھرنیٹ کو ترتیب دیں</translation>
 <translation id="5842497610951477805">بلوٹوتھ فعال</translation>
 <translation id="5844284118433003733">‏آپ کے سائن ان ہونے پر یہ ڈیٹا آپ کے Google اکاؤنٹ سے لنک ہو جاتا ہے تاکہ آپ کو تمام Google سروسز پر تحفظ فراہم کیا جا سکے، مثال کے طور پر سیکیورٹی کے واقعے کے بعد Gmail میں تحفظ میں اضافہ کرنا۔</translation>
-<translation id="5844574845205796324">دریافت کرنے کے لیے نیا مواد تجویز کریں</translation>
 <translation id="5844685625984052392">اشارہ</translation>
 <translation id="5846200638699387931">تعلق کے سِنٹیکس کی خرابی: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">کوئی شیڈو نہیں</translation>
@@ -8615,6 +8609,7 @@
 <translation id="7134951043985383439">خطرناک فائل ڈاؤن لوڈ ہو گئی</translation>
 <translation id="7135729336746831607">بلوٹوتھ آن کریں؟</translation>
 <translation id="7136694880210472378">ڈیفالٹ بنائیں</translation>
+<translation id="7137277889990479760">بطور <ph name="EMAIL" /> جاری رکھیں</translation>
 <translation id="7137771508221868414">اس سے سائٹس اور انسٹال کردہ ایپس کا <ph name="TOTAL_USAGE" /> اسٹور کردہ ڈیٹا حذف ہوگا</translation>
 <translation id="7138678301420049075">دوسرا</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ایپ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
@@ -9193,6 +9188,7 @@
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7561759921596375678">والیوم کو آن کریں</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
+<translation id="7563970324931922582">پلیس ہولڈر کا ٹیکسٹ</translation>
 <translation id="756445078718366910">براؤزر ونڈو کھولیں</translation>
 <translation id="7564847347806291057">کارروائی ختم کریں</translation>
 <translation id="756503097602602175">‏آپ <ph name="LINK_BEGIN" />ترتیبات<ph name="LINK_END" /> سے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ ویب سائٹس اور ایپس کو آپ کی دی گئی اجازتیں سبھی اکاؤنٹس پر لاگو ہو سکتی ہیں۔ اگر آپ نہیں چاہتے ہیں کہ سائٹس یا ایپس کو آپ کے اکاؤنٹ کی معلومات تک رسائی حاصل ہو تو آپ بطور مہمان <ph name="DEVICE_TYPE" /> میں سائن ان یا <ph name="LINK_2_BEGIN" />پوشیدگی ونڈو<ph name="LINK_2_END" /> میں ویب براؤز کر سکتے ہیں۔</translation>
@@ -10116,7 +10112,6 @@
 <translation id="8203152941016626022">قریبی آلات کے ساتھ اشتراک کے آلے کا نام</translation>
 <translation id="8203732864715032075">آپ کو اطلاعات بھیجتی ہے اور "پیغامات" کیلئے اس کمپیوٹر کو یاد رکھنے پر ڈیفالٹ کرتی ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
-<translation id="8205432712228803050">آپ کے ڈسپلیز اور پیریفرلز تھوڑی دیر کیلئے ری سیٹ ہو سکتے ہیں۔ اس تبدیلی کے لاگو ہونے کیلئے اپنے پیریفیرلز نکالیں اور پھر سے لگائیں۔</translation>
 <translation id="8205478243727418828">‏launcher + نیچے تیر کا نشان</translation>
 <translation id="820568752112382238">سب سے زیادہ ملاحظہ کردہ سائٹس</translation>
 <translation id="8206267832882844324">نوٹ میں ترمیم کریں</translation>
@@ -10735,7 +10730,6 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> یا <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">نائٹ لائٹ کے رنگ کا درجہ حرارت</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> کو درکار ہے: <ph name="FIRST_PERMISSION" />، <ph name="SECOND_PERMISSION" />، اور مزید بہت کچھ</translation>
-<translation id="864892689521194669">‏ChromeOS Flex کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8649026945479135076">‏جن سائٹس کو آپ ملاحظہ کرتے ہیں ان میں آپ کی دلچسپیوں کو یاد رکھنا سائٹس کے لئے عام بات ہے تاکہ وہ آپ کے تجربے کو ذاتی نوعیت کا بنا سکیں۔ سائٹس Chrome کے ساتھ آپ کی دلچسپیوں کے بارے میں معلومات بھی اسٹور کر سکتی ہیں۔</translation>
 <translation id="8650543407998814195">اگرچہ آپ اپنے پرانے پروفائل تک مزید رسائی حاصل نہیں کر سکتے لیکن آپ اسے اب بھی ہٹا سکتے ہیں۔</translation>
 <translation id="8651585100578802546">یہ صفحہ زبردستی دوبارہ لوڈ کریں</translation>
@@ -10884,6 +10878,7 @@
 <translation id="8737966899544698733">‏مقام کی درستگی (صرف Android)</translation>
 <translation id="8738418093147087440">ممالک، زبان یا ان پٹ ناموں کے لحاظ سے تلاش کریں</translation>
 <translation id="8740086188450289493">‏Google اکاؤنٹ کا پاس ورڈ استعمال کریں</translation>
+<translation id="874023689350909633">اسے آزمائیں</translation>
 <translation id="8740247629089392745">‏آپ اس Chromebook کو <ph name="SUPERVISED_USER_NAME" /> کو دے سکتے ہیں۔ سیٹ اپ تقریباً مکمل ہو گیا ہے، اب اسے دریافت کرنے کا وقت ہے۔</translation>
 <translation id="8740672167979365981">‏ChromeOS Flex اپ ڈیٹ درکار ہے</translation>
 <translation id="8741944563400125534">سوئچ رسائی کی سیٹ اپ گائیڈ</translation>

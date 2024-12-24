@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Άλλαξε <ph name="ONE_CHANGED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Άλλαξαν <ph name="MANY_CHANGED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Ανενεργή</translation>
 <translation id="4460014764210899310">Κατάργηση ομαδοποίησης</translation>
-<translation id="4590027107044272416">Τώρα μπορείτε να ανοίξετε μια νέα καρτέλα εδώ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Κλείσιμο 1 ανενεργής καρτέλας;}other{Κλείσιμο <ph name="TAB_COUNT_MANY" /> ανενεργών καρτελών;}}</translation>
 <translation id="4686942373615810936">Δημιουργήθηκε μόλις τώρα</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Κλείσιμο μετά από 1 ημέρα}other{Κλείσιμο μετά από <ph name="DAY_COUNT_MANY" /> ημέρες}}</translation>

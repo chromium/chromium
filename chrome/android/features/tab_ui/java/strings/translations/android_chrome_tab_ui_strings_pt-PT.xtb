@@ -77,7 +77,6 @@ Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de s
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> separador alterado, <ph name="ANY_CLOSED" /> fechado(s)}other{<ph name="MANY_CHANGED" /> separadores alterados, <ph name="ANY_CLOSED" /> fechado(s)}}</translation>
 <translation id="4371591986692297148">Inativo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
-<translation id="4590027107044272416">Agora, pode abrir um novo separador aqui</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fechar 1 separador inativo?}other{Fechar <ph name="TAB_COUNT_MANY" /> separadores inativos?}}</translation>
 <translation id="4686942373615810936">Criado agora mesmo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fechar após 1 dia}other{Fechar após <ph name="DAY_COUNT_MANY" /> dias}}</translation>

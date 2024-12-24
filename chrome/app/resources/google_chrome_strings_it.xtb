@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Chiudi la schermata di traduzione</translation>
 <translation id="2139300032719313227">Riavvia ChromeOS</translation>
 <translation id="2151406531797534936">Riavvia subito Chrome</translation>
-<translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Errore controllo aggiornamenti: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -241,6 +240,7 @@
 <translation id="3889417619312448367">Disinstalla Google Chrome</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
+<translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome vuole eliminare i tuoi dati del Gestore delle password di Google. Digita la tua password di Windows per consentire l'operazione.</translation>
 <translation id="398236277091248993">Chrome rimane veloce grazie a funzionalità che migliorano le prestazioni</translation>
 <translation id="3999683152997576765">Puoi visualizzare e rimuovere argomenti di interesse usati dai siti per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
@@ -305,6 +305,7 @@
 <translation id="4728575227883772061">Installazione non riuscita a causa di un errore non specificato. Se Google Chrome è attivo, chiudilo e riprova.</translation>
 <translation id="4741235124132242877">Riquadro bloccato. Usa di nuovo Google Lens dalla barra degli strumenti.</translation>
 <translation id="4747730611090640388">Chrome può stimare i tuoi interessi.  Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
+<translation id="475321580758063259">Aggiorna Chrome per continuare a usare i dati di Chrome nel tuo Account Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4793679854893018356">Scopri in che modo Chrome ti protegge</translation>
@@ -577,6 +578,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8077579734294125741">Altri profili Chrome</translation>
 <translation id="8086881907087796310">Installazione non riuscita perché il computer non soddisfa i requisiti hardware minimi.</translation>
 <translation id="8111297389482307122">Chrome deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci, i dati in questione rimarranno su questo dispositivo.</translation>
+<translation id="8113883687556086139">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Invia feedback per la ricerca con Lens</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>

@@ -96,7 +96,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2137162749895930932">Funga skrini ya kutafsiri</translation>
 <translation id="2139300032719313227">Zima kisha uwashe Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="2151406531797534936">Tafadhali zima kisha uwashe Chrome sasa</translation>
-<translation id="2163089732491971196">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, weka kauli yako ya siri</translation>
 <translation id="2174917724755363426">Usakinishaji haujakamilika. Je, una uhakika unataka kughairi?</translation>
 <translation id="2186206192313702726">Lenzi ya Google</translation>
 <translation id="2190166659037789668">Hitilafu ya ukaguzi wa sasisho: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
 <translation id="5947104538377036631">Njia ya Mkato ya Chrome</translation>
 <translation id="5953954252731207958">Hujatembelea hivi majuzi. Chrome imeondoa <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Viendelezi, programu na mandhari kutoka vyanzo visivyojulikana vinaweza kudhuru kifaa chako. Chrome inapendekeza uviweke kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> pekee</translation>
 <translation id="6003112304606738118">Inapakua... Zimesalia saa <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chrome<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
@@ -612,6 +612,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="842386925677997438">Zana za usalama za Chrome</translation>
 <translation id="8425765582779547329">Ingia katika Chrome udumishe usalama wako mtandaoni ukitumia chaguo za mzazi wako</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
+<translation id="8429214465555795676">Ili uendelee, utahitaji kuingia kwenye Chrome ukitumia <ph name="EMAIL" />. Hii inasaidia kuhakikisha kuwa unafuata sera za shirika lako.</translation>
 <translation id="8433638294851456451">Ili uweze kutuma namba kwa simu yako ya Android kutoka hapa, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
 <translation id="8451192282033883849">Akaunti yako inadhibitiwa na <ph name="MANAGER_NAME" />. Msimamizi wako anaweza kuona na kubadilisha wasifu wa kivinjari hiki cha Chrome na data yake kama vile alamisho, historia na manenosiri.</translation>
 <translation id="8496177819998570653">Kidhibiti cha Manenosiri cha Google</translation>

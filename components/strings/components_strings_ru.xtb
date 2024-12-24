@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">Автоматический показ картинки в картинке</translation>
 <translation id="1100782917270858593">Кнопка "Продолжить поиск в истории". Нажмите Ввод, чтобы посмотреть похожие действия в истории Chrome.</translation>
 <translation id="1101672080107056897">Действие при ошибке</translation>
+<translation id="1101902632743388185">Ваши таблицы сравнения</translation>
 <translation id="1104409666019087579">Пропущены обязательные поля. Заполните их.</translation>
 <translation id="1104860668737945357">Кнопка "Управление паролями". Нажмите ее, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Прокси-сервер настраивается автоматически.</translation>
 <translation id="2025891858974379949">Небезопасный контент</translation>
 <translation id="2027465737841872819">Пластик</translation>
+<translation id="2027707238798802149">Карта недоступна</translation>
 <translation id="2029735183873159415">Родословные и генеалогия</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера и брандмауэра<ph name="END_LINK" />.</translation>
 <translation id="2033900728810589426">Быстрая команда не должна совпадать с ключевым словом поисковой системы по умолчанию, заданным в правиле <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" />.</translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Дом и сад</translation>
 <translation id="2515629240566999685">Проверьте уровень сигнала сети.</translation>
 <translation id="2515761554693942801">Вы выбрали Touch ID для подтверждения покупок на сайтах, пользующихся услугами поставщика <ph name="PROVIDER_ORIGIN" />. Он мог сохранить информацию о вашем способе оплаты. У вас есть право <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Карта недоступна. Обратитесь к ее эмитенту.</translation>
 <translation id="2521385132275182522">Скоба в правом нижнем углу</translation>
 <translation id="2521736961081452453">Создать форму</translation>
 <translation id="2523886232349826891">Карта будет сохранена только на этом устройстве</translation>
@@ -2471,6 +2474,7 @@
 <translation id="5425082381151187189">Обустройство дома и отделка помещений</translation>
 <translation id="5426179911063097041">С сайта <ph name="SITE" /> поступил запрос на отправку уведомлений.</translation>
 <translation id="5430298929874300616">Удалить закладку</translation>
+<translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5433756542371550806">Модификации для командной строки</translation>
 <translation id="5434798570900738152">В Chromium <ph name="BEGIN_EMPHASIS" />не будут сохраняться<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3290,6 +3294,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди-арт</translation>
 <translation id="692638818576287323">Коммерческий транспорт</translation>
+<translation id="6933282894115597956">Войдите в аккаунт. Это требование вашей организации</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Поисковая система по умолчанию позволяет находить информацию в интернете и пользоваться различными функциями Chrome<ph name="END_BOLD" />, например совершать запросы из адресной строки или по изображению с веб-страницы. Некоторые функции могут быть недоступны, если их не поддерживает ваша поисковая система.</translation>
 <translation id="6934672428414710184">Это имя из вашего аккаунта Google</translation>
 <translation id="6935082727755903526">Вакансии в сфере бухгалтерского учета и финансов</translation>
@@ -3341,6 +3346,7 @@
 <translation id="7003322000677139268">Запчасти и аксессуары для транспортных средств</translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7006930604109697472">Все равно отправить</translation>
+<translation id="7009364359744329733">Карта недоступна. Повторите попытку позже.</translation>
 <translation id="7010658264061801199">Еда и напитки</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Может запрашивать разрешение на блокировку указателя мыши и ее использование</translation>
@@ -3783,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Настроить шрифты и их размеры в Chrome</translation>
 <translation id="7752995774971033316">Не управляется</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Чат с <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Вкладки и приложения Chrome закроются, когда запустится обновление</translation>
 <translation id="7755287808199759310">Твой родитель может разблокировать его.</translation>
 <translation id="7755624218968747854">Основной рулон</translation>
@@ -3923,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать форму Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="8028892419725165118">Казуальные игры</translation>
 <translation id="8028960012888758725">Подрезать после завершения задания</translation>
+<translation id="8028993641010258682">Размер</translation>
 <translation id="8029829038322015001">Красный 1</translation>
 <translation id="8030729864112325446">Дополнительное образование и профессиональная подготовка</translation>
 <translation id="8032546467100845887">Прозрачность</translation>
@@ -3978,7 +3984,6 @@
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
 <translation id="8118506371121007279">Оставить отзыв</translation>
-<translation id="8124085000247609808">Чат с <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Программа "<ph name="SOFTWARE_NAME" />" была установлена неправильно. Обратитесь за помощью к системному администратору.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8133495915926741232">Укажите, какие категории тем могут использоваться для персонализации рекламы. Если отключить категорию, будут заблокированы все связанные с ней темы. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

@@ -2475,6 +2475,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5425082381151187189">Home and interior decor</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
+<translation id="5431318178759467895">Colour</translation>
 <translation id="5433756542371550806">Command-line variations</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3789,7 +3790,6 @@ Additional details:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Customise font sizes and typefaces in Chrome</translation>
 <translation id="7752995774971033316">Unmanaged</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – chat with <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Your Chrome tabs and apps will close when the update starts</translation>
 <translation id="7755287808199759310">Your parent can unblock it for you</translation>
 <translation id="7755624218968747854">Primary roll</translation>
@@ -3929,6 +3929,7 @@ Additional details:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new form in Google Forms quickly</translation>
 <translation id="8028892419725165118">Casual games</translation>
 <translation id="8028960012888758725">Trim after job</translation>
+<translation id="8028993641010258682">Size</translation>
 <translation id="8029829038322015001">Red 1</translation>
 <translation id="8030729864112325446">Vocational and continuing education</translation>
 <translation id="8032546467100845887">Transparency</translation>
@@ -3984,7 +3985,6 @@ Additional details:
 <translation id="8116925261070264013">Muted</translation>
 <translation id="8118489163946903409">Payment method</translation>
 <translation id="8118506371121007279">Give feedback</translation>
-<translation id="8124085000247609808">Chat with <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' wasn’t installed properly on your computer or network. Ask your IT administrator to resolve this issue.</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8133495915926741232">Choose which broad categories of topics can be used to help personalise ads. Turning off a broader category will also block its related topics. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

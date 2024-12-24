@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">გაგრძელება</translation>
 <translation id="2690699652723742414">ბოლო 30 დღე</translation>
 <translation id="2691924980723297736">გაფრთხილება უსაფრთხოების შესახებ</translation>
+<translation id="2697248912349197812">ჰკითხეთ <ph name="KEYWORD_SHORT_NAME" />-ს</translation>
 <translation id="2699273987028089219">ხელმისაწვდომია ქვემენიუ, გამოიყენეთ <ph name="SHORTCUT" /> დამატებით ვარიანტებზე გადასასვლელად.</translation>
 <translation id="2701514975700770343">ნაბეჭდი მხარით დაღმა</translation>
 <translation id="2702592986366989640">დაბალფასიანი ვარიანტი</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">ინკოგნიტო ფანჯრების დახურვის ღილაკი, ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დასახურად გაააქტიურეთ ის</translation>
 <translation id="4691093235373904540">გადახურვა</translation>
 <translation id="4692623383562244444">საძიებო სისტემები</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> — ჰკითხეთ <ph name="KEYWORD_SHORT_NAME" />-ს</translation>
 <translation id="4698692901173737941">სპორტის საბრძოლო სახეობები</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">გვერდითი</translation>
@@ -2478,6 +2480,7 @@
 <translation id="5425082381151187189">სახლისა და ინტერიერის გაფორმება</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
+<translation id="5431318178759467895">ფერი</translation>
 <translation id="5433756542371550806">ბრძანებათა სტრიქონის ვარიანტები</translation>
 <translation id="5434798570900738152">Chromium-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3795,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">შრიფტების ზომებისა და ტიპების მორგება Chrome-ში</translation>
 <translation id="7752995774971033316">არამართვადი</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> — ჩეთი <ph name="KEYWORD_SHORT_NAME" />-სთან</translation>
 <translation id="7754587126786572336">თქვენი Chrome-ის ჩანართები და აპები დაიხურება განახლების დაწყებისას</translation>
 <translation id="7755287808199759310">მისი განბლოკვა თქვენს მშობელს შეუძლია</translation>
 <translation id="7755624218968747854">ძირითადი რულონი</translation>
@@ -3932,6 +3934,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-ში ახალი ფორმის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8028892419725165118">ყოველდღიური თამაშები</translation>
 <translation id="8028960012888758725">შემოჭრა დავალების შესრულების შემდეგ</translation>
+<translation id="8028993641010258682">ზომა</translation>
 <translation id="8029829038322015001">წითელი 1</translation>
 <translation id="8030729864112325446">პროფესიული და უწყვეტი განათლება</translation>
 <translation id="8032546467100845887">გამჭვირვალობა</translation>
@@ -3987,7 +3990,6 @@
 <translation id="8116925261070264013">დადუმებული</translation>
 <translation id="8118489163946903409">გადახდის მეთოდი</translation>
 <translation id="8118506371121007279">გამოხმაურების დაწერა</translation>
-<translation id="8124085000247609808">ჩეთი <ph name="KEYWORD_SHORT_NAME" />-თან</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />“ არასათანადოდ დაინსტალირდა თქვენს კომპიუტერზე ან ქსელში. სთხოვეთ თქვენს IT ადმინისტრატორს ამ პრობლემის მოგვარება.</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8133495915926741232">აირჩიეთ, თემების რომელი ვრცელი კატეგორია იყოს გამოყენებული რეკლამის პერსონალიზების ხელშეწყობის მიზნით. ვრცელი კატეგორიის დაბლოკვის შემთხვევაში დაიბლოკება მასთან დაკავშირებული თემებიც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>

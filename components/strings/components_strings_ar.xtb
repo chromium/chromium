@@ -2477,6 +2477,7 @@
 <translation id="5425082381151187189">ديكور منزلي وديكور داخلي</translation>
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك.</translation>
 <translation id="5430298929874300616">إزالة إشارة مرجعية</translation>
+<translation id="5431318178759467895">بالألوان</translation>
 <translation id="5433756542371550806">الإصدارات المُعدَّلة لسطر الأوامر</translation>
 <translation id="5434798570900738152">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chromium ما يلي:
         <ph name="BEGIN_LIST" />
@@ -3791,7 +3792,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">‏تخصيص أحجام الخطوط وأنماطها في Chrome</translation>
 <translation id="7752995774971033316">غير مُدار</translation>
-<translation id="7753769899818674547">‏‫‎<ph name="KEYWORD" />: بدء الدردشة مع "<ph name="KEYWORD_SHORT_NAME" />"</translation>
 <translation id="7754587126786572336">‏سيتم إغلاق علامات تبويب Chrome وتطبيقاته عند بدء التحديث</translation>
 <translation id="7755287808199759310">يمكن لأحد والديك إزالة الحظر لك</translation>
 <translation id="7755624218968747854">اللفافة الأساسية</translation>
@@ -3931,6 +3931,7 @@
 <translation id="8028698320761417183">‏<ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء نموذج جديد في "نماذج Google" بسرعة.</translation>
 <translation id="8028892419725165118">ألعاب بسيطة</translation>
 <translation id="8028960012888758725">القطع بعد المهمة</translation>
+<translation id="8028993641010258682">الحجم</translation>
 <translation id="8029829038322015001">أحمر 1</translation>
 <translation id="8030729864112325446">تعليم مهني وتعليم مستمر</translation>
 <translation id="8032546467100845887">شفافية</translation>
@@ -3986,7 +3987,6 @@
 <translation id="8116925261070264013">المواقع الإلكترونية التي تم كتم الصوت فيها</translation>
 <translation id="8118489163946903409">طريقة الدفع</translation>
 <translation id="8118506371121007279">تقديم ملاحظات</translation>
-<translation id="8124085000247609808">بدء محادثة مع <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">لم يتم تثبيت "<ph name="SOFTWARE_NAME" />" بطريقة صحيحة على جهاز الكمبيوتر أو الشبكة. اطلب من مشرف تقنية المعلومات حل هذه المشكلة.</translation>
 <translation id="8131740175452115882">تأكيد</translation>
 <translation id="8133495915926741232">اختَر فئات المواضيع العامة التي يمكن استخدامها للمساعدة في تخصيص الإعلانات، مع العِلم بأنّ إيقاف إحدى الفئات العامة سيؤدي أيضًا إلى حظر المواضيع ذات الصلة بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

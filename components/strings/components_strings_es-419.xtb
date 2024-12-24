@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">modo de pantalla en pantalla automático</translation>
 <translation id="1100782917270858593">Botón Reanudar exploración, presiona Intro para reanudar tu exploración y ver actividad pertinente en tu historial de Chrome</translation>
 <translation id="1101672080107056897">Acción con error</translation>
+<translation id="1101902632743388185">Tus tablas de comparación</translation>
 <translation id="1104409666019087579">Algunos campos obligatorios están vacíos. Llénalos antes de guardar.</translation>
 <translation id="1104860668737945357">Botón Administrar contraseñas: actívalo para ver y administrar tus contraseñas en la configuración de Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -460,6 +461,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1777422078676229054">Foto (archivo)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">¿Quieres instalar apps web?</translation>
+<translation id="1791415068765905273">Mostrar todas las tablas de comparación</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="1793631236004319016">Se usó por última vez hace <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -583,6 +585,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2025186561304664664">El proxy se estableció en configuración automática.</translation>
 <translation id="2025891858974379949">Contenido no seguro</translation>
 <translation id="2027465737841872819">Plástico</translation>
+<translation id="2027707238798802149">Tarjeta no disponible</translation>
 <translation id="2029735183873159415">Ascendencia y genealogía</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar el proxy y el firewall<ph name="END_LINK" />.</translation>
 <translation id="2033900728810589426">El atajo no puede ser igual a la palabra clave del proveedor de búsqueda predeterminado definida por <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +869,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2514548229949738417">Casa y jardín</translation>
 <translation id="2515629240566999685">Verificar la señal en tu área.</translation>
 <translation id="2515761554693942801">Elegiste realizar la verificación con Touch ID en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Esta tarjeta no está disponible. Comunícate con el proveedor de la tarjeta.</translation>
 <translation id="2521385132275182522">Grapa en la esquina inferior derecha</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
@@ -2195,6 +2199,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (no es necesario que descargues la app)</translation>
 <translation id="4920457992177678649">Alquileres de vacaciones y estadías cortas</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4920921410507315601">Tablas de comparación</translation>
 <translation id="4922104989726031751">Para utilizar el Administrador de contraseñas con tu sistema operativo, reinicia Chromium y permite el acceso al administrador de contraseñas de la computadora. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="4923459931733593730">Pago</translation>
 <translation id="4926049483395192435">Debe especificarse un valor.</translation>
@@ -2388,6 +2393,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
 <translation id="5280963125494874678">aplicaciones web</translation>
+<translation id="5282008206326321696">{count,plural, =0{# favoritos}=1{# favorito}other{# favoritos}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propiedades del documento</translation>
 <translation id="528468243742722775">Finalizar</translation>
@@ -2473,6 +2479,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5425082381151187189">Hogar y decoración de interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
+<translation id="5431318178759467895">Color</translation>
 <translation id="5433756542371550806">Variaciones en la línea de comandos</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
           <ph name="BEGIN_LIST" />
@@ -2582,6 +2589,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="561165882404867731">Traduce esta página con Google Traductor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> desea usar la ubicación de tu computadora</translation>
 <translation id="5614520971155863709">Juegos de naipes</translation>
+<translation id="5617785978844309968">Mostrar todas las tablas de comparación</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te redireccionó demasiadas veces.</translation>
 <translation id="5619721953841297650">Ajuste predeterminado</translation>
 <translation id="5624120631404540903">Administrar contraseñas</translation>
@@ -3292,6 +3300,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
+<translation id="6933282894115597956">Tu organización requiere que accedas</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Tu motor de búsqueda predeterminado te permite buscar en la Web y potencia las funciones de Chrome<ph name="END_BOLD" />, como la búsqueda desde la barra de direcciones o desde imágenes de páginas web. Es posible que una función no esté disponible si tu motor de búsqueda no la admite.</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>
 <translation id="6935082727755903526">Trabajos en contabilidad y finanzas</translation>
@@ -3343,6 +3352,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7003322000677139268">Piezas y accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
+<translation id="7009364359744329733">Esta tarjeta no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7010658264061801199">Comidas y bebidas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Puede solicitar permiso para bloquear y usar el mouse</translation>
@@ -3785,7 +3795,6 @@ Detalles adicionales:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personaliza el tamaño de las fuentes y los tipos de letra en Chrome</translation>
 <translation id="7752995774971033316">Sin administrar</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Chatear con <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Las pestañas y apps de Chrome se cerrarán cuando comience la actualización</translation>
 <translation id="7755287808199759310">Tu madre o padre puede desbloquearlo por ti</translation>
 <translation id="7755624218968747854">Rollo principal</translation>
@@ -3925,6 +3934,7 @@ Detalles adicionales:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear un formulario nuevo en Formularios de Google rápidamente</translation>
 <translation id="8028892419725165118">Juegos casuales</translation>
 <translation id="8028960012888758725">Cortar al finalizar el trabajo</translation>
+<translation id="8028993641010258682">Tamaño</translation>
 <translation id="8029829038322015001">Rojo 1</translation>
 <translation id="8030729864112325446">Enseñanza profesional y formación continua</translation>
 <translation id="8032546467100845887">Transparencia</translation>
@@ -3980,7 +3990,6 @@ Detalles adicionales:
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8118489163946903409">Forma de pago</translation>
 <translation id="8118506371121007279">Enviar comentarios</translation>
-<translation id="8124085000247609808">Chatear con <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Elige qué categorías de temas generales se pueden utilizar para personalizar los anuncios. Si desactivas una categoría más general, también se bloquearán los temas relacionados. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

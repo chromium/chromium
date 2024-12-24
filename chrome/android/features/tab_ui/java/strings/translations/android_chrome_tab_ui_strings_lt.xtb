@@ -77,7 +77,6 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Pakeistas <ph name="ONE_CHANGED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}one{Pakeistas <ph name="MANY_CHANGED" /> skirtukas, uždaryta: <ph name="ANY_CLOSED" />}few{Pakeisti <ph name="MANY_CHANGED" /> skirtukai, uždaryta: <ph name="ANY_CLOSED" />}many{Pakeista <ph name="MANY_CHANGED" /> skirtuko, uždaryta: <ph name="ANY_CLOSED" />}other{Pakeista <ph name="MANY_CHANGED" /> skirtukų, uždaryta: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktyvus</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
-<translation id="4590027107044272416">Dabar čia galite atidaryti naują skirtuką</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Uždaryti vieną neaktyvų skirtuką?}one{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvų skirtuką?}few{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvius skirtukus?}many{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvaus skirtuko?}other{Uždaryti <ph name="TAB_COUNT_MANY" /> neaktyvių skirtukų?}}</translation>
 <translation id="4686942373615810936">Ką tik sukurta</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Uždaryti po 1 dienos}one{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}few{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}many{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}other{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>

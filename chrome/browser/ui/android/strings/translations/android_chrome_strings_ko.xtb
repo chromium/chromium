@@ -19,6 +19,7 @@
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1080365971383768617">모든 기기의 비밀번호</translation>
 <translation id="1082920045291562218">요약 의견 시트와 공유 닫힘</translation>
+<translation id="1087176310396019910">스팸일 수 있음</translation>
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1094555143448724771">다른 기기의 탭을 보려면 탭과 방문 기록을 동기화하세요.</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
@@ -508,6 +509,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />개 탭}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />개 탭}}</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
+<translation id="3301936297336370235">비밀번호 추천 확인</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> 탭 그룹, <ph name="COLOR_NAME" /> 색상을 새 백그라운드 탭 그룹으로 복원합니다.</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
@@ -1136,6 +1138,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="6202812185118613467">동기화를 시작하려면 다시 로그인하세요.</translation>
+<translation id="6204781143409202534">Chrome에서 <ph name="DOMAIN" />의 스팸 가능성이 감지되었습니다.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Descarga en pausa</translation>
 <translation id="1396327438254055134">Permite que el sitio use el optimizador de V8.</translation>
 <translation id="1415402041810619267">URL truncada</translation>
+<translation id="1415855080660575082">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para que aparezcan en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Puedes activar o desactivar esta opción en la configuración de Chrome.</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
 <translation id="1500473259453106018">Ocultar tarjeta Bajadas de precio en pestañas</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Has permitido temporalmente que este sitio use cookies de terceros. Tendrás menos protección al navegar, pero será más probable que las funciones del sitio funcionen según lo previsto. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Es posible que las funciones de algunos sitios no funcionen en modo Incógnito</translation>
 <translation id="2442870161001914531">Solicitar siempre la vista para ordenador</translation>
+<translation id="2445311670906052406">Ahora Chrome comparte tus pestañas recientes con tu dispositivo. Las verás en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2469312991797799607">Esta acción eliminará todos los datos y las cookies de <ph name="ORIGIN" /> y de todos los sitios que incluya.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Los sitios pueden mostrar solicitudes de inicio de sesión de servicios de identidad.</translation>
 <translation id="2787357173144933081">Arrancar con omnibox</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Si está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni de recibir datos.</translation>
+<translation id="2814830417943086299">Ahora Chrome muestra tus pestañas recientes en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2822354292072154809">¿Seguro que quieres restablecer todos los permisos de los sitios de <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicita la vista para móvil</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zoom actual: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Permite que Chrome muestre tus pestañas recientes en la lista de aplicaciones y en los resultados de búsqueda de tu dispositivo. Desactiva esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="959682366969460160">Mantenlo todo organizado</translation>

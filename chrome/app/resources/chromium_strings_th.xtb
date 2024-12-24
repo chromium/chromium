@@ -111,6 +111,7 @@
 <translation id="2483889755041906834">ใน Chromium</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2513154137948333830">ต้องรีบูต: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">หากต้องการดำเนินการต่อ คุณจะต้องลงชื่อเข้าใช้ Chromium ด้วย <ph name="EMAIL" /> ซึ่งจะเป็นไปตามนโยบายขององค์กร</translation>
 <translation id="2542968102051442371">เลือกข้อความด้วยการค้นหารูปภาพ</translation>
 <translation id="2554739539410784893">Chromium กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="2560420686485554789">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
@@ -252,7 +253,6 @@
 <translation id="4438870983368648614"><ph name="MANAGER" /> จัดการ Chromium</translation>
 <translation id="444069871276811466">เพิ่มโปรไฟล์ Chromium</translation>
 <translation id="4447409407328223819">เกี่ยวกับ Chrome สำหรับการทดสอบ</translation>
-<translation id="4470974262661801543">โปรดป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chromium ในบัญชี Google</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
 <translation id="4501471624619070934">การติดตั้งล้มเหลวเนื่องจากมีการควบคุมการเข้าใช้งานในประเทศนี้</translation>
 <translation id="4510853178268397146">ส่วนขยายนี้ไม่ได้เผยแพร่หลักปฏิบัติเกี่ยวกับนโยบายความเป็นส่วนตัว เช่น วิธีเก็บรวบรวมและใช้ข้อมูล Chromium แนะนำให้คุณนำออก</translation>

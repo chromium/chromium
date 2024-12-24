@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Download onderbroken</translation>
 <translation id="1396327438254055134">Sta toe dat de site V8-optimalisatie gebruikt.</translation>
 <translation id="1415402041810619267">URL afgekapt</translation>
+<translation id="1415855080660575082">Sta toe dat Chrome je recente tabbladen deelt met je apparaat zodat je ze kunt zien in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd aan- of uitzetten in de Chrome-instellingen.</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Kaart Prijsdalingen op tabbladen verbergen</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Je hebt deze site tijdelijk toestemming gegeven om cookies van derden te gebruiken. Je krijgt dan minder bescherming terwijl je browst, maar het is waarschijnlijker dat de sitefuncties werken zoals verwacht. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Functies op bepaalde sites werken misschien niet in de incognitomodus</translation>
 <translation id="2442870161001914531">Altijd desktopsite aanvragen</translation>
+<translation id="2445311670906052406">Chrome deelt nu je recente tabbladen met je apparaat. Je ziet ze in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="2469312991797799607">Met deze actie verwijder je alle gegevens en cookies voor <ph name="ORIGIN" /> en alle onderliggende sites</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2787357173144933081">Omnibox voor een goede start</translation>
 <translation id="2790501146643349491">Als deze optie aanstaat, kunnen recent gesloten sites het sturen en ontvangen van gegevens afronden. Staat de optie uit, dan kunnen recent gesloten sites het sturen of ontvangen van gegevens niet afronden.</translation>
+<translation id="2814830417943086299">Chrome toont je recente tabbladen nu in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
 <translation id="2850913818900871965">Mobiele weergave opvragen</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Huidig zoomniveau is <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Sta toe dat Chrome je recente tabbladen toont in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>

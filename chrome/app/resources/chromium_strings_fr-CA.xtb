@@ -113,6 +113,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="2483889755041906834">Dans Chromium</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2513154137948333830">Redémarrage nécessaire : <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Pour continuer, vous devez vous connecter à Chromium avec l'adresse courriel <ph name="EMAIL" />. Cela assure le respect des politiques de votre organisation.</translation>
 <translation id="2542968102051442371">Sélectionnez du texte avec la recherche d'images</translation>
 <translation id="2554739539410784893">Chromium essaie de remplacer les mots de passe existants. Tapez votre mot de passe Windows pour autoriser cela.</translation>
 <translation id="2560420686485554789">Chromium a besoin d'accéder au stockage pour télécharger des fichiers</translation>
@@ -254,7 +255,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4438870983368648614"><ph name="MANAGER" /> gère Chromium</translation>
 <translation id="444069871276811466">Ajouter un profil Chromium</translation>
 <translation id="4447409407328223819">À propos de Chrome for Testing</translation>
-<translation id="4470974262661801543">Pour utiliser et enregistrer les données Chromium dans votre compte Google, saisissez votre phrase de passe</translation>
 <translation id="4493028449971051158">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
 <translation id="4501471624619070934">L'installation a échoué, car l'accès est restreint dans ce pays.</translation>
 <translation id="4510853178268397146">Cette extension n'a pas publié de pratiques en matière de confidentialité, telles que la manière dont elle collecte et utilise les données. Chromium vous recommande de la retirer.</translation>

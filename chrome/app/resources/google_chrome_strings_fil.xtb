@@ -96,7 +96,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2137162749895930932">Isara ang isalin ang screen</translation>
 <translation id="2139300032719313227">I-restart ang ChromeOS</translation>
 <translation id="2151406531797534936">Paki-restart ang Chrome ngayon</translation>
-<translation id="2163089732491971196">Para magamit at ma-save ang data sa Chrome sa iyong Google Account, ilagay ang passphrase mo</translation>
 <translation id="2174917724755363426">Hindi nakumpleto ang pag-install. Sigurado ka bang gusto mong kanselahin?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error sa pagtingin kung may update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="5947104538377036631">Shortcut ng Chrome</translation>
 <translation id="5953954252731207958">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6014316319780893079">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chrome<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
@@ -612,6 +612,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="842386925677997438">Mga tool sa kaligtasan ng Chrome</translation>
 <translation id="8425765582779547329">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, mag-sign in sa Chrome</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
+<translation id="8429214465555795676">Para magpatuloy, kakailanganin mong mag-sign in sa Chrome gamit ang <ph name="EMAIL" />. Tinitiyak nito ang pagsunod sa mga patakaran ng iyong organisasyon.</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8451192282033883849">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome browser at ang data nito gaya ng mga bookmark, history, at mga password.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

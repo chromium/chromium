@@ -124,6 +124,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2583187216237139145">Administrator poslovnog profila može da ukloni sve podatke Chromium-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi sa korišćenjem Chromium-a</translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Potvrdite identitet da biste koristili i sačuvali Chromium podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno (preporučeno)</translation>
 <translation id="2648074677641340862">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Chromium ponovo.</translation>
 <translation id="2661879430930417727">Ako delite uređaj, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele</translation>
@@ -256,7 +257,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4438870983368648614"><ph name="MANAGER" /> upravlja Chromium-om</translation>
 <translation id="444069871276811466">Dodaj Chromium profil</translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
-<translation id="4470974262661801543">Da biste koristili i čuvali Chromium podatke na Google nalogu, unesite pristupnu frazu</translation>
 <translation id="4493028449971051158">Greška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
 <translation id="4501471624619070934">Instalacija nije uspela jer je pristup u ovoj zemlji ograničen.</translation>
 <translation id="4510853178268397146">Ovaj dodatak nije objavio prakse privatnosti, na primer, kako prikuplja i koristi podatke. Chromium preporučuje da ga uklonite.</translation>
@@ -452,6 +452,7 @@ Neke funkcije će možda biti nedostupne. Navedite drugi direktorijum profila i
 <translation id="6980074797973263542">Organizacija može da vidi podatke pregledanja, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na ličnim Chromium profilima.</translation>
 <translation id="6985329841647292029">Chromium OS uslovi</translation>
 <translation id="6990124437352146030">Chromium traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
+<translation id="7003299027384820442">Unesite pristupnu frazu da biste koristili i sačuvali Chromium podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Instaliranje nije uspelo zato što ova verzija operativnog sistema nije podržana.</translation>
 <translation id="7024536598735240744">Greška pri otpakivanju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je prekinuta.</translation>
@@ -547,6 +548,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8330519371938183845">Prijavite se da biste sinhronizovali i personalizovali Chromium na svim uređajima</translation>
 <translation id="8340674089072921962">Korisnik <ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio Chromium</translation>
 <translation id="8357820681460164151">Da biste pristupali Chromium pregledaču na svim uređajima, prijavite se, pa uključite sinhronizaciju</translation>
+<translation id="8359544530202147897">Ažurirajte Chromium da biste nastavili da koristite Chromium podatke na Google nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Da biste dobijali buduća Chromium ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.</translation>
 <translation id="8362914115861174987">Prevodi na jezik</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>

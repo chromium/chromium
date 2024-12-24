@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
-<translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
 <translation id="2174917724755363426">No se completó la instalación. ¿Confirmas que quieres cancelarla?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -386,6 +385,7 @@
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
 <translation id="5947104538377036631">Acceso directo de Chrome</translation>
 <translation id="5953954252731207958">No lo visitaste recientemente. Chrome quitó el permiso <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Las extensiones, apps y temas de fuentes desconocidas pueden dañar tu dispositivo. Chrome recomienda instalarlas únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">Con las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
@@ -604,6 +604,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
 <translation id="8425765582779547329">Para protegerte más en línea con las elecciones de tu madre o padre, accede a Chrome</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8429214465555795676">Para continuar, deberás acceder a Chrome con <ph name="EMAIL" />. Esto garantiza el cumplimiento de las políticas de tu organización.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> administra tu cuenta. El administrador puede ver y editar este perfil del navegador de Chrome y sus datos, como los favoritos, el historial y las contraseñas.</translation>
 <translation id="8496177819998570653">Administrador de contraseñas de Google</translation>

@@ -96,7 +96,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
-<translation id="2163089732491971196">Para usar y guardar los datos de Chrome en tu cuenta de Google, introduce tu frase de contraseña</translation>
 <translation id="2174917724755363426">No se ha completado la instalación. ¿Seguro que quieres cancelarla?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5941830788786076944">Establecer Google Chrome como navegador predeterminado</translation>
 <translation id="5947104538377036631">Acceso directo de Chrome</translation>
 <translation id="5953954252731207958">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION" />.</translation>
+<translation id="5980111191913430208">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chrome recomienda instalarlos únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Descargando... Horas restantes: <ph name="HOURS" />.</translation>
 <translation id="6014316319780893079">Las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
@@ -612,6 +612,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
 <translation id="8425765582779547329">Para tener más protección online con las opciones de tus padres, inicia sesión en Chrome</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8429214465555795676">Para continuar, debes iniciar sesión en Chrome con <ph name="EMAIL" />. De esta forma, se asegura el cumplimiento de las políticas de tu organización.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona tu cuenta. Tu administrador puede ver y editar este perfil del navegador Chrome y sus datos, como los marcadores, el historial o las contraseñas.</translation>
 <translation id="8496177819998570653">&amp;Gestor de contraseñas de Google</translation>

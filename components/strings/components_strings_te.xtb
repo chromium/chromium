@@ -456,6 +456,7 @@
 <translation id="1777422078676229054">ఫోటో (ఆర్కైవల్)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయాలా?</translation>
+<translation id="1791415068765905273">కంపారిజన్ టేబుల్స్ అన్నింటినీ చూడండి</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="1793631236004319016">చివరిగా <ph name="NUM_HOURS_MINUTES_SECONDS" /> క్రితం ఉపయోగించడం జరిగింది</translation>
@@ -2192,6 +2193,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4920457992177678649">వెకేషన్ రెంట‌ల్స్ &amp; తక్కువ రోజులు బస చేయడానికి స్థలాలు</translation>
 <translation id="4920710383559189047">స్లీవ్</translation>
+<translation id="4920921410507315601">కంపారిజన్ టేబుల్స్</translation>
 <translation id="4922104989726031751">మీ ఆపరేటింగ్ సిస్టమ్‌తో Password Managerను ఉపయోగించడానికి, Chromiumను రీ-లాంచ్ చేసి, మీ కంప్యూటర్ పాస్‌వర్డ్ మేనేజర్‌కు యాక్సెస్‌ను అనుమతించండి. మీ ట్యాబ్‌లు రీ-లాంచ్ చేసిన తర్వాత మళ్లీ తెరవబడతాయి.</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
 <translation id="4926049483395192435">ఖచ్చితంగా పేర్కొనాలి.</translation>
@@ -2385,6 +2387,7 @@
 <translation id="5278778426231952189">ఇప్పుడే అప్‌లోడ్ చేయండి</translation>
 <translation id="5279286380302340275">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5280963125494874678">వెబ్ అప్లికేషన్‌లు</translation>
+<translation id="5282008206326321696">{count,plural, =0{# బుక్‌మార్క్‌లు}=1{# బుక్‌మార్క్}other{# బుక్‌మార్క్‌లు}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">డాక్యుమెంట్ ప్రాపర్టీలు</translation>
 <translation id="528468243742722775">ముగించు</translation>
@@ -2470,6 +2473,7 @@
 <translation id="5425082381151187189">ఇల్లు &amp; ఇంటీరియర్ డెకరేషన్</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> మీకు నోటిఫికేషన్‌లను పంపాలనుకుంటోంది</translation>
 <translation id="5430298929874300616">బుక్‌మార్క్‌ను తీసివేయండి</translation>
+<translation id="5431318178759467895">రంగు</translation>
 <translation id="5433756542371550806">కమాండ్-లైన్ వేరియేషన్స్</translation>
 <translation id="5434798570900738152">Chromium ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2579,6 +2583,7 @@
 <translation id="561165882404867731">Google Translateతో ఈ పేజీని అనువదించండి</translation>
 <translation id="5612720917913232150"><ph name="URL" /> మీ కంప్యూటర్ లొకేషన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5614520971155863709">కార్డ్ గేమ్‌లు</translation>
+<translation id="5617785978844309968">కంపారిజన్ టేబుల్స్ అన్నింటినీ చూడండి</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> మిమ్మల్ని అనేక సార్లు దారి మళ్లించింది.</translation>
 <translation id="5619721953841297650">ప్రీసెట్</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
@@ -3784,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />‌తో చాట్ చేయండి</translation>
 <translation id="7754587126786572336">అప్‌డేట్ చేయడం ప్రారంభమైనప్పుడు మీ Chrome ట్యాబ్‌లు, యాప్‌లు మూసివేయబడతాయి</translation>
 <translation id="7755287808199759310">మీ తల్లి/తండ్రి దీన్ని మీ కోసం అన్‌బ్లాక్ చేయగలరు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>
@@ -3924,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsలో త్వరగా కొత్త ఫారమ్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8028892419725165118">సరదా గేమ్‌లు</translation>
 <translation id="8028960012888758725">పని తర్వాత కత్తిరించండి</translation>
+<translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="8029829038322015001">ఎరుపు రంగు 1</translation>
 <translation id="8030729864112325446">వొకేషనల్ &amp; కొనసాగుతున్న విద్య</translation>
 <translation id="8032546467100845887">ట్రాన్స్‌పరెన్సీ</translation>
@@ -3979,7 +3984,6 @@
 <translation id="8116925261070264013">మ్యూట్ చేసినవి</translation>
 <translation id="8118489163946903409">పేమెంట్ ఆప్షన్‌</translation>
 <translation id="8118506371121007279">ఫీడ్‌బ్యాక్ తెలియజేయండి</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" />‌తో చాట్ చేయండి</translation>
 <translation id="8127301229239896662">మీ కంప్యూటర్ లేదా నెట్‌వర్క్‌లో "<ph name="SOFTWARE_NAME" />" సరిగ్గా ఇన్‌స్టాల్ కాలేదు. ఈ సమస్యను పరిష్కరించమని మీ IT నిర్వాహకులను కోరండి.</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8133495915926741232">యాడ్‌లను వ్యక్తిగతీకరించడంలో సహాయపడటానికి ఏ విస్తృత కేటగిరీలు టాపిక్‌లను ఉపయోగించవచ్చో ఎంచుకోండి. విస్తృత కేటగిరీని ఆఫ్ చేయడం వలన దాని సంబంధిత టాపిక్‌లు కూడా బ్లాక్ చేయబడతాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>

@@ -77,7 +77,6 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> lap módosítva, <ph name="ANY_CLOSED" /> bezárva}other{<ph name="MANY_CHANGED" /> lap módosítva, <ph name="ANY_CLOSED" /> lap bezárva}}</translation>
 <translation id="4371591986692297148">Inaktív</translation>
 <translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
-<translation id="4590027107044272416">Itt új lapot nyithat meg</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Bezár 1 inaktív lapot?}other{Bezár <ph name="TAB_COUNT_MANY" /> inaktív lapot?}}</translation>
 <translation id="4686942373615810936">Épp most létrehozva</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Bezárás 1 nap után}other{Bezárás <ph name="DAY_COUNT_MANY" /> nap után}}</translation>

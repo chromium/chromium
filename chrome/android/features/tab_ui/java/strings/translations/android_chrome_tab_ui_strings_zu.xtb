@@ -77,7 +77,6 @@ Uma ulisula, wonke umuntu ngokushesha uzolahlekelwa ukufinyelela eqenjini letheb
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Ithebhu engu-<ph name="ONE_CHANGED" /> ishintshiwe, kuvalwe engu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Akusebenzi</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
-<translation id="4590027107044272416">Manje ungavula ithebhu entsha lapha</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vala ithebhu e-1 engasebenzi?}one{Vala amathebhu angu-<ph name="TAB_COUNT_MANY" /> angasebenzi?}other{Vala amathebhu angu-<ph name="TAB_COUNT_MANY" /> angasebenzi?}}</translation>
 <translation id="4686942373615810936">Kusanda kusungulwa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Vala ngemva kosuku olu-1}one{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>

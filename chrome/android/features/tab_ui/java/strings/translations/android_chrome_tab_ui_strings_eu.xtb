@@ -77,7 +77,6 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fitxa aldatu da, eta <ph name="ANY_CLOSED" /> itxi}other{<ph name="MANY_CHANGED" /> fitxa aldatu dira, eta <ph name="ANY_CLOSED" /> itxi}}</translation>
 <translation id="4371591986692297148">Inaktibo</translation>
 <translation id="4460014764210899310">Desegin taldea</translation>
-<translation id="4590027107044272416">Orain, hemen ireki dezakezu fitxa berri bat</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 fitxa inaktibo itxi nahi duzu?}other{<ph name="TAB_COUNT_MANY" /> fitxa inaktibo itxi nahi dituzu?}}</translation>
 <translation id="4686942373615810936">Oraintxe bertan sortua</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Itxi egun bat igaro ondoren}other{Itxi <ph name="DAY_COUNT_MANY" /> egun igaro ondoren}}</translation>

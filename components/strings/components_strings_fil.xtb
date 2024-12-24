@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">awtomatikong picture-in-picture</translation>
 <translation id="1100782917270858593">Button na Ipagpatuloy ang iyong journey, pindutin ang Enter para ipagpatuloy ang journey mo at makakita ng nauugnay na aktibidad sa iyong history sa Chrome</translation>
 <translation id="1101672080107056897">Error sa pagkilos</translation>
+<translation id="1101902632743388185">Iyong mga talahanayan sa paghahambing</translation>
 <translation id="1104409666019087579">Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.</translation>
 <translation id="1104860668737945357">Button na Pamahalaan ang mga password, i-activate para matingnan at mapamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2025186561304664664">Nakatakda sa awtomatikong naka-configure ang proxy.</translation>
 <translation id="2025891858974379949">Hindi secure na content</translation>
 <translation id="2027465737841872819">Plastic</translation>
+<translation id="2027707238798802149">Hindi available ang card</translation>
 <translation id="2029735183873159415">Mga Ninuno at Angkan</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Suriin ang proxy at ang firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Hindi puwedeng pareho ang shortcut at ang default na keyword ng provider ng paghahanap na tinukoy ng <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2514548229949738417">Bahay at Hardin</translation>
 <translation id="2515629240566999685">Suriin ang signal sa iyong lugar</translation>
 <translation id="2515761554693942801">Puwede mong piliing mag-verify gamit ang Touch ID sa mga website na gumagamit ng <ph name="PROVIDER_ORIGIN" />. Ang provider na ito ay posibleng nag-store ng impormasyon tungkol sa iyong paraan ng pagbabayad, na puwede mong <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Hindi available ang card na ito. Makipag-ugnayan sa provider ng iyong card.</translation>
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Gumawa ng form</translation>
 <translation id="2523886232349826891">Ise-save sa device lang na ito</translation>
@@ -2472,6 +2475,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5425082381151187189">Dekorasyon sa Bahay</translation>
 <translation id="5426179911063097041">Gusto ng <ph name="SITE" /> na padalhan ka ng mga notification</translation>
 <translation id="5430298929874300616">Alisin ang bookmark</translation>
+<translation id="5431318178759467895">Kulay</translation>
 <translation id="5433756542371550806">Mga Variation ng Command-line</translation>
 <translation id="5434798570900738152"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chromium ang:
           <ph name="BEGIN_LIST" />
@@ -3291,6 +3295,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body Art</translation>
 <translation id="692638818576287323">Mga Sasakyang Pang-negosyo</translation>
+<translation id="6933282894115597956">Nire-require ng iyong organisasyon ang pag-sign in.</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Magbibigay-daan ang iyong default na search engine para makapaghanap ka sa web at pagaganahin nito ang mga feature ng Chrome<ph name="END_BOLD" /> gaya ng paghahanap mula sa address bar at mula sa mga larawan sa mga web page. Posibleng hindi maging available ang isang feature kung hindi ito sinusuportahan ng iyong search engine.</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>
 <translation id="6935082727755903526">Mga Trabaho sa Accounting at Pananalapi</translation>
@@ -3342,6 +3347,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7003322000677139268">Mga Piyesa at Accessory ng Sasakyan</translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7006930604109697472">Ipadala pa rin</translation>
+<translation id="7009364359744329733">Hindi available ngayon ang card na ito. Pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="7010658264061801199">Pagkain at Inumin</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Puwedeng hilinging i-lock at gamitin ang iyong mouse</translation>
@@ -3784,7 +3790,6 @@ Mga karagdagang detalye:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">I-customize ang mga laki ng font at typeface sa Chrome</translation>
 <translation id="7752995774971033316">Hindi pinamamahalaan</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Makipag-chat sa <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Magsasara ang iyong mga tab ng Chrome at Chrome app kapag nagsimula ang pag-update</translation>
 <translation id="7755287808199759310">Maaari itong i-unblock ng iyong magulang para sa iyo</translation>
 <translation id="7755624218968747854">Pangunahing Rolyo</translation>
@@ -3924,6 +3929,7 @@ Mga karagdagang detalye:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong form sa Google Forms nang mabilis</translation>
 <translation id="8028892419725165118">Mga Casual na Laro</translation>
 <translation id="8028960012888758725">Trim after job</translation>
+<translation id="8028993641010258682">Laki</translation>
 <translation id="8029829038322015001">Pula 1</translation>
 <translation id="8030729864112325446">Vocational at Karagdagang Edukasyon</translation>
 <translation id="8032546467100845887">Transparency</translation>
@@ -3979,7 +3985,6 @@ Mga karagdagang detalye:
 <translation id="8116925261070264013">Naka-mute</translation>
 <translation id="8118489163946903409">Paraan ng pagbabayad</translation>
 <translation id="8118506371121007279">Magbigay ng feedback</translation>
-<translation id="8124085000247609808">Makipag-chat sa <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Hindi na-install nang maayos ang "<ph name="SOFTWARE_NAME" />" sa iyong computer o network. Magtanong sa IT administrator mo upang malutas ang isyung ito.</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8133495915926741232">Piliin kung aling malalawak na kategorya ng mga paksa ang puwedeng gamitin para makatulong sa pag-personalize ng mga ad. Kapag in-off ang isang mas malawak na kategorya, maba-block din nito ang mga kaugnay na paksa. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>

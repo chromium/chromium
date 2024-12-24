@@ -2474,6 +2474,7 @@
 <translation id="5425082381151187189">การจัดบ้านและตกแต่งภายใน</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ต้องการส่งการแจ้งเตือนให้คุณ</translation>
 <translation id="5430298929874300616">นำบุ๊กมาร์กออก</translation>
+<translation id="5431318178759467895">สี</translation>
 <translation id="5433756542371550806">บรรทัดคำสั่งรูปแบบต่างๆ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />จะไม่บันทึก<ph name="END_EMPHASIS" />ข้อมูลต่อไปนี้
           <ph name="BEGIN_LIST" />
@@ -3293,6 +3294,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">รอยสัก</translation>
 <translation id="692638818576287323">ยานพาหนะเพื่อการพาณิชย์</translation>
+<translation id="6933282894115597956">องค์กรของคุณกำหนดให้ต้องลงชื่อเข้าใช้</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />เครื่องมือค้นหาเริ่มต้นจะให้คุณค้นหาเว็บและใช้งานฟีเจอร์ต่างๆ ของ Chrome<ph name="END_BOLD" /> เช่น การค้นหาจากแถบที่อยู่และภาพบนหน้าเว็บ ฟีเจอร์อาจไม่พร้อมใช้งาน หากเครื่องมือค้นหาของคุณไม่รองรับ</translation>
 <translation id="6934672428414710184">ชื่อนี้มาจากบัญชี Google ของคุณ</translation>
 <translation id="6935082727755903526">งานบัญชีและการเงิน</translation>
@@ -3787,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">ปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="7752995774971033316">ไม่ได้จัดการ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - แชทกับ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">แท็บและแอป Chrome จะปิดลงเมื่อการอัปเดตเริ่มขึ้น</translation>
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
@@ -3927,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างแบบฟอร์มใหม่ใน Google ฟอร์มอย่างรวดเร็ว</translation>
 <translation id="8028892419725165118">เกมเล่นฆ่าเวลา</translation>
 <translation id="8028960012888758725">ตัดออกหลังเสร็จงาน</translation>
+<translation id="8028993641010258682">ขนาด</translation>
 <translation id="8029829038322015001">แดง 1</translation>
 <translation id="8030729864112325446">อาชีวะและการศึกษาต่อเนื่อง</translation>
 <translation id="8032546467100845887">โปร่งใส</translation>
@@ -3982,7 +3984,6 @@
 <translation id="8116925261070264013">ปิดเสียง</translation>
 <translation id="8118489163946903409">วิธีการชำระเงิน</translation>
 <translation id="8118506371121007279">แสดงความคิดเห็น</translation>
-<translation id="8124085000247609808">แชทกับ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ไม่ได้ติดตั้งในคอมพิวเตอร์หรือเครือข่ายอย่างถูกต้อง โปรดขอให้ผู้ดูแลระบบ IT แก้ไขปัญหานี้</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8133495915926741232">เลือกหมวดหมู่กว้างๆ ของหัวข้อที่สามารถใช้ในการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ การปิดหมวดหมู่ที่กว้างขึ้นจะบล็อกหัวข้อที่เกี่ยวข้องด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

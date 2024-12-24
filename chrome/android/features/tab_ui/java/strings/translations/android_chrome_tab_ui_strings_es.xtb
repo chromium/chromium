@@ -77,7 +77,6 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestaña cambiada, <ph name="ANY_CLOSED" /> cerrada}other{<ph name="MANY_CHANGED" /> pestañas cambiadas, <ph name="ANY_CLOSED" /> cerradas}}</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Sin agrupar</translation>
-<translation id="4590027107044272416">Ahora puedes abrir una nueva pestaña aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{¿Cerrar 1 pestaña inactiva?}other{¿Cerrar <ph name="TAB_COUNT_MANY" /> pestañas inactivas?}}</translation>
 <translation id="4686942373615810936">Creado ahora mismo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Cerrar después de 1 día}other{Cerrar después de <ph name="DAY_COUNT_MANY" /> días}}</translation>

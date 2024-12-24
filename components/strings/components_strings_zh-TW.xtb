@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">自動進入子母畫面</translation>
 <translation id="1100782917270858593">「繼續瀏覽歷程」按鈕；按下 Enter 鍵即可繼續瀏覽歷程，查看 Chrome 歷史記錄中的相關活動</translation>
 <translation id="1101672080107056897">錯誤動作</translation>
+<translation id="1101902632743388185">你的比較表</translation>
 <translation id="1104409666019087579">部分必填欄位沒有內容，請先填寫再儲存。</translation>
 <translation id="1104860668737945357">「管理密碼」按鈕，啟動後即可在 Chrome 設定中查看及管理密碼</translation>
 <translation id="1108464073729874771">A3 x 4</translation>
@@ -582,6 +583,7 @@
 <translation id="2025186561304664664">Proxy 已設為自動設定。</translation>
 <translation id="2025891858974379949">不安全的內容</translation>
 <translation id="2027465737841872819">塑膠</translation>
+<translation id="2027707238798802149">無法使用卡片</translation>
 <translation id="2029735183873159415">祖先與族譜</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy 和防火牆<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">搜尋捷徑不得與 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 定義的預設搜尋引擎關鍵字相同：<ph name="SHORTCUT_NAME" /></translation>
@@ -865,6 +867,7 @@
 <translation id="2514548229949738417">居家與園藝</translation>
 <translation id="2515629240566999685">檢查所在位置的網路訊號</translation>
 <translation id="2515761554693942801">你已選擇使用 Touch ID 在使用 <ph name="PROVIDER_ORIGIN" /> 的網站上進行驗證。這個供應商可能已儲存你的付款方式相關資訊，你可以 <ph name="LINK_TEXT" />。</translation>
+<translation id="2518584823165598232">無法使用這張卡片。請與卡片供應商聯絡。</translation>
 <translation id="2521385132275182522">釘裝 (右下方)</translation>
 <translation id="2521736961081452453">建立表單</translation>
 <translation id="2523886232349826891">僅儲存在這部裝置</translation>
@@ -2470,6 +2473,7 @@
 <translation id="5425082381151187189">居家布置與室內裝潢</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給你</translation>
 <translation id="5430298929874300616">移除書籤</translation>
+<translation id="5431318178759467895">彩色</translation>
 <translation id="5433756542371550806">指令列變化版本</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
@@ -3289,6 +3293,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
+<translation id="6933282894115597956">貴機構要求登入</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chrome 的各項功能<ph name="END_BOLD" />，例如透過網址列和運用網頁上的圖片進行搜尋。請注意，如果搜尋引擎不支援某項功能，你可能就無法使用該功能。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
 <translation id="6935082727755903526">會計和財務工作</translation>
@@ -3340,6 +3345,7 @@
 <translation id="7003322000677139268">汽車零件與配件</translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
+<translation id="7009364359744329733">目前無法使用這張卡片，請稍後再試。</translation>
 <translation id="7010658264061801199">餐飲</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
 <translation id="7013835112918108252">可要求鎖定及使用滑鼠</translation>
@@ -3782,7 +3788,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /><ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">自訂 Chrome 中的字型大小和字體</translation>
 <translation id="7752995774971033316">未管理</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - 與 <ph name="KEYWORD_SHORT_NAME" /> 聊天</translation>
 <translation id="7754587126786572336">更新開始後，Chrome 將關閉分頁和應用程式</translation>
 <translation id="7755287808199759310">你的家長可以為你解除封鎖這個網站</translation>
 <translation id="7755624218968747854">主卷</translation>
@@ -3922,6 +3927,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google 表單中快速建立新表單</translation>
 <translation id="8028892419725165118">休閒遊戲</translation>
 <translation id="8028960012888758725">完成工作後裁切</translation>
+<translation id="8028993641010258682">大小</translation>
 <translation id="8029829038322015001">紅色 1</translation>
 <translation id="8030729864112325446">技職與進修教育</translation>
 <translation id="8032546467100845887">透明</translation>
@@ -3977,7 +3983,6 @@
 <translation id="8116925261070264013">已設為靜音</translation>
 <translation id="8118489163946903409">付款方式</translation>
 <translation id="8118506371121007279">提供意見</translation>
-<translation id="8124085000247609808">與 <ph name="KEYWORD_SHORT_NAME" /> 對話</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」未正確安裝在電腦或網路上。請通知 IT 管理員解決這個問題。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8133495915926741232">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果停用廣泛類別，系統也會一併封鎖相關主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

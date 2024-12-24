@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Si cambias la extensión de archivo, es posible que el archivo se abra en una app diferente y dañe el dispositivo.</translation>
 <translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1082920045291562218">Se cerró la hoja de comentarios del resumen para compartir</translation>
+<translation id="1087176310396019910">Posible spam</translation>
 <translation id="1089606299949659462">¡Se completó la revisión!</translation>
 <translation id="1094555143448724771">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
@@ -508,6 +509,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestañas}}</translation>
 <translation id="3293181007446299124">Se mantendrá la privacidad del historial de navegación en tu dispositivo y los informes se enviarán con demora para proteger tu identidad.</translation>
+<translation id="3301936297336370235">Confirmación de la sugerencia de contraseña</translation>
 <translation id="3302615849591357577">Restablece el grupo de pestañas <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
@@ -972,6 +974,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5444999712122199445">Volver al sitio</translation>
 <translation id="544776284582297024">Para abrir pestañas y visitar diferentes páginas al mismo tiempo, presiona el botón de pestañas abiertas</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Cuando el dispositivo está plegado, puedes elegir una opción o mantener presionada la barra de direcciones para cambiar la posición.</translation>
 <translation id="5458366071038729214">Aquí encontrarás los sitios que sigues.</translation>
 <translation id="5468068603361015296">¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
 <translation id="548278423535722844">Abrir en una app de mapas</translation>
@@ -1135,6 +1138,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196315980958524839">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo</translation>
 <translation id="6202812185118613467">Vuelve a acceder para iniciar la sincronización</translation>
+<translation id="6204781143409202534">Chrome detectó posible spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidad en los anuncios</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Vista previa de esta página</translation>

@@ -981,7 +981,6 @@
 <translation id="1663698992894057019">如要收到最新的安全性和軟體更新，請改用新款 Chromebook</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 碼解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">表現主義</translation>
-<translation id="1666232093776384142">停用周邊裝置的資料存取權防護功能</translation>
 <translation id="1667842670298352129">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後顯目顯示所需文字。你也可以使用鍵盤快速鍵：醒目顯示文字，然後按下搜尋鍵 + S 鍵。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1668804837842452164">儲存至 <ph name="EMAIL" /> 的 <ph name="BRAND" /></translation>
@@ -2852,7 +2851,6 @@
 <translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="2975845084271617886">加入並開啟</translation>
 <translation id="2976547701881428815">工具與動作</translation>
-<translation id="2976557544729462544">有些裝置需要停用資料存取權防護功能才能正常運作或發揮最佳效能。</translation>
 <translation id="2976639738101799892">每次瀏覽都能盡情使用 Google 搜尋和 Google 智慧功能</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="2979493931538961252">Chromebook 離線而且有可用的無線基地台時</translation>
@@ -2978,7 +2976,6 @@
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
 <translation id="3054011216223858553">關閉 • 使用日常用語搜尋瀏覽記錄，找出造訪過的網站</translation>
-<translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
@@ -3724,7 +3721,6 @@
 <translation id="3619294456800709762">網站可以自動進入子母畫面</translation>
 <translation id="3620136223548713675">地理位置</translation>
 <translation id="3621202678540785336">輸入</translation>
-<translation id="3621807901162200696">協助改善 ChromeOS 的功能與效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="3622820753353315928">螢幕閃光燈顏色</translation>
 <translation id="362333465072914957">正在等待 CA 核發憑證</translation>
@@ -3804,7 +3800,6 @@
 <translation id="3675683621636519363">將當機報告和診斷與使用資料傳送到 ChromeOS Flex</translation>
 <translation id="367645871420407123">如果您要將 Root 密碼設為測試映像檔的預設值，請保留空白</translation>
 <translation id="3677911431265050325">切換為行動版網站</translation>
-<translation id="3677959414150797585">包括應用程式、網頁等。只有當你選擇提供使用資料時，系統才會傳送統計資料用來改善建議項目。</translation>
 <translation id="3678156199662914018">擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">你在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，而且在你登出後，電腦上也不會留下 Cookie 等其他追蹤記錄。此外，系統不會保留你下載的檔案和建立的書籤。</translation>
 <translation id="3679126865530709868">內建觸控板</translation>
@@ -4604,6 +4599,7 @@
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4222917615373664617">價格追蹤功能已啟用。目前的價格為 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="4223404254440398437">不允許使用麥克風</translation>
+<translation id="4224541845943007092">讀取並儲存網址列的鍵盤輸入內容</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4228071595943929139">使用貴機構的電子郵件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖部分擴充功能}}</translation>
@@ -6522,7 +6518,6 @@
 <translation id="5613074282491265467">登入 Chrome 後，密碼將儲存在 Google 帳戶 (<ph name="USER_EMAIL" />) 中。如要關閉這項功能，請前往設定。</translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
-<translation id="5614625640221885312">登入帳戶後，就能在所有裝置上存取你的書籤、密碼等資訊</translation>
 <translation id="5614947000616625327">iCloud 鑰匙圈</translation>
 <translation id="561552177910095306">這份近期造訪網站清單列出了可在你上網時向其他網站提供廣告建議的網站</translation>
 <translation id="5616571005307953937">最舊</translation>
@@ -6824,7 +6819,6 @@
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5842497610951477805">啟用藍牙</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
-<translation id="5844574845205796324">建議新的探索內容</translation>
 <translation id="5844685625984052392">提示</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">沒有陰影</translation>
@@ -8609,6 +8603,7 @@
 <translation id="7134951043985383439">下載的檔案有危險</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7136694880210472378">設為預設</translation>
+<translation id="7137277889990479760">以 <ph name="EMAIL" /> 的身分繼續</translation>
 <translation id="7137771508221868414">這會刪除網站儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585">「<ph name="APP_NAME" />」正在使用麥克風</translation>
@@ -9186,6 +9181,7 @@
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="7561759921596375678">開啟音量。</translation>
 <translation id="7561982940498449837">關閉選單</translation>
+<translation id="7563970324931922582">[預留位置文字]</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
 <translation id="756503097602602175">你可以透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。你授予網站和應用程式的權限可能適用於所有帳戶。如果不想讓網站和應用程式存取你的帳戶資訊，請以訪客身分登入 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
@@ -10110,7 +10106,6 @@
 <translation id="8203152941016626022">鄰近分享裝置名稱</translation>
 <translation id="8203732864715032075">傳送通知給你，並預設記住這部電腦，以便在收到簡訊時傳送通知。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">按右鍵</translation>
-<translation id="8205432712228803050">螢幕和周邊裝置可能會快速重設，請先拔除周邊裝置的插頭再重新插回，這項變更才會生效。</translation>
 <translation id="8205478243727418828">啟動鍵 + 向下鍵</translation>
 <translation id="820568752112382238">最常造訪的網站</translation>
 <translation id="8206267832882844324">編輯附註</translation>
@@ -10729,7 +10724,6 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">夜燈模式色溫</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> 要求<ph name="FIRST_PERMISSION" />以及<ph name="SECOND_PERMISSION" />等權限</translation>
-<translation id="864892689521194669">協助改善 ChromeOS Flex 的功能與效能</translation>
 <translation id="8649026945479135076">你造訪的網站通常都會記住你感興趣的項目，目的是打造個人化體驗。此外，網站也可以將你的興趣喜好相關資訊儲存在 Chrome 中。</translation>
 <translation id="8650543407998814195">雖然你無法再使用舊的設定檔，但仍可將其移除。</translation>
 <translation id="8651585100578802546">強制重新載入此網頁</translation>
@@ -10878,6 +10872,7 @@
 <translation id="8737966899544698733">定位精確度 (僅限 Android)</translation>
 <translation id="8738418093147087440">依國家/地區、語言或輸入名稱搜尋</translation>
 <translation id="8740086188450289493">使用 Google 帳戶密碼</translation>
+<translation id="874023689350909633">試試看</translation>
 <translation id="8740247629089392745">你可以將這部 Chromebook 交給「<ph name="SUPERVISED_USER_NAME" />」。設定即將完成，完成後即可開始探索。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">切換控制功能設定指南</translation>

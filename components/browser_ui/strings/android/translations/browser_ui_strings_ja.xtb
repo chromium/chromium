@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
 <translation id="1396327438254055134">V8 オプティマイザーの使用を許可するサイトを指定します。</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
+<translation id="1415855080660575082">Chrome で最近使ったタブをデバイスと共有して、デバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でオンまたはオフにできます。</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
 <translation id="1500473259453106018">タブカードで値下げ情報を非表示にする</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">このサイトにサードパーティ Cookie の使用を一時的に許可しました。ブラウジングの保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
+<translation id="2445311670906052406">Chrome で最近使ったタブがデバイスと共有され、デバイスのアプリリストと検索結果に表示されるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="2469312991797799607">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトのデータと Cookie がすべて削除されます</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
 <translation id="2787357173144933081">ジャンプスタート アドレスバー</translation>
 <translation id="2790501146643349491">オンにすると、最近閉じたサイトのデータの送受信を完了できます。オフにすると、最近閉じたサイトのデータの送受信を完了できません。</translation>
+<translation id="2814830417943086299">Chrome で最近使ったタブがデバイスのアプリリストと検索結果に表示されるようになりました。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
 <translation id="2850913818900871965">モバイルビューをリクエストする</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="9138217887606523162">現在のズームレベルは <ph name="ZOOM_LEVEL" />%% です</translation>
+<translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>

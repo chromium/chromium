@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">otomatik pencere içinde pencere</translation>
 <translation id="1100782917270858593">Arama yolculuğunuzu devam ettirin düğmesi, arama yolculuğunuzu devam ettirerek Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="1101672080107056897">Hata işlemi</translation>
+<translation id="1101902632743388185">Karşılaştırma tablolarınız</translation>
 <translation id="1104409666019087579">Bazı zorunlu alanlar boş. Kaydetmeden önce bu alanları doldurun.</translation>
 <translation id="1104860668737945357">Şifreleri yönet düğmesi, Chrome ayarlarında şifrelerinizi görüp yönetmek için etkinleştirin</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2025186561304664664">Proxy, otomatik yapılandırıldı değerine ayarlandı.</translation>
 <translation id="2025891858974379949">Güvenli olmayan içerik</translation>
 <translation id="2027465737841872819">Plastik</translation>
+<translation id="2027707238798802149">Kart kullanılamıyor</translation>
 <translation id="2029735183873159415">Soy ve Genealoji</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy'yi ve güvenlik duvarını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Kısayol, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tarafından tanımlanan varsayılan arama sağlayıcı anahtar kelimesiyle aynı olamaz: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2514548229949738417">Ev ve Bahçe</translation>
 <translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol etme</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> kullanan web sitelerinde Touch ID ile doğrulamayı seçtiniz. Bu sağlayıcı, ödeme yönteminizle ilgili bilgileri depolamış olabilir. Bu bilgilerin <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Bu kart kullanılamıyor. Lütfen kart sağlayıcınızla iletişime geçin.</translation>
 <translation id="2521385132275182522">Sağ altta tel zımba</translation>
 <translation id="2521736961081452453">Form oluştur</translation>
 <translation id="2523886232349826891">Yalnızca bu cihazda kaydedildi</translation>
@@ -2472,6 +2475,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5425082381151187189">Ev Dekorasyonu ve İç Dekorasyon</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> size bildirim göndermek istiyor</translation>
 <translation id="5430298929874300616">Yer işaretini kaldır</translation>
+<translation id="5431318178759467895">Renk</translation>
 <translation id="5433756542371550806">Komut satırı varyasyonları</translation>
 <translation id="5434798570900738152">Chromium aşağıdaki bilgileri <ph name="BEGIN_EMPHASIS" />kaydetmez<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3342,6 +3346,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7003322000677139268">Araç Parçaları ve Aksesuarları</translation>
 <translation id="7004499039102548441">Son Sekmeler</translation>
 <translation id="7006930604109697472">Yine de gönder</translation>
+<translation id="7009364359744329733">Bu kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="7010658264061801199">Yiyecek ve İçecek</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Farenizi kilitlemek ve kullanmak için izin isteyebilir</translation>
@@ -3784,7 +3789,6 @@ Ek ayrıntılar:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirin</translation>
 <translation id="7752995774971033316">Yönetimden kaldırıldı</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ile sohbet et</translation>
 <translation id="7754587126786572336">Güncelleme başladığında Chrome sekmeleriniz ve uygulamalarınız kapatılacaktır</translation>
 <translation id="7755287808199759310">Ebeveyniniz engellemeyi sizin için kaldırabilir</translation>
 <translation id="7755624218968747854">Birincil Rulo</translation>
@@ -3924,6 +3928,7 @@ Ek ayrıntılar:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formlar'da hızlıca yeni bir form oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="8028892419725165118">Basit Oyunlar</translation>
 <translation id="8028960012888758725">İşten sonra kırp</translation>
+<translation id="8028993641010258682">Boyut</translation>
 <translation id="8029829038322015001">Kırmızı 1</translation>
 <translation id="8030729864112325446">Mesleki ve Lise Sonrası Eğitim</translation>
 <translation id="8032546467100845887">Şeffaflık</translation>
@@ -3979,7 +3984,6 @@ Ek ayrıntılar:
 <translation id="8116925261070264013">Ses kapatıldı</translation>
 <translation id="8118489163946903409">Ödeme yöntemi</translation>
 <translation id="8118506371121007279">Geri bildirim gönder</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> ile sohbet edin</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" yazılımı bilgisayarınıza veya ağa düzgün şekilde yüklenmemiş. BT yöneticinizden sorunu çözmesini isteyin.</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8133495915926741232">Reklamların kişiselleştirilmesine yardımcı olmak için kullanılacak geniş kapsamlı konu kategorilerini seçin. Daha geniş kapsamlı bir kategori devre dışı bırakıldığında bu kategoriyle ilgili konular da engellenir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>

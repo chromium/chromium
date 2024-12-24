@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="4371591986692297148">無効</translation>
 <translation id="4460014764210899310">グループを解除</translation>
-<translation id="4590027107044272416">ここで新しいタブを開くことができます</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{アクティブでない 1 個のタブを閉じますか？}other{アクティブでない <ph name="TAB_COUNT_MANY" /> 個のタブを閉じますか？}}</translation>
 <translation id="4686942373615810936">作成: たった今</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 日後に閉じる}other{<ph name="DAY_COUNT_MANY" /> 日後に閉じる}}</translation>

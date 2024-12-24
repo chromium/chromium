@@ -2476,6 +2476,7 @@
 <translation id="5425082381151187189">အိမ်၊ အတွင်းပိုင်း အလှဆင်ခြင်း</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
 <translation id="5430298929874300616">စာညှပ် ဖယ်ရှားရန်</translation>
+<translation id="5431318178759467895">အရောင်</translation>
 <translation id="5433756542371550806">ကွန်မန်းလိုင်း မူကွဲများ</translation>
 <translation id="5434798570900738152">Chromium သည် အောက်ပါတို့ကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
           <ph name="BEGIN_LIST" />
@@ -3294,6 +3295,7 @@
 <translation id="6925267999184670015">မြောက်အမေရိကန် B+</translation>
 <translation id="6926216138694948720">ကိုယ်ပေါ်အလှဆင်ခြင်း အနုပညာ</translation>
 <translation id="692638818576287323">လုပ်ငန်းသုံးယာဉ်</translation>
+<translation id="6933282894115597956">သင့်အဖွဲ့အစည်းက လက်မှတ်ထိုးဝင်ရန် လိုအပ်သည်</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />သင့်မူရင်း ရှာဖွေရေးအင်ဂျင်သည် ဝဘ်တွင်ရှာဖွေခွင့်ပေးပြီး Chrome ဝန်ဆောင်မှုများကို ပံ့ပိုးသည်<ph name="END_BOLD" />။ လိပ်စာဘားနှင့် အင်တာနက်စာမျက်နှာများရှိ ပုံများမှ ရှာဖွေခြင်းကဲ့သို့ ဝန်ဆောင်မှုများဖြစ်သည်။ ဝန်ဆောင်မှုတစ်ခုကို သင့်ရှာဖွေရေး အင်ဂျင်က ပံ့ပိုးခြင်းမရှိပါက မရနိုင်ပါ။</translation>
 <translation id="6934672428414710184">ဤအမည်သည် သင်၏ Google အကောင့်မှဖြစ်သည်။</translation>
 <translation id="6935082727755903526">စာရင်းကိုင် (သို့) ငွေကြေးဆိုင်ရာ အလုပ်</translation>
@@ -3788,7 +3790,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome တွင် ဖောင့် အရွယ်အစားများနှင့် စာလုံးပုံစံများကို စိတ်ကြိုက်လုပ်ပါ</translation>
 <translation id="7752995774971033316">စီမံကွပ်ကဲမထား</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> နှင့်ချတ်လုပ်ရန်</translation>
 <translation id="7754587126786572336">အပ်ဒိတ်စတင်သောအခါ Chrome တဘ်နှင့် အက်ပ်များ ပိတ်မည်</translation>
 <translation id="7755287808199759310">သင့်မိဘသည် ၎င်းကို သင့်အတွက် ဖွင့်ပေးနိုင်ပါသည်</translation>
 <translation id="7755624218968747854">ပင်မအလိပ်</translation>
@@ -3929,6 +3930,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Forms တွင် ဖောင်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="8028892419725165118">ရိုးရိုး ဂိမ်း</translation>
 <translation id="8028960012888758725">အလုပ်ပြီးလျှင် ဖြတ်ထုတ်ရန်</translation>
+<translation id="8028993641010258682">ဆိုက်</translation>
 <translation id="8029829038322015001">အနီ ၁</translation>
 <translation id="8030729864112325446">အသက်မွေးမှု၊ စဉ်ဆက်မပြတ်ပညာရေး</translation>
 <translation id="8032546467100845887">အလင်းပေါက်</translation>
@@ -3984,7 +3986,6 @@
 <translation id="8116925261070264013">ဖျောက်ထားသည်</translation>
 <translation id="8118489163946903409">ငွေပေးချေမှုစနစ်</translation>
 <translation id="8118506371121007279">အကြံပြုရန်</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> နှင့် ချတ်လုပ်ရန်</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ကို သင်၏ ကွန်ပျူတာ သို့မဟုတ် ကွန်ရက်တွင် မှန်ကန်စွာ ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် သင်၏ IT စီမံခန့်ခွဲသူကို မေးမြန်းပါ။</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8133495915926741232">ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးနိုင်သည့် ကျယ်ပြန့်သော အကြောင်းအရာအမျိုးအစားများကို ရွေးပါ။ ပိုမိုကျယ်ပြန့်သော အမျိုးအစားကို ပိတ်ခြင်းဖြင့် ၎င်းနှင့်ဆက်စပ်သော အကြောင်းအရာများကိုလည်း ပိတ်လိုက်ပါမည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>

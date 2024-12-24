@@ -1397,6 +1397,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Qidiruv tarixi<ph name="END_LINK" /> va <ph name="BEGIN_LINK" />boshqa turdagi faoliyat<ph name="END_LINK" /> Google hisobida saqlanishi mumkin.</translation>
 <translation id="7253951228444156601">Parollar tekshirilmoqda…</translation>
 <translation id="7261217796641151584">Guruhni ulashish</translation>
+<translation id="7266578100016339897">Bu sizga tartibni saqlashda asqatadi. Buni istalgan payt sozlamalar orqali tahrirlash mumkin.</translation>
 <translation id="7271220006028561438">Kalitlarni avtomatik yangilashga ruxsat</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
 <translation id="7293429513719260019">Til tanlash</translation>
@@ -1591,6 +1592,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8080028325999236607">Barcha tablarni yopish</translation>
 <translation id="8084285576995584326">Google hisobingiz maʼlumotlarini boshqaring</translation>
 <translation id="809543534949702122">Qidiruv tarixi</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Siz ishlatmaydigan sahifalar {COUNT} kundan keyin bu yerga koʻchirildi}other{Siz ishlatmaydigan sahifalar {COUNT} kundan keyin bu yerga koʻchirildi}}</translation>
 <translation id="8101409298456377967">Sayt va ilovalarga osongina kirish uchun parollaringizni yarating, saqlang va boshqaring. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Y</translation>
 <translation id="8114753159095730575">Faylni yuklab olish mumkin. Qo‘shimcha amallar ekranning pastki qismida.</translation>

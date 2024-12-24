@@ -96,7 +96,6 @@
 <translation id="2137162749895930932">Орчуулах дэлгэцийг хаах</translation>
 <translation id="2139300032719313227">ChromeOS-г дахин эхлүүлнэ үү</translation>
 <translation id="2151406531797534936">Chrome-г одоо дахин эхлүүлнэ үү</translation>
-<translation id="2163089732491971196">Google Бүртгэлийнхээ Chrome-н өгөгдлийг ашиглах болон хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="2174917724755363426">Суулгаж дуусаагүй байна. Та цуцлахдаа итгэлтэй байна уу?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Шалгалтын алдааг шинэчлэх: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5941830788786076944">Google Chrome-ыг анхдагч веб хөтөчөө болгоно уу</translation>
 <translation id="5947104538377036631">Chrome-н товчлол</translation>
 <translation id="5953954252731207958">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION" />-г хассан</translation>
+<translation id="5980111191913430208">Тодорхойгүй эх сурвалжийн өргөтгөл, апп, загварууд таны төхөөрөмжийг гэмтээх боломжтой. Chrome тэдгээрийг зөвхөн <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-с суулгахыг зөвлөдөг</translation>
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-н хэрэгслийн<ph name="END_LINK" /> тусламжтайгаар та аюулгүй үзэх болон хяналтыг гартаа байлгах боломжтой</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
@@ -612,6 +612,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="842386925677997438">Chrome-н аюулгүй байдлын хэрэгсэл</translation>
 <translation id="8425765582779547329">Эцэг эхийнхээ сонголтуудаар онлайн орчинд илүү аюулгүй байхын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
+<translation id="8429214465555795676">Үргэлжлүүлэхийн тулд та <ph name="EMAIL" />-р Chrome-д нэвтрэх шаардлагатай болно. Энэ нь танай байгууллагын бодлогыг дагаж мөрдөж байгааг баталгаажуулна.</translation>
 <translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
 <translation id="1396327438254055134">Atļaujiet vietnei izmantot V8 optimizētāju.</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
+<translation id="1415855080660575082">Ļaujiet pārlūkam Chrome kopīgot jūsu nesen atvērtās cilnes ar ierīci, lai tās tiktu rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat ieslēgt vai izslēgt šo funkciju.</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
 <translation id="1500473259453106018">Paslēpt kartīti “Cenu kritums cilnēs”</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Jūs īslaicīgi atļāvāt šai vietnei izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Noteiktās vietnēs funkcijas var nedarboties, ja tiek izmantots inkognito režīms</translation>
 <translation id="2442870161001914531">Vienmēr pieprasīt datora vietni</translation>
+<translation id="2445311670906052406">Tagad Chrome kopīgo jūsu nesen atvērtās cilnes ar ierīci. Tās tiks rādītas ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="2469312991797799607">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko glabā <ph name="ORIGIN" /> un visas šīs grupas vietnes.</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi.</translation>
 <translation id="2787357173144933081">Ātrāk palaist universālo lodziņu</translation>
 <translation id="2790501146643349491">Kad šis slēdzis ir ieslēgts, nesen aizvērtās vietnes var pabeigt datu sūtīšanu un saņemšanu. Kad šis slēdzis ir izslēgts, nesen aizvērtās vietnes nevar pabeigt datu sūtīšanu vai saņemšanu.</translation>
+<translation id="2814830417943086299">Tagad Chrome rāda jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="2822354292072154809">Vai tiešām vēlaties atiestatīt visas vietņu atļaujas, kas piešķirtas šim objektam: <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Pieprasiet skatu mobilajā ierīcē</translation>
 <translation id="2870560284913253234">Vietne</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Pašreizējais tālummaiņas iestatījums: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Ļaujiet pārlūkam Chrome rādīt jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>

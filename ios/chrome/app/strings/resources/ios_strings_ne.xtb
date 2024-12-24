@@ -1203,6 +1203,7 @@
 <translation id="6418346271604475326">PDF तयार गर्दै</translation>
 <translation id="6429213933892582367">पासवर्डसम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
 <translation id="6434591244308415567">कुनै त्रुटि भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="6435307030888827407">साइन आउट अवस्थामा रहिरहनुहोस्</translation>
 <translation id="6436318499800111867">मसँग सेयर गरिएको <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">ट्याब अनपिन गर्नुहोस्</translation>
 <translation id="6443118737398455446">म्याद सकिने मिति अमान्य छ</translation>
@@ -1396,6 +1397,7 @@
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />सर्च हिस्ट्री<ph name="END_LINK" /> र <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> तपाईंको Google खातामा सेभ गरिन सक्छन्।</translation>
 <translation id="7253951228444156601">पासवर्डहरू जाँच गरिँदै…</translation>
 <translation id="7261217796641151584">समूह सेयर गर्नुहोस्</translation>
+<translation id="7266578100016339897">यसले तपाईंलाई व्यवस्थित रहन मद्दत गर्छ। तपाईं जुनसुकै बेला सेटिङमा गई यो कुरा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="7271220006028561438">पासकी स्वतः अपग्रेड गर्ने अनुमति दिनुहोस्</translation>
 <translation id="7272437679830969316">तपाईंको पहिचान पुष्टि गर्न सकिएन। पासवर्डको प्रतिलिपि गरिएको छैन।</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
@@ -1590,6 +1592,7 @@
 <translation id="8080028325999236607">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="8084285576995584326">आफ्ना Google खातामा रहेका डेटा नियन्त्रण गर्नुहोस्</translation>
 <translation id="809543534949702122">सर्च हिस्ट्री</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{तपाईंले प्रयोग नगर्ने ट्याबहरू {COUNT} दिनपछि सारेर यहाँ ल्याइने छन्}other{तपाईंले प्रयोग नगर्ने ट्याबहरू {COUNT} दिनपछि सारेर यहाँ ल्याइने छन्}}</translation>
 <translation id="8101409298456377967">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">डाउनलोड गर्न फाइल उपलब्ध छ। स्क्रिनको फेदनजिकै विकल्पहरू उपलब्ध छन्।</translation>

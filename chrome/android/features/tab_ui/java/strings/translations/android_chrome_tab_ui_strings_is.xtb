@@ -77,7 +77,6 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> flipa breytt, <ph name="ANY_CLOSED" /> lokað}one{<ph name="MANY_CHANGED" /> flipa breytt, <ph name="ANY_CLOSED" /> lokað}other{<ph name="MANY_CHANGED" /> flipum breytt, <ph name="ANY_CLOSED" /> lokað}}</translation>
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4460014764210899310">Sundra hópi</translation>
-<translation id="4590027107044272416">Nú geturðu opnað nýjan flipa hér</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Loka einum óvirkum flipa?}one{Loka <ph name="TAB_COUNT_MANY" /> óvirkum flipa?}other{Loka <ph name="TAB_COUNT_MANY" /> óvirkum flipum?}}</translation>
 <translation id="4686942373615810936">Búinn til rétt í þessu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Loka eftir 1 dag}one{Loka eftir <ph name="DAY_COUNT_MANY" /> dag}other{Loka eftir <ph name="DAY_COUNT_MANY" /> daga}}</translation>

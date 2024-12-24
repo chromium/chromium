@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ja mainīsiet faila paplašinājumu, fails var tikt atvērts citā lietojumprogrammā un potenciāli apdraudēt jūsu ierīci.</translation>
 <translation id="1080365971383768617">Paroles visās jūsu ierīcēs</translation>
 <translation id="1082920045291562218">Lapa atsauksmju kopīgošanai par kopsavilkumu ir aizvērta</translation>
+<translation id="1087176310396019910">Iespējami nevēlams saturs</translation>
 <translation id="1089606299949659462">Pārskatīšana ir pabeigta!</translation>
 <translation id="1094555143448724771">Lai skatītu cilnes no citām savām ierīcēm, sinhronizējiet cilnes un vēsturi.</translation>
 <translation id="1095761715416917775">Parūpējieties, lai vienmēr varētu piekļūt sinhronizētajiem datiem</translation>
@@ -508,6 +509,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="3293181007446299124">Pārlūkošanas vēsture tiek privāti glabāta jūsu ierīcē, un pārskati tiek nosūtīti ar kavēšanos, lai aizsargātu jūsu identitāti</translation>
+<translation id="3301936297336370235">Paroles ieteikuma apstiprinājums</translation>
 <translation id="3302615849591357577">Atjaunot ciļņu grupu <ph name="TITLE_OF_GROUP" /> (krāsa: <ph name="COLOR_NAME" />) kā jaunu fona ciļņu grupu.</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
@@ -1136,6 +1138,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6196315980958524839">Paroles tiek saglabātas Google paroļu pārvaldniekā šajā ierīcē</translation>
 <translation id="6202812185118613467">Lai sāktu sinhronizēšanu, pierakstieties vēlreiz.</translation>
+<translation id="6204781143409202534">Chrome noteica iespējami nevēlamu saturu no domēna <ph name="DOMAIN" /></translation>
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>

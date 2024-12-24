@@ -461,6 +461,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1777422078676229054">Fotopopierius (archyvinis)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Įdiegti žiniatinklio programas?</translation>
+<translation id="1791415068765905273">Rodyti visas palyginimo lenteles</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti savo informaciją, privatumo ir saugos nustatymus „Google“ paskyroje</translation>
 <translation id="1793631236004319016">Paskutinį kartą naudota prieš <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -961,6 +962,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2688969097326701645">Taip, tęsti</translation>
 <translation id="2690699652723742414">Pastarosios 30 dienų</translation>
 <translation id="2691924980723297736">Saugos įspėjimas</translation>
+<translation id="2697248912349197812">Paklauskite „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="2699273987028089219">Pasiekiamas submeniu: norėdami naršyti papildomas parinktis, naudokite <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Gerąja puse į apačią</translation>
 <translation id="2702592986366989640">Mažos kainos parinktis</translation>
@@ -2066,6 +2068,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="469028408546145398">Mygtukas „Uždaryti inkognito langus“; suaktyvinkite, jei norite uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="4691093235373904540">Stogų remontas ir priežiūra</translation>
 <translation id="4692623383562244444">Paieškos varikliai</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – paklauskite „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="4698692901173737941">Imtynių sportas</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Šonas</translation>
@@ -2198,6 +2201,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4918221908152712722">Įdiekite „<ph name="APP_NAME" />“ (nereikia atsisiųsti)</translation>
 <translation id="4920457992177678649">Nuomojamas būstas atostogoms ir trumpalaikei viešnagei</translation>
 <translation id="4920710383559189047">Įmautė</translation>
+<translation id="4920921410507315601">Palyginimo lentelės</translation>
 <translation id="4922104989726031751">Jei norite naudoti Slaptažodžių tvarkyklę savo operacinėje sistemoje, iš naujo paleiskite „Chromium“ ir leiskite pasiekti kompiuterio slaptažodžių tvarkyklę. Paleidus iš naujo skirtukai bus atidaryti iš naujo.</translation>
 <translation id="4923459931733593730">Mokėjimas</translation>
 <translation id="4926049483395192435">Turi būti nurodyta.</translation>
@@ -2391,6 +2395,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5278778426231952189">Įkelti dabar</translation>
 <translation id="5279286380302340275">Tvarkyti atsisiuntimus</translation>
 <translation id="5280963125494874678">žiniatinklio programos</translation>
+<translation id="5282008206326321696">{count,plural, =0{# žymių}=1{# žymė}one{# žymė}few{# žymės}many{# žymės}other{# žymių}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumento ypatybės</translation>
 <translation id="528468243742722775">Baigti</translation>
@@ -2476,6 +2481,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5425082381151187189">Namų ir interjero dekoravimas</translation>
 <translation id="5426179911063097041">Svetainė <ph name="SITE" /> nori siųsti jums pranešimus</translation>
 <translation id="5430298929874300616">Pašalinti žymę</translation>
+<translation id="5431318178759467895">Spalva</translation>
 <translation id="5433756542371550806">Komandos eilutės kintamieji</translation>
 <translation id="5434798570900738152">„Chromium“ <ph name="BEGIN_EMPHASIS" />nesaugos<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -2585,6 +2591,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="561165882404867731">Verskite šį puslapį naudodami „Google“ vertėją</translation>
 <translation id="5612720917913232150"><ph name="URL" /> nori naudoti kompiuterio vietovę</translation>
 <translation id="5614520971155863709">Kortų žaidimai</translation>
+<translation id="5617785978844309968">Rodyti visas palyginimo lenteles</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> buvote per daug kartų peradresuoti.</translation>
 <translation id="5619721953841297650">Iš anksto nustatyta</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
@@ -3295,6 +3302,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
+<translation id="6933282894115597956">Jūsų organizacija reikalauja prisijungti</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
 <translation id="6935082727755903526">Apskaitos ir finansiniai darbai</translation>
@@ -3789,7 +3797,6 @@ Papildoma išsami informacija:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Tinkinti šriftų dydį ir šriftų šeimas naršyklėje „Chrome“</translation>
 <translation id="7752995774971033316">Netvarkoma</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – pokalbis su „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="7754587126786572336">Pradėjus atnaujinimą, „Chrome“ skirtukai ir programos bus uždaryti</translation>
 <translation id="7755287808199759310">Jūsų tėtis ar mama gali ją atblokuoti už jus</translation>
 <translation id="7755624218968747854">Pagrindinis ritinėlis</translation>
@@ -3929,6 +3936,7 @@ Papildoma išsami informacija:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite greitai sukurti naują formą „Google“ formose</translation>
 <translation id="8028892419725165118">Paprasti žaidimai</translation>
 <translation id="8028960012888758725">Apkarpymas po užduoties</translation>
+<translation id="8028993641010258682">Dydis</translation>
 <translation id="8029829038322015001">1 raudona</translation>
 <translation id="8030729864112325446">Profesinis ir tęstinis mokymas</translation>
 <translation id="8032546467100845887">Skaidrumas</translation>
@@ -3984,7 +3992,6 @@ Papildoma išsami informacija:
 <translation id="8116925261070264013">Išjungta</translation>
 <translation id="8118489163946903409">Mokėjimo metodas</translation>
 <translation id="8118506371121007279">Pateikti atsiliepimą</translation>
-<translation id="8124085000247609808">Pokalbis su „<ph name="KEYWORD_SHORT_NAME" />“</translation>
 <translation id="8127301229239896662">„<ph name="SOFTWARE_NAME" />“ nebuvo tinkamai įdiegta kompiuteryje ar tinkle. Kreipkitės į IT administratorių, kad ši problema būtų išspręsta.</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8133495915926741232">Pasirinkite, kurias plačias temų kategorijas galima naudoti skelbimams suasmeninti. Išjungus platesnę kategoriją taip pat bus užblokuotos su ja susijusios temos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

@@ -96,7 +96,6 @@
 <translation id="2137162749895930932">Pechar a pantalla de tradución</translation>
 <translation id="2139300032719313227">Reiniciar Chrome OS</translation>
 <translation id="2151406531797534936">Reinicia Chrome agora</translation>
-<translation id="2163089732491971196">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso</translation>
 <translation id="2174917724755363426">A instalación non finalizou. Seguro que queres cancelala?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Produciuse un erro durante a comprobación de actualizacións: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -394,6 +393,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
 <translation id="5947104538377036631">Atallo de Chrome</translation>
 <translation id="5953954252731207958">Levas un tempo sen entrar. Chrome quitou o seguinte permiso: <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
 <translation id="6014316319780893079">Coas <ph name="BEGIN_LINK" />ferramentas de Chrome<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
@@ -612,6 +612,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="842386925677997438">Ferramentas de privacidade de Chrome</translation>
 <translation id="8425765582779547329">Para protexerte en liña coas eleccións dos teus pais, inicia sesión en Chrome</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8429214465555795676">Para continuar, terás que iniciar sesión en Chrome con <ph name="EMAIL" />. Esta opción garante o cumprimento das políticas da túa organización.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> xestiona a túa conta. O teu administrador pode consultar e editar este perfil do navegador Chrome e os seus datos (por exemplo, os marcadores, o historial ou os contrasinais).</translation>
 <translation id="8496177819998570653">Xestor de c&amp;ontrasinais de Google</translation>

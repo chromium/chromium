@@ -2476,6 +2476,7 @@
 <translation id="5425082381151187189">Гэр, интерьер чимэглэл</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> танд мэдэгдэл илгээх хүсэлтэй байна</translation>
 <translation id="5430298929874300616">Хавчуургыг устга</translation>
+<translation id="5431318178759467895">Өнгө</translation>
 <translation id="5433756542371550806">Тушаалын мөрийн хувилбар</translation>
 <translation id="5434798570900738152">Chromium дараахыг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3294,6 +3295,7 @@
 <translation id="6925267999184670015">Хойд Америкийн B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
 <translation id="692638818576287323">Худалдааны тээврийн хэрэгслүүд</translation>
+<translation id="6933282894115597956">Нэвтрэхийг танай байгууллагаас шаарддаг</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Таны өгөгдмөл хайлтын систем нь танд вебээс хайх боломжийг олгодог бөгөөд Chrome-н онцлогуудыг дэмждэг<ph name="END_BOLD" />. Үүнд хаяг оруулах хэсэг болон веб хуудаснуудын зургуудаас хайх зэрэг орно. Хэрэв таны хайлтын систем онцлогийг дэмждэггүй бол энэ нь боломжгүй байж магадгүй.</translation>
 <translation id="6934672428414710184">Энэ нэрийг таны Google Бүртгэлээс гаргасан байна</translation>
 <translation id="6935082727755903526">Нягтлан бодох бүртгэл болон санхүүгийн ажлын байрууд</translation>
@@ -3787,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome-д фонтын хэмжээ болон үсгийн хэлбэрийг өөрчилнө үү</translation>
 <translation id="7752995774971033316">Ажиллаж дуусаагүй</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-тай чатлах</translation>
 <translation id="7754587126786572336">Шинэчлэлт эхлэх үед таны Chrome табууд болон аппуудыг хаана</translation>
 <translation id="7755287808199759310">Таны эцэг эх үүнийг блокоос гаргах боломжтой</translation>
 <translation id="7755624218968747854">Үндсэн хуйлмал</translation>
@@ -3927,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Маягтад шинэ маягт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="8028892419725165118">Энгийн тоглоомууд</translation>
 <translation id="8028960012888758725">Ажил дууссаны дараа тайрах</translation>
+<translation id="8028993641010258682">Хэмжээ</translation>
 <translation id="8029829038322015001">Улаан 1</translation>
 <translation id="8030729864112325446">Мэргэжлийн, тасралтгүй боловсрол</translation>
 <translation id="8032546467100845887">Тунгалаг</translation>
@@ -3982,7 +3984,6 @@
 <translation id="8116925261070264013">Дууг хаасан</translation>
 <translation id="8118489163946903409">Төлбөрийн хэрэгсэл</translation>
 <translation id="8118506371121007279">Санал хүсэлт өгөх</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" />-тай чатлах</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />"-г таны компьютер эсвэл сүлжээнд зөв суулгаагүй байна. Энэ асуудлыг шийдвэрлэхийн тулд админтайгаа холбогдоно уу.</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8133495915926741232">Зарыг хувийн болгоход туслахын тулд ямар сэдвүүдийн өргөн хүрээтэй ангиллыг ашиглаж болохыг сонгоно уу. Өргөн хүрээтэй ангиллыг унтраах нь мөн түүний холбоотой сэдвүүдийг блоклоно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>

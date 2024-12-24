@@ -6328,7 +6328,6 @@ Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, dialog konfirmas
 
       Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk melarang hash yang tidak aman. Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" /> akan mengizinkan penggunaan hash yang tidak aman oleh server saat menegosiasikan TLS handshake. Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" /> akan melarang penggunaan hash yang tidak aman oleh server saat menegosiasikan TLS handshake.</translation>
 <translation id="5611869109049836323">Terapkan batasan di trust anchor yang ditambahkan secara lokal</translation>
-<translation id="5612770822986069057">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> di perangkatnya.</translation>
 <translation id="561480358503796257">URL ke gambar yang akan digunakan sebagai badge perusahaan untuk profil terkelola. URL harus mengarah ke gambar.
 
 Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna.
@@ -8620,17 +8619,6 @@ Jika kebijakan ini disetel ke nonaktif, sandi tidak akan diingat dan semua sandi
       Pengidentifikasi jenis sambungan yang dikenal adalah <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" />, dan <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Jangan wajibkan kecocokan antara pengguna lokal dan pemilik host akses jarak jauh</translation>
 <translation id="7151366515472588710">Klien seharusnya tidak menafsirkan data ini dan harus meneruskannya kata demi kata. DMServer menggunakan policy_version untuk memverifikasi bahwa tampilan kebijakan DMServer cocok dengan tampilan perangkat ChromeOS.</translation>
-<translation id="7152605873936173525">Mengontrol mode resolver DNS-over-HTTPS. Perlu diingat bahwa kebijakan ini hanya akan menetapkan mode default untuk setiap kueri. Mode tersebut mungkin digantikan untuk jenis kueri khusus seperti permintaan untuk memutuskan hostname server DNS-over-HTTPS.
-
-      Mode <ph name="SECURE_DNS_MODE_OFF" /> akan menonaktifkan DNS-over-HTTPS.
-
-      Mode <ph name="SECURE_DNS_MODE_AUTOMATIC" /> akan mengirim kueri DNS-over-HTTPS terlebih dahulu jika server DNS-over-HTTPS tersedia dan dapat berganti mengirim kueri yang tidak aman tentang error.
-
-      Mode <ph name="SECURE_DNS_MODE_SECURE" /> hanya akan mengirim kueri DNS-over-HTTPS dan akan gagal menyelesaikan error.
-
-      Di <ph name="ANDROID_VERSION" /> dan yang lebih tinggi, jika DNS-over-TLS aktif, <ph name="PRODUCT_NAME" /> tidak akan mengirim permintaan DNS yang tidak aman.
-
-      Jika kebijakan ini tidak ditetapkan, browser mungkin akan mengirim permintaan DNS-over-HTTPS kepada resolver yang terkait dengan resolver sistem terkonfigurasi milik pengguna.</translation>
 <translation id="7152640356717355643">Aktifkan pelaporan antarmuka jaringan perangkat</translation>
 <translation id="7153786895642570081">Kebijakan ini mengontrol pengaktifan fitur EphemeralNetworkPolicies.
 Jika kebijakan ini disetel ke benar (true), entri DeviceOpenNetworkConfiguration RecommendedValuesAreEphemeral dan UserCreatedNetworkConfigurationsAreEphemeral akan dipatuhi.
@@ -9375,13 +9363,6 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
 <translation id="7777535871204167559">Memperlakukan perangkat penyimpanan eksternal sebagai hanya baca</translation>
 <translation id="7781452670568828399">Ubah konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan.</translation>
 <translation id="7784062550705119230">Jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
-<translation id="7785199109546027763">Kebijakan untuk mengontrol apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.
-
-Jika kebijakan ini disetel ke Nonaktif, fitur Perlindungan IP akan dinonaktifkan dan pengguna tidak akan dapat mengaktifkan fitur tersebut melalui setelan UI.
-Jika kebijakan ini disetel ke Aktif, fitur Perlindungan IP akan diaktifkan dan pengguna tidak akan dapat menonaktifkan fitur tersebut melalui setelan UI.
-Jika kebijakan ini tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan fitur Perlindungan IP di perangkatnya melalui setelan UI.
-
-Catatan: Perilaku fitur Perlindungan IP untuk pengguna versi bisnis dapat berbeda-beda dari waktu ke waktu saat kebijakan ini disetel ke Aktif atau saat kebijakan ini tidak disetel dan fitur ini diaktifkan melalui setelan UI.</translation>
 <translation id="7788511847830146438">Per Profil</translation>
 <translation id="7790221177424764797">Kebijakan ini akan mengontrol apakah aturan dari kebijakan SiteList <ph name="IE_PRODUCT_NAME" /> dimuat atau tidak.
 
@@ -9708,11 +9689,6 @@ juga aman.</translation>
 <translation id="8030228699677851043">Membuat perilaku URL blob SharedWorker sesuai dengan spesifikasi</translation>
 <translation id="8031651557770840616">Tidak mengizinkan Wallpaper AI Generatif</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
-<translation id="8036284429246268475">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
-
-      Jika kebijakan disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pemeriksaan kebocoran kredensial akan diizinkan, tetapi pengguna dapat menonaktifkannya.
-
-      Perilaku ini tidak akan dipicu jika Safe Browsing dinonaktifkan (oleh kebijakan ataupun pengguna). Untuk mengaktifkan paksa Safe Browsing, gunakan kebijakan <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Nonaktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>

@@ -111,6 +111,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2483889755041906834">W Chromium</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
 <translation id="2513154137948333830">Wymagany restart: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Aby przejść dalej, musisz zalogować się w Chromium przy użyciu konta <ph name="EMAIL" />. Dzięki temu będziesz przestrzegać zasad organizacji.</translation>
 <translation id="2542968102051442371">Wybierz tekst za pomocą wyszukiwania obrazów</translation>
 <translation id="2554739539410784893">Chromium próbuje zastąpić obecne hasła. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="2560420686485554789">Chromium musi mieć dostęp do pamięci, by pobierać pliki</translation>
@@ -250,7 +251,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4438870983368648614">Przeglądarką Chromium zarządza <ph name="MANAGER" /></translation>
 <translation id="444069871276811466">Dodaj profil Chromium</translation>
 <translation id="4447409407328223819">Chrome for Testing – informacje</translation>
-<translation id="4470974262661801543">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chromium na koncie Google i ich używać</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
 <translation id="4510853178268397146">Dla tego rozszerzenia nie opublikowano procedur ochrony prywatności, na przykład informacji o tym, jak zbiera i wykorzystuje ono dane. Chromium zaleca jego usunięcie.</translation>

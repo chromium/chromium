@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">የራስ-ሰር ስዕል-ላይ-ስዕል</translation>
 <translation id="1100782917270858593">የጉዞን ከቆመበት ቀጥል አዝራር፣ ጉዞዎን ከቆመበት ለመቀጠል አስገባን ይጫኑ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="1101672080107056897">የስህተት እርምጃ</translation>
+<translation id="1101902632743388185">የእርስዎ ንጽጽር ሠንጠረዦች</translation>
 <translation id="1104409666019087579">አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።</translation>
 <translation id="1104860668737945357">የይለፍ ቃላት አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ የእርስዎን የይለፍ ቃላት ለማየት እና ለማስተዳደር ያግብሩ</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">ተኪ ወደ ራስ-ውቅር ተዋቅሯል።</translation>
 <translation id="2025891858974379949">ደህንነቱ ያልተጠበቀ ይዘት</translation>
 <translation id="2027465737841872819">ፕላስቲክ</translation>
+<translation id="2027707238798802149">ካርድ አይገኝም</translation>
 <translation id="2029735183873159415">የዘር ሐረግ እና የዘር ሐረግ ጥናት</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ወኪሉን እና ኬላውን መፈተሽ<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">አቋራጭ በ <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />፡- <ph name="SHORTCUT_NAME" /> ከተገለጸው ነባሪ የፍለጋ አቅራቢ ቁልፍ ቃል ጋር ተመሳሳይ ሊሆን አይችልም።</translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">ቤት እና የአትክልት ስፍራ</translation>
 <translation id="2515629240566999685">በእርስዎ አካባቢ ያለውን ሲግናል መፈተሽ</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" />ን በሚጠቀሙ ድር ጣቢያዎች ላይ በTouch ID ማረጋገጥን መርጠዋል። ይህ አቅራቢ ስለእርስዎ የመክፈያ ዘዴ መረጃ አከማችቶ ሊሆን ይችላል። እርስዎ ይህንን <ph name="LINK_TEXT" /> ይችላሉ።</translation>
+<translation id="2518584823165598232">ይህ ካርድ አይገኝም። እባክዎ የእርስዎን ካርድ አቅራቢ ያነጋግሩ።</translation>
 <translation id="2521385132275182522">ከግራጌ በቀኝ በኩል ስቴፕለር ምታ</translation>
 <translation id="2521736961081452453">ቅጽ ፍጠር</translation>
 <translation id="2523886232349826891">በዚህ መሣሪያ ላይ ብቻ ይቀመጣል</translation>
@@ -2471,6 +2474,7 @@
 <translation id="5425082381151187189">የቤት እና የቤት ውስጥ ማስጌጫ</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
 <translation id="5430298929874300616">ዕልባት አስወግድ</translation>
+<translation id="5431318178759467895">ቀለም</translation>
 <translation id="5433756542371550806">የትዕዛዝ መስመር አማራጭ ቅርጾች</translation>
 <translation id="5434798570900738152">Chromium የሚከተሉትን<ph name="BEGIN_EMPHASIS" />አያስቀምጥም<ph name="END_EMPHASIS" />፦
           <ph name="BEGIN_LIST" />
@@ -3290,6 +3294,7 @@
 <translation id="6925267999184670015">የሰሜን አሜሪካ B+</translation>
 <translation id="6926216138694948720">የሰውነት ሥነ ጥበብ</translation>
 <translation id="692638818576287323">የንግድ ተሽከርካሪዎች</translation>
+<translation id="6933282894115597956">ድርጅትዎ በመለያ እንዲገቡ ይፈልጋል።</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />የእርስዎ ነባሪ የፍለጋ ፕሮግራም ድርን እንዲፈልጉ ያስችልዎታል እና የChrome ባህሪያትን ያጎለብታል<ph name="END_BOLD" /> ለምሳሌ ከአድራሻ አሞሌ እና በድረ-ገጾች ላይ ከምስሎች መፈለግ። ባህሪ በእርስዎ የፍለጋ ፕሮግራም የሚደገፍ ካልሆነ ላይገኝ ይችላል።</translation>
 <translation id="6934672428414710184">ይህ ስም ከእርስዎ Google መለያ የተገኘ ነው</translation>
 <translation id="6935082727755903526">የሂሳብ አያያዝ እና የፋይናንስ ስራዎች</translation>
@@ -3341,6 +3346,7 @@
 <translation id="7003322000677139268">የተሽከርካሪ ክፍሎች እና መለዋወጫዎች</translation>
 <translation id="7004499039102548441">የቅርብ ጊዜ ትሮች</translation>
 <translation id="7006930604109697472">ለማንኛውም ላክ</translation>
+<translation id="7009364359744329733">ይህ ካርድ አሁን አይገኝም። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="7010658264061801199">ምግብ እና መጠጥ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">የእርስዎን መዳፊት ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
@@ -3783,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">በChrome ውስጥ የቅርጸ-ቁምፊ መጠኖችን እና መልከ ቁምፊዎችን ያብጁ</translation>
 <translation id="7752995774971033316">አይቀናበርም</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - ከ<ph name="KEYWORD_SHORT_NAME" /> ጋር ይወያዩ</translation>
 <translation id="7754587126786572336">የእርስዎ የChrome ትሮች እና መተግበሪያዎች ዝማኔው ሲጀምር ይዘጋሉ</translation>
 <translation id="7755287808199759310">የእርስዎ ወላጅ እገዳውን ሊያነሱልዎ ይችላሉ</translation>
 <translation id="7755624218968747854">ዋና ጥቅልል</translation>
@@ -3923,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle ቅጾች ውስጥ አዲስ ቅጽ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="8028892419725165118">የተለመዱ ጨዋታዎች</translation>
 <translation id="8028960012888758725">ከሥራው በኋላ ከርክም</translation>
+<translation id="8028993641010258682">መጠን</translation>
 <translation id="8029829038322015001">ቀይ 1</translation>
 <translation id="8030729864112325446">የሙያ እና ቀጣይነት ያለው ትምህርት</translation>
 <translation id="8032546467100845887">ግልጽነት</translation>
@@ -3978,7 +3984,6 @@
 <translation id="8116925261070264013">ድምፀ ከል ተደርጓል</translation>
 <translation id="8118489163946903409">የመክፈያ ዘዴ</translation>
 <translation id="8118506371121007279">ግብረመልስ ይስጡ</translation>
-<translation id="8124085000247609808">ከ<ph name="KEYWORD_SHORT_NAME" /> ጋር ይወያዩ</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» በእርስዎ ኮምፒውተር ወይም አውታረ መረብ ላይ በአግባቡ አልተጫነም። አስተዳዳሪዎ ይህን ችግር እንዲፈታ ይጠይቁ።</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8133495915926741232">የትኛዎቹን ሰፊ የርዕሰ ጉዳዮች ምድቦች ማስታወቂያዎችን ግላዊ ለማድረግ እንደሚረዱ መምረጥ ይችላሉ። ሰፊ ምድብን ማጥፋት እንዲሁም ተዛማጅ ርዕሶቹን ያግዳል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>

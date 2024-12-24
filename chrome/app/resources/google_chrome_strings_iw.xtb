@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
 <translation id="2139300032719313227">‏הפעלה מחדש של ChromeOS</translation>
 <translation id="2151406531797534936">‏יש להפעיל מחדש את Chrome עכשיו</translation>
-<translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
 <translation id="2174917724755363426">ההתקנה לא הושלמה. להמשיך בביטול?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">השגיאה בבדיקת העדכון: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -386,6 +385,7 @@
 <translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
 <translation id="5947104538377036631">‏קיצור דרך ב-Chrome</translation>
 <translation id="5953954252731207958">‏לא נכנסת לאתר הזה בזמן האחרון. ‫Chrome הסיר את ההרשאה <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">מתבצעת הורדה… יש עוד <ph name="HOURS" /> שע'</translation>
 <translation id="6014316319780893079">‏בעזרת <ph name="BEGIN_LINK" />הכלים של Chrome<ph name="END_LINK" /> אפשר לגלוש בבטחה ובשליטה</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
@@ -604,6 +604,7 @@
 <translation id="842386925677997438">‏הכלים לבטיחות של Chrome</translation>
 <translation id="8425765582779547329">‏ההורה שלך עושה הכול כדי לשמור על הבטיחות שלך באונליין. כדי שהביטחון שלך יישמר, עליך להיכנס ל-Chrome</translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8429214465555795676">‏כדי להמשיך, עליך להיכנס ל-Chrome באמצעות <ph name="EMAIL" />. כך אפשר להבטיח עמידה בסעיפי המדיניות של הארגון.</translation>
 <translation id="8433638294851456451">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chrome בשני המכשירים.</translation>
 <translation id="8451192282033883849">‏החשבון שלך מנוהל על ידי <ph name="MANAGER_NAME" />. האדמין שלך יכול לראות ולערוך את הפרופיל הזה של דפדפן Chrome ואת הנתונים שלו, כמו סימניות, היסטוריה וסיסמאות.</translation>
 <translation id="8496177819998570653">‏מנהל &amp;הסיסמאות של Google</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ha módosítja a fájl kiterjesztését, előfordulhat, hogy a fájlt másik alkalmazás nyitja meg, ami veszélyt jelenthet az eszközre.</translation>
 <translation id="1080365971383768617">Jelszavak az összes eszközén</translation>
 <translation id="1082920045291562218">„Megosztás összefoglalással” visszajelzési munkalap bezárva</translation>
+<translation id="1087176310396019910">Lehetséges spam</translation>
 <translation id="1089606299949659462">Az áttekintés befejeződött!</translation>
 <translation id="1094555143448724771">Ha látni szeretné a többi eszközén felkeresett lapokat, szinkronizálja lapjait és előzményeit</translation>
 <translation id="1095761715416917775">Gondoskodjon arról, hogy mindig hozzá tudjon férni a szinkronizált adataihoz</translation>
@@ -508,6 +509,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> lap}}</translation>
 <translation id="3293181007446299124">Böngészési előzményeit privát módon tárolja a rendszer az eszközén, és személyazonosságának védelme érdekében késleltetve küldi el a rendszer a jelentéseket.</translation>
+<translation id="3301936297336370235">Jelszójavaslat megerősítése</translation>
 <translation id="3302615849591357577">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
 <translation id="3303855915957856445">Nincs találat</translation>
@@ -972,6 +974,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5444999712122199445">Vissza a webhelyre</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> szolgáltatóval</translation>
+<translation id="5454215368971121976">Amikor az eszköz össze van hajtva, kiválaszthat egy lehetőséget, vagy nyomva tarthatja a címsávot a pozíció módosítása érdekében.</translation>
 <translation id="5458366071038729214">A követett webhelyeket itt láthatja majd</translation>
 <translation id="5468068603361015296">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Megnyitás térképalkalmazásban</translation>
@@ -1135,6 +1138,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
 <translation id="6196315980958524839">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="6202812185118613467">A szinkronizálás megkezdéséhez jelentkezzen be újra.</translation>
+<translation id="6204781143409202534">A Chrome lehetséges spamet észlelt innen: <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
 <translation id="6210748933810148297">Nem <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Az oldal előnézete</translation>

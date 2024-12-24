@@ -2475,6 +2475,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5425082381151187189">Trang trí nhà và nội thất</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> muốn gửi thông báo cho bạn</translation>
 <translation id="5430298929874300616">Xóa dấu trang</translation>
+<translation id="5431318178759467895">Màu</translation>
 <translation id="5433756542371550806">Các biến thể của dòng lệnh</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -3789,7 +3790,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Tùy chỉnh cỡ chữ và kiểu chữ trong Chrome</translation>
 <translation id="7752995774971033316">Không được quản lý</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Trò chuyện với <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Các thẻ và ứng dụng trên Chrome sẽ đóng khi quá trình cập nhật bắt đầu</translation>
 <translation id="7755287808199759310">Cha mẹ của bạn có thể bỏ chặn trang web cho bạn</translation>
 <translation id="7755624218968747854">Cuộn chính</translation>
@@ -3929,6 +3929,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một biểu mẫu mới trong Google Biểu mẫu</translation>
 <translation id="8028892419725165118">Trò chơi phổ thông</translation>
 <translation id="8028960012888758725">Cắt bỏ sau lệnh in</translation>
+<translation id="8028993641010258682">Kích thước</translation>
 <translation id="8029829038322015001">Đỏ 1</translation>
 <translation id="8030729864112325446">Dạy nghề và giáo dục thường xuyên</translation>
 <translation id="8032546467100845887">Trong suốt</translation>
@@ -3984,7 +3985,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="8118489163946903409">Phương thức thanh toán</translation>
 <translation id="8118506371121007279">Gửi phản hồi</translation>
-<translation id="8124085000247609808">Trò chuyện với <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" đã được cài đặt không đúng trên máy tính hoặc mạng của bạn. Hãy yêu cầu quản trị viên CNTT của bạn giải quyết vấn đề này.</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8133495915926741232">Chọn những loại chủ đề chính mà các trang web có thể dùng để cá nhân hoá quảng cáo. Nếu bạn tắt một chủ đề chính thì các chủ đề có liên quan cũng sẽ bị chặn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

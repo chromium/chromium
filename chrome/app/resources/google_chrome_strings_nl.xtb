@@ -96,7 +96,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2137162749895930932">Scherm voor vertalen sluiten</translation>
 <translation id="2139300032719313227">Chrome OS opnieuw opstarten</translation>
 <translation id="2151406531797534936">Chrome nu opnieuw opstarten</translation>
-<translation id="2163089732491971196">Voer je wachtwoordzin in als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account</translation>
 <translation id="2174917724755363426">Installatie niet afgerond. Weet je zeker dat je wilt annuleren?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Fout bij updaten: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -245,6 +244,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3889417619312448367">Google Chrome verwijderen</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
+<translation id="3968962723676998462">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="3973161977468201858">Google Chrome wil je Google Wachtwoordmanager-gegevens verwijderen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="398236277091248993">Chrome blijft snel met functies om de prestaties te verbeteren</translation>
 <translation id="3999683152997576765">Je kunt interessante onderwerpen bekijken en verwijderen die sites hebben gebruikt om advertenties te tonen. Chrome schat je interesses op basis van je recente browsegeschiedenis.</translation>
@@ -309,6 +309,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4728575227883772061">De installatie is mislukt wegens een onbekende fout. Als Google Chrome momenteel actief is, sluit je het programma af en probeer je het opnieuw.</translation>
 <translation id="4741235124132242877">Vastgezet. Gebruik Google Lens opnieuw via de werkbalk</translation>
 <translation id="4747730611090640388">Chrome kan een schatting van je interesses maken.  Later kan een site die je bezoekt Chrome vragen om je interesses te bekijken zodat de advertenties die je ziet kunnen worden gepersonaliseerd.</translation>
+<translation id="475321580758063259">Update Chrome om de Chrome-gegevens in je Google-account <ph name="ACCOUNT_EMAIL" /> te blijven gebruiken</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Hiervoor wordt dezelfde spellingcontrole gebruikt als voor Google Zoeken. Tekst die je in de browser typt, wordt naar Google gestuurd. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="4793679854893018356">Meer informatie over hoe Chrome je beschermt</translation>
@@ -391,6 +392,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5941830788786076944">Google Chrome instellen als mijn standaardbrowser</translation>
 <translation id="5947104538377036631">Chrome-snelkoppeling</translation>
 <translation id="5953954252731207958">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION" /> verwijderd.</translation>
+<translation id="5980111191913430208">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chrome raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
 <translation id="6014316319780893079">Met <ph name="BEGIN_LINK" />tools van Chrome<ph name="END_LINK" /> kun je beveiligd browsen en de controle behouden</translation>
 <translation id="6022659036123304283">Personaliseer Chrome voor jou</translation>
@@ -582,6 +584,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8077579734294125741">Andere Chrome-profielen</translation>
 <translation id="8086881907087796310">De installatie is mislukt omdat je computer niet voldoet aan de minimale hardwarevereisten.</translation>
 <translation id="8111297389482307122">Chrome moet verifiëren dat jij het bent voordat bepaalde gegevens kunnen worden opgeslagen in je Google-account en op al je apparaten kunnen worden gebruikt. Als je uitlogt, blijven deze gegevens op dit apparaat staan.</translation>
+<translation id="8113883687556086139">Laat verifiëren dat jij het bent om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="8118331347066725040">Stuur feedback voor zoeken met Lens</translation>
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="813913629614996137">Starten...</translation>
@@ -609,6 +612,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="842386925677997438">Veiligheidstools van Chrome</translation>
 <translation id="8425765582779547329">Log in bij Chrome om online veiliger te blijven met de keuzes van je ouder</translation>
 <translation id="8428213095426709021">Instellingen</translation>
+<translation id="8429214465555795676">Als je wilt doorgaan, moet je inloggen bij Chrome met <ph name="EMAIL" />. Zo voldoe je aan het beleid van je organisatie.</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
 <translation id="8451192282033883849">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens (zoals bookmarks, geschiedenis en wachtwoorden) bekijken en bewerken.</translation>
 <translation id="8496177819998570653">Google W&amp;achtwoordmanager</translation>

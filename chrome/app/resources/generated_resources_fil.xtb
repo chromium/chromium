@@ -983,7 +983,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1663698992894057019">Mag-upgrade sa bagong Chromebook para sa pinakabagong seguridad at software</translation>
 <translation id="1665328953287874063">Gumamit ng password o PIN para i-unlock ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionism</translation>
-<translation id="1666232093776384142">I-disable ang proteksyon sa pag-access ng data para sa mga peripheral</translation>
 <translation id="1667842670298352129">Marinig na binabasa nang malakas ang partikular na text. Una, piliin ang icon na Select-to-speak sa ibaba ng iyong screen, pagkatapos ay i-highlight ang text. Puwede ka ring gumamit ng keyboard shortcut: Mag-highlight ng text, pagkatapos ay pindutin ang Search + S.</translation>
 <translation id="1668435968811469751">Magpa-enroll nang manual</translation>
 <translation id="1668804837842452164">I-save sa <ph name="BRAND" /> para sa <ph name="EMAIL" /></translation>
@@ -2866,7 +2865,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2975761176769946178">Kinakailangan ng URL</translation>
 <translation id="2975845084271617886">Sumali at Buksan</translation>
 <translation id="2976547701881428815">Mga tool at pagkilos</translation>
-<translation id="2976557544729462544">Kinakailangan sa ilang device na i-disable mo ang proteksyon sa pag-access ng data para gumana ang mga ito nang maayos o para sa ganap na performance ng mga ito.</translation>
 <translation id="2976639738101799892">Makakuha ng Google Search at mahuhusay na tool ng Google sa tuwing magba-browse ka</translation>
 <translation id="2977480621796371840">Alisin sa grupo</translation>
 <translation id="2979493931538961252">Kapag naka-offline ang Chromebook at available ang mga hotspot</translation>
@@ -2992,7 +2990,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3053273573829329829">I-enable ang pin ng user</translation>
 <translation id="3053274730492362225">Huwag kukurap</translation>
 <translation id="3054011216223858553">Naka-off • Gumamit ng pang-araw-araw na wika para maghanap sa iyong history ng pag-browse at makita ang mga site na binisita mo</translation>
-<translation id="3054766768827382232">Kapag na-disable ito, magiging mas mahusay ang performance ng iyong mga peripheral, pero posibleng malantad ang personal na data mo sa pamamagitan ng hindi awtorisadong paggamit.</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
 <translation id="3058517085907878899">Pangalan ng device</translation>
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
@@ -3741,7 +3738,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3619294456800709762">Awtomatikong makakapasok sa picture-in-picture ang mga site</translation>
 <translation id="3620136223548713675">Geolocation</translation>
 <translation id="3621202678540785336">Input</translation>
-<translation id="3621807901162200696">Tumulong na pahusayin ang mga feature at performance ng ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{isang app}one{# app}other{# na app}}</translation>
 <translation id="3622820753353315928">Kulay ng pag-flash ng screen</translation>
 <translation id="362333465072914957">Hinihintay ang CA na magbigay ng certificate</translation>
@@ -3821,7 +3817,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3675683621636519363">Magpadala ng mga ulat ng pag-crash at data ng diagnostic at paggamit sa ChromeOS Flex</translation>
 <translation id="367645871420407123">iwanang blangko kung gusto mong itakda ang root password sa default na value ng pansubok na larawan</translation>
 <translation id="3677911431265050325">Hilingin ang pang-mobile na site</translation>
-<translation id="3677959414150797585">Kabilang ang mga app, webpage, at higit pa. Magpapadala lang ng mga istatistika para mapahusay ang mga suhestyon kung pinili mong ibahagi ang data ng paggamit.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Hindi lalabas sa history ng browser ang mga page na tiningnan mo sa window na ito at hindi mag-iiwan ang mga ito ng iba pang trace, tulad ng cookies, sa computer pagkatapos mong mag-sign out. Hindi papanatilihin ang mga dina-download mong file at ginagawa mong bookmark.</translation>
 <translation id="3679126865530709868">Built-in na Touchpad</translation>
@@ -4622,6 +4617,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4220648711404560261">Nagkaroon ng error habang ina-activate.</translation>
 <translation id="4222917615373664617">Naka-enable ang pagsubaybay sa presyo. <ph name="CURRENT_PRICE" /> ang presyo.</translation>
 <translation id="4223404254440398437">Hindi pinapayagan ang mikropono</translation>
+<translation id="4224541845943007092">Magbasa at mag-save ng input ng keyboard mula sa address bar</translation>
 <translation id="4225397296022057997">Sa lahat ng site</translation>
 <translation id="4228071595943929139">Gamitin ang email address ng iyong organisasyon</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hindi pinapayagan ang extension na ito}one{Hindi pinapayagan ang ilang extension}other{Hindi pinapayagan ang ilang extension}}</translation>
@@ -6542,7 +6538,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5613074282491265467">Kapag naka-sign in ka sa Chrome, mapupunta ang mga password na sine-save mo sa iyong Google Account na <ph name="USER_EMAIL" />. Para ma-off ito, pumunta sa mga setting.</translation>
 <translation id="5614190747811328134">Notice sa User</translation>
 <translation id="5614553682702429503">I-save ang password?</translation>
-<translation id="5614625640221885312">Mag-sign in para makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Listahan ng mga kamakailang site na binisita mo na puwedeng magmungkahi ng mga ad sa iba pang site habang patuloy kang nagba-browse</translation>
 <translation id="5616571005307953937">Pinakaluma</translation>
@@ -6846,7 +6841,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5841270259333717135">I-configure ang Ethernet</translation>
 <translation id="5842497610951477805">I-enable ang Bluetooth</translation>
 <translation id="5844284118433003733">Kapag naka-sign in ka, naka-link ang data na ito sa iyong Google Account para protektahan ka sa lahat ng serbisyo ng Google, halimbawa, pagpapaigting ng proteksyon sa Gmail pagkatapos ng isang insidente sa seguridad.</translation>
-<translation id="5844574845205796324">Magmungkahi ng bagong content na ie-explore</translation>
 <translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Error sa syntax sa kaugnayan: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Walang shadow</translation>
@@ -10139,7 +10133,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8203152941016626022">Pangalan ng device sa Nearby Share</translation>
 <translation id="8203732864715032075">Papadalhan ka ng mga notification at aalalahanin ang computer na ito para sa Messages bilang default. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Mag-right click</translation>
-<translation id="8205432712228803050">Posibleng panandaliang mag-reset ang iyong mga display at peripheral. Para magkabisa ang pagbabagong ito, i-unplug at i-plug ulit ang iyong mga peripheral.</translation>
 <translation id="8205478243727418828">launcher + pababang arrow</translation>
 <translation id="820568752112382238">Mga pinakamadalas bisitahing site</translation>
 <translation id="8206267832882844324">I-edit ang tala</translation>
@@ -10759,7 +10752,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> o <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura ng kulay para sa Night Light</translation>
 <translation id="8648544143274677280">Gusto ng <ph name="SITE_NAME" /> na: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" />, at higit pa</translation>
-<translation id="864892689521194669">Tumulong na pahusayin ang mga feature at performance ng ChromeOS Flex</translation>
 <translation id="8649026945479135076">Karaniwan para sa mga binibisita mong site na tandaan ang mga bagay na interesado ka, para ma-personalize ang iyong karanasan. Puwede ring mag-store ang mga site sa Chrome tungkol sa iyong mga interes.</translation>
 <translation id="8650543407998814195">Bagama't hindi mo na maa-access ang iyong lumang profile, maaari mo pa rin itong alisin.</translation>
 <translation id="8651585100578802546">Sapilitang I-reload ang Pahinang Ito</translation>

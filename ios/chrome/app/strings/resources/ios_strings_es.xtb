@@ -1397,6 +1397,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7248046129087111453">Puede que el <ph name="BEGIN_LINK" />historial de búsqueda<ph name="END_LINK" /> y <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google.</translation>
 <translation id="7253951228444156601">Comprobando contraseñas…</translation>
 <translation id="7261217796641151584">Compartir grupo</translation>
+<translation id="7266578100016339897">Esto te ayuda a mantener el orden. Puedes cambiarlo en los ajustes en cualquier momento.</translation>
 <translation id="7271220006028561438">Permitir actualizaciones automáticas de llaves de acceso</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. No se ha copiado la contraseña.</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
@@ -1591,6 +1592,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="8084285576995584326">Controla los datos de tu cuenta de Google</translation>
 <translation id="809543534949702122">Historial de búsqueda</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Las pestañas que no uses se moverán aquí después de {COUNT} día}other{Las pestañas que no uses se moverán aquí después de {COUNT} días}}</translation>
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">La descarga de archivos está disponible. Hay opciones disponibles en la parte inferior de la pantalla.</translation>

@@ -77,7 +77,6 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE_
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Promijenjena je <ph name="ONE_CHANGED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}one{Promijenjena je <ph name="MANY_CHANGED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}few{Promijenjene su <ph name="MANY_CHANGED" /> kartice, zatvoreno: <ph name="ANY_CLOSED" />}other{Promijenjeno je <ph name="MANY_CHANGED" /> kartica, zatvoreno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">neaktivan</translation>
 <translation id="4460014764210899310">Razgrupiraj</translation>
-<translation id="4590027107044272416">Ovdje sada možete otvoriti novu karticu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Želite li zatvoriti jednu neaktivnu karticu?}one{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnu karticu?}few{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivne kartice?}other{Želite li zatvoriti <ph name="TAB_COUNT_MANY" /> neaktivnih kartica?}}</translation>
 <translation id="4686942373615810936">Upravo izrađeno</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zatvori nakon jednog dana}one{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}few{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}other{Zatvori nakon <ph name="DAY_COUNT_MANY" /> dana}}</translation>

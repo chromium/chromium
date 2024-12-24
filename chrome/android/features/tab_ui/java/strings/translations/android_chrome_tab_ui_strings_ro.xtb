@@ -77,7 +77,6 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> filă modificată, <ph name="ANY_CLOSED" /> închisă}few{<ph name="MANY_CHANGED" /> file modificate, <ph name="ANY_CLOSED" /> închise}other{<ph name="MANY_CHANGED" /> de file modificate, <ph name="ANY_CLOSED" /> închise}}</translation>
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
-<translation id="4590027107044272416">Poți deschide o filă nouă aici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Închizi o filă inactivă?}few{Închizi <ph name="TAB_COUNT_MANY" /> file inactive?}other{Închizi <ph name="TAB_COUNT_MANY" /> de file inactive?}}</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Închide după 1 zi}few{Închide după <ph name="DAY_COUNT_MANY" /> zile}other{Închide după <ph name="DAY_COUNT_MANY" /> de zile}}</translation>

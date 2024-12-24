@@ -2479,6 +2479,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5425082381151187189">Kediaman &amp; Hiasan Dalaman</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
 <translation id="5430298929874300616">Alih keluar penanda halaman</translation>
+<translation id="5431318178759467895">Warna</translation>
 <translation id="5433756542371550806">Variasi Baris perintah</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3794,7 +3795,6 @@ Butiran tambahan:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Sesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
 <translation id="7752995774971033316">Tidak Diurus</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Sembang dengan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Tab dan apl Chrome anda akan ditutup apabila pengemaskinian bermula</translation>
 <translation id="7755287808199759310">Ibu bapa anda boleh menyahsekatnya untuk anda</translation>
 <translation id="7755624218968747854">Gulungan Utama</translation>
@@ -3934,6 +3934,7 @@ Butiran tambahan:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat borang baharu dalam Google Forms dengan pantas</translation>
 <translation id="8028892419725165118">Permainan Kasual</translation>
 <translation id="8028960012888758725">Pangkas selepas tugasan</translation>
+<translation id="8028993641010258682">Saiz</translation>
 <translation id="8029829038322015001">Merah 1</translation>
 <translation id="8030729864112325446">Pendidikan Vokasional &amp; Berterusan</translation>
 <translation id="8032546467100845887">Kelutsinaran</translation>
@@ -3989,7 +3990,6 @@ Butiran tambahan:
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8118489163946903409">Kaedah pembayaran</translation>
 <translation id="8118506371121007279">Beri maklum balas</translation>
-<translation id="8124085000247609808">Sembang dengan <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8133495915926741232">Pilih kategori topik yang luas yang boleh digunakan untuk memeribadikan iklan. Tindakan mematikan kategori yang lebih luas akan turut menyekat topik yang berkaitan dengan kategori tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>

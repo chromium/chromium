@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">தானியங்குப் பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="1100782917270858593">உலாவலைத் தொடர்வதற்கான பட்டன். Chrome செயல்பாடுகளில் இருக்கும் தொடர்புடைய செயல்பாடுகளைப் பார்த்து உலாவலைத் தொடர, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="1101672080107056897">பிழையின்போது செய்ய வேண்டியது</translation>
+<translation id="1101902632743388185">உங்களின் ஒப்பீட்டு அட்டவணைகள்</translation>
 <translation id="1104409666019087579">சில அவசியமான புலங்கள் காலியாக உள்ளன. சேமிப்பதற்கு முன் அவற்றை நிரப்பவும்.</translation>
 <translation id="1104860668737945357">கடவுச்சொற்களை நிர்வகிப்பதற்கான பட்டன். Chrome அமைப்புகளில் உங்கள் கடவுச்சொற்களைப் பார்க்கவும் நிர்வகிக்கவும் இதை இயக்குங்கள்</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">ப்ராக்ஸி, தானியங்கி உள்ளமைவுக்கு அமைக்கப்பட்டுள்ளது</translation>
 <translation id="2025891858974379949">பாதுகாப்பற்ற உள்ளடக்கம்</translation>
 <translation id="2027465737841872819">பிளாஸ்டிக்</translation>
+<translation id="2027707238798802149">கார்டு கிடைக்கவில்லை</translation>
 <translation id="2029735183873159415">வம்சாவளி மற்றும் மரபாய்வு</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ப்ராக்ஸி மற்றும் ஃபயர்வாலைச் சரிபார்த்தல்<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> வரையறுத்த இயல்புத் தேடல் வழங்கும் நிறுவனம் தேடல் குறிப்பும் ஷார்ட்கட்டும் ஒன்றாக இருக்கக்கூடாது: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">வீடும் தோட்டமும்</translation>
 <translation id="2515629240566999685">உங்கள் பகுதியில் உள்ள சிக்னலைச் சரிபார்த்தல்</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> ஐப் பயன்படுத்தும் தளங்களில் Touch ID மூலம் சரிபார்க்கத் தேர்வுசெய்துள்ளீர்கள். உங்கள் பேமெண்ட் முறை குறித்த தகவல்களை இந்த வழங்குநர் சேமித்திருக்கக்கூடும். அவற்றை நீங்கள் <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">இந்தக் கார்டு கிடைக்கவில்லை. உங்கள் கார்டு வழங்குநரைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="2521385132275182522">ஸ்டேப்பில் பாட்டம் ரைட்</translation>
 <translation id="2521736961081452453">படிவத்தை உருவாக்கு</translation>
 <translation id="2523886232349826891">இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
@@ -2468,6 +2471,7 @@
 <translation id="5425082381151187189">வீடு மற்றும் உட்புற அலங்காரம்</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> உங்களுக்கு அறிவிப்புகளை அனுப்ப விரும்புகிறது</translation>
 <translation id="5430298929874300616">புத்தகக்குறியை அகற்று</translation>
+<translation id="5431318178759467895">வண்ணம்</translation>
 <translation id="5433756542371550806">கட்டளை வரிக்கான மாற்று வடிவங்கள்</translation>
 <translation id="5434798570900738152">பின்வரும் தகவல்களை Chromium <ph name="BEGIN_EMPHASIS" />சேமிக்காது<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3337,6 +3341,7 @@
 <translation id="7003322000677139268">வாகன உதிரிபாகங்கள் மற்றும் துணைக்கருவிகள்</translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7006930604109697472">பரவாயில்லை அனுப்பு</translation>
+<translation id="7009364359744329733">இந்தக் கார்டைத் தற்போது பயன்படுத்த முடியாது. பிறகு முயலவும்.</translation>
 <translation id="7010658264061801199">உணவு மற்றும் பானம்</translation>
 <translation id="7012363358306927923">சீனா UnionPay</translation>
 <translation id="7013835112918108252">பூட்டும்படி கேட்டுவிட்டு உங்கள் மவுஸைப் பயன்படுத்தலாம்</translation>
@@ -3779,7 +3784,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeமில் எழுத்து வடிவ அளவுகளையும் வகைகளையும் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="7752995774971033316">நிர்வகிக்கப்படாதது</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> உடன் உரையாடுங்கள்</translation>
 <translation id="7754587126786572336">புதுப்பிப்புத் தொடங்கும்போது உங்கள் Chrome உலாவிப் பக்கங்களும் ஆப்ஸும் மூடப்படும்</translation>
 <translation id="7755287808199759310">உங்களுக்காக, தளத்தின் தடுப்பை உங்கள் பெற்றோர் நீக்க முடியும்</translation>
 <translation id="7755624218968747854">முதன்மை ரோல்</translation>
@@ -3919,6 +3923,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsஸில் புதிய படிவத்தை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8028892419725165118">சிம்பிள் கேம்கள்</translation>
 <translation id="8028960012888758725">டிரிம் ஆஃப்டர் ஜாப்</translation>
+<translation id="8028993641010258682">அளவு</translation>
 <translation id="8029829038322015001">சிவப்பு 1</translation>
 <translation id="8030729864112325446">தொழில்முறை மற்றும் தொடர் கல்வி</translation>
 <translation id="8032546467100845887">டிரான்ஸ்பரன்ஸி</translation>
@@ -3974,7 +3979,6 @@
 <translation id="8116925261070264013">ஒலியடக்கியவை</translation>
 <translation id="8118489163946903409">கட்டண முறை</translation>
 <translation id="8118506371121007279">கருத்து வழங்குங்கள்</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> உடன் அரட்டையடி</translation>
 <translation id="8127301229239896662">உங்கள் கம்ப்யூட்டர் அல்லது நெட்வொர்க்கில் "<ph name="SOFTWARE_NAME" />" மென்பொருள் சரியாக நிறுவப்படவில்லை. இந்தச் சிக்கலைச் சரிசெய்யும்படி உங்கள் ஐடி நிர்வாகியிடம் கேட்கவும்.</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8133495915926741232">விளம்பரங்களைப் பிரத்தியேகமாக்க உதவுவதற்குப் பயன்படுத்தக்கூடிய பரவலான தலைப்பு வகைகளைத் தேர்வுசெய்யலாம். பரவலான வகையை முடக்கும்போது அதோடு தொடர்புடைய தலைப்புகளும் தடுக்கப்படும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>

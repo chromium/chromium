@@ -95,7 +95,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
-<translation id="2163089732491971196">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète</translation>
 <translation id="2174917724755363426">Installation non terminée. Voulez-vous vraiment annuler ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Erreur lors de la recherche de mises à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -393,6 +392,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
 <translation id="5947104538377036631">Raccourci Chrome</translation>
 <translation id="5953954252731207958">Vous n'avez pas consulté le site récemment. Chrome a supprimé l'autorisation d'accéder à la <ph name="PERMISSION" />.</translation>
+<translation id="5980111191913430208">Les extensions, les applis et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chrome recommande de les installer uniquement à partir du <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Téléchargement… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6014316319780893079">Avec les <ph name="BEGIN_LINK" />outils de Chrome<ph name="END_LINK" />, vous pouvez naviguer de façon sécurisée et garder le contrôle</translation>
 <translation id="6022659036123304283">Personnalisez Chrome</translation>
@@ -611,6 +611,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="842386925677997438">Outils de sécurité de Chrome</translation>
 <translation id="8425765582779547329">Pour te protéger en ligne avec les choix de ton parent, connecte-toi à Chrome</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8429214465555795676">Pour continuer, vous devez vous connecter à Chrome avec <ph name="EMAIL" />. Cela garantit la conformité aux règles de votre organisation.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut afficher et modifier ce profil de navigateur Chrome et ses données, comme les favoris, l'historique et les mots de passe.</translation>
 <translation id="8496177819998570653">Gestionnaire de mots de p&amp;asse de Google</translation>

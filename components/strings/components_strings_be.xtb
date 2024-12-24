@@ -2474,6 +2474,7 @@
 <translation id="5425082381151187189">Афармленне дома і дэкор інтэр’ера</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> запытвае дазвол адпраўляць вам апавяшчэнні</translation>
 <translation id="5430298929874300616">Выдаліць закладку</translation>
+<translation id="5431318178759467895">Колер</translation>
 <translation id="5433756542371550806">Мадыфікацыі каманднага радка</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
 <ph name="BEGIN_LIST" />
@@ -3293,6 +3294,7 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодзі-арт</translation>
 <translation id="692638818576287323">Камерцыйны транспарт</translation>
+<translation id="6933282894115597956">Уваход ва ўліковы запіс патрабуецца вашай арганізацыяй</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chrome<ph name="END_BOLD" /> (напрыклад, ажыццяўляць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Пэўныя функцыі могуць быць недаступнымі, калі выбраная вамі пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6935082727755903526">Вакансіі ў сферы бухгалтарскага ўліку і фінансаў</translation>
@@ -3787,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Наладзіць памеры і тыпы шрыфтоў у Chrome</translation>
 <translation id="7752995774971033316">Не пад кіраваннем</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – чат з <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Калі абнаўленне пачнецца, укладкі і праграмы Chrome закрыюцца</translation>
 <translation id="7755287808199759310">Разблакіраваць сайт можа адзін з бацькоў</translation>
 <translation id="7755624218968747854">Асноўны рулон</translation>
@@ -3927,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую форму ў Формах Google, націсніце Tab, затым Enter</translation>
 <translation id="8028892419725165118">Казуальныя гульні</translation>
 <translation id="8028960012888758725">Абрэзка па завяршэнні задання</translation>
+<translation id="8028993641010258682">Памер</translation>
 <translation id="8029829038322015001">Чырвоны 1</translation>
 <translation id="8030729864112325446">Прафесійная і бесперапынная адукацыя</translation>
 <translation id="8032546467100845887">Празрысты матэрыял</translation>
@@ -3982,7 +3984,6 @@
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="8118489163946903409">Спосаб аплаты</translation>
 <translation id="8118506371121007279">Пакінуць водгук</translation>
-<translation id="8124085000247609808">Размаўляць у чаце з <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Праграма "<ph name="SOFTWARE_NAME" />" не была належным чынам усталявана на камп’ютар або ў сетцы: папрасіце IT-адміністратара вырашыць гэту праблему.</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8133495915926741232">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы. Калі выключыць катэгорыю, звязаныя з ёй тэмы таксама будуць заблакіраваны. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

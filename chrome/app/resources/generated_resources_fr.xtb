@@ -982,7 +982,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1663698992894057019">Passez à un nouveau Chromebook pour bénéficier des dernières mises à jour logicielles et de sécurité</translation>
 <translation id="1665328953287874063">Utilisez un mot de passe ou un code pour déverrouiller votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionnisme</translation>
-<translation id="1666232093776384142">Désactiver la protection de l'accès aux données pour les périphériques</translation>
 <translation id="1667842670298352129">En bas de l'écran, sélectionnez l'icône Sélectionner pour écouter, puis mettez en surbrillance le texte qui vous sera lu à voix haute. Vous pouvez aussi utiliser un raccourci clavier : mettez le texte en surbrillance, puis appuyer sur Recherche+S.</translation>
 <translation id="1668435968811469751">Faire l'enregistrement manuellement</translation>
 <translation id="1668804837842452164">Enregistrer dans le <ph name="BRAND" /> pour <ph name="EMAIL" /></translation>
@@ -2853,7 +2852,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2975761176769946178">Veuillez saisir une URL</translation>
 <translation id="2975845084271617886">Rejoindre et ouvrir</translation>
 <translation id="2976547701881428815">Outils et actions</translation>
-<translation id="2976557544729462544">Désactivez la protection de l'accès aux données pour que certains appareils puissent fonctionner correctement ou de manière optimale.</translation>
 <translation id="2976639738101799892">Naviguez sur le Web en bénéficiant chaque fois des fonctionnalités intelligentes de Google et de la recherche Google</translation>
 <translation id="2977480621796371840">Retirer du groupe</translation>
 <translation id="2979493931538961252">Lorsque votre Chromebook est hors connexion et que des points d'accès sont disponibles</translation>
@@ -2979,7 +2977,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3053273573829329829">Activer le code de l'utilisateur</translation>
 <translation id="3053274730492362225">Ne pas faire clignoter</translation>
 <translation id="3054011216223858553">Désactivé • Utilisez un langage courant pour faire une recherche dans votre historique de navigation et trouver les sites que vous avez consultés</translation>
-<translation id="3054766768827382232">Vous pourrez améliorer les performances de vos périphériques, mais vos données à caractère personnel risquent d'être divulguées via une utilisation non autorisée.</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3058517085907878899">Nommer l'appareil</translation>
 <translation id="3060952009917586498">Modifier la langue de l'appareil. La langue actuelle est : <ph name="LANGUAGE" />.</translation>
@@ -3726,7 +3723,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3619294456800709762">Les sites peuvent passer en Picture-in-picture automatiquement</translation>
 <translation id="3620136223548713675">Géolocalisation</translation>
 <translation id="3621202678540785336">Entrée</translation>
-<translation id="3621807901162200696">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une appli}one{# appli}other{# applis}}</translation>
 <translation id="3622820753353315928">Couleur de clignotement de l'écran</translation>
 <translation id="362333465072914957">En attente de l'émission du certificat par l'autorité de certification</translation>
@@ -3806,7 +3802,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3675683621636519363">Envoyer des rapports d'erreur, des données de diagnostic et d'utilisation à ChromeOS Flex</translation>
 <translation id="367645871420407123">N'indiquez rien si vous voulez définir le mot de passe racine sur la valeur d'image test par défaut.</translation>
 <translation id="3677911431265050325">Demander le site mobile</translation>
-<translation id="3677959414150797585">Les suggestions de contenu concernent des applications, des pages Web et bien plus. Si vous avez choisi de partager les données d'utilisation, des statistiques sont envoyées pour améliorer ces suggestions.</translation>
 <translation id="3678156199662914018">Extension : <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (des cookies, par exemple), une fois que vous vous êtes déconnecté. Les fichiers téléchargés et vos favoris ne sont pas conservés.</translation>
 <translation id="3679126865530709868">Pavé tactile intégré</translation>
@@ -4607,6 +4602,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4220648711404560261">Une erreur s'est produite lors de l'activation.</translation>
 <translation id="4222917615373664617">Le suivi des prix est activé. Le prix est de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Micro non autorisé</translation>
+<translation id="4224541845943007092">Lire et enregistrer la saisie au clavier à partir de la barre d'adresse</translation>
 <translation id="4225397296022057997">Sur tous les sites</translation>
 <translation id="4228071595943929139">Utiliser l'adresse e-mail de votre organisation</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Cette extension n'est pas autorisée}one{Cette extension n'est pas autorisée}other{Certaines extensions ne sont pas autorisées}}</translation>
@@ -6525,7 +6521,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5613074282491265467">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez le sont dans votre compte Google (<ph name="USER_EMAIL" />). Pour désactiver cette option, accédez aux paramètres.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
-<translation id="5614625640221885312">Connectez-vous pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils</translation>
 <translation id="5614947000616625327">Trousseau iCloud</translation>
 <translation id="561552177910095306">Liste des sites que vous avez consultés récemment et qui peuvent suggérer des annonces à d'autres sites au fil de votre navigation</translation>
 <translation id="5616571005307953937">Le plus ancien</translation>
@@ -6830,7 +6825,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5841270259333717135">Configurer le réseau Ethernet</translation>
 <translation id="5842497610951477805">Activation du Bluetooth</translation>
 <translation id="5844284118433003733">Lorsque vous êtes connecté, ces données sont associées à votre compte Google afin de vous protéger dans tous les services Google, par exemple pour renforcer la protection dans Gmail après un incident de sécurité.</translation>
-<translation id="5844574845205796324">Suggérer un nouveau contenu à explorer</translation>
 <translation id="5844685625984052392">Indice</translation>
 <translation id="5846200638699387931">Erreur de syntaxe dans la relation : <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Sans ombre</translation>
@@ -10121,7 +10115,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8203152941016626022">Nom de l'appareil pour le Partage à proximité</translation>
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur pour l'utilisation de l'appli Messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic droit</translation>
-<translation id="8205432712228803050">Vos écrans et périphériques peuvent se réinitialiser brièvement. Pour que cette modification soit prise en compte, débranchez et rebranchez vos périphériques.</translation>
 <translation id="8205478243727418828">Lanceur d'applications+Flèche vers le bas</translation>
 <translation id="820568752112382238">Sites les plus consultés</translation>
 <translation id="8206267832882844324">Modifier la note</translation>
@@ -10740,7 +10733,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> ou <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Température des couleurs de l'Éclairage nocturne</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> souhaite obtenir les autorisations suivantes : <ph name="FIRST_PERMISSION" /> et <ph name="SECOND_PERMISSION" />, entre autres</translation>
-<translation id="864892689521194669">Contribuer à améliorer les fonctionnalités et les performances de ChromeOS Flex</translation>
 <translation id="8649026945479135076">Il est courant que les sites que vous consultez mémorisent ce qui vous intéresse, afin de personnaliser votre expérience. Les sites peuvent aussi stocker des informations sur vos centres d'intérêt dans Chrome.</translation>
 <translation id="8650543407998814195">Bien que vous ne puissiez plus accéder à votre ancien profil, vous pouvez quand même le supprimer.</translation>
 <translation id="8651585100578802546">Forcer l'actualisation de cette page</translation>

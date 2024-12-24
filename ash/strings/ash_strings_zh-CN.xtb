@@ -1645,6 +1645,7 @@
 <translation id="6539852571005954999">正在扫描要下载的文件“<ph name="FILENAME" />”</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">表情符号、GIF 等</translation>
+<translation id="6543942526104794893">确定要关闭面部动作吗？</translation>
 <translation id="6545382064335350438">仍然无法验证您的 PIN 码。请重试。</translation>
 <translation id="6555373427270923730">在地址栏中输入网址，然后按 <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2311,6 +2312,7 @@
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
 <translation id="8860366331836346216">添加 eSIM 卡</translation>
+<translation id="8869149849311827122">确定要关闭光标控制功能吗？</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8873203135446552888">确认您要停用内置触控板</translation>
 <translation id="8874184842967597500">未连接</translation>

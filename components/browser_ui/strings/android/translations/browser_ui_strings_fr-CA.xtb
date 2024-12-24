@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Téléchargement interrompu</translation>
 <translation id="1396327438254055134">Autorisez le site à utiliser l'optimiseur V8.</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
+<translation id="1415855080660575082">Autorisez Chrome à partager vos onglets récents avec votre appareil afin qu'ils s'affichent dans la liste d'applis et dans les résultats de recherche de votre appareil. Vous pouvez activer ou désactiver cette option dans les paramètres de Chrome.</translation>
 <translation id="1448064542941920355">Diminuer le zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Masquer la carte Baisse de prix sur les onglets</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Vous avez temporairement autorisé ce site à utiliser des témoins tiers, ce qui signifie que le niveau de protection de la navigation est moins élevé, mais que les fonctionnalités du site sont plus susceptibles de fonctionner comme prévu. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Les fonctionnalités de certains sites peuvent ne pas fonctionner en mode de navigation privée</translation>
 <translation id="2442870161001914531">Toujours demander le site pour ordinateurs de bureau</translation>
+<translation id="2445311670906052406">Chrome partage désormais vos onglets récents avec votre appareil. Ils s'afficheront dans la liste d'applis et dans les résultats de recherche de votre appareil. Vous pouvez désactiver cette option en tout temps dans les paramètres de Chrome.</translation>
 <translation id="2469312991797799607">Cette action supprimera l'ensemble des données et des témoins de connexion pour <ph name="ORIGIN" /> et tous les sites qui lui sont subordonnés</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="2787357173144933081">Démarrage rapide d'omnibox</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
+<translation id="2814830417943086299">Chrome affiche maintenant vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option en tout temps dans les paramètres de Chrome.</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Demander l'affichage sur un appareil mobile</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autre}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> autres}}</translation>
 <translation id="913657688200966289">Vous pouvez activer les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Laissez Chrome afficher vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option en tout temps dans les paramètres de Chrome.</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
 <translation id="947156494302904893">Les sites que vous visitez peuvent vérifier que vous êtes une personne réelle et non un robot</translation>
 <translation id="959682366969460160">Place à l'organisation</translation>

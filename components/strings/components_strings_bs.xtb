@@ -2478,6 +2478,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5425082381151187189">Uređenje doma i enterijera</translation>
 <translation id="5426179911063097041">Web lokacija <ph name="SITE" /> vam želi slati obavještenja</translation>
 <translation id="5430298929874300616">Uklonite oznaku</translation>
+<translation id="5431318178759467895">Boja</translation>
 <translation id="5433756542371550806">Varijacije komandne linije</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />neće pohranjivati<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3793,7 +3794,6 @@ Dodatni detalji:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prilagodite veličine i stilove fontova u Chromeu</translation>
 <translation id="7752995774971033316">Nema upravitelja</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – chatajte s uslugom <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Kartice Chromea i aplikacije će se zatvoriti kada se ažuriranje pokrene</translation>
 <translation id="7755287808199759310">Roditelj može deblokirati tu web lokaciju</translation>
 <translation id="7755624218968747854">Primarna rolna</translation>
@@ -3933,6 +3933,7 @@ Dodatni detalji:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novi obrazac na usluzi Google Forms</translation>
 <translation id="8028892419725165118">Ležerne igre</translation>
 <translation id="8028960012888758725">Skraćivanje nakon završetka posla</translation>
+<translation id="8028993641010258682">Veličina</translation>
 <translation id="8029829038322015001">1. crvena</translation>
 <translation id="8030729864112325446">Stručno obrazovanje i stručno usavršavanje</translation>
 <translation id="8032546467100845887">Transparentnost</translation>
@@ -3988,7 +3989,6 @@ Dodatni detalji:
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
 <translation id="8118506371121007279">Pošaljite povratne informacije</translation>
-<translation id="8124085000247609808">Chat s funkcijom <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nije pravilno instaliran na vaš računar ili mrežu. Zamolite IT administratora da riješi taj problem.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133495915926741232">Odaberite koje široke kategorije tema se mogu koristiti kao pomoć za personaliziranje oglasa. Isključivanjem šire kategorije blokiraju se i povezane teme. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>

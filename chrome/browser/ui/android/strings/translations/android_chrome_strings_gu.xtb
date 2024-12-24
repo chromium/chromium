@@ -19,6 +19,7 @@
 <translation id="107147699690128016">જો તમે ફાઇલનું એક્સ્ટેંશન બદલશો, તો તે કોઈ અલગ ઍપ્લિકેશનમાં ખુલી શકે છે અને તમારા ડિવાઇસ માટે નુકસાનકારક હોવાનું સંભવિત હોય શકે.</translation>
 <translation id="1080365971383768617">તમારા બધા ડિવાઇસમાંના પાસવર્ડ</translation>
 <translation id="1082920045291562218">સારાંશ વિશે પ્રતિસાદની શીટ બંધ રાખીને શેર કરો</translation>
+<translation id="1087176310396019910">સંભવિત સ્પામ</translation>
 <translation id="1089606299949659462">રિવ્યૂ પૂર્ણ થયો!</translation>
 <translation id="1094555143448724771">તમારા અન્ય ડિવાઇસમાંના ટૅબ જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1095761715416917775">ખાતરી કરો કે તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
+<translation id="3301936297336370235">પાસવર્ડના સૂચનનું કન્ફર્મેશન</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" />ને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6196315980958524839">પાસવર્ડ આ ડિવાઇસના Google Password Managerમાં સાચવવામાં આવે છે</translation>
 <translation id="6202812185118613467">સિંક શરૂ કરવા ફરી સાઇન ઇન કરો</translation>
+<translation id="6204781143409202534">Chromeને <ph name="DOMAIN" /> પાસેથી મળેલા સંભવિત સ્પામની ભાળ મળી છે.</translation>
 <translation id="6205314730813004066">જાહેરાત સંબંધી પ્રાઇવસી</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>

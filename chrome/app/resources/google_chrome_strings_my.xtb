@@ -96,7 +96,6 @@
 <translation id="2137162749895930932">ဘာသာပြန် စခရင် ပိတ်ရန်</translation>
 <translation id="2139300032719313227">ChromeOS ပြန်စပါ</translation>
 <translation id="2151406531797534936">Chrome ကို ယခုပြန်စပါ</translation>
-<translation id="2163089732491971196">သင်၏ Google Account ရှိ Chrome ဒေတာ သုံးရန်၊ သိမ်းရန် သင့်စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="2174917724755363426">ထည့်သွင်းမှု မပြီးဆုံးပါ။ ပယ်ဖျက်လိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">အပ်ဒိတ်စစ်ဆေးရန် အမှား- <ph name="UPDATE_CHECK_ERROR" />။</translation>
@@ -394,6 +393,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
 <translation id="5947104538377036631">Chrome ဖြတ်လမ်းလင့်ခ်</translation>
 <translation id="5953954252731207958">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION" /> ကို ဖယ်ရှားလိုက်သည်</translation>
+<translation id="5980111191913430208">မူရင်းမသိရှိသော ရင်းမြစ်များမှ နောက်ဆက်တွဲများ၊ အက်ပ်နှင့် အပြင်အဆင်များသည် သင့်စက်ကို ထိခိုက်စေနိုင်သည်။ ၎င်းတို့ကို <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> မှသာ ထည့်သွင်းရန် Chrome က အကြံပြုပါသည်</translation>
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome မှ တူးလ်များ<ph name="END_LINK" /> ဖြင့် လုံခြုံစွာဘရောက်စ်လုပ်ပြီး ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
@@ -612,6 +612,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="842386925677997438">Chrome ၏ လုံခြုံရေးတူးလ်များ</translation>
 <translation id="8425765582779547329">သင့်မိဘ၏ ရွေးချယ်မှုများဖြင့် အွန်လိုင်းတွင် ပိုမိုဘေးကင်းစေရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
+<translation id="8429214465555795676">ရှေ့ဆက်ရန်အတွက် <ph name="EMAIL" /> ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ရပါမည်။ ၎င်းသည် သင့်အဖွဲ့အစည်း၏ မူဝါဒများနှင့် ညီကြောင်း သေချာစေသည်။</translation>
 <translation id="8433638294851456451">ဤနေရာမှ သင်၏ Android ဖုန်းသို့ နံပါတ်တစ်ခုပို့ရန် စက်နှစ်ခုလုံးတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="8451192282033883849">သင့်အကောင့်ကို <ph name="MANAGER_NAME" /> က စီမံခန့်ခွဲသည်။ သင်၏စီမံခန့်ခွဲသူက ဤ Chrome ဘရောင်ဇာပရိုဖိုင်နှင့် လိပ်စာ၊ မှတ်တမ်းနှင့် စကားဝှက်များ ကဲ့သို့သော ၎င်း၏ဒေတာများကို ကြည့်နိုင်၊ ပြင်ဆင်နိုင်သည်။</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

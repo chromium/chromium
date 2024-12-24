@@ -755,7 +755,7 @@
 <translation id="2306124309679506798">没入型エクスペリエンスを許可しますか？</translation>
 <translation id="2312234273148520048">調味料、ドレッシング</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
-<translation id="2316159751672436664">Chrome OS の設定でユーザー補助ツールをカスタマイズします</translation>
+<translation id="2316159751672436664">ChromeOS の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2316887270356262533">最大で 1 MB を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> にはユーザー名とパスワードが必要です。</translation>
 <translation id="2318594867107319532">ポリシーの最終タイムスタンプ:</translation>
@@ -2475,6 +2475,7 @@
 <translation id="5425082381151187189">室内装飾、インテリア</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> が通知を送信しようとしています。</translation>
 <translation id="5430298929874300616">ブックマークを削除</translation>
+<translation id="5431318178759467895">カラー</translation>
 <translation id="5433756542371550806">コマンドラインのバリエーション</translation>
 <translation id="5434798570900738152">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
           <ph name="BEGIN_LIST" />
@@ -2529,7 +2530,7 @@
 <translation id="5523118979700054094">ポリシー名</translation>
 <translation id="5523588073846127669">販売者がこの仮想カードに対応していません</translation>
 <translation id="5525755241743357906">ファイルをコピーまたは移動しました</translation>
-<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
+<translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ChromeOS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="55293785478302737">端綴じ</translation>
 <translation id="553377674408670169">教育系の求人情報</translation>
 <translation id="5534785731327961487">買い時</translation>
@@ -3294,6 +3295,7 @@
 <translation id="6925267999184670015">北米 B+</translation>
 <translation id="6926216138694948720">ボディアート</translation>
 <translation id="692638818576287323">商用自動車</translation>
+<translation id="6933282894115597956">組織がログインを求めています</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索エンジンではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索エンジンでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6935082727755903526">会計、財務系の求人情報</translation>
@@ -3789,7 +3791,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="7752995774971033316">管理されていません</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> と話す</translation>
 <translation id="7754587126786572336">更新が始まると Chrome のタブとアプリは閉じられます</translation>
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7755624218968747854">メインロール</translation>
@@ -3929,6 +3930,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google フォームで新しいフォームをすばやく作成します</translation>
 <translation id="8028892419725165118">カジュアル ゲーム</translation>
 <translation id="8028960012888758725">トリミング（ジョブ後）</translation>
+<translation id="8028993641010258682">サイズ</translation>
 <translation id="8029829038322015001">赤 1</translation>
 <translation id="8030729864112325446">職業訓練、生涯学習</translation>
 <translation id="8032546467100845887">透明</translation>
@@ -3984,7 +3986,6 @@
 <translation id="8116925261070264013">ミュート中</translation>
 <translation id="8118489163946903409">お支払い方法</translation>
 <translation id="8118506371121007279">フィードバックを送信</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> と話す</translation>
 <translation id="8127301229239896662">「<ph name="SOFTWARE_NAME" />」がパソコンまたはネットワークに正しくインストールされていません。管理者にこの問題を解決するよう依頼してください。</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8133495915926741232">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します。大まかなカテゴリをオフにすると、その関連トピックもブロックされます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -4049,7 +4050,7 @@
 <translation id="824968735947741546"><ph name="SOURCE" />（自動検出）を <ph name="TARGET" /> に翻訳しています</translation>
 <translation id="8250094606476360498">この住所は現在、このデバイスに保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="ACCOUNT" />）に保存してください。</translation>
 <translation id="8251493595871259082">住所を自動入力</translation>
-<translation id="8252991034201168845">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
+<translation id="8252991034201168845">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと ChromeOS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="8253091569723639551">請求先住所が必要です</translation>
 <translation id="8257387598443225809">このアプリはモバイル向けに設計されています</translation>
 <translation id="8259239120149678929">ドキュメンタリー番組、ノンフィクション番組</translation>

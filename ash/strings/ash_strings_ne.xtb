@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस् वा आफ्नो फोन अनलक गर्नुहोस्</translation>
 <translation id="240545663114741956">साइन आउट गर्न <ph name="ACCELERATOR" /> मा दुई पटक थिच्नुहोस्।</translation>
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
+<translation id="2406710117564540804">Do Not Disturb अन/अफ गर्नुहोस्</translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2416438829169535743">भ्यूबाट बाहिरिने हो?</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> स्क्यान गरेर डाउनलोड गर्नुहोस्</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6542891623636520977">इमोजी, GIF र थप कुराहरू</translation>
+<translation id="6543942526104794893">तपाईंले फेसियल जेस्चर अफ गर्न खोज्नुभएकै हो?</translation>
 <translation id="6545382064335350438">तपाईंको PIN अझै पनि पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6555373427270923730">एड्रेस बारमा वेब ठेगाना टाइप गर्नुहोस् अनि <ph name="MODIFIER" /><ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="8860366331836346216">eSIM हाल्नुहोस्</translation>
+<translation id="8869149849311827122">तपाईंले माउस कर्सर कन्ट्रोल अफ गर्न खोज्नुभएकै हो?</translation>
 <translation id="8870509716567206129">एपले विभाजित-स्क्रिनलाई समर्थन गर्दैन।</translation>
 <translation id="8873203135446552888">तपाईं यो अन्तर्निर्मित टचप्याड अफ गर्न चाहनुहुन्छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8874184842967597500">जडित छैन</translation>

@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{បានប្ដូរ <ph name="ONE_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}other{បានប្ដូរ <ph name="MANY_CHANGED" /> ផ្ទាំង, បានបិទ <ph name="ANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="4371591986692297148">អសកម្ម​</translation>
 <translation id="4460014764210899310">បំបែក​ក្រុម</translation>
-<translation id="4590027107044272416">ឥឡូវនេះ អ្នកអាចបើកផ្ទាំងថ្មីនៅទីនេះ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{បិទ​ផ្ទាំង​អសកម្ម 1 ឬ?}other{បិទ​ផ្ទាំង​អសកម្ម <ph name="TAB_COUNT_MANY" /> ឬ?}}</translation>
 <translation id="4686942373615810936">ទើប​បាន​បង្កើត​អម្បាញ់​មិញ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{បិទក្រោយពេល 1 ថ្ងៃ}other{បិទក្រោយពេល <ph name="DAY_COUNT_MANY" /> ថ្ងៃ}}</translation>

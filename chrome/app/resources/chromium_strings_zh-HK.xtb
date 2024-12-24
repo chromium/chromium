@@ -113,6 +113,7 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chromium，確保符合機構的政策。</translation>
 <translation id="2542968102051442371">使用「圖片搜尋」選取文字</translation>
 <translation id="2554739539410784893">Chromium 正在嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間的存取權才能下載檔案</translation>
@@ -254,7 +255,6 @@
 <translation id="4438870983368648614">Chromium 由「<ph name="MANAGER" />」管理</translation>
 <translation id="444069871276811466">新增 Chromium 設定檔</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
-<translation id="4470974262661801543">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
 <translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
 <translation id="4510853178268397146">此擴充程式尚未發佈私隱守則，例如擴充程式如何收集和使用資料。Chromium 建議你移除此擴充程式。</translation>

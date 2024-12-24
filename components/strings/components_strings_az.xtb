@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">avtomatik şəkildə şəkil</translation>
 <translation id="1100782917270858593">"Baxışa davam edin" düyməsi, Enter düyməsinə basaraq baxışa davam edin və Chrome tarixçəsində əlaqəli fəaliyyəti görün</translation>
 <translation id="1101672080107056897">Xəta əməliyyatı</translation>
+<translation id="1101902632743388185">Müqayisə cədvəlləriniz</translation>
 <translation id="1104409666019087579">Tələb edilən bəzi sahələr boşdur. Yadda saxlamamışdan əvvəl doldurun.</translation>
 <translation id="1104860668737945357">"Parolları idarə edin" düyməsi, aktivləşdirərək Chrome ayarlarında parollara baxın və onları idarə edin</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Proksi avtomatik konfiqurasiyaya ayarlandı.</translation>
 <translation id="2025891858974379949">Təhlükəli məzmun</translation>
 <translation id="2027465737841872819">Plastik</translation>
+<translation id="2027707238798802149">Kart əlçatan deyil</translation>
 <translation id="2029735183873159415">Əcdadlar və Genetika</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proksi və güvənlik divarı yoxlanılır<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Qısayol <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tərəfindən müəyyən edilmiş axtarış provayderi defolt açar sözü eyni ola bilməz: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Ev və bağ</translation>
 <translation id="2515629240566999685">Ərazinizdəki siqnal yoxlanılır</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> istifadə edən saytlarda Touch ID ilə doğrulamağı seçmisiniz. Bu provayder ödəniş metodunuz haqqında məlumat saxlamış ola bilər, onu <ph name="LINK_TEXT" /> ünvanında tapa bilərsiniz.</translation>
+<translation id="2518584823165598232">Bu kart əlçatan deyil. Kart provayderinizlə əlaqə saxlayın.</translation>
 <translation id="2521385132275182522">Aşağı sağdan ştapel vurun</translation>
 <translation id="2521736961081452453">Forma yaradın</translation>
 <translation id="2523886232349826891">Yalnız bu cihaz yadda saxlanıldı</translation>
@@ -2468,6 +2471,7 @@
 <translation id="5425082381151187189">Ev və İnteryer Dekoru</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> Sizə bildiriş göndərmək istəyir</translation>
 <translation id="5430298929874300616">Əlfəcini silin</translation>
+<translation id="5431318178759467895">Rəng</translation>
 <translation id="5433756542371550806">Əmr sətri variasiyaları</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3338,6 +3342,7 @@
 <translation id="7003322000677139268">Ehtiyat Hissələri və Aksesuarlar</translation>
 <translation id="7004499039102548441">Son Tablar</translation>
 <translation id="7006930604109697472">İstənilən halda göndərin</translation>
+<translation id="7009364359744329733">Bu kart hazırda əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="7010658264061801199">Qida və İçki</translation>
 <translation id="7012363358306927923">Çin UnionPay</translation>
 <translation id="7013835112918108252">Mausu kilidləmək və istifadə etmək istəyə bilər</translation>
@@ -3779,7 +3784,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome'da şrift ölçülərini və şriftləri fərdiləşdirin</translation>
 <translation id="7752995774971033316">İdarə edilməyən</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ilə söhbət edin</translation>
 <translation id="7754587126786572336">Güncəllənmə başladıqda Chrome tabları və tətbiqlər bağlanacaq</translation>
 <translation id="7755287808199759310">Valideyniniz kilidi aça bilər</translation>
 <translation id="7755624218968747854">Əsas Rulon</translation>
@@ -3919,6 +3923,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Forma'da cəld yeni forma yaradın</translation>
 <translation id="8028892419725165118">Kazual Oyun</translation>
 <translation id="8028960012888758725">İşdən sonra kəsin</translation>
+<translation id="8028993641010258682">Ölçü</translation>
 <translation id="8029829038322015001">Qırmızı 1</translation>
 <translation id="8030729864112325446">Peşə və Əlavə Təhsil</translation>
 <translation id="8032546467100845887">Şəffaflıq</translation>
@@ -3974,7 +3979,6 @@
 <translation id="8116925261070264013">Səssiz</translation>
 <translation id="8118489163946903409">Ödəniş üsulu</translation>
 <translation id="8118506371121007279">Rəy bildirin</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> ilə çat</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" kompüter və ya şəbəkənizdə düzgün quraşdırılmayıb. IT administratorunuzdan bu problemi həll etməyi tələb edin.</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8133495915926741232">Reklamları fərdiləşdirmək üçün istifadə olunacaq geniş mövzu kateqoriyalarını seçin. Daha geniş kateqoriyanın deaktiv edilməsi əlaqədar mövzuları da bloklayacaq. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

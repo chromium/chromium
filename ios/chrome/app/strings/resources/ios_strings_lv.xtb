@@ -1397,6 +1397,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7248046129087111453">Jūsu Google kontā var tikt saglabāta <ph name="BEGIN_LINK" />meklēšanas vēsture<ph name="END_LINK" /> un <ph name="BEGIN_LINK" />cita veida darbības<ph name="END_LINK" />.</translation>
 <translation id="7253951228444156601">Notiek paroļu pārbaude…</translation>
 <translation id="7261217796641151584">Kopīgot grupu</translation>
+<translation id="7266578100016339897">Tas palīdz jums saglabāt kārtību. Varat to jebkurā brīdī mainīt sadaļā Iestatījumi.</translation>
 <translation id="7271220006028561438">Atļauja jaunināt automātiskās piekļuves atslēgas</translation>
 <translation id="7272437679830969316">Nevar apstiprināt jūsu identitāti. Parole nav nokopēta.</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
@@ -1591,6 +1592,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
 <translation id="8084285576995584326">Kontrolējiet savus Google konta datus</translation>
 <translation id="809543534949702122">Meklēt vēsturē</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Neizmantotās cilnes tiek pārvietotas šeit pēc {COUNT} dienas}zero{Neizmantotās cilnes tiek pārvietotas šeit pēc {COUNT} dienām}one{Neizmantotās cilnes tiek pārvietotas šeit pēc {COUNT} dienas}other{Neizmantotās cilnes tiek pārvietotas šeit pēc {COUNT} dienām}}</translation>
 <translation id="8101409298456377967">Izveidojiet, saglabājiet un pārvaldiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8102130909719902723">J</translation>
 <translation id="8114753159095730575">Pieejama failu lejupielāde. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>

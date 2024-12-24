@@ -981,7 +981,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1663698992894057019">En son güvenlik ve yazılım özelliklerini kullanmak için yeni bir Chromebook sürümüne geçin</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için bir şifre veya PIN kullanın</translation>
 <translation id="1665859804801131136">Ekspresyonizm</translation>
-<translation id="1666232093776384142">Çevre birimleri için veri erişimi koruma ayarlarınızı devre dışı bırakın</translation>
 <translation id="1667842670298352129">Seçilen metni sesli dinleyin. Ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın. Klavye kısayolu da kullanabilirsiniz: Metni vurguladıktan sonra Arama + S tuşlarına basın.</translation>
 <translation id="1668435968811469751">Manuel olarak kaydol</translation>
 <translation id="1668804837842452164"><ph name="EMAIL" /> için <ph name="BRAND" /> uygulamasına kaydet</translation>
@@ -2850,7 +2849,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2975761176769946178">URL girilmesi zorunludur</translation>
 <translation id="2975845084271617886">Katıl ve aç</translation>
 <translation id="2976547701881428815">Araçlar ve işlemler</translation>
-<translation id="2976557544729462544">Bazı cihazlar, düzgün çalışmak veya tam performans göstermek için veri erişim koruma ayarını devre dışı bırakmanızı gerektirir.</translation>
 <translation id="2976639738101799892">Her göz attığınızda Google Arama ve Google zekasından yararlanın</translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
 <translation id="2979493931538961252">Chromebook'um çevrimdışı ve hotspot'lar kullanılabilir durumdayken</translation>
@@ -2976,7 +2974,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Kullanıcı pin kodunu etkinleştir</translation>
 <translation id="3053274730492362225">Yanıp sönmesin</translation>
 <translation id="3054011216223858553">Kapalı • Günlük dil kullanarak tarama geçmişinizde arama yapabilir ve ziyaret ettiğiniz siteleri bulabilirsiniz.</translation>
-<translation id="3054766768827382232">Devre dışı bırakmak çevre birimlerinizin daha iyi bir performans göstermesini sağlayabilir ancak yetkisiz kullanımla kişisel verilerinizi görülür hale getirebilir</translation>
 <translation id="3058498974290601450">Senkronizasyonu istediğiniz zaman ayarlardan açabilirsiniz</translation>
 <translation id="3058517085907878899">Cihazı adlandır</translation>
 <translation id="3060952009917586498">Cihaz dilini değiştirin. Mevcut dil: <ph name="LANGUAGE" />.</translation>
@@ -3723,7 +3720,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3619294456800709762">Siteler otomatik olarak pencere içinde pencere moduna girebilir</translation>
 <translation id="3620136223548713675">Coğrafi konum</translation>
 <translation id="3621202678540785336">Giriş</translation>
-<translation id="3621807901162200696">ChromeOS özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{bir uygulama}other{# uygulama}}</translation>
 <translation id="3622820753353315928">Yanıp sönen ekran ışığı rengi</translation>
 <translation id="362333465072914957">CA'nın sertifika yayınlaması bekleniyor</translation>
@@ -3803,7 +3799,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3675683621636519363">Kilitlenme raporlarını, teşhis ve kullanım verilerini ChromeOS Flex'e gönder</translation>
 <translation id="367645871420407123">kök şifrenin varsayılan test görüntüsü değerine ayarlanmasını istiyorsanız boş bırakın</translation>
 <translation id="3677911431265050325">Mobil site iste</translation>
-<translation id="3677959414150797585">Uygulamalar, web sayfaları ve daha fazlasını içerir. Yalnızca kullanım verilerini paylaşmayı seçtiyseniz önerileri iyileştirmek için istatistikleri gönderir.</translation>
 <translation id="3678156199662914018">Uzantı: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Bu pencerede görüntülediğiniz sayfalar tarayıcı geçmişinde görünmez ve oturumu kapatmanızdan sonra bilgisayarda çerezler gibi başka izler bırakmaz. İndirdiğiniz dosyalar ve oluşturduğunuz yer işaretleri saklanmaz.</translation>
 <translation id="3679126865530709868">Yerleşik Dokunmatik Alan</translation>
@@ -6523,7 +6518,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5613074282491265467">Chrome'da oturum açtığınızda, kaydettiğiniz şifreler Google Hesabınızda (<ph name="USER_EMAIL" />) saklanır. Bu özelliği devre dışı bırakmak için ayarlara gidin.</translation>
 <translation id="5614190747811328134">Kullanıcı Bildirimi</translation>
 <translation id="5614553682702429503">Şifre kaydedilsin mi?</translation>
-<translation id="5614625640221885312">Yer işaretlerinize, şifrelerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın</translation>
 <translation id="5614947000616625327">iCloud Anahtar Zinciri</translation>
 <translation id="561552177910095306">Son zamanlarda ziyaret ettiğiniz ve siz internette gezindikçe diğer sitelere reklam önerebilen sitelerin listesi</translation>
 <translation id="5616571005307953937">En eski</translation>
@@ -6828,7 +6822,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5841270259333717135">Ethernet'i yapılandır</translation>
 <translation id="5842497610951477805">Bluetooth etkin</translation>
 <translation id="5844284118433003733">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
-<translation id="5844574845205796324">Keşfetmek için yeni içerik öner</translation>
 <translation id="5844685625984052392">İpucu</translation>
 <translation id="5846200638699387931">İlişki söz dizimi hatası: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Gölge yok</translation>
@@ -10116,7 +10109,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8203152941016626022">Yakındakilerle Paylaş cihaz adı</translation>
 <translation id="8203732864715032075">Size bildirimler gönderir ve Mesajlar uygulaması için bu bilgisayarın hatırlanmasını varsayılan ayar yapar. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Sağ tıklama</translation>
-<translation id="8205432712228803050">Ekranlarınız ve çevre birimleriniz kısa süreliğine sıfırlanabilir. Bu değişikliğin devreye girmesi için çevre birimlerinizi çıkarıp yeniden takın.</translation>
 <translation id="8205478243727418828">başlatıcı + aşağı ok</translation>
 <translation id="820568752112382238">En çok ziyaret edilen siteler</translation>
 <translation id="8206267832882844324">Notu düzenle</translation>
@@ -10735,7 +10727,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> veya <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Gece Işığı renk sıcaklığı</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> şunu yapmak istiyor: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> ve daha fazlası</translation>
-<translation id="864892689521194669">ChromeOS Flex'in özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="8649026945479135076">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da da saklayabilir.</translation>
 <translation id="8650543407998814195">Artık eski profilinize erişemeseniz de onu yine de kaldırabilirsiniz.</translation>
 <translation id="8651585100578802546">Bu Sayfayı Tekrar Yüklemeye Zorla</translation>

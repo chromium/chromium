@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1396327438254055134">Leisti svetainei naudoti V8 optimizavimo priemonę.</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
+<translation id="1415855080660575082">Leiskite „Chrome“ bendrinti naujausius skirtukus su įrenginiu, kad juos matytumėte įrenginio programų sąraše ir paieškos rezultatuose. Galite įjungti arba išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
 <translation id="1500473259453106018">Slėpti sumažintų kainų skirtukuose kortelę</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Laikinai leidote šiai svetainei naudoti trečiųjų šalių slapukus, dėl kurių teikiama silpnesnė naršymo apsauga, bet labiau tikėtina, kad svetainės funkcijos veiks, kaip numatyta. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Kai kurių svetainių funkcijos gali neveikti inkognito režimu</translation>
 <translation id="2442870161001914531">Visada galite pateikti užklausą dėl svetainės staliniams kompiuteriams</translation>
+<translation id="2445311670906052406">Dabar „Chrome“ bendrina pastaruosius skirtukus su įrenginiu. Juos matysite įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="2469312991797799607">Atlikus šį veiksmą bus ištrinti visi domeno <ph name="ORIGIN" /> ir visų jo svetainių duomenys bei slapukai</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Svetainėse gali būti rodomi raginimai prisijungti iš tapatybės nustatymo paslaugų.</translation>
 <translation id="2787357173144933081">„Omnibox“ paleidimas</translation>
 <translation id="2790501146643349491">Įjungus neseniai uždarytose svetainėse galima baigti siųsti ir gauti duomenis. Išjungus neseniai uždarytose svetainėse negalima baigti siųsti ar gauti duomenų.</translation>
+<translation id="2814830417943086299">Dabar „Chrome“ rodo naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="2822354292072154809">Ar tikrai norite iš naujo nustatyti visus „<ph name="CHOSEN_OBJECT_NAME" />“ svetainės leidimus?</translation>
 <translation id="2850913818900871965">Pateikti užklausą dėl rodinio versijos mobiliesiems</translation>
 <translation id="2870560284913253234">Svetainė</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>

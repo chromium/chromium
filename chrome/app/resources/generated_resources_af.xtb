@@ -982,7 +982,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1663698992894057019">Gradeer op na ’n nuwe Chromebook vir die jongste sekuriteit en sagteware</translation>
 <translation id="1665328953287874063">Gebruik ’n wagwoord of PIN om jou <ph name="DEVICE_TYPE" /> te ontsluit</translation>
 <translation id="1665859804801131136">Ekspressionisme</translation>
-<translation id="1666232093776384142">Deaktiveer datatoegangbeskerming vir randtoestelle</translation>
 <translation id="1667842670298352129">Hoor hoe spesifieke teks hardop gelees word. Kies eerstens die Hardoplees-ikoon aan die onderkant van jou skerm en merk dan die teks. Jy kan ook ’n kortpadsleutel gebruik: Merk teks en druk dan Soek + S.</translation>
 <translation id="1668435968811469751">Skryf self in</translation>
 <translation id="1668804837842452164">Stoor na <ph name="BRAND" /> vir <ph name="EMAIL" /></translation>
@@ -2865,7 +2864,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2975761176769946178">’n URL word vereis</translation>
 <translation id="2975845084271617886">Sluit aan en maak oop</translation>
 <translation id="2976547701881428815">Nutsgoed en handelinge</translation>
-<translation id="2976557544729462544">Vir sommige toestelle moet jy datatoegangbeskerming deaktiveer sodat dit behoorlik werk of vir optimale werkverrigting.</translation>
 <translation id="2976639738101799892">Kry Google Search en Google-slimkenmerke elke keer wanneer jy blaai</translation>
 <translation id="2977480621796371840">Verwyder uit groep</translation>
 <translation id="2979493931538961252">Wanneer jou Chromebook vanlyn en warmkolle beskikbaar is</translation>
@@ -2991,7 +2989,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3053273573829329829">Aktiveer gebruiker-PIN</translation>
 <translation id="3053274730492362225">Moenie flits nie</translation>
 <translation id="3054011216223858553">Af • Gebruik alledaagse taal om jou blaaigeskiedenis te deursoek en die werwe wat jy besoek het, te kry</translation>
-<translation id="3054766768827382232">As jy datatoegangbeskerming deaktiveer, kan dit randtoestelle se werkverrigting verbeter. Dit kan egter jou persoonlike data deur ongemagtigde gebruik blootstel.</translation>
 <translation id="3058498974290601450">Jy kan sinkronisering enige tyd in Instellings aanskakel</translation>
 <translation id="3058517085907878899">Gee toestel 'n naam</translation>
 <translation id="3060952009917586498">Verander toesteltaal. Huidige taal is <ph name="LANGUAGE" />.</translation>
@@ -3740,7 +3737,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3619294456800709762">Werwe kan prent-in-prent outomaties ingaan</translation>
 <translation id="3620136223548713675">Geoligging</translation>
 <translation id="3621202678540785336">Invoer</translation>
-<translation id="3621807901162200696">Help om Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{'n program}other{# programme}}</translation>
 <translation id="3622820753353315928">Skerm se flitskleur</translation>
 <translation id="362333465072914957">Wag vir die CA om 'n sertifikaat uit te reik</translation>
@@ -3820,7 +3816,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3675683621636519363">Stuur omvalverslae en diagnostiese en gebruiksdata na ChromeOS Flex</translation>
 <translation id="367645871420407123">laat leeg as jy die kernwagwoord op die verstektoetsprentwaarde wil stel</translation>
 <translation id="3677911431265050325">Versoek mobiele werf</translation>
-<translation id="3677959414150797585">Sluit programme, webbladsye en meer in. Stuur net statistieke om voorstelle beter te maak as jy gekies het om gebruiksdata te deel.</translation>
 <translation id="3678156199662914018">Uitbreiding: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Bladsye wat jy in hierdie venster bekyk, sal nie in die blaaiergeskiedenis verskyn nie en hulle sal nie ander spore, soos webkoekies, op die rekenaar agterlaat nadat jy afgemeld het nie. Lêers wat jy aflaai en boekmerke wat jy skep, sal nie bewaar word nie.</translation>
 <translation id="3679126865530709868">Ingeboude raakpaneel</translation>
@@ -6541,7 +6536,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5613074282491265467">Wanneer jy by Chrome aangemeld is, sal wagwoorde wat jy stoor na jou Google-rekening, <ph name="USER_EMAIL" />, toe gaan. Gaan na instellings om dit af te skakel.</translation>
 <translation id="5614190747811328134">Gebruikerkennisgewing</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
-<translation id="5614625640221885312">Meld aan om jou boekmerke, wagwoorde en meer op al jou toestelle te kry</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Lys werwe wat jy onlangs besoek het wat advertensies aan ander werwe kan voorstel terwyl jy blaai</translation>
 <translation id="5616571005307953937">Oudste</translation>
@@ -6846,7 +6840,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5841270259333717135">Stel Ethernet op</translation>
 <translation id="5842497610951477805">Aktiveer Bluetooth</translation>
 <translation id="5844284118433003733">Wanneer jy aangemeld is, word hierdie data aan jou Google-rekening gekoppel om jou oral in Google-dienste te beskerm, byvoorbeeld deur beskerming in Gmail te verhoog ná ’n sekuriteitvoorval.</translation>
-<translation id="5844574845205796324">Stel nuwe inhoud voor om te verken</translation>
 <translation id="5844685625984052392">Wenk</translation>
 <translation id="5846200638699387931">Verhoudingsinsboufout: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Geen skaduwee nie</translation>
@@ -10133,7 +10126,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8203152941016626022">Nabydeling: toestelnaam</translation>
 <translation id="8203732864715032075">Stuur vir jou kennisgewings en stel dit as verstek om hierdie rekenaar vir Boodskappe te onthou. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Regsklik</translation>
-<translation id="8205432712228803050">Jou skerms en randtoestelle kan vir 'n kort tydjie teruggestel word. Prop jou randtoestelle uit en weer in sodat hierdie verandering in werking kan tree.</translation>
 <translation id="8205478243727418828">lanseerder + afpyl</translation>
 <translation id="820568752112382238">Mees besoekte werwe</translation>
 <translation id="8206267832882844324">Wysig nota</translation>
@@ -10752,7 +10744,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> of <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Aandbeligting-kleurtemperatuur</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wil: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> en meer</translation>
-<translation id="864892689521194669">Help om Chrome OS Flex se kenmerke en werkverrigting te verbeter</translation>
 <translation id="8649026945479135076">Dit is algemeen vir werwe wat jy besoek om dinge waarin jy belangstel te onthou en jou ervaring te personaliseer. Werwe kan ook inligting oor jou belangstellings in Chrome stoor.</translation>
 <translation id="8650543407998814195">Hoewel jy nie meer by jou ou profiel kan ingaan nie, kan jy dit steeds verwyder.</translation>
 <translation id="8651585100578802546">Dwing hierdie bladsy om te herlaai</translation>

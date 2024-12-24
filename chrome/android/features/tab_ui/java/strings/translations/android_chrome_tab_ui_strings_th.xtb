@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{เปลี่ยนแล้ว <ph name="ONE_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{เปลี่ยนแล้ว <ph name="MANY_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
-<translation id="4590027107044272416">ตอนนี้คุณเปิดแท็บใหม่ได้ที่นี่</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{ปิด 1 แท็บที่ไม่ได้ใช้งานไหม}other{ปิด <ph name="TAB_COUNT_MANY" /> แท็บที่ไม่ได้ใช้งานไหม}}</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ปิดหลังจาก 1 วัน}other{ปิดหลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>

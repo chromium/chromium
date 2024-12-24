@@ -426,6 +426,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1282436639288565079">Dettagli gruppo di schede</translation>
 <translation id="1283126956823499975">Si è verificato un problema durante la configurazione del dispositivo</translation>
 <translation id="1284277788676816155">Non consentire il salvataggio dei dati</translation>
+<translation id="1284912418686719556">Chrome sta creando una password efficace per te. Non devi ricordarla perché è salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1285484354230578868">Memorizza dati nel tuo account Google Drive</translation>
 <translation id="1285625592773741684">Impostazione di utilizzo dei dati corrente: Dati mobili</translation>
@@ -982,7 +983,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1663698992894057019">Esegui l'upgrade a un nuovo Chromebook per avere la versione di sicurezza e software più recente</translation>
 <translation id="1665328953287874063">Usa una password o un PIN per sbloccare il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Espressionismo</translation>
-<translation id="1666232093776384142">Disattiva la protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="1667842670298352129">Attiva la lettura ad alta voce di testo specifico. Seleziona prima l'icona Seleziona per ascoltare nella parte inferiore dello schermo, quindi evidenzia il testo. Puoi anche usare una scorciatoia da tastiera: evidenzia il testo e premi il tasto per la ricerca + S.</translation>
 <translation id="1668435968811469751">Registrazione manuale</translation>
 <translation id="1668804837842452164">Salva su <ph name="BRAND" /> per <ph name="EMAIL" /></translation>
@@ -2854,7 +2854,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2975761176769946178">È necessario specificare un URL</translation>
 <translation id="2975845084271617886">Entra e apri</translation>
 <translation id="2976547701881428815">Strumenti e azioni</translation>
-<translation id="2976557544729462544">Alcuni dispositivi richiedono la disattivazione della protezione dell'accesso ai dati per funzionare correttamente o con le prestazioni ottimali.</translation>
 <translation id="2976639738101799892">Sfrutta tutti i vantaggi della Ricerca Google e di Google ogni volta che navighi</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="2979493931538961252">Quando il tuo Chromebook è offline e sono disponibili hotspot</translation>
@@ -2980,7 +2979,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3053273573829329829">Attiva PIN utente</translation>
 <translation id="3053274730492362225">Non lampeggiare</translation>
 <translation id="3054011216223858553">Off • Usa il linguaggio di tutti i giorni per cercare nella cronologia di navigazione e trovare i siti che hai visitato</translation>
-<translation id="3054766768827382232">La disattivazione può migliorare le prestazioni delle periferiche, ma può esporre i dati personali all'utilizzo non autorizzato.</translation>
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3058517085907878899">Nome del dispositivo</translation>
 <translation id="3060952009917586498">Cambia la lingua del dispositivo. La lingua corrente è <ph name="LANGUAGE" />.</translation>
@@ -3731,7 +3729,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3619294456800709762">I siti possono attivare automaticamente la modalità Picture in picture</translation>
 <translation id="3620136223548713675">Geolocalizzazione</translation>
 <translation id="3621202678540785336">Ingresso</translation>
-<translation id="3621807901162200696">Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="3622820753353315928">Colore flash dello schermo</translation>
 <translation id="362333465072914957">In attesa dell'emissione del certificato da parte della CA</translation>
@@ -3811,7 +3808,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3675683621636519363">Invia a ChromeOS Flex report sugli arresti anomali, dati diagnostici e sull'utilizzo</translation>
 <translation id="367645871420407123">lascia vuoto questo campo se desideri impostare la password root sul valore dell'immagine di test predefinita</translation>
 <translation id="3677911431265050325">Richiedi sito per dispositivi mobili</translation>
-<translation id="3677959414150797585">Sono incluse app, pagine web e altro. Invia statistiche per migliorare i suggerimenti solo se hai scelto di condividere i dati sull'utilizzo.</translation>
 <translation id="3678156199662914018">Estensione: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Le pagine visualizzate in questa finestra non verranno memorizzate nella cronologia del browser e non lasceranno altre tracce, ad esempio cookie, sul computer dopo l'uscita dall'account. I file scaricati e i preferiti creati non verranno conservati.</translation>
 <translation id="3679126865530709868">Touchpad integrato</translation>
@@ -6535,7 +6531,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5613074282491265467">Se accedi a Chrome, le password salvate verranno memorizzate nel tuo Account Google, <ph name="USER_EMAIL" />. Per disattivare questa preferenza, vai alle impostazioni.</translation>
 <translation id="5614190747811328134">Notifica all'utente</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
-<translation id="5614625640221885312">Accedi per avere a disposizione i tuoi preferiti, le password e altro ancora su tutti i dispositivi</translation>
 <translation id="5614947000616625327">Portachiavi iCloud</translation>
 <translation id="561552177910095306">Elenco di siti recenti visitati che possono suggerire annunci ad altri siti mentre continui a navigare</translation>
 <translation id="5616571005307953937">Meno recenti</translation>
@@ -6837,7 +6832,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth attivato</translation>
 <translation id="5844284118433003733">Se hai eseguito l'accesso, questi dati vengono collegati al tuo Account Google per proteggerti nei servizi Google, ad esempio aumentando la protezione in Gmail dopo un incidente di sicurezza.</translation>
-<translation id="5844574845205796324">Ricevi suggerimenti su nuovi contenuti da scoprire</translation>
 <translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Errore di sintassi nella relazione: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Nessuna ombra</translation>
@@ -7571,6 +7565,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="637642201764944055">Le versioni precedenti delle app di Chrome non si apriranno più sui dispositivi Linux dopo dicembre 2022. Contatta l'amministratore per eseguire l'aggiornamento a una nuova versione o per rimuovere questa app.</translation>
 <translation id="6377268785556383139">1 risultato per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Apri nelle reti Wi-Fi</translation>
+<translation id="6379228010899751161">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
 <translation id="6383382161803538830">Modalità Lettura non disponibile in questa pagina</translation>
 <translation id="638418309848716977">Link supportati</translation>
@@ -8625,6 +8620,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7134951043985383439">File scaricato pericoloso</translation>
 <translation id="7135729336746831607">Attivare il Bluetooth?</translation>
 <translation id="7136694880210472378">Imposta come predefinito</translation>
+<translation id="7137277889990479760">Continua come <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati da siti e app installate</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sta utilizzando il microfono</translation>
@@ -9205,6 +9201,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561759921596375678">Attiva il volume</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
+<translation id="7563970324931922582">[Testo segnaposto]</translation>
 <translation id="756445078718366910">Apri finestra del browser</translation>
 <translation id="7564847347806291057">Termina processo</translation>
 <translation id="756503097602602175">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere alle informazioni del tuo account, puoi accedere a <ph name="DEVICE_TYPE" /> come ospite oppure navigare sul Web in una <ph name="LINK_2_BEGIN" />finestra di navigazione in incognito<ph name="LINK_2_END" />.</translation>
@@ -9621,6 +9618,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account, all'indirizzo account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile alla tua o in possesso di una registrazione della tua voce potrebbe essere in grado di accedere ai tuoi risultati personali o all'assistente. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
+<translation id="7851196412551419054">Modifica della password…</translation>
 <translation id="7851457902707056880">L'accesso è consentito soltanto all'account del proprietario. Riavvia ed esegui l'accesso con l'account del proprietario. Il computer si riavvierà automaticamente tra 30 secondi.</translation>
 <translation id="7851716364080026749">Impedisci sempre l'accesso a webcam e microfono</translation>
 <translation id="7851720427268294554">Parser IPP</translation>
@@ -10129,7 +10127,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8203152941016626022">Nome dispositivo Condivisione nelle vicinanze</translation>
 <translation id="8203732864715032075">Ricevere notifiche e impostare come predefinita la memorizzazione di questo computer per Messaggi. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic con il pulsante destro</translation>
-<translation id="8205432712228803050">I display e le periferiche potrebbero riavviarsi a breve. Per applicare questa modifica, scollega e ricollega le periferiche.</translation>
 <translation id="8205478243727418828">Avvio app + Freccia giù</translation>
 <translation id="820568752112382238">Siti più visitati</translation>
 <translation id="8206267832882844324">Modifica nota</translation>
@@ -10749,7 +10746,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> o <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura di colore della luminosità notturna</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> richiede le autorizzazioni: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> e altre</translation>
-<translation id="864892689521194669">Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS Flex</translation>
 <translation id="8649026945479135076">È normale che i siti che visiti memorizzino argomenti di tuo interesse per personalizzare la tua esperienza. I siti possono anche memorizzare su Chrome informazioni relative ai tuoi interessi.</translation>
 <translation id="8650543407998814195">Anche se non puoi più accedere al tuo vecchio profilo, puoi comunque rimuoverlo.</translation>
 <translation id="8651585100578802546">Forza aggiornamento di questa pagina</translation>
@@ -10898,6 +10894,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8737966899544698733">Precisione della posizione (solo Android)</translation>
 <translation id="8738418093147087440">Cerca per paesi, lingua o nomi di input</translation>
 <translation id="8740086188450289493">Usa la password del tuo Account Google</translation>
+<translation id="874023689350909633">Prova</translation>
 <translation id="8740247629089392745">Puoi consegnare il Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configurazione è quasi completa, a breve sarà possibile utilizzare il dispositivo.</translation>
 <translation id="8740672167979365981">Aggiornamento di ChromeOS Flex richiesto</translation>
 <translation id="8741944563400125534">Guida alla configurazione di Switch Access</translation>
@@ -11209,6 +11206,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8962863356073277855">Il formato dell'URL deve essere https://www.example.com</translation>
 <translation id="8962918469425892674">Questo sito usa sensori di movimento o della luce.</translation>
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
+<translation id="8964927371396953727">Verifica la tua identità per usare e salvare le password nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Inserisci vecchia password</translation>
 <translation id="8966809848145604011">Altri profili</translation>
 <translation id="8967427617812342790">Aggiungi all'elenco di lettura</translation>

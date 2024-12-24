@@ -108,6 +108,7 @@
 <translation id="143681031165817424">Cyfeiriad wedi'i gadw ar y ddyfais hon yn unig</translation>
 <translation id="1445276840641906250">Eich holl dabiau mewn un porwr</translation>
 <translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
+<translation id="1454615514353469963">Bydd cyfrineiriau, codau pas a data arall yn cael eu dileu yn barhaol o Reolwr Cyfrineiriau Google</translation>
 <translation id="1455660774629812862">Peidio â chuddio</translation>
 <translation id="1460751212339734034">Arbed amser, teipio llai</translation>
 <translation id="1466035273550360103">Dim tabiau ar agor</translation>
@@ -1203,6 +1204,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6418346271604475326">Wrthi'n paratoi PDF</translation>
 <translation id="6429213933892582367">Agorwch Opsiynau Cyfrinair</translation>
 <translation id="6434591244308415567">Bu gwall. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="6435307030888827407">Aros wedi'ch allgofnodi</translation>
 <translation id="6436318499800111867">Rhannwyd â mi <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Dad-binio Tab</translation>
 <translation id="6443118737398455446">Dyddiad darfod annilys</translation>
@@ -1396,6 +1398,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7248046129087111453">Mae'n bosib y bydd <ph name="BEGIN_LINK" />hanes chwilio<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />ffurfiau eraill o weithgarwch<ph name="END_LINK" /> yn cael eu cadw yn eich Cyfrif Google.</translation>
 <translation id="7253951228444156601">Wrthi'n gwirio cyfrineiriau…</translation>
 <translation id="7261217796641151584">Rhannu Grŵp</translation>
+<translation id="7266578100016339897">Mae hyn yn eich helpu i aros yn drefnus. Gallwch chi newid hyn yn y gosodiadau unrhyw bryd.</translation>
 <translation id="7271220006028561438">Caniatáu uwchraddio cod pas awtomatig</translation>
 <translation id="7272437679830969316">Methu â chadarnhau'ch hunaniaeth. Ni chopïwyd y cyfrinair.</translation>
 <translation id="7293429513719260019">Dewis iaith</translation>
@@ -1590,6 +1593,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8080028325999236607">Cau Pob Tab</translation>
 <translation id="8084285576995584326">Rheoli eich data Cyfrif Google</translation>
 <translation id="809543534949702122">Hanes Chwilio</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}zero{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}two{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} ddiwrnod}few{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}many{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}other{Mae tabiau nad ydych yn eu defnyddio yn cael eu symud yma ar ôl {COUNT} diwrnod}}</translation>
 <translation id="8101409298456377967">Creu, cadw a rheoli eich cyfrineiriau fel y gallwch fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">G</translation>
 <translation id="8114753159095730575">Mae lawrlwytho ffeiliau ar gael. Mae dewisiadau ar gael ger gwaelod y sgrîn.</translation>

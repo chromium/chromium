@@ -982,7 +982,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1663698992894057019">Fă upgrade la un Chromebook nou pentru cea mai recentă securitate și cel mai recent software</translation>
 <translation id="1665328953287874063">Folosește o parolă sau un cod PIN pentru a debloca dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expresionism</translation>
-<translation id="1666232093776384142">Dezactivează protecția accesului la date pentru dispozitive periferice</translation>
 <translation id="1667842670298352129">Ascultă un anumit text citit cu voce tare. Mai întâi, selectează pictograma Selectați și ascultați din partea de jos a ecranului, apoi evidențiază textul. Poți folosi și o comandă rapidă de la tastatură: evidențiază textul, apoi apasă pe tasta de căutare + S.</translation>
 <translation id="1668435968811469751">Înregistrează-te manual</translation>
 <translation id="1668804837842452164">Salvează în <ph name="BRAND" /> pentru <ph name="EMAIL" /></translation>
@@ -2853,7 +2852,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2975761176769946178">Este necesară o adresă URL</translation>
 <translation id="2975845084271617886">Alătură-te și deschide</translation>
 <translation id="2976547701881428815">Instrumente și acțiuni</translation>
-<translation id="2976557544729462544">Unele dispozitive necesită dezactivarea protecției accesului la date pentru a funcționa corect sau la capacitate maximă.</translation>
 <translation id="2976639738101799892">Profită de Căutarea Google și ingeniozitatea Google de fiecare dată când navighezi</translation>
 <translation id="2977480621796371840">Elimină din grup</translation>
 <translation id="2979493931538961252">Când Chromebookul este offline și sunt disponibile hotspoturi</translation>
@@ -2979,7 +2977,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Activează codul PIN pentru utilizator</translation>
 <translation id="3053274730492362225">Fără clipire</translation>
 <translation id="3054011216223858553">Dezactivat • Folosește limbajul cotidian pentru a căuta în istoricul de navigare și pentru a găsi site-urile pe care le-ai accesat</translation>
-<translation id="3054766768827382232">Dacă dezactivezi protecția, dispozitivele periferice pot să funcționeze mai bine, dar îți pot expune datele cu caracter personal prin utilizare neautorizată.</translation>
 <translation id="3058498974290601450">Poți să activezi sincronizarea oricând în setări</translation>
 <translation id="3058517085907878899">Denumește dispozitivul</translation>
 <translation id="3060952009917586498">Schimbă limba dispozitivului. Limba actuală este <ph name="LANGUAGE" />.</translation>
@@ -3727,7 +3724,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3619294456800709762">Site-urile pot intra automat în modul picture-in-picture</translation>
 <translation id="3620136223548713675">Localizarea geografică</translation>
 <translation id="3621202678540785336">Intrări</translation>
-<translation id="3621807901162200696">Contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{o aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="3622820753353315928">Luminare intermitentă colorată a ecranului</translation>
 <translation id="362333465072914957">Se așteaptă emiterea unui certificat de către CA</translation>
@@ -3807,7 +3803,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3675683621636519363">Trimite rapoarte de blocare și date de diagnosticare și de utilizare către ChromeOS Flex</translation>
 <translation id="367645871420407123">nu completa dacă dorești să setezi parola directorului rădăcină la valoarea prestabilită a imaginii de test</translation>
 <translation id="3677911431265050325">Solicită site mobil</translation>
-<translation id="3677959414150797585">Include aplicații, pagini web și altele. Trimite statistici pentru a îmbunătăți sugestiile numai dacă ai ales să permiți accesul la datele de utilizare.</translation>
 <translation id="3678156199662914018">Extensie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Paginile pe care le accesezi în această fereastră nu vor apărea în istoricul browserului și nu vor lăsa alte urme pe computer (de exemplu, cookie-uri) după ce te deconectezi. Fișierele pe care le descarci și marcajele pe care le creezi nu se vor păstra.</translation>
 <translation id="3679126865530709868">Touchpad încorporat</translation>
@@ -6526,7 +6521,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5613074282491265467">Dacă te-ai conectat la Chrome, parolele pe care le salvezi vor fi păstrate în Contul tău Google <ph name="USER_EMAIL" />. Pentru a dezactiva opțiunea, accesează setările.</translation>
 <translation id="5614190747811328134">Notificare pentru utilizator</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
-<translation id="5614625640221885312">Conectează-te pentru a-ți accesa marcajele, parolele și altele pe toate dispozitivele tale</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Lista site-urilor accesate recent care pot sugera anunțuri pe alte site-uri pe măsură ce navighezi</translation>
 <translation id="5616571005307953937">Cea mai veche</translation>
@@ -6830,7 +6824,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5841270259333717135">Configurează setările de Ethernet</translation>
 <translation id="5842497610951477805">Activează Bluetooth</translation>
 <translation id="5844284118433003733">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
-<translation id="5844574845205796324">Sugerează conținut nou de explorat</translation>
 <translation id="5844685625984052392">Indiciu</translation>
 <translation id="5846200638699387931">Eroare de sintaxă a relației: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Fără umbră</translation>
@@ -10121,7 +10114,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8203152941016626022">numele dispozitivului în Trimiterea în apropiere</translation>
 <translation id="8203732864715032075">Îți trimite notificări și are ca setare prestabilită reținerea acestui computer pentru Messages <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Clic dreapta</translation>
-<translation id="8205432712228803050">Ecranele și dispozitivele periferice se pot reseta pentru scurt timp. Pentru ca modificarea să fie aplicată, deconectează și reconectează dispozitivele periferice.</translation>
 <translation id="8205478243727418828">Lansator + săgeată în jos</translation>
 <translation id="820568752112382238">Cele mai accesate site-uri</translation>
 <translation id="8206267832882844324">Editează nota</translation>
@@ -10740,7 +10732,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> sau <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Temperatura culorii pentru Lumina de noapte</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> dorește să <ph name="FIRST_PERMISSION" />, să <ph name="SECOND_PERMISSION" /> și altele</translation>
-<translation id="864892689521194669">Contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome Flex</translation>
 <translation id="8649026945479135076">Se întâmplă frecvent ca site-urile pe care le accesezi să rețină lucrurile care te interesează, pentru a-ți personaliza experiența. În plus, site-urile pot stoca informații în Chrome despre interesele tale.</translation>
 <translation id="8650543407998814195">Deși nu mai poți accesa profilul vechi, poți totuși să-l elimini.</translation>
 <translation id="8651585100578802546">Reîncarcă forțat această pagină</translation>

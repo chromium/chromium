@@ -396,6 +396,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2402411679569069051">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeä tai avaamalla puhelimesi</translation>
 <translation id="240545663114741956">Kirjaudu ulos painamalla <ph name="ACCELERATOR" /> kahdesti.</translation>
 <translation id="2405664212338326887">Ei yhdistetty</translation>
+<translation id="2406710117564540804">Laita Älä häiritse ‑tila päälle tai pois päältä</translation>
 <translation id="2408955596600435184">Lisää PIN-koodi</translation>
 <translation id="2412593942846481727">Päivitys saatavilla</translation>
 <translation id="2416438829169535743">Poistutaanko näkymästä?</translation>
@@ -1647,6 +1648,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6539852571005954999">Latausta <ph name="FILENAME" /> skannataan</translation>
 <translation id="6542521951477560771">Suoratoistetaan: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojit, GIFit ja muuta</translation>
+<translation id="6543942526104794893">Haluatko varmasti laittaa kasvoeleet pois päältä?</translation>
 <translation id="6545382064335350438">PIN-koodia ei voitu vieläkään vahvistaa. Yritä uudelleen.</translation>
 <translation id="6555373427270923730">Kirjoita verkko-osoite osoitepalkkiin ja paina <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2312,6 +2314,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8855885154700222542">Koko näyttö ‑näppäin</translation>
 <translation id="8858369206579825206">Yksityisyysasetukset</translation>
 <translation id="8860366331836346216">Lisää eSIM</translation>
+<translation id="8869149849311827122">Haluatko varmasti laittaa hiiren kohdistimen ohjauksen pois päältä?</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
 <translation id="8873203135446552888">Vahvista, että haluat poistaa sisäänrakennetun kosketuslevyn käytöstä</translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>

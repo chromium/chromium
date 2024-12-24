@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1396327438254055134">允許網站使用 V8 優化工具。</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
+<translation id="1415855080660575082">讓 Chrome 與你的裝置分享最近使用的分頁，並在裝置應用程式清單和搜尋結果中顯示。你可以在 Chrome 設定中開啟或關閉此功能。</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
 <translation id="1500473259453106018">隱藏「在分頁上啟用減價通知」資訊卡</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">你已暫時允許此網站使用第三方 Cookie。換言之，瀏覽保護程度會降低，但網站功能正常運作的機率會提高。<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">部分網站的功能可能無法在無痕模式中正常運作</translation>
 <translation id="2442870161001914531">一律要求桌面版網站</translation>
+<translation id="2445311670906052406">Chrome 現在會與你的裝置分享最近使用的分頁。這些分頁會在裝置應用程式清單和搜尋結果中顯示。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="2469312991797799607">此操作會刪除 <ph name="ORIGIN" /> 及底下所有網站的所有資料和 Cookie</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">網站可顯示來自身分服務的登入提示。</translation>
 <translation id="2787357173144933081">快速開啟網址列</translation>
 <translation id="2790501146643349491">開咗之後，最近閂咗嘅網站可以完成傳送同接收資料。閂咗之後，最近閂咗嘅網站唔可以完成傳送同接收資料。</translation>
+<translation id="2814830417943086299">Chrome 現在會於裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
 <translation id="2850913818900871965">要求使用流動裝置檢視模式</translation>
 <translation id="2870560284913253234">網站</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>

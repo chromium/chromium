@@ -2471,6 +2471,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5425082381151187189">Domácnosť a výzdoba interiéru</translation>
 <translation id="5426179911063097041">Web <ph name="SITE" /> vám chce posielať upozornenia</translation>
 <translation id="5430298929874300616">Odstrániť záložku</translation>
+<translation id="5431318178759467895">Farebne</translation>
 <translation id="5433756542371550806">Variácie v príkazovom riadku</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nebude ukladať<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -3784,7 +3785,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prispôsobiť veľkosť a typ písma v Chrome</translation>
 <translation id="7752995774971033316">Nespravované</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Čet s <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Po spustení aktualizácie sa karty a aplikácie Chromu zatvoria</translation>
 <translation id="7755287808199759310">Váš rodič ho môže pre vás odblokovať</translation>
 <translation id="7755624218968747854">Hlavný kotúč</translation>
@@ -3924,6 +3924,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom nový formulár vo Formulároch Google</translation>
 <translation id="8028892419725165118">Jednoduché hry</translation>
 <translation id="8028960012888758725">Orezať po dokončení úlohy</translation>
+<translation id="8028993641010258682">Veľkosť</translation>
 <translation id="8029829038322015001">Červená č. 1</translation>
 <translation id="8030729864112325446">Odborné a celoživotné vzdelávanie</translation>
 <translation id="8032546467100845887">Priehľadnosť</translation>
@@ -3979,7 +3980,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8116925261070264013">Vypnuté</translation>
 <translation id="8118489163946903409">Spôsob platby</translation>
 <translation id="8118506371121007279">Odoslať spätnú väzbu</translation>
-<translation id="8124085000247609808">Čet s <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Softvér <ph name="SOFTWARE_NAME" /> nebol v počítači alebo sieti riadne nainštalovaný. Požiadajte správcu IT, aby tento problém vyriešil.</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8133495915926741232">Vyberte, ktoré všeobecné kategórie tém môžu pomáhať prispôsobovať reklamy. Vypnutím všeobecnej kategórie zablokujete aj jej súvisiace témy. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>

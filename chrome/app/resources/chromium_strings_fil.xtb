@@ -114,6 +114,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="2483889755041906834">Sa Chromium</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2513154137948333830">Nire-require na i-reboot: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Para magpatuloy, kakailanganin mong mag-sign in sa Chromium gamit ang <ph name="EMAIL" />. Tinitiyak nito ang pagsunod sa mga patakaran ng iyong organisasyon.</translation>
 <translation id="2542968102051442371">Pumili ng text gamit ang Paghahanap ng Larawan</translation>
 <translation id="2554739539410784893">Sinusubukang palitan ng Chromium ang mga kasalukuyang password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="2560420686485554789">Kailangan ng Chromium ang access sa storage upang maka-download ng mga file</translation>
@@ -255,7 +256,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="4438870983368648614">Pinapamahalaan ni <ph name="MANAGER" /> ang Chromium</translation>
 <translation id="444069871276811466">Magdagdag ng profile sa Chromium</translation>
 <translation id="4447409407328223819">Tungkol sa Chrome na Pang-test</translation>
-<translation id="4470974262661801543">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, ilagay ang passphrase mo</translation>
 <translation id="4493028449971051158">Nagkaroon ng error sa startup: patakbuhin ang installer bilang administrator.</translation>
 <translation id="4501471624619070934">Hindi na-install dahil pinaghihigpitan ang access sa bansang ito.</translation>
 <translation id="4510853178268397146">Hindi nag-publish ang extension na ito ng mga kagawian sa privacy, gaya ng kung paano ito nangongolekta at gumagamit ng data. Inirerekomenda ng Chromium na alisin mo ito.</translation>

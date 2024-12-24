@@ -1648,6 +1648,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6539852571005954999">Folyamatban van a következő letöltés ellenőrzése: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Küldés ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojik, GIF-ek és egyebek</translation>
+<translation id="6543942526104794893">Biztosan kikapcsolja az arckifejezéseket?</translation>
 <translation id="6545382064335350438">PIN-kódjának ellenőrzése még mindig nem sikerült. Próbálkozzon újra.</translation>
 <translation id="6555373427270923730">Gépelje be a címsávba az internetcímet, majd nyomja le a(z) <ph name="MODIFIER" /><ph name="KEY" /> billentyűkombinációt</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2315,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8858369206579825206">Adatvédelmi beállítások</translation>
 <translation id="8860366331836346216">eSIM hozzáadása</translation>
+<translation id="8869149849311827122">Biztosan kikapcsolja az egérkurzor vezérlését?</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8873203135446552888">Annak megerősítése, hogy le szeretné tiltani a beépített érintőpadot</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>

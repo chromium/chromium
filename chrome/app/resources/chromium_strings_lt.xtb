@@ -114,6 +114,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2483889755041906834">Naudojant „Chromium“</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
 <translation id="2513154137948333830">Būtina paleisti iš naujo: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Jei norite tęsti, turite prisijungti prie „Chromium“ naudodami <ph name="EMAIL" />. Taip užtikrinama, kad būtų laikomasi organizacijos politikos.</translation>
 <translation id="2542968102051442371">Pasirinkite tekstą naudodami vaizdų paiešką</translation>
 <translation id="2554739539410784893">„Chromium“ bando pakeisti esamus slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="2560420686485554789">„Chromium“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
@@ -123,6 +124,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2583187216237139145">Visus „Chromium“ duomenis, sugeneruotus naudojant šį profilį (pvz., sukurtas žymes, istoriją, slaptažodžius ir kitus nustatymus), gali pašalinti darbo profilio administratorius. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="259935314519650377">Nepavyko talpykloje išsaugoti atsisiųstos diegimo programos. Klaida: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Patvirtinkite savo tapatybę, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">„Chromium“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta (rekomenduojama)</translation>
 <translation id="2648074677641340862">Diegiant įvyko operacinės sistemos klaida. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="2661879430930417727">Jei bendrinate įrenginį, šeimos nariai ir draugai gali naršyti atskirai ir nustatyti „Chromium“ pagal savo poreikius</translation>
@@ -255,7 +257,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4438870983368648614">„<ph name="MANAGER" />“ tvarko „Chromium“</translation>
 <translation id="444069871276811466">Pridėti „Chromium“ profilį</translation>
 <translation id="4447409407328223819">Apie „Chrome for Testing“</translation>
-<translation id="4470974262661801543">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, įveskite slaptafrazę</translation>
 <translation id="4493028449971051158">Paleisties klaida: diegimo programą paleiskite kaip administratorius.</translation>
 <translation id="4501471624619070934">Diegimas nepavyko, nes šioje šalyje prieiga ribojama.</translation>
 <translation id="4510853178268397146">Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis. „Chromium“ rekomenduoja jį pašalinti.</translation>
@@ -451,6 +452,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6980074797973263542">Organizacija gali peržiūrėti ir tvarkyti naršymo duomenis, pvz., žymes, istoriją ir slaptažodžius. Ji negali peržiūrėti naršymo duomenų asmeniniuose „Chromium“ profiliuose.</translation>
 <translation id="6985329841647292029">„Chromium“ OS sąlygos</translation>
 <translation id="6990124437352146030">„Chromium“ reikia leidimo, kad galėtų naudoti mikrofoną šioje svetainėje</translation>
+<translation id="7003299027384820442">Įveskite slaptafrazę, kad galėtumėte naudoti ir išsaugoti „Chromium“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Įdiegti nepavyko, nes ši operacinės sistemos versija nepalaikoma.</translation>
 <translation id="7024536598735240744">Išpakavimo klaida: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Diegimas sustabdytas.</translation>
@@ -546,6 +548,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8330519371938183845">Prisijunkite, kad galėtumėte sinchronizuoti ir suasmeninti „Chromium“ skirtinguose įrenginiuose</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> anksčiau naudojo „Chromium“</translation>
 <translation id="8357820681460164151">Jei norite pasiekti „Chromium“ naršyklės duomenis visuose savo įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
+<translation id="8359544530202147897">Atnaujinkite „Chromium“, kad galėtumėte toliau naudoti „Chromium“ duomenis „Google“ paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Jei norite gauti būsimus „Chromium“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8 versijos „Windows“.</translation>
 <translation id="8362914115861174987">Versti į</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>

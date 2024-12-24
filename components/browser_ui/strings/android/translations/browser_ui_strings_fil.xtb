@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
 <translation id="1396327438254055134">Payagan ang site na gumamit ng V8 optimizer.</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
+<translation id="1415855080660575082">Hayaang i-share ng Chrome ang iyong mga kamakailang tab gamit ang device mo para makita ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-on o i-off sa mga setting ng Chrome.</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
 <translation id="1500473259453106018">I-hide ang card tungkol sa mga pagbaba ng presyo sa mga tab</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Pansamantala mong pinayagan ang site na ito na gumamit ng third-party na cookies, na nangangahulugang mas mahina ang proteksyon sa pag-browse pero mas malamang na gumana ang mga feature ng site na gaya ng inaasahan. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Posibleng hindi gumana sa Incognito mode ang mga feature sa ilang site</translation>
 <translation id="2442870161001914531">Palaging hilingin ang pang-desktop na site</translation>
+<translation id="2445311670906052406">Shine-share na ngayon ng Chrome ang iyong mga kamakailang tab sa device mo. Makikita mo ang mga ito sa listahan ng app at mga resulta ng paghahanap ng iyong device. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="2469312991797799607">Ide-delete ng pagkilos na ito ang lahat ng data at cookies para sa <ph name="ORIGIN" /> at lahat ng site sa ilalim nito</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Puwedeng magpakita ang mga site ng mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
 <translation id="2787357173144933081">Simulan ang Omnibox</translation>
 <translation id="2790501146643349491">Kapag naka-on, matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data. Kapag naka-off, hindi matatapos ng mga kamakailang isinarang site ang pagpapadala at pagtanggap ng data.</translation>
+<translation id="2814830417943086299">Ipinapakita na ngayon ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="2822354292072154809">Sigurado ka bang gusto mong i-reset ang lahat ng pahintulot sa site para sa <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Mag-request ng mobile view</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162"><ph name="ZOOM_LEVEL" /> %% ang kasalukuyang pag-zoom</translation>
+<translation id="9156722768168878035">Hayaang ipakita ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
 <translation id="959682366969460160">Maging organisado</translation>

@@ -461,6 +461,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1777422078676229054">Foto (arkiv)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Vill du installera webbappar?</translation>
+<translation id="1791415068765905273">Visa alla jämförelsetabeller</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
 <translation id="1793631236004319016">Användes senast för <ph name="NUM_HOURS_MINUTES_SECONDS" /> sedan.</translation>
@@ -2197,6 +2198,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4918221908152712722">Installera <ph name="APP_NAME" /> (ingen nedladdning krävs)</translation>
 <translation id="4920457992177678649">Semesterbostäder och kortare vistelser</translation>
 <translation id="4920710383559189047">Omslag</translation>
+<translation id="4920921410507315601">Jämförelsetabeller</translation>
 <translation id="4922104989726031751">Om du vill använda Lösenordshantering med operativsystemet ska du starta om Chromium och tillåta åtkomst till datorns lösenordshanterare. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="4923459931733593730">Betalning</translation>
 <translation id="4926049483395192435">Värdet måste anges.</translation>
@@ -2390,6 +2392,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5278778426231952189">Ladda upp nu</translation>
 <translation id="5279286380302340275">Hantera nedladdningar</translation>
 <translation id="5280963125494874678">webbappar</translation>
+<translation id="5282008206326321696">{count,plural, =0{# bokmärken}=1{# bokmärke}other{# bokmärken}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
 <translation id="528468243742722775">Avsluta</translation>
@@ -2475,6 +2478,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5425082381151187189">Heminredning</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vill skicka aviseringar</translation>
 <translation id="5430298929874300616">Ta bort bokmärke</translation>
+<translation id="5431318178759467895">Färg</translation>
 <translation id="5433756542371550806">Varianter på kommandoraden</translation>
 <translation id="5434798570900738152">Följande sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chromium:
         <ph name="BEGIN_LIST" />
@@ -2584,6 +2588,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="561165882404867731">Översätt den här sidan med Google Översätt</translation>
 <translation id="5612720917913232150"><ph name="URL" /> vill använda datorns plats</translation>
 <translation id="5614520971155863709">Kortspel</translation>
+<translation id="5617785978844309968">Visa alla jämförelsetabeller</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> omdirigerade dig för många gånger.</translation>
 <translation id="5619721953841297650">Förinställning</translation>
 <translation id="5624120631404540903">Hantera lösenord</translation>
@@ -3789,7 +3794,6 @@ Mer information.
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Anpassa teckenstorlekar och teckensnitt i Chrome</translation>
 <translation id="7752995774971033316">Hanteras inte</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Chatta med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Dina flikar och appar i Chrome stängs när uppdateringen startar</translation>
 <translation id="7755287808199759310">En förälder kan ta bort blockeringen</translation>
 <translation id="7755624218968747854">Primär rulle</translation>
@@ -3929,6 +3933,7 @@ Mer information.
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa ett nytt formulär i Google Formulär</translation>
 <translation id="8028892419725165118">Småspel</translation>
 <translation id="8028960012888758725">Beskär efter jobb</translation>
+<translation id="8028993641010258682">Storlek</translation>
 <translation id="8029829038322015001">Röd 1</translation>
 <translation id="8030729864112325446">Yrkes- och vidareutbildning</translation>
 <translation id="8032546467100845887">Transparens</translation>
@@ -3984,7 +3989,6 @@ Mer information.
 <translation id="8116925261070264013">Ljudet avstängt</translation>
 <translation id="8118489163946903409">Betalningsmetod</translation>
 <translation id="8118506371121007279">Ge feedback</translation>
-<translation id="8124085000247609808">Chatta med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> har inte installerats korrekt på datorn eller nätverket. Be IT-administratören om hjälp med problemet.</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8133495915926741232">Välj vilka breda kategorier av ämnen som kan användas för att anpassa annonser. Om du inaktiverar en bredare kategori blockeras även relaterade ämnen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

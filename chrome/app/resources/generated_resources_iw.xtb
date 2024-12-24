@@ -981,7 +981,6 @@
 <translation id="1663698992894057019">‏כדאי לשדרג למכשיר Chromebook חדש כדי לקבל את גרסאות התוכנה והאבטחה העדכניות</translation>
 <translation id="1665328953287874063">צריך להשתמש בסיסמה או בקוד אימות כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">אקספרסיוניזם</translation>
-<translation id="1666232093776384142">השבתת הגנת הגישה לנתונים עבור ציוד היקפי</translation>
 <translation id="1667842670298352129">‏האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט. אפשר גם להשתמש במקשי הקיצור: מדגישים טקסט ומקישים על מקש החיפוש + S.</translation>
 <translation id="1668435968811469751">הרשמה ידנית</translation>
 <translation id="1668804837842452164">שמירה ב<ph name="BRAND" /> בחשבון <ph name="EMAIL" /></translation>
@@ -2864,7 +2863,6 @@
 <translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
 <translation id="2975845084271617886">הצטרפות ופתיחה</translation>
 <translation id="2976547701881428815">כלים ופעולות</translation>
-<translation id="2976557544729462544">יש מכשירים שיפעלו בצורה נכונה או מיטבית רק אם הגנת הגישה לנתונים תושבת.</translation>
 <translation id="2976639738101799892">‏נהנים מחיפוש Google ומהיכולות המתקדמות של Google בכל פעם שגולשים</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="2979493931538961252">‏בזמן ש-Chromebook במצב אופליין ויש נקודות זמינות לשיתוף אינטרנט</translation>
@@ -2990,7 +2988,6 @@
 <translation id="3053273573829329829">הפעלה של קוד אימות משתמש</translation>
 <translation id="3053274730492362225">ללא הבהוב</translation>
 <translation id="3054011216223858553">מצב מושבת • שימוש בשפה יומיומית כדי לחפש בהיסטוריית הגלישה ולמצוא אתרים שביקרת בהם.</translation>
-<translation id="3054766768827382232">לאחר השבתה, ייתכן שהביצועים של מכשירים היקפיים מסוימים ישתפרו, אבל הנתונים האישיים עלולים להיחשף עקב שימוש לא מורשה.</translation>
 <translation id="3058498974290601450">אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות</translation>
 <translation id="3058517085907878899">שם המכשיר</translation>
 <translation id="3060952009917586498">שינוי השפה במכשיר. השפה הנוכחית היא <ph name="LANGUAGE" />.</translation>
@@ -3739,7 +3736,6 @@
 <translation id="3619294456800709762">אתרים יכולים להפעיל את מצב 'תמונה בתוך תמונה' אוטומטית</translation>
 <translation id="3620136223548713675">מיקום גאוגרפי</translation>
 <translation id="3621202678540785336">קלט</translation>
-<translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="3622820753353315928">צבע המסך בזמן הבהוב</translation>
 <translation id="362333465072914957">‏בהמתנה להנפקת אישור על ידי ה-CA</translation>
@@ -3819,7 +3815,6 @@
 <translation id="3675683621636519363">‏שליחת דוחות קריסה ונתוני אבחון ושימוש במכשיר אל ChromeOS Flex</translation>
 <translation id="367645871420407123">‏יש להשאיר ריק אם ברצונך להגדיר את סיסמת root לערך תמונת בדיקת ברירת המחדל</translation>
 <translation id="3677911431265050325">בקשת אתר לנייד</translation>
-<translation id="3677959414150797585">כולל אפליקציות, דפי אינטרנט ועוד. המערכת שולחת נתונים סטטיסטיים כדי לשפר את ההצעות רק אם בחרת לשתף נתוני שימוש במכשיר.</translation>
 <translation id="3678156199662914018">תוסף: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">‏דפים שיוצגו בחלון זה לא יופיעו בהיסטוריית הדפדפן ולא ישאירו במחשב עקבות מסוגים אחרים, כגון קובצי Cookie, לאחר היציאה. קבצים שיורדו וסימניות שייווצרו לא יישמרו.</translation>
 <translation id="3679126865530709868">לוח מגע מובנה</translation>
@@ -4620,6 +4615,7 @@
 <translation id="4220648711404560261">קרתה שגיאה בזמן ההפעלה.</translation>
 <translation id="4222917615373664617">המעקב אחר מחירים מופעל. המחיר הוא <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">אין הרשאת גישה למיקרופון</translation>
+<translation id="4224541845943007092">קריאה ושמירה של הקלט מהמקלדת בסרגל הכתובות</translation>
 <translation id="4225397296022057997">בכל האתרים</translation>
 <translation id="4228071595943929139">שימוש בכתובת האימייל של הארגון שלך</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
@@ -6541,7 +6537,6 @@
 <translation id="5613074282491265467">‏לאחר כניסה לחשבון ב-Chrome, סיסמאות שנשמרות מאוחסנות בחשבון Google ‏(<ph name="USER_EMAIL" />). אפשר להשבית את האפשרות הזו בהגדרות.</translation>
 <translation id="5614190747811328134">הודעת משתמש</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
-<translation id="5614625640221885312">לאחר הכניסה לחשבון, הסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">רשימה של האתרים שביקרת בהם לאחרונה, שיש להם הרשאה להציע מודעות לאתרים אחרים במהלך הגלישה שלך</translation>
 <translation id="5616571005307953937">הישן ביותר</translation>
@@ -6845,7 +6840,6 @@
 <translation id="5841270259333717135">‏הגדרת Ethernet</translation>
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
 <translation id="5844284118433003733">‏אחרי שנכנסת לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
-<translation id="5844574845205796324">קבלת הצעות לתוכן חדש ומעניין</translation>
 <translation id="5844685625984052392">רמז</translation>
 <translation id="5846200638699387931">שגיאה בתחביר המציין את הקשר: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">ללא צל</translation>
@@ -8636,6 +8630,7 @@
 <translation id="7134951043985383439">בוצעה הורדה של קובץ מסוכן</translation>
 <translation id="7135729336746831607">‏האם להפעיל את Bluetooth?</translation>
 <translation id="7136694880210472378">הגדרה כברירת מחדל</translation>
+<translation id="7137277889990479760">המשך בתור <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">הפעולה הזו תגרום למחיקת נתונים בנפח של <ph name="TOTAL_USAGE" /> שאוחסנו על ידי אתרים ואפליקציות מותקנות</translation>
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7139627972753429585">המיקרופון בשימוש על ידי <ph name="APP_NAME" /></translation>
@@ -9214,6 +9209,7 @@
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7561759921596375678">הפעלת השמע</translation>
 <translation id="7561982940498449837">סגירת התפריט</translation>
+<translation id="7563970324931922582">[טקסט למילוי מקום]</translation>
 <translation id="756445078718366910">פתיחת חלון דפדפן</translation>
 <translation id="7564847347806291057">סיום התהליך</translation>
 <translation id="756503097602602175">‏ב<ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /> אפשר לנהל את חשבונות Google המחוברים. ייתכן שהרשאות שנתת לאתרים ולאפליקציות יחולו על כל החשבונות. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, ניתן להיכנס אל <ph name="DEVICE_TYPE" /> כאורח או לגלוש באינטרנט ב<ph name="LINK_2_BEGIN" />חלון אנונימי<ph name="LINK_2_END" />.</translation>
@@ -10139,7 +10135,6 @@
 <translation id="8203152941016626022">הגדרת שם המכשיר לשיתוף בקרבת מקום</translation>
 <translation id="8203732864715032075">המערכת שולחת לך התראות ומגדירה את המחשב הזה כברירת מחדל לשליחת ההודעות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">לחיצה ימנית</translation>
-<translation id="8205432712228803050">המסכים והציוד ההיקפי עשויים לעבור איפוס לזמן קצר. כדי שהשינוי הזה ייכנס לתוקף, יש לנתק את הציוד ההיקפי ולחבר אותו מחדש.</translation>
 <translation id="8205478243727418828">מרכז האפליקציות + חץ למטה</translation>
 <translation id="820568752112382238">האתרים שאליהם נכנסת בתדירות הגבוהה ביותר</translation>
 <translation id="8206267832882844324">עריכת ההערה</translation>
@@ -10758,7 +10753,6 @@
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> או <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">טמפרטורת הצבע של תאורת לילה</translation>
 <translation id="8648544143274677280">האתר <ph name="SITE_NAME" /> מבקש את ההרשאות: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> והרשאות נוספות</translation>
-<translation id="864892689521194669">‏עזרה בשיפור התכונות והביצועים של ChromeOS Flex</translation>
 <translation id="8649026945479135076">‏באתרים רבים נהוג לשמור את תחומי העניין שלך כדי להתאים אישית את חוויית הגלישה בהם. בנוסף, אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין שלך.</translation>
 <translation id="8650543407998814195">למרות שכבר אין לך גישה לפרופיל הישן, אפשר עדיין להסיר אותו.</translation>
 <translation id="8651585100578802546">אילוץ טעינה מחדש של דף זה</translation>
@@ -10907,6 +10901,7 @@
 <translation id="8737966899544698733">‏קביעת מיקום יותר מדויקת (Android בלבד)</translation>
 <translation id="8738418093147087440">חיפוש לפי מדינות, שפות או שמות קלט</translation>
 <translation id="8740086188450289493">‏שימוש בסיסמה לחשבון Google</translation>
+<translation id="874023689350909633">אני רוצה לנסות</translation>
 <translation id="8740247629089392745">‏אפשר להעביר את ה-Chromebook הזה אל <ph name="SUPERVISED_USER_NAME" />. ההתקנה כמעט הסתיימה. מיד ניתן יהיה לחקור ולהתנסות.</translation>
 <translation id="8740672167979365981">‏נדרש עדכון של ChromeOS Flex</translation>
 <translation id="8741944563400125534">מדריך להגדרת גישה באמצעות מתג</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">మీరు ఫైల్ ఎక్స్‌టెన్షన్‌ను మార్చితే, ఫైల్ వేరే అప్లికేషన్‌లో తెరవబడవచ్చు. అది మీ పరికరానికి హానికరంగా పరిణమించే అవకాశం ఉంటుంది.</translation>
 <translation id="1080365971383768617">మీ అన్ని పరికరాలలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="1082920045291562218">'షేర్ చేయడానికి' సారాంశంపై ఫీడ్‌బ్యాక్‌ను అందించడానికి ఉపయోగించే షీట్ మూసివేయబడింది</translation>
+<translation id="1087176310396019910">స్పామ్ అయ్యే అవకాశం</translation>
 <translation id="1089606299949659462">రివ్యూ పూర్తయింది!</translation>
 <translation id="1094555143448724771">మీ ఇతర పరికరాల నుండి ట్యాబ్‌లను చూడటానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="1095761715416917775">మీ సింక్ డేటాను మీరు ఎల్లప్పుడూ యాక్సెస్ చేయగలరని నిర్ధారించుకోండి</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="3293181007446299124">మీ బ్రౌజింగ్ హిస్టరీ మీ పరికరంలో ప్రైవేట్‌గా ఉంచబడుతుంది, అలాగే మీ గుర్తింపును సురక్షితంగా ఉంచడానికి రిపోర్ట్‌లు ఆలస్యంగా పంపబడతాయి</translation>
+<translation id="3301936297336370235">పాస్‌వర్డ్ సూచన నిర్ధారణ</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" />రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.</translation>
 <translation id="3303414029551471755">కంటెంట్‌ను డౌన్‌లోడ్ చేయడం కొనసాగించాలా?</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6196315980958524839">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి</translation>
 <translation id="6202812185118613467">సింక్‌ను ప్రారంభించడం కోసం తిరిగి సైన్ ఇన్ చేయండి</translation>
+<translation id="6204781143409202534"><ph name="DOMAIN" /> నుండి వచ్చే నోటిఫికేషన్ స్పామ్ అయ్యే అవకాశమున్నట్లు Chrome గుర్తించింది.</translation>
 <translation id="6205314730813004066">యాడ్‌ల విషయంలో గోప్యత</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> కాదా?</translation>
 <translation id="6211386937064921208">ఈ పేజీని ప్రివ్యూ చేస్తోంది</translation>

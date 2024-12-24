@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">automatický obraz v obraze</translation>
 <translation id="1100782917270858593">Tlačítko obnovení cesty, stisknutím klávesy Enter obnovíte svou cestu a zobrazíte příslušnou aktivitu v historii Chromu</translation>
 <translation id="1101672080107056897">Akce při chybě</translation>
+<translation id="1101902632743388185">Vaše srovnávací tabulky</translation>
 <translation id="1104409666019087579">Některá povinná pole jsou prázdná. Před uložením je vyplňte.</translation>
 <translation id="1104860668737945357">Tlačítko Spravovat hesla, aktivací můžete zobrazit a spravovat hesla v nastavení Chromu</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2025186561304664664">Proxy server je nastaven na automatickou konfiguraci.</translation>
 <translation id="2025891858974379949">Nezabezpečený obsah</translation>
 <translation id="2027465737841872819">Plast</translation>
+<translation id="2027707238798802149">Karta není k dispozici</translation>
 <translation id="2029735183873159415">Genealogie a rodokmeny</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Zkontrolovat proxy server a firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Zkratka nesmí být stejná jako klíčové slovo výchozího poskytovatele vyhledávání definované v zásadě <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2514548229949738417">Domácnost a zahrada</translation>
 <translation id="2515629240566999685">Zkontrolovat, zda máte dostatečně silný signál</translation>
 <translation id="2515761554693942801">Rozhodli jste se provést ověření pomocí Touch ID na webech, které používají <ph name="PROVIDER_ORIGIN" />. Tento poskytovatel může mít uložené údaje o vaší platební metodě – můžete <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Tato karta není k dispozici. Kontaktujte poskytovatele karty.</translation>
 <translation id="2521385132275182522">Sponka vpravo dole</translation>
 <translation id="2521736961081452453">Vytvořit formulář</translation>
 <translation id="2523886232349826891">Uloženo pouze do tohoto zařízení</translation>
@@ -2468,6 +2471,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5425082381151187189">Domácí a interiérové dekorace</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vám chce zasílat oznámení</translation>
 <translation id="5430298929874300616">Odstranit záložku</translation>
+<translation id="5431318178759467895">Barevně</translation>
 <translation id="5433756542371550806">Varianty pro příkazový řádek</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3337,6 +3341,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7003322000677139268">Náhradní díly a doplňky pro vozidla</translation>
 <translation id="7004499039102548441">Nedávno použité karty</translation>
 <translation id="7006930604109697472">Přesto odeslat</translation>
+<translation id="7009364359744329733">Tato karta aktuálně není k dispozici. Zkuste to znovu později.</translation>
 <translation id="7010658264061801199">Jídlo a pití</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Může žádat o zamknutí a používání myši</translation>
@@ -3778,7 +3783,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Upravit v Chromu velikosti a typy písem</translation>
 <translation id="7752995774971033316">Nespravováno</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Chatovat s: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Po spuštění aktualizace se vaše karty a aplikace Chrome zavřou</translation>
 <translation id="7755287808199759310">Rodič ti jej může odblokovat.</translation>
 <translation id="7755624218968747854">Hlavní role</translation>
@@ -3918,6 +3922,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte nový formulář ve Formulářích Google</translation>
 <translation id="8028892419725165118">Nenáročné hry</translation>
 <translation id="8028960012888758725">Oříznout za úlohou</translation>
+<translation id="8028993641010258682">Velikost</translation>
 <translation id="8029829038322015001">Červená 1</translation>
 <translation id="8030729864112325446">Odborné a celoživotní vzdělávání</translation>
 <translation id="8032546467100845887">Transparentní</translation>
@@ -3973,7 +3978,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="8118489163946903409">Platební metoda</translation>
 <translation id="8118506371121007279">Dát zpětnou vazbu</translation>
-<translation id="8124085000247609808">Chat s <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Software <ph name="SOFTWARE_NAME" /> na počítači nebo v síti nebyl nainstalován správně. Požádejte administrátora IT o vyřešení tohoto problému.</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8133495915926741232">Vyberte, které široké kategorie témat mohou být používány k personalizaci reklam. Vypnutím širší kategorie zablokujete také související témata. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>

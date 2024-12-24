@@ -2475,6 +2475,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5425082381151187189">Dom in notranja oprema</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vam želi pošiljati obvestila</translation>
 <translation id="5430298929874300616">Odstrani zaznamek</translation>
+<translation id="5431318178759467895">Barvno</translation>
 <translation id="5433756542371550806">Različice ukazne vrstice</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ne bo shranjeval<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3294,6 +3295,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Telesna umetnost</translation>
 <translation id="692638818576287323">Komercialna vozila</translation>
+<translation id="6933282894115597956">Vaša organizacija zahteva prijavo</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Privzeti iskalnik omogoča iskanje v spletu in se uporablja za Chromove funkcije<ph name="END_BOLD" />, kot je iskanje v naslovni vrstici in s slik na spletnih straneh. Funkcija morda ne bo na voljo, če je vaš iskalnik ne podpira.</translation>
 <translation id="6934672428414710184">To ime je iz vašega računa za Google</translation>
 <translation id="6935082727755903526">Zaposlitev na področju računovodstva in financ</translation>
@@ -3788,7 +3790,6 @@ Dodatne podrobnosti:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Prilagajanje velikosti pisav in tipografije v Chromu</translation>
 <translation id="7752995774971033316">Odstranjen iz uporabe</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Klepet s storitvijo <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Zavihki in aplikacije v Chromu se bodo ob začetku posodobitve zaprli.</translation>
 <translation id="7755287808199759310">Starš ga lahko odblokira</translation>
 <translation id="7755624218968747854">Glavni kolut</translation>
@@ -3928,6 +3929,7 @@ Dodatne podrobnosti:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov obrazec v Google Obazcih</translation>
 <translation id="8028892419725165118">Priložnostne igre</translation>
 <translation id="8028960012888758725">Obrezovanje po opravilu</translation>
+<translation id="8028993641010258682">Velikost</translation>
 <translation id="8029829038322015001">Rdeča 1</translation>
 <translation id="8030729864112325446">Poklicno in vseživljenjsko izobraževanje</translation>
 <translation id="8032546467100845887">Transparency</translation>
@@ -3983,7 +3985,6 @@ Dodatne podrobnosti:
 <translation id="8116925261070264013">Prezrto</translation>
 <translation id="8118489163946903409">Plačilno sredstvo</translation>
 <translation id="8118506371121007279">Pošiljanje povratnih informacij</translation>
-<translation id="8124085000247609808">Klepet s/z: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Programska oprema »<ph name="SOFTWARE_NAME" />« ni bila pravilno nameščena v računalniku ali omrežju. Obrnite se na skrbnika za IT glede odpravljanja te težave.</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8133495915926741232">Izberite, katere širše kategorije tem se lahko uporabljajo za lažje osebno prilagajanje oglasov. Če izklopite širšo kategorijo, bodo blokirane tudi njene sorodne teme. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>

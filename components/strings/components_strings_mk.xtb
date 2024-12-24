@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">автоматска „слика во слика“</translation>
 <translation id="1100782917270858593">Копче „Продолжете со патувањето“, притиснете Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="1101672080107056897">Грешка во дејството</translation>
+<translation id="1101902632743388185">Вашите табели за споредба</translation>
 <translation id="1104409666019087579">Некои задолжителни полиња се празни. Пополнете ги пред да зачувате.</translation>
 <translation id="1104860668737945357">Копче за управување со лозинките, активирајте го за да ги прегледате и управувате со вашите лозинки во поставките за Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">Проксито е поставено на автоматско конфигурирање.</translation>
 <translation id="2025891858974379949">Небезбедни содржини</translation>
 <translation id="2027465737841872819">Пластика</translation>
+<translation id="2027707238798802149">Картичката не е достапна</translation>
 <translation id="2029735183873159415">Потекло и генеалогија</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Да ги проверите проксито и заштитниот ѕид<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Кратенката не може да биде иста со клучниот збор на стандардниот оператор за пребарување дефиниран од <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">Дом и градина</translation>
 <translation id="2515629240566999685">Да го проверите сигналот во вашата област</translation>
 <translation id="2515761554693942801">Избравте да потврдите со Touch ID на веб-страници кои користат <ph name="PROVIDER_ORIGIN" />. Давателов на услуги можеби ги зачувал податоците за вашиот начин на плаќање и можете <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Картичкава не е достапна. Контактирајте со издавачот на картичката.</translation>
 <translation id="2521385132275182522">Спојување долу десно</translation>
 <translation id="2521736961081452453">Создај формулар</translation>
 <translation id="2523886232349826891">Зачувано само на овој уред</translation>
@@ -2472,6 +2475,7 @@
 <translation id="5425082381151187189">Декорирање дом и ентериер</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> сака да ви испраќа известувања</translation>
 <translation id="5430298929874300616">Отстрани обележувач</translation>
+<translation id="5431318178759467895">Боја</translation>
 <translation id="5433756542371550806">Варијации на линијата за наредби</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />нема да ги зачувува следниве работи<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3342,6 +3346,7 @@
 <translation id="7003322000677139268">Делови и додатоци за возила</translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
+<translation id="7009364359744329733">Картичкава не е достапна во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7010658264061801199">Храна и пијалаци</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Може да побара да го заклучи и користи глувчето</translation>
@@ -3783,7 +3788,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Приспособете ги голимините и типовите на фонтовите во Chrome</translation>
 <translation id="7752995774971033316">Неуправуван</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – разговарајте со <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Кога ќе започне ажурирањето, ќе се затворат вашите картички и апликации на Chrome</translation>
 <translation id="7755287808199759310">Родителот може да го одблокира</translation>
 <translation id="7755624218968747854">Примарна ролна</translation>
@@ -3923,6 +3927,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов формулар во Google Forms</translation>
 <translation id="8028892419725165118">Секојдневни игри</translation>
 <translation id="8028960012888758725">Кратење по завршување на задачата</translation>
+<translation id="8028993641010258682">Големина</translation>
 <translation id="8029829038322015001">Црвена 1</translation>
 <translation id="8030729864112325446">Стручно и вечерно училиште</translation>
 <translation id="8032546467100845887">Транспарентност</translation>
@@ -3978,7 +3983,6 @@
 <translation id="8116925261070264013">Со исклучен звук</translation>
 <translation id="8118489163946903409">Начин на плаќање</translation>
 <translation id="8118506371121007279">Испратете повратни информации</translation>
-<translation id="8124085000247609808">Разговарајте со <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Софтверот „<ph name="SOFTWARE_NAME" />“ не е правилно инсталиран на компјутерот или мрежата. Побарајте од вашиот IT-администратор да го реши проблемот.</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8133495915926741232">Изберете кои општи категории теми може да се користат за да помогнат при персонализирањето реклами. Со исклучувањето на поопшта категорија, ќе се блокираат и нејзините поврзани теми. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>

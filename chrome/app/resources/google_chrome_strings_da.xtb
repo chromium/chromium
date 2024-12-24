@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Luk oversættelsesskærmen</translation>
 <translation id="2139300032719313227">Genstart ChromeOS</translation>
 <translation id="2151406531797534936">Genstart Chrome nu</translation>
-<translation id="2163089732491971196">Angiv din adgangssætning for at bruge og gemme Chrome-data på din Google-konto</translation>
 <translation id="2174917724755363426">Installationen er ikke fuldført. Er du sikker på, at du vil annullere?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Fejl ved søgning efter opdatering: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -386,6 +385,7 @@
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
 <translation id="5947104538377036631">Chrome-genvej</translation>
 <translation id="5953954252731207958">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chrome anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />værktøjer fra Chrome<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
@@ -604,6 +604,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="842386925677997438">Chromes sikkerhedsværktøjer</translation>
 <translation id="8425765582779547329">Log ind i Chrome for at blive beskyttet på nettet med dine forældres valg</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
+<translation id="8429214465555795676">Du skal logge ind i Chrome med <ph name="EMAIL" /> for at fortsætte. Dette sikrer, at din organisations politikker overholdes.</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8451192282033883849">Din konto administreres af <ph name="MANAGER_NAME" />. Din administrator kan se og redigere denne Chrome-browserprofil og dens data som f.eks. bogmærker, historik og adgangskoder.</translation>
 <translation id="8496177819998570653">Google Adgangs­kode­admin­istrator</translation>

@@ -77,7 +77,6 @@ Ja izdzēsīsiet šo grupu, visi lietotāji nekavējoties zaudēs piekļuvi ciļ
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> cilne mainīta; aizvērtas: <ph name="ANY_CLOSED" />}zero{<ph name="MANY_CHANGED" /> cilnes mainītas; aizvērtas: <ph name="ANY_CLOSED" />}one{<ph name="MANY_CHANGED" /> cilne mainīta; aizvērtas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> cilnes mainītas; aizvērtas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">neaktīva</translation>
 <translation id="4460014764210899310">Atcelt grupēšanu</translation>
-<translation id="4590027107044272416">Tagad varat šeit atvērt jaunu cilni.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vai aizvērt 1 neaktīvu cilni?}zero{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvas cilnes?}one{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvu cilni?}other{Vai aizvērt <ph name="TAB_COUNT_MANY" /> neaktīvas cilnes?}}</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Aizvērt pēc 1 dienas}zero{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>

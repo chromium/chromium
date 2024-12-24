@@ -1648,6 +1648,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Transmitiendo a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs y mucho más</translation>
+<translation id="6543942526104794893">¿Confirmas que quieres desactivar los gestos faciales?</translation>
 <translation id="6545382064335350438">Aún no se pudo verificar tu PIN. Vuelve a intentarlo.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, luego, presiona <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2315,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8860366331836346216">Agregar eSIM</translation>
+<translation id="8869149849311827122">¿Confirmas que quieres desactivar el control del cursor del mouse?</translation>
 <translation id="8870509716567206129">La app no es compatible con la función de pantalla dividida.</translation>
 <translation id="8873203135446552888">Confirma que quieres inhabilitar el panel táctil integrado</translation>
 <translation id="8874184842967597500">No conectado</translation>

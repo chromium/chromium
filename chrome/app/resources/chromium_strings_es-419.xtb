@@ -112,6 +112,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
 <translation id="2513154137948333830">Debes reiniciar el sistema: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Para continuar, deberás acceder a Chromium con <ph name="EMAIL" />. Esto garantiza el cumplimiento de las políticas de tu organización.</translation>
 <translation id="2542968102051442371">Selecciona texto con la Búsqueda con imágenes</translation>
 <translation id="2554739539410784893">Chromium está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="2560420686485554789">Chromium necesita acceder al almacenamiento para descargar archivos</translation>
@@ -251,7 +252,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="4438870983368648614"><ph name="MANAGER" /> administra Chromium</translation>
 <translation id="444069871276811466">Agregar perfil de Chromium</translation>
 <translation id="4447409407328223819">Acerca de Chrome for Testing</translation>
-<translation id="4470974262661801543">Para usar y guardar datos de Chromium en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
 <translation id="4493028449971051158">Error de inicio: Ejecuta el instalador como administrador.</translation>
 <translation id="4501471624619070934">La instalación falló porque el acceso está restringido en este país.</translation>
 <translation id="4510853178268397146">Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos. Chromium te recomienda quitarla.</translation>

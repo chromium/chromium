@@ -92,7 +92,6 @@
 <translation id="2137162749895930932">Tutup layar terjemahan</translation>
 <translation id="2139300032719313227">Mulai ulang ChromeOS</translation>
 <translation id="2151406531797534936">Mulai ulang Chrome sekarang</translation>
-<translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, masukkan frasa sandi</translation>
 <translation id="2174917724755363426">Penginstalan tidak selesai. Yakin ingin membatalkan?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error pemeriksaan update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -386,6 +385,7 @@
 <translation id="5941830788786076944">Jadikan Google Chrome sebagai browser default</translation>
 <translation id="5947104538377036631">Pintasan Chrome</translation>
 <translation id="5953954252731207958">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alat dari Chrome<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
@@ -604,6 +604,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="842386925677997438">Alat keamanan Chrome</translation>
 <translation id="8425765582779547329">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chrome</translation>
 <translation id="8428213095426709021">Setelan</translation>
+<translation id="8429214465555795676">Untuk melanjutkan, Anda harus login ke Chrome dengan <ph name="EMAIL" />. Langkah ini memastikan kepatuhan terhadap kebijakan organisasi Anda.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8451192282033883849">Akun Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat melihat dan mengedit profil browser Chrome ini beserta datanya seperti bookmark, histori, dan sandi.</translation>
 <translation id="8496177819998570653">Pengelola S&amp;andi Google</translation>

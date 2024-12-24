@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">Φωτογραφία (Αρχειοθέτησης)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Να εγκατασταθούν εφαρμογές ιστού;</translation>
+<translation id="1791415068765905273">Εμφάνιση όλων των πινάκων σύγκρισης</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες σας, το απόρρητο και την ασφάλεια στον Λογαριασμό σας Google</translation>
 <translation id="1793631236004319016">Τελευταία χρήση πριν από <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -961,6 +962,7 @@
 <translation id="2688969097326701645">Ναι, συνέχεια</translation>
 <translation id="2690699652723742414">Τελευταίες 30 ημέρες</translation>
 <translation id="2691924980723297736">Προειδοποίηση ασφαλείας</translation>
+<translation id="2697248912349197812">Ερώτηση στο <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Διαθέσιμο υπομενού. Χρησιμοποιήστε τη συντόμευση <ph name="SHORTCUT" /> για πλοήγηση σε πρόσθετες επιλογές.</translation>
 <translation id="2701514975700770343">Πρόσοψη προς τα κάτω</translation>
 <translation id="2702592986366989640">Επιλογή χαμηλής τιμής</translation>
@@ -2066,6 +2068,7 @@
 <translation id="469028408546145398">Κουμπί Κλείσιμο παραθύρων για ανώνυμη περιήγηση, ενεργοποιήστε το για να κλείσετε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι ανοιχτά αυτήν τη στιγμή</translation>
 <translation id="4691093235373904540">Στέγες/οροφές</translation>
 <translation id="4692623383562244444">Μηχανές αναζήτησης</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Ερώτηση στο <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Αθλήματα μάχης</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Πλευρά</translation>
@@ -2198,6 +2201,7 @@
 <translation id="4918221908152712722">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /> (δεν απαιτείται λήψη)</translation>
 <translation id="4920457992177678649">Ενοικιάσεις για διακοπές και βραχυπρόθεσμες διαμονές</translation>
 <translation id="4920710383559189047">Δίπλωση</translation>
+<translation id="4920921410507315601">Πίνακες σύγκρισης</translation>
 <translation id="4922104989726031751">Για να χρησιμοποιήσετε τον Διαχειριστή κωδικών πρόσβασης με το λειτουργικό σύστημα, επανεκκινήστε το Chromium και επιτρέψτε την πρόσβαση στον διαχειριστή κωδικών πρόσβασης του υπολογιστή σας. Οι καρτέλες θα ανοίξουν ξανά μετά την επανεκκίνηση.</translation>
 <translation id="4923459931733593730">Πληρωμή</translation>
 <translation id="4926049483395192435">Πρέπει να καθοριστεί.</translation>
@@ -2392,6 +2396,7 @@
 <translation id="5278778426231952189">Μεταφόρτωση τώρα</translation>
 <translation id="5279286380302340275">Διαχείριση στοιχείων λήψης</translation>
 <translation id="5280963125494874678">εφαρμογές ιστού</translation>
+<translation id="5282008206326321696">{count,plural, =0{# σελιδοδείκτες}=1{1 σελιδοδείκτης}other{# σελιδοδείκτες}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Ιδιότητες εγγράφου</translation>
 <translation id="528468243742722775">Τέλος</translation>
@@ -2477,6 +2482,7 @@
 <translation id="5425082381151187189">Διακόσμηση σπιτιού και εσωτερικών χώρων</translation>
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
 <translation id="5430298929874300616">Κατάργηση σελιδοδείκτη</translation>
+<translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5433756542371550806">Παραλλαγές γραμμής εντολών</translation>
 <translation id="5434798570900738152">Το Chromium <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2586,6 +2592,7 @@
 <translation id="561165882404867731">Μεταφράστε αυτήν τη σελίδα με τη Μετάφραση Google.</translation>
 <translation id="5612720917913232150">Ο ιστότοπος <ph name="URL" /> επιθυμεί να χρησιμοποιήσει την τοποθεσία του υπολογιστή σας</translation>
 <translation id="5614520971155863709">Παιχνίδια με κάρτες</translation>
+<translation id="5617785978844309968">Εμφάνιση όλων των πινάκων σύγκρισης</translation>
 <translation id="5617949217645503996">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> έκανε πάρα πολλές ανακατευθύνσεις.</translation>
 <translation id="5619721953841297650">Προεπιλογή</translation>
 <translation id="5624120631404540903">Διαχείριση κωδικών πρόσβασης</translation>
@@ -3791,7 +3798,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Προσαρμογή μεγεθών γραμματοσειρών και οικογενειών χαρακτήρων στο Chrome</translation>
 <translation id="7752995774971033316">Χωρίς διαχείριση</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Συζήτηση με <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Οι καρτέλες και οι εφαρμογές του Chrome θα κλείσουν όταν ξεκινήσει η ενημέρωση</translation>
 <translation id="7755287808199759310">Ο γονέας σας μπορεί να καταργήσει τον αποκλεισμό του για εσάς</translation>
 <translation id="7755624218968747854">Κύριο ρολό</translation>
@@ -3931,6 +3937,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα μια νέα φόρμα στις Φόρμες Google</translation>
 <translation id="8028892419725165118">Παιχνίδια casual</translation>
 <translation id="8028960012888758725">Περικοπή μετά την εργασία</translation>
+<translation id="8028993641010258682">Μέγεθος</translation>
 <translation id="8029829038322015001">Κόκκινο 1</translation>
 <translation id="8030729864112325446">Τεχνική και δια βίου εκπαίδευση</translation>
 <translation id="8032546467100845887">Διαφάνεια</translation>
@@ -3986,7 +3993,6 @@
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="8118489163946903409">Τρόπος πληρωμής</translation>
 <translation id="8118506371121007279">Αποστολή σχολίων</translation>
-<translation id="8124085000247609808">Συνομιλήστε με το <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">Το λογισμικό "<ph name="SOFTWARE_NAME" />" δεν εγκαταστάθηκε σωστά στον υπολογιστή ή στο δίκτυό σας. Ζητήστε από τον διαχειριστή IT να επιλύσει αυτό το πρόβλημα.</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8133495915926741232">Επιλέξτε τις ευρείες κατηγορίες θεμάτων που μπορούν να χρησιμοποιηθούν για την εξατομίκευση των διαφημίσεων. Με την απενεργοποίηση μιας ευρύτερης κατηγορίας θα αποκλειστούν επίσης τα σχετικά θέματα. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>

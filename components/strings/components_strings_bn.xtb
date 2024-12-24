@@ -2476,6 +2476,7 @@
 <translation id="5425082381151187189">গৃহ ও অন্দর সজ্জা</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> আপনাকে বিজ্ঞপ্তি পাঠাতে চায়</translation>
 <translation id="5430298929874300616">বুকমার্ক সরান</translation>
+<translation id="5431318178759467895">রঙ</translation>
 <translation id="5433756542371550806">কমান্ড-লাইন ভেরিয়েশন</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />সেভ করবে না<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3788,7 +3789,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করুন</translation>
 <translation id="7752995774971033316">অপরিচালিত</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-এর সাথে চ্যাট করুন</translation>
 <translation id="7754587126786572336">আপডেট শুরু হলে আপনার Chrome ট্যাব এবং অ্যাপ বন্ধ হয়ে যাবে</translation>
 <translation id="7755287808199759310">আপনার পিতামাতা এটি আপনার জন্য অবরোধ মুক্ত করতে পারবেন</translation>
 <translation id="7755624218968747854">প্রাইমারি রোল</translation>
@@ -3928,6 +3928,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-এ চটপট নতুন ফর্ম তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="8028892419725165118">ক্যাজুয়াল গেম</translation>
 <translation id="8028960012888758725">কাজের পর ট্রিম করুন</translation>
+<translation id="8028993641010258682">সাইজ</translation>
 <translation id="8029829038322015001">লাল ১</translation>
 <translation id="8030729864112325446">ভোকেশনাল ও কনটিনিউয়িং এডুকেশন</translation>
 <translation id="8032546467100845887">ট্রান্সপারেন্সি</translation>
@@ -3983,7 +3984,6 @@
 <translation id="8116925261070264013">মিউট করা আছে</translation>
 <translation id="8118489163946903409">পেমেন্টের পদ্ধতি</translation>
 <translation id="8118506371121007279">মতামত জানান</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" />-এর সাথে চ্যাট করুন</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" আপনার কম্পিউটার বা নেটওয়ার্কে সঠিক ভাবে ইনস্টল করা হয়নি। আপনার IT প্রশাসককে এই সমস্যাটি সমাধান করতে বলুন।</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8133495915926741232">পছন্দমতো বিজ্ঞাপন দেখানোর জন্য কোনও বিষয়ের কোন কোন বিস্তারিত বিভাগ ব্যবহার করা যেতে পারে তা বেছে নিন। কোনও বিস্তারিত বিভাগ বন্ধ করে দেওয়া হলে, এটির সাথে সম্পর্কিত বিষয়ও ব্লক করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>

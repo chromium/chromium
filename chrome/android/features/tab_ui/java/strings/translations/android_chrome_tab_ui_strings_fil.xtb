@@ -77,7 +77,6 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Binago ang <ph name="ONE_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}one{Binago ang <ph name="MANY_CHANGED" /> tab, isinara ang<ph name="ANY_CLOSED" />}other{Binago ang <ph name="MANY_CHANGED" /> na tab, isinara ang<ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Hindi Aktibo</translation>
 <translation id="4460014764210899310">I-ungroup</translation>
-<translation id="4590027107044272416">Puwede ka na ngayong magbukas ng bagong tab dito</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Isara ang 1 hindi aktibong tab?}one{Isara ang <ph name="TAB_COUNT_MANY" /> hindi aktibong tab?}other{Isara ang <ph name="TAB_COUNT_MANY" /> na hindi aktibong tab?}}</translation>
 <translation id="4686942373615810936">Kakagawa lang</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Isara pagkalipas ng 1 araw}one{Isara pagkalipas ng <ph name="DAY_COUNT_MANY" /> araw}other{Isara pagkalipas ng <ph name="DAY_COUNT_MANY" /> na araw}}</translation>

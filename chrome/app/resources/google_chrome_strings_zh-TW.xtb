@@ -93,7 +93,6 @@
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
-<translation id="2163089732491971196">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語</translation>
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
@@ -388,6 +387,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
 <translation id="5947104538377036631">Chrome 捷徑</translation>
 <translation id="5953954252731207958">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION" />」權限</translation>
+<translation id="5980111191913430208">來源不明的擴充功能、應用程式和主題可能會損害裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，你可以放心瀏覽網路，掌控一切設定</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
@@ -606,6 +606,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="842386925677997438">Chrome 安全工具</translation>
 <translation id="8425765582779547329">為確保家長監護設定可以進一步守護你的上網安全，請登入 Chrome</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8429214465555795676">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chrome，確保符合貴機構的政策。</translation>
 <translation id="8433638294851456451">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8451192282033883849">你的帳戶是由 <ph name="MANAGER_NAME" /> 管理。系統管理員可查看及編輯這個 Chrome 瀏覽器設定檔及其中的資料，例如書籤、歷史記錄和密碼。</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>

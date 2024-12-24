@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">Για να ξεκλειδώσετε το Chromebook, χρησιμοποιήστε το δακτυλικό αποτύπωμά σας ή ξεκλειδώστε το τηλέφωνό σας</translation>
 <translation id="240545663114741956">Πατήστε δύο φορές τον συνδυασμό πλήκτρων <ph name="ACCELERATOR" /> για να αποσυνδεθείτε.</translation>
 <translation id="2405664212338326887">Δεν συνδέθηκε</translation>
+<translation id="2406710117564540804">Ενεργοποίηση/απενεργοποίηση λειτουργίας Μην ενοχλείτε</translation>
 <translation id="2408955596600435184">Εισαγάγετε το PIN</translation>
 <translation id="2412593942846481727">Υπάρχει διαθέσιμη ενημέρωση</translation>
 <translation id="2416438829169535743">Έξοδος από προβολή;</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">Σάρωση του αρχείου <ph name="FILENAME" /> για λήψη</translation>
 <translation id="6542521951477560771">Μετάδοση στη συσκευή <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF και άλλα</translation>
+<translation id="6543942526104794893">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τις κινήσεις προσώπου;</translation>
 <translation id="6545382064335350438">Η επαλήθευση του PIN σας εξακολουθεί να μην είναι δυνατή. Δοκιμάστε ξανά.</translation>
 <translation id="6555373427270923730">Πληκτρολογήστε μια διεύθυνση ιστού στη γραμμή διευθύνσεων και έπειτα πατήστε <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">Πλήκτρο πλήρους οθόνης</translation>
 <translation id="8858369206579825206">Στοιχεία ελέγχου απορρήτου</translation>
 <translation id="8860366331836346216">Προσθήκη eSIM</translation>
+<translation id="8869149849311827122">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τον έλεγχο δείκτη ποντικιού;</translation>
 <translation id="8870509716567206129">Η εφαρμογή δεν υποστηρίζει διαχωρισμό οθόνης.</translation>
 <translation id="8873203135446552888">Επιβεβαιώστε ότι θέλετε να απενεργοποιήσετε την ενσωματωμένη επιφάνεια αφής</translation>
 <translation id="8874184842967597500">Καμία σύνδεση</translation>

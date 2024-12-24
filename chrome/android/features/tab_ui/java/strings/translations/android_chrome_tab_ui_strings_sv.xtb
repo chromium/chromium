@@ -77,7 +77,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> flik har ändrats, <ph name="ANY_CLOSED" /> har stängts}other{<ph name="MANY_CHANGED" /> flikar har ändrats, <ph name="ANY_CLOSED" /> har stängts}}</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Ta bort gruppering</translation>
-<translation id="4590027107044272416">Du kan nu öppna en ny flik här</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vill du stänga 1 inaktiv flik?}other{Vill du stänga <ph name="TAB_COUNT_MANY" /> inaktiv flik?}}</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Stäng efter 1 dag}other{Stäng efter <ph name="DAY_COUNT_MANY" /> dagar}}</translation>

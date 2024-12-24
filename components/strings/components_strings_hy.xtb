@@ -2484,6 +2484,7 @@
 <translation id="5425082381151187189">Տան կահավորում և ներքին հարդարանք</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> կայքն ուզում է ձեզ ծանուցումներ ուղարկել</translation>
 <translation id="5430298929874300616">Հեռացնել էջանիշը</translation>
+<translation id="5431318178759467895">Գունավոր</translation>
 <translation id="5433756542371550806">Հրամանատողի տարատեսակներ</translation>
 <translation id="5434798570900738152">Chromium-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
           <ph name="BEGIN_LIST" />
@@ -3797,7 +3798,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Անհատականացնել տառատեսակները և դրանց չափերը Chrome-ում</translation>
 <translation id="7752995774971033316">Չի կառավարվում</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Զրուցել <ph name="KEYWORD_SHORT_NAME" />-ի հետ</translation>
 <translation id="7754587126786572336">Երբ թարմացումը սկսվի, Chrome-ի ներդիրներն ու հավելվածները կփակվեն</translation>
 <translation id="7755287808199759310">Այն կարող է արգելահանել ձեր ծնողը</translation>
 <translation id="7755624218968747854">Հիմնական գլանափաթեթ</translation>
@@ -3937,6 +3937,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Ձևաթղթերում արագ ձև ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="8028892419725165118">Թեթև խաղեր</translation>
 <translation id="8028960012888758725">Կտրել առաջադրանքից հետո</translation>
+<translation id="8028993641010258682">Չափ</translation>
 <translation id="8029829038322015001">Կարմիր 1</translation>
 <translation id="8030729864112325446">Մասնագիտական և շարունակական կրթություն</translation>
 <translation id="8032546467100845887">Թափանցիկություն</translation>
@@ -3992,7 +3993,6 @@
 <translation id="8116925261070264013">Անջատած ձայնով կայքեր</translation>
 <translation id="8118489163946903409">Վճարման եղանակ</translation>
 <translation id="8118506371121007279">Կարծիք հայտնել</translation>
-<translation id="8124085000247609808">Զրուցեք <ph name="KEYWORD_SHORT_NAME" />-ի հետ</translation>
 <translation id="8127301229239896662">«<ph name="SOFTWARE_NAME" />» ծրագիրը ձեր համակարգչում կամ ցանցում ճիշտ չէ տեղադրվել: Հարցրեք ձեր ՏՏ ադմինիստրատորին կամ ինքներդ լուծեք այս խնդիրը:</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8133495915926741232">Ընտրեք թեմաների ընդհանուր կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար։ Եթե անջատեք որևէ ընդհանուր կատեգորիա, կարգելափակվեն նաև դրա բոլոր առնչվող թեմաները։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

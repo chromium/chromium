@@ -77,7 +77,6 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> skedë u ndryshua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_CHANGED" /> skeda u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
-<translation id="4590027107044272416">Tani mund të hapësh një skedë të re këtu.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Të mbyllet 1 skedë joaktive?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> skeda joaktive?}}</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>

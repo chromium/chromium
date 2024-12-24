@@ -396,6 +396,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2402411679569069051">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd neu datglowch eich ffôn</translation>
 <translation id="240545663114741956">Pwyswch <ph name="ACCELERATOR" /> ddwywaith i allgofnodi.</translation>
 <translation id="2405664212338326887">Ni chysylltir</translation>
+<translation id="2406710117564540804">Troi peidiwch ag aflonyddu ymlaen neu'i ddiffodd</translation>
 <translation id="2408955596600435184">Rhowch eich PIN</translation>
 <translation id="2412593942846481727">Mae diweddariad ar gael</translation>
 <translation id="2416438829169535743">Gadael gwedd?</translation>
@@ -1647,6 +1648,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6539852571005954999">Wrthi'n sganio'r lawrlwythiad <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Wrthi'n castio i <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF, a rhagor</translation>
+<translation id="6543942526104794893">Ydych chi'n siŵr eich bod am ddiffodd ystumiau wyneb?</translation>
 <translation id="6545382064335350438">Nid oedd modd dilysu'ch PIN o hyd. Rhowch gynnig arall arni.</translation>
 <translation id="6555373427270923730">Teipiwch gyfeiriad gwe yn y bar cyfeiriad, yna pwyswch <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8855885154700222542">Bysell sgrîn lawn</translation>
 <translation id="8858369206579825206">Rheolyddion preifatrwydd</translation>
 <translation id="8860366331836346216">Ychwanegu eSIM</translation>
+<translation id="8869149849311827122">Ydych chi'n siŵr eich bod am ddiffodd rheolaeth cyrchwr llygoden?</translation>
 <translation id="8870509716567206129">Nid yw'r ap yn cefnogi sgrîn hollt.</translation>
 <translation id="8873203135446552888">Cadarnhewch eich bod am analluogi'r pad cyffwrdd integredig</translation>
 <translation id="8874184842967597500">Ni chysylltir</translation>

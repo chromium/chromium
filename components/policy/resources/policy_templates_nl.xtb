@@ -248,6 +248,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Als je het beleid instelt op False of niet instelt, kunnen webpagina's de WebGL API gebruiken en kunnen plug-ins de Pepper 3D API gebruiken, maar kan in de standaardinstellingen van de browser nog steeds zijn ingesteld dat er opdrachtregelargumenten nodig zijn om deze API's te gebruiken.</translation>
 <translation id="1198458955128279215">Standaardgedrag van het functie-uitrolplan gebruiken</translation>
 <translation id="1202216683470826356">Kaarten tonen op de pagina Nieuw tabblad</translation>
+<translation id="1203676252390737801">IP-verwerking per URL voor WebRTC</translation>
 <translation id="1204263402976895730">Bedrijfsprinters aangezet</translation>
 <translation id="1207301487141109411">Voorkomen dat gebruikers avatars selecteren via het lokale bestandssysteem, de camera en het Google-profiel</translation>
 <translation id="1209096923317019235">Apps toewijzen als standaardhandlers voor gespecificeerde bestandsextensies</translation>
@@ -643,6 +644,13 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 Als je dit beleid toepast, ondersteunt de emoji-kiezer gif-emoji's.
 Als je dit beleid niet toepast of niet instelt, ondersteunt de emoji-kiezer geen gif-emoji's.
 Als dit beleid niet is ingesteld, wordt de emoji-kiezer aangezet voor normale gebruikers, maar uitgezet voor beheerde gebruikers.</translation>
+<translation id="1493245040983394029">Dit beleid beheert de instellingen van de functie voor fotobewerking met generatieve AI voor <ph name="PRODUCT_OS_NAME" />.
+
+0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.</translation>
 <translation id="1494138678487405397">Hoog contrast op het inlogscherm uitzetten</translation>
 <translation id="1497797462580613666">Downloadbeheer heeft een optie om bestanden op te slaan in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven voor welke sites automatisch de toegang tot lokale printers via de WebPrinting API wordt geweigerd.
@@ -1532,6 +1540,17 @@ Als je dit beleid niet instelt, staat Live vertalen in eerste instantie uit, maa
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
       Als je het beleid instelt op False of niet instelt, wordt er geen beleid overschreven.</translation>
+<translation id="2158028663273824412">Hiermee wordt de modus van de DNS-over-HTTPS-resolver bepaald. Houd er rekening mee dat dit beleid alleen de standaardmodus voor elke query instelt. De modus kan worden overschreven voor speciale typen query's, zoals verzoeken om de hostnaam van een DNS-over-HTTPS-server om te zetten.
+
+In de modus <ph name="SECURE_DNS_MODE_OFF" /> wordt DNS-over-HTTPS uitgezet.
+
+In de modus <ph name="SECURE_DNS_MODE_AUTOMATIC" /> worden eerst DNS-over-HTTPS-query's verstuurd als er een DNS-over-HTTPS-server beschikbaar is en kan in geval van een fout worden teruggevallen op de verzending van onveilige query's.
+
+In de modus <ph name="SECURE_DNS_MODE_SECURE" /> worden alleen DNS-over-HTTPS-query's verstuurd en mislukt het omzetten in geval van een fout.
+
+Als voor <ph name="ANDROID_VERSION" /> en hoger DNS-over-TLS actief is, verstuurt <ph name="PRODUCT_NAME" /> geen onveilige DNS-verzoeken.
+
+Als dit beleid niet is ingesteld, worden DNS-over-HTTPS-verzoeken niet verstuurd voor beheerde apparaten. Anders kan de browser DNS-over-HTTPS-verzoeken versturen naar een resolver die is gekoppeld aan de geconfigureerde systeemresolver van de gebruiker.</translation>
 <translation id="2158741059065130266">Als je het beleid instelt op True, kunnen gebruikers van de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> een prullenbak zien en worden bestanden onder Mijn bestanden en Downloads (inclusief door de gebruiker gemaakte onderliggende items) daar naartoe gestuurd als ze worden verwijderd.
 
       Als je het beleid instelt op False, zijn de bestanden die eerder in de prullenbak stonden, nog steeds beschikbaar door verborgen bestanden te tonen en de directory .Trash te zoeken onder Mijn bestanden of Downloads.</translation>
@@ -1636,8 +1655,14 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="2202787915587511214">NTLMv2 aanzetten</translation>
 <translation id="2204379573346866896">Verstreken minuten in het huidige uur.</translation>
 <translation id="2204753382813641270">Automatisch verbergen van archief beheren</translation>
+<translation id="2208092773610663977">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> laten checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een gegevenslek.
+
+Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze functionaliteit.
+
+      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten.</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
 <translation id="2212011154693551439">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is standaard zichtbaar op chrome://history/grouped.</translation>
+<translation id="2212207215880394506">Fotobewerking met generatieve AI niet toestaan.</translation>
 <translation id="221287948061571053">Uitgevouwen zakelijke werkbalkbadge verbergen</translation>
 <translation id="2213059592185933570">Maken van roamingprofielen aanzetten</translation>
 <translation id="2213342458177721585">De Hindi Inscript-indeling aanzetten voor het hele apparaat.</translation>
@@ -2168,6 +2193,7 @@ Als je het beleid niet toepast of niet instelt, kunnen de logboeken niet worden 
 
       Als je het beleid instelt op AlleenGebruiker (waarde 1), kunnen gebruikers gebruikerscertificaten beheren, maar niet alle certificaten op het apparaat.</translation>
 <translation id="2593762551209145088">Safe Browsing is nooit actief.</translation>
+<translation id="2594773358911436070">WebRTC-instellingen</translation>
 <translation id="26023406105317310">Kerberos-accounts configureren</translation>
 <translation id="2603237557651009842">WebPrinting API blokkeren op deze sites</translation>
 <translation id="2603382859270873566">Ondersteuning aanzetten voor de PPB_VideoDecoder(Dev) API.</translation>
@@ -2289,6 +2315,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je het beleid instelt en automatisch inloggen aanzet (bekijk het beleid <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> en <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), gebruikt de beheerde sessie de eerste aanbevolen landinstelling en de populairste overeenkomende toetsenbordindeling.
 
       De vooraf geselecteerde toetsenbordindeling is altijd de populairste indeling die overeenkomt met de vooraf geselecteerde landinstelling. Gebruikers kunnen voor hun sessie altijd elke landinstelling kiezen die <ph name="PRODUCT_OS_NAME" /> ondersteunt.</translation>
+<translation id="269274821351405808">Instellingen voor de functie voor fotobewerking met generatieve AI</translation>
 <translation id="2693108589792503178">Configureer de URL voor het wijzigen van het wachtwoord.</translation>
 <translation id="2694143893026486692">Vastgezet vergrootglas aangezet</translation>
 <translation id="2696077732471707315">
@@ -2460,6 +2487,7 @@ Het rapport bevat de profielstatus en gebruiksinformatie, inclusief maar niet be
 Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2846689894646472396">Snelheid voor checken van netwerkgebeurtenissen in milliseconden.</translation>
 <translation id="2847788524147474533">Platformapparaatbeleid krijgt voorrang op cloud-apparaatbeleid</translation>
+<translation id="2849051159985119151">Fotobewerking met generatieve AI toe zonder AI-modellen te verbeteren.</translation>
 <translation id="2849275596224278787">Toegankelijkheidsopties verbergen in het systeemvakmenu op het inlogscherm</translation>
 <translation id="2853649500575897584">Geen verouderde extensiepunten in het browserproces blokkeren</translation>
 <translation id="2853757230661166968">Hiermee kunnen apps standaard systeemsnelkoppelingen vastleggen en overschrijven.</translation>
@@ -3214,6 +3242,7 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
       Als je dit beleid instelt op Verborgen, kunnen gebruikers de uitgezette functies niet gebruiken en niet zien.
 
       Als je dit beleid niet instelt of instelt op een ongeldige waarde, wordt de stand voor het uitzetten van systeemfuncties geblokkeerd.</translation>
+<translation id="3411947169047929182">Beheert de configuratie voor WebRTC</translation>
 <translation id="341285788698114069">Met dit beleid bepaal je de prioriteit van het audioproces in Windows.
       Als je dit beleid toepast, wordt het audioproces uitgevoerd met een hogere prioriteit dan normaal.
       Als je dit beleid niet toepast, wordt het audioproces uitgevoerd met normale prioriteit.
@@ -4583,6 +4612,7 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
 <translation id="4472740647327683596">Breedte van de pagina in micrometers</translation>
 <translation id="4474167089968829729">Opslag van wachtwoorden in Wachtwoordmanager aanzetten</translation>
+<translation id="447692108909279121">IP-verwerking voor WebRTC</translation>
 <translation id="4478248026668918517">Detectie van beleidsbereik blokkeren.</translation>
 <translation id="4479671363221255277">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun leestoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API.
 
@@ -5694,6 +5724,23 @@ Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruik
 
       Als het beleid niet wordt ingesteld, of als dit wordt ingesteld voor een lege tekenreeks of een ongeldig poortbereik, kan WebRTC gebruikmaken van elke lokale UDP-poort.</translation>
 <translation id="5288776487100096897">Toestaan dat cloudbeleidsregels voor gebruikers <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-beleidsregels overschrijven.</translation>
+<translation id="5289330879750533981">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht voor elk specifieke URL-patroon.
+
+Het beleid accepteert een lijst met paren van URL-patronen en verwerkingstypen. De URL-patronen worden op volgorde gecheckt en de eerste overeenkomst bepaalt welke verwerking door WebRTC voor het domein wordt gebruikt. Als de URL van het huidige document niet overeenkomt met een item, wordt de configuratie gebruikt die is ingesteld door het beleid <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor meer informatie over geldige invoerpatronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
+
+Geldige waarden voor verwerking:
+
+* default: WebRTC gebruikt alle netwerkinterfaces.
+
+* default_public_and_private_interfaces: WebRTC gebruikt alle openbare en privé-interfaces.
+
+* default_public_interface_only: WebRTC gebruikt alle openbare interfaces, maar geen privé-interfaces.
+
+* disable_non_proxied_udp: WebRTC gebruikt UDP SOCKS-proxy's of valt terug op TCP-proxy's.
+
+Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) voor een gedetailleerde beschrijving van alle waarden voor verwerking.</translation>
 <translation id="5290940294294002042">Lijst met plug-ins opgeven die de gebruiker kan aan- of uitzetten</translation>
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
 <translation id="5293619885162445352">Toestaan dat <ph name="PEPPER_NAME" /> de nieuwe videodecoder gebruikt.</translation>
@@ -5975,6 +6022,13 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="545817252640069915">Onderschepping bij inloggen aanzetten</translation>
 <translation id="5460797984317417682">Melding voor volledig scherm aanzetten</translation>
 <translation id="5462898272514237681">Toegang van <ph name="PRODUCT_OS_NAME" /> tot Google-locatieservices beheren</translation>
+<translation id="5464786290880338716">Beleid om te bepalen of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
+
+Als je het beleid niet toepast, wordt de functie IP-beveiliging uitgezet en kunnen gebruikers de functie niet aanzetten via de UI-instellingen.
+Als je het beleid toepast, wordt de functie IP-beveiliging aangezet en kunnen gebruikers de functie niet uitzetten via de UI-instellingen.
+Als je het beleid niet instelt, wordt de functie IP-beveiliging uitgezet voor gebruikers van wie de browser of het apparaat wordt beheerd. Deze gebruikers kunnen de functie niet aanzetten via de UI-instellingen. Gebruikers van niet-beheerde browsers en apparaten kunnen de functie IP-beveiliging op hun apparaat aan- of uitzetten via de UI-instellingen.
+
+Opmerking: Het gedrag van de functie IP-beveiliging voor zakelijke gebruikers kan in de loop van de tijd variëren als je het beleid toepast of als het beleid niet is ingesteld en de functie wordt aangezet via de UI-instellingen.</translation>
 <translation id="5464816904705580310">Hiermee configureer je instellingen voor beheerde gebruikers.</translation>
 <translation id="5466596281866046569">App-gegevens melden</translation>
 <translation id="5467175549232776406">Testpagina voor beleid is toegankelijk</translation>
@@ -6177,7 +6231,6 @@ Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigings
 
       Als je dit beleid niet instelde, volgde <ph name="PRODUCT_NAME" /> het standaard uitrolproces om onveilige hashes te verbieden. Als je het beleid toepaste, stond <ph name="PRODUCT_NAME" /> toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake. Als je het beleid niet toepaste, stond <ph name="PRODUCT_NAME" /> niet toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake.</translation>
 <translation id="5611869109049836323">Beperkingen afdwingen in lokaal toegevoegde vertrouwensankers</translation>
-<translation id="5612770822986069057">Toestaan dat gebruikers de instelling voor IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten op hun apparaat.</translation>
 <translation id="561480358503796257">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor een beheerd profiel. De URL moet naar een afbeelding verwijzen.
 
 Dit beleid kan alleen worden ingesteld als gebruikersbeleid.
@@ -6829,6 +6882,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard maximumversie.
 
       Anders kan deze worden ingesteld op een van de volgende waarden: tls1.2 of tls1.3. Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> geen latere SSL/TLS-versies dan de opgegeven versie. Een onbekende waarde wordt genegeerd.</translation>
+<translation id="6120909112796019291">Fotobewerking met generatieve AI toestaan en AI-modellen verbeteren.</translation>
 <translation id="6123052603197028610">Geen query's naar Google-servers toestaan om tijdstempels op te halen</translation>
 <translation id="6130360423841559818">Nieuw gedrag beheren voor het annuleringsdialoogvenster dat door de beforeunload-gebeurtenis wordt gegenereerd</translation>
 <translation id="6131803221304830537">Code-integriteit van weergaveprogramma uitzetten</translation>
@@ -7226,6 +7280,7 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
 <translation id="6368011194414932347">De homepage-URL configureren</translation>
 <translation id="6368403635025849609">JavaScript toestaan op deze sites</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Instellingen voor Gerelateerde websitesets</translation>
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
@@ -8366,17 +8421,6 @@ Als je dit beleid niet toepast, worden wachtwoorden nooit onthouden en worden al
       De herkende ID's voor verbindingstypen zijn <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> en <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Niet vereisen dat de lokale gebruiker en de eigenaar van de host voor externe toegang overeenkomen</translation>
 <translation id="7151366515472588710">De client moet deze gegevens niet interpreteren, maar woord voor woord doorsturen. De DMServer gebruikt policy_version om te verifiëren dat de beleidsweergave van DMServer overeenkomt met de weergave van het Chrome OS-apparaat.</translation>
-<translation id="7152605873936173525">Hiermee wordt de modus van de DNS-over-HTTPS-resolver bepaald. Houd er rekening mee dat dit beleid alleen de standaardmodus voor elke query instelt. De modus kan worden overschreven voor speciale typen query's, zoals verzoeken om de hostnaam van een DNS-over-HTTPS-server om te zetten.
-
-      In de modus <ph name="SECURE_DNS_MODE_OFF" /> wordt DNS-over-HTTPS uitgezet.
-
-      In de modus <ph name="SECURE_DNS_MODE_AUTOMATIC" /> worden eerst DNS-over-HTTPS-query's verstuurd als er een DNS-over-HTTPS-server beschikbaar is en kan in geval van een fout worden teruggevallen op de verzending van onveilige query's.
-
-      In de modus <ph name="SECURE_DNS_MODE_SECURE" /> worden alleen DNS-over-HTTPS-query's verstuurd en mislukt het omzetten in geval van een fout.
-
-      Als voor <ph name="ANDROID_VERSION" /> en hoger DNS-over-TLS actief is, verstuurt <ph name="PRODUCT_NAME" /> geen onveilige DNS-verzoeken.
-
-      Als dit beleid niet is ingesteld, kan de browser DNS-over-HTTPS-verzoeken versturen naar een resolver die is gekoppeld aan de geconfigureerde systeemresolver van de gebruiker.</translation>
 <translation id="7152640356717355643">Rapportage voor netwerkinterface van apparaat aanzetten</translation>
 <translation id="7153786895642570081">Met dit beleid bepaal je of de functie EphemeralNetworkPolicies wordt aangezet.
 Als je dit beleid instelt op True, worden de DeviceOpenNetworkConfiguration-vermeldingen RecommendedValuesAreEphemeral en UserCreatedNetworkConfigurationsAreEphemeral gerespecteerd.
@@ -8405,6 +8449,7 @@ De beleidswaarde is een lijst met base64-gecodeerde X.509-certificaten. Elk cert
 <translation id="7177293255621000064">Als je het beleid instelt op 'True', zijn alle typen externe opslagmedia (USB-sticks, externe harde schijven, SD's en andere geheugenkaarten, optische opslagapparaten) niet meer beschikbaar in de bestandsbrowser. Als je het beleid instelt op 'False' of niet instelt, kunnen gebruikers externe opslag gebruiken op hun apparaat.
 
       Opmerking: Het beleid heeft geen invloed op Google Drive en interne opslag. Gebruikers kunnen bestanden die zijn opgeslagen in de map 'Downloads' nog steeds openen.</translation>
+<translation id="7177645313697913767">Toestaan dat gebruikers de instelling voor IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan- of uitzetten op hun apparaat als hun browser en apparaat niet worden beheerd.</translation>
 <translation id="7177857088692019405">Snel ontgrendelen</translation>
 <translation id="7179157174254421614">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
 
@@ -9114,13 +9159,6 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
 <translation id="7781452670568828399">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie wijzigen.</translation>
 <translation id="7784062550705119230">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
-<translation id="7785199109546027763">Beleid om te bepalen of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
-
-Als je het beleid niet toepast, wordt de functie IP-beveiliging uitgezet en kunnen gebruikers de functie niet aanzetten via de UI-instellingen.
-Als je het beleid toepast, wordt de functie IP-beveiliging aangezet en kunnen gebruikers de functie niet uitzetten via de UI-instellingen.
-Als het beleid niet is ingesteld, kunnen gebruikers de functie IP-beveiliging op hun apparaat aan- of uitzetten via de UI-instellingen.
-
-Opmerking: Het gedrag van de functie IP-beveiliging voor zakelijke gebruikers kan in de loop van de tijd variëren als je het beleid toepast of als het beleid niet is ingesteld en de functie wordt aangezet via de UI-instellingen.</translation>
 <translation id="7788511847830146438">Per profiel</translation>
 <translation id="7790221177424764797">Met dit beleid wordt bepaald of de regels van het SiteList-beleid van <ph name="IE_PRODUCT_NAME" /> moeten worden geladen.
 
@@ -9433,11 +9471,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8030228699677851043">Het gedrag van de SharedWorker-blob-URL afstemmen op de specificatie</translation>
 <translation id="8031651557770840616">Generatieve AI-achtergrond niet toestaan</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
-<translation id="8036284429246268475">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> laten checken of ingevoerde gebruikersnamen en wachtwoorden deel uitmaken van een gegevenslek.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, is checken op gegevenslekken toegestaan, maar kan de gebruiker deze functie uitzetten.
-
-Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid of door de gebruiker). Gebruik het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> of <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> om Safe Browsing gedwongen aan te zetten.</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
@@ -9683,6 +9716,21 @@ Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomo
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
 <translation id="8239143983379015783">Afdwingen dat permanent quotum wordt aangezet</translation>
+<translation id="8240976615241583524">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht.
+
+Geldige waarden:
+
+* default: WebRTC gebruikt alle beschikbare netwerkinterfaces.
+
+* default_public_and_private_interfaces: WebRTC gebruikt alle openbare en privé-interfaces.
+
+* default_public_interface_only: WebRTC gebruikt alle openbare interfaces, maar geen privé-interfaces.
+
+* disable_non_proxied_udp: WebRTC gebruikt UDP SOCKS-proxy's of valt terug op TCP-proxy's.
+
+Als het beleid niet wordt ingesteld, worden standaard alle beschikbare netwerkinterfaces gebruikt.
+
+Zie RFC 8828 artikel 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2) voor een gedetailleerde beschrijving van alle waarden voor verwerking.</translation>
 <translation id="8244171102276095471">RC4-coderingssuites in TLS aanzetten</translation>
 <translation id="8244525275280476362">Maximum vertraging voor ophalen na ongeldigverklaring voor beleid</translation>
 <translation id="8244828501034607035">Met dit beleid bepaal je of de kaart Outlook zichtbaar is op de pagina Nieuw tabblad. De kaart wordt alleen op de pagina Nieuw tabblad getoond als het beleid wordt toegepast en je organisatie het gebruik van de Outlook-agendagegevens in de browser heeft goedgekeurd.

@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">ସ୍ୱତଃ ପିକଚର-ଇନ-ପିକଚର</translation>
 <translation id="1100782917270858593">"ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ" ବଟନ, ଆପଣଙ୍କ ସର୍ଚ୍ଚ ପୁଣି ଆରମ୍ଭ କରି Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="1101672080107056897">ତ୍ରୁଟି ସମ୍ବନ୍ଧିତ କାର୍ଯ୍ୟ</translation>
+<translation id="1101902632743388185">ଆପଣଙ୍କର ତୁଳନା ଟେବୁଲ</translation>
 <translation id="1104409666019087579">କିଛି ଆବଶ୍ୟକ ଫିଲ୍ଡ ଖାଲି ଅଛି। ସେଭ କରିବା ପୂର୍ବରୁ ସେଗୁଡ଼ିକୁ ପୂରଣ କରନ୍ତୁ।</translation>
 <translation id="1104860668737945357">'ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chrome ସେଟିଂସରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଭ୍ୟୁ କରି ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -583,6 +584,7 @@
 <translation id="2025186561304664664">ସ୍ଵଚାଳିତ ଭାବେ କନ୍‍ଫିଗର୍ ହେବା ପାଇଁ ପ୍ରକ୍ସିକୁ ସେଟ୍ କରାଯାଇଛି।</translation>
 <translation id="2025891858974379949">ଅସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="2027465737841872819">ପ୍ଲାଷ୍ଟିକ</translation>
+<translation id="2027707238798802149">କାର୍ଡ ବର୍ତ୍ତମାନ ନାହିଁ</translation>
 <translation id="2029735183873159415">ପୂର୍ବପୁରୁଷ ଏବଂ ବଂଶାବଳୀ</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ପ୍ରକ୍ସି ଓ ଫାୟର୍‍ୱାଲ୍‍କୁ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ପ୍ରଦାନକାରୀ କୀୱାର୍ଡ ସହିତ ସର୍ଟକଟ ସମାନ ହୋଇପାରିବ ନାହିଁ: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +868,7 @@
 <translation id="2514548229949738417">ଘର ଓ ବଗିଚା</translation>
 <translation id="2515629240566999685">ଆପଣଙ୍କ କ୍ଷେତ୍ରରେ ଥିବା ସିଗନାଲ୍‍କୁ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="2515761554693942801">ଆପଣ <ph name="PROVIDER_ORIGIN" /> ବ୍ୟବହାର କରୁଥିବା ୱେବସାଇଟଗୁଡ଼ିକରେ ଟଚ ID ମାଧ୍ୟମରେ ଯାଞ୍ଚ କରିବାକୁ ବାଛିଛନ୍ତି। ଏହି ପ୍ରଦାନକାରୀ ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତି ବିଷୟରେ ସୂଚନା ଷ୍ଟୋର କରିଥାଇପାରନ୍ତି, ଯାହାକୁ ଆପଣ <ph name="LINK_TEXT" /> କରିପାରିବେ।</translation>
+<translation id="2518584823165598232">ଏହି କାର୍ଡ ଉପଲବ୍ଧ ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର କାର୍ଡ ପ୍ରଦାନକାରୀଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="2521385132275182522">ତଳ ଡାହାଣ ପଟରେ ଷ୍ଟାପଲ୍</translation>
 <translation id="2521736961081452453">ଫର୍ମ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2523886232349826891">କେବଳ ଏହି ଡିଭାଇସ୍‍ରେ ସେଭ୍ କରାଯାଇଛି</translation>
@@ -2469,6 +2472,7 @@
 <translation id="5425082381151187189">ଘର ଏବଂ ଇଣ୍ଟେରିଅର ସାଜସଜ୍ଜା</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତି ପଠାଇବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5430298929874300616">ବୁକମାର୍କ୍ କାଢ଼ିଦିଅନ୍ତୁ</translation>
+<translation id="5431318178759467895">ରଙ୍ଗ</translation>
 <translation id="5433756542371550806">କମାଣ୍ଡ-ଲାଇନ ଭେରିଏସନ</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />ଏସବୁକୁ ସେଭ କରିବ ନାହିଁ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3338,6 +3342,7 @@
 <translation id="7003322000677139268">ଗାଡ଼ି ପାର୍ଟ ଏବଂ ଆକ୍ସେସୋରୀଗୁଡ଼ିକ</translation>
 <translation id="7004499039102548441">ସାମ୍ପ୍ରତିକ ଟାବ୍‌</translation>
 <translation id="7006930604109697472">ଯେ କୌଣସି ଭାବେ ପଠାନ୍ତୁ</translation>
+<translation id="7009364359744329733">ଏହି କାର୍ଡ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7010658264061801199">ଖାଦ୍ୟ ଓ ପାନୀୟ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">ଆପଣଙ୍କ ମାଉସକୁ ଲକ କରି ବ୍ୟବହାର କରିବା ପାଇଁ କହିପାରିବ</translation>
@@ -3779,7 +3784,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeରେ ଫଣ୍ଟ ଆକାର ଏବଂ ଟାଇପଫେସ୍ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="7752995774971033316">ଅପରିଚାଳିତ</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ସହ ଚାଟ କରନ୍ତୁ</translation>
 <translation id="7754587126786572336">ଅପଡେଟ ଆରମ୍ଭ ହେଲେ ଆପଣଙ୍କ Chrome ଟାବ ଏବଂ ଆପ୍ସ ବନ୍ଦ ହୋଇଯିବ</translation>
 <translation id="7755287808199759310">ଆପଣଙ୍କ ଅଭିଭାବକ ଆପଣଙ୍କ ପାଇଁ ଏହାର ଅବରୋଧ ହଟାଇପାରିବେ</translation>
 <translation id="7755624218968747854">ପ୍ରାଥମିକ ରୋଲ୍</translation>
@@ -3919,6 +3923,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsରେ ଶୀଘ୍ର ଏକ ନୂଆ ଫର୍ମ ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="8028892419725165118">କାଜୁଆଲ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="8028960012888758725">କାର୍ଯ୍ୟ ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
+<translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8029829038322015001">ଲାଲ 1</translation>
 <translation id="8030729864112325446">ଧନ୍ଦାମୂଳକ ଏବଂ ନିରନ୍ତର ଶିକ୍ଷା</translation>
 <translation id="8032546467100845887">ଟ୍ରାନ୍ସପରେନ୍ସି</translation>
@@ -3974,7 +3979,6 @@
 <translation id="8116925261070264013">ମ୍ୟୁଟ୍‍ କରାଗଲା</translation>
 <translation id="8118489163946903409">ପେମେଣ୍ଟ ପଦ୍ଧତି</translation>
 <translation id="8118506371121007279">ମତାମତ ପ୍ରଦାନ କରନ୍ତୁ</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" />ଙ୍କ ସହିତ ଚାଟ୍ କରନ୍ତୁ</translation>
 <translation id="8127301229239896662">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ବା ନେଟ୍‌ୱାର୍କରେ "<ph name="SOFTWARE_NAME" />" ସଠିକ୍ ଭାବରେ ଇନ୍‌ଷ୍ଟଲ୍ ହେଲାନାହିଁ। ଏହି ତ୍ରୁଟିର ସମାଧାନ ପାଇଁ ଆପଣଙ୍କ IT ବ୍ୟବସ୍ଥାପକଙ୍କୁ ପଚାରନ୍ତୁ।</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8133495915926741232">ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ବିଷୟଗୁଡ଼ିକର କେଉଁ ବ୍ୟାପକ ବର୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା ବାଛନ୍ତୁ। ଏକ ବ୍ୟାପକ ବର୍ଗକୁ ବନ୍ଦ କରିବା ଫଳରେ ଏହା ଏହାର ସମ୍ବନ୍ଧିତ ବିଷୟଗୁଡ଼ିକୁ ମଧ୍ୟ ବ୍ଲକ କରିବ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>

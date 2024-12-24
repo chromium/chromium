@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> zavihek je spremenjen, zaprtih: <ph name="ANY_CLOSED" />}one{<ph name="MANY_CHANGED" /> zavihek je spremenjen, zaprtih: <ph name="ANY_CLOSED" />}two{<ph name="MANY_CHANGED" /> zavihka sta spremenjena zaprtih: <ph name="ANY_CLOSED" />}few{<ph name="MANY_CHANGED" /> zavihki so spremenjeni, zaprtih: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> zavihkov je spremenjenih, zaprtih: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4460014764210899310">Razdruži</translation>
-<translation id="4590027107044272416">Tukaj lahko zdaj odprete nov zavihek</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Želite zapreti 1 neaktiven zavihek?}one{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktiven zavihek?}two{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivna zavihka?}few{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivne zavihke?}other{Želite zapreti <ph name="TAB_COUNT_MANY" /> neaktivnih zavihkov?}}</translation>
 <translation id="4686942373615810936">Ustvarjeno pravkar</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zapri po 1 dnevu}one{Zapri po <ph name="DAY_COUNT_MANY" /> dnevu}two{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}few{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}other{Zapri po <ph name="DAY_COUNT_MANY" /> dneh}}</translation>

@@ -982,7 +982,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1663698992894057019">Upgrade to a new Chromebook for the latest security features and software</translation>
 <translation id="1665328953287874063">Use a password or PIN to unlock your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1665859804801131136">Expressionism</translation>
-<translation id="1666232093776384142">Disable data access protection for peripherals</translation>
 <translation id="1667842670298352129">Hear specific text read aloud. First, select the Select to Speak icon at the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search + S.</translation>
 <translation id="1668435968811469751">Enrol manually</translation>
 <translation id="1668804837842452164">Save to <ph name="BRAND" /> for <ph name="EMAIL" /></translation>
@@ -2865,7 +2864,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2975761176769946178">A URL is required</translation>
 <translation id="2975845084271617886">Join and open</translation>
 <translation id="2976547701881428815">Tools and actions</translation>
-<translation id="2976557544729462544">Some devices require you to disable data access protection to work properly or at full performance.</translation>
 <translation id="2976639738101799892">Get Google Search and Google smarts every time you browse</translation>
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="2979493931538961252">When your Chromebook is offline and hotspots are available</translation>
@@ -2991,7 +2989,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3053273573829329829">Enable user pin</translation>
 <translation id="3053274730492362225">Don't blink</translation>
 <translation id="3054011216223858553">Off • Use everyday language to search your browsing history and find sites that you visited</translation>
-<translation id="3054766768827382232">Disabling can make your peripherals perform better, but may expose your personal data by unauthorised usage.</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3058517085907878899">Name device</translation>
 <translation id="3060952009917586498">Change device language. Current language is <ph name="LANGUAGE" />.</translation>
@@ -3740,7 +3737,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3619294456800709762">Sites can enter picture-in-picture automatically</translation>
 <translation id="3620136223548713675">Geolocation</translation>
 <translation id="3621202678540785336">Input</translation>
-<translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
 <translation id="3622820753353315928">Flash screen colour</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
@@ -3820,7 +3816,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3675683621636519363">Send crash reports and diagnostic and usage data to ChromeOS Flex</translation>
 <translation id="367645871420407123">leave empty if you want to set the root password to the default test image value</translation>
 <translation id="3677911431265050325">Request mobile site</translation>
-<translation id="3677959414150797585">Includes apps, web pages and more. Sends statistics to improve suggestions only if you’ve chosen to share usage data.</translation>
 <translation id="3678156199662914018">Extension: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">Pages that you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you sign out. Files that you download and bookmarks that you create won't be preserved.</translation>
 <translation id="3679126865530709868">Built-in touchpad</translation>
@@ -6542,7 +6537,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5613074282491265467">When you’re signed in to Chrome, passwords that you save will go in your Google Account, <ph name="USER_EMAIL" />. To turn this off, go to settings.</translation>
 <translation id="5614190747811328134">User Notice</translation>
 <translation id="5614553682702429503">Save password?</translation>
-<translation id="5614625640221885312">Sign in to get your bookmarks, passwords and more on all your devices</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">List of recent sites that you visited that can suggest ads to other sites as you keep browsing</translation>
 <translation id="5616571005307953937">Oldest</translation>
@@ -6846,7 +6840,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5841270259333717135">Configure Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
-<translation id="5844574845205796324">Suggest new content to explore</translation>
 <translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">No shadow</translation>
@@ -8633,6 +8626,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7134951043985383439">Downloaded dangerous file</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
 <translation id="7136694880210472378">Make default</translation>
+<translation id="7137277889990479760">Continue as <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">This will delete <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> is using your microphone</translation>
@@ -9211,6 +9205,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561759921596375678">Turn on volume</translation>
 <translation id="7561982940498449837">Close menu</translation>
+<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Open Browser Window</translation>
 <translation id="7564847347806291057">End process</translation>
 <translation id="756503097602602175">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign in to your <ph name="DEVICE_TYPE" /> as a guest or browse the web in an <ph name="LINK_2_BEGIN" />Incognito window<ph name="LINK_2_END" />.</translation>
@@ -10135,7 +10130,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8203152941016626022">Nearby Share device name</translation>
 <translation id="8203732864715032075">Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Right click</translation>
-<translation id="8205432712228803050">Your displays and peripherals may reset briefly. For this change to take effect, unplug and replug your peripherals.</translation>
 <translation id="8205478243727418828">launcher + down arrow</translation>
 <translation id="820568752112382238">Most-visited sites</translation>
 <translation id="8206267832882844324">Edit note</translation>
@@ -10754,7 +10748,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> or <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Night Light colour temperature</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> wants to: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> and more</translation>
-<translation id="864892689521194669">Help improve Chrome OS Flex features and performance</translation>
 <translation id="8649026945479135076">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chrome about your interests.</translation>
 <translation id="8650543407998814195">Although you can no longer access your old profile, you can still remove it.</translation>
 <translation id="8651585100578802546">Force Reload This Page</translation>
@@ -10903,6 +10896,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8737966899544698733">Location Accuracy (Android only)</translation>
 <translation id="8738418093147087440">Search by countries, language or input names</translation>
 <translation id="8740086188450289493">Use Google Account password</translation>
+<translation id="874023689350909633">Try it out</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
 <translation id="8740672167979365981">Chrome OS Flex update required</translation>
 <translation id="8741944563400125534">Switch Access setup guide</translation>

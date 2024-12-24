@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ਟੈਬ ਨੂੰ ਬਦਲਿਆ ਗਿਆ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}one{<ph name="MANY_CHANGED" /> ਟੈਬ ਨੂੰ ਬਦਲਿਆ ਗਿਆ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}other{<ph name="MANY_CHANGED" /> ਟੈਬਾਂ ਨੂੰ ਬਦਲਿਆ ਗਿਆ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="4371591986692297148">ਅਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="4460014764210899310">ਗਰੁੱਪ ਹਟਾਓ</translation>
-<translation id="4590027107044272416">ਤੁਸੀਂ ਹੁਣ ਇੱਥੇ ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{ਕੀ 1 ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}one{ਕੀ <ph name="TAB_COUNT_MANY" /> ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}other{ਕੀ <ph name="TAB_COUNT_MANY" /> ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?}}</translation>
 <translation id="4686942373615810936">ਹੁਣੇ ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 ਦਿਨ ਬਾਅਦ ਬੰਦ ਕਰੋ}one{<ph name="DAY_COUNT_MANY" /> ਦਿਨ ਬਾਅਦ ਬੰਦ ਕਰੋ}other{<ph name="DAY_COUNT_MANY" /> ਦਿਨਾਂ ਬਾਅਦ ਬੰਦ ਕਰੋ}}</translation>

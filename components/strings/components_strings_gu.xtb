@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ફોટો (આર્કાઇવલ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">વેબ ઍપ ઇન્સ્ટૉલ કરીએ?</translation>
+<translation id="1791415068765905273">તુલના માટેના તમામ ટેબલ બતાવો</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Google એકાઉન્ટમાં તમારી માહિતી, પ્રાઇવસી અને સુરક્ષા મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="1793631236004319016">છેલ્લે <ph name="NUM_HOURS_MINUTES_SECONDS" /> પહેલાં ઉપયોગ કર્યો હતો</translation>
@@ -2197,6 +2198,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરો (કોઈ ડાઉનલોડ આવશ્યક નથી)</translation>
 <translation id="4920457992177678649">વેકેશનમાં ભાડા પર અને ટૂંકાગાળાનું રોકાણ</translation>
 <translation id="4920710383559189047">સ્લીવ</translation>
+<translation id="4920921410507315601">તુલના માટેના ટેબલ</translation>
 <translation id="4922104989726031751">તમારી ઑપરેટિંગ સિસ્ટમ વડે Password Managerનો ઉપયોગ કરવા માટે, Chromiumને ફરીથી લૉન્ચ કરો અને તમારા કમ્પ્યૂટરના પાસવર્ડ મેનેજરના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="4923459931733593730">ચુકવણી</translation>
 <translation id="4926049483395192435">ઉલ્લેખિત હોવું આવશ્યક છે.</translation>
@@ -2390,6 +2392,7 @@
 <translation id="5278778426231952189">હમણાં અપલોડ કરો</translation>
 <translation id="5279286380302340275">ડાઉનલોડ મેનેજ કરો</translation>
 <translation id="5280963125494874678">વેબ ઍપ્લિકેશન</translation>
+<translation id="5282008206326321696">{count,plural, =0{# બુકમાર્ક}=1{# બુકમાર્ક}one{# બુકમાર્ક}other{# બુકમાર્ક}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">દસ્તાવેજની પ્રોપર્ટી</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
@@ -2475,6 +2478,7 @@
 <translation id="5425082381151187189">ઘર અને તેને સંબંધિત ઇન્ટિરિયર ડેકોરેશન</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
 <translation id="5430298929874300616">બુકમાર્ક દૂર કરો</translation>
+<translation id="5431318178759467895">રંગ</translation>
 <translation id="5433756542371550806">આદેશ લાઇનમાં વેરિયેશન</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />આ સાચવશે નહીં<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2584,6 +2588,7 @@
 <translation id="561165882404867731">Google Translate વડે આ પેજનો અનુવાદ કરો</translation>
 <translation id="5612720917913232150"><ph name="URL" /> તમારા કમ્પ્યુટરનાં સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5614520971155863709">પત્તાંની રમતો</translation>
+<translation id="5617785978844309968">તુલના માટેના તમામ ટેબલ બતાવો</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> એ તમને ઘણીબધી વખત રીડાયરેક્ટ કર્યું.</translation>
 <translation id="5619721953841297650">પ્રીસેટ</translation>
 <translation id="5624120631404540903">પાસવર્ડ્સનું સંચાલન કરો</translation>
@@ -3789,7 +3794,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chromeમાં ફૉન્ટના કદ અને ટાઇપફેસ કસ્ટમાઇઝ કરો</translation>
 <translation id="7752995774971033316">બિનસંચાલિત</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> સાથે ચૅટ કરો</translation>
 <translation id="7754587126786572336">જ્યારે અપડેટ શરૂ થશે ત્યારે તમારા Chromeના ટૅબ અને ઍપ બંધ થઈ જશે</translation>
 <translation id="7755287808199759310">તમારા માટે તમારા માતાપિતા તેને અનાવરોધિત કરી શકે છે</translation>
 <translation id="7755624218968747854">પ્રાથમિક રોલ</translation>
@@ -3929,6 +3933,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Formsમાં ઝડપથી કોઈ નવું ફોર્મ બનાવવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
 <translation id="8028892419725165118">કૅઝુઅલ ગેમ</translation>
 <translation id="8028960012888758725">કાર્ય પછી ટ્રિમ કરો</translation>
+<translation id="8028993641010258682">કદ</translation>
 <translation id="8029829038322015001">લાલ 1</translation>
 <translation id="8030729864112325446">વ્યાવસાયિક અને તેની આગળનું શિક્ષણ</translation>
 <translation id="8032546467100845887">પારદર્શિતા</translation>
@@ -3984,7 +3989,6 @@
 <translation id="8116925261070264013">મ્યૂટ કરેલ</translation>
 <translation id="8118489163946903409">ચુકવણી પદ્ધતિ</translation>
 <translation id="8118506371121007279">પ્રતિસાદ આપો</translation>
-<translation id="8124085000247609808"><ph name="KEYWORD_SHORT_NAME" /> સાથે ચૅટ કરો</translation>
 <translation id="8127301229239896662">તમારા કમ્પ્યુટરમાં અથવા નેટવર્ક પર "<ph name="SOFTWARE_NAME" />" યોગ્ય રીતે ઇન્સ્ટૉલ થયું નથી. તમારા IT વ્યવસ્થાપકને આ સમસ્યા હલ કરવાનું કહો.</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8133495915926741232">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો. વ્યાપક કૅટેગરીને બંધ કરવાથી તેના સંબંધિત મુદ્દા પણ બ્લૉક કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

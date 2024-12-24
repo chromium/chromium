@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1082920045291562218">Delen met blad met overzichtfeedback gesloten</translation>
+<translation id="1087176310396019910">Mogelijk spam</translation>
 <translation id="1089606299949659462">Beoordeling voltooid</translation>
 <translation id="1094555143448724771">Synchroniseer je tabbladen en geschiedenis om tabbladen van je andere apparaten te zien</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
@@ -508,6 +509,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="3293181007446299124">Je browsegeschiedenis blijft privé op je apparaat en rapporten worden met vertraging verstuurd om je identiteit te beschermen</translation>
+<translation id="3301936297336370235">Bevestiging van wachtwoordsuggestie</translation>
 <translation id="3302615849591357577">Tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />, herstellen als een nieuwe tabbladgroep op de achtergrond.</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
@@ -972,6 +974,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5444999712122199445">Terug naar site</translation>
 <translation id="544776284582297024">Tik op de knop voor geopende tabbladen om tabbladen te openen en tegelijkertijd verschillende pagina's te bezoeken</translation>
 <translation id="5454166040603940656">met <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Als je apparaat is dichtgevouwen, kun je een optie kiezen of je vinger op de adresbalk houden om de positie te wijzigen.</translation>
 <translation id="5458366071038729214">Hier vind je de sites die je volgt</translation>
 <translation id="5468068603361015296">Wil je <ph name="FILE_NAME" /> toch downloaden?</translation>
 <translation id="548278423535722844">Openen in app voor passen</translation>
@@ -1135,6 +1138,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6193448654517602979">Tabbladen selecteren</translation>
 <translation id="6196315980958524839">Wachtwoorden worden opgeslagen in Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="6202812185118613467">Log weer in om de synchronisatie te starten</translation>
+<translation id="6204781143409202534">Chrome heeft mogelijk spam van <ph name="DOMAIN" /> gevonden.</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>

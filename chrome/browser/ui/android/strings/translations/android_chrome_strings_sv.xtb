@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
 <translation id="1080365971383768617">Lösenord på alla dina enheter</translation>
 <translation id="1082920045291562218">Dela med feedbackarket för sammanfattningen har stängts</translation>
+<translation id="1087176310396019910">Möjlig spam</translation>
 <translation id="1089606299949659462">Granskningen är klar</translation>
 <translation id="1094555143448724771">Synkronisera flikar och historik om du vill se flikar från dina andra enheter</translation>
 <translation id="1095761715416917775">Se till att du alltid får åtkomst till din synkroniserade data</translation>
@@ -508,6 +509,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
+<translation id="3301936297336370235">Bekräftelse för lösenordsförslag</translation>
 <translation id="3302615849591357577">Återställ flikgruppen <ph name="TITLE_OF_GROUP" /> med färgen <ph name="COLOR_NAME" /> som en ny flikgrupp i bakgrunden.</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
@@ -1137,6 +1139,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6196315980958524839">Lösenorden sparas med Google Lösenordshantering på den här enheten</translation>
 <translation id="6202812185118613467">Logga in igen för att starta synkroniseringen</translation>
+<translation id="6204781143409202534">Chrome har upptäckt möjlig spam från <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>

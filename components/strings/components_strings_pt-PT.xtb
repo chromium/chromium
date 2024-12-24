@@ -2478,6 +2478,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5425082381151187189">Decoração interior e do lar</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar-lhe notificações.</translation>
 <translation id="5430298929874300616">Remover marcador</translation>
+<translation id="5431318178759467895">Cor</translation>
 <translation id="5433756542371550806">Variações da linha de comandos</translation>
 <translation id="5434798570900738152">O Chromium <ph name="BEGIN_EMPHASIS" />não irá guardar<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3792,7 +3793,6 @@ Detalhes adicionais:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" />: <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Personalize os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="7752995774971033316">Não gerido</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Conversar com <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Os separadores e as apps do Chrome são fechados quando a atualização é iniciada</translation>
 <translation id="7755287808199759310">O teu pai/a tua mãe pode desbloquear-te</translation>
 <translation id="7755624218968747854">Rolo principal</translation>
@@ -3932,6 +3932,7 @@ Detalhes adicionais:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente um novo formulário no Google Forms</translation>
 <translation id="8028892419725165118">Jogos casuais</translation>
 <translation id="8028960012888758725">Cortar no fim da tarefa</translation>
+<translation id="8028993641010258682">Tamanho</translation>
 <translation id="8029829038322015001">Vermelho 1</translation>
 <translation id="8030729864112325446">Formação vocacional e contínua</translation>
 <translation id="8032546467100845887">Transparência</translation>
@@ -3987,7 +3988,6 @@ Detalhes adicionais:
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="8118489163946903409">Método de pagamento</translation>
 <translation id="8118506371121007279">Envie feedback</translation>
-<translation id="8124085000247609808">Chat com <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">O "<ph name="SOFTWARE_NAME" />" não foi instalado corretamente no computador ou na rede. Peça ao gestor de TI que resolva este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Escolha as categorias amplas de tópicos que podem ser usadas para ajudar a personalizar anúncios. A desativação de uma categoria mais ampla também bloqueia os respetivos tópicos relacionados. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>

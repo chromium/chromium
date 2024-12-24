@@ -1647,6 +1647,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6539852571005954999">S'està escanejant <ph name="FILENAME" /> per baixar</translation>
 <translation id="6542521951477560771">S'està emetent a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIF i molt més</translation>
+<translation id="6543942526104794893">Confirmes que vols desactivar els gestos facials?</translation>
 <translation id="6545382064335350438">El PIN continua sense poder-se verificar. Torna-ho a provar.</translation>
 <translation id="6555373427270923730">Escriu una adreça web a la barra d'adreces i, a continuació, prem <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controls de privadesa</translation>
 <translation id="8860366331836346216">Afegeix una eSIM</translation>
+<translation id="8869149849311827122">Confirmes que vols desactivar el control del cursor del ratolí?</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8873203135446552888">Confirma que vols desactivar el ratolí tàctil integrat</translation>
 <translation id="8874184842967597500">No connectada</translation>

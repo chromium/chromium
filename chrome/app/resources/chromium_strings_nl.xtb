@@ -113,6 +113,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2513154137948333830">Opnieuw opstarten vereist: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Als je wilt doorgaan, moet je inloggen bij Chromium met <ph name="EMAIL" />. Zo voldoe je aan het beleid van je organisatie.</translation>
 <translation id="2542968102051442371">Tekst selecteren met Zoeken met afbeelding</translation>
 <translation id="2554739539410784893">Chromium probeert bestaande wachtwoorden te vervangen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="2560420686485554789">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
@@ -122,6 +123,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2583187216237139145">Alle Chromium-gegevens die worden gegenereerd bij het gebruik van dit profiel (zoals bookmarks, geschiedenis, wachtwoorden en andere instellingen) kunnen worden verwijderd door de beheerder van het werkprofiel. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium blijven gebruiken</translation>
 <translation id="259935314519650377">Kan het gedownloade installatieprogramma niet opslaan in het cachegeheugen. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Laat verifiëren dat jij het bent om Chromium-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="264613044588233783">Chromium werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken (aanbevolen)</translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
 <translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
@@ -254,7 +256,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4438870983368648614"><ph name="MANAGER" /> beheert Chromium</translation>
 <translation id="444069871276811466">Chromium-profiel toevoegen</translation>
 <translation id="4447409407328223819">Over Chrome for Testing</translation>
-<translation id="4470974262661801543">Voer je wachtwoordzin in als je Chromium-gegevens wilt gebruiken en opslaan in je Google-account</translation>
 <translation id="4493028449971051158">Opstartfout: voer het installatieprogramma uit als beheerder.</translation>
 <translation id="4501471624619070934">De installatie is mislukt omdat de toegang is beperkt in dit land.</translation>
 <translation id="4510853178268397146">Deze extensie heeft geen privacyprocedures gepubliceerd, zoals de manier waarop gegevens worden verzameld en gebruikt. Chromium raadt je aan deze te verwijderen.</translation>
@@ -450,6 +451,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6980074797973263542">Je organisatie kan browsegegevens bekijken en beheren, zoals je bookmarks, geschiedenis en wachtwoorden. Je organisatie kan geen browsegegevens bekijken in persoonlijke Chromium-profielen.</translation>
 <translation id="6985329841647292029">Voorwaarden van Chromium OS</translation>
 <translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
+<translation id="7003299027384820442">Voer je wachtwoordzin in om Chromium-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
 <translation id="7011190694940573312">De installatie is mislukt omdat deze versie van het besturingssysteem niet wordt ondersteund.</translation>
 <translation id="7024536598735240744">Fout bij uitpakken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installatie gestopt.</translation>
@@ -545,6 +547,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8330519371938183845">Log in om Chromium op al je apparaten te synchroniseren en te personaliseren</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> maakte eerder gebruik van Chromium</translation>
 <translation id="8357820681460164151">Log in en zet synchronisatie aan voor toegang tot je Chromium-browsergegevens op al je apparaten</translation>
+<translation id="8359544530202147897">Update Chromium om de Chromium-gegevens in je Google-account <ph name="ACCOUNT_EMAIL" /> te blijven gebruiken</translation>
 <translation id="8360718212975266891">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.</translation>
 <translation id="8362914115861174987">Vertalen naar het</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>

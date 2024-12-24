@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">사진(보관용)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">웹 앱을 설치하시겠습니까?</translation>
+<translation id="1791415068765905273">모든 비교 표 표시</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="1793631236004319016">마지막 사용: <ph name="NUM_HOURS_MINUTES_SECONDS" /> 전</translation>
@@ -2197,6 +2198,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
 <translation id="4920457992177678649">휴가철 임대 및 단기 체류</translation>
 <translation id="4920710383559189047">슬리브</translation>
+<translation id="4920921410507315601">비교 표</translation>
 <translation id="4922104989726031751">운영체제에서 비밀번호 관리자를 사용하려면 Chromium을 다시 실행하고 비밀번호 관리자에 대한 컴퓨터의 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="4923459931733593730">결제</translation>
 <translation id="4926049483395192435">지정해야 합니다.</translation>
@@ -2390,6 +2392,7 @@
 <translation id="5278778426231952189">지금 업로드</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
 <translation id="5280963125494874678">웹 애플리케이션</translation>
+<translation id="5282008206326321696">{count,plural, =0{북마크 #개}=1{북마크 #개}other{북마크 #개}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">문서 속성</translation>
 <translation id="528468243742722775">종료</translation>
@@ -2475,6 +2478,7 @@
 <translation id="5425082381151187189">가정 및 인테리어 장식</translation>
 <translation id="5426179911063097041"><ph name="SITE" />에서 알림을 보내려고 합니다.</translation>
 <translation id="5430298929874300616">북마크 삭제</translation>
+<translation id="5431318178759467895">컬러</translation>
 <translation id="5433756542371550806">명령줄 변형</translation>
 <translation id="5434798570900738152">Chromium에 <ph name="BEGIN_EMPHASIS" />저장되지 않는 항목<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2584,6 +2588,7 @@
 <translation id="561165882404867731">Google 번역으로 이 페이지를 번역하세요.</translation>
 <translation id="5612720917913232150"><ph name="URL" />에서 내 컴퓨터의 위치에 액세스하려고 합니다</translation>
 <translation id="5614520971155863709">카드 게임</translation>
+<translation id="5617785978844309968">모든 비교 표 표시</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />에서 리디렉션한 횟수가 너무 많습니다.</translation>
 <translation id="5619721953841297650">미리 설정</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
@@ -3788,7 +3793,6 @@
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Chrome의 글꼴 크기 및 서체 맞춤설정</translation>
 <translation id="7752995774971033316">관리되지 않음</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />와 채팅</translation>
 <translation id="7754587126786572336">업데이트가 시작되면 Chrome 탭과 앱이 닫힙니다</translation>
 <translation id="7755287808199759310">부모님이 차단 해제할 수 있습니다.</translation>
 <translation id="7755624218968747854">기본 롤</translation>
@@ -3928,6 +3932,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="8028892419725165118">캐주얼 게임</translation>
 <translation id="8028960012888758725">각 작업 뒤에 트림</translation>
+<translation id="8028993641010258682">크기</translation>
 <translation id="8029829038322015001">빨간색 1</translation>
 <translation id="8030729864112325446">직업 및 평생 교육</translation>
 <translation id="8032546467100845887">투명</translation>
@@ -3983,7 +3988,6 @@
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8118489163946903409">결제 수단</translation>
 <translation id="8118506371121007279">의견 보내기</translation>
-<translation id="8124085000247609808">키워드(<ph name="KEYWORD_SHORT_NAME" />)와 채팅</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8133495915926741232">광고 맞춤설정을 지원하는 데 사용할 수 있는 광범위한 주제 카테고리를 선택하세요. 더 광범위한 카테고리를 사용 중지하면 관련 주제도 차단됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

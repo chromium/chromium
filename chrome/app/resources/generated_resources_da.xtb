@@ -984,7 +984,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1663698992894057019">Opgrader til en ny Chromebook for at få den nyeste sikkerhed og software</translation>
 <translation id="1665328953287874063">Brug en adgangskode eller pinkode til at låse din <ph name="DEVICE_TYPE" /> op</translation>
 <translation id="1665859804801131136">Ekspressionisme</translation>
-<translation id="1666232093776384142">Deaktiver Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="1667842670298352129">Få oplæst en bestemt tekst. Start med at vælge ikonet for Tekstoplæsning nederst på skærmen, og fremhæv derefter teksten. Du kan også bruge en tastaturgenvej: Fremhæv tekst, og tryk derefter på søgetasten+S.</translation>
 <translation id="1668435968811469751">Tilmeld manuelt</translation>
 <translation id="1668804837842452164">Gem i <ph name="BRAND" /> for <ph name="EMAIL" /></translation>
@@ -2868,7 +2867,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2975761176769946178">En webadresse er påkrævet</translation>
 <translation id="2975845084271617886">Deltag og åbn</translation>
 <translation id="2976547701881428815">Værktøjer og handlinger</translation>
-<translation id="2976557544729462544">For at fungere korrekt og optimalt kræver nogle enheder, at du deaktiverer indstillingen for beskyttelse af dataadgang.</translation>
 <translation id="2976639738101799892">Få adgang til Google Søgning og smarte Google-funktioner, hver gang du browser</translation>
 <translation id="2977480621796371840">Fjern fra gruppe</translation>
 <translation id="2979493931538961252">Når din Chromebook er offline, og hotspots er tilgængelige</translation>
@@ -2994,7 +2992,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3053273573829329829">Aktivér brugerens pinkode</translation>
 <translation id="3053274730492362225">Blink ikke</translation>
 <translation id="3054011216223858553">Brug dagligsprog til at søge i din browserhistorik og finde websites, du har besøgt</translation>
-<translation id="3054766768827382232">Deaktivering af denne indstilling kan forbedre dine eksterne enheders ydeevne, men kan også kompromittere dine personoplysninger, hvis nogen får uautoriseret adgang til dem.</translation>
 <translation id="3058498974290601450">Du kan til enhver tid aktivere synkronisering i indstillingerne</translation>
 <translation id="3058517085907878899">Navngiv enheden</translation>
 <translation id="3060952009917586498">Skift enhedens sprog Det nuværende sprog er <ph name="LANGUAGE" />.</translation>
@@ -3745,7 +3742,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3619294456800709762">Websites kan automatisk åbne integreret billede</translation>
 <translation id="3620136223548713675">Geoplacering</translation>
 <translation id="3621202678540785336">Input</translation>
-<translation id="3621807901162200696">Vær med til at forbedre funktioner og ydeevne i ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{en app}one{# app}other{# apps}}</translation>
 <translation id="3622820753353315928">Skærmlysets farve</translation>
 <translation id="362333465072914957">Venter på, at certifikatautoriteten udsteder et certifikat</translation>
@@ -3825,7 +3821,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3675683621636519363">Send nedbrudsrapporter samt diagnostik- og brugsdata til ChromeOS Flex</translation>
 <translation id="367645871420407123">lad feltet være tomt, hvis du vil angive adgangskoderoden til standardværdien for testbilledet</translation>
 <translation id="3677911431265050325">Anmod om mobilversion</translation>
-<translation id="3677959414150797585">Omfatter apps, websider og mere. Sender kun statistik til forbedring af forslag, hvis du har valgt at dele dine brugsdata.</translation>
 <translation id="3678156199662914018">Udvidelse: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3678188444105291936">De sider, du ser i dette vindue, vises ikke i browserhistorikken, og de efterlader ikke andre spor som f.eks. cookies på computeren, når du logger ud. De filer, du downloader, og bogmærker, du opretter, bliver ikke gemt.</translation>
 <translation id="3679126865530709868">Indbygget touchplade</translation>
@@ -4626,6 +4621,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4220648711404560261">Der opstod en fejl under aktiveringen.</translation>
 <translation id="4222917615373664617">Prissporing er aktiveret. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Adgang til mikrofon er ikke tilladt</translation>
+<translation id="4224541845943007092">Læse og gemme tastaturinput fra adresselinjen</translation>
 <translation id="4225397296022057997">På alle websites</translation>
 <translation id="4228071595943929139">Brug din organisations mailadresse</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne udvidelse er ikke tilladt}one{Denne udvidelse er ikke tilladt}other{Nogle udvidelser er ikke tilladt}}</translation>
@@ -6549,7 +6545,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5613074282491265467">Når du er logget ind i Chrome, opbevares de adgangskoder, du gemmer, på din Google-konto, <ph name="USER_EMAIL" />. Gå til indstillingerne for at deaktivere dette.</translation>
 <translation id="5614190747811328134">Brugerbesked</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
-<translation id="5614625640221885312">Log ind for at få adgang til dine bogmærker, adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="5614947000616625327">iCloud-nøglering</translation>
 <translation id="561552177910095306">Liste over websites, du har besøgt for nylig, som kan foreslå annoncer på andre websites, når du er på nettet</translation>
 <translation id="5616571005307953937">Ældste</translation>
@@ -6853,7 +6848,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5841270259333717135">Konfigurer Ethernet</translation>
 <translation id="5842497610951477805">Aktivering af Bluetooth</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
-<translation id="5844574845205796324">Foreslå nyt indhold til mig</translation>
 <translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Fejl i relationens syntaks: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">Ingen skygge</translation>
@@ -10149,7 +10143,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8203152941016626022">Enhedsnavn til Deling tæt på</translation>
 <translation id="8203732864715032075">Sende dig notifikationer og huske denne computer som standard til Beskeder. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Højreklik</translation>
-<translation id="8205432712228803050">Dine skærme og eksterne enheder nulstilles muligvis. Træk stikket ud af dine eksterne enheder, og tilslut dem derefter igen, så ændringerne kan træde i kraft.</translation>
 <translation id="8205478243727418828">appliste + pil ned</translation>
 <translation id="820568752112382238">Mest besøgte websites</translation>
 <translation id="8206267832882844324">Rediger note</translation>
@@ -10769,7 +10762,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> eller <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Farvetemperatur for Nattelys</translation>
 <translation id="8648544143274677280"><ph name="SITE_NAME" /> vil gerne have tilladelse til at: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /> og andre ting</translation>
-<translation id="864892689521194669">Vær med til at forbedre funktionerne og ydeevnen i ChromeOS Flex</translation>
 <translation id="8649026945479135076">Det er almindeligt, at de websites, du besøger, husker ting, du er interesseret i, så din oplevelse personligt tilpasses. Websites kan også gemme oplysninger med Chrome om dine interesser.</translation>
 <translation id="8650543407998814195">Du kan godt fjerne din gamle profil, selvom du ikke længere har adgang til den.</translation>
 <translation id="8651585100578802546">Gennemtving genindlæsning af denne side</translation>

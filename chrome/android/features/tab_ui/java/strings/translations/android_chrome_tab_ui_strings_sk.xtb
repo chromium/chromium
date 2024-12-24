@@ -77,7 +77,6 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> karta bola zmenená, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_CHANGED" /> karty boli zmenené, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_CHANGED" /> tabs changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_CHANGED" /> kariet bolo zmenených, zavreté: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
-<translation id="4590027107044272416">Tu môžete teraz otvoriť novú kartu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chcete zavrieť 1 neaktívnu kartu?}few{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívne karty?}many{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}other{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívnych kariet?}}</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavrieť po 1 dni}few{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}many{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňa}other{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>

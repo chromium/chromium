@@ -2478,6 +2478,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5425082381151187189">Boligindretning</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
 <translation id="5430298929874300616">Fjern bogmærke</translation>
+<translation id="5431318178759467895">Farve</translation>
 <translation id="5433756542371550806">Variationer i kommandolinjer</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -3298,6 +3299,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6925267999184670015">Nordamerika B+</translation>
 <translation id="6926216138694948720">Kropskunst</translation>
 <translation id="692638818576287323">Erhvervskøretøjer</translation>
+<translation id="6933282894115597956">Din organisation kræver, at du logger ind</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chrome-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen og billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>
 <translation id="6935082727755903526">Jobs inden for regnskab og finans</translation>
@@ -3792,7 +3794,6 @@ Yderligere oplysninger:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Tilpas skriftstørrelser og skrifttyper i Chrome</translation>
 <translation id="7752995774971033316">Administreres ikke</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> – Chat med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="7754587126786572336">Dine Chrome-faner og -apps lukkes, når opdateringen starter</translation>
 <translation id="7755287808199759310">Din forælder kan fjerne blokeringen for dig</translation>
 <translation id="7755624218968747854">Primær papirrulle</translation>
@@ -3932,6 +3933,7 @@ Yderligere oplysninger:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny formular i Google Analyse</translation>
 <translation id="8028892419725165118">Hyggespil</translation>
 <translation id="8028960012888758725">Beskær efter tryk</translation>
+<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8029829038322015001">Rød 1</translation>
 <translation id="8030729864112325446">Erhvervsrettet uddannelse og efteruddannelse</translation>
 <translation id="8032546467100845887">Gennemsigtighed</translation>
@@ -3987,7 +3989,6 @@ Yderligere oplysninger:
 <translation id="8116925261070264013">Websites, hvor lyden er slået fra</translation>
 <translation id="8118489163946903409">Betalingsmetode</translation>
 <translation id="8118506371121007279">Giv feedback</translation>
-<translation id="8124085000247609808">Chat med <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" blev ikke korrekt installeret på computeren eller netværket. Bed din IT-administrator om at løse problemet.</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8133495915926741232">Vælg, hvilke generelle emnekategorier der kan bruges til at foretage personlig tilpasning af annoncer. Hvis du deaktiverer en mere generel kategori, blokeres de relaterede emner også. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
