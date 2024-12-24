@@ -266,7 +266,28 @@ export namespace Session {
   );
 }
 export namespace Session {
+  export const SubscriptionSchema = z.lazy(() => z.string());
+}
+export namespace Session {
   export const SubscriptionRequestSchema = z.lazy(() =>
+    z.object({
+      events: z.array(z.string()).min(1),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+    }),
+  );
+}
+export namespace Session {
+  export const UnsubscribeByIdRequestSchema = z.lazy(() =>
+    z.object({
+      subscriptions: z.array(Session.SubscriptionSchema).min(1),
+    }),
+  );
+}
+export namespace Session {
+  export const UnsubscribeByAttributesRequestSchema = z.lazy(() =>
     z.object({
       events: z.array(z.string()).min(1),
       contexts: z
@@ -344,10 +365,20 @@ export namespace Session {
   );
 }
 export namespace Session {
+  export const SubscriptionRequestResultSchema = z.lazy(() =>
+    z.object({
+      subscription: Session.SubscriptionSchema,
+    }),
+  );
+}
+export namespace Session {
   export const UnsubscribeSchema = z.lazy(() =>
     z.object({
       method: z.literal('session.unsubscribe'),
-      params: Session.SubscriptionRequestSchema,
+      params: z.union([
+        Session.UnsubscribeByAttributesRequestSchema,
+        Session.UnsubscribeByIdRequestSchema,
+      ]),
     }),
   );
 }
