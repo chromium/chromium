@@ -742,3 +742,6 @@ d965ba0faffffaa1a3fccf2f92e983ee7b79db4a
 71bd8f1596b301a842247d3488f901d7ae3dfad2
 770f3fce3719ee18c102ad0b1a347d82147fbb1a
 3a3959162be6995ac2202ac30d23ce1b2c2ef8b9
+
+# [cleanup] clang-format cast code.
+f9e5dcb3a7008a1ffb4cc33f1ab9fc6b556824c0
