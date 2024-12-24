@@ -15,6 +15,8 @@ SessionParams::Scope ParseScope(const base::Value::Dict& scope_dict) {
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
   scope.include_site = include_site.value_or(false);
+  const std::string* origin = scope_dict.FindString("origin");
+  scope.origin = origin ? *origin : "";
   const base::Value::List* specifications_list =
       scope_dict.FindList("scope_specification");
   if (!specifications_list) {

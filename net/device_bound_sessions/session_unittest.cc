@@ -34,10 +34,13 @@ constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
 constexpr char kSessionId[] = "SessionId";
 constexpr char kUrlString[] = "https://example.test/index.html";
+constexpr char kUrlStringForWrongETLD[] = "https://example.co.uk/index.html";
 const GURL kTestUrl(kUrlString);
+const GURL kTestUrlForWrongETLD(kUrlStringForWrongETLD);
 
 SessionParams CreateValidParams() {
   SessionParams::Scope scope;
+  scope.origin = "example.test";
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie",
                                  "Secure; Domain=example.test"}});
@@ -61,6 +64,11 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
   params.refresh_url = "";
   EXPECT_FALSE(Session::CreateIfValid(params, kTestUrl));
+}
+
+TEST_F(SessionTest, InvalidTestUrl) {
+  auto params = CreateValidParams();
+  EXPECT_FALSE(Session::CreateIfValid(params, kTestUrlForWrongETLD));
 }
 
 TEST_F(SessionTest, ToFromProto) {

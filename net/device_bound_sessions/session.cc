@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
@@ -55,6 +56,16 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
   }
 
   if (params.session_id.empty()) {
+    return nullptr;
+  }
+
+  if (!params.scope.origin.empty() && !url.host().empty() &&
+      url.host() != params.scope.origin &&
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) !=
+          net::registry_controlled_domains::GetDomainAndRegistry(
+              params.scope.origin,
+              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES)) {
     return nullptr;
   }
 

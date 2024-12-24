@@ -31,6 +31,7 @@ struct NET_EXPORT SessionParams final {
     // Defaults to false if not in the params
     bool include_site = false;
     std::vector<Specification> specifications;
+    std::string origin;
 
     Scope();
     Scope(Scope&& other) noexcept;
