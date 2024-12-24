@@ -306,7 +306,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
-#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/app_restore/features.h"

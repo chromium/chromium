@@ -168,7 +168,6 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
-    "//chromeos/ash/components/standalone_browser",
     "//components/app_constants",
     "//components/crx_file",
     "//components/keyed_service/core",

@@ -2535,7 +2535,6 @@ static_library("ui") {
       "//chromeos/ash/components/scalable_iph",
       "//chromeos/ash/components/scalable_iph:constants",
       "//chromeos/ash/components/settings",
-      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/string_matching",
       "//chromeos/ash/components/system",
       "//chromeos/ash/components/system_info",

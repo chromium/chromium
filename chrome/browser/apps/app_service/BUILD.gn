@@ -507,7 +507,6 @@ source_set("unit_tests") {
       "//chromeos/ash/components/dbus/cicerone",
       "//chromeos/ash/components/dbus/seneschal",
       "//chromeos/ash/components/login/login_state",
-      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/system",
       "//chromeos/components/mgs:test_support",
       "//chromeos/dbus/power:power_manager_proto",

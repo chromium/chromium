@@ -228,7 +228,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/sync_wifi:test_support",
     "//components/prefs:test_support",
     "//components/webapps/browser",

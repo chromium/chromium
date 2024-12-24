@@ -22909,7 +22909,6 @@ from previous Chrome versions.
   <int value="1000025209"
       label="ExperimentalWebMachineLearningNeuralNetwork:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
-  <int value="1000630368" label="lacros-stability"/>
   <int value="1000706989" label="AutomaticTabDiscarding:disabled"/>
   <int value="1002247842" label="WebGPUService:enabled"/>
   <int value="1002585107" label="emphasize-titles-in-omnibox-dropdown"/>
@@ -25312,6 +25311,7 @@ from previous Chrome versions.
   <int value="1924192543" label="ProactiveTabFreezeAndDiscard:enabled"/>
   <int value="1924326113" label="HelpAppDiscoverTab:disabled"/>
   <int value="1924454983" label="UseGMSCoreForBrandingInfo:enabled"/>
+  <int value="1924563140" label="(Obsolete) lacros-stability"/>
   <int value="1924773264" label="WakeOnWifiAllowed:disabled"/>
   <int value="1925213304" label="FillingAcrossAffiliatedWebsites:enabled"/>
   <int value="1925346911" label="AssistEmojiEnhanced:enabled"/>

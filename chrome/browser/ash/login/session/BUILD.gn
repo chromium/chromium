@@ -95,7 +95,6 @@ static_library("session") {
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",

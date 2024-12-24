@@ -49,7 +49,6 @@ static_library("preferences") {
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
     "//chromeos/components/disks:prefs",

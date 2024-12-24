@@ -5339,7 +5339,6 @@ static_library("browser") {
       "//chromeos/ash/components/report",
       "//chromeos/ash/components/scalable_iph",
       "//chromeos/ash/components/settings",
-      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/components/system",
       "//chromeos/ash/components/timezone",

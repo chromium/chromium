@@ -5558,14 +5558,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "lacros-stability",
-    "owners": [ "jamescook@chromium.org", "erikchen@chromium.org", "lacros-team@google.com" ],
-    // Once Lacros is launched, this flag can be removed. Until then, this
-    // absolutely must not expire. We do not yet have a launch milestone.
-    // TODO(crbug.com/40157060).
-    "expiry_milestone": 140
-  },
-  {
     "name": "lacros-trigger-profile-backward-migration",
     "owners": ["janagrill@chromium.org", "artyomchen@chromium.org", "lacros-team@google.com"],
     // TODO(http://b/243125048): Once the Ash browser is removed, this flag

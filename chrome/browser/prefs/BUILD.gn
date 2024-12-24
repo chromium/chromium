@@ -227,7 +227,6 @@ source_set("impl") {
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/policy",
       "//chromeos/ash/components/report",
-      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/timezone",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",

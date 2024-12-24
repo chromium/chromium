@@ -6937,9 +6937,6 @@ const char kCrosComponentsName[] = "Cros Components";
 const char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";
 
-const char kLacrosStabilityName[] = "Lacros stability";
-const char kLacrosStabilityDescription[] = "Lacros update channel.";
-
 const char kLacrosWaylandLoggingName[] = "Lacros Wayland logging";
 const char kLacrosWaylandLoggingDescription[] =
     "Enables Wayland logging for Lacros. This generates a significant amount "

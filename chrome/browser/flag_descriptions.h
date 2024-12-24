@@ -4045,9 +4045,6 @@ extern const char kImeUsEnglishModelUpdateDescription[];
 extern const char kCrosComponentsName[];
 extern const char kCrosComponentsDescription[];
 
-extern const char kLacrosStabilityName[];
-extern const char kLacrosStabilityDescription[];
-
 extern const char kLacrosWaylandLoggingName[];
 extern const char kLacrosWaylandLoggingDescription[];
 

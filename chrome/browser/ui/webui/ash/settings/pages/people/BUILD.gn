@@ -115,7 +115,6 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/account_manager",
-    "//chromeos/ash/components/standalone_browser",
     "//components/account_manager_core",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",

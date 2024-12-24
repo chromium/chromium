@@ -69,7 +69,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "components/account_id/account_id.h"
