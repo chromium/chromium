@@ -18,11 +18,35 @@ SearchBoxModel::SearchBoxModel() = default;
 SearchBoxModel::~SearchBoxModel() = default;
 
 void SearchBoxModel::SetShowAssistantButton(bool show) {
-  if (show_assistant_button_ == show)
+  if (show_assistant_button_ == show) {
     return;
+  }
+
   show_assistant_button_ = show;
-  for (auto& observer : observers_)
+
+  CHECK(!show_assistant_button_ || !show_assistant_new_entry_point_button_)
+      << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
+         "shown";
+
+  for (auto& observer : observers_) {
     observer.ShowAssistantChanged();
+  }
+}
+
+void SearchBoxModel::SetShowAssistantNewEntryPointButton(bool show) {
+  if (show_assistant_new_entry_point_button_ == show) {
+    return;
+  }
+
+  show_assistant_new_entry_point_button_ = show;
+
+  CHECK(!show_assistant_button_ || !show_assistant_new_entry_point_button_)
+      << "Only one of AssistantButton or AssistantNewEntryPointButton can be "
+         "shown";
+
+  for (SearchBoxModelObserver& observer : observers_) {
+    observer.ShowAssistantNewEntryPointChanged();
+  }
 }
 
 void SearchBoxModel::SetShowSunfishButton(bool show) {

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_TEST_SUPPORT_SCOPED_ASSISTANT_BROWSER_DELEGATE_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
@@ -23,6 +24,8 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
   ~ScopedAssistantBrowserDelegate() override;
 
   AssistantBrowserDelegate& Get();
+
+  void SetOpenNewEntryPointClosure(base::OnceClosure closure);
 
   // Set the MediaControllerManager receiver that will be bound to the remote
   // passed into RequestMediaControllerManager().
@@ -55,7 +58,7 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) override {}
   void OpenUrl(GURL url) override;
-  void OpenNewEntryPoint() override {}
+  void OpenNewEntryPoint() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
       mojo::PendingReceiver<libassistant::mojom::LibassistantService> receiver)
@@ -63,6 +66,8 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
  private:
+  base::OnceClosure open_new_entry_point_closure_;
+
   raw_ptr<mojo::Receiver<media_session::mojom::MediaControllerManager>>
       media_controller_manager_receiver_ = nullptr;
 };

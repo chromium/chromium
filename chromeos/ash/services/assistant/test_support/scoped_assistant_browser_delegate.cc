@@ -16,6 +16,12 @@ AssistantBrowserDelegate& ScopedAssistantBrowserDelegate::Get() {
   return *AssistantBrowserDelegate::Get();
 }
 
+void ScopedAssistantBrowserDelegate::SetOpenNewEntryPointClosure(
+    base::OnceClosure closure) {
+  CHECK(open_new_entry_point_closure_.is_null()) << "Closure is already set";
+  open_new_entry_point_closure_ = std::move(closure);
+}
+
 void ScopedAssistantBrowserDelegate::SetMediaControllerManager(
     mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver) {
   media_controller_manager_receiver_ = receiver;
@@ -34,6 +40,14 @@ void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void ScopedAssistantBrowserDelegate::OpenNewEntryPoint() {
+  if (open_new_entry_point_closure_.is_null()) {
+    return;
+  }
+
+  std::move(open_new_entry_point_closure_).Run();
 }
 
 }  // namespace ash::assistant

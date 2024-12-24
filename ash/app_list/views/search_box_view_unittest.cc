@@ -48,6 +48,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
@@ -68,6 +71,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -1321,6 +1325,124 @@ TEST_F(SearchBoxViewAutocompleteTest, AccessibleValue) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE,
                                        view()->search_box()->GetText()),
             data2.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+}
+
+class AssistantNewEntryPointTestBase
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  explicit AssistantNewEntryPointTestBase(bool enable_new_entry_point) {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::assistant::features::kEnableNewEntryPoint, enable_new_entry_point);
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().EnterTabletMode();
+    }
+  }
+
+  void TearDown() override {
+    if (IsTabletMode()) {
+      ash::TabletModeControllerTestApi().LeaveTabletMode();
+    }
+
+    AshTestBase::TearDown();
+  }
+
+  ~AssistantNewEntryPointTestBase() override = default;
+
+  static std::string GenerateParamName(
+      const testing::TestParamInfo<bool>& info) {
+    return info.param ? "Tablet" : "Clamshell";
+  }
+
+ protected:
+  bool IsTabletMode() const { return GetParam(); }
+
+  assistant::ScopedAssistantBrowserDelegate scoped_assistant_browser_delegate_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AssistantNewEntryPointTest : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/true) {}
+  ~AssistantNewEntryPointTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonVisibility) {
+  GetAppListTestHelper()->ShowAppList();
+
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  EXPECT_TRUE(new_entry_point_button->GetVisible());
+
+  views::ImageButton* assistant_button =
+      GetAppListTestHelper()->GetSearchBoxView()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  EXPECT_FALSE(assistant_button->GetVisible());
+}
+
+TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
+  base::test::TestFuture<void> open_new_entry_point_future;
+  scoped_assistant_browser_delegate_.SetOpenNewEntryPointClosure(
+      open_new_entry_point_future.GetCallback());
+
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  if (IsTabletMode()) {
+    generator->GestureTapAt(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+  } else {
+    generator->MoveMouseTo(
+        new_entry_point_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+  }
+
+  EXPECT_TRUE(open_new_entry_point_future.Wait())
+      << "Expect OpenNewEntryPoint to be called";
+}
+
+class AssistantNewEntryPointDisabledTest
+    : public AssistantNewEntryPointTestBase {
+ public:
+  AssistantNewEntryPointDisabledTest()
+      : AssistantNewEntryPointTestBase(/*enable_new_entry_point=*/false) {}
+  ~AssistantNewEntryPointDisabledTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AssistantNewEntryPointDisabledTest,
+                         testing::Bool(),
+                         &AssistantNewEntryPointTestBase::GenerateParamName);
+
+TEST_P(AssistantNewEntryPointDisabledTest, NewEntryPointButtonHidden) {
+  GetAppListTestHelper()->ShowAppList();
+  views::ImageButton* new_entry_point_button =
+      GetAppListTestHelper()
+          ->GetSearchBoxView()
+          ->assistant_new_entry_point_button();
+  ASSERT_TRUE(new_entry_point_button);
+  EXPECT_FALSE(new_entry_point_button->GetVisible());
 }
 
 class SunfishLauncherButtonTest : public AshTestBase,

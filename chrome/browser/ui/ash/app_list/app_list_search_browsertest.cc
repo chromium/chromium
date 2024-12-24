@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_search_view.h"
@@ -40,6 +41,13 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   void SearchForSystemApp(aura::Window* primary_root_window,
                           const std::u16string app_query,
                           const std::string app_id) {
+    // Disables sunfish nudge as it can take click event for clicking the top
+    // result. Remove this once sunfish nudge becomes dismissed automatically
+    // with a start of launcher search.
+    // TODO(crbug.com/385385395): sunfish nudge should be dismissed if launcher
+    // search starts.
+    AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
+
     // Ensure the System app is installed.
     Profile* profile = ProfileManager::GetActiveUserProfile();
     ASSERT_TRUE(profile);

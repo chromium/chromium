@@ -210,6 +210,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
+  // Called when the assistant new entry point button within the search box gets
+  // pressed.
+  void AssistantNewEntryPointButtonPressed();
+
   // Called when the sunfish launcher button within the search box gets pressed.
   void SunfishButtonPressed();
 
@@ -256,6 +260,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
+  void ShowAssistantNewEntryPointChanged() override;
   void ShowSunfishChanged() override;
 
   // Updates the visibility of an IPH view.
