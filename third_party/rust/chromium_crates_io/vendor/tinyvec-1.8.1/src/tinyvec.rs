@@ -1,5 +1,3 @@
-#![cfg(feature = "alloc")]
-
 use super::*;
 
 use alloc::vec::{self, Vec};
@@ -35,7 +33,7 @@ use serde::ser::{Serialize, SerializeSeq, Serializer};
 /// let many_ints: TinyVec<[i32; 4]> = tiny_vec!(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 /// ```
 #[macro_export]
-#[cfg_attr(docs_rs, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 macro_rules! tiny_vec {
   ($array_type:ty => $($elem:expr),* $(,)?) => {
     {
@@ -94,7 +92,7 @@ pub enum TinyVecConstructor<A: Array> {
 /// let empty_tv = tiny_vec!([u8; 16]);
 /// let some_ints = tiny_vec!([i32; 4] => 1, 2, 3);
 /// ```
-#[cfg_attr(docs_rs, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub enum TinyVec<A: Array> {
   #[allow(missing_docs)]
   Inline(ArrayVec<A>),
@@ -266,6 +264,7 @@ impl<A: Array> TinyVec<A> {
   /// tv.shrink_to_fit();
   /// assert!(tv.is_inline());
   /// ```
+  #[inline]
   pub fn shrink_to_fit(&mut self) {
     let vec = match self {
       TinyVec::Inline(_) => return,
@@ -276,7 +275,7 @@ impl<A: Array> TinyVec<A> {
       return vec.shrink_to_fit();
     }
 
-    let moved_vec = core::mem::replace(vec, Vec::new());
+    let moved_vec = core::mem::take(vec);
 
     let mut av = ArrayVec::default();
     let mut rest = av.fill(moved_vec);
@@ -339,6 +338,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 35);
   /// ```
+  #[inline]
   pub fn move_to_the_heap_and_reserve(&mut self, n: usize) {
     let arr = match self {
       TinyVec::Heap(h) => return h.reserve(n),
@@ -388,6 +388,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 5);
   /// ```
+  #[inline]
   pub fn reserve(&mut self, n: usize) {
     let arr = match self {
       TinyVec::Heap(h) => return h.reserve(n),
@@ -451,6 +452,7 @@ impl<A: Array> TinyVec<A> {
   /// assert!(tv.is_heap());
   /// assert!(tv.capacity() >= 5);
   /// ```
+  #[inline]
   pub fn reserve_exact(&mut self, n: usize) {
     let arr = match self {
       TinyVec::Heap(h) => return h.reserve_exact(n),
@@ -640,7 +642,7 @@ impl<A: Array> TinyVec<A> {
   /// assert_eq!(tv.as_slice(), &[2, 4][..]);
   /// ```
   #[inline]
-  pub fn retain<F: FnMut(&A::Item) -> bool>(self: &mut Self, acceptable: F) {
+  pub fn retain<F: FnMut(&A::Item) -> bool>(&mut self, acceptable: F) {
     match self {
       TinyVec::Inline(i) => i.retain(acceptable),
       TinyVec::Heap(h) => h.retain(acceptable),
@@ -671,14 +673,14 @@ impl<A: Array> TinyVec<A> {
   /// Helper for getting the mut slice.
   #[inline(always)]
   #[must_use]
-  pub fn as_mut_slice(self: &mut Self) -> &mut [A::Item] {
+  pub fn as_mut_slice(&mut self) -> &mut [A::Item] {
     self.deref_mut()
   }
 
   /// Helper for getting the shared slice.
   #[inline(always)]
   #[must_use]
-  pub fn as_slice(self: &Self) -> &[A::Item] {
+  pub fn as_slice(&self) -> &[A::Item] {
     self.deref()
   }
 
@@ -838,8 +840,7 @@ impl<A: Array> TinyVec<A> {
 
     if let Some(x) = arr.try_insert(index, item) {
       let mut v = Vec::with_capacity(arr.len() * 2);
-      let mut it =
-        arr.iter_mut().map(|r| core::mem::replace(r, Default::default()));
+      let mut it = arr.iter_mut().map(core::mem::take);
       v.extend(it.by_ref().take(index));
       v.push(x);
       v.extend(it);
@@ -1061,7 +1062,7 @@ impl<A: Array> TinyVec<A> {
 /// Draining iterator for `TinyVecDrain`
 ///
 /// See [`TinyVecDrain::drain`](TinyVecDrain::<A>::drain)
-#[cfg_attr(docs_rs, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub enum TinyVecDrain<'p, A: Array> {
   #[allow(missing_docs)]
   Inline(ArrayVecDrain<'p, A::Item>),
@@ -1110,7 +1111,7 @@ impl<'p, A: Array> DoubleEndedIterator for TinyVecDrain<'p, A> {
 
 /// Splicing iterator for `TinyVec`
 /// See [`TinyVec::splice`](TinyVec::<A>::splice)
-#[cfg_attr(docs_rs, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub struct TinyVecSplice<'p, A: Array, I: Iterator<Item = A::Item>> {
   parent: &'p mut TinyVec<A>,
   removal_start: usize,
@@ -1205,6 +1206,7 @@ where
 impl<'p, A: Array, I: Iterator<Item = A::Item>> Drop
   for TinyVecSplice<'p, A, I>
 {
+  #[inline]
   fn drop(&mut self) {
     for _ in self.by_ref() {}
 
@@ -1286,6 +1288,7 @@ impl<A: Array> From<ArrayVec<A>> for TinyVec<A> {
 }
 
 impl<A: Array> From<A> for TinyVec<A> {
+  #[inline]
   fn from(array: A) -> Self {
     TinyVec::Inline(ArrayVec::from(array))
   }
@@ -1330,7 +1333,7 @@ impl<A: Array> FromIterator<A::Item> for TinyVec<A> {
 }
 
 /// Iterator for consuming an `TinyVec` and returning owned elements.
-#[cfg_attr(docs_rs, doc(cfg(feature = "alloc")))]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 pub enum TinyVecIterator<A: Array> {
   #[allow(missing_docs)]
   Inline(ArrayVecIterator<A>),

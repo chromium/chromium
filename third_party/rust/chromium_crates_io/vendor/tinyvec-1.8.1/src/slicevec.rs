@@ -655,6 +655,7 @@ impl<'s, T> SliceVec<'s, T> {
   /// sv.push(13);
   /// assert_eq!(sv.grab_spare_slice().len(), 0);
   /// ```
+  #[must_use]
   #[inline(always)]
   pub fn grab_spare_slice(&self) -> &[T] {
     &self.data[self.len..]

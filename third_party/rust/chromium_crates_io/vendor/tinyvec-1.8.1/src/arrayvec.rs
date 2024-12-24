@@ -52,8 +52,8 @@ macro_rules! array_vec {
 /// An array-backed, vector-like data structure.
 ///
 /// * `ArrayVec` has a fixed capacity, equal to the minimum of the array size
-/// and `u16::MAX`. Note that not all capacities are necessarily supported by
-/// default. See comments in [`Array`].
+///   and `u16::MAX`. Note that not all capacities are necessarily supported by
+///   default. See comments in [`Array`].
 /// * `ArrayVec` has a variable length, as you add and remove elements. Attempts
 ///   to fill the vec beyond its capacity will cause a panic.
 /// * All of the vec's array slots are always initialized in terms of Rust's
@@ -572,6 +572,7 @@ impl<A: Array> ArrayVec<A> {
     }
 
     let target = &mut self.as_mut_slice()[index..];
+    #[allow(clippy::needless_range_loop)]
     for i in 0..target.len() {
       core::mem::swap(&mut item, &mut target[i]);
     }
@@ -1857,6 +1858,7 @@ impl<A: Array> ArrayVec<A> {
   /// assert_eq!(v, &[1, 2, 3]);
   /// assert_eq!(v.capacity(), 13);
   /// ```
+  #[inline]
   pub fn drain_to_vec_and_reserve(&mut self, n: usize) -> Vec<A::Item> {
     let cap = n + self.len();
     let mut v = Vec::with_capacity(cap);
@@ -1902,6 +1904,7 @@ impl<A: Array> ArrayVec<A> {
   /// assert_eq!(v, &[1, 2, 3]);
   /// assert_eq!(v.capacity(), 3);
   /// ```
+  #[inline]
   pub fn drain_to_vec(&mut self) -> Vec<A::Item> {
     self.drain_to_vec_and_reserve(0)
   }
