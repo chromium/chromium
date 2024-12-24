@@ -33,6 +33,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         pref_service_(profile_->GetPrefs()),
         receiver_(this, std::move(receiver)) {}
 
+  ~GlicWebClientHandler() override { Uninstall(); }
+
   // glic::mojom::WebClientHandler implementation.
   void WebClientInitialized(
       ::mojo::PendingRemote<glic::mojom::WebClient> web_client) override {
@@ -59,6 +61,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     // Communicate initial permission values to web client.
     SendPermissionsToWebClient();
+    installed_ = true;
   }
 
   void GetChromeVersion(GetChromeVersionCallback callback) override {
@@ -155,11 +158,18 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPanelStateChange(panel_state.Clone());
   }
 
- private:
-  void WebClientDisconnected() {
+  void Uninstall() {
+    if (!installed_) {
+      return;
+    }
+
     pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
+    installed_ = false;
   }
+
+ private:
+  void WebClientDisconnected() { Uninstall(); }
 
   void OnPrefChanged(const std::string& pref_name) {
     bool is_enabled = pref_service_->GetBoolean(pref_name);
@@ -189,6 +199,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<PrefService> pref_service_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
+  bool installed_ = false;
 };
 
 GlicPageHandler::GlicPageHandler(
