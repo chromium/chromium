@@ -162,7 +162,7 @@ fn decode_iso_8859_1(text: &[u8]) -> String {
     text.iter().map(|&b| b as char).collect()
 }
 
-fn encode_iso_8859_1(text: &str) -> Result<Vec<u8>, TextEncodingError> {
+pub(crate) fn encode_iso_8859_1(text: &str) -> Result<Vec<u8>, TextEncodingError> {
     encode_iso_8859_1_iter(text).collect()
 }
 

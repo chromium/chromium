@@ -13,33 +13,33 @@ cargo_crate("lib") {
   epoch = "0.17"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/adam7.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/benchable_apis.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/chunk.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/common.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/interlace_info.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/read_decoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/stream.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/transform.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/transform/palette.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/unfiltering_buffer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/decoder/zlib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/encoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/filter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/srgb.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/test_utils.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/text_metadata.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-0.17.15/src/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/adam7.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/benchable_apis.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/chunk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/interlace_info.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/read_decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/transform.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/transform/palette.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/unfiltering_buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/decoder/zlib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/encoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/filter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/srgb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/test_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/text_metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-0.17.16/src/traits.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "0.17.15"
+  cargo_pkg_version = "0.17.16"
   cargo_pkg_authors = "The image-rs Developers"
   cargo_pkg_name = "png"
   cargo_pkg_description = "PNG decoding and encoding library in pure Rust"

@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.57"
 name = "png"
-version = "0.17.15"
+version = "0.17.16"
 authors = ["The image-rs Developers"]
 build = false
 include = [
@@ -121,8 +121,13 @@ version = "0.3"
 version = "0.8.4"
 
 [dev-dependencies.term]
-version = "0.7"
+version = "1.0.1"
 
 [features]
 benchmarks = []
-unstable = []
+unstable = ["crc32fast/nightly"]
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = ["cfg(fuzzing)"]

@@ -725,10 +725,22 @@ impl Info<'_> {
             .raw_row_length_from_width(self.bit_depth, width)
     }
 
+    /// Mark the image data as conforming to the SRGB color space with the specified rendering intent.
+    ///
+    /// Any ICC profiles will be ignored.
+    ///
+    /// Source gamma and chromaticities will be written only if they're set to fallback
+    /// values specified in [11.3.2.5](https://www.w3.org/TR/png-3/#sRGB-gAMA-cHRM).
+    pub(crate) fn set_source_srgb(&mut self, rendering_intent: SrgbRenderingIntent) {
+        self.srgb = Some(rendering_intent);
+        self.icc_profile = None;
+    }
+
     /// Encode this header to the writer.
     ///
     /// Note that this does _not_ include the PNG signature, it starts with the IHDR chunk and then
     /// includes other chunks that were added to the header.
+    #[deprecated(note = "Use Encoder+Writer instead")]
     pub fn encode<W: Write>(&self, mut w: W) -> encoder::Result<()> {
         // Encode the IHDR chunk
         let mut data = [0; 13];
@@ -753,11 +765,17 @@ impl Info<'_> {
 
         // If specified, the sRGB information overrides the source gamma and chromaticities.
         if let Some(srgb) = &self.srgb {
-            let gamma = crate::srgb::substitute_gamma();
-            let chromaticities = crate::srgb::substitute_chromaticities();
             srgb.encode(&mut w)?;
-            gamma.encode_gama(&mut w)?;
-            chromaticities.encode(&mut w)?;
+
+            // gAMA and cHRM are optional, for backwards compatibility
+            let srgb_gamma = crate::srgb::substitute_gamma();
+            if Some(srgb_gamma) == self.source_gamma {
+                srgb_gamma.encode_gama(&mut w)?
+            }
+            let srgb_chromaticities = crate::srgb::substitute_chromaticities();
+            if Some(srgb_chromaticities) == self.source_chromaticities {
+                srgb_chromaticities.encode(&mut w)?;
+            }
         } else {
             if let Some(gma) = self.source_gamma {
                 gma.encode_gama(&mut w)?
@@ -766,7 +784,7 @@ impl Info<'_> {
                 chrms.encode(&mut w)?;
             }
             if let Some(iccp) = &self.icc_profile {
-                encoder::write_chunk(&mut w, chunk::iCCP, iccp)?;
+                encoder::write_iccp_chunk(&mut w, "_", iccp)?
             }
         }
 

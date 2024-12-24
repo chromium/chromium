@@ -1528,9 +1528,11 @@ impl StreamingDecoder {
         let mut buf = &self.current_chunk.raw_bytes[..];
 
         // read profile name
-        let _: u8 = buf.read_be()?;
-        for _ in 1..80 {
+        for len in 0..=80 {
             let raw: u8 = buf.read_be()?;
+            if (raw == 0 && len == 0) || (raw != 0 && len == 80) {
+                return Err(DecodingError::from(TextDecodingError::InvalidKeywordSize));
+            }
             if raw == 0 {
                 break;
             }
@@ -2106,6 +2108,23 @@ mod tests {
         // Note that the 2nd chunk in the test file has been manually altered to have a different
         // content (`b"test iccp contents"`) which would have a different CRC (797351983).
         assert_eq!(4070462061, crc32fast::hash(&icc_profile));
+    }
+
+    #[test]
+    fn test_iccp_roundtrip() {
+        let dummy_icc = b"I'm a profile";
+
+        let mut info = crate::Info::with_size(1, 1);
+        info.icc_profile = Some(dummy_icc.into());
+        let mut encoded_image = Vec::new();
+        let enc = crate::Encoder::with_info(&mut encoded_image, info).unwrap();
+        let mut enc = enc.write_header().unwrap();
+        enc.write_image_data(&[0]).unwrap();
+        enc.finish().unwrap();
+
+        let dec = crate::Decoder::new(encoded_image.as_slice());
+        let dec = dec.read_info().unwrap();
+        assert_eq!(dummy_icc, &**dec.info().icc_profile.as_ref().unwrap());
     }
 
     #[test]

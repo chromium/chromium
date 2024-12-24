@@ -13,7 +13,7 @@ use crate::common::{
 };
 use crate::filter::{filter, AdaptiveFilterType, FilterType};
 use crate::text_metadata::{
-    EncodableTextChunk, ITXtChunk, TEXtChunk, TextEncodingError, ZTXtChunk,
+    encode_iso_8859_1, EncodableTextChunk, ITXtChunk, TEXtChunk, TextEncodingError, ZTXtChunk,
 };
 use crate::traits::WriteBytesExt;
 
@@ -268,9 +268,23 @@ impl<'a, W: Write> Encoder<'a, W> {
     /// Mark the image data as conforming to the SRGB color space with the specified rendering intent.
     ///
     /// Matching source gamma and chromaticities chunks are added automatically.
-    /// Any manually specified source gamma or chromaticities will be ignored.
+    /// Any manually specified source gamma, chromaticities, or ICC profiles will be ignored.
+    #[doc(hidden)]
+    #[deprecated(note = "use set_source_srgb")]
     pub fn set_srgb(&mut self, rendering_intent: super::SrgbRenderingIntent) {
-        self.info.srgb = Some(rendering_intent);
+        self.info.set_source_srgb(rendering_intent);
+        self.info.source_gamma = Some(crate::srgb::substitute_gamma());
+        self.info.source_chromaticities = Some(crate::srgb::substitute_chromaticities());
+    }
+
+    /// Mark the image data as conforming to the SRGB color space with the specified rendering intent.
+    ///
+    /// Any ICC profiles will be ignored.
+    ///
+    /// Source gamma and chromaticities will be written only if they're set to fallback
+    /// values specified in [11.3.2.5](https://www.w3.org/TR/png-3/#sRGB-gAMA-cHRM).
+    pub fn set_source_srgb(&mut self, rendering_intent: super::SrgbRenderingIntent) {
+        self.info.set_source_srgb(rendering_intent);
     }
 
     /// Start encoding by writing the header data.
@@ -576,6 +590,7 @@ impl<W: Write> Writer<W> {
         }
 
         self.w.write_all(&[137, 80, 78, 71, 13, 10, 26, 10])?; // PNG signature
+        #[allow(deprecated)]
         info.encode(&mut self.w)?;
 
         Ok(self)
@@ -1038,6 +1053,36 @@ impl<W: Write> Drop for Writer<W> {
             let _ = self.write_iend();
         }
     }
+}
+
+// This should be moved to Writer after `Info::encoding` is gone
+pub(crate) fn write_iccp_chunk<W: Write>(
+    w: &mut W,
+    profile_name: &str,
+    icc_profile: &[u8],
+) -> Result<()> {
+    let profile_name = encode_iso_8859_1(profile_name)?;
+    if profile_name.len() < 1 || profile_name.len() > 79 {
+        return Err(TextEncodingError::InvalidKeywordSize.into());
+    }
+
+    let estimated_compressed_size = icc_profile.len() * 3 / 4;
+    let chunk_size = profile_name
+        .len()
+        .checked_add(2) // string NUL + compression type. Checked add optimizes out later Vec reallocations.
+        .and_then(|s| s.checked_add(estimated_compressed_size))
+        .ok_or(EncodingError::LimitsExceeded)?;
+
+    let mut data = Vec::new();
+    data.try_reserve_exact(chunk_size)
+        .map_err(|_| EncodingError::LimitsExceeded)?;
+
+    data.extend(profile_name.into_iter().chain([0, 0]));
+
+    let mut encoder = ZlibEncoder::new(data, flate2::Compression::default());
+    encoder.write_all(icc_profile)?;
+
+    write_chunk(w, chunk::iCCP, &encoder.finish()?)
 }
 
 enum ChunkOutput<'a, W: Write> {
