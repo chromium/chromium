@@ -43,11 +43,6 @@ component("account_manager_core") {
     "//services/network/public/cpp:cpp",
   ]
 
-  if (is_chromeos_lacros) {
-    sources += [ "chromeos/account_manager_facade_factory_lacros.cc" ]
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
-
   public_deps = [
     ":account_manager_proto",
     "//third_party/abseil-cpp:absl",

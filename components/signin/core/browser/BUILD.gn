@@ -86,19 +86,6 @@ static_library("browser") {
     deps += [ "//chromeos/crosapi/mojom" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-    sources += [
-      "consistency_cookie_manager.cc",
-      "consistency_cookie_manager.h",
-      "mirror_landing_account_reconcilor_delegate.cc",
-      "mirror_landing_account_reconcilor_delegate.h",
-    ]
-  }
-
   if (!enable_dice_support) {
     sources -= [
       "dice_account_reconcilor_delegate.cc",
@@ -158,18 +145,6 @@ source_set("unit_tests") {
     sources -= [
       "account_investigator_unittest.cc",
       "signin_status_metrics_provider_helpers_unittest.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-    ]
-    sources += [
-      "consistency_cookie_manager_unittest.cc",
-      "mirror_landing_account_reconcilor_delegate_unittest.cc",
     ]
   }
 

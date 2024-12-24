@@ -106,10 +106,6 @@ source_set("unit_tests") {
     "//ui/gfx/geometry",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:test_support" ]
-  }
 }
 
 test("paint_preview_browser_unit_tests") {

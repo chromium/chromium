@@ -49,9 +49,6 @@ source_set("util") {
   if (is_chromeos) {
     deps += [ "//components/user_manager" ]
   }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
-  }
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/system" ]
   }
@@ -251,20 +248,6 @@ source_set("internal") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "management/platform_management_status_provider_lacros.cc",
-      "management/platform_management_status_provider_lacros.h",
-      "policy_loader_lacros.cc",
-      "policy_loader_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup:startup",
-    ]
-  }
 
   allow_circular_includes_from = [
     # Generated files use policy_details.h and policy_map.h from this target.
@@ -644,10 +627,6 @@ source_set("unit_tests") {
       "scoped_critical_policy_section_unittest.cc",
     ]
   }
-  if (is_chromeos_lacros) {
-    sources += [ "policy_loader_lacros_unittest.cc" ]
-  }
-
   deps = [
     ":common_constants",
     ":test_support",
@@ -673,15 +652,6 @@ source_set("unit_tests") {
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup:startup",
-    ]
   }
 }
 

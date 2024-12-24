@@ -17,8 +17,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-large_variation_key_size_enabled =
-    is_castos || is_cast_android || is_chromeos_lacros
+large_variation_key_size_enabled = is_castos || is_cast_android
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -123,7 +122,7 @@ component("variations") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos_ash) {
     sources += [
       "variations_crash_keys_chromeos.cc",
       "variations_crash_keys_chromeos.h",
