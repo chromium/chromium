@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"
+#include "components/manta/proto/scanner.pb.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -37,7 +38,8 @@ constexpr char kScannerActionFailureToastId[] = "scanner_action_failure";
 
 // Shows an action progress notification. Note that this will remove the
 // previous action notification if there is one.
-void ShowActionProgressNotification() {
+void ShowActionProgressNotification(
+    manta::proto::ScannerAction::ActionCase action_case) {
   message_center::RichNotificationData optional_fields;
   // Show an infinite loading progress bar.
   optional_fields.progress = -1;
@@ -48,10 +50,11 @@ void ShowActionProgressNotification() {
                                      /*by_user=*/false);
   // TODO: crbug.com/375967525 - Finalize the action notification strings and
   // icon.
-  constexpr char16_t kPlaceholderActionProgressTitle[] = u"Creating...";
   message_center->AddNotification(CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_PROGRESS, kScannerActionNotificationId,
-      kPlaceholderActionProgressTitle,
+      action_case == manta::proto::ScannerAction::kCopyToClipboard
+          ? u"Copying text..."
+          : u"Creating...",
       /*message=*/u"",
       /*display_source=*/u"", GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -62,22 +65,24 @@ void ShowActionProgressNotification() {
 }
 
 // Should be called when an action finishes execution.
-void OnActionFinished(bool success) {
+void OnActionFinished(manta::proto::ScannerAction::ActionCase action_case,
+                      bool success) {
   // Remove the action progress notification.
   message_center::MessageCenter::Get()->RemoveNotification(
       kScannerActionNotificationId,
       /*by_user=*/false);
 
   if (success) {
-    // TODO: crbug.com/382182688 - The action success text should depend on the
-    // type of action executed.
-    constexpr char16_t kPlaceholderActionSuccessText[] = u"Action Finished";
-    // TODO: crbug.com/383925780 - Add feedback mechanism to the toast.
-    ToastManager::Get()->Show(ToastData(kScannerActionSuccessToastId,
-                                        ToastCatalogName::kScannerActionSuccess,
-                                        kPlaceholderActionSuccessText));
+    // TODO: crbug.com/375967525 - Finalize the action toast string.
+    if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
+      ToastManager::Get()->Show(ToastData(
+          kScannerActionSuccessToastId, ToastCatalogName::kScannerActionSuccess,
+          u"Text copied to clipboard"));
+    }
+    // TODO: crbug.com/383925780 - We should also show a toast for other action
+    // cases once the feedback mechanism is ready.
   } else {
-    // TODO: crbug.com/378582420 - The action failure text should depend on the
+    // TODO: crbug.com/383926250 - The action failure text should depend on the
     // type of action attempted.
     constexpr char16_t kPlaceholderActionFailureText[] = u"Action Failed";
     ToastManager::Get()->Show(ToastData(kScannerActionFailureToastId,
@@ -147,8 +152,10 @@ void ScannerController::OnSessionUIClosed() {
 
 void ScannerController::ExecuteAction(
     const ScannerActionViewModel& scanner_action) {
-  scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished));
-  ShowActionProgressNotification();
+  const manta::proto::ScannerAction::ActionCase action_case =
+      scanner_action.GetActionCase();
+  scanner_action.ExecuteAction(base::BindOnce(&OnActionFinished, action_case));
+  ShowActionProgressNotification(action_case);
 }
 
 bool ScannerController::HasActiveSessionForTesting() const {

@@ -252,6 +252,11 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
   }
 }
 
+manta::proto::ScannerAction::ActionCase ScannerActionViewModel::GetActionCase()
+    const {
+  return unpopulated_action_.action_case();
+}
+
 void ScannerActionViewModel::ExecuteAction(
     ScannerCommandCallback action_finished_callback) const {
   unpopulated_action_.PopulateToVariant(base::BindOnce(

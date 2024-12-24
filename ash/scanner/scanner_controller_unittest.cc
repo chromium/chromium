@@ -172,8 +172,10 @@ TEST_F(ScannerControllerTest, ShowsToastAfterActionSuccess) {
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->StartNewSession());
   manta::proto::ScannerOutput output;
-  output.add_objects()->add_actions()->mutable_new_event()->set_title(
-      "Event title");
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
   FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
       *GetFakeScannerProfileScopedDelegate(*scanner_controller);
   // Mock a successful action.
