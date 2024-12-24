@@ -444,10 +444,6 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    // Hide user switching shortcuts for lacros builds.
-    case kSwitchToNextUser:
-    case kSwitchToPreviousUser:
-      return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
       return !accelerators::CanTogglePrivacyScreen();
     case kTilingWindowResizeLeft:

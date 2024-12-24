@@ -71,7 +71,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -152,7 +151,6 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  crosapi::lacros_startup_state::SetLacrosStartupState(false);
   SetState(State::UNAVAILABLE);
   ClearLacrosData();
 }
