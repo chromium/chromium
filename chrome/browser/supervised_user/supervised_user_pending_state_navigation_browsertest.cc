@@ -582,8 +582,16 @@ MATCHER(ContainsGoogleApiKey, "") {
 
 // Tests that when the user doesn't have a valid access token the request is
 // sent with an api key and not an access token (i.e an anonymous request).
+// TODO(https://crbug.com/385450025): Flaky on Win ASAN.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_TestPendingStateRequestHasGoogleApiInHeader \
+  DISABLED_TestPendingStateRequestHasGoogleApiInHeader
+#else
+#define MAYBE_TestPendingStateRequestHasGoogleApiInHeader \
+  TestPendingStateRequestHasGoogleApiInHeader
+#endif
 IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
-                       TestPendingStateRequestHasGoogleApiInHeader) {
+                       MAYBE_TestPendingStateRequestHasGoogleApiInHeader) {
   // TODO(crbug.com/365529863): Move the methods SetAutomaticIssueOfAccessTokens
   // and WaitForAccessTokenRequestIfNecessaryAndRespondWithError to
   // supervisionMixin::SetPendingStateForPrimaryAccount.
