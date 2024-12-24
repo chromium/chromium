@@ -73,7 +73,7 @@ static_library("base") {
     deps += [ "//components/signin/public/android:jni_headers" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/user_manager" ]
     public_deps += [ "//components/account_manager_core" ]
   }

@@ -67,7 +67,7 @@ source_set("identity_manager") {
     "//services/network/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/user_manager" ]
   }
 
@@ -150,13 +150,10 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/ash/components/account_manager",
       "//components/account_manager_core",
       "//components/account_manager_core:test_support",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/account_manager" ]
   }
 }
 
@@ -192,7 +189,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/account_manager" ]
   }
 

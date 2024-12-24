@@ -61,7 +61,10 @@ static_library("sync_device_info") {
 
   if (is_chromeos) {
     sources += [ "local_device_info_util_chromeos.cc" ]
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/ash/components/system",
+      "//chromeos/constants",
+    ]
   }
 
   if (is_ios) {
@@ -86,10 +89,6 @@ static_library("sync_device_info") {
 
   if (is_win) {
     sources += [ "local_device_info_util_win.cc" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
   }
 }
 
@@ -134,7 +133,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
 }

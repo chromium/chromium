@@ -79,11 +79,10 @@ static_library("browser") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/account_manager_core" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/crosapi/mojom" ]
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//components/account_manager_core",
+    ]
   }
 
   if (!enable_dice_support) {
@@ -134,13 +133,10 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/account_manager_core:test_support" ]
-  }
-
-  if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/crosapi/mojom",
+      "//components/account_manager_core:test_support",
     ]
     sources -= [
       "account_investigator_unittest.cc",

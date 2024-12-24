@@ -122,7 +122,7 @@ component("variations") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "variations_crash_keys_chromeos.cc",
       "variations_crash_keys_chromeos.h",
@@ -151,7 +151,7 @@ component("variations") {
     deps += [ "//components/variations/android:variations_jni" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
       "//chromeos/ash/components/dbus/featured:proto",
@@ -249,7 +249,7 @@ source_set("unit_tests") {
     sources += [ "variations_request_scheduler_mobile_unittest.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "variations_crash_keys_chromeos_unittest.cc" ]
   }
 
@@ -283,7 +283,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
       "//chromeos/ash/components/dbus/featured:proto",

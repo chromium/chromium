@@ -10,7 +10,7 @@ import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 # Exo is only used on ash.
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 # ash implies ozone.
 assert(use_ozone)

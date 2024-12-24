@@ -115,7 +115,7 @@ source_set("unit_tests") {
 }
 
 source_set("server_environment") {
-  assert(is_chromeos_ash)
+  assert(is_chromeos)
 
   testonly = true
 
