@@ -857,6 +857,8 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
 
+  recordreplay::AutoDisallowEvents disallow("SendCDPMessage");;
+
   v8::Isolate* isolate = args.GetIsolate();
   absl::optional<int> contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
 
