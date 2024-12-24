@@ -213,7 +213,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // Install the context menu in the Ash browser.
     await chrome.contextMenus.create(createArgs);
 
-    // Listen for context menu clicks from other contexts (like Lacros).
+    // Listen for context menu clicks from other contexts.
     chrome.accessibilityPrivate.onSelectToSpeakContextMenuClicked.addListener(
         () => {
           this.getFocusedNodeAndSpeakSelectedText_();
@@ -574,19 +574,15 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
         this.inputHandler_!.onRequestReadClipboardData();
         this.currentNodeGroupItem_ =
             new ParagraphUtils.NodeGroupItem(gsuiteAppRootNode, 0, false);
-        if (tabs.length > 0 && tabs[0].url === gsuiteAppRootNode.url) {
-          const tab = tabs[0];
-          chrome.tabs.executeScript(tab.id, {
-            allFrames: true,
-            matchAboutBlank: true,
-            code: 'document.execCommand("copy");',
-          });
-        } else {
-          // In Lacros because chrome.tabs didn't return a tab or it
-          // was a tab with a different URL.
-          chrome.accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc(
-              gsuiteAppRootNode.url);
+        if (tabs.length === 0 || tabs[0].url !== gsuiteAppRootNode.url) {
+          return;
         }
+        const tab = tabs[0];
+        chrome.tabs.executeScript(tab.id, {
+          allFrames: true,
+          matchAboutBlank: true,
+          code: 'document.execCommand("copy");',
+        });
         if (userRequested) {
           MetricsUtils.recordStartEvent(methodNumber, this.prefsManager_);
         }

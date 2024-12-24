@@ -422,8 +422,6 @@ declare global {
 
       export function setSelectToSpeakState(state: SelectToSpeakState): void;
 
-      export function clipboardCopyInActiveLacrosGoogleDoc(url: string): void;
-
       export function handleScrollableBoundsForPointFound(rect: ScreenRect):
           void;
 
@@ -472,9 +470,6 @@ declare global {
       export function getTtsDlcContents(
           dlc: DlcType, variant: TtsVariant,
           callback: GetDlcContentsCallback): void;
-
-      type IsLacrosPrimaryCallback = (result: boolean) => void;
-      export function isLacrosPrimary(callback: IsLacrosPrimaryCallback): void;
 
       export function getDisplayBounds(
           callback: (screens: ScreenRect[]) => void): void;

@@ -207,8 +207,7 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   x: number,
  *   y: number,
  *   touchAccessibility: (boolean|undefined),
- *   mouseButton:
- * (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
+ *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
  *   isDoubleClick: (boolean|undefined),
  *   isTripleClick: (boolean|undefined),
  *   useRewriters: (boolean|undefined),
@@ -649,13 +648,6 @@ chrome.accessibilityPrivate.sendSyntheticMouseEvent = function(mouseEvent) {};
 chrome.accessibilityPrivate.setSelectToSpeakState = function(state) {};
 
 /**
- * Called by the Select-to-Speak extension to request a clipboard copy in the
- * active Lacros Google Docs tab for the copy-paste fallback.
- * @param {string} url URL of the Google Docs tab.
- */
-chrome.accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc = function(url) {};
-
-/**
  * Called by the Accessibility Common extension when
  * onScrollableBoundsForPointRequested has found a scrolling container. |rect|
  * will be the bounds of the nearest scrollable ancestor of the node at the
@@ -786,13 +778,6 @@ chrome.accessibilityPrivate.getTtsDlcContents = function(dlc, variant, callback)
  *     callback A callback that is run when the result is returned.
  */
 chrome.accessibilityPrivate.getDisplayBounds = function(callback) {};
-
-/**
- * Gets whether new browser windows and tabs should be in Lacros browser.
- * @param {function(boolean): void} callback A callback that is run when the
- *     result is returned.
- */
-chrome.accessibilityPrivate.isLacrosPrimary = function(callback) {};
 
 /**
  * Displays an accessibility-related toast.
