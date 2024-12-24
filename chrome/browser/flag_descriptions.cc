@@ -2862,12 +2862,6 @@ const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
-const char kOverviewDeskNavigationName[] =
-    "CrOS Labs: Overview Desk Navigation";
-const char kOverviewDeskNavigationDescription[] =
-    "Stay in overview when navigating between desks using a swipe gesture or "
-    "keyboard shortcut.";
-
 const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
