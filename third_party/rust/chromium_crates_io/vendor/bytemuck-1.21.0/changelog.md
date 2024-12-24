@@ -1,5 +1,14 @@
 # `bytemuck` changelog
 
+## 1.21
+
+* Implement `Pod` and `Zeroable` for `core::arch::{x86, x86_64}::__m512`, `__m512d` and `__m512i` without nightly.
+  Requires Rust 1.72, and is gated through the `avx512_simd` cargo feature.
+* Allow the use of `must_cast_mut` and `must_cast_slice_mut` in const contexts.
+  Requires Rust 1.83, and is gated through the `must_cast_extra` cargo feature.
+* internal: introduced the `maybe_const_fn` macro that allows defining some function
+  to be const depending upon some `cfg` predicate.
+
 ## 1.20
 
 * New functions to allocate zeroed `Arc` and `Rc`. Requires Rust 1.82

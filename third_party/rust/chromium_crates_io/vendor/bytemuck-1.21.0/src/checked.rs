@@ -438,7 +438,7 @@ pub fn from_bytes_mut<T: NoUninit + CheckedBitPattern>(s: &mut [u8]) -> &mut T {
 /// Reads the slice into a `T` value.
 ///
 /// ## Panics
-/// * This is like `try_pod_read_unaligned` but will panic on failure.
+/// * This is like [`try_pod_read_unaligned`] but will panic on failure.
 #[inline]
 #[cfg_attr(feature = "track_caller", track_caller)]
 pub fn pod_read_unaligned<T: CheckedBitPattern>(bytes: &[u8]) -> T {

@@ -1,5 +1,6 @@
 #![no_std]
 #![warn(missing_docs)]
+#![allow(unused_mut)]
 #![allow(clippy::match_like_matches_macro)]
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::result_unit_err)]
@@ -152,6 +153,25 @@ macro_rules! impl_unsafe_marker_for_simd {
     $( #[cfg($cfg_predicate)] )? // To prevent recursion errors if nothing is going to be expanded anyway.
     impl_unsafe_marker_for_simd!($( #[cfg($cfg_predicate)] )? unsafe impl $trait for $platform::{ $( $types ),* });
   };
+}
+
+/// A macro for conditionally const-ifying a function.
+/// #[allow(unused)] because currently it is only used with the `must_cast` feature.
+#[allow(unused)]
+macro_rules! maybe_const_fn {
+  (
+      #[cfg($cfg_predicate:meta)]
+      $(#[$attr:meta])*
+      $vis:vis $(unsafe $($unsafe:lifetime)?)? fn $name:ident $($rest:tt)*
+  ) => {
+      #[cfg($cfg_predicate)]
+      $(#[$attr])*
+      $vis const $(unsafe $($unsafe)?)? fn $name $($rest)*
+
+      #[cfg(not($cfg_predicate))]
+      $(#[$attr])*
+      $vis $(unsafe $($unsafe)?)? fn $name $($rest)*
+    };
 }
 
 #[cfg(feature = "extern_crate_std")]
