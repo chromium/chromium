@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FlowAborted.Reason"
-    enum="QuickStartAbortFlowReason" expires_after="2025-04-17">
+    enum="QuickStartAbortFlowReason" expires_after="2025-06-22">
   <owner>bhartmire@google.com</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
