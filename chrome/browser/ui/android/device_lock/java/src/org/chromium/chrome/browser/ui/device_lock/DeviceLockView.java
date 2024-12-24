@@ -80,7 +80,11 @@ public class DeviceLockView extends LinearLayout {
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
         mButtonBar.addView(mDismissButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
+        } else {
+            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
+        }
     }
 
     MaterialProgressBar getProgressBar() {
