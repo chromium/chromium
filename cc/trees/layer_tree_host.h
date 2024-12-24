@@ -869,7 +869,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
 
-  void QueueImageDecode(const DrawImage& image,
+  void QueueImageDecode(const PaintImage& image,
                         base::OnceCallback<void(bool)> callback);
   void ImageDecodesFinished(const std::vector<std::pair<int, bool>>& results);
 

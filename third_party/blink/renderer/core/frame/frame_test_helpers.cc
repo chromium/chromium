@@ -1011,7 +1011,7 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
 }
 
 void TestWebFrameWidget::RequestDecode(
-    const cc::DrawImage&,
+    const cc::PaintImage&,
     base::OnceCallback<void(bool)> callback) {
   // TODO(paint-dev): probably this should `std::move(callback).Run(true)`, but
   // that could cause deep recursion into

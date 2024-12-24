@@ -29,7 +29,7 @@
 #include "base/time/time.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/overscroll_behavior.h"
-#include "cc/paint/draw_image.h"
+#include "cc/paint/paint_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -554,7 +554,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   }
 
   virtual void RequestDecode(LocalFrame*,
-                             const cc::DrawImage& image,
+                             const cc::PaintImage& image,
                              base::OnceCallback<void(bool)> callback) {
     std::move(callback).Run(false);
   }

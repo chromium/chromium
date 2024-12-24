@@ -26,12 +26,12 @@
 namespace cc {
 class AnimationHost;
 class AnimationTimeline;
-class DrawImage;
 enum class EventListenerClass;
 enum class EventListenerProperties;
 class Layer;
 class LayerTreeSettings;
 class LayerTreeDebugState;
+class PaintImage;
 struct ElementId;
 }  // namespace cc
 
@@ -81,7 +81,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
 
   // Image decode functionality.
-  virtual void RequestDecode(const cc::DrawImage&,
+  virtual void RequestDecode(const cc::PaintImage&,
                              base::OnceCallback<void(bool)>) = 0;
 
   // Forwards to `WebFrameWidget::NotifyPresentationTime()`.

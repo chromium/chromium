@@ -1990,7 +1990,7 @@ bool LayerTreeHost::RunsOnCurrentThread() const {
   return !task_runner_provider_ || task_runner_provider_->IsMainThread();
 }
 
-void LayerTreeHost::QueueImageDecode(const DrawImage& image,
+void LayerTreeHost::QueueImageDecode(const PaintImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
@@ -1999,7 +1999,7 @@ void LayerTreeHost::QueueImageDecode(const DrawImage& image,
     proxy()->QueueImageDecode(next_id, image);
   } else {
     pending_commit_state()->queued_image_decodes.emplace_back(
-        next_id, std::make_unique<DrawImage>(image));
+        next_id, std::make_unique<PaintImage>(image));
   }
   pending_image_decodes_.emplace(next_id, std::move(callback));
   SetNeedsCommit();

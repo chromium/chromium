@@ -8296,8 +8296,8 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));
     // Schedule the decode twice for the same image.
-    layer_tree_host()->QueueImageDecode(image_, callback);
-    layer_tree_host()->QueueImageDecode(image_, callback);
+    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
+    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
   }
 
   void ReadyToCommitOnThread(LayerTreeHostImpl* impl) override {
@@ -8350,12 +8350,7 @@ class LayerTreeHostTestQueueImageDecodeNonLazy : public LayerTreeHostTest {
     auto callback = base::BindOnce(
         &LayerTreeHostTestQueueImageDecodeNonLazy::ImageDecodeFinished,
         base::Unretained(this));
-    layer_tree_host()->QueueImageDecode(
-        DrawImage(image,
-                  /*use_dark_mode=*/false,
-                  SkIRect::MakeWH(image.width(), image.height()),
-                  PaintFlags::FilterQuality::kNone, SkM44()),
-        std::move(callback));
+    layer_tree_host()->QueueImageDecode(image, std::move(callback));
   }
 
   void ImageDecodeFinished(bool decode_succeeded) {

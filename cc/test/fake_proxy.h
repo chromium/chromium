@@ -47,7 +47,7 @@ class FakeProxy : public Proxy {
   bool CommitRequested() const override;
   void Start() override {}
   void Stop() override {}
-  void QueueImageDecode(int request_id, const DrawImage& image) override;
+  void QueueImageDecode(int request_id, const PaintImage& image) override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
