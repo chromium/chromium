@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56"
 name = "serde_json"
-version = "1.0.133"
+version = "1.0.134"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -51,6 +51,22 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
 features = ["raw_value"]
+
+[features]
+alloc = ["serde/alloc"]
+arbitrary_precision = []
+default = ["std"]
+float_roundtrip = []
+preserve_order = [
+    "indexmap",
+    "std",
+]
+raw_value = []
+std = [
+    "memchr/std",
+    "serde/std",
+]
+unbounded_depth = []
 
 [lib]
 name = "serde_json"
@@ -131,19 +147,3 @@ version = "0.1.8"
 [dev-dependencies.trybuild]
 version = "1.0.81"
 features = ["diff"]
-
-[features]
-alloc = ["serde/alloc"]
-arbitrary_precision = []
-default = ["std"]
-float_roundtrip = []
-preserve_order = [
-    "indexmap",
-    "std",
-]
-raw_value = []
-std = [
-    "memchr/std",
-    "serde/std",
-]
-unbounded_depth = []
