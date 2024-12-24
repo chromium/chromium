@@ -96,7 +96,7 @@
 <translation id="1742316578210444689">ヘブライ語（文字変換）</translation>
 <translation id="1747761757048858544">オランダ語（オランダ）</translation>
 <translation id="174937106936716857">合計ファイル数</translation>
-<translation id="1755345808328621801">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
+<translation id="1755345808328621801">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
 <translation id="1757915090001272240">全角ラテン文字</translation>
 <translation id="1761091787730831947"><ph name="VM_NAME" /> と共有</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
@@ -244,7 +244,7 @@
 <translation id="2949781154072577687">「<ph name="DRIVE_NAME" />」をフォーマットしています...</translation>
 <translation id="2951236788251446349">クラゲ</translation>
 <translation id="2958458230122209142"><ph name="TOTAL_SPACE" /> の個人用ストレージは残り <ph name="REMAINING_PERCENTAGE" />% と少なくなっています。</translation>
-<translation id="2977940621473452797">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
+<translation id="2977940621473452797">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
 <translation id="2984337792991268709">今日 <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">フランス語（カナダ）</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
@@ -465,7 +465,7 @@
 <translation id="4694604912444486114">サル</translation>
 <translation id="469612310041132144">中国語（速成）</translation>
 <translation id="4697043402264950621">ファイルの一覧は <ph name="COLUMN_NAME" /> の昇順で並べ替えられています。</translation>
-<translation id="469897186246626197">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
+<translation id="469897186246626197">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。ChromeOS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="4706042980341760088">タミル語（タイプライター型）キーボード</translation>
 <translation id="4711094779914110278">トルコ語</translation>
 <translation id="4712283082407695269">「<ph name="PATH" />」を開いています</translation>
@@ -602,7 +602,7 @@
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
-<translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
+<translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。ChromeOS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="5649768706273821470">聴く</translation>
@@ -826,7 +826,7 @@
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7343393116438664539">ベトナム語（テレックス）</translation>
 <translation id="7347346221088620549">暗号化されたファイル</translation>
-<translation id="7357762654218998920">このファイル形式はサポートされていません。Chrome OS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
+<translation id="7357762654218998920">このファイル形式はサポートされていません。ChromeOS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをコピーしています...</translation>
 <translation id="7375951387215729722">ファイルの一覧は <ph name="COLUMN_NAME" /> の降順で並べ替えられています。</translation>
 <translation id="7377161162143020057">このファイルのコピーは管理者が設定したポリシーによってブロックされています</translation>
