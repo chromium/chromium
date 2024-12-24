@@ -3020,7 +3020,7 @@ AutofillSaveCreditCardPromptDestination.
 
 <histogram
     name="Autofill.Funnel.ClassifiedAsTargetFilling.FillAfterSuggestion.Password"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-01-05">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-06-05">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
