@@ -67,6 +67,11 @@ class InputMethodUserDataServiceImpl
       const std::string& tsv_data,
       ImportJapaneseDictionaryCallback callback) override;
 
+  void ClearJapanesePersonalizationData(
+      bool clear_conversion_history,
+      bool clear_suggestion_history,
+      ClearJapanesePersonalizationDataCallback callback) override;
+
   void AddReceiver(
       mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver);
 

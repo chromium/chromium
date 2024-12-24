@@ -66,4 +66,13 @@ interface InputMethodUserDataService {
   // and then sent directly to the sandboxed IMEService.
   ImportJapaneseDictionary(
       uint64 dict_id, mojo_base.mojom.BigString tsv_data) => (Status status);
+
+  // Clears the Japanese personalization data on the device.
+  // clear_conversion_history set to true will clear the conversion history for
+  // Japanese input.
+  // clear_suggestion_history set to true will clear the suggestion history for
+  // Japanese input.
+  ClearJapanesePersonalizationData(
+      bool clear_conversion_history, bool clear_suggestion_history)
+      => (Status status);
 };

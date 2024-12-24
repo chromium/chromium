@@ -235,6 +235,26 @@ void InputMethodUserDataServiceImpl::ImportJapaneseDictionary(
   }
   std::move(callback).Run(std::move(response));
 }
+void InputMethodUserDataServiceImpl::ClearJapanesePersonalizationData(
+    bool clear_conversion_history,
+    bool clear_suggestion_history,
+    ClearJapanesePersonalizationDataCallback callback) {
+  chromeos_input::UserDataRequest user_data_request;
+  user_data_request.mutable_clear_personalization_data()
+      ->set_clear_conversion_history(clear_conversion_history);
+  user_data_request.mutable_clear_personalization_data()
+      ->set_clear_suggestion_history(clear_suggestion_history);
+
+  chromeos_input::UserDataResponse user_data_response =
+      c_api_->ProcessUserDataRequest(user_data_request);
+
+  mojom::StatusPtr response = mojom::Status::New();
+  response->success = user_data_response.status().success();
+  if (user_data_response.status().has_reason()) {
+    response->reason = user_data_response.status().reason();
+  }
+  std::move(callback).Run(std::move(response));
+}
 
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
