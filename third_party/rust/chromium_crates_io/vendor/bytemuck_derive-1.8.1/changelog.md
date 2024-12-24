@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.8.1
+
+* https://github.com/Lokathor/bytemuck/pull/287
+
 ## 1.8
 
 * [#257](https://github.com/Lokathor/bytemuck/pull/257): Allows deriving Zeroable on some enums.

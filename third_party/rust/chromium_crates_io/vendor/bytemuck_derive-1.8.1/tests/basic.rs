@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+#![deny(clippy::allow_attributes)]
 
 use bytemuck::{
   checked::CheckedCastError, AnyBitPattern, CheckedBitPattern, Contiguous,

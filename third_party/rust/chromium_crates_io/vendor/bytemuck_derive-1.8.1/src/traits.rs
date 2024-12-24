@@ -2,7 +2,7 @@
 use std::{cmp, convert::TryFrom};
 
 use proc_macro2::{Ident, Span, TokenStream, TokenTree};
-use quote::{quote, quote_spanned, ToTokens};
+use quote::{quote, ToTokens};
 use syn::{
   parse::{Parse, ParseStream, Parser},
   punctuated::Punctuated,
@@ -553,7 +553,7 @@ fn get_struct_fields(input: &DeriveInput) -> Result<&Fields> {
 
 /// Extract the `Fields` off a `DeriveInput`, or, in the `enum` case, off
 /// those of the `enum_variant`, when provided (e.g., for `Zeroable`).
-/// 
+///
 /// We purposely allow not providing an `enum_variant` for cases where
 /// the caller wants to reject supporting `enum`s (e.g., `NoPadding`).
 fn get_fields(
@@ -607,19 +607,27 @@ fn generate_checked_bit_pattern_struct(
   let field_name = &field_names[..];
   let field_ty = &field_tys[..];
 
-  let derive_dbg =
-    quote!(#[cfg_attr(not(target_arch = "spirv"), derive(Debug))]);
-
   Ok((
     quote! {
         #[doc = #GENERATED_TYPE_DOCUMENTATION]
         #repr
         #[derive(Clone, Copy, #crate_name::AnyBitPattern)]
-        #derive_dbg
         #[allow(missing_docs)]
         pub struct #bits_ty {
             #(#field_name: <#field_ty as #crate_name::CheckedBitPattern>::Bits,)*
         }
+
+        #[allow(unexpected_cfgs)]
+        const _: () = {
+          #[cfg(not(target_arch = "spirv"))]
+          impl ::core::fmt::Debug for #bits_ty {
+            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+              let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#bits_ty));
+              #(::core::fmt::DebugStruct::field(&mut debug_struct, ::core::stringify!(#field_name), &self.#field_name);)*
+              ::core::fmt::DebugStruct::finish(&mut debug_struct)
+            }
+          }
+        };
     },
     quote! {
         type Bits = #bits_ty;
@@ -664,7 +672,7 @@ fn generate_checked_bit_pattern_enum_without_fields(
   )?;
 
   let check = if count == 0 {
-    quote_spanned!(span => false)
+    quote!(false)
   } else if max - min == count - 1 {
     // contiguous range
     let min_lit = LitInt::new(&format!("{}", min), span);
@@ -710,9 +718,6 @@ fn generate_checked_bit_pattern_enum_with_fields(
 ) -> Result<(TokenStream, TokenStream)> {
   let representation = get_repr(&input.attrs)?;
   let vis = &input.vis;
-
-  let derive_dbg =
-    quote!(#[cfg_attr(not(target_arch = "spirv"), derive(Debug))]);
 
   match representation.repr {
     Repr::Rust => unreachable!(),
@@ -793,12 +798,24 @@ fn generate_checked_bit_pattern_enum_with_fields(
         quote! {
           #[doc = #GENERATED_TYPE_DOCUMENTATION]
           #[derive(::core::clone::Clone, ::core::marker::Copy, #crate_name::AnyBitPattern)]
-          #derive_dbg
           #bits_repr
           #vis struct #bits_ty_ident {
             tag: #integer,
             payload: #variants_union_ident,
           }
+
+          #[allow(unexpected_cfgs)]
+          const _: () = {
+            #[cfg(not(target_arch = "spirv"))]
+            impl ::core::fmt::Debug for #bits_ty_ident {
+              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#bits_ty_ident));
+                ::core::fmt::DebugStruct::field(&mut debug_struct, "tag", &self.tag);
+                ::core::fmt::DebugStruct::field(&mut debug_struct, "payload", &self.payload);
+                ::core::fmt::DebugStruct::finish(&mut debug_struct)
+              }
+            }
+          };
 
           #[derive(::core::clone::Clone, ::core::marker::Copy, #crate_name::AnyBitPattern)]
           #[repr(C)]
@@ -807,13 +824,16 @@ fn generate_checked_bit_pattern_enum_with_fields(
             #(#union_fields,)*
           }
 
-          #[cfg(not(target_arch = "spirv"))]
-          impl ::core::fmt::Debug for #variants_union_ident {
-            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-              let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#variants_union_ident));
-              ::core::fmt::DebugStruct::finish_non_exhaustive(&mut debug_struct)
+          #[allow(unexpected_cfgs)]
+          const _: () = {
+            #[cfg(not(target_arch = "spirv"))]
+            impl ::core::fmt::Debug for #variants_union_ident {
+              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#variants_union_ident));
+                ::core::fmt::DebugStruct::finish_non_exhaustive(&mut debug_struct)
+              }
             }
-          }
+          };
 
           #(#variant_struct_definitions)*
         },
@@ -930,14 +950,17 @@ fn generate_checked_bit_pattern_enum_with_fields(
             #(#union_fields,)*
           }
 
-          #[cfg(not(target_arch = "spirv"))]
-          impl ::core::fmt::Debug for #bits_ty_ident {
-            fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-              let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#bits_ty_ident));
-              ::core::fmt::DebugStruct::field(&mut debug_struct, "tag", unsafe { &self.__tag });
-              ::core::fmt::DebugStruct::finish_non_exhaustive(&mut debug_struct)
+          #[allow(unexpected_cfgs)]
+          const _: () = {
+            #[cfg(not(target_arch = "spirv"))]
+            impl ::core::fmt::Debug for #bits_ty_ident {
+              fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#bits_ty_ident));
+                ::core::fmt::DebugStruct::field(&mut debug_struct, "tag", unsafe { &self.__tag });
+                ::core::fmt::DebugStruct::finish_non_exhaustive(&mut debug_struct)
+              }
             }
-          }
+          };
 
           #(#variant_struct_definitions)*
         },
@@ -962,22 +985,20 @@ fn generate_checked_bit_pattern_enum_with_fields(
 /// is equal to the sum of the size of it's fields
 fn generate_assert_no_padding(input: &DeriveInput) -> Result<TokenStream> {
   let struct_type = &input.ident;
-  let span = input.ident.span();
   let enum_variant = None; // `no padding` check is not supported for `enum`s yet.
   let fields = get_fields(input, enum_variant)?;
 
   let mut field_types = get_field_types(&fields);
   let size_sum = if let Some(first) = field_types.next() {
-    let size_first = quote_spanned!(span => ::core::mem::size_of::<#first>());
-    let size_rest =
-      quote_spanned!(span => #( + ::core::mem::size_of::<#field_types>() )*);
+    let size_first = quote!(::core::mem::size_of::<#first>());
+    let size_rest = quote!(#( + ::core::mem::size_of::<#field_types>() )*);
 
-    quote_spanned!(span => #size_first #size_rest)
+    quote!(#size_first #size_rest)
   } else {
-    quote_spanned!(span => 0)
+    quote!(0)
   };
 
-  Ok(quote_spanned! {span => const _: fn() = || {
+  Ok(quote! {const _: fn() = || {
     #[doc(hidden)]
     struct TypeWithoutPadding([u8; #size_sum]);
     let _ = ::core::mem::transmute::<#struct_type, TypeWithoutPadding>;
@@ -991,9 +1012,8 @@ fn generate_fields_are_trait(
   let (impl_generics, _ty_generics, where_clause) =
     input.generics.split_for_impl();
   let fields = get_fields(input, enum_variant)?;
-  let span = input.span();
   let field_types = get_field_types(&fields);
-  Ok(quote_spanned! {span => #(const _: fn() = || {
+  Ok(quote! {#(const _: fn() = || {
       #[allow(clippy::missing_const_for_fn)]
       #[doc(hidden)]
       fn check #impl_generics () #where_clause {
