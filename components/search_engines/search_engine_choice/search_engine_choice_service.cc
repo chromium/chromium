@@ -23,7 +23,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/common/policy_service.h"

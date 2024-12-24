@@ -5,7 +5,6 @@
 #include "components/sync_device_info/device_info_proto_enum_util.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 

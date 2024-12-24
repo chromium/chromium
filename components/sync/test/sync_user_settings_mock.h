@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/service/sync_user_settings.h"

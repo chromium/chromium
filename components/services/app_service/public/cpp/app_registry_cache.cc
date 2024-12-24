@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_update.h"

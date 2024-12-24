@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {

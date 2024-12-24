@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "build/chromeos_buildflags.h"
 
 namespace account_manager {
 class AccountManagerFacade;

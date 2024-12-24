@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/variations_seed.pb.h"

@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"

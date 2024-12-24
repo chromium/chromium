@@ -8,7 +8,6 @@
 #include "components/policy/policy_export.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace policy {
 namespace switches {

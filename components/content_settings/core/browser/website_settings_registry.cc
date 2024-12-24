@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace {

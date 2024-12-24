@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"

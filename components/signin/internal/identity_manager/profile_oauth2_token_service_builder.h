@@ -9,7 +9,6 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)

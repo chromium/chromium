@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 
 namespace signin {

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 

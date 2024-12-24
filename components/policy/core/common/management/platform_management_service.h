@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/policy_export.h"

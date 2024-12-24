@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/plus_addresses/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 

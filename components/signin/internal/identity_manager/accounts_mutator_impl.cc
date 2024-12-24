@@ -4,7 +4,6 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"

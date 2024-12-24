@@ -27,7 +27,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/default_pref_store.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"

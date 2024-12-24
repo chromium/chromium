@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 
 namespace syncer {

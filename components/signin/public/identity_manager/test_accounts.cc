@@ -13,7 +13,6 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 using base::Value;
 

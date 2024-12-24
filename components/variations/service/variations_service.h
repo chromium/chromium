@@ -16,7 +16,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"

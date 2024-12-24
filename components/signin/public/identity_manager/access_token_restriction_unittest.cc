@@ -4,7 +4,6 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
