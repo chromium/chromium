@@ -675,7 +675,7 @@ TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
 template class TypedPolicyBuilder<em::ExternalPolicyData>;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 StringPolicyBuilder::StringPolicyBuilder() = default;
 
 void StringPolicyBuilder::Build() {

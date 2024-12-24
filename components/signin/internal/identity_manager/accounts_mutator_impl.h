@@ -67,7 +67,7 @@ class AccountsMutatorImpl : public AccountsMutator {
                    const CoreAccountId& account_id) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CoreAccountId SeedAccountInfo(const GaiaId& gaia,
                                 const std::string& email) override;
 #endif

@@ -454,7 +454,7 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdownNoAccount) {
   ShutdownIdentityManager();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(PrimaryAccountAccessTokenFetcherTest,
        ShouldNotRetryCanceledAccessTokenRequestIfSignedOut) {
@@ -531,7 +531,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(ConsentLevel::kSignin,
                                          ConsentLevel::kSync));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Chrome OS can directly set the unconsented primary account during login,
 // so it has additional tests.
 TEST_F(PrimaryAccountAccessTokenFetcherTest,
@@ -595,6 +595,6 @@ TEST_F(PrimaryAccountAccessTokenFetcherTest,
       access_token_info().token, access_token_info().expiration_time,
       access_token_info().id_token);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace signin

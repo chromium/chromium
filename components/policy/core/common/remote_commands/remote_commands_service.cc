@@ -187,7 +187,7 @@ std::string RemoteCommandsService::GetRequestType(
     case PolicyInvalidationScope::kCBCM:
       return dm_protocol::kChromeBrowserRemoteCommandType;
     case PolicyInvalidationScope::kUser:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return dm_protocol::kChromeAshUserRemoteCommandType;
 #else
       return dm_protocol::kChromeUserRemoteCommandType;

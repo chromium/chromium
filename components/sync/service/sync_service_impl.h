@@ -213,10 +213,10 @@ class SyncServiceImpl : public SyncService,
 
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   void OnSelectedTypesPrefChange() override;
 
   // KeyedService implementation.  This must be called exactly

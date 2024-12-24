@@ -14,7 +14,7 @@
 
 namespace signin {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 std::string GetSigninScopedDeviceId(PrefService* prefs) {
   std::string signin_scoped_device_id =

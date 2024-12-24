@@ -34,7 +34,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Check for OS types. This includes types that used to be browser types,
   // like "apps" and "preferences".
   std::optional<UserSelectableOsType> os_type =
@@ -42,7 +42,7 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
   if (os_type.has_value()) {
     syncer::SyncPrefs::SetOsTypeDisabledByPolicy(prefs, *os_type);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

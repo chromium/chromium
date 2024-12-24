@@ -53,7 +53,7 @@
 #endif
 #include "components/version_info/version_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -181,7 +181,7 @@ std::string GetOSUsername() {
   }
 
   return base::WideToUTF8(username);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   if (!user_manager::UserManager::IsInitialized())
     return std::string();
   auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
@@ -213,7 +213,7 @@ em::Channel ConvertToProtoChannel(version_info::Channel channel) {
 }
 
 std::string GetDeviceName() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::string(
       ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
           ""));

@@ -15,7 +15,7 @@
 namespace signin {
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST(DeviceIdHelper, GenerateSigninScopedDeviceId) {
   EXPECT_FALSE(GenerateSigninScopedDeviceId().empty());

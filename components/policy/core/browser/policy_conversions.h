@@ -139,7 +139,7 @@ class POLICY_EXPORT DefaultPolicyConversions
   base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::Value::Dict GetDeviceLocalAccountPolicies();
 #endif
 };

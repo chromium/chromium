@@ -31,7 +31,7 @@ const char kPrefName[] = "pref.name";
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(PrefServiceUtilTest, GetAllDottedPaths) {
   using pref_service_util::GetAllDottedPaths;
 

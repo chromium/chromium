@@ -55,7 +55,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
   DCHECK(!account_info.email.empty());
   DCHECK(!account_info.gaia.empty());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   bool is_signin_allowed = pref_service_->GetBoolean(prefs::kSigninAllowed);
   if (!is_signin_allowed)
     return PrimaryAccountError::kSigninNotAllowed;
@@ -63,7 +63,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 
   switch (consent_level) {
     case ConsentLevel::kSync:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
       // TODO(crbug.com/40067025): Replace with NOTREACHED on iOS after all
       // flows have been migrated away from kSync. See ConsentLevel::kSync
       // documentation for details.
@@ -72,7 +72,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 #endif
       break;
     case ConsentLevel::kSignin:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // On Chrome OS the UPA can only be set once and never removed or changed.
       DCHECK(
           !primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -98,7 +98,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
   return PrimaryAccountError::kNoError;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Users cannot revoke the Sync consent on Ash. They can only turn off all Sync
 // data types if they want. Revoking sync consent can lead to breakages in
 // IdentityManager dependencies like `chrome.identity` extension API - that
@@ -130,6 +130,6 @@ bool PrimaryAccountMutatorImpl::RemovePrimaryAccountButKeepTokens(
   primary_account_manager_->RemovePrimaryAccountButKeepTokens(source_metric);
   return true;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace signin

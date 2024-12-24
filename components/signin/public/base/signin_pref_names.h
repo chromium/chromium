@@ -12,7 +12,7 @@
 
 namespace prefs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceLogoutUnauthenticatedUserEnabled[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

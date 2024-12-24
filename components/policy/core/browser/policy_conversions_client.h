@@ -97,7 +97,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   virtual base::Value::List GetExtensionPolicies(
       PolicyDomain policy_domain) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns policies for ChromeOS device.
   virtual base::Value::List GetDeviceLocalAccountPolicies() = 0;
   // Returns device specific information if this device is enterprise managed.

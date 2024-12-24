@@ -343,7 +343,7 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
     prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Migrate primary account ID from email to Gaia ID if needed.
   std::string pref_account_id =
       prefs->GetString(prefs::kGoogleServicesAccountId);
@@ -612,7 +612,7 @@ void PrimaryAccountManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void PrimaryAccountManager::ClearPrimaryAccount(
     signin_metrics::ProfileSignout signout_source_metric) {
   StartSignOut(signout_source_metric, RemoveAccountsOption::kRemoveAllAccounts);
@@ -624,7 +624,7 @@ void PrimaryAccountManager::RemovePrimaryAccountButKeepTokens(
                RemoveAccountsOption::kKeepAllAccountsAndClearPrimary);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void PrimaryAccountManager::RevokeSyncConsent(
     signin_metrics::ProfileSignout signout_source_metric) {
@@ -795,7 +795,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
   token_service_observation_.Reset();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (account_tracker_service_->GetMigrationState() ==
       AccountTrackerService::MIGRATION_IN_PROGRESS) {
     account_tracker_service_->SetMigrationDone();

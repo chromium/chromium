@@ -62,7 +62,7 @@ class PrefMemberBase;
 class ScopedUserPrefUpdateBase;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace pref_service_util {
 // Gets all the dotted paths from `dict`. For example if values stored are
 // `{"a" : { "b" : true, "c": false }}`, then `paths` gets ["a.b", "a.c"].

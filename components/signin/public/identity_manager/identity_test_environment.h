@@ -30,7 +30,7 @@ class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace account_manager {
 class AccountManagerFacade;
 }
@@ -38,7 +38,7 @@ class AccountManagerFacade;
 namespace ash {
 class AccountManagerFactory;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
@@ -179,11 +179,11 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   AccountInfo MakePrimaryAccountAvailable(const std::string& email,
                                           ConsentLevel consent_level);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Revokes sync consent from the primary account: the primary account is left
   // at ConsentLevel::kSignin.
   void RevokeSyncConsent();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Clears the primary account, removes all accounts and revokes the sync
   // consent. Blocks until the primary account is cleared.
@@ -419,7 +419,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       SigninClient* signin_client,
       PrefService* pref_service,
       base::FilePath user_data_dir
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       ash::AccountManagerFactory* account_manager_factory,
       account_manager::AccountManagerFacade* account_manager_facade
@@ -432,7 +432,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       SigninClient* signin_client,
       PrefService* pref_service,
       base::FilePath user_data_dir
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       account_manager::AccountManagerFacade* account_manager_facade
 #endif

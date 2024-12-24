@@ -328,7 +328,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
   return primary_account_info;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager) {
@@ -350,10 +350,10 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
       signin_metrics::ProfileSignout::kTest);
   run_loop.Run();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void ClearPrimaryAccount(IdentityManager* identity_manager) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(blundell): If we ever need this functionality on ChromeOS (which seems
   // unlikely), plumb this through to just clear the primary account info
   // synchronously with IdentityManager.

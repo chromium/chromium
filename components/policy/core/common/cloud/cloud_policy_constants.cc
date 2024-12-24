@@ -84,7 +84,7 @@ const char kValueRequestFmRegistrationTokenUpload[] =
     "fm_registration_token_upload";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
 #elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";

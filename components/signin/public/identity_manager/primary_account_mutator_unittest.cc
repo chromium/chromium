@@ -31,7 +31,7 @@ namespace {
 
 // Constants used by the different tests.
 const char kPrimaryAccountEmail[] = "primary.account@example.com";
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kAnotherAccountEmail[] = "another.account@example.com";
 const char kUnknownAccountId[] = "{unknown account id}";
 #endif
@@ -100,7 +100,7 @@ class ClearPrimaryAccountTestObserver
       scoped_observation_{this};
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Helper for testing of RevokeSyncConsent/ClearPrimaryAccount(). This function
 // requires lots of tests due to having different behaviors based on its
 // arguments. But the setup and execution of these test is all the boiler plate
@@ -308,7 +308,7 @@ void RunClearPrimaryAccountTestForSigninOnly() {
       secondary_account_info.account_id));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -387,7 +387,7 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_Sync) {
 // ChromeOS, where those preconditions do not exist.
 // TODO(crbug.com/41470280): Run these tests on ChromeOS if/once we
 // enable those preconditions on that platform
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Checks that setting the primary account fails if the account is not known by
 // the identity system.
 TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
@@ -657,4 +657,4 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent) {
 TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_SigninOnly) {
   RunClearPrimaryAccountTestForSigninOnly();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

@@ -128,7 +128,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
 
   // Signout API surfaces (not supported on ChromeOS, where signout is not
   // permitted).
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Clears the primary account, erasing all keys associated with the primary
   // account (also cancels all auth in progress).
   // It removes all accounts from the identity manager by revoking all refresh
@@ -141,7 +141,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout signout_source_metric);
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Rovokes the sync consent but leaves the primary account and the rest of
   // the accounts untouched.

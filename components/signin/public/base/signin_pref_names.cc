@@ -8,7 +8,7 @@
 
 namespace prefs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A boolean pref - should unauthenticated user should be logged out
 // automatically. Default value is false.
 const char kForceLogoutUnauthenticatedUserEnabled[] =
@@ -18,7 +18,7 @@ const char kForceLogoutUnauthenticatedUserEnabled[] =
 // email to gaia id for the the profile.  See account_tracker_service.h
 // for possible values.
 const char kAccountIdMigrationState[] = "account_id_migration_state";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Name of the preference property that persists the account information
 // tracked by this signin.

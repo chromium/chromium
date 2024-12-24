@@ -38,11 +38,11 @@
 #include "components/variations/metrics.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
 #include "chromeos/ash/components/dbus/featured/featured_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_IOS)
 #include "components/variations/metrics.h"
@@ -72,11 +72,11 @@ constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 // The maximum size of an uncompressed seed at 50 MiB.
 constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Number of attempts to send the safe seed from Chrome to CrOS platforms before
 // giving up.
 constexpr int kSendPlatformSafeSeedMaxAttempts = 2;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The name of the seed file that stores the latest seed data.
 const base::FilePath::CharType kSeedFilename[] =
@@ -813,7 +813,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   }
   safe_seed_store_->SetFetchTime(seed_fetch_time);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // `SendSafeSeedToPlatform` will send the safe seed at most twice and should
   // only be called if the seed is successfully validated.
   // This is a best effort attempt and it is possible that the safe seed for
@@ -821,7 +821,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
   send_seed_to_platform_attempts_ = 0;
   SendSafeSeedToPlatform(GetSafeSeedStateForPlatform(
       seed, seed_milestone, client_state, seed_fetch_time));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -959,7 +959,7 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 featured::SeedDetails VariationsSeedStore::GetSafeSeedStateForPlatform(
     const ValidatedSeed& seed,
     const int seed_milestone,
@@ -1002,6 +1002,6 @@ void VariationsSeedStore::SendSafeSeedToPlatform(
                                   weak_ptr_factory_.GetWeakPtr(), safe_seed));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace variations

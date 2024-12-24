@@ -143,7 +143,7 @@ bool PlatformCrashpadInitialization(
   DCHECK(exe_path.empty());
 
   crashpad::CrashpadClient client;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string crash_loop_before =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kCrashLoopBefore);

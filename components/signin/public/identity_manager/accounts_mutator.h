@@ -84,7 +84,7 @@ class AccountsMutator {
                            const CoreAccountId& account_id) = 0;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Seeds account into AccountTrackerService. Used by UserSessionManager to
   // manually seed the primary account before credentials are loaded.
   // TODO(crbug.com/40176006): Remove after adding an account cache to

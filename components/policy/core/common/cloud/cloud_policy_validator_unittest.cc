@@ -28,12 +28,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace em = enterprise_management;
 
@@ -203,7 +203,7 @@ class CloudPolicyValidatorTest : public testing::Test {
   MOCK_METHOD1(ValidationCompletion, void(UserCloudPolicyValidator* validator));
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CloudPolicyValidatorTest,
        SuccessfulValidationWithDisableKeyVerificationOnTestImage) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -240,7 +240,7 @@ TEST_F(CloudPolicyValidatorTest,
       },
       "");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyValidatorTest, SuccessfulValidation) {
   Validate(Invoke(this, &CloudPolicyValidatorTest::CheckSuccessfulValidation));
