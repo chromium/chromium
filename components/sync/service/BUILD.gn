@@ -102,7 +102,6 @@ static_library("service") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/os_crypt/sync",

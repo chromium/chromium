@@ -13,11 +13,10 @@ static_library("metrics_services_manager") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/metrics",
+    "//components/metrics/dwa",
     "//components/metrics/structured",
     "//components/ukm",
-    "//components/metrics/dwa",
     "//components/variations",
     "//components/variations/service",
     "//services/network/public/cpp:cpp",

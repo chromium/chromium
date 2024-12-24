@@ -36,7 +36,6 @@ component("account_manager_core") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//components/prefs:prefs",
     "//google_apis:google_apis",

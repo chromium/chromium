@@ -140,7 +140,6 @@ component("variations") {
     ":buildflags",
     ":variations_mojom",
     "proto",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
     "//components/version_info",

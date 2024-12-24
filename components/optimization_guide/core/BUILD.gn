@@ -572,7 +572,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_proto",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/download/public/background_service/test:test_support",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

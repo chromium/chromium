@@ -46,7 +46,6 @@ static_library("sync_device_info") {
     "//components/sync/protocol",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/prefs",
@@ -128,7 +127,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/version_info:version_string",

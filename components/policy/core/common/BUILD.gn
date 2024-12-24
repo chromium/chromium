@@ -44,10 +44,7 @@ source_set("util") {
     "//components/version_info",
   ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 
   if (is_chromeos) {
     deps += [ "//components/user_manager" ]
@@ -238,7 +235,6 @@ source_set("internal") {
 
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
     "//components/prefs",
@@ -487,18 +483,12 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//services/network:test_support",
-  ]
+  deps = [ "//services/network:test_support" ]
 }
 
 source_set("common_constants") {
   configs += [ "//components/policy:component_implementation" ]
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
   sources = [
     "../../policy_export.h",
     "cloud/cloud_policy_constants.cc",
@@ -663,7 +653,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/account_id",
     "//components/invalidation:test_support",
     "//components/invalidation/impl:test_support",

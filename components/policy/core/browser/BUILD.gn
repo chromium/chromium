@@ -80,7 +80,6 @@ source_set("internal") {
   public_deps = [ "//base" ]
   deps = [
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/invalidation/impl",
     "//components/keyed_service/core",

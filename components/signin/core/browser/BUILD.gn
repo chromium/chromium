@@ -64,7 +64,6 @@ static_library("browser") {
   ]
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/metrics",
     "//components/os_crypt/sync",
@@ -127,7 +126,6 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/prefs:test_support",

@@ -19,10 +19,7 @@ source_set("memory_pressure") {
     "unnecessary_discard_monitor.h",
   ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 
   if (is_win) {
     sources += [

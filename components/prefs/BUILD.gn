@@ -58,8 +58,7 @@ component("prefs") {
 
   defines = [ "COMPONENTS_PREFS_IMPLEMENTATION" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
-
+  deps = []
   public_deps = [ "//base" ]
 
   if (is_android) {

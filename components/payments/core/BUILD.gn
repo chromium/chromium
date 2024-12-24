@@ -86,7 +86,6 @@ static_library("core") {
     ":method_strings",
     "//base",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//components/link_header_util",

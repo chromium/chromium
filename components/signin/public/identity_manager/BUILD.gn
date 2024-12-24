@@ -59,7 +59,6 @@ source_set("identity_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
     "//components/plus_addresses:features",
     "//components/prefs",
@@ -130,7 +129,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -186,7 +184,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/image_fetcher/core:test_support",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",

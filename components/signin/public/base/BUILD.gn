@@ -53,7 +53,6 @@ static_library("base") {
     "wait_for_network_callback_helper.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/prefs",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
@@ -123,7 +122,6 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs",
 
     # TODO(b/309104936): Remove this unwanted dependency.
@@ -163,7 +161,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
@@ -186,7 +183,6 @@ component("signin_switches") {
   deps = [
     ":signin_buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/prefs",
   ]
 }

@@ -97,7 +97,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/paint_preview/common:test_utils",
     "//components/version_info",
     "//content/public/browser",
