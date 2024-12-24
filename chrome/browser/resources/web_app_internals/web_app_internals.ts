@@ -263,6 +263,7 @@ async function iwaDevFetchUpdateManifest() {
             // TODO(crbug.com/373396075): Allow selecting the channel.
             updateChannel: 'default',
             pinnedVersion: null,
+            allowDowngrades: false,
           },
         })).result;
     if (installResult.success) {
@@ -373,6 +374,17 @@ getRequiredElement('iwa-pinned-version-dialog-close')
       setDevInstallMessageText('');
     });
 
+// Logic for downgrades
+async function toggleAllowDowngrades(appId: string, isChecked: boolean) {
+  try {
+    await webAppInternalsHandler.setAllowDowngradesForIsolatedWebApp(
+        isChecked, appId);
+    setTimeout(refreshDevModeAppList, 0);
+  } catch (error) {
+    setDevInstallMessageText('Error toggling allowDowngrades');
+  }
+}
+
 iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
 getRequiredElement('iwa-dev-update-manifest-fetch-button')
     .addEventListener('click', iwaDevFetchUpdateManifest);
@@ -452,16 +464,17 @@ function formatDevModeLocation(location: IwaDevModeLocation): string|void {
 function describeIsolatedWebApp(
     name: string, installedVersion: string, location: IwaDevModeLocation,
     updateInfo: UpdateInfo|null): string {
+  let updateMsg = `${name} (${installedVersion}) →`;
   if (updateInfo) {
-    if (updateInfo.pinnedVersion) {
-      return `${name} (${installedVersion}) → ${
-          updateInfo.updateManifestUrl.url} (${
-          updateInfo.updateChannel}, pinned to: ${updateInfo.pinnedVersion})`;
-    }
-    return `${name} (${installedVersion}) → ${
-        updateInfo.updateManifestUrl.url} (${updateInfo.updateChannel})`;
+    const pinnedVersionValue =
+        updateInfo.pinnedVersion ? updateInfo.pinnedVersion : '-';
+    updateMsg += ` ${updateInfo.updateManifestUrl.url} ( update_channel: ${
+        updateInfo.updateChannel} | pinned_version: ${
+        pinnedVersionValue} | allow_downgrades: ${updateInfo.allowDowngrades})`;
+  } else {
+    updateMsg += ` (${formatDevModeLocation(location)})`;
   }
-  return `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
+  return updateMsg;
 }
 
 function showIwaSection(containerId: string) {
@@ -490,22 +503,12 @@ async function refreshDevModeAppList() {
           describeIsolatedWebApp(name, installedVersion, location, updateInfo);
       li.className = 'iwa-dev-mode-list-item';
 
-      const {updateMsg, updateBtn, switchChannelBtn, pinnedVersionBtn} =
+
+      const {updateMsg, buttonsSection} =
           prepareAppButtons(appId, name, location, updateInfo);
 
-      li.appendChild(updateMsg);
-
-      const buttonsSection = document.createElement('div');
-      buttonsSection.className = 'dev-iwa-buttons';
-
-      buttonsSection.appendChild(updateBtn);
-      if (switchChannelBtn) {
-        buttonsSection.appendChild(switchChannelBtn);
-      }
-      if (pinnedVersionBtn) {
-        buttonsSection.appendChild(pinnedVersionBtn);
-      }
       li.appendChild(buttonsSection);
+      li.appendChild(updateMsg);
 
       devModeAppList.appendChild(li);
     }
@@ -517,16 +520,12 @@ function prepareAppButtons(
     name: string,
     location: IwaDevModeLocation,
     updateInfo: UpdateInfo|null,
-    ): {
-  updateMsg: HTMLParagraphElement,
-  updateBtn: HTMLButtonElement,
-  switchChannelBtn?: HTMLButtonElement,
-  pinnedVersionBtn?: HTMLButtonElement,
-} {
+    ): {updateMsg: HTMLParagraphElement, buttonsSection: HTMLElement} {
   const updateMsg = document.createElement('p');
+  const buttonsSection = document.createElement('div');
+  buttonsSection.className = 'dev-iwa-buttons';
 
   const updateBtn = document.createElement('button');
-
   updateBtn.innerText = 'Perform update now';
   updateBtn.onclick = async () => {
     const oldText = updateBtn.innerText;
@@ -557,24 +556,41 @@ function prepareAppButtons(
       updateBtn.disabled = false;
     }
   };
+  buttonsSection.appendChild(updateBtn);
 
-  let switchChannelBtn;
-  let pinnedVersionBtn;
   if (updateInfo) {
-    switchChannelBtn = document.createElement('button');
+    const switchChannelBtn = document.createElement('button');
     switchChannelBtn.innerText = 'Switch channel';
-    switchChannelBtn.onclick = async () => {
+    switchChannelBtn.onclick = () => {
       showSwitchChannelDialog(appId, name);
     };
+    buttonsSection.appendChild(switchChannelBtn);
 
-    pinnedVersionBtn = document.createElement('button');
+    const pinnedVersionBtn = document.createElement('button');
     pinnedVersionBtn.innerText = 'Pin To Version';
-    pinnedVersionBtn.onclick = async () => {
+    pinnedVersionBtn.onclick = () => {
       showPinnedVersionDialog(appId, name);
     };
+    buttonsSection.appendChild(pinnedVersionBtn);
+
+    const allowDowngradesToggle = document.createElement('input');
+    allowDowngradesToggle.type = 'checkbox';
+    allowDowngradesToggle.checked = updateInfo.allowDowngrades || false;
+    allowDowngradesToggle.id = 'allow-downgrades-toggle';
+
+    const allowDowngradesLabel = document.createElement('label');
+    allowDowngradesLabel.htmlFor = 'allow-downgrades-toggle';
+    allowDowngradesLabel.textContent = 'Allow downgrades';
+
+    allowDowngradesToggle.addEventListener('change', () => {
+      toggleAllowDowngrades(appId, allowDowngradesToggle.checked);
+    });
+
+    buttonsSection.appendChild(allowDowngradesToggle);
+    buttonsSection.appendChild(allowDowngradesLabel);
   }
 
-  return {updateMsg, updateBtn, switchChannelBtn, pinnedVersionBtn};
+  return {updateMsg, buttonsSection};
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

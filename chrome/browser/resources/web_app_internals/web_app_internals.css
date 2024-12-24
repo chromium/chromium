@@ -68,4 +68,7 @@ div .dialog-buttons {
   flex-direction: row;
   justify-content: flex-start;
   gap: 8px;
+  >* {
+      padding: 4px;
+    }
 }

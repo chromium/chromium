@@ -136,6 +136,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
   void UpdateManifestInstalledIsolatedWebApp(
       const webapps::AppId& app_id,
       std::optional<base::Version> pinned_version,
+      bool allow_downgrades,
       Handler::UpdateManifestInstalledIsolatedWebAppCallback callback) {
     if (base::Contains(update_requests_, app_id)) {
       std::move(callback).Run(
@@ -175,7 +176,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
         /*update_channel=*/
         isolation_data.update_channel().value_or(
             UpdateChannel::default_channel()),
-        /*allow_downgrades=*/false, pinned_version,
+        allow_downgrades, pinned_version,
         /*dev_mode=*/true);
   }
 
@@ -458,7 +459,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     if (base::Contains(pinned_versions_, app.app_id())) {
       pinned_version = pinned_versions_[app.app_id()].GetString();
     }
-
+    bool allow_downgrades = app_ids_allowing_downgrades_.contains(app.app_id());
     absl::visit(
         base::Overloaded{
             [&](const IwaSourceBundleDevMode& source) {
@@ -472,7 +473,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
                             isolation_data.update_channel()
                                 .value_or(UpdateChannel::default_channel())
                                 .ToString(),
-                            pinned_version)
+                            pinned_version, allow_downgrades)
                       : nullptr));
             },
             [&](const IwaSourceProxy& source) {
@@ -566,9 +567,10 @@ void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
 
   std::optional<base::Version> pinned_version =
       base::OptionalFromPtr(base::FindOrNull(pinned_versions_, app_id));
+  bool allow_downgrades = app_ids_allowing_downgrades_.contains(app_id);
 
-  update_handler_->UpdateManifestInstalledIsolatedWebApp(app_id, pinned_version,
-                                                         std::move(callback));
+  update_handler_->UpdateManifestInstalledIsolatedWebApp(
+      app_id, pinned_version, allow_downgrades, std::move(callback));
 }
 
 void IwaInternalsHandler::SetUpdateChannelForIsolatedWebApp(
@@ -618,8 +620,7 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
     return;
   }
 
-  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id),
-                  [&](auto) { std::move(callback).Run(/*success=*/false); });
+  RETURN_IF_ERROR(GetIsolatedWebAppById(provider->registrar_unsafe(), app_id), [&](auto) { std::move(callback).Run(/*success=*/false); });
 
   base::Version version = base::Version(pinned_version);
   if (!version.IsValid()) {
@@ -634,6 +635,24 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
 void IwaInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id) {
   pinned_versions_.erase(app_id);
+}
+
+void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
+    bool allow_downgrades,
+    const webapps::AppId& app_id) {
+  auto* provider = WebAppProvider::GetForWebApps(profile());
+  if (!provider || provider->registrar_unsafe().GetInstallState(app_id)
+      != proto::INSTALLED_WITH_OS_INTEGRATION) {
+    return;
+  }
+
+  // Removes `app_id` for which downgrades were turned off.
+  if (base::Contains(app_ids_allowing_downgrades_, app_id) &&
+      !allow_downgrades) {
+    app_ids_allowing_downgrades_.erase(app_id);
+    return;
+  }
+  app_ids_allowing_downgrades_.insert(app_id);
 }
 
 void IwaInternalsHandler::DownloadWebBundleToFile(

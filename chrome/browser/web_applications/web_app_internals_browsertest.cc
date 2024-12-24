@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
   params->web_bundle_url = web_bundle_url;
   params->update_info = ::mojom::UpdateInfo::New(
       update_manifest_url, UpdateChannel::default_channel().ToString(),
-      /*pinned_version=*/std::nullopt);
+      /*pinned_version=*/std::nullopt, /*allow_downgrades=*/false);
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());
@@ -407,10 +407,9 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
   }
 
-  // Unpin the app. Expect update to v2.4.0.
+  // Unpin the app. App should be updated to v2.4.0.
   {
     handler->ResetPinnedVersionForIsolatedWebApp(app_id);
-
     base::test::TestFuture<std::string> update_future;
     handler->UpdateManifestInstalledIsolatedWebApp(
         app_id, update_future.GetCallback<const std::string&>());
@@ -421,6 +420,26 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
     EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.4.0"));
+  }
+
+  // Pin to v2.3.0, allow downgrades. Expect update to v2.3.0.
+  {
+    handler->SetAllowDowngradesForIsolatedWebApp(true, app_id);
+    base::test::TestFuture<bool> set_pinned_version_future;
+    handler->SetPinnedVersionForIsolatedWebApp(
+        app_id, "2.3.0", set_pinned_version_future.GetCallback());
+    EXPECT_TRUE(set_pinned_version_future.Get());
+
+    base::test::TestFuture<std::string> update_future;
+    handler->UpdateManifestInstalledIsolatedWebApp(
+        app_id, update_future.GetCallback<const std::string&>());
+    EXPECT_THAT(update_future.Get(), HasSubstr("Update to v2.3.0 successful"));
+
+    ASSERT_OK_AND_ASSIGN(
+        const WebApp& iwa,
+        GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
+
+    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.3.0"));
   }
 }
 
@@ -458,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(
   params->web_bundle_url = web_bundle_url;
   params->update_info = ::mojom::UpdateInfo::New(
       update_manifest_url, UpdateChannel::default_channel().ToString(),
-      /*pinned_version=*/std::nullopt);
+      /*pinned_version=*/std::nullopt, /*allow_downgrades=*/false);
   handler->InstallIsolatedWebAppFromBundleUrl(std::move(params),
                                               install_future.GetCallback());
   ASSERT_TRUE(install_future.Take()->is_success());

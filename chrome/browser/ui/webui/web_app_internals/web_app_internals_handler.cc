@@ -519,3 +519,9 @@ void WebAppInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id) {
   iwa_handler_.ResetPinnedVersionForIsolatedWebApp(app_id);
 }
+
+void WebAppInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
+    bool allow_downgrades,
+    const webapps::AppId& app_id) {
+  iwa_handler_.SetAllowDowngradesForIsolatedWebApp(allow_downgrades, app_id);
+}
