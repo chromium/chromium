@@ -2526,6 +2526,12 @@ crbug.com/377833124 external/wpt/webdriver/tests/bidi/browsing_context/navigate/
 
 # unblock roll wpt
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
+crbug.com/385751153 external/wpt/webtransport/datagrams.https.any.html [ Timeout ]
+crbug.com/385751153 external/wpt/webtransport/datagrams.https.any.serviceworker.html [ Timeout ]
+crbug.com/385751153 external/wpt/webtransport/datagrams.https.any.sharedworker.html [ Timeout ]
+crbug.com/385751153 external/wpt/webtransport/datagrams.https.any.worker.html [ Timeout ]
+crbug.com/385751153 external/wpt/webtransport/stats.https.any.html [ Failure ]
+crbug.com/385751153 external/wpt/webtransport/stats.https.any.sharedworker.html [ Failure ]
 
 # Disable certain requestIdleCallback tests pending spec or test changes.
 crbug.com/1316344 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
