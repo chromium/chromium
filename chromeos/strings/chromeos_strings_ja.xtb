@@ -582,7 +582,7 @@
 <translation id="3959413315969265597">この APN を有効にできません。デフォルトの APN が追加されていることを確認してください。</translation>
 <translation id="3966286471246132217">より正確な結果を得るには、テストが完了するまですべてのアプリを閉じてください。</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
-<translation id="3969602104473960991">Chrome OS のパスワードが更新されました</translation>
+<translation id="3969602104473960991">ChromeOS のパスワードが更新されました</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="3981099166243641873">ライトグリーン</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
@@ -1014,7 +1014,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />、他 <ph name="NUMBER" /> 個のアルバム</translation>
 <translation id="6120815036186828722">会話を聞き取っています…</translation>
 <translation id="6122191549521593678">オンライン</translation>
-<translation id="6122277663991249694">Chrome OS の入力方法サービス</translation>
+<translation id="6122277663991249694">ChromeOS の入力方法サービス</translation>
 <translation id="6127426868813166163">ホワイト</translation>
 <translation id="613049107179582049">Chromebook オーディオがオンの場合、レコーダーはこのデバイスで再生されるすべての音声を録音します</translation>
 <translation id="6136285399872347291">Backspace</translation>
@@ -1495,7 +1495,7 @@
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">下</translation>
 <translation id="8428213095426709021">設定</translation>
-<translation id="8431300646573772016">Chrome OS の最新情報</translation>
+<translation id="8431300646573772016">ChromeOS の最新情報</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="843568408673868420">インターネット接続</translation>
 <translation id="844521431886043384">DNS が設定されていません</translation>
