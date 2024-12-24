@@ -4598,7 +4598,6 @@ def _make_attribute_registration_table(table_name, attribute_entries):
     attr_set_cfunctions = []
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{attribute_get_callback}, "
                "{attribute_set_callback}, "
                "{v8_property_attribute}, "
@@ -4771,7 +4770,6 @@ def _make_operation_registration_table(table_name, operation_entries):
     nadc_overload_nodes = ListNode()
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{operation_callback}, "
                "{function_length}, "
                "{v8_property_attribute}, "
@@ -5911,23 +5909,41 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         body.append(EmptyNode())
 
     if is_per_context_install:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_object}, "
-                   "${prototype_object}, "
-                   "${interface_object}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_object}, "
+                                          "${prototype_object}, "
+                                          "${interface_object}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_object}, "
+                                       "${prototype_object}, "
+                                       "${interface_object}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
     else:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_template}, "
-                   "${prototype_template}, "
-                   "${interface_template}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_template}, "
+                                          "${prototype_template}, "
+                                          "${interface_template}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_template}, "
+                                       "${prototype_template}, "
+                                       "${interface_template}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
 
     table_name = "kAttributeTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallAttributes",
         table_name=table_name)
 
@@ -5947,7 +5963,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kConstantCallbackTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
     constant_callback_entries = list(
@@ -5958,7 +5974,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kConstantValueTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
     constant_value_entries = list(
@@ -5969,7 +5985,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kExposedConstructTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallExposedConstructs",
         table_name=table_name)
     install_properties(table_name, exposed_construct_entries,
@@ -5978,7 +5994,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kOperationTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallOperations",
         table_name=table_name)
     entries = list(
