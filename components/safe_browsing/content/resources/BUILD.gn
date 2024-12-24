@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 # TODO(nparker): reduce the duplication between these two, somehow.
 
 # Generate the binary proto form of "file_types" from the ascii proto.

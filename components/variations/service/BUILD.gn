@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Set to true make a build that disables activation of field trial tests

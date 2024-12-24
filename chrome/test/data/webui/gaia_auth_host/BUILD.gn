@@ -5,7 +5,7 @@
 import("//components/signin/features.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(enable_dice_support || is_chromeos_ash)
+assert(enable_dice_support || is_chromeos)
 
 # Creates the necessary GRDP file with local test files.
 generate_grd("build_grdp") {
