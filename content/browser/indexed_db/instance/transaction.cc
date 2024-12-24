@@ -296,7 +296,8 @@ bool Transaction::IsTransactionBlockingOtherClients(
   CHECK_EQ(state_, STARTED);
   std::set<PartitionedLockHolder*> blocked_requests =
       bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
-  return std::ranges::any_of(
+  base::TimeTicks start = base::TimeTicks::Now();
+  const bool is_blocking_others = std::ranges::any_of(
       blocked_requests, [&](PartitionedLockHolder* blocked_lock_holder) {
         auto* lock_request_data = static_cast<LockRequestData*>(
             blocked_lock_holder->GetUserData(LockRequestData::kKey));
@@ -315,6 +316,15 @@ bool Transaction::IsTransactionBlockingOtherClients(
         }
         return lock_request_data->client_token != connection_->client_token();
       });
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+  if (duration > base::Milliseconds(2)) {
+    base::UmaHistogramTimes("IndexedDB.CalculateBlockingStatusLongTimes",
+                            duration);
+    base::UmaHistogramCounts100000(
+        "IndexedDB.CalculateBlockingStatusRequestQueueSize",
+        bucket_context_->lock_manager().RequestsWaitingForMetrics());
+  }
+  return is_blocking_others;
 }
 
 void Transaction::Start() {

@@ -69,6 +69,7 @@ class PartitionedLockManager {
 
   int64_t LocksHeldForTesting() const;
   int64_t RequestsWaitingForTesting() const;
+  int64_t RequestsWaitingForMetrics() const;
 
   // Acquires locks for the given requests. Lock partitions are treated as
   // completely independent domains.

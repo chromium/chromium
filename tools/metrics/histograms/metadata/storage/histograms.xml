@@ -309,6 +309,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.CalculateBlockingStatusLongTimes" units="ms"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of Transaction::IsTransactionBlockingOtherClients, but
+    only if it takes over 2ms to execute. This is intended to facilitate
+    tracking down performance issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.CalculateBlockingStatusRequestQueueSize"
+    units="count" expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of queued lock requests that exist in the
+    PartitionedLockManager when IsTransactionBlockingPtherClients() takes over
+    2ms to complete. This is intended to facilitate tracking down performance
+    issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.ContextShutdownDuration" units="ms"
     expires_after="2025-06-08">
   <owner>estade@chromium.org</owner>
@@ -317,6 +340,29 @@ chromium-metrics-reviews@google.com.
     Logs the time it takes to completely shut down `IndexedDBContextImpl`,
     starting from when it's requested on the UI thread to when destruction is
     completed on the IDB task runner.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.GetUnacquirableLocksLongTimes" units="ms"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of PartitionedLockManager::GetUnacquirableLocks, but only
+    if it takes over 2ms to execute. This is intended to facilitate tracking
+    down performance issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.GetUnacquirableLocksRequestQueueSize" units="count"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of queued lock requests that exist in the
+    PartitionedLockManager when GetUnacquirableLocks() takes over 2ms to
+    complete. This is intended to facilitate tracking down performance issues.
+    See crbug.com/384476946
   </summary>
 </histogram>
 
@@ -329,6 +375,29 @@ chromium-metrics-reviews@google.com.
     Recorded in the renderer process for the first value that failed to be
     unwrapped in a transaction. This error causes the transaction to abort,
     preventing further read attempts on other values.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.LockRequestCancelledLongTimes" units="ms"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of PartitionedLockManager::LockRequestCancelled, but only
+    if it takes over 2ms to execute. This is intended to facilitate tracking
+    down performance issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.LockRequestCancelledRequestQueueSize" units="count"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of queued lock requests that exist in the
+    PartitionedLockManager when LockRequestCancelled() takes over 2ms to
+    complete. This is intended to facilitate tracking down performance issues.
+    See crbug.com/384476946
   </summary>
 </histogram>
 
@@ -345,6 +414,40 @@ chromium-metrics-reviews@google.com.
     <variant name="QuotaError"/>
     <variant name="Success"/>
   </token>
+</histogram>
+
+<histogram name="IndexedDB.RemoveTransactionConnectionTxnCount" units="count"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of transactions remaining on a Connection when
+    Connection::RemoveTransaction() takes over 2ms to complete. This is intended
+    to facilitate tracking down performance issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.RemoveTransactionLongTimes" units="ms"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of Connection::RemoveTransaction(), but only if it takes
+    over 2ms to execute. This is intended to facilitate tracking down
+    performance issues. See crbug.com/384476946
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.RemoveTransactionRequestQueueSize" units="count"
+    expires_after="2025-04-20">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the number of queued lock requests that exist in the
+    PartitionedLockManager when Connection::RemoveTransaction() takes over 2ms
+    to complete. This is intended to facilitate tracking down performance
+    issues. See crbug.com/384476946
+  </summary>
 </histogram>
 
 <histogram name="IndexedDB.WrappedBlobLoadTime" units="ms"
