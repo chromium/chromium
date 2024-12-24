@@ -47,15 +47,7 @@ void UserCloudPolicyStoreBase::InstallPolicy(
     const std::string& policy_signature_public_key) {
   // Decode the payload.
   policy_map_.Clear();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // From the policies that Lacros fetched from the cloud, it should only
-  // respect the ones with per_profile=True. Session-wide policies
-  // (per_profile=False) are be provided by ash and installed by
-  // PolicyLoaderLacros.
-  PolicyPerProfileFilter filter = PolicyPerProfileFilter::kTrue;
-#else
   PolicyPerProfileFilter filter = PolicyPerProfileFilter::kAny;
-#endif
   DecodeProtoFields(*payload, external_data_manager(), POLICY_SOURCE_CLOUD,
                     policy_scope_, &policy_map_, filter);
 

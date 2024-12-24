@@ -43,10 +43,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/signin/core/browser/consistency_cookie_manager.h"
-#endif
-
 using signin::AccountReconcilorDelegate;
 using signin::ConsentLevel;
 using signin_metrics::AccountReconcilorState;
@@ -169,10 +165,6 @@ AccountReconcilor::AccountReconcilor(
       client_(client),
       account_manager_facade_(account_manager_facade) {
   VLOG(1) << "AccountReconcilor::AccountReconcilor";
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  consistency_cookie_manager_ =
-      std::make_unique<signin::ConsistencyCookieManager>(client_, this);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // Reconcilor is constructed but not initialized. Call `Initialize()` before
   // using this object.
 }
@@ -909,13 +901,6 @@ bool AccountReconcilor::IsReconcileBlocked() const {
 GoogleServiceAuthError AccountReconcilor::GetReconcileError() const {
   return error_during_last_reconcile_;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-signin::ConsistencyCookieManager*
-AccountReconcilor::GetConsistencyCookieManager() {
-  return consistency_cookie_manager_.get();
-}
-#endif
 
 void AccountReconcilor::BlockReconcile() {
   DCHECK(IsReconcileBlocked());

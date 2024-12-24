@@ -52,10 +52,6 @@
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif
-
 #if BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/device_accounts_synchronizer_impl.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"

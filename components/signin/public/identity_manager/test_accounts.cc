@@ -25,7 +25,7 @@ const char kPlatform[] = "win";
 const char kPlatform[] = "mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPlatform[] = "chromeos";
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
 const char kPlatform[] = "linux";
 #elif BUILDFLAG(IS_ANDROID)
 const char kPlatform[] = "android";

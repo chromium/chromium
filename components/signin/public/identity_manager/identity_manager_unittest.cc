@@ -2339,49 +2339,6 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
   EXPECT_TRUE(identity_manager()->AreRefreshTokensLoaded());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(IdentityManagerTest, SetPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(
-      account_manager::Account{
-          account_manager::AccountKey{kTestGaiaId,
-                                      account_manager::AccountType::kGaia},
-          kTestEmail},
-      /*is_child=*/false);
-  // Do not sign into a primary account as part of the test setup.
-  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
-                          PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
-
-  // We should have a non-syncing Primary Account set up automatically.
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(
-      kTestGaiaId,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
-}
-
-// TODO(crbug.com/40774609): Remove this when all the users are migrated.
-TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(
-      account_manager::Account{
-          account_manager::AccountKey{kTestGaiaId2,
-                                      account_manager::AccountType::kGaia},
-          kTestEmail2},
-      /*is_child=*/false);
-
-  // RecreateIdentityManager will create PrimaryAccountManager with the primary
-  // account set to kTestGaiaId. After that, IdentityManager ctor should clear
-  // this existing primary account and set the new one to the initial value
-  // provided by the SigninClient.
-  RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
-                          PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
-  ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_EQ(
-      kTestGaiaId2,
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia);
-}
-#endif
-
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info
 // is updated.
 TEST_F(IdentityManagerTest, ObserveOnAccountUpdated) {

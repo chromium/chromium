@@ -26,10 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 namespace paint_preview {
 
 namespace {
@@ -196,10 +192,6 @@ class PaintPreviewBaseServiceTest
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Instantiate LacrosService for WakeLock support during capturing.
-  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
-#endif
   std::unique_ptr<SimpleFactoryKey> key_;
   std::unique_ptr<SimpleFactoryKey> rejection_policy_key_;
 };

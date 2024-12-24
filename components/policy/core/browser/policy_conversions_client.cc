@@ -39,9 +39,6 @@ namespace policy {
 namespace {
 const char* USER_SCOPE = "user";
 const char* DEVICE_SCOPE = "machine";
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char* ALL_USERS_SCOPE = "allUsers";
-#endif
 
 // Return true if machine policy information needs to be hidden.
 bool IsMachineInfoHidden(PolicyScope scope, bool show_machine_values) {
@@ -123,10 +120,6 @@ base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
 
   // Convert dictionary values to strings for display.
   handler_list->PrepareForDisplaying(&map);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  PopulatePerProfileMap();
-#endif
 
   return GetPolicyValues(map, &errors, deprecated_policies, future_policies,
                          GetKnownPolicies(schema_map, policy_namespace));
@@ -467,46 +460,8 @@ std::string PolicyConversionsClient::GetPolicyScope(
   if (policy_scope != POLICY_SCOPE_USER) {
     return DEVICE_SCOPE;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (per_profile_map_) {
-    auto it = per_profile_map_->find(policy_name);
-    if (it != per_profile_map_->end()) {
-      return it->second ? USER_SCOPE : ALL_USERS_SCOPE;
-    }
-  }
-#endif
-
-  // In Lacros case, this policy is missing from the policy templates.
-  // Which means it's a policy for apps/extensions.
   return USER_SCOPE;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void PolicyConversionsClient::PopulatePerProfileMap() {
-  if (per_profile_map_) {
-    return;
-  }
-
-  per_profile_map_ = std::make_unique<std::map<std::string, bool>>();
-  for (const BooleanPolicyAccess& access : kBooleanPolicyAccess) {
-    per_profile_map_->emplace(std::string(access.policy_key),
-                              access.per_profile);
-  }
-  for (const IntegerPolicyAccess& access : kIntegerPolicyAccess) {
-    per_profile_map_->emplace(std::string(access.policy_key),
-                              access.per_profile);
-  }
-  for (const StringPolicyAccess& access : kStringPolicyAccess) {
-    per_profile_map_->emplace(std::string(access.policy_key),
-                              access.per_profile);
-  }
-  for (const StringListPolicyAccess& access : kStringListPolicyAccess) {
-    per_profile_map_->emplace(std::string(access.policy_key),
-                              access.per_profile);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 std::u16string PolicyConversionsClient::GetPolicyError(
     const std::string& policy_name,

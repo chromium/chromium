@@ -149,14 +149,6 @@ void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   // If the store has a verified policy blob received from the server then apply
   // the defaults for policies that haven't been configured by the administrator
   // given that this is an enterprise user.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!store()->has_policy())
-    return;
-
-  // TODO(https://crbug.com/1206315): Don't apply enterprise defaults for Child
-  // user.
-  SetEnterpriseUsersProfileDefaults(policy_map);
-#endif
 #if BUILDFLAG(IS_ANDROID)
   if (store()->has_policy() &&
       !policy_map->Get(key::kNTPContentSuggestionsEnabled)) {

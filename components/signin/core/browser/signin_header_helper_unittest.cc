@@ -29,11 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/core/browser/dice_header_helper.h"
 #endif
@@ -76,14 +71,6 @@ class SigninHeaderHelperTest : public testing::Test {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/40760763): remove this after the rollout.
-    if (!chromeos::LacrosService::Get()) {
-      scoped_lacros_test_helper_ =
-          std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-    }
-#endif
 
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
@@ -158,11 +145,7 @@ class SigninHeaderHelperTest : public testing::Test {
 #endif
 
   std::string consistency_enabled_by_default_value() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return "true";
-#else
     return "false";
-#endif
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -175,10 +158,6 @@ class SigninHeaderHelperTest : public testing::Test {
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      scoped_lacros_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   scoped_refptr<HostContentSettingsMap> settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };

@@ -21,9 +21,6 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kCrashVariationsFileName[] = ".variations-list.txt";
 #endif  // IS_CHROMEOS_ASH
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kCrashVariationsFileName[] = ".variations-list-lacros.txt";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WriteVariationsToFile(ExperimentListInfo info) {
   std::string combined_string = base::StrCat(

@@ -23,10 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/account.h"
-#endif
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 namespace signin {
 class BoundSessionOAuthMultiLoginDelegate;
@@ -134,23 +130,6 @@ class SigninClient : public KeyedService {
   virtual std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns an account used to sign into Chrome OS session if available.
-  virtual std::optional<account_manager::Account>
-  GetInitialPrimaryAccount() = 0;
-
-  // Returns whether account used to sign into Chrome OS is a child account.
-  // Returns nullopt for secondary / non-main profiles in LaCrOS.
-  virtual std::optional<bool> IsInitialPrimaryAccountChild() const = 0;
-
-  // Remove account.
-  virtual void RemoveAccount(
-      const account_manager::AccountKey& account_key) = 0;
-
-  // Removes all accounts.
-  virtual void RemoveAllAccounts() = 0;
-#endif
 
   // Returns the channel for the client installation.
   virtual version_info::Channel GetClientChannel() = 0;

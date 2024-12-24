@@ -22,11 +22,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace signin {
 
 namespace {
@@ -257,11 +252,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 
   parts.push_back(base::StringPrintf("%s=%s",
                                      kConsistencyEnabledByDefaultAttrName,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                     "true"));
-#else
                                      "false"));
-#endif
 
   return base::JoinString(parts, is_header_request ? "," : ":");
 }

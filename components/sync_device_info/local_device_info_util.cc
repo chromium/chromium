@@ -108,8 +108,6 @@ sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
 DeviceInfo::OsType GetLocalDeviceOSType() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return DeviceInfo::OsType::kChromeOsAsh;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return DeviceInfo::OsType::kChromeOsLacros;
 #elif BUILDFLAG(IS_LINUX)
   return DeviceInfo::OsType::kLinux;
 #elif BUILDFLAG(IS_ANDROID)

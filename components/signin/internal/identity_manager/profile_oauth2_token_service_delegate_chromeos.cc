@@ -129,18 +129,12 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
         account_manager::AccountManagerFacade* account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         bool is_regular_profile)
     : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
       signin_client_(signin_client),
       account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       account_manager_facade_(account_manager_facade),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      delete_signin_cookies_on_exit_(delete_signin_cookies_on_exit),
-#endif
       is_regular_profile_(is_regular_profile),
       weak_factory_(this) {
   network_connection_tracker_->AddNetworkConnectionObserver(this);
@@ -256,20 +250,6 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
 
   DCHECK(account_manager_facade_);
   account_manager_facade_->AddObserver(this);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, signin cookies can only be cleared for non-syncing
-  // secondary profiles, because:
-  // - the main profile cannot be signed out,
-  // - clearing cookie does not turn sync off
-  // Additionally, there is no way for Chrome to "invalidate" a token. In
-  // particular, the "sync paused" state does not exist.
-  bool revoke_all_tokens =
-      delete_signin_cookies_on_exit_ && !is_syncing &&
-      !signin_client_->GetInitialPrimaryAccount().has_value();
-  if (revoke_all_tokens)
-    RevokeAllCredentials();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   account_manager_facade_->GetAccounts(
       base::BindOnce(&ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts,
                      weak_factory_.GetWeakPtr()));
@@ -484,30 +464,14 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ScopedBatchChange batch(this);
-  AccountInfo account_info =
-      account_tracker_service_->GetAccountInfo(account_id);
-  DCHECK(!account_info.IsEmpty());
-  signin_client_->RemoveAccount(
-      account_manager::AccountKey::FromGaiaId(account_info.gaia));
-  ClearAuthError(account_id);
-#else
-  // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
+  // Signing out of Chrome is not possible on Chrome OS.
   NOTREACHED();
-#endif
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentialsInternal(
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(!signin_client_->GetInitialPrimaryAccount().has_value());
-  ScopedBatchChange batch(this);
-  signin_client_->RemoveAllAccounts();
-#else
-  // Signing out of Chrome is not possible on Chrome OS Ash.
+  // Signing out of Chrome is not possible on Chrome OS.
   NOTREACHED();
-#endif
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateAuthError(

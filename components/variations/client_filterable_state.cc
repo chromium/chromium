@@ -50,8 +50,6 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
   return Study::PLATFORM_MAC;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return Study::PLATFORM_CHROMEOS;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return Study::PLATFORM_CHROMEOS_LACROS;
 #elif BUILDFLAG(IS_ANDROID)
   return Study::PLATFORM_ANDROID;
 #elif BUILDFLAG(IS_FUCHSIA)

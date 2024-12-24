@@ -16,12 +16,6 @@
 #include "services/network/test/test_cookie_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-
-#include "components/account_manager_core/account.h"
-#endif
-
 TestWaitForNetworkCallbackHelper::TestWaitForNetworkCallbackHelper() = default;
 TestWaitForNetworkCallbackHelper::~TestWaitForNetworkCallbackHelper() = default;
 
@@ -156,26 +150,3 @@ void TestSigninClient::SetBoundSessionOauthMultiloginDelegateFactory(
   bound_session_delegate_factory_ = std::move(factory);
 }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::optional<account_manager::Account>
-TestSigninClient::GetInitialPrimaryAccount() {
-  return initial_primary_account_;
-}
-
-std::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
-  return is_initial_primary_account_child_;
-}
-
-void TestSigninClient::SetInitialPrimaryAccountForTests(
-    const account_manager::Account& account,
-    const std::optional<bool>& is_child) {
-  initial_primary_account_ = std::make_optional(account);
-  is_initial_primary_account_child_ = is_child;
-}
-
-void TestSigninClient::RemoveAccount(
-    const account_manager::AccountKey& account_key) {}
-void TestSigninClient::RemoveAllAccounts() {}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

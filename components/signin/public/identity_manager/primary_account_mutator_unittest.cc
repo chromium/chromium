@@ -578,7 +578,6 @@ TEST_F(PrimaryAccountMutatorTest,
       primary_account_info.account_id);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that trying to set the primary account fails if setting the primary
 // account is not allowed.
 TEST_F(PrimaryAccountMutatorTest,
@@ -614,7 +613,6 @@ TEST_F(PrimaryAccountMutatorTest,
       signin::PrimaryAccountMutator::PrimaryAccountError::kSigninNotAllowed,
       setPrimaryAccountResult);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // End of tests of preconditions not being satisfied causing the setting of
 // the primary account to fail.

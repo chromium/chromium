@@ -193,11 +193,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool user_policies_enabled_ = true;
   bool drop_default_values_enabled_ = false;
   bool show_machine_values_ = true;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void PopulatePerProfileMap();
-  std::unique_ptr<std::map<std::string, bool>> per_profile_map_;
-#endif
 };
 
 }  // namespace policy

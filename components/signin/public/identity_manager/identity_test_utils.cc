@@ -36,10 +36,6 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
 #include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
@@ -50,22 +46,6 @@ using signin::constants::kNoHostedDomainFound;
 namespace signin {
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Whether identity_test_utils uses `AccountManagerFacade` or
-// `ProfileOAuth2TokenService` for managing credentials.
-bool ShouldUseAccountManagerFacade(IdentityManager* identity_manager) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If account consistency is `kMirror` - use `AccountManagerFacade` for
-  // managing credentials, otherwise use `ProfileOAuth2TokenService`.
-  return identity_manager->GetAccountConsistency() ==
-         AccountConsistencyMethod::kMirror;
-#else
-  // In Ash - always use `AccountManagerFacade` for managing credentials.
-  return true;
-#endif
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Helper function that updates the refresh token for |account_id| to
 // |new_token|. Before updating the refresh token, blocks until refresh tokens
@@ -98,28 +78,23 @@ void UpdateRefreshTokenForAccount(
   token_updated_observer.SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());
 
-  // TODO(crbug.com/40776160): simplify this when all Lacros Profiles use
-  // Mirror.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ShouldUseAccountManagerFacade(identity_manager)) {
-    const AccountInfo& account_info =
-        account_tracker_service->GetAccountInfo(account_id);
-    account_manager::Account account{
-        account_manager::AccountKey{account_info.gaia,
-                                    account_manager::AccountType::kGaia},
-        account_info.email};
-    GetAccountManagerFacade(identity_manager)
-        ->UpsertAccountForTesting(account, new_token);
-  } else
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  {
-    token_service->UpdateCredentials(account_id, new_token, source
+  const AccountInfo& account_info =
+      account_tracker_service->GetAccountInfo(account_id);
+  account_manager::Account account{
+      account_manager::AccountKey{account_info.gaia,
+                                  account_manager::AccountType::kGaia},
+      account_info.email};
+  GetAccountManagerFacade(identity_manager)
+      ->UpsertAccountForTesting(account, new_token);
+#else
+  token_service->UpdateCredentials(account_id, new_token, source
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-                                     ,
-                                     wrapped_binding_key
+                                   ,
+                                   wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    );
-  }
+  );
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   run_loop.Run();
 }
@@ -539,21 +514,15 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   token_updated_observer.SetOnRefreshTokenRemovedCallback(
       run_loop.QuitClosure());
 
-  // TODO(crbug.com/40776160): simplify this when all Lacros Profiles use
-  // Mirror.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ShouldUseAccountManagerFacade(identity_manager)) {
-    const AccountInfo& account_info =
-        identity_manager->GetAccountTrackerService()->GetAccountInfo(
-            account_id);
-    GetAccountManagerFacade(identity_manager)
-        ->RemoveAccountForTesting(account_manager::AccountKey{
-            account_info.gaia, account_manager::AccountType::kGaia});
-  } else
+  const AccountInfo& account_info =
+      identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
+  GetAccountManagerFacade(identity_manager)
+      ->RemoveAccountForTesting(account_manager::AccountKey{
+          account_info.gaia, account_manager::AccountType::kGaia});
+#else
+  identity_manager->GetTokenService()->RevokeCredentials(account_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  {
-    identity_manager->GetTokenService()->RevokeCredentials(account_id);
-  }
 
   run_loop.Run();
 }

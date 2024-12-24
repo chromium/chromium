@@ -109,8 +109,7 @@ constexpr char kIdToken[] = "id_token";
 constexpr char kOidcState[] = "fake-oidc-state";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 constexpr char kBrowserEnrollmentToken[] = "browser_enrollment_token";
 #endif
 
@@ -337,8 +336,7 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   return request;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 em::DeviceManagementRequest GetEnrollmentRequest() {
   em::DeviceManagementRequest request;
 
@@ -914,8 +912,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   CheckPolicyResponse(policy_response);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenAndPolicyFetch) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 

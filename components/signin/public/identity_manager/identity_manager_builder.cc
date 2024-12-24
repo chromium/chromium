@@ -117,9 +117,9 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS)
         params->account_manager_facade, params->is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
         params->delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) ||  BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
         params->token_web_data,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

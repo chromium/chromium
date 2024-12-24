@@ -63,16 +63,10 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     account_manager::AccountManagerFacade* account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool delete_signin_cookies_on_exit,
-#endif
     bool is_regular_profile) {
   return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
       signin_client, account_tracker_service, network_connection_tracker,
       account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      delete_signin_cookies_on_exit,
-#endif
       is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -132,9 +126,9 @@ CreateOAuth2TokenServiceDelegate(
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     scoped_refptr<TokenWebData> token_web_data,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -159,9 +153,6 @@ CreateOAuth2TokenServiceDelegate(
   return CreateCrOsOAuthDelegate(signin_client, account_tracker_service,
                                  network_connection_tracker,
                                  account_manager_facade,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                 delete_signin_cookies_on_exit,
-#endif
                                  is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
@@ -192,9 +183,9 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     bool delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     scoped_refptr<TokenWebData> token_web_data,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -225,9 +216,9 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #if BUILDFLAG(IS_CHROMEOS)
           account_manager_facade, is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
           delete_signin_cookies_on_exit,
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           token_web_data,
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
