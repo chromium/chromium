@@ -163,6 +163,7 @@ pub mod fast {
     }
 
     impl FoldHasher {
+        #[inline]
         pub(crate) fn with_seed(per_hasher_seed: u64, global_seed: &[u64; 4]) -> FoldHasher {
             FoldHasher {
                 accumulator: per_hasher_seed,
@@ -183,7 +184,7 @@ pub mod fast {
                 let hi = (self.sponge >> 64) as u64;
                 self.accumulator = folded_multiply(lo ^ self.accumulator, hi ^ self.fold_seed);
                 self.sponge = x.into();
-                self.sponge_len = 0;
+                self.sponge_len = bits as u8;
             } else {
                 self.sponge |= x.into() << self.sponge_len;
                 self.sponge_len += bits as u8;

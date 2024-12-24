@@ -25,10 +25,16 @@ pub mod fast {
 
     impl Default for RandomState {
         fn default() -> Self {
-            let per_hasher_seed;
+            // We initialize the per-hasher seed with the stack pointer to ensure
+            // different threads have different seeds, with as side benefit that
+            // stack address randomization gives us further non-determinism.
+            let mut per_hasher_seed = 0;
+            let stack_ptr = core::ptr::addr_of!(per_hasher_seed) as u64;
+            per_hasher_seed = stack_ptr;
 
             // If we have the standard library available we use a thread-local
-            // counter for the per-hasher seed.
+            // state to ensure RandomStates are different with high probability,
+            // even if the call stack is the same.
             #[cfg(feature = "std")]
             {
                 use std::cell::Cell;
@@ -36,16 +42,13 @@ pub mod fast {
                     static PER_HASHER_NONDETERMINISM: Cell<u64> = const { Cell::new(0) };
                 }
 
-                let mut nondeterminism = PER_HASHER_NONDETERMINISM.get();
-                nondeterminism = nondeterminism.wrapping_add(ARBITRARY1 | 1); // Ensure number is odd for maximum period.
-                PER_HASHER_NONDETERMINISM.set(nondeterminism);
-                per_hasher_seed = folded_multiply(nondeterminism, ARBITRARY2);
+                let nondeterminism = PER_HASHER_NONDETERMINISM.get();
+                per_hasher_seed = folded_multiply(per_hasher_seed, ARBITRARY1 ^ nondeterminism);
+                PER_HASHER_NONDETERMINISM.set(per_hasher_seed);
             };
 
-            // If we don't have the standard library we use our current stack
-            // address in combination with a global PER_HASHER_NONDETERMINISM to
-            // create a new value that is very likely to have never been used as
-            // a random state before.
+            // If we don't have the standard library we instead use a global
+            // atomic instead of a thread-local state.
             //
             // PER_HASHER_NONDETERMINISM is loaded and updated in a racy manner,
             // but this doesn't matter in practice - it is impossible that two
@@ -62,10 +65,12 @@ pub mod fast {
                 static PER_HASHER_NONDETERMINISM: AtomicUsize = AtomicUsize::new(0);
 
                 let nondeterminism = PER_HASHER_NONDETERMINISM.load(Ordering::Relaxed) as u64;
-                let stack_ptr = &nondeterminism as *const _ as u64;
-                per_hasher_seed = folded_multiply(nondeterminism ^ stack_ptr, ARBITRARY2);
+                per_hasher_seed = folded_multiply(per_hasher_seed, ARBITRARY1 ^ nondeterminism);
                 PER_HASHER_NONDETERMINISM.store(per_hasher_seed as usize, Ordering::Relaxed);
             }
+
+            // One extra mixing step to ensure good random bits.
+            per_hasher_seed = folded_multiply(per_hasher_seed, ARBITRARY2);
 
             Self {
                 per_hasher_seed,
@@ -77,6 +82,7 @@ pub mod fast {
     impl BuildHasher for RandomState {
         type Hasher = FoldHasher;
 
+        #[inline(always)]
         fn build_hasher(&self) -> FoldHasher {
             FoldHasher::with_seed(self.per_hasher_seed, self.global_seed.get())
         }
@@ -92,6 +98,7 @@ pub mod fast {
 
     impl FixedState {
         /// Creates a [`FixedState`] with the given seed.
+        #[inline(always)]
         pub const fn with_seed(seed: u64) -> Self {
             // XOR with ARBITRARY3 such that with_seed(0) matches default.
             Self {
@@ -101,6 +108,7 @@ pub mod fast {
     }
 
     impl Default for FixedState {
+        #[inline(always)]
         fn default() -> Self {
             Self {
                 per_hasher_seed: ARBITRARY3,
@@ -111,6 +119,7 @@ pub mod fast {
     impl BuildHasher for FixedState {
         type Hasher = FoldHasher;
 
+        #[inline(always)]
         fn build_hasher(&self) -> FoldHasher {
             FoldHasher::with_seed(self.per_hasher_seed, &FIXED_GLOBAL_SEED)
         }
@@ -130,6 +139,7 @@ pub mod quality {
     impl BuildHasher for RandomState {
         type Hasher = FoldHasher;
 
+        #[inline(always)]
         fn build_hasher(&self) -> FoldHasher {
             FoldHasher {
                 inner: self.inner.build_hasher(),
@@ -147,6 +157,7 @@ pub mod quality {
 
     impl FixedState {
         /// Creates a [`FixedState`] with the given seed.
+        #[inline(always)]
         pub const fn with_seed(seed: u64) -> Self {
             Self {
                 // We do an additional folded multiply with the seed here for
@@ -161,6 +172,7 @@ pub mod quality {
     impl BuildHasher for FixedState {
         type Hasher = FoldHasher;
 
+        #[inline(always)]
         fn build_hasher(&self) -> FoldHasher {
             FoldHasher {
                 inner: self.inner.build_hasher(),
@@ -194,7 +206,11 @@ mod global {
         // current time and an address from the allocator.
         #[cfg(feature = "std")]
         {
-            #[cfg(not(all(target_family = "wasm", target_os = "unknown")))]
+            #[cfg(not(any(
+                miri,
+                all(target_family = "wasm", target_os = "unknown"),
+                target_os = "zkvm"
+            )))]
             if let Ok(duration) = std::time::UNIX_EPOCH.elapsed() {
                 seed = mix(seed, duration.subsec_nanos() as u64);
                 seed = mix(seed, duration.as_secs());

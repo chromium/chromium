@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "foldhash"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Orson Peters <orsonpeters@gmail.com>"]
 build = false
 exclude = [
@@ -20,6 +20,7 @@ exclude = [
     "tools",
     "assets",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

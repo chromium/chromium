@@ -1,6 +1,6 @@
 [package]
 name = "foldhash"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Orson Peters <orsonpeters@gmail.com>"]
 license = "Zlib"
 repository = "https://github.com/orlp/foldhash"

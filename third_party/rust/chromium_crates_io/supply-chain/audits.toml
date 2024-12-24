@@ -1263,6 +1263,12 @@ notes = """
 \"Foldhash is **not appropriate for any cryptographic purpose**.\"
 """
 
+[[audits.foldhash]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.1.3 -> 0.1.4"
+notes = "No changes to safety-relevant code"
+
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
