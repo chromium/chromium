@@ -232,20 +232,17 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
       existing_profile ? *existing_profile
                        : CreateNewAutofillProfile(personal_data, country_code);
 
-  // TODO(crbug.com/40266693): Fields not visible for the autofill profile's
-  // country must be reset.
   for (const api::autofill_private::AddressField& field : address->fields) {
-    if (field.type == autofill_private::FieldType::kNameFull) {
-      profile.SetInfoWithVerificationStatus(
-          autofill::NAME_FULL, base::UTF8ToUTF16(field.value),
-          ExtensionsBrowserClient::Get()->GetApplicationLocale(),
-          kUserVerified);
-    } else {
-      profile.SetRawInfoWithVerificationStatus(
-          autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
-          base::UTF8ToUTF16(field.value), kUserVerified);
-    }
+    std::u16string trimmed_value;
+    base::TrimWhitespace(base::UTF8ToUTF16(field.value), base::TRIM_ALL,
+                         &trimmed_value);
+    // TODO(crbug.com/385727960): Investigate why we can't use
+    // SetInfoWithVerificationStatus here.
+    profile.SetRawInfoWithVerificationStatus(
+        autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
+        base::UTF8ToUTF16(field.value), kUserVerified);
   }
+  profile.FinalizeAfterImport();
 
   const std::u16string existing_alternative_name =
       existing_profile
@@ -272,7 +269,6 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   if (use_existing_profile) {
     personal_data.address_data_manager().UpdateProfile(profile);
   } else {
-    profile.FinalizeAfterImport();
     personal_data.address_data_manager().AddProfile(profile);
     autofill::autofill_metrics::LogManuallyAddedAddress(
         autofill::autofill_metrics::AutofillManuallyAddedAddressSurface::

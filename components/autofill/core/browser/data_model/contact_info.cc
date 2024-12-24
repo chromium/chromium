@@ -86,13 +86,38 @@ bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
 
 bool NameInfo::FinalizeAfterImport() {
   name_->MigrateLegacyStructure();
+
+  bool result = name_->CompleteFullTree();
+  // If the name could not be completed, it is possible that it contains an
+  // invalid structure.
+  if (!result) {
+    // If the user manually changes name it can happen that the structure is
+    // invalid (e.g. first name is not matching the full name). In this case,
+    // try to complete the structure again.
+    if (name_->GetVerificationStatus() == VerificationStatus::kUserVerified &&
+        name_->WipeInvalidStructure()) {
+      // If the structure was wiped because it is invalid, try to complete the
+      // name tree again.
+      result = name_->CompleteFullTree();
+    }
+  }
+
+  // The same logic as above for the alternative name.
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    bool result = name_->CompleteFullTree();
-    result &= alternative_name_->CompleteFullTree();
-    return result;
+    alternative_name_->MigrateLegacyStructure();
+    bool result_alt = alternative_name_->CompleteFullTree();
+    if (!result_alt) {
+      if (alternative_name_->GetVerificationStatus() ==
+              VerificationStatus::kUserVerified &&
+          alternative_name_->WipeInvalidStructure()) {
+        result_alt &= alternative_name_->CompleteFullTree();
+      }
+      result &= result_alt;
+    }
   }
-  return name_->CompleteFullTree();
+
+  return result;
 }
 
 bool NameInfo::operator==(const NameInfo& other) const {

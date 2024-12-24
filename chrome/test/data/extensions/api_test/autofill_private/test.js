@@ -7,7 +7,9 @@
 // and failures are detected.
 
 // Constants for the tests.
-var NAME = 'Name';
+var FIRST_NAME = 'Firstname';
+var LAST_NAME = 'Lastname';
+var NAME = FIRST_NAME + ' ' + LAST_NAME;
 var ALTERNATIVE_FULL_NAME = 'NameAlternative';
 var ALTERNATIVE_FULL_NAME_SEPARATOR = 'Name Alternative';
 var COMPANY_NAME = 'Company name';
@@ -244,6 +246,8 @@ var availableTests = [
                 chrome.test.assertEq(1, addressList.length);
                 const expectedAddress = {
                   NAME_FULL: NAME,
+                  NAME_FIRST: FIRST_NAME,
+                  NAME_LAST: LAST_NAME,
                   ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
                   ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
                   ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,
@@ -310,7 +314,9 @@ var availableTests = [
   function updateExistingAddress() {
     // The information that will be updated. It should be different than the
     // information in the addNewAddress function.
-    var UPDATED_NAME = 'UpdatedName';
+    var UPDATED_NAME = 'UpdatedFirst UpdatedLast';
+    var UPDATED_FIRST_NAME = 'UpdatedFirst';
+    var UPDATED_LAST_NAME = 'UpdatedLast';
     var UPDATED_PHONE = '1 987-987-9876'
 
     function filterAddressProperties(address) {
@@ -338,6 +344,8 @@ var availableTests = [
             const expectedAddress = {
               guid: addressGuid,
               NAME_FULL: UPDATED_NAME,
+              NAME_FIRST: UPDATED_FIRST_NAME,
+              NAME_LAST: UPDATED_LAST_NAME,
               ADDRESS_HOME_STATE: ADDRESS_LEVEL1,
               ADDRESS_HOME_CITY: ADDRESS_LEVEL2,
               ADDRESS_HOME_DEPENDENT_LOCALITY: ADDRESS_LEVEL3,

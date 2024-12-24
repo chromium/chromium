@@ -1084,6 +1084,35 @@ TEST_F(AutofillProfileTest, TestFinalizeAfterImport) {
   }
 }
 
+TEST_F(AutofillProfileTest, TestFinalizeAfterImportUserVerified) {
+  // This test checks the scenario where the user modified the full name in
+  // the settings page. The first and last name should be parsed and
+  // `FinalizeAfterImport` should return true.
+  {
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+    profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Peter Pan",
+                                             VerificationStatus::kUserVerified);
+    profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Michael",
+                                             VerificationStatus::kObserved);
+    EXPECT_TRUE(profile.FinalizeAfterImport());
+    EXPECT_EQ(profile.GetRawInfo(NAME_FIRST), u"Peter");
+    EXPECT_EQ(profile.GetVerificationStatus(NAME_FIRST),
+              VerificationStatus::kParsed);
+    EXPECT_EQ(profile.GetRawInfo(NAME_LAST), u"Pan");
+    EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST),
+              VerificationStatus::kParsed);
+    EXPECT_EQ(profile.GetRawInfo(NAME_LAST_FIRST), u"");
+    EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST_FIRST),
+              VerificationStatus::kParsed);
+    EXPECT_EQ(profile.GetRawInfo(NAME_LAST_SECOND), u"Pan");
+    EXPECT_EQ(profile.GetVerificationStatus(NAME_LAST_SECOND),
+              VerificationStatus::kParsed);
+    EXPECT_EQ(profile.GetRawInfo(NAME_FULL), u"Peter Pan");
+    EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
+              VerificationStatus::kUserVerified);
+  }
+}
+
 TEST_F(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   // An unsupported type should return |kNoStatus|.
