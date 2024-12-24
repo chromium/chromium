@@ -2328,10 +2328,7 @@ pub(crate) mod parsing {
             let brace_token = braced!(content in input);
             attr::parsing::parse_inner(&content, &mut attrs)?;
 
-            let mut arms = Vec::new();
-            while !content.is_empty() {
-                arms.push(content.call(Arm::parse)?);
-            }
+            let arms = Arm::parse_multiple(&content)?;
 
             Ok(ExprMatch {
                 attrs,
@@ -2942,6 +2939,17 @@ pub(crate) mod parsing {
             } else {
                 Err(input.error("expected identifier or integer"))
             }
+        }
+    }
+
+    #[cfg(feature = "full")]
+    impl Arm {
+        pub(crate) fn parse_multiple(input: ParseStream) -> Result<Vec<Self>> {
+            let mut arms = Vec::new();
+            while !input.is_empty() {
+                arms.push(input.call(Arm::parse)?);
+            }
+            Ok(arms)
         }
     }
 

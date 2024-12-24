@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 use tar::Archive;
 use walkdir::{DirEntry, WalkDir};
 
-const REVISION: &str = "86d69c705a552236a622eee3fdea94bf13c5f102";
+const REVISION: &str = "0aeaa5eb22180fdf12a8489e63c4daa18da6f236";
 
 #[rustfmt::skip]
 static EXCLUDE_FILES: &[&str] = &[
@@ -29,11 +29,32 @@ static EXCLUDE_FILES: &[&str] = &[
     "tests/rustdoc/inline_cross/auxiliary/non_lifetime_binders.rs",
     "tests/rustdoc/non_lifetime_binders.rs",
 
+    // TODO: unsafe binders: `unsafe<'a> &'a T`
+    // https://github.com/dtolnay/syn/issues/1791
+    "src/tools/rustfmt/tests/source/unsafe-binders.rs",
+    "src/tools/rustfmt/tests/target/unsafe-binders.rs",
+
+    // TODO: unsafe fields: `struct S { unsafe field: T }`
+    // https://github.com/dtolnay/syn/issues/1792
+    "src/tools/rustfmt/tests/source/unsafe-field.rs",
+    "src/tools/rustfmt/tests/target/unsafe-field.rs",
+    "tests/ui/unsafe-fields/auxiliary/unsafe-fields-crate-dep.rs",
+
+    // TODO: guard patterns: `match expr { (A if f()) | (B if g()) => {} }`
+    // https://github.com/dtolnay/syn/issues/1793
+    "src/tools/rustfmt/tests/target/guard_patterns.rs",
+
+    // TODO: struct field default: `struct S { field: i32 = 1 }`
+    // https://github.com/dtolnay/syn/issues/1774
+    "tests/ui/structs/auxiliary/struct_field_default.rs",
+    "tests/ui/structs/default-field-values-support.rs",
+
     // TODO: return type notation: `where T: Trait<method(): Send>` and `where T::method(..): Send`
     // https://github.com/dtolnay/syn/issues/1434
-    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/return_type_syntax_assoc_type_bound.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/return_type_syntax_in_path.rs",
     "src/tools/rustfmt/tests/target/return-type-notation.rs",
+    "tests/ui/associated-type-bounds/all-generics-lookup.rs",
+    "tests/ui/associated-type-bounds/implied-from-self-where-clause.rs",
     "tests/ui/associated-type-bounds/return-type-notation/basic.rs",
     "tests/ui/associated-type-bounds/return-type-notation/higher-ranked-bound-works.rs",
     "tests/ui/associated-type-bounds/return-type-notation/namespace-conflict.rs",
@@ -169,6 +190,15 @@ static EXCLUDE_FILES: &[&str] = &[
     // https://github.com/dtolnay/syn/issues/1632
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/const_trait_bound.rs",
     "tests/ui/generic-const-items/const-trait-impl.rs",
+    "tests/ui/traits/const-traits/const-bound-in-host.rs",
+    "tests/ui/traits/const-traits/const-drop.rs",
+    "tests/ui/traits/const-traits/const-impl-trait.rs",
+    "tests/ui/traits/const-traits/const-in-closure.rs",
+    "tests/ui/traits/const-traits/dont-ice-on-const-pred-for-bounds.rs",
+    "tests/ui/traits/const-traits/effects/auxiliary/minicore.rs",
+    "tests/ui/traits/const-traits/effects/dont-prefer-param-env-for-infer-self-ty.rs",
+    "tests/ui/traits/const-traits/effects/minicore-const-fn-early-bound.rs",
+    "tests/ui/traits/const-traits/predicate-entailment-passes.rs",
     "tests/ui/traits/const-traits/tilde-const-syntax.rs",
 
     // TODO: unparenthesized half-open range pattern inside slice pattern: `[1..]`
@@ -180,7 +210,7 @@ static EXCLUDE_FILES: &[&str] = &[
     // https://github.com/dtolnay/syn/issues/1770
     "src/tools/rustfmt/tests/source/pin_sugar.rs",
     "src/tools/rustfmt/tests/target/pin_sugar.rs",
-    "tests/ui/async-await/pin-sugar.rs",
+    "tests/ui/async-await/pin-ergonomics/sugar.rs",
 
     // TODO: `|| .. .method()`
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/closure_range_method_call.rs",
@@ -231,10 +261,8 @@ static EXCLUDE_FILES: &[&str] = &[
     "tests/rustdoc/generic-associated-types/gats.rs",
 
     // Deprecated trait object syntax with parenthesized generic arguments and no dyn keyword
-    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/bare_dyn_types_with_paren_as_generic_args.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/path_fn_trait_args.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/typepathfn_with_coloncolon.rs",
-    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/value_parameters_no_patterns.rs",
     "src/tools/rustfmt/tests/source/attrib.rs",
     "src/tools/rustfmt/tests/source/closure.rs",
     "src/tools/rustfmt/tests/source/existential_type.rs",
@@ -268,7 +296,10 @@ static EXCLUDE_FILES: &[&str] = &[
     "tests/ui/parser/bounds-obj-parens.rs",
 
     // Various extensions to Rust syntax made up by rust-analyzer
+    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/assoc_type_bound.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/const_param_default_path.rs",
+    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/field_expr.rs",
+    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/generic_arg_bounds.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/use_tree_abs_star.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/ok/0015_use_tree.rs",
     "src/tools/rust-analyzer/crates/parser/test_data/parser/ok/0029_range_forms.rs",
@@ -305,6 +336,7 @@ static EXCLUDE_FILES: &[&str] = &[
     "tests/ui/dyn-keyword/dyn-2015-no-warnings-without-lints.rs",
     "tests/ui/editions/edition-keywords-2015-2015.rs",
     "tests/ui/editions/edition-keywords-2015-2018.rs",
+    "tests/ui/lint/keyword-idents/auxiliary/multi_file_submod.rs",
     "tests/ui/lint/lint_pre_expansion_extern_module_aux.rs",
     "tests/ui/macros/macro-comma-support-rpass.rs",
     "tests/ui/macros/try-macro.rs",

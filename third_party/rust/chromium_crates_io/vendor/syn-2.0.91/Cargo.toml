@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.61"
 name = "syn"
-version = "2.0.90"
+version = "2.0.91"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 include = [
@@ -60,6 +60,29 @@ features = [
     "fold",
     "extra-traits",
 ]
+
+[features]
+clone-impls = []
+default = [
+    "derive",
+    "parsing",
+    "printing",
+    "clone-impls",
+    "proc-macro",
+]
+derive = []
+extra-traits = []
+fold = []
+full = []
+parsing = []
+printing = ["dep:quote"]
+proc-macro = [
+    "proc-macro2/proc-macro",
+    "quote?/proc-macro",
+]
+test = ["syn-test-suite/all-features"]
+visit = []
+visit-mut = []
 
 [lib]
 name = "syn"
@@ -227,29 +250,6 @@ version = "0"
 
 [dev-dependencies.termcolor]
 version = "1"
-
-[features]
-clone-impls = []
-default = [
-    "derive",
-    "parsing",
-    "printing",
-    "clone-impls",
-    "proc-macro",
-]
-derive = []
-extra-traits = []
-fold = []
-full = []
-parsing = []
-printing = ["dep:quote"]
-proc-macro = [
-    "proc-macro2/proc-macro",
-    "quote?/proc-macro",
-]
-test = ["syn-test-suite/all-features"]
-visit = []
-visit-mut = []
 
 [target."cfg(not(miri))".dev-dependencies.flate2]
 version = "1"

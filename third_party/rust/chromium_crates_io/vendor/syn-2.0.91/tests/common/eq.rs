@@ -15,7 +15,6 @@ use rustc_ast::ast::AssocItemConstraint;
 use rustc_ast::ast::AssocItemConstraintKind;
 use rustc_ast::ast::AssocItemKind;
 use rustc_ast::ast::AttrArgs;
-use rustc_ast::ast::AttrArgsEq;
 use rustc_ast::ast::AttrId;
 use rustc_ast::ast::AttrItem;
 use rustc_ast::ast::AttrKind;
@@ -150,6 +149,8 @@ use rustc_ast::ast::TyAliasWhereClauses;
 use rustc_ast::ast::TyKind;
 use rustc_ast::ast::UintTy;
 use rustc_ast::ast::UnOp;
+use rustc_ast::ast::UnsafeBinderCastKind;
+use rustc_ast::ast::UnsafeBinderTy;
 use rustc_ast::ast::UnsafeSource;
 use rustc_ast::ast::UseTree;
 use rustc_ast::ast::UseTreeKind;
@@ -309,6 +310,7 @@ macro_rules! spanless_eq_partial_eq {
     };
 }
 
+spanless_eq_partial_eq!(());
 spanless_eq_partial_eq!(bool);
 spanless_eq_partial_eq!(u8);
 spanless_eq_partial_eq!(u16);
@@ -494,7 +496,7 @@ spanless_eq_struct!(DelimSpacing; open close);
 spanless_eq_struct!(EnumDef; variants);
 spanless_eq_struct!(Expr; id kind span attrs !tokens);
 spanless_eq_struct!(ExprField; attrs id span ident expr is_shorthand is_placeholder);
-spanless_eq_struct!(FieldDef; attrs id span vis safety ident ty is_placeholder);
+spanless_eq_struct!(FieldDef; attrs id span vis safety ident ty default is_placeholder);
 spanless_eq_struct!(Fn; defaultness generics sig body);
 spanless_eq_struct!(FnDecl; inputs output);
 spanless_eq_struct!(FnHeader; constness coroutine_kind safety ext);
@@ -543,6 +545,7 @@ spanless_eq_struct!(Ty; id kind span tokens);
 spanless_eq_struct!(TyAlias; defaultness generics where_clauses bounds ty);
 spanless_eq_struct!(TyAliasWhereClause; !has_where_token span);
 spanless_eq_struct!(TyAliasWhereClauses; before after !split);
+spanless_eq_struct!(UnsafeBinderTy; generic_params inner_ty);
 spanless_eq_struct!(UseTree; prefix kind span);
 spanless_eq_struct!(Variant; attrs id span !vis ident data disr_expr is_placeholder);
 spanless_eq_struct!(Visibility; kind span tokens);
@@ -555,8 +558,7 @@ spanless_eq_enum!(AngleBracketedArg; Arg(0) Constraint(0));
 spanless_eq_enum!(AsmMacro; Asm GlobalAsm NakedAsm);
 spanless_eq_enum!(AssocItemConstraintKind; Equality(term) Bound(bounds));
 spanless_eq_enum!(AssocItemKind; Const(0) Fn(0) Type(0) MacCall(0) Delegation(0) DelegationMac(0));
-spanless_eq_enum!(AttrArgs; Empty Delimited(0) Eq(0 1));
-spanless_eq_enum!(AttrArgsEq; Ast(0) Hir(0));
+spanless_eq_enum!(AttrArgs; Empty Delimited(0) Eq(eq_span expr));
 spanless_eq_enum!(AttrStyle; Outer Inner);
 spanless_eq_enum!(AttrTokenTree; Token(0 1) Delimited(0 1 2 3) AttrsTarget(0));
 spanless_eq_enum!(BinOpKind; Add Sub Mul Div Rem And Or BitXor BitAnd BitOr Shl Shr Eq Lt Le Ne Ge Gt);
@@ -601,10 +603,10 @@ spanless_eq_enum!(MacStmtStyle; Semicolon Braces NoBraces);
 spanless_eq_enum!(MatchKind; Prefix Postfix);
 spanless_eq_enum!(MetaItemKind; Word List(0) NameValue(0));
 spanless_eq_enum!(MetaItemInner; MetaItem(0) Lit(0));
-spanless_eq_enum!(ModKind; Loaded(0 1 2) Unloaded);
+spanless_eq_enum!(ModKind; Loaded(0 1 2 3) Unloaded);
 spanless_eq_enum!(Movability; Static Movable);
 spanless_eq_enum!(Mutability; Mut Not);
-spanless_eq_enum!(PatFieldsRest; Rest None);
+spanless_eq_enum!(PatFieldsRest; Rest Recovered(0) None);
 spanless_eq_enum!(PreciseCapturingArg; Lifetime(0) Arg(0 1));
 spanless_eq_enum!(RangeEnd; Included(0) Excluded);
 spanless_eq_enum!(RangeLimits; HalfOpen Closed);
@@ -618,6 +620,7 @@ spanless_eq_enum!(TokenTree; Token(0 1) Delimited(0 1 2 3));
 spanless_eq_enum!(TraitObjectSyntax; Dyn DynStar None);
 spanless_eq_enum!(UintTy; Usize U8 U16 U32 U64 U128);
 spanless_eq_enum!(UnOp; Deref Not Neg);
+spanless_eq_enum!(UnsafeBinderCastKind; Wrap Unwrap);
 spanless_eq_enum!(UnsafeSource; CompilerGenerated UserProvided);
 spanless_eq_enum!(UseTreeKind; Simple(0) Nested(items span) Glob);
 spanless_eq_enum!(VariantData; Struct(fields recovered) Tuple(0 1) Unit(0));
@@ -633,7 +636,8 @@ spanless_eq_enum!(ExprKind; Array(0) ConstBlock(0) Call(0 1) MethodCall(0)
     Assign(0 1 2) AssignOp(0 1 2) Field(0 1) Index(0 1 2) Underscore
     Range(0 1 2) Path(0 1) AddrOf(0 1 2) Break(0 1) Continue(0) Ret(0)
     InlineAsm(0) OffsetOf(0 1) MacCall(0) Struct(0) Repeat(0 1) Paren(0) Try(0)
-    Yield(0) Yeet(0) Become(0) IncludedBytes(0) FormatArgs(0) Err(0) Dummy);
+    Yield(0) Yeet(0) Become(0) IncludedBytes(0) FormatArgs(0)
+    UnsafeBinderCast(0 1 2) Err(0) Dummy);
 spanless_eq_enum!(InlineAsmOperand; In(reg expr) Out(reg late expr)
     InOut(reg late expr) SplitInOut(reg late in_expr out_expr) Const(anon_const)
     Sym(sym) Label(block));
@@ -645,10 +649,11 @@ spanless_eq_enum!(LitKind; Str(0 1) ByteStr(0 1) CStr(0 1) Byte(0) Char(0)
     Int(0 1) Float(0 1) Bool(0) Err(0));
 spanless_eq_enum!(PatKind; Wild Ident(0 1 2) Struct(0 1 2 3) TupleStruct(0 1 2)
     Or(0) Path(0 1) Tuple(0) Box(0) Deref(0) Ref(0 1) Lit(0) Range(0 1 2)
-    Slice(0) Rest Never Paren(0) MacCall(0) Err(0));
+    Slice(0) Rest Never Guard(0 1) Paren(0) MacCall(0) Err(0));
 spanless_eq_enum!(TyKind; Slice(0) Array(0 1) Ptr(0) Ref(0 1) PinnedRef(0 1)
-    BareFn(0) Never Tup(0) Path(0 1) TraitObject(0 1) ImplTrait(0 1) Paren(0)
-    Typeof(0) Infer ImplicitSelf MacCall(0) CVarArgs Pat(0 1) Dummy Err(0));
+    BareFn(0) UnsafeBinder(0) Never Tup(0) Path(0 1) TraitObject(0 1)
+    ImplTrait(0 1) Paren(0) Typeof(0) Infer ImplicitSelf MacCall(0) CVarArgs
+    Pat(0 1) Dummy Err(0));
 
 impl SpanlessEq for Ident {
     fn eq(&self, other: &Self) -> bool {
@@ -717,8 +722,8 @@ impl SpanlessEq for TokenKind {
 
 impl SpanlessEq for TokenStream {
     fn eq(&self, other: &Self) -> bool {
-        let mut this_trees = self.trees();
-        let mut other_trees = other.trees();
+        let mut this_trees = self.iter();
+        let mut other_trees = other.iter();
         loop {
             let this = match this_trees.next() {
                 None => return other_trees.next().is_none(),
@@ -776,7 +781,7 @@ fn doc_comment<'a>(
         Some(TokenTree::Delimited(_span, _spacing, Delimiter::Bracket, stream)) => stream,
         _ => return false,
     };
-    let mut trees = stream.trees();
+    let mut trees = stream.iter();
     match trees.next() {
         Some(TokenTree::Token(
             Token {
@@ -825,16 +830,6 @@ fn is_escaped_literal_token(token: &Token, unescaped: Symbol) -> bool {
             _ => false,
         },
         _ => false,
-    }
-}
-
-fn is_escaped_literal_attr_args(value: &AttrArgsEq, unescaped: Symbol) -> bool {
-    match value {
-        AttrArgsEq::Ast(expr) => match &expr.kind {
-            ExprKind::Lit(lit) => is_escaped_lit(lit, unescaped),
-            _ => false,
-        },
-        AttrArgsEq::Hir(lit) => is_escaped_literal_meta_item_lit(lit, unescaped),
     }
 }
 
@@ -898,9 +893,10 @@ impl SpanlessEq for AttrKind {
                 SpanlessEq::eq(&path, &normal2.item.path)
                     && match &normal2.item.args {
                         AttrArgs::Empty | AttrArgs::Delimited(_) => false,
-                        AttrArgs::Eq(_span, value) => {
-                            is_escaped_literal_attr_args(value, *unescaped)
-                        }
+                        AttrArgs::Eq { eq_span: _, expr } => match &expr.kind {
+                            ExprKind::Lit(lit) => is_escaped_lit(lit, *unescaped),
+                            _ => false,
+                        },
                     }
             }
             (AttrKind::Normal(_), AttrKind::DocComment(..)) => SpanlessEq::eq(other, self),
