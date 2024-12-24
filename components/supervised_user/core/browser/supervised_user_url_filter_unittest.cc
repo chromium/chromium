@@ -491,15 +491,15 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
+  EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
   EXPECT_TRUE(
       IsURLAllowlisted("https://play.google/intl/pt-BR_pt/play-terms/"));
-  EXPECT_TRUE(IsURLAllowlisted(
+  EXPECT_FALSE(IsURLAllowlisted(
       "https://play.google.com/intl/pt-BR_pt/about/play-terms/"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google/play-terms/index.html"));
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       IsURLAllowlisted("https://play.google.com/about/play-terms/index.html"));
   EXPECT_FALSE(IsURLAllowlisted("http://play.google/play-terms/"));
   EXPECT_FALSE(IsURLAllowlisted("http://play.google.com/about/play-terms/"));
