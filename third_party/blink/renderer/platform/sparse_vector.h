@@ -80,7 +80,7 @@ template <typename FieldId,
                                  HeapVector<FieldType, inline_capacity>,
                                  Vector<FieldType, inline_capacity>>,
           typename BitfieldType =
-              std::conditional_t<static_cast<unsigned>(FieldId::kNumFields) <=
+              std::conditional_t<static_cast<size_t>(FieldId::kNumFields) <=
                                      std::numeric_limits<uint32_t>::digits,
                                  uint32_t,
                                  uint64_t>>
@@ -94,11 +94,12 @@ class SparseVector :
         internal::NonTraceableSparseVectorFields<VectorType>> {
   static_assert(std::is_enum_v<FieldId>);
   static_assert(std::is_unsigned_v<BitfieldType>);
-  static_assert(std::numeric_limits<BitfieldType>::digits >=
-                    static_cast<unsigned>(FieldId::kNumFields),
+  static constexpr wtf_size_t kMaxSize =
+      static_cast<wtf_size_t>(FieldId::kNumFields);
+  static_assert(std::numeric_limits<BitfieldType>::digits >= kMaxSize,
                 "BitfieldType must be big enough to have a bit for each "
                 "field in FieldId.");
-  static_assert(inline_capacity <= static_cast<unsigned>(FieldId::kNumFields));
+  static_assert(inline_capacity <= kMaxSize);
 
  public:
   wtf_size_t capacity() const { return this->fields_.capacity(); }
@@ -106,7 +107,7 @@ class SparseVector :
   bool empty() const { return this->fields_.empty(); }
 
   void reserve(wtf_size_t capacity) {
-    CHECK_LT(capacity, static_cast<wtf_size_t>(FieldId::kNumFields));
+    CHECK_LE(capacity, kMaxSize);
     this->fields_.reserve(capacity);
   }
 
@@ -118,6 +119,12 @@ class SparseVector :
   // Returns whether the field exists. Time complexity is O(1).
   bool HasField(FieldId field_id) const {
     return fields_bitfield_ & FieldIdMask(field_id);
+  }
+
+  // Returns whether any field between `first` and `last` (both inclusive)
+  // exists. Time complexity is O(1).
+  bool HasFieldInRange(FieldId first, FieldId last) const {
+    return fields_bitfield_ & RangeMask(first, last);
   }
 
   // Returns the value of existing field. Time complexity is O(1).
@@ -157,22 +164,28 @@ class SparseVector :
 
  private:
   static BitfieldType FieldIdMask(FieldId field_id) {
-    return static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id);
+    CHECK_LT(static_cast<wtf_size_t>(field_id), kMaxSize);
+    return static_cast<BitfieldType>(1) << static_cast<wtf_size_t>(field_id);
+  }
+
+  // Returns a mask that has entries for all field IDs lower than `upper`.
+  static BitfieldType LowerFieldIdsMask(FieldId upper) {
+    return FieldIdMask(upper) - 1;
+  }
+
+  static BitfieldType RangeMask(FieldId first, FieldId last) {
+    return (FieldIdMask(last) | LowerFieldIdsMask(last)) &
+           ~LowerFieldIdsMask(first);
   }
 
   // Returns the index in `fields_` that `field_id` is stored in. If `fields_`
   // isn't storing a field for `field_id`, then this returns the index which
   // the data for `field_id` should be inserted into.
   wtf_size_t GetFieldIndex(FieldId field_id) const {
-    // First, create a mask that has entries only for field IDs lower than
-    // the field ID we are looking for.
-    const BitfieldType mask =
-        ~(~static_cast<BitfieldType>(0) << static_cast<unsigned>(field_id));
-
     // Then count the total population of field IDs lower than that one we
     // are looking for. The target field ID should be located at the index of
     // of the total population.
-    return __builtin_popcountll(fields_bitfield_ & mask);
+    return __builtin_popcountll(fields_bitfield_ & LowerFieldIdsMask(field_id));
   }
 
   BitfieldType fields_bitfield_ = 0;
