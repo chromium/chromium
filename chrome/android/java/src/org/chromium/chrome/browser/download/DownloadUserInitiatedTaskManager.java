@@ -62,6 +62,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         } else {
             mHasUnseenCallbacks = true;
             mTaskNotificationCallbacks.put(taskId, taskNotificationCallback);
+            processDownloadUpdateQueue(/* isProcessingPending= */ false);
         }
     }
 
