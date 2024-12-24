@@ -14,6 +14,33 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
+namespace {
+
+// Called by ChangeProfileSignoutContinuation once the sign-out is complete.
+void SignoutDone(Browser* browser,
+                 bool force_snackbar_over_toolbar,
+                 MDCSnackbarMessage* snackbar_message,
+                 ProceduralBlock signout_completion,
+                 ProceduralBlock continuation_completion) {
+  id<SnackbarCommands> snackbar_commands_handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
+  if (force_snackbar_over_toolbar) {
+    [snackbar_commands_handler
+        showSnackbarMessageOverBrowserToolbar:snackbar_message];
+  } else {
+    [snackbar_commands_handler showSnackbarMessage:snackbar_message
+                                      bottomOffset:0];
+  }
+  if (signout_completion) {
+    signout_completion();
+  }
+  if (continuation_completion) {
+    continuation_completion();
+  }
+}
+
+}  // namespace
+
 @implementation ChangeProfileSignoutContinuation {
   signin_metrics::ProfileSignout _signoutSourceMetric;
   BOOL _forceClearData;
@@ -47,8 +74,6 @@
       sceneState.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
-  id<SnackbarCommands> snackbarCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
 
@@ -57,24 +82,12 @@
   ProceduralBlock signoutCompletion = _signoutCompletion;
 
   authenticationService->SignOut(_signoutSourceMetric, _forceClearData, ^{
-    if (forceSnackbarOverToolbar) {
-      [snackbarCommandsHandler
-          showSnackbarMessageOverBrowserToolbar:snackbarMessage];
-    } else {
-      [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
-                                      bottomOffset:0];
-    }
-    if (signoutCompletion) {
-      signoutCompletion();
-    }
+    SignoutDone(browser, forceSnackbarOverToolbar, snackbarMessage,
+                signoutCompletion, completion);
   });
 
   signin_metrics::RecordSignoutForceClearDataChoice(_forceClearData);
   signin_metrics::RecordSignoutUserAction(_forceClearData);
-
-  if (completion) {
-    completion();
-  }
 }
 
 @end
