@@ -46,9 +46,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_dlist_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
+#include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -82,6 +85,17 @@ bool HandleSelectionBoundary<EditingInFlatTreeStrategy>(const Node& node) {
 }
 
 }  // namespace
+
+template <typename... ElementTypes>
+inline Node* FirstAncestorOfTypes(const Node& current) {
+  for (ContainerNode* ancestor = current.parentNode(); ancestor;
+       ancestor = ancestor->parentNode()) {
+    if (((DynamicTo<ElementTypes>(*ancestor)) || ...)) {
+      return ancestor;
+    }
+  }
+  return nullptr;
+}
 
 template <typename Strategy>
 class StyledMarkupTraverser {
@@ -207,25 +221,8 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
   // be #text when its parent is a formatting tag. In this case, #text is
   // wrapped by <span> tag, but this text should be wrapped by the formatting
   // tag. See http://crbug.com/634482
-  bool should_append_parent_tag = false;
-  if (!last_closed_) {
-    last_closed_ =
-        StyledMarkupTraverser<Strategy>().Traverse(first_node, past_end);
-    if (last_closed_ && last_closed_->IsTextNode() &&
-        IsPresentationalHTMLElement(last_closed_->parentNode())) {
-      last_closed_ = last_closed_->parentElement();
-      should_append_parent_tag = true;
-    }
-    if (RuntimeEnabledFeatures::IncludeTableTagInExtendedSelectionEnabled()) {
-      if (last_closed_ && IsTablePartElement(last_closed_)) {
-        if (auto* first_ancestor_table_traversal =
-                Traversal<HTMLTableElement>::FirstAncestor(*last_closed_)) {
-          last_closed_ = first_ancestor_table_traversal;
-          should_append_parent_tag = true;
-        }
-      }
-    }
-  }
+  bool should_append_parent_tag =
+      DetermineParentTagAndUpdateLastClosed(first_node, past_end);
 
   StyledMarkupTraverser<Strategy> traverser(&markup_accumulator, last_closed_);
   Node* last_closed = traverser.Traverse(first_node, past_end);
@@ -318,6 +315,42 @@ String StyledMarkupSerializer<Strategy>::CreateMarkup() {
     markup_accumulator.AppendInterchangeNewline();
 
   return markup_accumulator.TakeResults();
+}
+
+template <typename Strategy>
+bool StyledMarkupSerializer<Strategy>::DetermineParentTagAndUpdateLastClosed(
+    Node* first_node,
+    Node* past_end) {
+  if (last_closed_) {
+    return false;
+  }
+  last_closed_ =
+      StyledMarkupTraverser<Strategy>().Traverse(first_node, past_end);
+  if (last_closed_ && last_closed_->IsTextNode() &&
+      IsPresentationalHTMLElement(last_closed_->parentNode())) {
+    last_closed_ = last_closed_->parentElement();
+    return true;
+  }
+  if (RuntimeEnabledFeatures::IncludeTableTagInExtendedSelectionEnabled()) {
+    if (last_closed_ && IsTablePartElement(last_closed_)) {
+      if (auto* first_ancestor_table_traversal =
+              Traversal<HTMLTableElement>::FirstAncestor(*last_closed_)) {
+        last_closed_ = first_ancestor_table_traversal;
+        return true;
+      }
+    }
+  }
+  if (RuntimeEnabledFeatures::
+          IncludeListElementTagInExtendedSelectionEnabled() &&
+      last_closed_ && IsListItemTag(last_closed_)) {
+    if (Node* ancestor =
+            FirstAncestorOfTypes<HTMLUListElement, HTMLOListElement,
+                                 HTMLDListElement>(*last_closed_)) {
+      last_closed_ = ancestor;
+      return true;
+    }
+  }
+  return false;
 }
 
 template <typename Strategy>
