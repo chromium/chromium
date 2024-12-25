@@ -68,7 +68,7 @@ GraphImplOrt::CreateAndBuild(
   ASSIGN_OR_RETURN(
       std::unique_ptr<GraphBuilderOrt::Result> result,
       GraphBuilderOrt::CreateAndBuild(*graph_info, context->properties(),
-                                      std::move(constant_operands)));
+                                      std::move(constant_operands), context));
 
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   if (!platform_functions) {

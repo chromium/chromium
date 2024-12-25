@@ -5,13 +5,16 @@
 #include "services/webnn/ort/graph_builder_ort.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
+#include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/webnn_constant_operand.h"
+#include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn {
 
@@ -53,15 +56,16 @@ constexpr char kOpTypeIdentity[] = "Identity";
 constexpr char kOpTypeSqrt[] = "Sqrt";
 constexpr char kOpTypeErf[] = "Erf";
 constexpr char kOpTypeReciprocal[] = "Reciprocal";
-// constexpr char kOpTypeCast[] = "Cast";
+constexpr char kOpTypeCast[] = "Cast";
 
+constexpr char kOpTypeClamp[] = "Clip";
 // constexpr char kOpTypeGemm[] = "Gemm";
 
 // Pool2d
 // constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 
 constexpr char kOpTypeRelu[] = "Relu";
-// constexpr char kOpTypeReshape[] = "Reshape";
+constexpr char kOpTypeReshape[] = "Reshape";
 constexpr char kOpTypeSoftmax[] = "Softmax";
 
 // constexpr char kBuildGraphError[] = "Failed to build graph.";
@@ -136,9 +140,10 @@ GraphBuilderOrt::CreateAndBuild(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands) {
+        constant_operands,
+    ContextImplOrt* context) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands));
+                                std::move(constant_operands), context);
 
   RETURN_IF_ERROR(graph_builder.BuildModel());
   return std::move(graph_builder.result_);
@@ -148,8 +153,10 @@ GraphBuilderOrt::GraphBuilderOrt(
     const mojom::GraphInfo& graph_info,
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-        constant_operands)
-    : graph_info_(graph_info),
+        constant_operands,
+    ContextImplOrt* context)
+    : context_(context),
+      graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
       result_(std::make_unique<Result>()) {
@@ -188,6 +195,34 @@ std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
       }
     }
   }
+}
+
+uint64_t GraphBuilderOrt::NewInitializerAsRawData(
+    base::span<const uint32_t> shape,
+    base::span<const uint8_t> data,
+    OperandDataType data_type) {
+  std::string name = GetInsertedOperandName(next_operand_id_);
+  OperandInfo operand_info{name, data_type, shape};
+
+  ScopedOrtValue initializer;
+  CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(
+      static_cast<ContextImplOrt*>(context_)->allocator(),
+      operand_info.int64_shape.data(), operand_info.int64_shape.size(),
+      operand_info.onnx_data_type, initializer.get_pptr()));
+
+  void* ort_tensor_raw_data = nullptr;
+  CHECK_STATUS(GetOrtApi()->GetTensorMutableData(initializer.get_ptr(),
+                                                 &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(ort_tensor_raw_data), data.size()))
+      .copy_from(data);
+  CHECK_STATUS(GetOrtGraphApi()->AddInitializer(graph_.get_ptr(), name.c_str(),
+                                                initializer.get_pptr()));
+
+  CHECK(result_->operand_infos.try_emplace(next_operand_id_, std::move(operand_info))
+            .second);
+  return next_operand_id_++;
 }
 
 void GraphBuilderOrt::AddInput(uint64_t input_id) {
@@ -419,14 +454,126 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
   }
 }
 
-void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {}
+void GraphBuilderOrt::AddCastOperation(const mojom::ElementWiseUnary& cast) {
+  const std::string node_name = GetNodeName(cast.label);
+  const std::string input_name = GetOperandName(cast.input_operand_id);
+  const std::string output_name = GetOperandName(cast.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  const OperandDataType output_data_type =
+      GetOperand(cast.output_operand_id).descriptor.data_type();
+
+  ScopedOrtOpAttr attr_to;
+  int64_t to_data_type = static_cast<int64_t>(
+      OperandTypeToONNXTensorElementDataType(output_data_type));
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"to", &to_data_type, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_to.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 1> attributes = {attr_to.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeCast, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
+void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
+  const std::string node_name = GetNodeName(clamp.label);
+  const std::string input_name = GetOperandName(clamp.input_operand_id);
+  const std::string output_name = GetOperandName(clamp.output_operand_id);
+
+  const OperandDataType input_data_type =
+      GetOperand(clamp.output_operand_id).descriptor.data_type();
+
+  // Min and max are 0-D operands with the same data type of input.
+
+  base::HeapArray<uint8_t> min_value;
+  base::HeapArray<uint8_t> max_value;
+  switch(input_data_type) {
+    case OperandDataType::kFloat32: {
+      min_value = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(&clamp.min_value), sizeof(float)));
+      max_value = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(&clamp.max_value), sizeof(float)));
+      break;
+    }
+    case OperandDataType::kFloat16: {
+      uint16_t fp16_min = fp16_ieee_from_fp32_value(clamp.min_value);
+      uint16_t fp16_max = fp16_ieee_from_fp32_value(clamp.max_value);
+      min_value = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(&fp16_min), sizeof(uint16_t)));
+      max_value = base::HeapArray<uint8_t>::CopiedFrom(base::span(
+          reinterpret_cast<const uint8_t*>(&fp16_max), sizeof(uint16_t)));
+      break;
+    }
+    // TODO: Add other data type support.
+    // https://onnx.ai/onnx/operators/onnx__Clip.html
+    default:
+      NOTREACHED()
+          << "[WebNN] Clamp only supports float32 and float16 data type.";
+  }
+
+  uint64_t min_id = NewInitializerAsRawData(
+      /*shape=*/{}, min_value, input_data_type);
+  const std::string min_name = GetInsertedOperandName(min_id);
+  uint64_t max_id = NewInitializerAsRawData(
+      /*shape=*/{}, max_value, input_data_type);
+  const std::string max_name = GetInsertedOperandName(max_id);
+
+  std::array<const char*, 3> input_names = {input_name.c_str(),
+                                            min_name.c_str(), max_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeClamp, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
 
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {}
 
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
 
-void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {}
+void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
+  const std::string node_name = GetNodeName(reshape.label);
+  const std::string input_name = GetOperandName(reshape.input_operand_id);
+  const std::string output_name = GetOperandName(reshape.output_operand_id);
+
+  const OperandDescriptor& output_descriptor =
+      GetOperand(reshape.output_operand_id).descriptor;
+  const std::vector<uint32_t>& output_shape = output_descriptor.shape();
+  // Shape is an operand with data type int64, not an attribute.
+  std::vector<uint32_t> shape_dims = {
+      base::checked_cast<uint32_t>(output_shape.size())};
+  std::vector<int64_t> shape_values;
+  base::ranges::transform(
+      output_shape, std::back_inserter(shape_values),
+      [](uint32_t dim) { return static_cast<int64_t>(dim); });
+  uint64_t shape_id = NewInitializerAsRawData(
+      shape_dims,
+      base::span(reinterpret_cast<const uint8_t*>(shape_values.data()),
+                 sizeof(int64_t) * shape_values.size()),
+      OperandDataType::kInt64);
+  const std::string shape_name = GetInsertedOperandName(shape_id);
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            shape_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeReshape, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
 
 void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   const std::string node_name = GetNodeName(softmax.label);
@@ -478,6 +625,10 @@ GraphBuilderOrt::BuildModel() {
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
     switch (operation->which()) {
+      case mojom::Operation::Tag::kClamp: {
+        AddClampOperation(*operation->get_clamp());
+        break;
+      }
       case mojom::Operation::Tag::kElementWiseBinary: {
         AddElementWiseBinaryOperation(*operation->get_element_wise_binary());
         break;
@@ -504,7 +655,6 @@ GraphBuilderOrt::BuildModel() {
       }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
-      case mojom::Operation::Tag::kClamp:
       case mojom::Operation::Tag::kConcat:
       case mojom::Operation::Tag::kConv2d:
       case mojom::Operation::Tag::kCumulativeSum:

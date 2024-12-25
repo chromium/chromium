@@ -32,6 +32,8 @@ class WebNNConstantOperand;
 
 namespace ort {
 
+class ContextImplOrt;
+
 class GraphBuilderOrt {
   STACK_ALLOCATED();
 
@@ -85,7 +87,8 @@ class GraphBuilderOrt {
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-                     constant_operands);
+                     constant_operands,
+                 ContextImplOrt* context);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -97,13 +100,30 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands);
+          constant_operands,
+      ContextImplOrt* context);
 
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
 
+  // Some initializers must be uploaded to raw data, e.g. Reshape op needs
+  // parameter *shape* as raw data to do shape inference.
+  //
+  // IssueA: Are there other ops requiring initializer as raw data? Currently we
+  // upload all constants into external data (for potential zero-copy) but what
+  // if some ops like Reshape can't take external data as initializers?
+  //
+  // Create a new initializer copied into graph.
+  uint64_t NewInitializerAsRawData(base::span<const uint32_t> shape,
+                                   base::span<const uint8_t> data,
+                                   OperandDataType data_type);
+
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
+
+  // TODO: Figure out whether to upload constants to external data or raw data
+  // in graph. See IssueA.
+  // Add initializer to external data.
   void AddInitializer(uint64_t constant_id);
 
   template <typename T>
@@ -117,12 +137,16 @@ class GraphBuilderOrt {
   void AddElementWiseUnaryOperation(
       const mojom::ElementWiseUnary& element_wise_unary);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
+  void AddClampOperation(const mojom::Clamp& clamp);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
+
+  // WebNNContextImpl owns this object.
+  const raw_ptr<WebNNContextImpl> context_;
 
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;

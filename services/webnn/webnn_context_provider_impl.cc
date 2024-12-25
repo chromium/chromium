@@ -239,6 +239,14 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #if BUILDFLAG(IS_WIN)
   if (options->power_preference ==
           mojom::CreateContextOptions::PowerPreference::kLowPower) {
+    auto* platform_functions = ort::PlatformFunctions::GetInstance();
+    if (!platform_functions) {
+      std::move(callback).Run(ToError<mojom::CreateContextResult>(
+          mojom::Error::Code::kNotSupportedError,
+          "WebNN is not supported in this ONNXRuntime version."));
+      return;
+    }
+
     scoped_refptr<ort::AllocatorOrt> allocator_ort =
         ort::AllocatorOrt::GetInstance();
     if (!allocator_ort) {

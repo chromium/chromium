@@ -20,11 +20,11 @@ PlatformFunctions::PlatformFunctions() {
     ort_library = base::ScopedNativeLibrary(base::LoadNativeLibrary(
         module_path.Append(L"onnxruntime.dll"), nullptr));
   }
-  // If it failed to load from module folder, try to load from system folder.
-  if (!ort_library.is_valid()) {
-    ort_library =
-        base::ScopedNativeLibrary(base::LoadSystemLibrary(L"onnxruntime.dll"));
-  }
+  // Dll from system folder doesn't support OrtGraph API.
+  // if (!ort_library.is_valid()) {
+  //   ort_library =
+  //       base::ScopedNativeLibrary(base::LoadSystemLibrary(L"onnxruntime.dll"));
+  // }
   if (!ort_library.is_valid()) {
     LOG(ERROR) << "[WebNN] Failed to load onnxruntime.dll.";
     return;
@@ -62,7 +62,14 @@ PlatformFunctions::~PlatformFunctions() = default;
 // static
 PlatformFunctions* PlatformFunctions::GetInstance() {
   static base::NoDestructor<PlatformFunctions> instance;
+  if (!instance->AllFunctionsLoaded()) {
+    return nullptr;
+  }
   return instance.get();
+}
+
+bool PlatformFunctions::AllFunctionsLoaded() {
+  return ort_get_api_base_proc_ && ort_api_ && ort_graph_api_;
 }
 
 }  // namespace webnn::ort

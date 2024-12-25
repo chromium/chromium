@@ -34,11 +34,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   PlatformFunctions();
   ~PlatformFunctions();
 
+  bool AllFunctionsLoaded();
+
   // Onnxruntime.dll
   base::ScopedNativeLibrary ort_library_;
-  OrtGetApiBaseProc ort_get_api_base_proc_;
-  raw_ptr<const OrtApi> ort_api_;
-  raw_ptr<const OrtGraphApi> ort_graph_api_;
+  OrtGetApiBaseProc ort_get_api_base_proc_ = nullptr;
+  raw_ptr<const OrtApi> ort_api_ = nullptr;
+  raw_ptr<const OrtGraphApi> ort_graph_api_ = nullptr;
 };
 
 }  // namespace webnn::ort
