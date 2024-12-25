@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 #include "url/gurl.h"
 #include "url/origin.h"

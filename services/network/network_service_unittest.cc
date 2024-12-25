@@ -28,7 +28,6 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"

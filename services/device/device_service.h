@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/geolocation/geolocation_provider.h"

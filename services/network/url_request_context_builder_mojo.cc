@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 #include "net/proxy_resolution/proxy_config_service.h"

@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/mock_device.h"
 #include "media/capture/video/mock_device_factory.h"

@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/video_capture_system_impl.h"
 
 using testing::_;

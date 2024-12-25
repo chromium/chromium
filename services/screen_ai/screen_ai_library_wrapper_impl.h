@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "services/screen_ai/screen_ai_library_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"

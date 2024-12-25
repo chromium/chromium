@@ -19,7 +19,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/client_gmb_interface.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

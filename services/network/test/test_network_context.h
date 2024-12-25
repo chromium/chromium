@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"

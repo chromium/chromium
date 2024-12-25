@@ -168,7 +168,6 @@ component("cpp") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/link_header_util",
     "//components/miracle_parameter/common",
     "//components/prefs",

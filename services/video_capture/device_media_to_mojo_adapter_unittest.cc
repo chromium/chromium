@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/mock_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"

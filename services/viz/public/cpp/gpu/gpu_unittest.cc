@@ -15,7 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"

@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/hid/hid_device_info.h"
 #include "services/device/hid/hid_service.h"
 

@@ -17,7 +17,6 @@
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"

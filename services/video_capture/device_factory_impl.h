@@ -9,7 +9,6 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_system.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

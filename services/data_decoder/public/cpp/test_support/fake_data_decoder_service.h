@@ -5,7 +5,6 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_FAKE_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_TEST_SUPPORT_FAKE_DATA_DECODER_SERVICE_H_
 
-#include "build/chromeos_buildflags.h"
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
@@ -36,7 +34,6 @@ source_set("lib") {
 
   deps = [
     ":binder_overrides",
-    "//build:chromeos_buildflags",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
@@ -165,7 +162,6 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",

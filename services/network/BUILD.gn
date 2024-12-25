@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
@@ -304,7 +303,6 @@ component("network_service") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
@@ -538,7 +536,6 @@ source_set("tests") {
     ":network_service",
     ":test_support",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/ip_protection/common:ip_protection_telemetry_uma",
     "//components/ip_protection/common:masked_domain_list_manager",
     "//components/network_session_configurator/browser",
@@ -675,7 +672,6 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/cbor:cbor",
     "//mojo/public/cpp/bindings",
     "//net",

@@ -18,7 +18,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/device/public/mojom/mtp_file_entry.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 

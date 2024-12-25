@@ -5,7 +5,6 @@
 #include "services/media_session/public/cpp/features.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace media_session {
 namespace features {

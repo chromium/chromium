@@ -132,7 +132,6 @@ target(tracing_lib_type, "cpp") {
     deps += [
       ":buildflags",
       "//build:chromecast_buildflags",
-      "//build:chromeos_buildflags",
       "//components/system_cpu:system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
     ]

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "services/video_capture/public/cpp/mock_video_capture_service.h"
-#include "build/chromeos_buildflags.h"
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

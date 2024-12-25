@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
 #include "services/device/generic_sensor/sensor_impl.h"

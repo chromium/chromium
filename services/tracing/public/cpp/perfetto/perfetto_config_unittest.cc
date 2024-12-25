@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
