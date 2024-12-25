@@ -623,7 +623,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3176221688814061633">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version de Bluetooth. Activez la super résolution Bluetooth ou utilisez le microphone interne pour une meilleure qualité audio.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre un certain temps</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
-<translation id="320207200541803018">Règler une minuterie</translation>
+<translation id="320207200541803018">Régler une minuterie</translation>
 <translation id="3203405173652969239">Switch Access est activé</translation>
 <translation id="3206735939915734551">Activer/désactiver le verrouillage des majuscules</translation>
 <translation id="3207953481422525583">Paramètres de l'utilisateur</translation>
