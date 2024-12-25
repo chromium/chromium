@@ -33,7 +33,7 @@ namespace {
 template <typename T>
 mojo_base::BigBuffer VectorToBigBuffer(const std::vector<T>& data) {
   return mojo_base::BigBuffer(
-      base::as_bytes(base::span(data.data(), data.size())));
+      base::as_byte_span(base::allow_nonunique_obj, data));
 }
 
 template <typename T>

@@ -82,6 +82,8 @@ component("webnn_service") {
       "dml/utils.h",
       "ort/allocator_ort.cc",
       "ort/allocator_ort.h",
+      "ort/buffer_content_ort.cc",
+      "ort/buffer_content_ort.h",
       "ort/context_impl_ort.cc",
       "ort/context_impl_ort.h",
       "ort/error_ort.h",

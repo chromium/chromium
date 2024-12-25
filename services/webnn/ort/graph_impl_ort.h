@@ -16,6 +16,7 @@
 #include "services/webnn/ort/graph_builder_ort.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
@@ -26,11 +27,12 @@ class WebNNConstantOperand;
 namespace ort {
 
 class ContextImplOrt;
+class BufferContentOrt;
 
 // GraphImplOrt inherits from WebNNGraphImpl to represent a ort graph
 // implementation. It is mainly responsible for building a ort
-// model from mojom::GraphInfo via ort::GraphBuilderOrt, then initializing
-// and executing the graph.
+// model from mojom::GraphInfo via ort::GraphBuilderOrt, then executing the
+// graph.
 class GraphImplOrt final : public WebNNGraphImpl {
  public:
   static base::expected<std::unique_ptr<GraphImplOrt>, mojom::ErrorPtr>
@@ -47,19 +49,20 @@ class GraphImplOrt final : public WebNNGraphImpl {
  private:
   GraphImplOrt(ComputeResourceInfo compute_resource_info,
                OrtSession* session,
-               OrtSessionOptions* session_options,
                ContextImplOrt* context);
+
+  class ComputeResources;
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
-  void DispatchImpl(
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-      const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)
-      override;
+  void DispatchImpl(const base::flat_map<std::string_view, WebNNTensorImpl*>&
+                        named_input_tensors,
+                    const base::flat_map<std::string_view, WebNNTensorImpl*>&
+                        named_output_tensors) override;
 
   // std::map<uint64_t, GraphBuilderOrt::OperandInfo> operand_infos_;
-  raw_ptr<OrtSession> session_;
-  raw_ptr<OrtSessionOptions> session_options_;
+  scoped_refptr<QueueableResourceState<ComputeResources>>
+      compute_resources_state_;
   base::WeakPtrFactory<GraphImplOrt> weak_factory_{this};
 };
 

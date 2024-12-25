@@ -180,31 +180,4 @@ void ContextImplOrt::CreateTensorImpl(
       std::move(receiver), this, std::move(tensor_info)));
 }
 
-// TODO: Support reading tensor in parallel.
-void ContextImplOrt::ReadTensor(
-    TensorImplOrt* src_tensor,
-    mojom::WebNNTensor::ReadTensorCallback callback) {
-  const size_t src_tensor_size = src_tensor->PackedByteLength();
-  void* ort_tensor_raw_data = nullptr;
-  ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(src_tensor->tensor(),
-                                                       &ort_tensor_raw_data));
-  CHECK(ort_tensor_raw_data);
-  mojo_base::BigBuffer big_buffer(base::span(
-      static_cast<const uint8_t*>(ort_tensor_raw_data), src_tensor_size));
-  std::move(callback).Run(
-      mojom::ReadTensorResult::NewBuffer(std::move(big_buffer)));
-}
-
-// TODO: Support writing tensor in parallel.
-void ContextImplOrt::WriteTensor(TensorImplOrt* dst_tensor,
-                                 mojo_base::BigBuffer src_buffer) {
-  void* ort_tensor_raw_data = nullptr;
-  ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(dst_tensor->tensor(),
-                                                       &ort_tensor_raw_data));
-  CHECK(ort_tensor_raw_data);
-  UNSAFE_BUFFERS(
-      base::span(static_cast<uint8_t*>(ort_tensor_raw_data), src_buffer.size()))
-      .copy_from(src_buffer);
-}
-
 }  // namespace webnn::ort

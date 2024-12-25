@@ -38,11 +38,6 @@ class ContextImplOrt final : public WebNNContextImpl {
 
   static ContextProperties GetContextProperties();
 
-  void ReadTensor(TensorImplOrt* src_tensor,
-                  mojom::WebNNTensor::ReadTensorCallback callback);
-
-  void WriteTensor(TensorImplOrt* dst_tensor, mojo_base::BigBuffer src_buffer);
-
  private:
   void CreateGraphImpl(
       mojom::GraphInfoPtr graph_info,

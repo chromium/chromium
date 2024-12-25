@@ -5,7 +5,11 @@
 #ifndef SERVICES_WEBNN_ORT_TENSOR_IMPL_ORT_H_
 #define SERVICES_WEBNN_ORT_TENSOR_IMPL_ORT_H_
 
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "services/webnn/ort/buffer_content_ort.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
@@ -23,18 +27,21 @@ class TensorImplOrt final : public WebNNTensorImpl {
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
   ~TensorImplOrt() override;
 
+  const scoped_refptr<QueueableResourceState<BufferContentOrt>>&
+  GetBufferState() const;
+
   base::WeakPtr<TensorImplOrt> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-
-  OrtValue* tensor() const { return tensor_.get(); }
 
  private:
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
 
-  raw_ptr<OrtValue> tensor_;
-  std::vector<int64_t> shape_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TensorImplOrt> weak_factory_{this};
 };
