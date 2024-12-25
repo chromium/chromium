@@ -120,6 +120,11 @@ void AccountCapabilitiesTestMutator::set_can_use_generative_ai_in_recorder_app(
   capabilities_->capabilities_map_[kCanUseGenerativeAiInRecorderApp] = value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_use_generative_ai_photo_editing(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseGenerativeAiPhotoEditing] = value;
+}
+
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
   for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {

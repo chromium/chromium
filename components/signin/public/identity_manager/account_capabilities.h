@@ -114,6 +114,9 @@ class AccountCapabilities {
   // The user account is able to use generative AI in recorder app.
   signin::Tribool can_use_generative_ai_in_recorder_app() const;
 
+  // The user account is able to use generative AI photo editing.
+  signin::Tribool can_use_generative_ai_photo_editing() const;
+
   // Whether at least one of the capabilities is not
   // `signin::Tribool::kUnknown`.
   bool AreAnyCapabilitiesKnown() const;

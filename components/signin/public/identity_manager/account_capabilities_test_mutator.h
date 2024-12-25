@@ -43,6 +43,7 @@ class AccountCapabilitiesTestMutator {
   void set_is_subject_to_parental_controls(bool value);
   void set_can_use_speaker_label_in_recorder_app(bool value);
   void set_can_use_generative_ai_in_recorder_app(bool value);
+  void set_can_use_generative_ai_photo_editing(bool value);
 
   // Modifies all supported capabilities at once.
   void SetAllSupportedCapabilities(bool value);
