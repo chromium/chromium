@@ -918,34 +918,6 @@ crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough 
 # New extension tests failing on ChromeOS VM
 crbug.com/angleproject/8315 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 
-## Jacuzzi ##
-crbug.com/1488973 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1488978 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
-crbug.com/1488979 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1492242 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/buffers/uniform-buffers.html [ Failure ]
-crbug.com/1492245 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/extensions/oes-sample-variables.html [ Failure ]
-crbug.com/1492248 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/array-as-return-value.html [ Failure ]
-crbug.com/1492250 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/matrix-row-major.html [ Failure ]
-crbug.com/1492256 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/texture-bias.html [ Failure ]
-crbug.com/1492257 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/1492258 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
-crbug.com/1492270 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
-crbug.com/1499516 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
-crbug.com/1499523 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/data/gles3/shaders/arrays.html [ Failure ]
-crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/basic_types* [ Failure ]
-crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/interpolation* [ Failure ]
-crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/position.html [ Failure ]
-crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/random* [ Failure ]
-crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/instance_array_basic_type.html [ Failure ]
-crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
-crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
-crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
-crbug.com/40285462 [ chromeos cros-chrome chromeos-board-jacuzzi angle-opengles passthrough arm ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
-# Broadly flaky unsymbolized crashes on Jacuzzi
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/* [ RetryOnFailure ]
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/* [ RetryOnFailure ]
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ RetryOnFailure ]
 
 
 ##############################
