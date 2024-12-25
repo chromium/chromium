@@ -12,7 +12,9 @@ window.onload = function() {
       {
         data: {
           event: 'module_impression',
-          module_name: '111-chrome-feature',
+          module_name: 'ChromeFeature',
+          section: 'spotlight',
+          order: '1',
         },
       },
       'chrome://whats-new/');

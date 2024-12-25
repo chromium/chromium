@@ -21,7 +21,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
@@ -60,10 +59,8 @@ void WhatsNewHandler::RecordVersionPageLoaded(bool is_auto_open) {
 
 void WhatsNewHandler::RecordEditionPageLoaded(const std::string& page_uid,
                                               bool is_auto_open) {
-  if (user_education::features::IsWhatsNewV2()) {
-    // Store that this edition has been used for this milestone.
-    whats_new_registry_->SetEditionUsed(page_uid);
-  }
+  // Store that this edition has been used for this milestone.
+  whats_new_registry_->SetEditionUsed(page_uid);
 
   base::RecordAction(base::UserMetricsAction("UserEducation.WhatsNew.Shown"));
 
@@ -183,12 +180,8 @@ void WhatsNewHandler::GetServerUrl(bool is_staging,
                                    GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
-    if (user_education::features::IsWhatsNewV2()) {
-      result =
-          whats_new::GetV2ServerURLForRender(*whats_new_registry_, is_staging);
-    } else {
-      result = whats_new::GetServerURL(true, is_staging);
-    }
+    result =
+        whats_new::GetV2ServerURLForRender(*whats_new_registry_, is_staging);
   }
   std::move(callback).Run(result);
 

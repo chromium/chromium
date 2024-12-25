@@ -61,9 +61,7 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 void GlobalFeatures::Init() {
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (user_education::features::IsWhatsNewV2()) {
-    whats_new_registry_ = CreateWhatsNewRegistry();
-  }
+  whats_new_registry_ = CreateWhatsNewRegistry();
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)

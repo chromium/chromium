@@ -100,7 +100,6 @@ if (is_linux || is_mac || is_win) {
       "whats_new_handler_unittest.cc",
       "whats_new_registrar_unittest.cc",
       "whats_new_storage_service_impl_unittest.cc",
-      "whats_new_util_unittest.cc",
     ]
     deps = [
       ":mojo_bindings",

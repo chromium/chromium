@@ -13,7 +13,6 @@
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "chrome/grit/user_education_internals_resources.h"
 #include "chrome/grit/user_education_internals_resources_map.h"
-#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,8 +33,6 @@ UserEducationInternalsUI::UserEducationInternalsUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source_, kUserEducationInternalsResources,
                               IDR_USER_EDUCATION_INTERNALS_INDEX_HTML);
-
-  source_->AddBoolean("isWhatsNewV2", user_education::features::IsWhatsNewV2());
 }
 
 UserEducationInternalsUI::~UserEducationInternalsUI() = default;
