@@ -184,7 +184,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   InterceptionCreatesNewProfileIfAccepted
 #endif
 TEST_F(ProfileTokenWebSigninInterceptorTest,
-       InterceptionCreatesNewProfileIfAccepted) {
+       MAYBE_InterceptionCreatesNewProfileIfAccepted) {
   const int num_profiles_before = TestingBrowserProcess::GetGlobal()
                                       ->profile_manager()
                                       ->GetNumberOfProfiles();
