@@ -217,4 +217,230 @@ TEST_F(WebNNContextOrtImplTest, DispatchGraphWithReluTest) {
   EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
 }
 
+TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddTwoInputsTest) {
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(CreateWebNNContext());
+
+  ASSERT_TRUE(webnn_context_remote_.is_bound());
+
+  OperandDataType data_type = OperandDataType::kFloat32;
+  std::vector<uint32_t> shape = {1, 1, 2, 4};
+  std::vector<float> lhs_input_data({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
+  std::vector<float> rhs_input_data(
+      {1.0, -2.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0});
+  std::vector<float> expected_output_data({2, 0, 6, 0, 10.0, 12.0, 0.0, 16.0});
+
+  // Build a simple graph with add operator.
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context_remote_->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+  GraphInfoBuilder builder(graph_builder_remote);
+
+  uint64_t lhs_operand_id =
+      builder.BuildInput("lhs", shape, OperandDataType::kFloat32);
+  uint64_t rhs_operand_id =
+      builder.BuildInput("rhs", shape, OperandDataType::kFloat32);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", shape, OperandDataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 lhs_operand_id, rhs_operand_id,
+                                 output_operand_id);
+
+  // The GraphImplOrt should be built successfully.
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
+  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+
+  // Create tensor
+  CreateTensorSuccess lhs_input_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+  CreateTensorSuccess rhs_input_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+  CreateTensorSuccess output_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+
+  // Write tensor
+  lhs_input_tensor.webnn_tensor_remote->WriteTensor(
+      VectorToBigBuffer(lhs_input_data));
+  rhs_input_tensor.webnn_tensor_remote->WriteTensor(
+      VectorToBigBuffer(rhs_input_data));
+
+  // Dispatch
+  base::flat_map<std::string, blink::WebNNTensorToken> named_inputs;
+  named_inputs.emplace("lhs", lhs_input_tensor.webnn_tensor_handle);
+  named_inputs.emplace("rhs", rhs_input_tensor.webnn_tensor_handle);
+
+  base::flat_map<std::string, blink::WebNNTensorToken> named_outputs;
+  named_outputs.emplace("output", output_tensor.webnn_tensor_handle);
+
+  webnn_graph_remote->Dispatch(named_inputs, named_outputs);
+
+  // Read tensor
+  base::test::TestFuture<mojom::ReadTensorResultPtr> future;
+  output_tensor.webnn_tensor_remote->ReadTensor(future.GetCallback());
+  mojom::ReadTensorResultPtr result = future.Take();
+  ASSERT_FALSE(result->is_error());
+
+  std::vector<float> output_data =
+      BigBufferToVector<float>(std::move(result->get_buffer()));
+  VerifyFloatDataIsEqual(output_data, expected_output_data);
+
+  webnn_graph_remote.reset();
+  graph_builder_remote.reset();
+  webnn_context_remote_.reset();
+  webnn_provider_remote_.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
+}
+
+TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddInputAndConstantTest) {
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(CreateWebNNContext());
+
+  ASSERT_TRUE(webnn_context_remote_.is_bound());
+
+  OperandDataType data_type = OperandDataType::kFloat32;
+  std::vector<uint32_t> shape = {1, 1, 2, 4};
+  std::vector<float> lhs_input_data({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
+  std::vector<float> rhs_input_data(
+      {1.0, -2.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0});
+  std::vector<float> expected_output_data({2, 0, 6, 0, 10.0, 12.0, 0.0, 16.0});
+
+  // Build a simple graph with add operator.
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context_remote_->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+  GraphInfoBuilder builder(graph_builder_remote);
+
+  uint64_t lhs_operand_id =
+      builder.BuildInput("lhs", shape, OperandDataType::kFloat32);
+  uint64_t rhs_operand_id = builder.BuildConstant(
+      shape, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, rhs_input_data));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", shape, OperandDataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 lhs_operand_id, rhs_operand_id,
+                                 output_operand_id);
+
+  // The GraphImplOrt should be built successfully.
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
+  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+
+  // Create tensor
+  CreateTensorSuccess lhs_input_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+  CreateTensorSuccess output_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+
+  // Write tensor
+  lhs_input_tensor.webnn_tensor_remote->WriteTensor(
+      VectorToBigBuffer(lhs_input_data));
+
+  // Dispatch
+  base::flat_map<std::string, blink::WebNNTensorToken> named_inputs;
+  named_inputs.emplace("lhs", lhs_input_tensor.webnn_tensor_handle);
+
+  base::flat_map<std::string, blink::WebNNTensorToken> named_outputs;
+  named_outputs.emplace("output", output_tensor.webnn_tensor_handle);
+
+  webnn_graph_remote->Dispatch(named_inputs, named_outputs);
+
+  // Read tensor
+  base::test::TestFuture<mojom::ReadTensorResultPtr> future;
+  output_tensor.webnn_tensor_remote->ReadTensor(future.GetCallback());
+  mojom::ReadTensorResultPtr result = future.Take();
+  ASSERT_FALSE(result->is_error());
+
+  std::vector<float> output_data =
+      BigBufferToVector<float>(std::move(result->get_buffer()));
+  VerifyFloatDataIsEqual(output_data, expected_output_data);
+
+  webnn_graph_remote.reset();
+  graph_builder_remote.reset();
+  webnn_context_remote_.reset();
+  webnn_provider_remote_.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
+}
+
+TEST_F(WebNNContextOrtImplTest, DispatchGraphWithAddTwoConstantsTest) {
+  WebNNContextProviderImpl::CreateForTesting(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(CreateWebNNContext());
+
+  ASSERT_TRUE(webnn_context_remote_.is_bound());
+
+  OperandDataType data_type = OperandDataType::kFloat32;
+  std::vector<uint32_t> shape = {1, 1, 2, 4};
+  std::vector<float> lhs_input_data({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0});
+  std::vector<float> rhs_input_data(
+      {1.0, -2.0, 3.0, -4.0, 5.0, 6.0, -7.0, 8.0});
+  std::vector<float> expected_output_data({2, 0, 6, 0, 10.0, 12.0, 0.0, 16.0});
+
+  // Build a simple graph with add operator.
+  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
+  webnn_context_remote_->CreateGraphBuilder(
+      graph_builder_remote.BindNewEndpointAndPassReceiver());
+  GraphInfoBuilder builder(graph_builder_remote);
+
+  uint64_t lhs_operand_id = builder.BuildConstant(
+      shape, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, lhs_input_data));
+  uint64_t rhs_operand_id = builder.BuildConstant(
+      shape, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, rhs_input_data));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", shape, OperandDataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 lhs_operand_id, rhs_operand_id,
+                                 output_operand_id);
+
+  // The GraphImplOrt should be built successfully.
+  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
+  graph_builder_remote->CreateGraph(builder.TakeGraphInfo(),
+                                    create_graph_future.GetCallback());
+  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
+  EXPECT_TRUE(create_graph_result->is_graph_remote());
+  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph_remote;
+  webnn_graph_remote.Bind(std::move(create_graph_result->get_graph_remote()));
+
+  // Create tensor
+  CreateTensorSuccess output_tensor =
+      CreateWebNNTensor(webnn_context_remote_, data_type, shape);
+
+  // Dispatch
+  base::flat_map<std::string, blink::WebNNTensorToken> named_inputs;
+
+  base::flat_map<std::string, blink::WebNNTensorToken> named_outputs;
+  named_outputs.emplace("output", output_tensor.webnn_tensor_handle);
+
+  webnn_graph_remote->Dispatch(named_inputs, named_outputs);
+
+  // Read tensor
+  base::test::TestFuture<mojom::ReadTensorResultPtr> future;
+  output_tensor.webnn_tensor_remote->ReadTensor(future.GetCallback());
+  mojom::ReadTensorResultPtr result = future.Take();
+  ASSERT_FALSE(result->is_error());
+
+  std::vector<float> output_data =
+      BigBufferToVector<float>(std::move(result->get_buffer()));
+  VerifyFloatDataIsEqual(output_data, expected_output_data);
+
+  webnn_graph_remote.reset();
+  graph_builder_remote.reset();
+  webnn_context_remote_.reset();
+  webnn_provider_remote_.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return true; }));
+}
+
 }  // namespace webnn::ort

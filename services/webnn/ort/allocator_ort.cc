@@ -28,9 +28,7 @@ scoped_refptr<AllocatorOrt> AllocatorOrt::Create() {
   CHECK(env);
 
   OrtMemoryInfo* memory_info;
-  // The `OrtArenaAllocator` is required, otherwise, we will get a wrong result
-  // of `dispatch`.
-  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(OrtArenaAllocator,
+  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(OrtDeviceAllocator,
                                             OrtMemTypeDefault, &memory_info));
   CHECK(memory_info);
 

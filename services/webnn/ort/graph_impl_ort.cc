@@ -26,31 +26,26 @@ namespace webnn::ort {
 
 namespace {
 
-base::flat_map<std::string, raw_ref<const BufferContentOrt>>
-GetSharedLockedBuffers(
-    const base::flat_map<
-        std::string,
-        scoped_refptr<QueueableResourceState<BufferContentOrt>>>& buffers) {
-  std::vector<std::pair<std::string, raw_ref<const BufferContentOrt>>>
-      queueable_buffers;
-  for (const auto& [name, buffer] : buffers) {
-    queueable_buffers.emplace_back(name, buffer->GetSharedLockedResource());
+std::vector<const OrtValue*> GetSharedLockedInputTensors(
+    const std::vector<scoped_refptr<QueueableResourceState<BufferContentOrt>>>&
+        buffers) {
+  std::vector<const OrtValue*> input_tensors;
+  input_tensors.reserve(buffers.size());
+  for (const auto& buffer : buffers) {
+    input_tensors.push_back(buffer->GetSharedLockedResource().tensor());
   }
-  return queueable_buffers;
+  return input_tensors;
 }
 
-base::flat_map<std::string, raw_ref<const BufferContentOrt>>
-GetExclusivelyLockedBuffers(
-    const base::flat_map<
-        std::string,
-        scoped_refptr<QueueableResourceState<BufferContentOrt>>>& buffers) {
-  std::vector<std::pair<std::string, raw_ref<const BufferContentOrt>>>
-      queueable_buffers;
-  for (const auto& [name, buffer] : buffers) {
-    queueable_buffers.emplace_back(name,
-                                   *buffer->GetExclusivelyLockedResource());
+std::vector<OrtValue*> GetExclusivelyLockedOutputTensors(
+    const std::vector<scoped_refptr<QueueableResourceState<BufferContentOrt>>>&
+        buffers) {
+  std::vector<OrtValue*> output_tensors;
+  output_tensors.reserve(buffers.size());
+  for (const auto& buffer : buffers) {
+    output_tensors.push_back(buffer->GetExclusivelyLockedResource()->tensor());
   }
-  return queueable_buffers;
+  return output_tensors;
 }
 
 }  // namespace
@@ -164,45 +159,56 @@ void GraphImplOrt::DidCreateAndBuild(
 // executing the graph.
 class GraphImplOrt::ComputeResources {
  public:
-  ComputeResources(OrtSession* session) : session_(session) {}
+  ComputeResources(OrtSession* session,
+                   const ComputeResourceInfo& compute_resource_info)
+      : session_(session) {
+    size_t input_count =
+        compute_resource_info.input_names_to_descriptors.size();
+    size_t output_count =
+        compute_resource_info.output_names_to_descriptors.size();
+
+    input_names_storage_.reserve(input_count);
+    output_names_storage_.reserve(output_count);
+
+    input_names_.reserve(input_count);
+    output_names_.reserve(output_count);
+
+    for (const auto& [name, _] :
+         compute_resource_info.input_names_to_descriptors) {
+      input_names_storage_.push_back(name);
+      input_names_.push_back(input_names_storage_.back().data());
+    }
+    for (const auto& [name, _] :
+         compute_resource_info.output_names_to_descriptors) {
+      output_names_storage_.push_back(name);
+      output_names_.push_back(output_names_storage_.back().data());
+    }
+  }
 
   ~ComputeResources() {
     const OrtApi* ort_api = GetOrtApi();
     ort_api->ReleaseSession(session_);
   }
 
-  void DoDispatch(base::flat_map<std::string, raw_ref<const BufferContentOrt>>
-                      named_input_buffers,
-                  base::flat_map<std::string, raw_ref<const BufferContentOrt>>
-                      named_output_buffers) {
-    std::vector<const char*> ort_input_names, ort_output_names;
-    ort_input_names.reserve(named_input_buffers.size());
-    ort_output_names.reserve(named_output_buffers.size());
-
-    std::vector<const OrtValue*> ort_input_tensors;
-    std::vector<OrtValue*> ort_output_tensors;
-    ort_input_tensors.reserve(named_input_buffers.size());
-    ort_output_tensors.reserve(named_output_buffers.size());
-
-    for (const auto& [name, buffer] : named_input_buffers) {
-      ort_input_names.push_back(name.data());
-      ort_input_tensors.push_back(buffer->tensor());
-    }
-
-    for (const auto& [name, buffer] : named_output_buffers) {
-      ort_output_names.push_back(name.data());
-      ort_output_tensors.push_back(buffer->tensor());
-    }
-
+  void DoDispatch(std::vector<const OrtValue*> input_tensors,
+                  std::vector<OrtValue*> output_tensors) {
+    CHECK_EQ(input_tensors.size(), input_names_.size());
+    CHECK_EQ(output_tensors.size(), output_names_.size());
     const OrtApi* ort_api = GetOrtApi();
-    CHECK_STATUS(ort_api->Run(session_, nullptr, ort_input_names.data(),
-                              ort_input_tensors.data(), ort_input_names.size(),
-                              ort_output_names.data(), ort_output_names.size(),
-                              ort_output_tensors.data()));
+    CHECK_STATUS(ort_api->Run(session_, nullptr, input_names_.data(),
+                              input_tensors.data(), input_names_.size(),
+                              output_names_.data(), output_names_.size(),
+                              output_tensors.data()));
   }
 
  private:
   raw_ptr<OrtSession> session_;
+  std::vector<std::string> input_names_storage_;
+  std::vector<std::string> output_names_storage_;
+  // Pointers to the strings in `input_names_storage_`
+  std::vector<const char*> input_names_;
+  // Pointers to the strings in `output_names_storage_`
+  std::vector<const char*> output_names_;
 };
 
 GraphImplOrt::~GraphImplOrt() = default;
@@ -211,8 +217,8 @@ GraphImplOrt::GraphImplOrt(ComputeResourceInfo compute_resource_info,
                            OrtSession* session,
                            ContextImplOrt* context)
     : WebNNGraphImpl(context, std::move(compute_resource_info)) {
-  std::unique_ptr<ComputeResources> compute_resources =
-      base::WrapUnique(new ComputeResources(session));
+  std::unique_ptr<ComputeResources> compute_resources = base::WrapUnique(
+      new ComputeResources(session, this->compute_resource_info()));
   compute_resources_state_ =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
@@ -224,26 +230,27 @@ void GraphImplOrt::DispatchImpl(
         named_input_tensors,
     const base::flat_map<std::string_view, WebNNTensorImpl*>&
         named_output_tensors) {
-  std::vector<std::pair<
-      std::string, scoped_refptr<QueueableResourceState<BufferContentOrt>>>>
-      named_input_buffer_states, named_output_buffer_states;
-  named_input_buffer_states.reserve(named_input_tensors.size());
-  named_output_buffer_states.reserve(named_output_tensors.size());
+  // Since the flat_map is ordered, the order of the tensors is guaranteed to be
+  // the same as the order of the input/output names.
+  std::vector<scoped_refptr<QueueableResourceState<BufferContentOrt>>>
+      input_buffer_states, output_buffer_states;
+  input_buffer_states.reserve(named_input_tensors.size());
+  output_buffer_states.reserve(named_output_tensors.size());
 
-  for (const auto& [name, tensor] : named_input_tensors) {
-    named_input_buffer_states.emplace_back(
-        name, static_cast<TensorImplOrt*>(tensor)->GetBufferState());
+  for (const auto& [_, tensor] : named_input_tensors) {
+    input_buffer_states.emplace_back(
+        static_cast<TensorImplOrt*>(tensor)->GetBufferState());
   }
-  for (const auto& [name, tensor] : named_output_tensors) {
-    named_output_buffer_states.emplace_back(
-        name, static_cast<TensorImplOrt*>(tensor)->GetBufferState());
+  for (const auto& [_, tensor] : named_output_tensors) {
+    output_buffer_states.emplace_back(
+        static_cast<TensorImplOrt*>(tensor)->GetBufferState());
   }
 
   // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_input_tensors.size());
-  for (const auto& [name, buffer_state] : named_input_buffer_states) {
+  for (const auto& buffer_state : input_buffer_states) {
     shared_resources.push_back(buffer_state);
   }
 
@@ -252,7 +259,7 @@ void GraphImplOrt::DispatchImpl(
   // Extra +1 is for the compute resources.
   exclusive_resources.reserve(1 + named_output_tensors.size());
   exclusive_resources.push_back(compute_resources_state_);
-  for (const auto& [name, buffer_state] : named_output_buffer_states) {
+  for (const auto& buffer_state : output_buffer_states) {
     exclusive_resources.push_back(buffer_state);
   }
 
@@ -261,14 +268,11 @@ void GraphImplOrt::DispatchImpl(
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<ComputeResources>>
                  compute_resources_state,
-             base::flat_map<
-                 std::string,
+             std::vector<scoped_refptr<
+                 QueueableResourceState<BufferContentOrt>>> input_buffer_states,
+             std::vector<
                  scoped_refptr<QueueableResourceState<BufferContentOrt>>>
-                 named_input_buffer_states,
-             base::flat_map<
-                 std::string,
-                 scoped_refptr<QueueableResourceState<BufferContentOrt>>>
-                 named_output_buffer_states,
+                 output_buffer_states,
              base::OnceClosure completion_closure) {
             // Compute tasks can take a significant amount of time, use the
             // thread pool to avoid blocking the main thread.
@@ -282,12 +286,12 @@ void GraphImplOrt::DispatchImpl(
                     // `ResourceTask` until `completion_closure` is run below.
                     base::Unretained(compute_resources_state
                                          ->GetExclusivelyLockedResource()),
-                    GetSharedLockedBuffers(named_input_buffer_states),
-                    GetExclusivelyLockedBuffers(named_output_buffer_states)),
+                    GetSharedLockedInputTensors(input_buffer_states),
+                    GetExclusivelyLockedOutputTensors(output_buffer_states)),
                 std::move(completion_closure));
           },
-          compute_resources_state_, std::move(named_input_buffer_states),
-          std::move(named_output_buffer_states)));
+          compute_resources_state_, std::move(input_buffer_states),
+          std::move(output_buffer_states)));
 
   task->Enqueue();
 }

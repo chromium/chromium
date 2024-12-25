@@ -275,17 +275,12 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   OperandInfo operand_info{name, operand.descriptor().data_type(),
                            operand.descriptor().shape()};
 
-  ScopedOrtMemoryInfo memory_info;
-  CHECK_STATUS(GetOrtApi()->CreateCpuMemoryInfo(
-      OrtAllocatorType::OrtDeviceAllocator, OrtMemType::OrtMemTypeDefault,
-      memory_info.get_pptr()));
-
   auto weight = base::HeapArray<uint8_t>::CopiedFrom(operand.ByteSpan());
   result_->weights.push_back(std::move(weight));
 
   ScopedOrtValue initializer;
   CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
-      memory_info.get_ptr(), result_->weights.back().data(),
+      allocator_->memory_info(), result_->weights.back().data(),
       result_->weights.back().size(), operand_info.int64_shape.data(),
       operand_info.int64_shape.size(), operand_info.onnx_data_type,
       initializer.get_pptr()));
