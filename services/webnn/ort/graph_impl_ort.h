@@ -13,12 +13,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/graph_builder_ort.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "services/webnn/queueable_resource_state.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace webnn {
 
@@ -35,12 +38,13 @@ class BufferContentOrt;
 // graph.
 class GraphImplOrt final : public WebNNGraphImpl {
  public:
-  static base::expected<std::unique_ptr<GraphImplOrt>, mojom::ErrorPtr>
-  CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                 ComputeResourceInfo compute_resource_info,
-                 base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
-                     constant_operands,
-                 ContextImplOrt* context);
+  static void CreateAndBuild(
+      mojom::GraphInfoPtr graph_info,
+      ComputeResourceInfo compute_resource_info,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      ContextImplOrt* context,
+      WebNNContextImpl::CreateGraphImplCallback callback);
 
   GraphImplOrt(const GraphImplOrt&) = delete;
   GraphImplOrt& operator=(const GraphImplOrt&) = delete;
@@ -50,6 +54,21 @@ class GraphImplOrt final : public WebNNGraphImpl {
   GraphImplOrt(ComputeResourceInfo compute_resource_info,
                OrtSession* session,
                ContextImplOrt* context);
+
+  static base::expected<OrtSession*, mojom::ErrorPtr>
+  CreateAndBuildOnBackgroundThread(
+      mojom::GraphInfoPtr graph_info,
+      mojom::CreateContextOptionsPtr context_options,
+      ContextProperties context_properties,
+      base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+          constant_operands,
+      scoped_refptr<AllocatorOrt> allocator);
+
+  static void DidCreateAndBuild(
+      base::WeakPtr<WebNNContextImpl> context,
+      ComputeResourceInfo compute_resource_info,
+      WebNNContextImpl::CreateGraphImplCallback callback,
+      base::expected<OrtSession*, mojom::ErrorPtr> result);
 
   class ComputeResources;
 

@@ -167,9 +167,9 @@ void ContextImplOrt::CreateGraphImpl(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     CreateGraphImplCallback callback) {
-  std::move(callback).Run(GraphImplOrt::CreateAndBuild(
+  GraphImplOrt::CreateAndBuild(
       std::move(graph_info), std::move(compute_resource_info),
-      std::move(constant_operands), this));
+      std::move(constant_operands), this, std::move(callback));
 }
 
 void ContextImplOrt::CreateTensorImpl(

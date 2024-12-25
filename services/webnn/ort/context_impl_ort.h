@@ -34,7 +34,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
   const OrtEnv* env() const { return allocator_ort_->env(); }
-  OrtAllocator* allocator() const { return allocator_ort_->allocator(); }
+  scoped_refptr<AllocatorOrt> allocator() const { return allocator_ort_; }
 
   static ContextProperties GetContextProperties();
 

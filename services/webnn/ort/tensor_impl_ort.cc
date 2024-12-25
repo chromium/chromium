@@ -24,7 +24,7 @@ TensorImplOrt::TensorImplOrt(
       OperandTypeToONNXTensorElementDataType(data_type());
 
   auto buffer_content = std::make_unique<BufferContentOrt>(
-      context->allocator(), std::move(ort_shape), ort_data_type);
+      context->allocator()->allocator(), std::move(ort_shape), ort_data_type);
   buffer_state_ =
       base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
           std::move(buffer_content));

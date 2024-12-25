@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
+#include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -27,12 +28,9 @@
 
 namespace webnn {
 
-class WebNNContextImpl;
 class WebNNConstantOperand;
 
 namespace ort {
-
-class ContextImplOrt;
 
 class GraphBuilderOrt {
   STACK_ALLOCATED();
@@ -88,7 +86,7 @@ class GraphBuilderOrt {
                  ContextProperties context_properties,
                  base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
                      constant_operands,
-                 ContextImplOrt* context);
+                 scoped_refptr<AllocatorOrt> allocator);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -101,7 +99,7 @@ class GraphBuilderOrt {
       ContextProperties context_properties,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
           constant_operands,
-      ContextImplOrt* context);
+      scoped_refptr<AllocatorOrt> allocator);
 
   const mojom::Operand& GetOperand(uint64_t operand_id);
   std::string GetOperandName(uint64_t operand_id);
@@ -145,8 +143,7 @@ class GraphBuilderOrt {
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 
-  // WebNNContextImpl owns this object.
-  const raw_ptr<WebNNContextImpl> context_;
+  scoped_refptr<AllocatorOrt> allocator_;
 
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;

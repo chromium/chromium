@@ -24,24 +24,23 @@ scoped_refptr<AllocatorOrt> AllocatorOrt::GetInstance() {
 scoped_refptr<AllocatorOrt> AllocatorOrt::Create() {
   const OrtApi* ort_api = GetOrtApi();
   OrtEnv* env;
-  ORT_ABORT_ON_ERROR(
-      ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "test", &env));
+  CHECK_STATUS(ort_api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "test", &env));
   CHECK(env);
 
   OrtMemoryInfo* memory_info;
   // The `OrtArenaAllocator` is required, otherwise, we will get a wrong result
   // of `dispatch`.
-  ORT_ABORT_ON_ERROR(ort_api->CreateCpuMemoryInfo(
-      OrtArenaAllocator, OrtMemTypeDefault, &memory_info));
+  CHECK_STATUS(ort_api->CreateCpuMemoryInfo(OrtArenaAllocator,
+                                            OrtMemTypeDefault, &memory_info));
   CHECK(memory_info);
 
   OrtAllocator* allocator = nullptr;
   // The default allocator is a CPU based, non-arena. Always returns the same
   // pointer to the same default allocator. Returned value should NOT be freed.
-  ORT_ABORT_ON_ERROR(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
 
   // const OrtDmlApi* ort_dml_api;
-  // ORT_ABORT_ON_ERROR(ort_api->GetExecutionProviderApi(
+  // CHECK_STATUS(ort_api->GetExecutionProviderApi(
   //     "DML", ORT_API_VERSION, reinterpret_cast<const void**>(&ort_dml_api)));
 
   return WrapRefCounted(new AllocatorOrt(env, memory_info, allocator));

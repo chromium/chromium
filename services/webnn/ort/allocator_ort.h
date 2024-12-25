@@ -11,8 +11,9 @@
 
 namespace webnn::ort {
 
+// TODO: Figure out if allocator is really thread safe.
 class COMPONENT_EXPORT(WEBNN_SERVICE) AllocatorOrt final
-    : public base::RefCounted<AllocatorOrt> {
+    : public base::RefCountedThreadSafe<AllocatorOrt> {
  public:
   // TODO: Now it's for CPU only, need to support other devices.
   static scoped_refptr<AllocatorOrt> GetInstance();
@@ -22,7 +23,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) AllocatorOrt final
   OrtAllocator* allocator() const { return allocator_.get(); }
 
  private:
-  friend class base::RefCounted<AllocatorOrt>;
+  friend class base::RefCountedThreadSafe<AllocatorOrt>;
   AllocatorOrt(OrtEnv* env, OrtMemoryInfo* info, OrtAllocator* allocator);
   ~AllocatorOrt();
 

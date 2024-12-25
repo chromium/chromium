@@ -9,7 +9,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
-#include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -141,9 +140,9 @@ GraphBuilderOrt::CreateAndBuild(
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    ContextImplOrt* context) {
+    scoped_refptr<AllocatorOrt> allocator) {
   GraphBuilderOrt graph_builder(graph_info, std::move(context_properties),
-                                std::move(constant_operands), context);
+                                std::move(constant_operands), allocator);
 
   RETURN_IF_ERROR(graph_builder.BuildModel());
   return std::move(graph_builder.result_);
@@ -154,8 +153,8 @@ GraphBuilderOrt::GraphBuilderOrt(
     ContextProperties context_properties,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    ContextImplOrt* context)
-    : context_(context),
+    scoped_refptr<AllocatorOrt> allocator)
+    : allocator_(allocator),
       graph_info_(graph_info),
       constant_operands_(std::move(constant_operands)),
       context_properties_(std::move(context_properties)),
@@ -206,9 +205,9 @@ uint64_t GraphBuilderOrt::NewInitializerAsRawData(
 
   ScopedOrtValue initializer;
   CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(
-      static_cast<ContextImplOrt*>(context_)->allocator(),
-      operand_info.int64_shape.data(), operand_info.int64_shape.size(),
-      operand_info.onnx_data_type, initializer.get_pptr()));
+      allocator_->allocator(), operand_info.int64_shape.data(),
+      operand_info.int64_shape.size(), operand_info.onnx_data_type,
+      initializer.get_pptr()));
 
   void* ort_tensor_raw_data = nullptr;
   CHECK_STATUS(GetOrtApi()->GetTensorMutableData(initializer.get_ptr(),
@@ -598,7 +597,6 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
-// TODO: Post to thread pool?
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   ScopedOrtModel& model = result_->model;

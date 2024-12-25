@@ -4,11 +4,9 @@
 
 #include "services/webnn/ort/graph_impl_ort.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/error.h"
@@ -23,7 +21,6 @@
 #include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
@@ -58,44 +55,61 @@ GetExclusivelyLockedBuffers(
 
 }  // namespace
 
-base::expected<std::unique_ptr<GraphImplOrt>, mojom::ErrorPtr>
-GraphImplOrt::CreateAndBuild(
+// static
+void GraphImplOrt::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    ContextImplOrt* context) {
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<GraphBuilderOrt::Result> result,
-      GraphBuilderOrt::CreateAndBuild(*graph_info, context->properties(),
-                                      std::move(constant_operands), context));
+    ContextImplOrt* context,
+    WebNNContextImpl::CreateGraphImplCallback callback) {
+  auto wrapped_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&GraphImplOrt::DidCreateAndBuild, context->AsWeakPtr(),
+                     std::move(compute_resource_info),
+                     std::move(callback)));
 
-  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
-  if (!platform_functions) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kNotSupportedError, "Platform functions error."));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
+                     std::move(graph_info), context->options().Clone(),
+                     context->properties(), std::move(constant_operands),
+                     context->allocator()),
+      std::move(wrapped_callback));
+}
+
+// static
+base::expected<OrtSession*, mojom::ErrorPtr>
+GraphImplOrt::CreateAndBuildOnBackgroundThread(
+    mojom::GraphInfoPtr graph_info,
+    mojom::CreateContextOptionsPtr context_options,
+    ContextProperties context_properties,
+    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+        constant_operands,
+    scoped_refptr<AllocatorOrt> allocator) {
+  auto result = GraphBuilderOrt::CreateAndBuild(
+      *graph_info, std::move(context_properties), std::move(constant_operands),
+      allocator);
+  if (!result.has_value()) {
+    return base::unexpected(std::move(result.error()));
   }
-  auto ort_get_api_base_proc = platform_functions->ort_get_api_base_proc();
-
-  // currently, win11 inside onnxruntime.dll version is 1.10.1 and can support
-  // IR_VERSION_2021_7_30.
-  const char* version = ort_get_api_base_proc()->GetVersionString();
-  LOG(ERROR) << "onnxruntime dll version is " << version;
 
   OrtSessionOptions* session_options;
   const OrtApi* ort_api = GetOrtApi();
-  ORT_ABORT_ON_ERROR(ort_api->CreateSessionOptions(&session_options));
+  CHECK_STATUS(ort_api->CreateSessionOptions(&session_options));
 
-  ORT_ABORT_ON_ERROR(ort_api->SetSessionGraphOptimizationLevel(
+  CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
 
-  if (context->options().device == mojom::CreateContextOptions::Device::kGpu || context->options().device == mojom::CreateContextOptions::Device::kNpu) {
+  if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
+      context_options->device == mojom::CreateContextOptions::Device::kNpu) {
     const OrtDmlApi* ort_dml_api;
-    ORT_ABORT_ON_ERROR(ort_api->GetExecutionProviderApi(
+    CHECK_STATUS(ort_api->GetExecutionProviderApi(
         "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
 
     OrtDmlDeviceOptions options;
-    if (context->options().device == mojom::CreateContextOptions::Device::kGpu) {
+    if (context_options->device == mojom::CreateContextOptions::Device::kGpu) {
       options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
     } else {
       options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
@@ -106,28 +120,43 @@ GraphImplOrt::CreateAndBuild(
     ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options, &options);
   }
 
-  // Todo: Consider move the session creation to BackgroundThread since load model may be time-consuming.
   OrtSession* session;
-  const OrtEnv* env = context->env();
-  CHECK(env);
-  CHECK_STATUS(GetOrtGraphApi()->CreateSessionFromModel(
-      env, result->model.get_ptr(), session_options, &session));
-
-  LOG(ERROR) << "success to create session.";
-
+  const OrtEnv* env = allocator->env();
+  OrtStatus* status = GetOrtGraphApi()->CreateSessionFromModel(
+      env, result.value()->model.get_ptr(), session_options, &session);
   ort_api->ReleaseSessionOptions(session_options);
 
-  // verify_input_output_count;
-  size_t count;
-  ORT_ABORT_ON_ERROR(ort_api->SessionGetInputCount(session, &count));
-  LOG(ERROR) << "input count: " << count;
-  CHECK_EQ(count, compute_resource_info.input_names_to_descriptors.size());
-  ORT_ABORT_ON_ERROR(ort_api->SessionGetOutputCount(session, &count));
-  LOG(ERROR) << "output count: " << count;
-  CHECK_EQ(count, compute_resource_info.output_names_to_descriptors.size());
+  if (status != NULL) {
+    std::string msg = ort_api->GetErrorMessage(status);
+    ort_api->ReleaseStatus(status);
+    LOG(ERROR) << "[WebNN] Ort Status " << msg;
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Failed to create ORT session."));
+  }
 
-  return base::WrapUnique(
-      new GraphImplOrt(std::move(compute_resource_info), session, context));
+  return session;
+}
+
+// static
+void GraphImplOrt::DidCreateAndBuild(
+    base::WeakPtr<WebNNContextImpl> context,
+    ComputeResourceInfo compute_resource_info,
+    WebNNContextImpl::CreateGraphImplCallback callback,
+    base::expected<OrtSession*, mojom::ErrorPtr> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(base::unexpected(std::move(result).error()));
+    return;
+  }
+
+  if (!context) {
+    std::move(callback).Run(base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, "Context was destroyed.")));
+    return;
+  }
+
+  std::move(callback).Run(base::WrapUnique(
+      new GraphImplOrt(std::move(compute_resource_info), result.value(),
+                       static_cast<ContextImplOrt*>(context.get()))));
 }
 
 // Represents the collection of resources associated with a particular graph.
@@ -166,10 +195,10 @@ class GraphImplOrt::ComputeResources {
     }
 
     const OrtApi* ort_api = GetOrtApi();
-    ORT_ABORT_ON_ERROR(ort_api->Run(
-        session_, nullptr, ort_input_names.data(), ort_input_tensors.data(),
-        ort_input_names.size(), ort_output_names.data(),
-        ort_output_names.size(), ort_output_tensors.data()));
+    CHECK_STATUS(ort_api->Run(session_, nullptr, ort_input_names.data(),
+                              ort_input_tensors.data(), ort_input_names.size(),
+                              ort_output_names.data(), ort_output_names.size(),
+                              ort_output_tensors.data()));
   }
 
  private:
