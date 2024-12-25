@@ -1267,8 +1267,17 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(access_entries[0].metrics["HoursSincePopupOpened"], 0);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
+// TODO(https://crbug.com/40933721): flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PopupInteraction_CookieAccessEmitsDevtoolsWarning \
+  DISABLED_PopupInteraction_CookieAccessEmitsDevtoolsWarning
+#else
+#define MAYBE_PopupInteraction_CookieAccessEmitsDevtoolsWarning \
+  PopupInteraction_CookieAccessEmitsDevtoolsWarning
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OpenerHeuristicBrowserTest,
+    MAYBE_PopupInteraction_CookieAccessEmitsDevtoolsWarning) {
   GURL opener_url = https_server_.GetURL("a.test", "/title1.html");
   GURL popup_url_1 = https_server_.GetURL("c.test", "/title1.html");
   GURL popup_url_2 =
