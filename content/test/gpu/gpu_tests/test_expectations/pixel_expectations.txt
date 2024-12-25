@@ -417,8 +417,6 @@ crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaF
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 
-# jacuzzi produces the wrong aspect ratio image
-crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
@@ -429,7 +427,6 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
-crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
@@ -451,8 +448,6 @@ crbug.com/40937765 [ android android-pixel-6 renderer-skia-vulkan ] Pixel_Video_
 # finder:enable-narrowing
 
 
-# Broadly flaky unsymbolized crashes on Jacuzzi
-crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
 
 # ChromeOS failures
 crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer-skia-gl ] Pixel_RenderPasses [ Failure ]
@@ -482,8 +477,6 @@ crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vu
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-# One particular Linux Bot consistently failures
-crbug.com/331488870 [ linux intel-0x9bc5 angle-opengl passthrough ] Pixel_Canvas2DBlitText [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
