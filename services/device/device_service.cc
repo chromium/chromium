@@ -111,7 +111,7 @@ DeviceService::DeviceService(
 }
 
 DeviceService::~DeviceService() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // NOTE: We don't call this on Chrome OS due to https://crbug.com/856771, as
   // Shutdown() implicitly depends on DBusThreadManager, which may already be
   // destroyed by the time DeviceService is destroyed. Fortunately on Chrome OS
@@ -212,7 +212,7 @@ void DeviceService::BindHidManager(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DeviceService::BindMtpManager(
     mojo::PendingReceiver<mojom::MtpManager> receiver) {
   if (!mtp_device_manager_)

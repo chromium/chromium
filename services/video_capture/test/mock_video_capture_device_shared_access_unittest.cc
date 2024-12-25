@@ -53,14 +53,14 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
 
     auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
         std::move(mock_device_factory));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     service_device_factory_ = std::make_unique<DeviceFactoryImpl>(
         std::move(video_capture_system), base::DoNothing(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
 #else
     service_device_factory_ =
         std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     source_provider_ = std::make_unique<VideoSourceProviderImpl>(
         service_device_factory_.get(), base::DoNothing());
 

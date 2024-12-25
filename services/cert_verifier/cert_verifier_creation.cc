@@ -50,7 +50,6 @@ namespace {
 crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
     mojom::CertVerifierCreationParams* creation_params) {
   crypto::ScopedPK11Slot public_slot;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (creation_params && !creation_params->username_hash.empty()) {
     // Make sure NSS is initialized for the user.
     crypto::InitializeNSSForChromeOSUser(creation_params->username_hash,
@@ -58,9 +57,6 @@ crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
     public_slot =
         crypto::GetPublicSlotForChromeOSUser(creation_params->username_hash);
   }
-#else
-#error IS_CHROMEOS set without IS_CHROMEOS_ASH
-#endif
   return public_slot;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

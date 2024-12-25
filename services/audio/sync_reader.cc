@@ -29,7 +29,7 @@ using media::AudioLatency;
 
 namespace audio {
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
 constexpr double kBufferDurationPercent = 0.95;
 #else
 constexpr double kBufferDurationPercent = 0.5;

@@ -50,7 +50,7 @@ source_set("time_zone_monitor") {
     deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "time_zone_monitor_ash.cc" ]
     deps += [ "//chromeos/ash/components/settings" ]
   }

@@ -272,11 +272,6 @@ component("network_service") {
     sources += [
       "cert_verifier_with_trust_anchors.cc",
       "cert_verifier_with_trust_anchors.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "dhcp_pac_file_fetcher_mojo.cc",
       "dhcp_pac_file_fetcher_mojo.h",
     ]
@@ -523,7 +518,7 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cert_verifier_with_trust_anchors_unittest.cc",
       "dhcp_pac_file_fetcher_mojo_unittest.cc",
@@ -663,7 +658,7 @@ source_set("test_support") {
     "test/url_loader_context_for_tests.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mock_mojo_dhcp_wpad_url_client.cc",
       "mock_mojo_dhcp_wpad_url_client.h",

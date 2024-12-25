@@ -88,7 +88,7 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
       deps += [ "//device/udev_linux" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chromeos/dbus/permission_broker" ]
     }
 

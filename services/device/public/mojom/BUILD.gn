@@ -49,7 +49,7 @@ mojom("mojom") {
     "//url/mojom:url_mojom_origin",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mtp_file_entry.mojom",
       "mtp_manager.mojom",

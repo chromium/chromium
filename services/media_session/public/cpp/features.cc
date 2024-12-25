@@ -26,7 +26,7 @@ BASE_FEATURE(kMediaSessionService,
 // have audio focus at any one time.
 BASE_FEATURE(kAudioFocusEnforcement,
              "AudioFocusEnforcement",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -37,7 +37,7 @@ BASE_FEATURE(kAudioFocusEnforcement,
 // share audio focus at the same time provided that they have the same group id.
 BASE_FEATURE(kAudioFocusSessionGrouping,
              "AudioFocusSessionGrouping",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

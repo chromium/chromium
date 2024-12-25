@@ -27,7 +27,7 @@ source_set("mojo") {
     "//third_party/blink/public/common",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/dbus/permission_broker" ]
   }
 }

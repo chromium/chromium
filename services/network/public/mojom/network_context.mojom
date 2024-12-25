@@ -72,7 +72,7 @@ import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 import "services/network/public/mojom/dhcp_wpad_url_client.mojom";
 
 [EnableIf=is_p2p_enabled]
@@ -345,7 +345,7 @@ struct NetworkContextParams {
   // Retrieves the PAC script URL set via DHCP from the browser process. Only
   // used if |proxy_resolver_factory| is set. Note: optional because some tests
   // build their own NetworkContextParams and don't need a DHCP WPAD client.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   pending_remote<DhcpWpadUrlClient>? dhcp_wpad_url_client;
 
   // If true, cookies will be stored encrypted.
@@ -1603,7 +1603,7 @@ interface NetworkContext {
   // |auth_scheme| is the authentication scheme of the challenge and it's
   // specified as a case-insensitive string. Unlike server credentials, proxy
   // credentials are not keyed on NetworkAnonymizationKey.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   LookupProxyAuthCredentials(
       ProxyServer proxy_server, string auth_scheme, string realm)
       => (AuthCredentials? credentials);

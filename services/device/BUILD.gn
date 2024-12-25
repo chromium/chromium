@@ -75,7 +75,7 @@ source_set("lib") {
     deps += [ "//services/device/compute_pressure" ]
   }
 
-  if (is_chromeos_ash && use_dbus) {
+  if (is_chromeos && use_dbus) {
     deps += [ "//services/device/media_transfer_protocol" ]
   }
 
@@ -234,7 +234,7 @@ source_set("tests") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "fingerprint/fingerprint_chromeos_unittest.cc",
       "geolocation/wifi_data_provider_chromeos_unittest.cc",

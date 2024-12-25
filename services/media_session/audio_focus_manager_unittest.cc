@@ -185,7 +185,7 @@ class AudioFocusManagerTest
   }
 
   bool IsEnforcementEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Enforcement is enabled by default on Chrome OS.
     if (GetParam() == mojom::EnforcementMode::kDefault)
       return true;

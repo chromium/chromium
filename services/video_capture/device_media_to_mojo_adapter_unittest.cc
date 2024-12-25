@@ -32,7 +32,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
         video_frame_handler_.InitWithNewPipeAndPassReceiver());
     auto mock_device = std::make_unique<media::MockDevice>();
     mock_device_ptr_ = mock_device.get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     adapter_ = std::make_unique<DeviceMediaToMojoAdapter>(
         std::move(mock_device), base::DoNothing(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -42,7 +42,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
 #else
     adapter_ =
         std::make_unique<DeviceMediaToMojoAdapter>(std::move(mock_device));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {

@@ -40,7 +40,7 @@ class ScreenAILibraryWrapperFake : public ScreenAILibraryWrapper {
       void (*get_file_content)(const char* relative_file_path,
                                uint32_t buffer_size,
                                char* buffer)) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetLogger() override;
 #endif
 

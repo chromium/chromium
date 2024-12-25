@@ -103,7 +103,7 @@ source_set("geolocation") {
   }
 
   # Platform-specific WifiDataProvider implementations.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "wifi_data_provider_chromeos.cc",
       "wifi_data_provider_chromeos.h",
@@ -197,7 +197,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus/shill" ]
   }
 }

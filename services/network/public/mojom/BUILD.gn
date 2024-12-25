@@ -23,8 +23,8 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash.
-  if (is_chromeos_ash) {
+  # WebUI bindings are only needed on ChromeOS.
+  if (is_chromeos) {
     webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
 
     # Used by ash/webui/resources/common/network_health, which is still using

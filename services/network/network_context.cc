@@ -2412,7 +2412,7 @@ void NetworkContext::LookupServerBasicAuthCredentials(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void NetworkContext::LookupProxyAuthCredentials(
     const net::ProxyServer& proxy_server,
     const std::string& auth_scheme,
@@ -2450,7 +2450,7 @@ void NetworkContext::LookupProxyAuthCredentials(
     std::move(callback).Run(std::nullopt);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
@@ -2691,11 +2691,11 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (params_->dhcp_wpad_url_client) {
     builder.SetDhcpWpadUrlClient(std::move(params_->dhcp_wpad_url_client));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!params_->http_cache_enabled) {
     builder.DisableHttpCache();

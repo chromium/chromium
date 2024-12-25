@@ -48,16 +48,15 @@ source_set("power_save_blocker") {
     sources += [ "power_save_blocker_android.cc" ]
     deps += [ ":jni_headers" ]
     public_deps += [ "//ui/android" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources += [ "power_save_blocker_ash.cc" ]
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
     ]
-  } else if ((is_linux || is_chromeos) && use_dbus) {
+  } else if (is_linux && use_dbus) {
     sources += [ "power_save_blocker_linux.cc" ]
     deps += [
-      "//dbus",
       "//ui/display",
       "//ui/gfx",
     ]

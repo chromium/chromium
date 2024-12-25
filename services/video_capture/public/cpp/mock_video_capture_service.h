@@ -23,7 +23,7 @@ class MockVideoCaptureService
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InjectGpuDependencies(
       mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
           accelerator_factory) override;
@@ -43,7 +43,7 @@ class MockVideoCaptureService
 
   void ConnectToCameraAppDeviceBridge(
       mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge>) override {}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void BindControlsForTesting(
       mojo::PendingReceiver<mojom::TestingControls>) override {}

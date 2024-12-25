@@ -64,7 +64,7 @@ source_set("lib") {
     deps += [ "//chromeos/crosapi/mojom" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "ash/video_capture_device_ash.cc",
       "ash/video_capture_device_ash.h",
