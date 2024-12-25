@@ -55,18 +55,6 @@ source_set("time_zone_monitor") {
     deps += [ "//chromeos/ash/components/settings" ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "time_zone_monitor_lacros.cc",
-      "time_zone_monitor_lacros.h",
-    ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
-
   if (is_apple) {
     sources += [ "time_zone_monitor_mac.mm" ]
     frameworks = [ "Foundation.framework" ]

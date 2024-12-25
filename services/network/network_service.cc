@@ -98,9 +98,7 @@
 #include "third_party/boringssl/src/include/openssl/cpu.h"
 #endif
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
 #include "components/os_crypt/sync/key_storage_config_linux.h"
 #endif
 

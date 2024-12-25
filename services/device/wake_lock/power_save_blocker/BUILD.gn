@@ -55,18 +55,10 @@ source_set("power_save_blocker") {
       "//chromeos/dbus/power:power_manager_proto",
     ]
   } else if ((is_linux || is_chromeos) && use_dbus) {
-    if (is_chromeos_lacros) {
-      sources += [ "power_save_blocker_lacros.cc" ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    } else {
-      sources += [ "power_save_blocker_linux.cc" ]
-      deps += [ "//ui/display" ]
-    }
+    sources += [ "power_save_blocker_linux.cc" ]
     deps += [
       "//dbus",
+      "//ui/display",
       "//ui/gfx",
     ]
   } else if (is_mac) {

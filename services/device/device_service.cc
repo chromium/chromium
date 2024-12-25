@@ -50,41 +50,6 @@
 #include "services/device/hid/input_service_linux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr bool IsLaCrOS() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
-  return false;
-#endif
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-void BindLaCrOSHidManager(
-    mojo::PendingReceiver<device::mojom::HidManager> receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LaCrOS does not have direct access to the permission_broker service over
-  // D-Bus. Use the HidManager interface from ash-chrome instead.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
-  // If the Hid manager is not available, then the pending receiver is deleted.
-  if (lacros_service->IsAvailable<device::mojom::HidManager>()) {
-    lacros_service->GetRemote<device::mojom::HidManager>()->AddReceiver(
-        std::move(receiver));
-  }
-#endif
-}
-#endif
-
-}  // namespace
-
 namespace device {
 
 DeviceServiceParams::DeviceServiceParams() = default;
@@ -240,13 +205,10 @@ void DeviceService::BindVibrationManager(
 #if !BUILDFLAG(IS_ANDROID)
 void DeviceService::BindHidManager(
     mojo::PendingReceiver<mojom::HidManager> receiver) {
-  if (IsLaCrOS() && !HidManagerImpl::IsHidServiceTesting()) {
-    BindLaCrOSHidManager(std::move(receiver));
-  } else {
-    if (!hid_manager_)
-      hid_manager_ = std::make_unique<HidManagerImpl>();
-    hid_manager_->AddReceiver(std::move(receiver));
+  if (!hid_manager_) {
+    hid_manager_ = std::make_unique<HidManagerImpl>();
   }
+  hid_manager_->AddReceiver(std::move(receiver));
 }
 #endif
 

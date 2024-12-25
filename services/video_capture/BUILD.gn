@@ -82,21 +82,6 @@ source_set("lib") {
 
     public_deps += [ "//media/capture/video/chromeos/mojom:cros_camera" ]
   }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "lacros/device_factory_adapter_lacros.cc",
-      "lacros/device_factory_adapter_lacros.h",
-      "lacros/device_proxy_lacros.cc",
-      "lacros/device_proxy_lacros.h",
-      "lacros/video_buffer_adapters.cc",
-      "lacros/video_buffer_adapters.h",
-      "lacros/video_frame_handler_proxy_lacros.cc",
-      "lacros/video_frame_handler_proxy_lacros.h",
-    ]
-
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("tests") {

@@ -81,16 +81,6 @@ source_set("lib") {
 
   if (is_serial_enabled_platform) {
     deps += [ "//services/device/serial" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
-
-  if (is_serial_enabled_platform) {
     defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
   }
 }
@@ -256,11 +246,6 @@ source_set("tests") {
       "//services/device/fingerprint",
       "//third_party/protobuf:protobuf_lite",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "geolocation/wifi_data_provider_lacros_unittest.cc" ]
-    deps += [ "//chromeos/lacros:test_support" ]
   }
 
   if (is_android) {

@@ -501,11 +501,6 @@ TEST_F(PlatformSensorProviderChromeOSTest, ReconnectClient) {
 
   // Simulate a disconnection between |provider_| and SensorHalDispatcher.
   provider_->OnSensorHalClientFailure(base::TimeDelta());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Need to manually re-connect the Mojo as SensorHalDispatcher doesn't exist
-  // in Lacros-Chrome.
-  RegisterSensorHalServer();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }

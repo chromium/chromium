@@ -34,8 +34,6 @@
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/hid/hid_connection_linux.h"
 
-// TODO(huangs): Enable for IS_CHROMEOS_LACROS. This will simplify crosapi so
-// that it won't need to pass HidManager around (crbug.com/1109621).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"  // nogncheck
@@ -371,7 +369,6 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   }
   scoped_refptr<HidDeviceInfo> device_info = map_entry->second;
 
-// TODO(huangs): Enable for IS_CHROMEOS_LACROS for crbug.com/1223456.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   chromeos::PermissionBrokerClient::Get()->OpenPath(

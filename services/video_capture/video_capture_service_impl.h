@@ -92,10 +92,6 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   // this function should be called on service startup.
   void InitializeDeviceMonitor();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnDisconnectedFromVCDFactoryAsh();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::DeviceMonitorMac> video_capture_device_monitor_mac_;
 #endif

@@ -50,16 +50,7 @@ namespace {
 crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
     mojom::CertVerifierCreationParams* creation_params) {
   crypto::ScopedPK11Slot public_slot;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (creation_params && creation_params->nss_full_path.has_value()) {
-    public_slot =
-        crypto::OpenSoftwareNSSDB(creation_params->nss_full_path.value(),
-                                  /*description=*/"cert_db");
-    // `public_slot` can contain important security related settings. Crash if
-    // failed to load it.
-    CHECK(public_slot);
-  }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (creation_params && !creation_params->username_hash.empty()) {
     // Make sure NSS is initialized for the user.
     crypto::InitializeNSSForChromeOSUser(creation_params->username_hash,
@@ -68,7 +59,7 @@ crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
         crypto::GetPublicSlotForChromeOSUser(creation_params->username_hash);
   }
 #else
-#error IS_CHROMEOS set without IS_CHROMEOS_LACROS or IS_CHROMEOS_ASH
+#error IS_CHROMEOS set without IS_CHROMEOS_ASH
 #endif
   return public_slot;
 }

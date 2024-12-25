@@ -60,7 +60,7 @@ bool ScreenAIPreSandboxHook(base::FilePath binary_path,
       BrokerFilePermission::ReadOnly("/proc/cpuinfo"),
       BrokerFilePermission::ReadOnly("/proc/meminfo")};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
   permissions.push_back(
       BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/kernel_max"));
