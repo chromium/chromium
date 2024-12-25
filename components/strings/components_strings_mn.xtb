@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">Гэрэл зураг (архивын)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Веб аппликэйшнүүдийг суулгах уу?</translation>
+<translation id="1791415068765905273">Харьцуулалтын бүх хүснэгтийг харуулах</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Бүртгэлийнхээ мэдээлэл, нууцлал болон аюулгүй байдлыг удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1793631236004319016">Хамгийн сүүлд <ph name="NUM_HOURS_MINUTES_SECONDS" />-н өмнө ашигласан</translation>
@@ -961,6 +962,7 @@
 <translation id="2688969097326701645">Тийм, үргэлжлүүлье</translation>
 <translation id="2690699652723742414">Сүүлийн 30 хоног</translation>
 <translation id="2691924980723297736">Аюулгүй байдлын анхааруулга</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />-с асуух</translation>
 <translation id="2699273987028089219">Дэд цэс боломжтой, нэмэлт сонголтууд руу шилжихийн тулд <ph name="SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="2701514975700770343">Нүүрээр нь доош харуулсан</translation>
 <translation id="2702592986366989640">Хямд үнэтэй сонголт</translation>
@@ -2066,6 +2068,7 @@
 <translation id="469028408546145398">Нууцлалтай цонхыг хаах товчлуур, одоогоор нээлттэй байгаа бүх нууцлалтай цонхыг хаахын тулд идэвхжүүлнэ үү</translation>
 <translation id="4691093235373904540">Дээвэр нөхөх, засах үйлчилгээ</translation>
 <translation id="4692623383562244444">Хайлтын систем</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />-с асуух</translation>
 <translation id="4698692901173737941">Тулааны спортууд</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Хажуугийн</translation>
@@ -2198,6 +2201,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />-г суулгах (татаж авах шаардлагагүй)</translation>
 <translation id="4920457992177678649">Амралтын түрээсний байр болон богино хугацаанд байрлах газрууд</translation>
 <translation id="4920710383559189047">Шургуулдаг хавтас</translation>
+<translation id="4920921410507315601">Харьцуулалтын хүснэгт</translation>
 <translation id="4922104989726031751">Үйлдлийн системээрээ Нууц үгний менежерийг ашиглахын тулд Chromium-г дахин ачаалж, компьютерынхоо нууц үгний менежерт хандахыг зөвшөөрнө үү. Дахин ачаалсны дараа таны табуудыг дахин нээнэ.</translation>
 <translation id="4923459931733593730">Төлбөр</translation>
 <translation id="4926049483395192435">Заасан өгсөн байх ёстой.</translation>
@@ -2391,6 +2395,7 @@
 <translation id="5278778426231952189">Одоо байршуулах</translation>
 <translation id="5279286380302340275">Таталтуудыг удирдах</translation>
 <translation id="5280963125494874678">веб аппликэйшнүүд</translation>
+<translation id="5282008206326321696">{count,plural, =0{# хавчуурга}=1{# хавчуурга}other{# хавчуурга}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Документын төлөв байдал</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
@@ -2586,6 +2591,7 @@
 <translation id="561165882404867731">Энэ хуудсыг Google Орчуулагчаар орчуулах</translation>
 <translation id="5612720917913232150"><ph name="URL" /> таны компьютерийн байршлыг ашиглах хүсэлтэй байна</translation>
 <translation id="5614520971155863709">Хөзрийн тоглоомууд</translation>
+<translation id="5617785978844309968">Харьцуулалтын бүх хүснэгтийг харуулах</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> нь таныг хэтэрхий олон удаа дахин чиглүүлсэн байна.</translation>
 <translation id="5619721953841297650">Урьдчилсан тохируулга</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>

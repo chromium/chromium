@@ -112,6 +112,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
 <translation id="2513154137948333830">Enheten må startes på nytt: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">For å fortsette må du logge på Chromium med <ph name="EMAIL" />. Dette sikrer at organisasjonens regler overholdes.</translation>
 <translation id="2542968102051442371">Marker tekst med bildesøk</translation>
 <translation id="2554739539410784893">Chromium prøver å erstatte eksisterende passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2560420686485554789">Chromium må ha lagringstilgang for å laste ned filer</translation>

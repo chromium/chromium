@@ -19,6 +19,7 @@
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1082920045291562218">閂咗「透過摘要意見反映表分享」功能</translation>
+<translation id="1087176310396019910">疑似垃圾內容</translation>
 <translation id="1089606299949659462">審核已完成！</translation>
 <translation id="1094555143448724771">如要查看其他裝置上的分頁，請同步處理分頁和記錄</translation>
 <translation id="1095761715416917775">請確保您可隨時存取同步處理的資料</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
+<translation id="3301936297336370235">密碼建議確認</translation>
 <translation id="3302615849591357577">將「<ph name="TITLE_OF_GROUP" />」分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6196315980958524839">密碼會儲存至此裝置上的「Google 密碼管理工具」</translation>
 <translation id="6202812185118613467">重新登入即可開始同步</translation>
+<translation id="6204781143409202534">Chrome 偵測到來自 <ph name="DOMAIN" /> 的疑似垃圾內容。</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>

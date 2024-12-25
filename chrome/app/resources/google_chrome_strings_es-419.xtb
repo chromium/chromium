@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3941890832296813527">Error de instalación: El nombre de archivo del instalador no es válido o no es compatible.</translation>
+<translation id="3968962723676998462">Ingresa tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome quiere borrar tus datos del Administrador de contraseñas de Google. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="398236277091248993">Chrome mantiene la velocidad con funciones que mejoran el rendimiento</translation>
 <translation id="3999683152997576765">Puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">No se pudo completar la instalación debido a un error no identificado. Si Google Chrome se está ejecutando en este momento, ciérrelo e intente nuevamente.</translation>
 <translation id="4741235124132242877">Se fijó. Vuelve a usar Google Lens desde la barra de herramientas.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran.</translation>
+<translation id="475321580758063259">Actualiza Chrome para seguir usando los datos de Chrome en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
 <translation id="4793679854893018356">Obtén información acerca de cómo Chrome te protege</translation>
@@ -577,6 +579,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">La instalación falló porque tu computadora no cumple con los requisitos mínimos de hardware.</translation>
 <translation id="8111297389482307122">Chrome debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales, estos datos permanecerán en este dispositivo.</translation>
+<translation id="8113883687556086139">Verifica tu identidad para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Envía comentarios sobre la búsqueda con Lens</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>

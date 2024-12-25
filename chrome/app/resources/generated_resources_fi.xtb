@@ -1759,7 +1759,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2209841631181508629">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa <ph name="FIELDS_STRING" /> tälle sivustolle. Tutustu sivuston <ph name="BEGIN_LINK" />käyttöehtoihin<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Asennus ei onnistunut</translation>
 <translation id="2211043920024403606">Profiilin tiedot</translation>
-<translation id="2211245494465528624">Muuta synkronointiasetuksia</translation>
 <translation id="221297410904507041">Tyhjennä historia, evästeet, välimuisti ja muita tietoja</translation>
 <translation id="2213410656650624348">Kohtalainen</translation>
 <translation id="2214018885812055163">Jaetut kansiot</translation>
@@ -2756,7 +2755,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="288734198558082692"><ph name="DEVICE" /> ja <ph name="NUMBER_OF_DEVICES" /> muuta</translation>
 <translation id="2889043468805635730">Ongelmia ei löytynyt</translation>
 <translation id="2889064240420137087">Avaa linkki sovelluksessa...</translation>
-<translation id="2890206081124517553">Muista työpöydän taustakuva eri laitteilla</translation>
 <translation id="2891464434568738544">Sivustoja ei ole tällä hetkellä saatavilla. Lisää sivusto luetteloon käymällä sivustolla.</translation>
 <translation id="2891922230654533301">Haluatko käyttää laitetta kirjautumiseen: <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Oletusselain</translation>
@@ -8372,7 +8370,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6949434160682548041">Salasana (valinnainen)</translation>
 <translation id="6950143189069683062">Muistin tiedot</translation>
 <translation id="6950627417367801484">Palauta sovellukset</translation>
-<translation id="6954910832698269894">Laita laitteen synkronointi päälle, niin voit palauttaa sovellukset, asetukset, Wi-Fi-verkot ja taustakuvan aiemmasta Chromebookista. Voit tehdä muutoksia milloin tahansa valitsemalla Asetukset &gt; Tilit.</translation>
 <translation id="6954936693361896459">Striimaa sen sijaan tämä välilehti</translation>
 <translation id="6955446738988643816">Näytä ponnahdusikkuna</translation>
 <translation id="6955535239952325894">Tämä asetus on poistettu käytöstä ylläpidetyillä selaimilla</translation>
@@ -8890,7 +8887,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Välilehtien kopiot</translation>
 <translation id="7333388112938984914">Tiedostoja ei voi ladata käytön mukaan veloitettavalla yhteydellä.</translation>
-<translation id="7333669215417470379">Sovellusten ja asetusten varmuuskopiointi ja palauttaminen</translation>
 <translation id="7335974957018254119">Tarkista oikeinkirjoitus:</translation>
 <translation id="7336799713063880535">Ilmoitukset estetty</translation>
 <translation id="7337258336304389677">Käytä puhelinta tai tablettia</translation>
@@ -11340,7 +11336,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9032513103438497286">Estä laitteelle (<ph name="DEVICE_TYPE" />) asennetut sovellukset. Voit rajoittaa sovellusten tai sisällön lataamista Google Playn asetuksissa.</translation>
 <translation id="9033765790910064284">Jatka silti</translation>
 <translation id="9033857511263905942">&amp;Liitä</translation>
-<translation id="9034408118624208974">Oletko uusi Chromebookin käyttäjä? Laita synkronointi päälle, niin asetuksesi varmuuskopioidaan.</translation>
 <translation id="903480517321259405">Kirjoita PIN-koodi uudelleen</translation>
 <translation id="9036484080057916082">Allekirjoitettujen varmenteiden aikaleimalista</translation>
 <translation id="9037054491984310631">Yhdistetty Bluetooth-laitteeseen nimeltä <ph name="DEVICE" /></translation>
@@ -11386,7 +11381,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9068598199622656904">Paina pikanäppäinyhdistelmän näppäimiä yksi kerrallaan sen sijaan, että painaisit kaikkia yhtä aikaa</translation>
 <translation id="9068878141610261315">Tiedostotyyppiä ei tueta</translation>
 <translation id="9069417381769492963">Hakuasi vastaavia kirjanmerkkejä ei ole</translation>
-<translation id="9069665781180028115">Valitut kohteet ovat käytettävissä tällä Chromebookilla. Jos olet uusi Chromebook-käyttäjä, synkronoi kaikki kohteet, niin asetuksesi varmuuskopioidaan. Voit tehdä muutoksia milloin tahansa valitsemalla Asetukset &gt; Tilit.</translation>
 <translation id="9070231741075992882">Sovellukselle (<ph name="APP_NAME" />) sallitut luvat sallitaan myös sen asennetuille ja striimatuille sovelluksille.</translation>
 <translation id="9070342919388027491">Välilehti siirretty vasemmalle</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1749,7 +1749,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2209841631181508629">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web. Consulta les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" /> d'aquest lloc web.</translation>
 <translation id="2210462644007531147">No s'ha pogut completar la instal·lació</translation>
 <translation id="2211043920024403606">Informació del perfil</translation>
-<translation id="2211245494465528624">Gestiona les opcions de sincronització</translation>
 <translation id="221297410904507041">Suprimeix l'historial, les galetes, la memòria cau i altres dades</translation>
 <translation id="2213410656650624348">Moderat</translation>
 <translation id="2214018885812055163">Carpetes compartides</translation>
@@ -2743,7 +2742,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="288734198558082692"><ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> més</translation>
 <translation id="2889043468805635730">No s'ha trobat cap problema</translation>
 <translation id="2889064240420137087">Obre l'enllaç amb...</translation>
-<translation id="2890206081124517553">Recorda el fons d'escriptori en tots els dispositius</translation>
 <translation id="2891464434568738544">No hi ha cap lloc web disponible en aquest moment. Visita un lloc web per afegir-lo a aquesta llista.</translation>
 <translation id="2891922230654533301">Vols utilitzar el teu dispositiu per iniciar la sessió a <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminat</translation>
@@ -4604,6 +4602,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4220648711404560261">S'ha produït un error durant l'activació.</translation>
 <translation id="4222917615373664617">El seguiment dels preus està activat. El preu és <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">No està permès utilitzar el micròfon</translation>
+<translation id="4224541845943007092">Llegir i desar l'entrada del teclat des de la barra d'adreces</translation>
 <translation id="4225397296022057997">En tots els llocs web</translation>
 <translation id="4228071595943929139">Utilitza l'adreça electrònica de la teva organització</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Aquesta extensió no està permesa}other{Algunes extensions no estan permeses}}</translation>
@@ -8354,7 +8353,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6949434160682548041">Contrasenya (opcional)</translation>
 <translation id="6950143189069683062">Detalls de la memòria</translation>
 <translation id="6950627417367801484">Restaura les aplicacions</translation>
-<translation id="6954910832698269894">Activa la sincronització del dispositiu per restaurar les aplicacions, la configuració, les xarxes Wi-Fi i el fons de pantalla del teu Chromebook anterior. Fes canvis en qualsevol moment a Configuració &gt; Comptes.</translation>
 <translation id="6954936693361896459">Emet aquesta pestanya</translation>
 <translation id="6955446738988643816">Inspecciona l'element emergent</translation>
 <translation id="6955535239952325894">Aquesta opció de configuració està desactivada als navegadors gestionats</translation>
@@ -8872,7 +8870,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Pestanyes duplicades</translation>
 <translation id="7333388112938984914">No es poden penjar fitxers mentre s'utilitza una connexió mesurada.</translation>
-<translation id="7333669215417470379">Crea una còpia de seguretat i restaura les aplicacions i la configuració</translation>
 <translation id="7335974957018254119">Fes servir el corrector ortogràfic per a</translation>
 <translation id="7336799713063880535">Notificacions bloquejades</translation>
 <translation id="7337258336304389677">Utilitza el telèfon o la tauleta</translation>
@@ -11322,7 +11319,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9032513103438497286">Bloqueja les aplicacions instal·lades en aquest <ph name="DEVICE_TYPE" />. Per restringir el contingut o la baixada d'aplicacions, ves a la configuració de Google Play.</translation>
 <translation id="9033765790910064284">Continua igualment</translation>
 <translation id="9033857511263905942">&amp;Enganxa</translation>
-<translation id="9034408118624208974">És el teu primer Chromebook? Activa la sincronització perquè es creï una còpia de seguretat de les teves preferències.</translation>
 <translation id="903480517321259405">Torna a escriure el PIN</translation>
 <translation id="9036484080057916082">Llista de marques de temps de certificats signats</translation>
 <translation id="9037054491984310631">Connectat a un dispositiu Bluetooth anomenat <ph name="DEVICE" /></translation>
@@ -11368,7 +11364,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9068598199622656904">Prem una tecla a la vegada per a les tecles de drecera en lloc de mantenir-les premudes alhora</translation>
 <translation id="9068878141610261315">Aquest tipus de fitxer no s'admet</translation>
 <translation id="9069417381769492963">No hi ha cap adreça d'interès que coincideixi amb la teva cerca</translation>
-<translation id="9069665781180028115">Els elements seleccionats estaran disponibles en aquest Chromebook. Si és el teu primer Chromebook, sincronitza tots els elements perquè es creï una còpia de seguretat de les teves preferències. Fes canvis en qualsevol moment a Configuració &gt; Comptes.</translation>
 <translation id="9070231741075992882">Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran per a les seves aplicacions instal·lades i reproduïdes en continu.</translation>
 <translation id="9070342919388027491">La pestanya s'ha mogut cap a l'esquerra</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

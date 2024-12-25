@@ -121,6 +121,7 @@
 <translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium を引き続き使用</translation>
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2635452620547538388">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="264613044588233783">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します（推奨）</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
 <translation id="2661879430930417727">デバイスを共有している場合でも、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
@@ -448,6 +449,7 @@
 <translation id="6980074797973263542">あなたの組織は閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。個人用の Chromium プロフィールの閲覧データを確認することはできません。</translation>
 <translation id="6985329841647292029">Chromium OS 利用規約</translation>
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
+<translation id="7003299027384820442">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">インストールが停止しました。</translation>
@@ -543,6 +545,7 @@
 <translation id="8330519371938183845">ログインすると、同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="8340674089072921962">Chromium の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
 <translation id="8357820681460164151">お使いのすべてのデバイスで Chromium ブラウザの設定やデータを使用するには、ログインして同期を有効にしてください</translation>
+<translation id="8359544530202147897">Google アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを引き続き使用するには、Chromium を更新してください</translation>
 <translation id="8360718212975266891">今後、Chromium のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8 が実行されています。</translation>
 <translation id="8362914115861174987">訳文の言語</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

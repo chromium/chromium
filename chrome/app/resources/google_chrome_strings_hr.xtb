@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Deinstaliranje preglednika Google Chrome</translation>
 <translation id="3892148308691398805">Kopiranje teksta</translation>
 <translation id="3941890832296813527">Pogreška pri instalaciji: naziv datoteke programa za instalaciju nije važeći ili nije podržan.</translation>
+<translation id="3968962723676998462">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke Google upravitelja zaporki. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="398236277091248993">Chrome će i dalje biti brz uz značajke koje poboljšavaju izvedbu</translation>
 <translation id="3999683152997576765">Možete vidjeti i ukloniti teme koje web-lokacije koriste da bi vam prikazivale oglase. Chrome procjenjuje vaše interese na temelju vaše nedavne povijesti pregledavanja.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">Instalacija nije uspjela zbog nepoznate pogreške. Ako je program Google Chrome trenutno otvoren, zatvorite ga i pokušajte ponovno.</translation>
 <translation id="4741235124132242877">Prikvačeno! Ponovo upotrijebite Google objektiv s alatne trake</translation>
 <translation id="4747730611090640388">Chrome može procijeniti vaše interese.  Web-lokacija koju posjetite nakon toga može od Chromea tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati.</translation>
+<translation id="475321580758063259">Ažurirajte Chrome kako biste nastavili upotrebljavati podatke iz Chromea na svojem Google računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Upotrebljava istu provjeru pravopisa koja se upotrebljava na Google pretraživanju. Tekst koji unesete u preglednik šalje se Googleu. To ponašanje možete promijeniti u postavkama kad god želite.</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
@@ -577,6 +579,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8077579734294125741">Ostali profili na Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaše računalo ne zadovoljava minimalne zahtjeve za hardver.</translation>
 <translation id="8111297389482307122">Chrome treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se odjavite, ti će podaci ostati na ovom uređaju.</translation>
+<translation id="8113883687556086139">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretraživanje pomoću Objektiva</translation>
 <translation id="8129812357326543296">O programu Google Chrome</translation>
 <translation id="813913629614996137">Pokretanje...</translation>

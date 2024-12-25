@@ -123,6 +123,7 @@
 <translation id="2583187216237139145">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chromium 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2635452620547538388">請驗證身分，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="264613044588233783">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作 (建議)</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
 <translation id="2661879430930417727">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chromium</translation>
@@ -450,6 +451,7 @@
 <translation id="6980074797973263542">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看個人 Chromium 設定檔中的瀏覽資料。</translation>
 <translation id="6985329841647292029">Chromium 作業系統條款</translation>
 <translation id="6990124437352146030">Chromium 需要取得權限，才能讓這個網站存取您的麥克風</translation>
+<translation id="7003299027384820442">請輸入通關密語，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
@@ -545,6 +547,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
+<translation id="8359544530202147897">請更新 Chromium，以便繼續使用 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的 Chromium 資料</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="8362914115861174987">譯文語言</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>

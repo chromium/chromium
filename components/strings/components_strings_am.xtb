@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ፎቶ (በማህደር የሚቀመጥ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">የድር መተግበሪያዎች ይጫኑ?</translation>
+<translation id="1791415068765905273">ሁሉንም የንጽጽር ሠንጠረዦች አሳይ</translation>
 <translation id="1791429645902722292">Google ዘመናዊ ቁልፍ</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle መለያዎ ውስጥ የእርስዎን መረጃ፣ ግላዊነት እና ደህንነት ለማስተዳደር ትር ከዚያ አስገባን ይጫኑ</translation>
 <translation id="1793631236004319016">ለመጨረሻ ጊዜ ጥቅም ላይ የዋለው ከ<ph name="NUM_HOURS_MINUTES_SECONDS" /> በፊት</translation>
@@ -2196,6 +2197,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />ን ይጫኑ (ምንም ማውረድ አያስፈልግም)</translation>
 <translation id="4920457992177678649">የሽርሽር ኪራዮች እና የአጭር ጊዜ ቆይታዎች</translation>
 <translation id="4920710383559189047">መሸፈኛ</translation>
+<translation id="4920921410507315601">የንጽጽር ሠንጠረዦች</translation>
 <translation id="4922104989726031751">ከስርዓተ ክወናዎ ጋር የይለፍ ቃል አስተዳዳሪን ለመጠቀም Chromiumን ዳግም ያስጀምሩ እና የኮምፒውተርዎን ይለፍ ቃል አቀናባሪ የመግቢያ ፍቃድ ይስጡ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="4923459931733593730">ክፍያ</translation>
 <translation id="4926049483395192435">መገለጽ አለበት።</translation>
@@ -2389,6 +2391,7 @@
 <translation id="5278778426231952189">አሁን ስቀል</translation>
 <translation id="5279286380302340275">ውርዶችን ያቀናብሩ</translation>
 <translation id="5280963125494874678">የድር መተግበሪያዎች</translation>
+<translation id="5282008206326321696">{count,plural, =0{# ዕልባቶች}=1{# ዕልባት}one{# ዕልባት}other{# ዕልባቶች}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">የሰነድ ባሕሪያት</translation>
 <translation id="528468243742722775">ጨርስ</translation>
@@ -2584,6 +2587,7 @@
 <translation id="561165882404867731">በGoogle ትርጉም አማካኝነት ይህን ገፅ ይተርጉሙ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> የኮምፒውተርዎን አካባቢ መጠቀም ይፈልጋል</translation>
 <translation id="5614520971155863709">የካርታ ጨዋታዎች</translation>
+<translation id="5617785978844309968">ሁሉንም የንጽጽር ሠንጠረዦች አሳይ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> እርስዎን በጣም ብዙ ጊዜ ወደ ሌላ ቦታ መርተዎታል።</translation>
 <translation id="5619721953841297650">ቅድመ-ቅምጥ</translation>
 <translation id="5624120631404540903">የይለፍ ቃሎችን አስተዳድር</translation>

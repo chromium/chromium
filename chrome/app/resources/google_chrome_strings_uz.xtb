@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Google Chrome’ni o‘chirib tashlash</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
 <translation id="3941890832296813527">Oʻrnatishda xato: Oʻrnatish vositasi fayl nomi yaroqsiz yoki ishlamaydi.</translation>
+<translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> hisobingizda Chrome maʼlumotlaridan foydalanish va saqlash uchun kalit iborangizni kiriting</translation>
 <translation id="3973161977468201858">Google Chrome Google Parollar menejeri maʼlumotlaringizni oʻchirmoqchi. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="398236277091248993">Chrome unumdorlikni oshirish funksiyalari bilan tez ishlaydi</translation>
 <translation id="3999683152997576765">Saytlar reklamani chiqarish uchun ishlatadigan sizga qiziq mavzularni koʻrishingiz va olib tashlashingiz mumkin. Chrome siz ochgan saytlar asosida sizga qiziq boʻlishi mumkin mavzularni taxmin qiladi.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qayta urinib ko‘ring.</translation>
 <translation id="4741235124132242877">Mahkamlandi! Endi uni asboblar panelidan ochish mumkin</translation>
 <translation id="4747730611090640388">Chrome qiziqishlaringizni taxmin qilishi mumkin.  Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chrome ilovasidan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
+<translation id="475321580758063259"><ph name="ACCOUNT_EMAIL" /> Google hisobingizda Chrome maʼlumotlaridan foydalanishda davom etish uchun Chrome brauzerini yangilang</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Google qidiruvida ishlatiladigan imlo tekshiruvi vositasidan foydalanadi. Brauzerda kiritiladigan matn Google serverlariga yuboriladi. Buni istalgan vaqtda sozlamalar orqali oʻzgartirish mumkin.</translation>
 <translation id="4793679854893018356">Chrome qanday qilib sizni himoya qilishi haqida batafsil</translation>
@@ -581,6 +583,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8077579734294125741">Boshqa Chrome profillari</translation>
 <translation id="8086881907087796310">Kompyuter minimal talablarga javob bermasligi sababli oʻrnatilmadi.</translation>
 <translation id="8111297389482307122">Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chrome shaxsingizni tasdiqlashi kerak. Hisobdan chiqsangiz, bu maʼlumotlar qurilmada saqlanib qoladi.</translation>
+<translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> hisobingizda Chrome maʼlumotlaridan foydalanish va saqlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="8118331347066725040">Lens bilan qidirish haqida fikr-mulohaza yuborish</translation>
 <translation id="8129812357326543296">&amp;Google Chrome haqida</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>

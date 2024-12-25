@@ -961,6 +961,7 @@
 <translation id="2688969097326701645">ਹਾਂ, ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2690699652723742414">ਪਿਛਲੇ 30 ਦਿਨ</translation>
 <translation id="2691924980723297736">ਸੁਰੱਖਿਆ ਚਿਤਾਵਨੀ</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="2699273987028089219">ਸਬਮੀਨੂ ਉਪਲਬਧ ਹੈ, ਵਧੀਕ ਵਿਕਲਪਾਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ <ph name="SHORTCUT" /> ਵਰਤੋ।</translation>
 <translation id="2701514975700770343">ਹੇਠਾਂ ਵੱਲ ਪਾਸਾ ਕੀਤੇ</translation>
 <translation id="2702592986366989640">ਘੱਟ ਕੀਮਤ ਵਾਲੇ ਵਿਕਲਪ</translation>
@@ -2062,6 +2063,7 @@
 <translation id="469028408546145398">'ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ' ਬਟਨ, ਫ਼ਿਲਹਾਲ ਖੁੱਲ੍ਹੀਆਂ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4691093235373904540">ਛੱਤ ਬਣਾਉਣਾ</translation>
 <translation id="4692623383562244444">ਖੋਜ ਇੰਜਣ</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ਨੂੰ ਪੁੱਛੋ</translation>
 <translation id="4698692901173737941">ਲੜਾਈ ਵਾਲੀਆਂ ਖੇਡਾਂ</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ਪਾਸਾ</translation>
@@ -3291,6 +3293,7 @@
 <translation id="6925267999184670015">ਨਾਰਥ ਅਮਰੀਕਨ B+</translation>
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="692638818576287323">ਵਪਾਰਕ ਵਾਹਨ</translation>
+<translation id="6933282894115597956">ਤੁਹਾਡੀ ਸੰਸਥਾ ਮੁਤਾਬਕ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਜ਼ਰੂਰੀ ਹੈ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿੰਦਾ ਹੈ<ph name="END_BOLD" /> ਜਿਵੇਂ ਕਿ ਪਤਾ ਬਾਰ ਅਤੇ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਮੌਜੂਦ ਚਿੱਤਰਾਂ ਦੀ ਮਦਦ ਨਾਲ ਖੋਜ ਕਰਨਾ। ਜੇ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ ਕਿਸੇ ਸੁਵਿਧਾ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਾ ਹੋਵੇ।</translation>
 <translation id="6934672428414710184">ਇਹ ਨਾਮ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਲਿਆ ਗਿਆ ਹੈ</translation>
 <translation id="6935082727755903526">ਲੇਖਾਕਾਰੀ ਜਾਂ ਵਿੱਤੀ ਖੇਤਰ ਵਾਲੀਆਂ ਨੌਕਰੀਆਂ</translation>

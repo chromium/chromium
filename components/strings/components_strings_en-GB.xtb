@@ -461,6 +461,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1777422078676229054">Photo (archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Install web apps?</translation>
+<translation id="1791415068765905273">Show all comparison tables</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your info, privacy and security in your Google Account</translation>
 <translation id="1793631236004319016">Last used <ph name="NUM_HOURS_MINUTES_SECONDS" /> ago</translation>
@@ -2197,6 +2198,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4918221908152712722">Install <ph name="APP_NAME" /> (no download required)</translation>
 <translation id="4920457992177678649">Holiday Rentals and Short-Term Stays</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4920921410507315601">Comparison tables</translation>
 <translation id="4922104989726031751">To use Password Manager with your operating system, relaunch Chromium and allow access to your computer's password manager. Your tabs will reopen after relaunching.</translation>
 <translation id="4923459931733593730">Payment</translation>
 <translation id="4926049483395192435">Must be specified.</translation>
@@ -2390,6 +2392,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5278778426231952189">Upload now</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
 <translation id="5280963125494874678">web applications</translation>
+<translation id="5282008206326321696">{count,plural, =0{# bookmarks}=1{# bookmark}other{# bookmarks}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Document properties</translation>
 <translation id="528468243742722775">End</translation>
@@ -2585,6 +2588,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="561165882404867731">Translate this page with Google Translate</translation>
 <translation id="5612720917913232150"><ph name="URL" /> wants to use your computer's location</translation>
 <translation id="5614520971155863709">Card games</translation>
+<translation id="5617785978844309968">Show all comparison tables</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redirected you too many times.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Manage passwords</translation>

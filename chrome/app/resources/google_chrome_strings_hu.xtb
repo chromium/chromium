@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">A Google Chrome eltávolítása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
+<translation id="3968962723676998462">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">A Google Chrome törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="398236277091248993">A Chrome gyors marad a teljesítménynövelő funkciókkal</translation>
 <translation id="3999683152997576765">Megtekintheti és eltávolíthatja azokat a témaköröket, amelyeket a webhelyek hirdetések megjelenítésére használnak. A Chrome az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján határozza meg.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">A telepítés váratlan hiba miatt nem sikerült. Ha a Google Chrome jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4741235124132242877">Sikeres kitűzés. Ha megint használni szeretné a Google Lens funkciót, megteheti az eszköztárból</translation>
 <translation id="4747730611090640388">A Chrome megbecsülheti az Ön érdeklődési köreit.  Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chrome-tól az Ön érdeklődési köreinek megismerését.</translation>
+<translation id="475321580758063259">Frissítse a Chrome-ot, hogy továbbra is használhassa a Google-fiókjában (<ph name="ACCOUNT_EMAIL" />) lévő Chrome-adatokat</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
 <translation id="4793679854893018356">További információ arról, hogy miként gondoskodik a Chrome az Ön biztonságáról</translation>
@@ -577,6 +579,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
 <translation id="8086881907087796310">A telepítés sikertelen volt, mert a számítógép nem felel meg a minimális hardverkövetelményeknek.</translation>
 <translation id="8111297389482307122">A Chrome-nak ellenőriznie kell az Ön személyazonosságát, mielőtt bizonyos adatokat menthetne az Ön Google-fiókjába, és minden eszközén használhatná őket. Ha kijelentkezik, ezek az adatok megmaradnak ezen az eszközön.</translation>
+<translation id="8113883687556086139">Igazolja személyazonosságát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8118331347066725040">Visszajelzés küldése a Lens segítségével való keresésről</translation>
 <translation id="8129812357326543296">A &amp;Google Chrome névjegye</translation>
 <translation id="813913629614996137">Indítás…</translation>

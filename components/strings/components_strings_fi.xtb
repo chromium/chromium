@@ -1149,7 +1149,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="306573536155379004">Peli aloitettu</translation>
 <translation id="3067505415088964188">Hinta on alhainen</translation>
 <translation id="3068118691172921711">Tiedostojen lataus (<ph name="CLOUD_PROVIDER" />) alkaa minuutin kuluttua</translation>
-<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} kohde}other{{ITEMS} kohdetta}}</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} tuote}other{{ITEMS} tuotetta}}</translation>
 <translation id="3076865167425975822">Käyttöjärjestelmät</translation>
 <translation id="3080254622891793721">Graafinen</translation>
 <translation id="3082007635241601060">Salli Googlelle pääsy ostoskoreihisi, jotta se voi löytää sinulle personoituja alennuksia</translation>

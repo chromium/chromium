@@ -1756,7 +1756,6 @@
 <translation id="2209841631181508629">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK" />شرایط خدمات<ph name="END_LINK" /> این سایت را بررسی کنید.</translation>
 <translation id="2210462644007531147">نصب کامل نشد</translation>
 <translation id="2211043920024403606">اطلاعات نمایه</translation>
-<translation id="2211245494465528624">مدیریت گزینه‌های همگام‌سازی</translation>
 <translation id="221297410904507041">حذف کردن سابقه، کوکی‌ها، حافظه نهان، و غیره</translation>
 <translation id="2213410656650624348">متوسط</translation>
 <translation id="2214018885812055163">پوشه‌های اشتراک‌گذاری‌شده</translation>
@@ -2753,7 +2752,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> و <ph name="NUMBER_OF_DEVICES" /> مورد دیگر</translation>
 <translation id="2889043468805635730">مشکلی پیدا نشد</translation>
 <translation id="2889064240420137087">بازکردن پیوند با...</translation>
-<translation id="2890206081124517553">به‌خاطر سپردن پس‌زمینه میز کار در دستگاه‌های مختلف</translation>
 <translation id="2891464434568738544">درحال‌حاضر هیچ سایتی در‌دسترس نیست. برای افزودن سایت به این فهرست، از آن بازدید کنید.</translation>
 <translation id="2891922230654533301">برای وارد شدن به سیستم <ph name="APP_NAME" /> از دستگاهتان استفاده شود؟</translation>
 <translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
@@ -8373,7 +8371,6 @@
 <translation id="6949434160682548041">گذرواژه (اختیاری)</translation>
 <translation id="6950143189069683062">جزئیات حافظه</translation>
 <translation id="6950627417367801484">بازیابی برنامه‌ها</translation>
-<translation id="6954910832698269894">‏برای بازیابی برنامه‌ها، تنظیمات، شبکه‌های Wi-Fi، و کاغذدیواری از دستگاه Chromebook قبلی، همگام‌سازی دستگاه را روشن کنید. هرزمان خواستید تغییرات موردنظر را در «تنظیمات &gt; حساب‌ها» اعمال کنید.</translation>
 <translation id="6954936693361896459">به‌جای آن، محتوای این برگه پخش شود</translation>
 <translation id="6955446738988643816">بازرسی پنجره بازشو</translation>
 <translation id="6955535239952325894">این تنظیم در مرورگرهای مدیریت‌شده غیرفعال است</translation>
@@ -8891,7 +8888,6 @@
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">برگه‌های تکراری</translation>
 <translation id="7333388112938984914">هنگام استفاده از اتصال با حجم محدود، نمی‌توان فایل بارگذاری کرد.</translation>
-<translation id="7333669215417470379">پشتیبان‌گیری و بازیابی برنامه‌ها و تنظیمات</translation>
 <translation id="7335974957018254119">استفاده از غلط‌یاب املایی برای</translation>
 <translation id="7336799713063880535">اعلان‌ها مسدود شدند.</translation>
 <translation id="7337258336304389677">استفاده از تلفن یا رایانه لوحی</translation>
@@ -11340,7 +11336,6 @@
 <translation id="9032513103438497286">‏برنامه‌های نصب‌شده در این <ph name="DEVICE_TYPE" /> را مسدود می‌کنید. برای محدود کردن بارگیری برنامه‌ها یا محتوا، به «تنظیمات Google Play» بروید.</translation>
 <translation id="9033765790910064284">ادامه درهرصورت</translation>
 <translation id="9033857511263905942">&amp;جای‌گذاری</translation>
-<translation id="9034408118624208974">‏به‌تازگی استفاده از Chromebook را شروع کرده‌اید؟ همگام‌سازی را روشن کنید تا از اولویت‌های شما پشتیبان‌گیری شود.</translation>
 <translation id="903480517321259405">پین را دوباره تایپ کنید</translation>
 <translation id="9036484080057916082">فهرست مُهر زمان گواهینامه امضاشده</translation>
 <translation id="9037054491984310631">متصل به دستگاه بلوتوث با نام <ph name="DEVICE" /></translation>
@@ -11386,7 +11381,6 @@
 <translation id="9068598199622656904">برای «میان‌برهای صفحه‌کلید»، به‌جای نگه داشتن هم‌زمان کلیدها، هر بار یک کلید را فشار دهید</translation>
 <translation id="9068878141610261315">نوع فایل پشتیبانی نمی‌شود</translation>
 <translation id="9069417381769492963">هیچ نشانکی با جستجوی شما مطابقت ندارد</translation>
-<translation id="9069665781180028115">‏موارد انتخاب‌شده در این Chromebook دردسترس خواهد بود. اگر به‌تازگی استفاده از Chromebook را شروع کرده‌اید، همه موارد را همگام‌سازی کنید تا از اولویت‌های شما پشتیبان‌گیری شود. هرزمان خواستید تغییرات موردنظر را در «تنظیمات &gt; حساب‌ها» اعمال کنید.</translation>
 <translation id="9070231741075992882">اجازه‌هایی که به <ph name="APP_NAME" /> اعطا می‌کنید به برنامه‌های نصب‌شده و جاری‌سازی‌شده آن نیز اعطا خواهد شد.</translation>
 <translation id="9070342919388027491">برگه به چپ منتقل شد</translation>
 <translation id="9074739597929991885">بلوتوث</translation>

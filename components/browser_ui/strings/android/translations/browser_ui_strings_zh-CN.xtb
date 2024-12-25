@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">已暂停下载</translation>
 <translation id="1396327438254055134">允许网站使用 V8 优化工具。</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
+<translation id="1415855080660575082">允许 Chrome 与您的设备分享您近期打开的标签页，以便在设备的应用列表和搜索结果中查看这些标签页。您可以在 Chrome 设置中开启或关闭此功能。</translation>
 <translation id="1448064542941920355">缩小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 个网站}other{<ph name="SITE_COUNT" /> 个网站}}</translation>
 <translation id="1500473259453106018">隐藏“在标签页上显示降价通知”卡片</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">您暂时允许了此网站使用第三方 Cookie，这意味着您选择采用较低级别的浏览保护措施，但网站功能更有可能会按预期运行。<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">在无痕模式下，某些网站上的功能可能会无法正常运行</translation>
 <translation id="2442870161001914531">始终请求访问桌面版网站</translation>
+<translation id="2445311670906052406">Chrome 现在会与您的设备分享您近期打开的标签页。您可以在设备的应用列表和搜索结果中看到这些标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="2469312991797799607">此操作会删除 <ph name="ORIGIN" /> 及其下属所有网站的全部数据和 Cookie</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">卸载</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
 <translation id="2787357173144933081">快速启动多功能框</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
+<translation id="2814830417943086299">Chrome 现在会在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2850913818900871965">请求使用移动视图</translation>
 <translation id="2870560284913253234">网站</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
 <translation id="9138217887606523162">当前缩放比例为 <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">让 Chrome 在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>

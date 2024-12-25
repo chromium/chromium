@@ -1645,6 +1645,7 @@
 <translation id="6539852571005954999">جارٍ فحص الملف <ph name="FILENAME" /> لتنزيله</translation>
 <translation id="6542521951477560771">البث على <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">‏رموز الإيموجي وصور GIF والمزيد</translation>
+<translation id="6543942526104794893">هل المطلوب فعلاً إيقاف ميزة إيماءات الوجه؟</translation>
 <translation id="6545382064335350438">يتعذَّر حتى الآن تأكيد صحة رقم التعريف الشخصي. يُرجى إعادة المحاولة.</translation>
 <translation id="6555373427270923730">‏اكتب عنوان الويب في شريط العناوين، ثم اضغط على ‎<ph name="MODIFIER" /><ph name="KEY" />.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2312,6 +2313,7 @@
 <translation id="8855885154700222542">مفتاح ملء الشاشة</translation>
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
 <translation id="8860366331836346216">‏إضافة شريحة eSIM</translation>
+<translation id="8869149849311827122">هل المطلوب فعلاً إيقاف ميزة التحكّم باستخدام مؤشر الماوس؟</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8873203135446552888">تأكيد رغبتك في إيقاف لوحة اللمس المُدمَجة</translation>
 <translation id="8874184842967597500">غير متصل</translation>

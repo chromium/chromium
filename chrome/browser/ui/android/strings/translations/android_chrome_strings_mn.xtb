@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
 <translation id="1080365971383768617">Таны бүх төхөөрөмж дээрх нууц үгнүүд</translation>
 <translation id="1082920045291562218">Хураангуйн санал хүсэлтийг хуваалцах хүснэгтийг хаасан</translation>
+<translation id="1087176310396019910">Болзошгүй спам</translation>
 <translation id="1089606299949659462">Шалгаж дууслаа!</translation>
 <translation id="1094555143448724771">Бусад төхөөрөмжийнхөө табуудыг харахын тулд таб, түүхээ синк хийнэ үү</translation>
 <translation id="1095761715416917775">Та синк хийх өгөгдөлдөө үргэлж хандах боломжтой эсэхээ шалгана уу</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> таб}}</translation>
 <translation id="3293181007446299124">Таны хөтчийн түүхийг төхөөрөмж дээр тань нууцалж, таныг таних мэдээллийг хамгаалах үүднээс тайлангуудыг саатуулан илгээдэг</translation>
+<translation id="3301936297336370235">Нууц үгний зөвлөмжийн баталгаажуулалт</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> өнгөтэй, <ph name="TITLE_OF_GROUP" /> нэртэй табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээх.</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
@@ -1136,6 +1138,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6193448654517602979">Таб сонгох</translation>
 <translation id="6196315980958524839">Нууц үгнүүдийг энэ төхөөрөмж дээр Google Password Manager-т хадгалдаг</translation>
 <translation id="6202812185118613467">Синк хийж эхлэхийн тулд буцаж нэвтэрнэ үү</translation>
+<translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-с болзошгүй спам илрүүллээ.</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
 <translation id="6211386937064921208">Энэ хуудсыг урьдчилан үзэж байна</translation>

@@ -1742,7 +1742,6 @@
 <translation id="2209841631181508629">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
 <translation id="2211043920024403606">个人资料信息</translation>
-<translation id="2211245494465528624">管理同步选项</translation>
 <translation id="221297410904507041">删除历史记录、Cookie、缓存内容及其他数据</translation>
 <translation id="2213410656650624348">适中</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
@@ -2735,7 +2734,6 @@
 <translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2889043468805635730">未发现问题</translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
-<translation id="2890206081124517553">记住您在各设备上的桌面背景</translation>
 <translation id="2891464434568738544">目前未打开任何网站。访问某个网站即可将其添加到此列表中。</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
@@ -4596,6 +4594,7 @@
 <translation id="4220648711404560261">激活时出错。</translation>
 <translation id="4222917615373664617">价格跟踪功能已启用。现价为 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="4223404254440398437">已拒绝授予麦克风使用权限</translation>
+<translation id="4224541845943007092">读取并保存地址栏中的键盘输入内容</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4228071595943929139">使用贵组织的电子邮件地址</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
@@ -8344,7 +8343,6 @@
 <translation id="6949434160682548041">密码（选填）</translation>
 <translation id="6950143189069683062">内存详情</translation>
 <translation id="6950627417367801484">还原应用</translation>
-<translation id="6954910832698269894">开启设备同步即可恢复您之前所用 Chromebook 中的应用、设置、Wi-Fi 网络和壁纸。您可随时在“设置”&gt;“账号”下进行更改。</translation>
 <translation id="6954936693361896459">改为投放此标签页</translation>
 <translation id="6955446738988643816">审查弹出内容</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
@@ -8605,6 +8603,7 @@
 <translation id="7134951043985383439">下载的文件有危险</translation>
 <translation id="7135729336746831607">要开启蓝牙吗？</translation>
 <translation id="7136694880210472378">设为默认选项</translation>
+<translation id="7137277889990479760">继续以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="7137771508221868414">这会删除由网站和安装的应用存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
@@ -8861,7 +8860,6 @@
 <translation id="7332053360324989309">Dedicated Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">重复标签页</translation>
 <translation id="7333388112938984914">使用按流量计费的网络时无法上传文件。</translation>
-<translation id="7333669215417470379">备份和恢复您所用的应用和设置</translation>
 <translation id="7335974957018254119">支持拼写检查的语言</translation>
 <translation id="7336799713063880535">已屏蔽通知。</translation>
 <translation id="7337258336304389677">使用手机或平板电脑</translation>
@@ -9185,6 +9183,7 @@
 <translation id="7561196759112975576">永远</translation>
 <translation id="7561759921596375678">开启声音</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
+<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
 <translation id="7564847347806291057">结束进程</translation>
 <translation id="756503097602602175">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 账号。您向网站和应用授予的权限可能会应用于所有账号。如果不想让网站或应用获取您的账号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />，或者在<ph name="LINK_2_BEGIN" />无痕式窗口<ph name="LINK_2_END" />中浏览网页。</translation>
@@ -10876,6 +10875,7 @@
 <translation id="8737966899544698733">位置信息精确度（仅限 Android）</translation>
 <translation id="8738418093147087440">按国家/地区、语言或输入法名称搜索</translation>
 <translation id="8740086188450289493">使用 Google 账号密码</translation>
+<translation id="874023689350909633">试试看</translation>
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">开关控制设置指南</translation>
@@ -11308,7 +11308,6 @@
 <translation id="9032513103438497286">屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用。如要限制下载应用或内容，请前往 Google Play 设置。</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
-<translation id="9034408118624208974">初次使用 Chromebook？不妨开启同步功能以便备份您的偏好设置。</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>
 <translation id="9036484080057916082">签名证书时间戳列表</translation>
 <translation id="9037054491984310631">已连接到名为“<ph name="DEVICE" />”的蓝牙设备</translation>
@@ -11354,7 +11353,6 @@
 <translation id="9068598199622656904">只需一次按下一个键即可执行键盘快捷操作，而不用同时按住多个键</translation>
 <translation id="9068878141610261315">不支持此文件类型</translation>
 <translation id="9069417381769492963">没有任何与您的搜索条件相符的书签</translation>
-<translation id="9069665781180028115">您将可以在此 Chromebook 上使用所选项。如果您是初次使用 Chromebook，不妨同步所有项以便备份您的偏好设置。您可随时在“设置”&gt;“账号”下进行更改。</translation>
 <translation id="9070231741075992882">您向“<ph name="APP_NAME" />”授予的权限也会授给它安装的应用和流式传输的应用。</translation>
 <translation id="9070342919388027491">此标签页已移至左侧</translation>
 <translation id="9074739597929991885">蓝牙</translation>

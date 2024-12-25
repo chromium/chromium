@@ -1647,6 +1647,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6539852571005954999">Download <ph name="FILENAME" /> yang sedang dipindai</translation>
 <translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF, dan lainnya</translation>
+<translation id="6543942526104794893">Yakin ingin menonaktifkan gestur wajah?</translation>
 <translation id="6545382064335350438">PIN Anda masih tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="6555373427270923730">Ketik alamat web di kolom URL, lalu tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8858369206579825206">Kontrol privasi</translation>
 <translation id="8860366331836346216">Tambahkan eSIM</translation>
+<translation id="8869149849311827122">Yakin ingin menonaktifkan kontrol kursor mouse?</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
 <translation id="8873203135446552888">Konfirmasi bahwa Anda ingin menonaktifkan touchpad bawaan</translation>
 <translation id="8874184842967597500">Tak terhubung</translation>

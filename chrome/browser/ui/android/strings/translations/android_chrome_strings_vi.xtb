@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
 <translation id="1080365971383768617">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="1082920045291562218">Trang Chia sẻ kèm theo phản hồi về bảng tóm tắt đã đóng</translation>
+<translation id="1087176310396019910">Có thể là thông báo rác</translation>
 <translation id="1089606299949659462">Đã hoàn tất quá trình xem xét!</translation>
 <translation id="1094555143448724771">Để xem thẻ từ các thiết bị khác của bạn, hãy đồng bộ hoá các thẻ và nhật ký</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
@@ -508,6 +509,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> thẻ}}</translation>
 <translation id="3293181007446299124">Nhật ký duyệt web của bạn được bảo mật trên thiết bị của bạn. Các báo cáo gửi đi sẽ được trì hoãn để bảo vệ danh tính của bạn</translation>
+<translation id="3301936297336370235">Xác nhận đề xuất về mật khẩu</translation>
 <translation id="3302615849591357577">Khôi phục nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
@@ -1136,6 +1138,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6196315980958524839">Mật khẩu sẽ được lưu vào Trình quản lý mật khẩu của Google trên thiết bị này</translation>
 <translation id="6202812185118613467">Đăng nhập lại để bắt đầu đồng bộ hoá</translation>
+<translation id="6204781143409202534">Chrome phát hiện thấy thông báo có thể là thông báo rác từ <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>

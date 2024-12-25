@@ -961,6 +961,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2688969097326701645">Ha, davom etilsin</translation>
 <translation id="2690699652723742414">Oxirgi 30 kun</translation>
 <translation id="2691924980723297736">Ogohlantirish</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />dan soʻrash</translation>
 <translation id="2699273987028089219">Quyi menyusi mavjud. Qoʻshimcha parametrlarni ochish uchun <ph name="SHORTCUT" />ni bosing.</translation>
 <translation id="2701514975700770343">Orqa tomonida</translation>
 <translation id="2702592986366989640">Past narxdagi variant</translation>
@@ -2061,6 +2062,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="469028408546145398">Inkognito oynalarni yopish tugmasi, hozir ochilgan barcha Inkognito oynalarni yopish uchun faollashtiring</translation>
 <translation id="4691093235373904540">Tom yopish</translation>
 <translation id="4692623383562244444">Qidiruv tizimlari</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />dan soʻrash</translation>
 <translation id="4698692901173737941">Yakkakurash</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Tomoni</translation>

@@ -426,6 +426,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1282436639288565079">Detalles del grupo de pestañas</translation>
 <translation id="1283126956823499975">Se produjo un error cuando se configuraba el dispositivo</translation>
 <translation id="1284277788676816155">No permitir que se guarden los datos</translation>
+<translation id="1284912418686719556">Chrome está creando una contraseña segura para ti. No es necesario que la recuerdes porque se guarda en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Nunca traducir este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos en tu cuenta de Google Drive</translation>
 <translation id="1285625592773741684">La configuración de uso de datos actual es Datos móviles</translation>
@@ -1746,7 +1747,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta las <ph name="BEGIN_LINK" />condiciones del servicio<ph name="END_LINK" /> del sitio.</translation>
 <translation id="2210462644007531147">No se pudo completar la instalación</translation>
 <translation id="2211043920024403606">Información del perfil</translation>
-<translation id="2211245494465528624">Administrar opciones de sincronización</translation>
 <translation id="221297410904507041">Borra el historial, las cookies, la memoria caché y más</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Carpetas compartidas</translation>
@@ -2740,7 +2740,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="288734198558082692"><ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> más</translation>
 <translation id="2889043468805635730">No se encontraron problemas</translation>
 <translation id="2889064240420137087">Abrir el vínculo con...</translation>
-<translation id="2890206081124517553">Recuerda el fondo de tu escritorio en distintos dispositivos</translation>
 <translation id="2891464434568738544">No hay sitios disponibles en este momento. Visita un sitio para agregarlo a esta lista.</translation>
 <translation id="2891922230654533301">¿Quieres usar tu dispositivo para acceder a <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
@@ -6909,7 +6908,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5895335062901455404">Tu actividad y tus preferencias guardadas estarán listas en cualquier dispositivo con ChromeOS Flex cuando accedes con tu Cuenta de Google. En Configuración, podrás elegir los datos que quieras sincronizar.</translation>
 <translation id="5895338131909306775">Laboratorio de química</translation>
 <translation id="589541317545606110">Buscar en la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="5895549920267917925">Te ayuda a concentrarte en lo que estés haciendo</translation>
+<translation id="5895549920267917925">Te ayuda a concentrarte en lo que estés haciendo.</translation>
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> está grabando tu pantalla</translation>
 <translation id="5896436821193322561">No permitir</translation>
 <translation id="5899860758576822363">Reproducir a un volumen más bajo cuando ChromeVox esté hablando</translation>
@@ -7565,6 +7564,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="637642201764944055">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Linux después de diciembre de 2022. Comunícate con el administrador para que quite esta app o la actualice a una versión nueva.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir en redes Wi-Fi</translation>
+<translation id="6379228010899751161">Verifica tu identidad para asegurarte de que siempre puedas usar las contraseñas en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="6383382161803538830">El modo de lectura no está disponible en esta página</translation>
 <translation id="638418309848716977">Vínculos compatibles</translation>
@@ -7813,7 +7813,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="656293578423618167">La ruta de acceso o el nombre del archivo es demasiado largo. Guarda con un nombre más corto o en otra ubicación.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
 <translation id="6563055593659435495">No se puede mantener la conexión con tu teléfono. Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
-<translation id="6564860838537532172">Cuando buscas en el historial de navegación, las búsquedas en el historial, el contenido de la página de las mejores coincidencias y los resultados del modelo generado se envían a Google y es posible que los vean revisores humanos para mejorar esta función.</translation>
+<translation id="6564860838537532172">Cuando buscas en el historial de navegación, las búsquedas en el historial, el contenido de la página de las mejores coincidencias y los resultados generados por el modelo se envían a Google y es posible que los vean revisores humanos para mejorar esta función.</translation>
 <translation id="6569931898053264308">Ahorro: moderado</translation>
 <translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Se necesita permiso para continuar con la descarga.</translation>
@@ -8298,7 +8298,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6900651018461749106">Vuelve a acceder para actualizar <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">¿Estás seguro de que deseas borrar este motor de búsqueda?</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
-<translation id="6901130673208235020">Cuando buscas en el historial de navegación, las búsquedas en el historial, el contenido de la página de las mejores coincidencias y los resultados del modelo generado se envían a Google.</translation>
+<translation id="6901130673208235020">Cuando buscas en el historial de navegación, las búsquedas en el historial, el contenido de la página de las mejores coincidencias y los resultados generados por el modelo se envían a Google.</translation>
 <translation id="6902066522699286937">Voz de prueba</translation>
 <translation id="6902336033320348843">La sección no es compatible: <ph name="ERROR_LINE" /></translation>
 <translation id="6903022061658753260">Tu información se sincronizará en todos los navegadores Chrome donde hayas activado la sincronización con esta cuenta. Para acceder a las opciones de sincronización de ChromeOS, ve a la <ph name="LINK_BEGIN" />configuración de ChromeOS<ph name="LINK_END" />.</translation>
@@ -8358,7 +8358,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950143189069683062">Detalles de la memoria</translation>
 <translation id="6950627417367801484">Restablecer apps</translation>
-<translation id="6954910832698269894">Activa la sincronización del dispositivo para restablecer las apps, la configuración, las redes Wi-Fi y los fondos de pantalla de tu Chromebook anterior. Puedes realizar cambios cuando quieras en Configuración &gt; Cuentas.</translation>
 <translation id="6954936693361896459">Transmitir esta pestaña en su lugar</translation>
 <translation id="6955446738988643816">Inspeccionar ventana emergente</translation>
 <translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados.</translation>
@@ -8876,7 +8875,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7332053360324989309">Trabajador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Duplica pestañas</translation>
 <translation id="7333388112938984914">No se pueden subir archivos mientras usas una conexión de uso medido.</translation>
-<translation id="7333669215417470379">Crea una copia de seguridad de tus apps y de tu configuración y restablécelas</translation>
 <translation id="7335974957018254119">Usar el corrector ortográfico para</translation>
 <translation id="7336799713063880535">Notificaciones bloqueadas</translation>
 <translation id="7337258336304389677">Usa tu teléfono o tablet</translation>
@@ -9617,6 +9615,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo con ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si habilitaste la configuración Actividad web y de aplicaciones en tu Cuenta de Google, es posible que se almacenen tus datos de Android en la cuenta. Para ver tus datos, borrarlos y cambiar la configuración de la cuenta, accede a account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a tus resultados personales o a tu Asistente. Desde la configuración de tu Asistente puedes hacer que "Hey Google" esté activado solo cuando este dispositivo está conectado a una fuente de alimentación, a fin de ahorrar batería.</translation>
+<translation id="7851196412551419054">Cambiando tu contraseña…</translation>
 <translation id="7851457902707056880">El acceso se restringió únicamente a la cuenta del propietario. Reinicia el sistema y accede con la cuenta del propietario. El equipo se reiniciará automáticamente en 30 segundos.</translation>
 <translation id="7851716364080026749">Siempre bloquear el acceso a la cámara y al micrófono</translation>
 <translation id="7851720427268294554">Analizador de IPP</translation>
@@ -11204,6 +11203,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8962863356073277855">El formato de la URL debe ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este sitio está usando los sensores de movimiento y luz.</translation>
 <translation id="8963117664422609631">Ir a la configuración del sitio</translation>
+<translation id="8964927371396953727">Verifica tu identidad para usar y guardar contraseñas en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Ingresa la contraseña anterior.</translation>
 <translation id="8966809848145604011">Otros perfiles</translation>
 <translation id="8967427617812342790">Agregar a la Lista de lectura</translation>
@@ -11325,7 +11325,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9032513103438497286">Bloquea las apps instaladas en tu <ph name="DEVICE_TYPE" />. Para restringir la descarga de apps o contenido, ve a la configuración de Google Play.</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
-<translation id="9034408118624208974">¿Es la primera vez que usas una Chromebook? Activa la sincronización para que se cree una copia de seguridad de tus preferencias.</translation>
 <translation id="903480517321259405">Vuelve a introducir el PIN</translation>
 <translation id="9036484080057916082">Lista de marcas de tiempo del certificado firmado</translation>
 <translation id="9037054491984310631">Se estableció conexión con el dispositivo Bluetooth <ph name="DEVICE" /></translation>
@@ -11371,7 +11370,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9068598199622656904">Presiona una tecla a la vez para usar las combinaciones de teclas en lugar de mantenerlas presionadas a la vez.</translation>
 <translation id="9068878141610261315">Tipo de archivo no compatible</translation>
 <translation id="9069417381769492963">No hay favoritos que coincidan con tu búsqueda</translation>
-<translation id="9069665781180028115">Los elementos seleccionados estarán disponibles en esta Chromebook. Si es la primera vez que usas una Chromebook, sincroniza todos los elementos para que se cree una copia de seguridad de tus preferencias. Puedes realizar cambios cuando quieras en Configuración &gt; Cuentas.</translation>
 <translation id="9070231741075992882">Los permisos que habilites para <ph name="APP_NAME" /> también se permitirán para sus apps instaladas y transmitidas.</translation>
 <translation id="9070342919388027491">Se movió la pestaña hacia la izquierda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

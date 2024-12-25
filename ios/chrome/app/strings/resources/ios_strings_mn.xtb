@@ -1204,6 +1204,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6418346271604475326">PDF форматыг бэлдэж байна</translation>
 <translation id="6429213933892582367">Нууц үгний сонголтыг нээнэ үү</translation>
 <translation id="6434591244308415567">Алдаа гарлаа. Дараа дахин оролдоно уу.</translation>
+<translation id="6435307030888827407">Гарсан хэвээр байх</translation>
 <translation id="6436318499800111867"><ph name="SHARED_WITH_ME_DATE" />-нд надтай хуваалцсан</translation>
 <translation id="6442697326824312960">Цонхыг тусгай сонголтоос гаргах</translation>
 <translation id="6443118737398455446">Дуусах огноо буруу</translation>
@@ -1397,6 +1398,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Хайлтын түүх<ph name="END_LINK" /> болон <ph name="BEGIN_LINK" />бусад хэлбэрийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй.</translation>
 <translation id="7253951228444156601">Нууц үгсийг шалгаж байна…</translation>
 <translation id="7261217796641151584">Бүлэг хуваалцах</translation>
+<translation id="7266578100016339897">Энэ нь танд цэгцтэй байхад тусална. Та үүнийг тохиргоонд хүссэн үедээ өөрчлөх боломжтой.</translation>
 <translation id="7271220006028561438">Нэвтрэх түлхүүрийг автоматаар сайжруулахыг зөвшөөрөх</translation>
 <translation id="7272437679830969316">Таныг баталгаажуулж чадсангүй. Нууц үгийг хуулаагүй байна.</translation>
 <translation id="7293429513719260019">Хэл сонгох</translation>
@@ -1591,6 +1593,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="8084285576995584326">Google Бүртгэлийн өгөгдлөө хянана уу</translation>
 <translation id="809543534949702122">Хайлтын түүх</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Таны ашигладаггүй табуудыг {COUNT} хоногийн дараа ийш зөөдөг}other{Таны ашигладаггүй табуудыг {COUNT} хоногийн дараа ийш зөөдөг}}</translation>
 <translation id="8101409298456377967">Нууц үгээ үүсгэж, хадгалж мөн удирдсанаар та сайтууд болон аппуудад хялбархан нэвтрэх боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Ш</translation>
 <translation id="8114753159095730575">Файл татаж авах боломжтой. Дэлгэцийн доод хэсгийн сонголтууд боломжтой.</translation>

@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">ใช้ลายนิ้วมือหรือปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
 <translation id="240545663114741956">กด <ph name="ACCELERATOR" /> 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="2405664212338326887">ไม่เชื่อมต่อ</translation>
+<translation id="2406710117564540804">เปิด/ปิดโหมดห้ามรบกวน</translation>
 <translation id="2408955596600435184">ป้อน PIN ของคุณ</translation>
 <translation id="2412593942846481727">มีเวอร์ชันอัปเดต</translation>
 <translation id="2416438829169535743">ออกจากมุมมองไหม</translation>
@@ -1642,6 +1643,7 @@
 <translation id="6539852571005954999">กำลังสแกน <ph name="FILENAME" /> เพื่อดาวน์โหลด</translation>
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">อีโมจิ, GIF และอื่นๆ</translation>
+<translation id="6543942526104794893">คุณแน่ใจไหมว่าต้องการปิดการแสดงสีหน้า</translation>
 <translation id="6545382064335350438">ยังคงยืนยัน PIN ของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="6555373427270923730">พิมพ์ที่อยู่เว็บในแถบที่อยู่แล้วกด <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2308,6 +2310,7 @@
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
 <translation id="8860366331836346216">เพิ่ม eSIM</translation>
+<translation id="8869149849311827122">คุณแน่ใจไหมว่าต้องการปิดการควบคุมเคอร์เซอร์เมาส์</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8873203135446552888">ยืนยันว่าคุณต้องการปิดใช้ทัชแพดในตัว</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>

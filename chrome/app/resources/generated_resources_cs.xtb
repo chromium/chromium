@@ -1749,7 +1749,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2209841631181508629">Aby bylo možné pokračovat, bude <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> s tímto webem sdílet tyto vaše údaje: <ph name="FIELDS_STRING" />. Přečtěte si <ph name="BEGIN_LINK" />smluvní podmínky<ph name="END_LINK" /> tohoto webu.</translation>
 <translation id="2210462644007531147">Instalaci se nepodařilo dokončit</translation>
 <translation id="2211043920024403606">Profilové údaje</translation>
-<translation id="2211245494465528624">Správa možností synchronizace</translation>
 <translation id="221297410904507041">Vymažte historii, soubory cookie, mezipaměť a další obsah</translation>
 <translation id="2213410656650624348">Mírné</translation>
 <translation id="2214018885812055163">Sdílené složky</translation>
@@ -2743,7 +2742,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="288734198558082692"><ph name="DEVICE" /> a ještě <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nebyly nalezeny žádné problémy</translation>
 <translation id="2889064240420137087">Otevřít odkaz pomocí...</translation>
-<translation id="2890206081124517553">Pamatovat si pozadí plochy napříč zařízeními</translation>
 <translation id="2891464434568738544">Aktuálně nejsou k dispozici žádné weby. Pokud nějaký web do tohoto seznamu chcete přidat, navštivte ho.</translation>
 <translation id="2891922230654533301">Přihlásit se pomocí zařízení do aplikace <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Výchozí prohlížeč</translation>
@@ -4602,6 +4600,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4220648711404560261">Při aktivaci došlo k chybě.</translation>
 <translation id="4222917615373664617">Sledování ceny je zapnuto. Cena je <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofon není povolen</translation>
+<translation id="4224541845943007092">Číst a ukládat vstup z klávesnice z adresního řádku</translation>
 <translation id="4225397296022057997">Na všech webech</translation>
 <translation id="4228071595943929139">Použijte e‑mailovou adresu své organizace</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Toto rozšíření není povoleno}few{Některá rozšíření nejsou povolena}many{Některá rozšíření nejsou povolena}other{Některá rozšíření nejsou povolena}}</translation>
@@ -8350,7 +8349,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950143189069683062">Podrobnosti o paměti</translation>
 <translation id="6950627417367801484">Obnovit aplikace</translation>
-<translation id="6954910832698269894">Pokud chcete obnovit aplikace, nastavení, sítě Wi-Fi a tapetu z předchozího Chromebooku, zapněte synchronizaci zařízení. Změny můžete kdykoli provést v části Nastavení &gt; Účty.</translation>
 <translation id="6954936693361896459">Namísto toho odeslat tuto kartu</translation>
 <translation id="6955446738988643816">Prozkoumat vyskakovací okna</translation>
 <translation id="6955535239952325894">Toto nastavení je ve spravovaných prohlížečích zakázáno</translation>
@@ -8610,6 +8608,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7134951043985383439">Byl stažen nebezpečný soubor</translation>
 <translation id="7135729336746831607">Zapnout Bluetooth?</translation>
 <translation id="7136694880210472378">Nastavit jako výchozí</translation>
+<translation id="7137277889990479760">Pokračovat jako <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Tímto vymažete <ph name="TOTAL_USAGE" /> dat, která uložily weby a nainstalované aplikace</translation>
 <translation id="7138678301420049075">Ostatní</translation>
 <translation id="7139627972753429585">Aplikace <ph name="APP_NAME" /> používá váš mikrofon</translation>
@@ -8864,7 +8863,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7332053360324989309">Vyhrazený pracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Duplicitní karty</translation>
 <translation id="7333388112938984914">Při měřeném připojení nelze nahrávat soubory.</translation>
-<translation id="7333669215417470379">Zálohujte a obnovte své aplikace a nastavení</translation>
 <translation id="7335974957018254119">Používat kontrolu pravopisu pro</translation>
 <translation id="7336799713063880535">Oznámení jsou blokována.</translation>
 <translation id="7337258336304389677">Použijte telefon nebo tablet</translation>
@@ -9187,6 +9185,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561759921596375678">Zapnout zvuk</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
+<translation id="7563970324931922582">[zástupný text]</translation>
 <translation id="756445078718366910">Otevřít okno prohlížeče</translation>
 <translation id="7564847347806291057">Ukončit proces</translation>
 <translation id="756503097602602175">Přihlášené účty Google můžete spravovat v <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" />. Oprávnění, která jste udělili webům a aplikacím, se mohou vztahovat na všechny účty. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, můžete se do zařízení <ph name="DEVICE_TYPE" /> přihlásit jako host nebo web procházet v <ph name="LINK_2_BEGIN" />anonymním okně<ph name="LINK_2_END" />.</translation>
@@ -10876,6 +10875,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8737966899544698733">Přesnost určování polohy (pouze Android)</translation>
 <translation id="8738418093147087440">Vyhledat podle zemí, jazyka nebo názvů metod zadávání</translation>
 <translation id="8740086188450289493">Použít heslo k účtu Google</translation>
+<translation id="874023689350909633">Vyzkoušet</translation>
 <translation id="8740247629089392745">Tento Chromebook můžete předat uživateli <ph name="SUPERVISED_USER_NAME" />. Nastavení je skoro hotové. Pak bude čas prozkoumat obsah.</translation>
 <translation id="8740672167979365981">Je vyžadována aktualizace systému ChromeOS Flex</translation>
 <translation id="8741944563400125534">Průvodce nastavením přístupu pomocí přepínačů</translation>
@@ -11310,7 +11310,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="9032513103438497286">Blokovat aplikace nainstalované na tomto zařízení <ph name="DEVICE_TYPE" />. Pokud chcete omezit stahování aplikací nebo obsahu, přejděte do Nastavení Google Play.</translation>
 <translation id="9033765790910064284">Přesto pokračovat</translation>
 <translation id="9033857511263905942">&amp;Vložit</translation>
-<translation id="9034408118624208974">Začínáte s Chromebookem? Zapněte synchronizaci, aby se vaše předvolby zálohovaly.</translation>
 <translation id="903480517321259405">Znovu zadejte PIN</translation>
 <translation id="9036484080057916082">Seznam časových razítek podepsaných certifikátů</translation>
 <translation id="9037054491984310631">Připojeno k zařízení Bluetooth s názvem <ph name="DEVICE" /></translation>
@@ -11356,7 +11355,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9068598199622656904">Klávesové zkratky aktivujete stisknutím kláves postupně, nikoli současným podržením</translation>
 <translation id="9068878141610261315">Nepodporovaný typ souboru</translation>
 <translation id="9069417381769492963">Hledání neodpovídají žádné záložky</translation>
-<translation id="9069665781180028115">Na tomto Chromebooku budou k dispozici vybrané položky. Pokud s Chromebookem začínáte, synchronizujte všechny položky, aby se vaše předvolby zálohovaly. Změny můžete kdykoli provést v části Nastavení &gt; Účty.</translation>
 <translation id="9070231741075992882">Oprávnění, která povolíte pro aplikaci <ph name="APP_NAME" />, budou povolena také pro přidružené nainstalované a streamované aplikace.</translation>
 <translation id="9070342919388027491">Karta se přesunula vlevo</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1744,7 +1744,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2209841631181508629">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt. Shiko <ph name="BEGIN_LINK" />kushtet e shërbimit<ph name="END_LINK" /> të këtij sajti.</translation>
 <translation id="2210462644007531147">Instalimi nuk mund të përfundohej</translation>
 <translation id="2211043920024403606">Informacionet e profilit</translation>
-<translation id="2211245494465528624">Menaxho opsionet e sinkronizimit</translation>
 <translation id="221297410904507041">Fshi historikun, kukit, memorien specifike etj.</translation>
 <translation id="2213410656650624348">Mesatar</translation>
 <translation id="2214018885812055163">Dosjet e ndara</translation>
@@ -2739,7 +2738,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="288734198558082692"><ph name="DEVICE" /> dhe <ph name="NUMBER_OF_DEVICES" /> të tjera</translation>
 <translation id="2889043468805635730">Nuk u gjetën probleme</translation>
 <translation id="2889064240420137087">Hap lidhjen me...</translation>
-<translation id="2890206081124517553">Kujto imazhin tënd të sfondit të desktopit mes pajisjeve të ndryshme</translation>
 <translation id="2891464434568738544">Nuk ka asnjë sajt aktualisht të disponueshëm. Vizito një sajt për ta shtuar te kjo listë.</translation>
 <translation id="2891922230654533301">Dëshiron ta përdorësh këtë pajisje për t'u identifikuar në <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
@@ -8346,7 +8344,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6949434160682548041">Fjalëkalimi (opsional)</translation>
 <translation id="6950143189069683062">Detajet e memories</translation>
 <translation id="6950627417367801484">Rivendos aplikacionet</translation>
-<translation id="6954910832698269894">Aktivizo sinkronizimin e pajisjes për të restauruar aplikacionet, cilësimet, rrjetet Wi-Fi dhe imazhin e sfondit nga pajisja jote e mëparshme Chromebook. Bëj ndryshime në çdo kohë te Cilësimet &gt; Llogaritë.</translation>
 <translation id="6954936693361896459">Transmeto këtë skedë më mirë</translation>
 <translation id="6955446738988643816">Inspekto menynë kërcyese</translation>
 <translation id="6955535239952325894">Ky cilësim është i çaktivizuar në shfletuesit e menaxhuar</translation>
@@ -8605,6 +8602,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7134951043985383439">U shkarkua një skedar i rrezikshëm</translation>
 <translation id="7135729336746831607">Të aktivizohet Bluetooth-i?</translation>
 <translation id="7136694880210472378">Bëje të parazgjedhur</translation>
+<translation id="7137277889990479760">Vazhdo si <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet dhe aplikacionet e instaluara</translation>
 <translation id="7138678301420049075">Tjetër</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> po përdor mikrofonin tënd</translation>
@@ -8859,7 +8857,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7332053360324989309">Procesi i posaçëm i punës: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Skedat dublikatë</translation>
 <translation id="7333388112938984914">Nuk mund të ngarkosh skedarë ndërsa ke një lidhje me matje.</translation>
-<translation id="7333669215417470379">Rezervo dhe restauro aplikacionet dhe cilësimet e tua</translation>
 <translation id="7335974957018254119">Përdor kontrollin drejtshkrimor për</translation>
 <translation id="7336799713063880535">Njoftimet u bllokuan.</translation>
 <translation id="7337258336304389677">Përdor telefonin ose tabletin</translation>
@@ -9183,6 +9180,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7561759921596375678">Aktivizo volumin</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
+<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Hap dritaren e shfletuesit</translation>
 <translation id="7564847347806291057">Përfundo procesin</translation>
 <translation id="756503097602602175">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në pajisjen <ph name="DEVICE_TYPE" /> si vizitor ose të shfletosh në ueb në një <ph name="LINK_2_BEGIN" />dritare të fshehtë<ph name="LINK_2_END" />.</translation>
@@ -10871,6 +10869,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8737966899544698733">Saktësia e vendndodhjes (vetëm për Android)</translation>
 <translation id="8738418093147087440">Kërko sipas shteteve, gjuhëve ose emrave të hyrjeve</translation>
 <translation id="8740086188450289493">Përdor fjalëkalimin e "Llogarisë së Google"</translation>
+<translation id="874023689350909633">Provoje</translation>
 <translation id="8740247629089392745">Këtë Chromebook mund t'ia dorëzosh <ph name="SUPERVISED_USER_NAME" />. Konfigurimi pothuajse mbaroi, më pas është koha për eksplorim.</translation>
 <translation id="8740672167979365981">Kërkohet përditësimi i Chrome OS Flex</translation>
 <translation id="8741944563400125534">Udhëzuesi i konfigurimit të "Qasjes me çelës"</translation>
@@ -11303,7 +11302,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9032513103438497286">Blloko aplikacionet e instaluara në këtë <ph name="DEVICE_TYPE" />. Për të kufizuar shkarkimin e aplikacioneve ose përmbajtjeve, shko te "Cilësimet" e Google Play.</translation>
 <translation id="9033765790910064284">Vazhdo gjithsesi</translation>
 <translation id="9033857511263905942">&amp;Ngjite</translation>
-<translation id="9034408118624208974">Je i ri në Chromebook? Aktivizo sinkronizimin që preferencat e tua të rezervohen.</translation>
 <translation id="903480517321259405">Shkruaj përsëri PIN-in</translation>
 <translation id="9036484080057916082">Lista e vulave kohore të certifikatave të nënshkruara</translation>
 <translation id="9037054491984310631">Lidhur me pajisjen me Bluetooth të emërtuar <ph name="DEVICE" /></translation>
@@ -11349,7 +11347,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9068598199622656904">Shtyp një tast në të njëjtën kohë për shkurtoret e tastierës në vend që t'i mbash tastet të shtypura në të njëjtën kohë</translation>
 <translation id="9068878141610261315">Lloji i skedarit nuk mbështetet</translation>
 <translation id="9069417381769492963">Nuk ka faqeshënues që përputhen me kërkimin tënd</translation>
-<translation id="9069665781180028115">Artikujt e zgjedhur do të jenë të disponueshëm në këtë Chromebook. Nëse je i ri në Chromebook, sinkronizo të gjithë artikujt që preferencat e tua të rezervohen. Bëj ndryshime në çdo kohë te Cilësimet &gt; Llogaritë.</translation>
 <translation id="9070231741075992882">Lejet që lejon për <ph name="APP_NAME" /> do të lejohen po ashtu për aplikacionet e instaluara dhe të transmetuara nga ai.</translation>
 <translation id="9070342919388027491">Skeda u zhvendos majtas</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>

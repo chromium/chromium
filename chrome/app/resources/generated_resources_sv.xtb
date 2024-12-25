@@ -426,6 +426,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1282436639288565079">Information om flikgruppen</translation>
 <translation id="1283126956823499975">Något gick fel med konfigureringen av enheten</translation>
 <translation id="1284277788676816155">Tillåt inte att data sparas</translation>
+<translation id="1284912418686719556">Chrome skapar ett starkt lösenord åt dig. Du behöver inte komma ihåg det eftersom det sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1285484354230578868">Spara data i Google Drive-kontot</translation>
 <translation id="1285625592773741684">Den aktuella inställningen för dataanvändning är Mobildata</translation>
@@ -1759,7 +1760,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Det gick inte att slutföra installationen</translation>
 <translation id="2211043920024403606">Profilinformation</translation>
-<translation id="2211245494465528624">Hantera synkroniseringsalternativ</translation>
 <translation id="221297410904507041">Radera historik, cookies, cacheminne med mera</translation>
 <translation id="2213410656650624348">Måttligt</translation>
 <translation id="2214018885812055163">Delade mappar</translation>
@@ -2756,7 +2756,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="288734198558082692"><ph name="DEVICE" /> och <ph name="NUMBER_OF_DEVICES" /> till</translation>
 <translation id="2889043468805635730">Inga problem hittades</translation>
 <translation id="2889064240420137087">Öppna länk med ...</translation>
-<translation id="2890206081124517553">Kom ihåg skrivbordsbakgrunden på alla enheter</translation>
 <translation id="2891464434568738544">Det finns för närvarande inga tillgängliga webbplatser. Besök en webbplats för att lägga till den i den här listan.</translation>
 <translation id="2891922230654533301">Vill du logga in på <ph name="APP_NAME" /> med enheten?</translation>
 <translation id="2893168226686371498">Standardwebbläsare</translation>
@@ -7581,6 +7580,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="637642201764944055">Äldre versioner av Chrome-appar öppnas inte på Linux-enheter efter december 2022. Kontakta administratören om att uppdatera till en ny version eller ta bort appen.</translation>
 <translation id="6377268785556383139">1 resultat för <ph name="SEARCH_TEXT" /></translation>
 <translation id="6378392501584240055">Öppna i wifi-nätverk</translation>
+<translation id="6379228010899751161">Verifiera din identitet så att du alltid kan använda lösenorden i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Godkänn och fortsätt</translation>
 <translation id="6383382161803538830">Läsläget är inte tillgängligt på den här sidan</translation>
 <translation id="638418309848716977">Länkar som stöds</translation>
@@ -8374,7 +8374,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6949434160682548041">Lösenord (valfritt)</translation>
 <translation id="6950143189069683062">Minnesinformation</translation>
 <translation id="6950627417367801484">Återställ appar</translation>
-<translation id="6954910832698269894">Aktivera enhetssynkronisering om du vill återställa appar, inställningar, wifi-nätverk och bakgrund från din tidigare Chromebook. Du kan göra ändringar när du vill i Inställningar &gt; Konton.</translation>
 <translation id="6954936693361896459">Casta den här fliken i stället</translation>
 <translation id="6955446738988643816">Kontrollera popup</translation>
 <translation id="6955535239952325894">Inställningen är inaktiverad för hanterade webbläsare</translation>
@@ -8892,7 +8891,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Flikdubbletter</translation>
 <translation id="7333388112938984914">Det går inte att ladda upp filer via en anslutning med datapriser.</translation>
-<translation id="7333669215417470379">Säkerhetskopiera och återställa appar och inställningar</translation>
 <translation id="7335974957018254119">Använd stavningskontroll för</translation>
 <translation id="7336799713063880535">Aviseringar stoppas.</translation>
 <translation id="7337258336304389677">Använd din telefon eller surfplatta</translation>
@@ -9633,6 +9631,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på ChromeOS-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Någon med en liknande röst eller en inspelning av din röst kan få åtkomst till dina personliga resultat eller Google Assistent. För att spara batteri kan du välja att ”Hey Google” endast är aktiverat när enheten är ansluten till en strömkälla. Detta gör du i Assistent-inställningarna.</translation>
+<translation id="7851196412551419054">Ändra lösenordet …</translation>
 <translation id="7851457902707056880">Inloggning kan bara göras med ägarkontot. Starta om och logga in med ägarkontot. Datorn kommer att startas om automatiskt om 30 sekunder.</translation>
 <translation id="7851716364080026749">Blockera alltid åtkomst till kamera och mikrofon</translation>
 <translation id="7851720427268294554">IPP-analysator</translation>
@@ -11220,6 +11219,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8962863356073277855">Webbadressen ska ha formatet https://www.example.com</translation>
 <translation id="8962918469425892674">Den här webbplatsen använder enhetens rörelse- eller ljussensor.</translation>
 <translation id="8963117664422609631">Öppna webbplatsinställningarna</translation>
+<translation id="8964927371396953727">Verifiera din identitet för att använda och spara lösenord i ditt konto <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Ange det gamla lösenordet</translation>
 <translation id="8966809848145604011">Andra profiler</translation>
 <translation id="8967427617812342790">Lägg till i läslistan</translation>
@@ -11341,7 +11341,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9032513103438497286">Blockera appar som har installerats på denna <ph name="DEVICE_TYPE" />. Öppna inställningarna för Google Play om du vill begränsa nedladdning av appar eller innehåll.</translation>
 <translation id="9033765790910064284">Fortsätt ändå</translation>
 <translation id="9033857511263905942">K&amp;listra in</translation>
-<translation id="9034408118624208974">Har du inte använt en Chromebook tidigare? Aktivera synkronisering så att dina inställningar säkerhetskopieras.</translation>
 <translation id="903480517321259405">Skriv pinkoden en gång till</translation>
 <translation id="9036484080057916082">Lista med tidsstämplar för signerade certifikat</translation>
 <translation id="9037054491984310631">Ansluten till Bluetooth-enheten <ph name="DEVICE" /></translation>
@@ -11387,7 +11386,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9068598199622656904">Använd kortkommandon genom att trycka på en tangent i taget i stället för att hålla ned alla samtidigt</translation>
 <translation id="9068878141610261315">Filtypen stöds inte</translation>
 <translation id="9069417381769492963">Det finns inga bokmärken som matchar sökningen</translation>
-<translation id="9069665781180028115">Valda objekt blir tillgängliga på denna Chromebook. Om du inte har använt en Chromebook tidigare synkroniserar du alla objekt så att dina inställningar säkerhetskopieras. Du kan göra ändringar när du vill i Inställningar &gt; Konton.</translation>
 <translation id="9070231741075992882">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för installerade och streamade appar.</translation>
 <translation id="9070342919388027491">Fliken flyttades åt vänster</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

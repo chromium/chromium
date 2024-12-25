@@ -385,6 +385,7 @@
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
 <translation id="5947104538377036631">Chrome-snarvei</translation>
 <translation id="5953954252731207958">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chrome anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktøy fra Chrome<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
@@ -603,6 +604,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
 <translation id="8425765582779547329">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, logg på Chrome</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
+<translation id="8429214465555795676">For å fortsette må du logge på Chrome med <ph name="EMAIL" />. Dette sikrer at organisasjonens regler overholdes.</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8451192282033883849">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chrome-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>
 <translation id="8496177819998570653">Google P&amp;assordlagring</translation>

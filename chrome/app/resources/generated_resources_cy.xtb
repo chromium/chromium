@@ -1763,7 +1763,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2209841631181508629">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu'ch <ph name="FIELDS_STRING" /> â'r wefan hon. Gweler <ph name="BEGIN_LINK" />telerau gwasanaeth<ph name="END_LINK" /> y wefan hon.</translation>
 <translation id="2210462644007531147">Methu â chwblhau gosod</translation>
 <translation id="2211043920024403606">Manylion proffil</translation>
-<translation id="2211245494465528624">Rheoli opsiynau cysoni</translation>
 <translation id="221297410904507041">Dileu hanes, cwcis, storfa dros dro, a rhagor</translation>
 <translation id="2213410656650624348">Cymedrol</translation>
 <translation id="2214018885812055163">Ffolderi sydd wedi'u rhannu</translation>
@@ -2760,7 +2759,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="288734198558082692"><ph name="DEVICE" /> a <ph name="NUMBER_OF_DEVICES" /> eraill</translation>
 <translation id="2889043468805635730">Ni chanfuwyd unrhyw broblemau</translation>
 <translation id="2889064240420137087">Agor y ddolen gyda...</translation>
-<translation id="2890206081124517553">Cofio eich cefndir bwrdd gwaith ar draws dyfeisiau</translation>
 <translation id="2891464434568738544">Dim gwefannau ar gael ar hyn o bryd. Ymweld â gwefan i'w hychwanegu at y rhestr hon.</translation>
 <translation id="2891922230654533301">Defnyddio eich dyfais i fewngofnodi i <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Porwr diofyn</translation>
@@ -8388,7 +8386,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="6949434160682548041">Cyfrinair (dewisol)</translation>
 <translation id="6950143189069683062">Manylion Cof</translation>
 <translation id="6950627417367801484">Adfer apiau</translation>
-<translation id="6954910832698269894">Trowch gysoni dyfais ymlaen i adfer eich apiau, gosodiadau, rhwydweithiau Wi-Fi, a phapur wal o'ch Chromebook blaenorol. Gwnewch newidiadau unrhyw bryd yn y Gosodiadau &gt; Cyfrifon.</translation>
 <translation id="6954936693361896459">Castio'r tab hwn yn lle</translation>
 <translation id="6955446738988643816">Archwilio Ffenestr Naid</translation>
 <translation id="6955535239952325894">Mae'r gosodiad hwn wedi'i analluogi ar borwyr a reolir</translation>
@@ -8905,7 +8902,6 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7332053360324989309">Gweithiwr Un Pwrpas: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tabiau dyblyg</translation>
 <translation id="7333388112938984914">Methu ag uwchlwytho ffeiliau tra eich bod ar gysylltiad mesuredig.</translation>
-<translation id="7333669215417470379">Gwneud copïau wrth gefn ac adfer eich apiau a'ch gosodiadau</translation>
 <translation id="7335974957018254119">Defnyddio'r nodwedd gwirio sillafu ar gyfer</translation>
 <translation id="7336799713063880535">Rhwystrwyd hysbysiadau.</translation>
 <translation id="7337258336304389677">Defnyddiwch eich ffôn neu lechen</translation>
@@ -11359,7 +11355,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9032513103438497286">Rhwystro apiau sydd wedi'u gosod ar y <ph name="DEVICE_TYPE" /> yma. I gyfyngu ar lawrlwytho apiau neu gynnwys, ewch i'r Gosodiadau Google Play.</translation>
 <translation id="9033765790910064284">Parhau beth bynnag</translation>
 <translation id="9033857511263905942">&amp;Gludo</translation>
-<translation id="9034408118624208974">Newydd i Chromebook? Trowch cysoni ymlaen fel y bydd eich dewisiadau yn cael eu cadw wrth gefn.</translation>
 <translation id="903480517321259405">Teipiwch y PIN eto</translation>
 <translation id="9036484080057916082">Rhestr Stampiau Amser Tystysgrif wedi'i Llofnodi</translation>
 <translation id="9037054491984310631">Wedi'i gysylltu â dyfais Bluetooth a enwir <ph name="DEVICE" /></translation>
@@ -11405,7 +11400,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9068598199622656904">Pwyswch un fysell ar y tro ar gyfer llwybrau byr bysellfwrdd yn lle dal bysellau i lawr ar yr un pryd</translation>
 <translation id="9068878141610261315">Math o ffeil na chefnogir</translation>
 <translation id="9069417381769492963">Nid oes unrhyw nodau tudalen sy'n cyfateb i'ch chwiliad</translation>
-<translation id="9069665781180028115">Bydd yr eitemau a ddewiswyd ar gael ar y Chromebook hwn. Os ydych yn newydd i Chromebook, cysonwch bob eitem fel y bydd eich dewisiadau yn cael eu cadw wrth gefn. Gwnewch newidiadau unrhyw bryd yn y Gosodiadau &gt; Cyfrifon.</translation>
 <translation id="9070231741075992882">Bydd caniatadau rydych yn eu cymeradwyo ar gyfer <ph name="APP_NAME" /> hefyd yn cael eu caniatáu ar gyfer ei apiau sydd wedi'u gosod a'u ffrydio.</translation>
 <translation id="9070342919388027491">Mae tab wedi'i symud i'r chwith</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

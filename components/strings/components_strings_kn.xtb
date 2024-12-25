@@ -460,6 +460,7 @@
 <translation id="1777422078676229054">ಫೋಟೋ (ಆರ್ಕೈವಲ್)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೇ?</translation>
+<translation id="1791415068765905273">ಎಲ್ಲಾ ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತೆಯನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1793631236004319016">ಕೊನೆಯದಾಗಿ <ph name="NUM_HOURS_MINUTES_SECONDS" /> ಹಿಂದೆ ಬಳಸಲಾಗಿದೆ</translation>
@@ -961,6 +962,7 @@
 <translation id="2688969097326701645">ಹೌದು, ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="2690699652723742414">ಕಳೆದ 30 ದಿನಗಳು</translation>
 <translation id="2691924980723297736">ಸುರಕ್ಷತೆಯ ಎಚ್ಚರಿಕೆ</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="2699273987028089219">ಸಬ್‌ಮೆನು ಲಭ್ಯವಿದೆ, ಹೆಚ್ಚುವರಿ ಆಯ್ಕೆಗಳಿಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು <ph name="SHORTCUT" /> ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="2701514975700770343">ಮುಖ ಕೆಳಗೆ</translation>
 <translation id="2702592986366989640">ಕಡಿಮೆ ದರದ ಆಯ್ಕೆ</translation>
@@ -2062,6 +2064,7 @@
 <translation id="469028408546145398">ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ ಬಟನ್, ಪ್ರಸ್ತುತವಾಗಿ ತೆರೆದಿರುವ ಎಲ್ಲಾ ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4691093235373904540">ಮೇಲ್ಛಾವಣಿ ದುರಸ್ತಿ</translation>
 <translation id="4692623383562244444">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="4698692901173737941">ಕಾಳಗ ಸ್ಪರ್ಧೆಗಳು</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ಅಂಚು</translation>
@@ -2194,6 +2197,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಿ (ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವ ಅಗತ್ಯವಿಲ್ಲ)</translation>
 <translation id="4920457992177678649">ರಜಾದಿನ ಕಳೆಯಲು ಲಭ್ಯವಿರುವ ಬಾಡಿಗೆ ಜಾಗಗಳು ಮತ್ತು ಅಲ್ಪಾವಧಿಯ ವಾಸ್ತವ್ಯಗಳು</translation>
 <translation id="4920710383559189047">ಸ್ಲೀವ್</translation>
+<translation id="4920921410507315601">ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳು</translation>
 <translation id="4922104989726031751">ನಿಮ್ಮ ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್ ಜೊತೆಗೆ Password Manager ಅನ್ನು ಬಳಸಲು, Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ Password Manager ಅನ್ನು ಬಳಸಲು ಅನುಮತಿಸಿ. ಮರುಪ್ರಾರಂಭಿಸಿದ ನಂತರ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಪುನಃ ತೆರೆಯುತ್ತವೆ.</translation>
 <translation id="4923459931733593730">ಪಾವತಿ</translation>
 <translation id="4926049483395192435">ನಿರ್ದಿಷ್ಟಪಡಿಸಬೇಕಾಗಿದೆ.</translation>
@@ -2387,6 +2391,7 @@
 <translation id="5278778426231952189">ಇದೀಗ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5279286380302340275">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5280963125494874678">ವೆಬ್ ಆ್ಯಪ್‌ಗಳು</translation>
+<translation id="5282008206326321696">{count,plural, =0{# ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು}=1{# ಬುಕ್‌ಮಾರ್ಕ್}one{# ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು}other{# ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ಡಾಕ್ಯುಮೆಂಟ್‌ ಗುಣಲಕ್ಷಣಗಳು</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
@@ -2582,6 +2587,7 @@
 <translation id="561165882404867731">Google Translate ಮೂಲಕ ಈ ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="5614520971155863709">ಕಾರ್ಡ್ ಗೇಮ್‌ಗಳು</translation>
+<translation id="5617785978844309968">ಎಲ್ಲಾ ಹೋಲಿಕೆಯ ಟೇಬಲ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ನಿಮ್ಮನ್ನು ತೀರಾ ಹೆಚ್ಚು ಬಾರಿ ಮರುನಿರ್ದೇಶಿಸಿದೆ.</translation>
 <translation id="5619721953841297650">ಪ್ರಿಸೆಟ್‌</translation>
 <translation id="5624120631404540903">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

@@ -1749,7 +1749,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2209841631181508629">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu <ph name="FIELDS_STRING" /> com este site. Consulte os <ph name="BEGIN_LINK" />termos de utilização<ph name="END_LINK" /> deste site.</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
 <translation id="2211043920024403606">Informações do perfil</translation>
-<translation id="2211245494465528624">Gerir opções de sincronização</translation>
 <translation id="221297410904507041">Elimine o histórico, os cookies, a cache e muito mais</translation>
 <translation id="2213410656650624348">Moderada</translation>
 <translation id="2214018885812055163">Pastas partilhadas</translation>
@@ -2743,7 +2742,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="288734198558082692"><ph name="DEVICE" /> e mais <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nenhum problema encontrado</translation>
 <translation id="2889064240420137087">Abrir link com...</translation>
-<translation id="2890206081124517553">Memorize o fundo do ambiente de trabalho entre dispositivos</translation>
 <translation id="2891464434568738544">Nenhum site atualmente disponível. Visite um site para o adicionar a esta lista.</translation>
 <translation id="2891922230654533301">Quer utilizar o seu dispositivo para iniciar sessão na app <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predefinido</translation>
@@ -8363,7 +8361,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6949434160682548041">Palavra-passe (opcional)</translation>
 <translation id="6950143189069683062">Detalhes da memória</translation>
 <translation id="6950627417367801484">Restaurar aplicações</translation>
-<translation id="6954910832698269894">Ative a sincronização do dispositivo para restaurar as apps, as definições, as redes Wi-Fi e a imagem de fundo do Chromebook anterior. Faça alterações em qualquer altura em Definições &gt; Contas.</translation>
 <translation id="6954936693361896459">Em alternativa, transmitir este separador</translation>
 <translation id="6955446738988643816">Inspecionar Pop-up</translation>
 <translation id="6955535239952325894">Esta definição está desativada em navegadores geridos.</translation>
@@ -8881,7 +8878,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7332053360324989309">Trabalhador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Separadores duplicados</translation>
 <translation id="7333388112938984914">Não é possível carregar ficheiros enquanto estiver numa ligação com acesso limitado.</translation>
-<translation id="7333669215417470379">Faça uma cópia de segurança e restaure as apps e as definições</translation>
 <translation id="7335974957018254119">Usar o corretor ortográfico para</translation>
 <translation id="7336799713063880535">Notific. bloqueadas</translation>
 <translation id="7337258336304389677">Use o seu telemóvel ou tablet</translation>
@@ -11330,7 +11326,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9032513103438497286">Bloqueie apps instaladas neste <ph name="DEVICE_TYPE" />. Para restringir a transferência de apps ou conteúdo, aceda às Definições do Google Play.</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">C&amp;olar</translation>
-<translation id="9034408118624208974">É a primeira vez que usa o Chromebook? Ative a sincronização para fazer uma cópia de segurança das suas preferências.</translation>
 <translation id="903480517321259405">Introduza novamente o PIN</translation>
 <translation id="9036484080057916082">Lista de data/hora do certificado assinado</translation>
 <translation id="9037054491984310631">Ligado a dispositivo Bluetooth denominado <ph name="DEVICE" /></translation>
@@ -11376,7 +11371,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9068598199622656904">Prima uma tecla de cada vez para os atalhos de teclado em vez de manter as teclas premidas em simultâneo</translation>
 <translation id="9068878141610261315">Tipo de ficheiro não suportado</translation>
 <translation id="9069417381769492963">Não existem marcadores que correspondam à sua pesquisa</translation>
-<translation id="9069665781180028115">Os itens selecionados estão disponíveis neste Chromebook. Se estiver a usar o Chromebook pela primeira vez, sincronize todos os itens para fazer uma cópia de segurança das suas preferências. Faça alterações em qualquer altura em Definições &gt; Contas.</translation>
 <translation id="9070231741075992882">As autorizações que concede à app <ph name="APP_NAME" /> também são concedidas às apps que esta instala e das quais faz stream.</translation>
 <translation id="9070342919388027491">Separador movido para a esquerda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

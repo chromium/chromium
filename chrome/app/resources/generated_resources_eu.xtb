@@ -1747,7 +1747,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2209841631181508629">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure <ph name="FIELDS_STRING" /> partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK" />zerbitzu-baldintzak<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Ezin izan da osatu instalazioa</translation>
 <translation id="2211043920024403606">Profileko informazioa</translation>
-<translation id="2211245494465528624">Kudeatu sinkronizazio-aukerak</translation>
 <translation id="221297410904507041">Ezabatu historia, cookieak, cachea eta beste</translation>
 <translation id="2213410656650624348">Ertaina</translation>
 <translation id="2214018885812055163">Karpeta partekatuak</translation>
@@ -2741,7 +2740,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="288734198558082692"><ph name="DEVICE" /> eta beste <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Ez da aurkitu arazorik</translation>
 <translation id="2889064240420137087">Ireki esteka honekin…</translation>
-<translation id="2890206081124517553">Gogoratu zure mahaigainaren atzeko planoa gailu guztietan</translation>
 <translation id="2891464434568738544">Ez dago webgunerik erabilgarri une honetan. Zerrenda honetan webgune bat gehitzeko, bisita ezazu.</translation>
 <translation id="2891922230654533301">Gailua erabili nahi duzu <ph name="APP_NAME" /> webgunean saioa hasteko?</translation>
 <translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
@@ -4601,6 +4599,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4220648711404560261">Errore bat gertatu da aktibatzean.</translation>
 <translation id="4222917615373664617">Prezioaren jarraipena gaituta dago. Prezioa <ph name="CURRENT_PRICE" /> da.</translation>
 <translation id="4223404254440398437">Ukatu da mikrofonoa erabiltzeko baimena</translation>
+<translation id="4224541845943007092">Helbide-barran idatzitakoa irakurri eta gorde.</translation>
 <translation id="4225397296022057997">Webgune guztietan</translation>
 <translation id="4228071595943929139">Erabili erakundearen helbide elektronikoa</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ez da onartzen luzapena}other{Ez dira onartzen zenbait luzapen}}</translation>
@@ -8345,7 +8344,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6949434160682548041">Pasahitza (aukerakoa)</translation>
 <translation id="6950143189069683062">Memoriaren xehetasunak</translation>
 <translation id="6950627417367801484">Leheneratu aplikazioak</translation>
-<translation id="6954910832698269894">Aktibatu gailuaren sinkronizazioa aurreko Chromebook-eko aplikazioak, ezarpenak, wifi-sareak eta horma-papera ezartzeko. Nahi duzunean aldaketak egiteko, joan Ezarpenak &gt; Kontuak atalera.</translation>
 <translation id="6954936693361896459">Igorri fitxa hau horren ordez</translation>
 <translation id="6955446738988643816">Ikuskatu leiho gainerakorra</translation>
 <translation id="6955535239952325894">Ezarpen hau desgaituta dago kudeatutako arakatzaileetan</translation>
@@ -8604,6 +8602,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7134951043985383439">Fitxategi arriskutsu bat deskargatu da</translation>
 <translation id="7135729336746831607">Bluetootha aktibatu nahi duzu?</translation>
 <translation id="7136694880210472378">Ezarri lehenetsi gisa</translation>
+<translation id="7137277889990479760">Egin aurrera <ph name="EMAIL" /> gisa</translation>
 <translation id="7137771508221868414">Webguneek eta instalatutako aplikazioek gordetako datuen <ph name="TOTAL_USAGE" /> ezabatuko dira</translation>
 <translation id="7138678301420049075">Beste bat</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da</translation>
@@ -8858,7 +8857,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7332053360324989309">Langile espezifikoa: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Fitxa bikoiztuak</translation>
 <translation id="7333388112938984914">Ezin da kargatu fitxategirik konexio neurtu batean.</translation>
-<translation id="7333669215417470379">Egin babeskopiak, eta leheneratu aplikazioak eta ezarpenak</translation>
 <translation id="7335974957018254119">Erabili ortografia-zuzentzailea hizkuntza hauetan:</translation>
 <translation id="7336799713063880535">Jakinarazpenak blokeatuta.</translation>
 <translation id="7337258336304389677">Erabili telefonoa edo tableta</translation>
@@ -9181,6 +9179,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7561759921596375678">Aktibatu bolumena</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
+<translation id="7563970324931922582">[leku-markaren testua]</translation>
 <translation id="756445078718366910">Ireki arakatzailearen leihoa</translation>
 <translation id="7564847347806291057">Amaitu prozesua</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan edo arakatu sarea <ph name="LINK_2_BEGIN" />ezkutuko moduko leiho<ph name="LINK_2_END" /> bat erabilita.</translation>
@@ -10870,6 +10869,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8737966899544698733">Kokapen-zehaztasuna (Android soilik)</translation>
 <translation id="8738418093147087440">Bilatu hizkuntzen, herrialdeen edo idazketa-metodoen arabera</translation>
 <translation id="8740086188450289493">Erabili Google-ko kontuko pasahitza</translation>
+<translation id="874023689350909633">Proba ezazu</translation>
 <translation id="8740247629089392745">Eman Chromebook-a <ph name="SUPERVISED_USER_NAME" /> erabiltzaileari. Ia amaitu duzue konfiguratzen. Arakatzen hasteko moduan izango zara laster.</translation>
 <translation id="8740672167979365981">ChromeOS Flex eguneratu egin behar da</translation>
 <translation id="8741944563400125534">Erabilerraztasun-osagarria konfiguratzeko gida</translation>
@@ -11302,7 +11302,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9032513103438497286">Blokeatu <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak. Aplikazioak edo edukia deskargatzeko aukera murrizteko, joan Google Play-ren ezarpenetara.</translation>
 <translation id="9033765790910064284">Jarraitu, halere</translation>
 <translation id="9033857511263905942">It&amp;satsi</translation>
-<translation id="9034408118624208974">Chromebook-a erabiltzen hasi berri zara? Aktibatu sinkronizazioa, hobespenen babeskopiak egiteko.</translation>
 <translation id="903480517321259405">Idatzi berriro PINa</translation>
 <translation id="9036484080057916082">Sinatutako ziurtagiriaren denbora-zigiluen zerrenda</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> izeneko Bluetooth bidezko gailura konektatuta</translation>
@@ -11348,7 +11347,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9068598199622656904">Lasterbideak erabiltzeko, sakatu tekla bakar bat aldiko, teklak aldi berean sakatuta eduki beharrean</translation>
 <translation id="9068878141610261315">Fitxategi mota hau ez da onartzen</translation>
 <translation id="9069417381769492963">Ez dago bilaketarekin bat datorren laster-markarik</translation>
-<translation id="9069665781180028115">Hautatutako elementuak Chromebook honetan erabilgarri egongo dira. Chromebook-a erabiltzen hasi berri bazara, sinkronizatu elementu guztiak zure hobespenen babeskopiak egin daitezen. Nahi duzunean aldaketak egiteko, joan Ezarpenak &gt; Kontuak atalera.</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> aplikazioari ematen dizkiozun baimenak hark instalatzen eta zuzenean igortzen dituen aplikazioei ere emango zaizkie.</translation>
 <translation id="9070342919388027491">Ezkerrera eraman da fitxa</translation>
 <translation id="9074739597929991885">Bluetootha</translation>

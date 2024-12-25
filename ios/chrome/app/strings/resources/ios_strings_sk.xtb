@@ -108,6 +108,7 @@
 <translation id="143681031165817424">Adresa je uložená iba v tomto zariadení</translation>
 <translation id="1445276840641906250">Všetky vaše karty v jednom prehliadači</translation>
 <translation id="1450170672351507823">Je zapnutá štandardná ochrana. Lepšie zabezpečenie dosiahnete používaním rozšírenej ochrany.</translation>
+<translation id="1454615514353469963">Heslá, prístupové kľúče a ďalšie údaje budú natrvalo odstránené zo Správcu hesiel Google</translation>
 <translation id="1455660774629812862">Neskrývať</translation>
 <translation id="1460751212339734034">Šetrite čas, píšte menej</translation>
 <translation id="1466035273550360103">Žiadne otvorené karty</translation>
@@ -1396,6 +1397,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />História vyhľadávania<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />ďalšie formy aktivity<ph name="END_LINK" /> sa môžu ukladať do vášho účtu Google.</translation>
 <translation id="7253951228444156601">Kontrolujú sa heslá…</translation>
 <translation id="7261217796641151584">Zdieľať skupinu</translation>
+<translation id="7266578100016339897">Pomôže vám to udržať si poriadok. V nastaveniach to môžete kedykoľvek zmeniť.</translation>
 <translation id="7271220006028561438">Povoliť automatické inovácie prístupových kľúčov</translation>
 <translation id="7272437679830969316">Vašu totožnosť nie je možné overiť. Heslo sa neskopírovalo.</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
@@ -1590,6 +1592,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8080028325999236607">Zavrieť všetky karty</translation>
 <translation id="8084285576995584326">Ovládať údaje účtu Google</translation>
 <translation id="809543534949702122">Hľadať v histórii</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Karty, ktoré nepoužívate, sa sem presunú po {COUNT} dni}few{Karty, ktoré nepoužívate, sa sem presunú po {COUNT} dňoch}many{Karty, ktoré nepoužívate, sa sem presunú po {COUNT} dňa}other{Karty, ktoré nepoužívate, sa sem presunú po {COUNT} dňoch}}</translation>
 <translation id="8101409298456377967">Vytvárajte, ukladajte a spravujte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">Súbor je k dispozícii na stiahnutie. Možnosti sú k dispozícii v dolnej časti obrazovky.</translation>

@@ -1748,7 +1748,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2209841631181508629">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site <ph name="FIELDS_STRING" />. Consultez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" /> du site.</translation>
 <translation id="2210462644007531147">Impossible de procéder à l'installation</translation>
 <translation id="2211043920024403606">Informations sur le profil</translation>
-<translation id="2211245494465528624">Gérer les options de synchronisation</translation>
 <translation id="221297410904507041">Supprimer l'historique et les cookies, vider le cache, etc.</translation>
 <translation id="2213410656650624348">Modéré</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
@@ -2742,7 +2741,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="288734198558082692"><ph name="DEVICE" /> et <ph name="NUMBER_OF_DEVICES" /> autres</translation>
 <translation id="2889043468805635730">Aucun problème détecté</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
-<translation id="2890206081124517553">Mémoriser l'arrière-plan du bureau sur tous les appareils</translation>
 <translation id="2891464434568738544">Aucun site disponible actuellement. Accédez à un site pour l'ajouter à cette liste.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" /> ?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
@@ -8353,7 +8351,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6949434160682548041">Mot de passe (facultatif)</translation>
 <translation id="6950143189069683062">Détails de la mémoire</translation>
 <translation id="6950627417367801484">Restaurer les applications</translation>
-<translation id="6954910832698269894">Activez la synchronisation de l'appareil pour récupérer les applis, les paramètres, les réseaux Wi-Fi et le fond d'écran de votre ancien Chromebook. Vous pouvez apporter des modifications à tout moment dans Paramètres &gt; Comptes.</translation>
 <translation id="6954936693361896459">Caster cet onglet à la place</translation>
 <translation id="6955446738988643816">Inspecter le pop-up</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
@@ -8613,6 +8610,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7134951043985383439">Fichier dangereux téléchargé</translation>
 <translation id="7135729336746831607">Activer le Bluetooth ?</translation>
 <translation id="7136694880210472378">Utiliser par défaut</translation>
+<translation id="7137277889990479760">Continuer en tant que <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Cela effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites et les applis installées</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre micro</translation>
@@ -8867,7 +8865,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7332053360324989309">Nœud de calcul dédié : <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Onglets en double</translation>
 <translation id="7333388112938984914">Impossible d'importer des fichiers lorsque la connexion est limitée.</translation>
-<translation id="7333669215417470379">Sauvegarder et restaurer vos applis et paramètres</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique</translation>
 <translation id="7336799713063880535">Notif. bloquées.</translation>
 <translation id="7337258336304389677">Utilisez votre téléphone ou votre tablette</translation>
@@ -9191,6 +9188,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7561759921596375678">Activer le volume</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
+<translation id="7563970324931922582">[texte d'espace réservé]</translation>
 <translation id="756445078718366910">Ouvrir une fenêtre du navigateur</translation>
 <translation id="7564847347806291057">Arrêter le processus</translation>
 <translation id="756503097602602175">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans les <ph name="LINK_BEGIN" />paramètres<ph name="LINK_END" />. Les autorisations que vous accordez aux sites Web et aux applis peuvent s'appliquer à tous ces comptes. Pour éviter que les sites ou les applis aient accès aux infos de votre compte, connectez-vous à votre <ph name="DEVICE_TYPE" /> en tant qu'invité ou utilisez une <ph name="LINK_2_BEGIN" />fenêtre de navigation privée<ph name="LINK_2_END" />.</translation>
@@ -10881,6 +10879,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8737966899544698733">Précision de la localisation (Android uniquement)</translation>
 <translation id="8738418093147087440">Recherchez par pays, langue ou nom de saisie</translation>
 <translation id="8740086188450289493">Utiliser le mot de passe du compte Google</translation>
+<translation id="874023689350909633">Essayer</translation>
 <translation id="8740247629089392745">Vous pouvez remettre ce Chromebook à <ph name="SUPERVISED_USER_NAME" />. La configuration est presque terminée. Ensuite, place à l'exploration !</translation>
 <translation id="8740672167979365981">Mise à jour de ChromeOS Flex requise</translation>
 <translation id="8741944563400125534">Guide de configuration de Switch Access</translation>
@@ -11314,7 +11313,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9032513103438497286">Bloquer les applis installées sur ce <ph name="DEVICE_TYPE" />. Pour limiter le téléchargement d'applis ou de contenu, accédez aux paramètres Google Play.</translation>
 <translation id="9033765790910064284">Continuer</translation>
 <translation id="9033857511263905942">&amp;Coller</translation>
-<translation id="9034408118624208974">Vous utilisez un Chromebook pour la première fois ? Activez la synchronisation pour sauvegarder vos préférences.</translation>
 <translation id="903480517321259405">Saisir de nouveau le code</translation>
 <translation id="9036484080057916082">Liste des codes temporels du certificat signé</translation>
 <translation id="9037054491984310631">Connecté à l'appareil Bluetooth <ph name="DEVICE" /></translation>
@@ -11360,7 +11358,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9068598199622656904">Activez les raccourcis clavier en appuyant sur une touche à la fois au lieu de maintenir plusieurs touches enfoncées</translation>
 <translation id="9068878141610261315">Type de fichier non compatible</translation>
 <translation id="9069417381769492963">Aucun favori ne correspond à votre recherche</translation>
-<translation id="9069665781180028115">Les éléments sélectionnés seront disponibles sur ce Chromebook. Si vous utilisez un Chromebook pour la première fois, synchronisez tous les éléments pour sauvegarder vos préférences. Vous pouvez apporter des modifications à tout moment dans Paramètres &gt; Comptes.</translation>
 <translation id="9070231741075992882">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront également pour ses applis installées et diffusées en streaming.</translation>
 <translation id="9070342919388027491">Onglet déplacé vers la gauche</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

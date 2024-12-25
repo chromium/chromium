@@ -461,6 +461,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1777422078676229054">Foto (arhiivimine)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Kas installida veebirakendused?</translation>
+<translation id="1791415068765905273">Kuva kõik võrdlustabelid</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Google'i kontol teabe, privaatsuse ja turvalisuse haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="1793631236004319016">Viimati kasutati <ph name="NUM_HOURS_MINUTES_SECONDS" /> tagasi</translation>
@@ -2197,6 +2198,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4918221908152712722">Installige rakendus <ph name="APP_NAME" /> (allalaadimine pole vajalik)</translation>
 <translation id="4920457992177678649">Puhkemajutus ja lühiajaline üürimine</translation>
 <translation id="4920710383559189047">Ümbris</translation>
+<translation id="4920921410507315601">Võrdlustabelid</translation>
 <translation id="4922104989726031751">Paroolihalduri kasutamiseks oma operatsioonisüsteemiga käivitage Chromium uuesti ja lubage juurdepääs oma arvuti paroolihaldurile. Pärast uuesti käivitamist avanevad teie vahelehed taas.</translation>
 <translation id="4923459931733593730">Makse</translation>
 <translation id="4926049483395192435">Tuleb määrata.</translation>
@@ -2390,6 +2392,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5278778426231952189">Laadi kohe üles</translation>
 <translation id="5279286380302340275">Allalaadimiste haldamine</translation>
 <translation id="5280963125494874678">veebirakendused</translation>
+<translation id="5282008206326321696">{count,plural, =0{# järjehoidjat}=1{# järjehoidja}other{# järjehoidjat}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumendi atribuudid</translation>
 <translation id="528468243742722775">Lõpeta</translation>
@@ -2585,6 +2588,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="561165882404867731">Tõlkige see leht rakendusega Google'i tõlge</translation>
 <translation id="5612720917913232150"><ph name="URL" /> soovib kasutada teie arvuti asukohta</translation>
 <translation id="5614520971155863709">Kaardimängud</translation>
+<translation id="5617785978844309968">Kuva kõik võrdlustabelid</translation>
 <translation id="5617949217645503996">Host <ph name="HOST_NAME" /> suunas teid liiga mitu korda ümber.</translation>
 <translation id="5619721953841297650">Eelseadistus</translation>
 <translation id="5624120631404540903">Paroolide haldamine</translation>

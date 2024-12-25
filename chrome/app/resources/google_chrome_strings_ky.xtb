@@ -393,6 +393,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5941830788786076944">Google Chrome'ду демейки серепчи кылуу</translation>
 <translation id="5947104538377036631">Chrome ыкчам баскыч</translation>
 <translation id="5953954252731207958">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION" /> өчүрдү</translation>
+<translation id="5980111191913430208">Белгисиз булактардан алынган кеңейтүүлөр, колдонмолор жана темалар түзмөгүңүзгө зыян келтириши мүмкүн. Chrome аларды <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> кызматынан гана орнотууну сунуштайт</translation>
 <translation id="6003112304606738118">Жүктөлүп алынууда... <ph name="HOURS" /> саат калды</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome'дун куралдары<ph name="END_LINK" /> менен коопсуз серептеп, баарын көзөмөлдөй аласыз</translation>
 <translation id="6022659036123304283">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
@@ -611,6 +612,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="842386925677997438">Chrome’дун коопсуздук куралдары</translation>
 <translation id="8425765582779547329">Интернетти ата-энең тандаган параметрлер менен коопсуз колдонуу үчүн Chrome'го кир</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8429214465555795676">Улантуу үчүн Chrome'го <ph name="EMAIL" /> аккаунтуңуз менен киришиңиз керек болот. Муну уюмдун эрежелери талап кылат.</translation>
 <translation id="8433638294851456451">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chrome'го кириңиз.</translation>
 <translation id="8451192282033883849">Аккаунтуңуз <ph name="MANAGER_NAME" /> тарабынан башкарылууда. Администраторуңуз Chrome серепчисиндеги профилди жана андагы маалыматты, мисалы, кыстармаларды, таржымалды жана сырсөздөрдү көрүп, түзөтө алат.</translation>
 <translation id="8496177819998570653">С&amp;ырсөздөрдү башкаргыч</translation>

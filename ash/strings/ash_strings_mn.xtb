@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">Chromebook-нхээ түгжээг тайлахын тулд хурууны хээгээ ашиглах эсвэл утасныхаа түгжээг тайлна уу</translation>
 <translation id="240545663114741956">Гарахын тулд <ph name="ACCELERATOR" />-г хоёр дарна уу.</translation>
 <translation id="2405664212338326887">Холбогдоогүй</translation>
+<translation id="2406710117564540804">Бүү саад бол онцлогийг асаах, унтраах</translation>
 <translation id="2408955596600435184">ПИН-ээ оруулна уу</translation>
 <translation id="2412593942846481727">Шинэчлэх боломжтой</translation>
 <translation id="2416438829169535743">Харагдах байдлаас гарах уу?</translation>
@@ -1648,6 +1649,7 @@
 <translation id="6539852571005954999">Татах <ph name="FILENAME" />-г скан хийж байна</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />-д дамжуулж байна</translation>
 <translation id="6542891623636520977">Эможи, GIF болон бусад</translation>
+<translation id="6543942526104794893">Та царайн зангааг унтраахдаа итгэлтэй байна уу?</translation>
 <translation id="6545382064335350438">Таны ПИН-г баталгаажуулж чадахгүй хэвээр байна. Дахин оролдоно уу.</translation>
 <translation id="6555373427270923730">Хаяг оруулах хэсэгт веб хаягийг бичээд дараа нь <ph name="MODIFIER" /><ph name="KEY" />-г дарна уу</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2315,6 +2317,7 @@
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8858369206579825206">Нууцлалын тохиргоо</translation>
 <translation id="8860366331836346216">eSIM-г нэмэх</translation>
+<translation id="8869149849311827122">Та хулганын курсорын хяналтыг унтраахдаа итгэлтэй байна уу?</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
 <translation id="8873203135446552888">Та бүрэлдэхүүн мэдрэгч самбарыг идэвхгүй болгохыг хүсэж байгаа эсэхээ баталгаажуулна уу</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>

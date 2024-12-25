@@ -19,6 +19,7 @@
 <translation id="107147699690128016">في حال تغيير امتداد الملف، قد يفتح الملف في تطبيق مختلف ومن المحتمل أن يشكّل خطورة على جهازك.</translation>
 <translation id="1080365971383768617">كلمات المرور على جميع أجهزتك</translation>
 <translation id="1082920045291562218">بطاقة مشاركة الملاحظات عن الملخّص مغلقة</translation>
+<translation id="1087176310396019910">إشعار يُحتمل أن يكون غير مرغوب فيه</translation>
 <translation id="1089606299949659462">اكتملت المراجعة</translation>
 <translation id="1094555143448724771">يجب مزامنة علامات التبويب والسجلّ للاطّلاع عليها من أجهزتك الأخرى</translation>
 <translation id="1095761715416917775">ضمان إمكانية الوصول إلى بيانات المزامنة دائمًا</translation>
@@ -510,6 +511,7 @@
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" /> وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{‫<ph name="TAB_GROUPS_PART" /> وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
+<translation id="3301936297336370235">تأكيد اقتراح كلمة المرور</translation>
 <translation id="3302615849591357577">استعادة مجموعة علامات تبويب "<ph name="TITLE_OF_GROUP" />" بلون "<ph name="COLOR_NAME" />" كمجموعة علامات تبويب جديدة في الخلفية</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
@@ -1138,6 +1140,7 @@
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
 <translation id="6196315980958524839">‏يتم حفظ كلمات المرور في تطبيق "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
 <translation id="6202812185118613467">سجِّل الدخول مرة أخرى لبدء المزامنة.</translation>
+<translation id="6204781143409202534">‏رصدَ متصفِّح Chrome إشعارًا يُحتمل أن يكون غير مرغوب فيه من <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6210748933810148297">ليس <ph name="EMAIL" />؟</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>

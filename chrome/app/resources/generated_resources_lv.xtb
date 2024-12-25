@@ -1751,7 +1751,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2209841631181508629">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos ar šo vietni šādus jūsu datus: <ph name="FIELDS_STRING" />. Skatiet šīs vietnes <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumus<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Instalēšanu nevarēja pabeigt</translation>
 <translation id="2211043920024403606">Profila informācija</translation>
-<translation id="2211245494465528624">Sinhronizācijas opciju pārvaldība</translation>
 <translation id="221297410904507041">Dzēst vēsturi, sīkfailus, kešatmiņu un citus datus</translation>
 <translation id="2213410656650624348">Vidēji</translation>
 <translation id="2214018885812055163">Kopīgotās mapes</translation>
@@ -2745,7 +2744,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="288734198558082692">“<ph name="DEVICE" />” un vēl <ph name="NUMBER_OF_DEVICES" /> ierīces</translation>
 <translation id="2889043468805635730">Netika atrasta neviena problēma</translation>
 <translation id="2889064240420137087">Atvērt saiti ar...</translation>
-<translation id="2890206081124517553">Jūsu darbvirsmas fona saglabāšana visās ierīcēs</translation>
 <translation id="2891464434568738544">Pašlaik nav pieejama neviena vietne. Apmeklējiet kādu vietni, lai to pievienotu šim sarakstam.</translation>
 <translation id="2891922230654533301">Vai vēlaties izmantot ierīci, lai pierakstītos lietotnē <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Noklusējuma pārlūks</translation>
@@ -8361,7 +8359,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6949434160682548041">Parole (neobligāti)</translation>
 <translation id="6950143189069683062">Informācija par atmiņu</translation>
 <translation id="6950627417367801484">Atjaunot lietotnes</translation>
-<translation id="6954910832698269894">Ieslēdziet ierīces sinhronizāciju, lai atjaunotu iepriekšējā Chromebook datora lietotnes, iestatījumus, Wi-Fi tīklus un fona tapeti. Jebkurā laikā varat ieviest izmaiņas sadaļā Iestatījumi &gt; Konti.</translation>
 <translation id="6954936693361896459">Tās vietā apraidīt šo cilni</translation>
 <translation id="6955446738988643816">Pārbaudīt uznirstošo elementu</translation>
 <translation id="6955535239952325894">Šis iestatījums ir atspējots pārvaldītās pārlūkprogrammās</translation>
@@ -8879,7 +8876,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7332053360324989309">Atvēlētais skripts: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Ciļņu dublikāti</translation>
 <translation id="7333388112938984914">Kamēr ir izveidots uzskaitītais savienojums, nevar augšupielādēt failus.</translation>
-<translation id="7333669215417470379">Lietotņu un iestatījumu dublēšana un atjaunošana</translation>
 <translation id="7335974957018254119">Izmantot pareizrakstības pārbaudītāju šīm valodām:</translation>
 <translation id="7336799713063880535">Paziņojumi bloķēti.</translation>
 <translation id="7337258336304389677">Izmantojiet tālruni vai planšetdatoru</translation>
@@ -11329,7 +11325,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9032513103438497286">Bloķēt lietotnes, kas instalētas šajā ierīcē (<ph name="DEVICE_TYPE" />). Lai ierobežotu lietotņu vai satura lejupielādi, pārejiet uz Google Play iestatījumiem.</translation>
 <translation id="9033765790910064284">Tik un tā turpināt</translation>
 <translation id="9033857511263905942">&amp;Ielīmēt</translation>
-<translation id="9034408118624208974">Vai esat jauns Chromebook datora lietotājs? Ieslēdziet sinhronizāciju, lai jūsu preferences tiktu dublētas.</translation>
 <translation id="903480517321259405">Vēlreiz ievadiet PIN</translation>
 <translation id="9036484080057916082">Parakstītā sertifikāta laikspiedolu saraksts</translation>
 <translation id="9037054491984310631">Izveidots savienojums ar Bluetooth ierīci “<ph name="DEVICE" />”.</translation>
@@ -11375,7 +11370,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9068598199622656904">Lai aktivizētu īsinājumtaustiņus, spiediet taustiņus pa vienam, nevis vienlaikus turiet nospiestus vairākus taustiņus.</translation>
 <translation id="9068878141610261315">Faila tips netiek atbalstīts.</translation>
 <translation id="9069417381769492963">Jūsu meklēšanas vaicājumam neatbilst neviena grāmatzīme</translation>
-<translation id="9069665781180028115">Atlasītie vienumi būs pieejami šajā Chromebook datorā. Ja esat jauns Chromebook lietotājs, sinhronizējiet visus vienumus, lai jūsu preferences tiktu dublētas. Jebkurā laikā varat ieviest izmaiņas sadaļā Iestatījumi &gt; Konti.</translation>
 <translation id="9070231741075992882">Jūsu lietotnei <ph name="APP_NAME" /> piešķirtās atļaujas būs spēkā arī ar to saistītajām instalētajām un straumētajām lietotnēm.</translation>
 <translation id="9070342919388027491">Cilne tika pārvietota pa kreisi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

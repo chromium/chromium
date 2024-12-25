@@ -111,6 +111,7 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">如需继续操作，您需要使用 <ph name="EMAIL" /> 登录 Chromium。这样才能确保符合您组织的政策。</translation>
 <translation id="2542968102051442371">选择要使用图片搜索功能搜索的文字</translation>
 <translation id="2554739539410784893">Chromium 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
 <translation id="1080365971383768617">Heslá vo všetkých vašich zariadeniach</translation>
 <translation id="1082920045291562218">Hárok zdieľania so súhrnnou spätnou väzbou bol zavretý</translation>
+<translation id="1087176310396019910">Možný spam</translation>
 <translation id="1089606299949659462">Kontrola bola dokončená.</translation>
 <translation id="1094555143448724771">Ak chcete vidieť karty z vašich ostatných zariadení, synchronizujte si karty aj históriu.</translation>
 <translation id="1095761715416917775">Zaistite, aby ste mali neustály prístup k svojim údajom synchronizácie</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kariet}}</translation>
 <translation id="3293181007446299124">Vaša história prehliadania je v zariadení uchovaná v súkromí a hlásenia sa z dôvodu ochrany vašej totožnosti odosielajú s oneskorením</translation>
+<translation id="3301936297336370235">Potvrdenie návrhu hesla</translation>
 <translation id="3302615849591357577">Obnovte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> ako novú skupinu kariet na pozadí.</translation>
 <translation id="3303414029551471755">Pokračovať a stiahnuť obsah?</translation>
 <translation id="3303855915957856445">Nič sa nenašlo</translation>
@@ -1136,6 +1138,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
 <translation id="6202812185118613467">Ak chcete spustiť synchronizáciu, znova sa prihláste</translation>
+<translation id="6204781143409202534">Chrome zistil možný spam z webu <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ochrana súkromia pri reklamách</translation>
 <translation id="6210748933810148297">Nie som <ph name="EMAIL" /></translation>
 <translation id="6211386937064921208">Je zobrazená ukážka tejto stránky</translation>

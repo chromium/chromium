@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Kui muudate faililaiendit, võib fail avaneda mõnes teises rakenduses ja teie seadmele ohtu kujutada.</translation>
 <translation id="1080365971383768617">Paroolid kõigis teie seadmetes</translation>
 <translation id="1082920045291562218">Jagamine kokkuvõtte tagasiside lehe abil on suletud</translation>
+<translation id="1087176310396019910">Võimalik rämpspost</translation>
 <translation id="1089606299949659462">Ülevaatus on lõpetatud!</translation>
 <translation id="1094555143448724771">Teiste seadmete vahelehtede nägemiseks sünkroonige oma vahelehed ja ajalugu</translation>
 <translation id="1095761715416917775">Veenduge, et pääseksite alati oma sünkroonitud andmetele juurde</translation>
@@ -508,6 +509,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="3293181007446299124">Teie sirvimisajalugu hoitakse teie seadmes privaatsena ja aruanded saadetakse viivitusega, et teie isikut saladuses hoida</translation>
+<translation id="3301936297336370235">Paroolisoovituse kinnitamine</translation>
 <translation id="3302615849591357577">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.</translation>
 <translation id="3303414029551471755">Kas soovite jätkata sisu allalaadimist?</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
@@ -1136,6 +1138,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6196315980958524839">Paroolid salvestatakse Google'i paroolihaldurisse selles seadmes</translation>
 <translation id="6202812185118613467">Sünkroonimise alustamiseks logige uuesti sisse</translation>
+<translation id="6204781143409202534">Chrome tuvastas võimaliku rämpsposti domeenilt <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>

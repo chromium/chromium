@@ -965,6 +965,7 @@
 <translation id="2688969097326701645">បាទ/ចាស បន្ត</translation>
 <translation id="2690699652723742414">30 ថ្ងៃ​ចុងក្រោយ</translation>
 <translation id="2691924980723297736">ការព្រមាន​អំពីសុវត្ថិភាព</translation>
+<translation id="2697248912349197812">សួរ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">មាន​ម៉ឺនុយរង, ប្រើ <ph name="SHORTCUT" /> ដើម្បី​ទៅកាន់​ជម្រើសបន្ថែម។</translation>
 <translation id="2701514975700770343">ផ្កាប់ចុះ</translation>
 <translation id="2702592986366989640">ជម្រើស​តម្លៃទាប</translation>
@@ -2070,6 +2071,7 @@
 <translation id="469028408546145398">ប៊ូតុង "បិទផ្ទាំងឯកជន", បើកដំណើរការ ដើម្បី​បិទផ្ទាំងឯកជន​ទាំងអស់​ដែលកំពុងបើក</translation>
 <translation id="4691093235373904540">ការងារ​ដំបូល</translation>
 <translation id="4692623383562244444">ម៉ាស៊ីនស្វែងរក</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - សួរ <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">កីឡា​បែបប្រយុទ្ធ</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ចំហៀង</translation>

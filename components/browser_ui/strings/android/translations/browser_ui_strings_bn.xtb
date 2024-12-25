@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
 <translation id="1396327438254055134">ভি৮ অপ্টিমাইজার ব্যবহার করার জন্য সাইটকে অনুমতি দিন।</translation>
 <translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
+<translation id="1415855080660575082">Chrome-কে আপনার ডিভাইসের সাথে আপনার সাম্প্রতিক ব্যবহার ট্যাব শেয়ার করার অনুমতি দিন যাতে সেগুলি আপনার ডিভাইসের অ্যাপের তালিকা এবং সার্চ ফলাফলে দেখা যায়। আপনি এটি Chrome সেটিংস থেকে চালু বা বন্ধ করতে পারবেন।</translation>
 <translation id="1448064542941920355">জুম কমান</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" />টি সাইট}one{<ph name="SITE_COUNT" />টি সাইট}other{<ph name="SITE_COUNT" />টি সাইট}}</translation>
 <translation id="1500473259453106018">ট্যাবে দেখানো দাম কমার তথ্য সংক্রান্ত কার্ড লুকান</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">আপনি এই সাইটটিকে থার্ড-পার্টি কুকি ব্যবহারের সাময়িকভাবে অনুমতি দিয়েছেন, যার ফলে ব্রাউজিং সংক্রান্ত সুরক্ষা একটু কম থাকলেও সাইটের সব ফিচার প্রত্যাশা অনুযায়ী কাজ করার সম্ভাবনা বেশি হবে। <ph name="BEGIN_LINK" />মতামত জানান<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">কিছু সাইটের ফিচার ছদ্মবেশী মোডে কাজ নাও করতে পারে</translation>
 <translation id="2442870161001914531">সবসময়ের ডেস্কটপ সাইটের অনুরোধ করুন</translation>
+<translation id="2445311670906052406">Chrome এখন আপনার ডিভাইসের সাথে সাম্প্রতিক ট্যাব শেয়ার করে। আপনার ডিভাইসের অ্যাপ তালিকা ও সার্চ ফলাফলে সেগুলি দেখতে পাবেন। আপনি Chrome সেটিংস থেকে যেকোনও সময়ে এটি বন্ধ করতে পারবেন।</translation>
 <translation id="2469312991797799607">এই অ্যাকশন <ph name="ORIGIN" /> এবং তার অধীনে থাকা সমস্ত সাইটের জন্য সব ডেটা এবং কুকি মুছে দেবে</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">সাইটগুলি পরিচয় পরিষেবা প্রদানকারী থেকে সাইন-ইন প্রম্পট দেখাতে পারে।</translation>
 <translation id="2787357173144933081">বহুউপযোগী ক্ষেত্র সরাসরি চালু করুন</translation>
 <translation id="2790501146643349491">চালু থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে। বন্ধ থাকলে, সম্প্রতি বন্ধ হওয়া সাইট ডেটা পাঠানো ও রিসিভ করা সম্পূর্ণ করতে পারে না।</translation>
+<translation id="2814830417943086299">Chrome এখন আপনার ডিভাইসের অ্যাপ তালিকা ও সার্চ ফলাফলে সাম্প্রতিক ট্যাব দেখায়। আপনি Chrome সেটিংস থেকে যেকোনও সময়ে এটি বন্ধ করতে পারবেন।</translation>
 <translation id="2822354292072154809">আপনি কি <ph name="CHOSEN_OBJECT_NAME" />-এর জন্য সাইটের সব অনুমতি রিসেট করার ব্যাপারে নিশ্চিত?</translation>
 <translation id="2850913818900871965">মোবাইল ভিউয়ের অনুরোধ করুন</translation>
 <translation id="2870560284913253234">সাইট</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>
 <translation id="9138217887606523162">বর্তমান জুম হল <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Chrome-কে সাম্প্রতিক ট্যাব আপনার ডিভাইসের অ্যাপ তালিকা ও সার্চ ফলাফলে দেখানোর অনুমতি দিন। আপনি Chrome সেটিংস থেকে যেকোনও সময়ে এটি বন্ধ করতে পারবেন।</translation>
 <translation id="9162462602695099906">এই পৃষ্ঠাটি বিপজ্জনক</translation>
 <translation id="947156494302904893">আপনি যে সাইটগুলি দেখেন সেগুলি যাচাই করতে পারে যে আপনি একজন প্রকৃত ব্যক্তি এবং বট নন</translation>
 <translation id="959682366969460160">সবকিছু গুছিয়ে রাখুন</translation>

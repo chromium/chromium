@@ -426,6 +426,7 @@
 <translation id="1282436639288565079">タブグループの詳細</translation>
 <translation id="1283126956823499975">デバイスの設定中にエラーが発生しました</translation>
 <translation id="1284277788676816155">データの保存を許可しない</translation>
+<translation id="1284912418686719556">Chrome で安全なパスワードを作成しています。このパスワードは、「<ph name="EMAIL" />」の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されるため、覚えておく必要はありません。</translation>
 <translation id="1285320974508926690">このサイトは翻訳しない</translation>
 <translation id="1285484354230578868">Google ドライブ アカウントでのデータの保存</translation>
 <translation id="1285625592773741684">現在のデータ使用設定はモバイルデータです</translation>
@@ -539,6 +540,7 @@
 <translation id="1368603372088757436">Linux はお使いの <ph name="DEVICE_TYPE" /> ではサポートされていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">他のデバイスで使用するには、Google アカウントに保存してください</translation>
 <translation id="1370384480654163477">前回このサイトにアクセスしたときのファイルを表示、編集する。</translation>
+<translation id="1372259917802609049">制約の削除中にエラーが発生しました</translation>
 <translation id="1372841398847029212">アカウントに同期</translation>
 <translation id="1373176046406139583">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">ネットワーク「<ph name="NETWORK_NAME" />」が要求する証明書がインストールされていないか、証明書の有効期限が切れています。新しい証明書を取得して、もう一度接続してみてください。</translation>
@@ -1475,6 +1477,7 @@
     この操作は他のデバイスのアプリやコンテンツには影響しません。</translation>
 <translation id="2018189721942291407">登録が必要かどうかわからない場合</translation>
 <translation id="2018352199541442911">お使いの外部ストレージ デバイスは現在サポートされていません。</translation>
+<translation id="2019213483156307334">制約の追加中にエラーが発生しました</translation>
 <translation id="2019718679933488176">オーディオを新しいタブで開く(&amp;O)</translation>
 <translation id="2020183425253392403">ネットワーク アドレス設定を表示</translation>
 <translation id="2020225359413970060">ファイルをスキャン</translation>
@@ -1744,7 +1747,6 @@
 <translation id="2209841631181508629">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
 <translation id="2211043920024403606">プロフィール情報</translation>
-<translation id="2211245494465528624">同期オプションを管理</translation>
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
@@ -2735,7 +2737,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> とその他 <ph name="NUMBER_OF_DEVICES" /> 個のデバイス</translation>
 <translation id="2889043468805635730">問題は見つかりませんでした</translation>
 <translation id="2889064240420137087">次のプログラムでリンクを開く...</translation>
-<translation id="2890206081124517553">デスクトップの背景をすべてのデバイスに保存します</translation>
 <translation id="2891464434568738544">現在、追加されたサイトはありません。このサイトをリストに追加するには、サイトにアクセスしてください。</translation>
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
@@ -3131,6 +3132,7 @@
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{PASSWORD_COUNT} 件のパスワードとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3192586965067888278">問題の内容を詳しく説明します。フィードバックは、人間によるレビューのため Google に送信され、Google のプロダクトやサービスの改善または開発の目的で使用される場合があります。</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
@@ -3601,6 +3603,7 @@
 <translation id="3537881477201137177">後から [設定] で変更することができます</translation>
 <translation id="3538066758857505094">Linux のアンインストール中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="3539537154248488260">インスピレーションを切り替え</translation>
+<translation id="3539791442352537591">信頼状態の変更の保存中にエラーが発生しました</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />経由のネットワーク接続はありません</translation>
 <translation id="354060433403403521">AC アダプター</translation>
 <translation id="354068948465830244">サイトデータの読み取りと変更を行います</translation>
@@ -4786,6 +4789,7 @@
 <translation id="4361745360460842907">タブとして開く</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
 <translation id="4364327530094270451">メロン</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{ITEM_COUNT} 件の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4367971618859387374">表示名</translation>
@@ -5706,6 +5710,7 @@
 <translation id="5029287942302939687">パスワードを設定しました</translation>
 <translation id="5029873138381728058">VM を確認できませんでした</translation>
 <translation id="503155457707535043">アプリをダウンロード中</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{住所}=1{住所（{SELECTED_ITEMS}）}other{住所（{SELECTED_ITEMS}）}}</translation>
 <translation id="5032430150487044192">QR コードを作成できません</translation>
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
 <translation id="5035846135112863536">下の [詳細] を選択して、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
@@ -6451,6 +6456,7 @@
 <translation id="5568069709869097550">ログインできない</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびインストール済みのアプリを削除しますか？</translation>
 <translation id="5568602038816065197">サイトは、標準の印刷プロンプトを表示することなく、お使いのデバイスにアクセスできるプリンタの高度な機能を使用できます。</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{パスワード}=1{パスワード（{SELECTED_ITEMS}）}other{パスワード（{SELECTED_ITEMS}）}}</translation>
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="5571092938913434726">グローバル メディア コントロール</translation>
 <translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
@@ -6953,6 +6959,7 @@
 <translation id="5941153596444580863">ユーザーを追加...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{PASSWORD_COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> でページを検索</translation>
 <translation id="5942779427914696408">デバイスの公開設定</translation>
 <translation id="5943127421590245687">確認が完了しました。ロックを解除してローカルデータを復元するには、<ph name="DEVICE_TYPE" /> の以前のパスワードを入力してください。</translation>
@@ -7544,6 +7551,7 @@
 <translation id="637642201764944055">古いバージョンの Chrome アプリを Linux デバイスで使用できるのは、2022 年 12 月までです。管理者にお問い合わせのうえ、新しいバージョンに更新するか、アプリを削除してください。</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6378392501584240055">Wi-Fi ネットワークを開く</translation>
+<translation id="6379228010899751161">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを常に使用できるようにするには、本人確認を行ってください</translation>
 <translation id="6380143666419481200">同意して続行</translation>
 <translation id="6383382161803538830">このページではリーディング モードを利用できません</translation>
 <translation id="638418309848716977">対応リンク</translation>
@@ -8335,7 +8343,6 @@
 <translation id="6949434160682548041">パスワード（任意）</translation>
 <translation id="6950143189069683062">メモリ情報</translation>
 <translation id="6950627417367801484">アプリを復元</translation>
-<translation id="6954910832698269894">デバイスの同期をオンにすると、以前の Chromebook のアプリ、設定、Wi-Fi ネットワーク、壁紙を復元できます。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
 <translation id="6954936693361896459">代わりにこのタブをキャスト</translation>
 <translation id="6955446738988643816">ポップアップを検証</translation>
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>
@@ -8468,6 +8475,7 @@
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="7037157058268992880">PIN を忘れた場合</translation>
 <translation id="7037509989619051237">テキスト読み上げの音声をプレビュー</translation>
+<translation id="7037633074390821254">DNS または CIDR の制約</translation>
 <translation id="7038632520572155338">スイッチ アクセス</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> の別の Google アカウントを追加</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> の USB デバイスへのアクセス</translation>
@@ -8717,6 +8725,7 @@
 <translation id="7231260028442989757">スマートフォンの通知を確認する、閉じる、返信するなどの操作を行います</translation>
 <translation id="7231347196745816203">スマートフォンを使って <ph name="DEVICE_TYPE" /> のロックを解除します。</translation>
 <translation id="7232750842195536390">名前を変更できませんでした</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{1 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{BOOKMARK_COUNT} 件のブックマークとその他の項目がこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />で画像を検索</translation>
 <translation id="7234010996000898150">Linux の復元をキャンセルしています</translation>
 <translation id="7235305658956131898">デバイス管理者がインストールした Android アプリ。</translation>
@@ -8843,6 +8852,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> により ADB デバッグが無効になりました。<ph name="DEVICE_TYPE" /> を再起動すると、アプリをサイドローディングできなくなります。</translation>
 <translation id="7328119182036084494"><ph name="WEB_DRIVE" /> に保存しました</translation>
 <translation id="7328162502911382168">（<ph name="COUNT" />）</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 件のブックマークがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}other{{BOOKMARK_COUNT} 件のブックマークがこのデバイスのみに保存されています。他のデバイスで使用するには、Google アカウントに保存してください。}}</translation>
 <translation id="7328867076235380839">無効な組み合わせです</translation>
 <translation id="7329154610228416156">保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、ログインできませんでした。管理者にお問い合わせください。</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" /> さんのデバイスの <ph name="FEATURE_NAME" /> 設定（<ph name="USER_EMAIL" /> アカウントでの共有）。</translation>
@@ -8850,7 +8860,6 @@
 <translation id="7332053360324989309">専用ワーカー: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">タブの重複</translation>
 <translation id="7333388112938984914">従量制での接続時は、ファイルをアップロードできません。</translation>
-<translation id="7333669215417470379">アプリや設定のバックアップと復元</translation>
 <translation id="7335974957018254119">スペルチェックを使用する言語</translation>
 <translation id="7336799713063880535">通知をブロックしました。</translation>
 <translation id="7337258336304389677">スマートフォンまたはタブレットを使用する</translation>
@@ -9590,6 +9599,7 @@
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。データの確認と削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、アカウントに基づく情報やアシスタントにアクセスできてしまうことがあります。バッテリー消費を抑えるには、[アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
+<translation id="7851196412551419054">パスワードを変更しています...</translation>
 <translation id="7851457902707056880">ログインは所有者アカウントのみに制限されています。再起動して、所有者アカウントでログインしてください。30 秒後に自動的に再起動します。</translation>
 <translation id="7851716364080026749">カメラとマイクへのアクセスを常にブロックする</translation>
 <translation id="7851720427268294554">IPP パーサー</translation>
@@ -10385,6 +10395,7 @@
 <translation id="8398877366907290961">このまま続行</translation>
 <translation id="8399282673057829204">パスワードを表示</translation>
 <translation id="839949601275221554">デバイスでエラーが発生しました。デバイスを再起動して、もう一度お試しください。</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{ブックマーク}=1{ブックマーク（{SELECTED_ITEMS}）}other{ブックマーク（{SELECTED_ITEMS}）}}</translation>
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
 <translation id="8403807918453631441">パスワードを保存すると、<ph name="BRAND" /> で確認できるようになります</translation>
 <translation id="8405046151008197676">最新のアップデートの概要をご確認ください</translation>
@@ -11176,6 +11187,7 @@
 <translation id="8962863356073277855">URL は https://www.example.com の形式で入力してください</translation>
 <translation id="8962918469425892674">このサイトはモーション センサーまたは光センサーを使用しています。</translation>
 <translation id="8963117664422609631">サイトの設定に移動</translation>
+<translation id="8964927371396953727">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8965037249707889821">古いパスワードを入力</translation>
 <translation id="8966809848145604011">他のプロファイル</translation>
 <translation id="8967427617812342790">リーディング リストに追加</translation>
@@ -11297,7 +11309,6 @@
 <translation id="9032513103438497286">この <ph name="DEVICE_TYPE" /> でアプリのインストールをブロックします。アプリやコンテンツのダウンロードを制限するには、Google Play の設定にアクセスしてください。</translation>
 <translation id="9033765790910064284">続行</translation>
 <translation id="9033857511263905942">貼り付け(&amp;P)</translation>
-<translation id="9034408118624208974">Chromebook を初めてお使いですか？同期をオンにすると、設定がバックアップされます。</translation>
 <translation id="903480517321259405">もう一度 PIN を入力してください</translation>
 <translation id="9036484080057916082">署名付き証明書のタイムスタンプ リスト</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
@@ -11343,7 +11354,6 @@
 <translation id="9068598199622656904">キーボード ショートカットで複数のキーを同時に押すのではなく、1 つずつ押します</translation>
 <translation id="9068878141610261315">サポートされていないファイル形式です</translation>
 <translation id="9069417381769492963">検索条件に一致するブックマークはありません</translation>
-<translation id="9069665781180028115">選択した項目はこの Chromebook で使用できるようになります。Chromebook を初めてお使いになる場合は、すべての項目を同期すると設定のバックアップが作成されます。この設定は、[設定] &gt; [アカウント] でいつでも変更できます。</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> に許可した権限は、インストール（ストリーミング）されるアプリにも適用されます。</translation>
 <translation id="9070342919388027491">タブを左に移動しました</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -11639,6 +11649,7 @@
 <translation id="97905529126098460">このウィンドウはキャンセル処理の完了後に閉じられます。</translation>
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>
+<translation id="982083952953998237">制約を追加</translation>
 <translation id="98235653036850093">こんにちは、<ph name="PROFILE_NAME" /> さん</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - カメラ録画とマイク録音</translation>

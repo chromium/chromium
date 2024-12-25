@@ -1397,6 +1397,7 @@
 <translation id="7248046129087111453">‏<ph name="BEGIN_LINK" />היסטוריית החיפושים<ph name="END_LINK" /> ו<ph name="BEGIN_LINK" />סוגי פעילות אחרים<ph name="END_LINK" /> עשויים להישמר בחשבון שלך ב-Google.</translation>
 <translation id="7253951228444156601">הסיסמאות נבדקות…</translation>
 <translation id="7261217796641151584">שיתוף קבוצה</translation>
+<translation id="7266578100016339897">כך יהיה לך יותר קל לשמור על סדר. אפשר לשנות את הבחירה דרך ההגדרות בכל שלב.</translation>
 <translation id="7271220006028561438">הפעלת שדרוגים אוטומטיים של מפתחות גישה</translation>
 <translation id="7272437679830969316">לא ניתן לאמת את הזהות שלך. הסיסמה לא הועתקה.</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
@@ -1591,6 +1592,7 @@
 <translation id="8080028325999236607">סגור את כל הכרטיסיות</translation>
 <translation id="8084285576995584326">‏שליטה בנתונים שלך בחשבון Google</translation>
 <translation id="809543534949702122">חיפוש בהיסטוריה</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יום אחד ({COUNT})}one{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}two{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי יומיים ({COUNT})}other{כרטיסיות שלא משתמשים בהן מועברות לכאן אחרי {COUNT} ימים}}</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">ח</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>

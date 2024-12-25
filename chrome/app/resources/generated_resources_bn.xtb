@@ -1758,7 +1758,6 @@
 <translation id="2209841631181508629">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> এই সাইটের সাথে আপনার <ph name="FIELDS_STRING" /> শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="2210462644007531147">ইনস্টলেশন সম্পূর্ণ করা যায়নি</translation>
 <translation id="2211043920024403606">প্রোফাইলের তথ্য</translation>
-<translation id="2211245494465528624">সিঙ্ক সংক্রান্ত বিকল্পগুলি ম্যানেজ করুন</translation>
 <translation id="221297410904507041">ইতিহাস, কুকি, ক্যাশে ও আরও অনেক কিছু মুছুন</translation>
 <translation id="2213410656650624348">মাঝারি</translation>
 <translation id="2214018885812055163">শেয়ার করা ফোল্ডার</translation>
@@ -2755,7 +2754,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> এবং আরও <ph name="NUMBER_OF_DEVICES" />টি</translation>
 <translation id="2889043468805635730">কোনও সমস্যা পাওয়া যায়নি</translation>
 <translation id="2889064240420137087">এর সাথে লিঙ্ক খুলুন...</translation>
-<translation id="2890206081124517553">বিভিন্ন ডিভাইস জুড়ে আপনার ডেস্কটপ ব্যাকগ্রাউন্ড মনে রাখুন</translation>
 <translation id="2891464434568738544">বর্তমানে কোনও সাইট উপলভ্য নেই। এই তালিকায় এটি যোগ করার জন্য কোনও সাইট দেখুন।</translation>
 <translation id="2891922230654533301">আপনি কি <ph name="APP_NAME" />-এ সাইন-ইন করার জন্য আপনার ডিভাইস ব্যবহার করতে চান?</translation>
 <translation id="2893168226686371498">ডিফল্ট ব্রাউজার</translation>
@@ -4617,6 +4615,7 @@
 <translation id="4220648711404560261">অ্যাক্টিভেট করার সময় কোনও সমস্যা হয়েছে।</translation>
 <translation id="4222917615373664617">দাম ট্র্যাক করার সুবিধা চালু আছে। দাম <ph name="CURRENT_PRICE" />।</translation>
 <translation id="4223404254440398437">মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
+<translation id="4224541845943007092">অ্যাড্রেস বার থেকে কীবোর্ড পড়ুন এবং সেভ করুন</translation>
 <translation id="4225397296022057997">সমস্ত সাইটে</translation>
 <translation id="4228071595943929139">আপনার সংস্থার ইমেল আইডি ব্যবহার করুন</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশনের অনুমতি নেই}one{কিছু এক্সটেনশনের অনুমতি নেই}other{কিছু এক্সটেনশনের অনুমতি নেই}}</translation>
@@ -8369,7 +8368,6 @@
 <translation id="6949434160682548041">পাসওয়ার্ড (ঐচ্ছিক)</translation>
 <translation id="6950143189069683062">মেমরি সংক্রান্ত বিবরণ</translation>
 <translation id="6950627417367801484">অ্যাপ রিস্টোর করুন</translation>
-<translation id="6954910832698269894">আপনার আগের Chromebook থেকে অ্যাপ, সেটিংস, ওয়াই-ফাই নেটওয়ার্ক এবং ওয়ালপেপার রিস্টোর করতে ডিভাইস সিঙ্ক চালু করুন। 'সেটিংস &gt; অ্যাকাউন্ট' থেকে যেকোনও সময় পরিবর্তন করুন।</translation>
 <translation id="6954936693361896459">পরিবর্তে এই ট্যাব কাস্ট করুন</translation>
 <translation id="6955446738988643816">পপআপ সংবীক্ষণ</translation>
 <translation id="6955535239952325894">ম্যানেজ করা ব্রাউজারে এই সেটিং কাজ করে না</translation>
@@ -8629,6 +8627,7 @@
 <translation id="7134951043985383439">ভয়ঙ্কর ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="7135729336746831607">ব্লুটুথ চালু করবেন?</translation>
 <translation id="7136694880210472378">ডিফল্ট করুন</translation>
+<translation id="7137277889990479760"><ph name="EMAIL" /> হিসেবে চালিয়ে যান</translation>
 <translation id="7137771508221868414">এটি সাইট ও ইনস্টল করা অ্যাপের স্টোর করা <ph name="TOTAL_USAGE" /> ডেটা মুছে দেবে</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> আপনার মাইক্রোফোন ব্যবহার করছে</translation>
@@ -8883,7 +8882,6 @@
 <translation id="7332053360324989309">ডেডিকেটেড ওয়ার্কার: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ডুপ্লিকেট ট্যাব</translation>
 <translation id="7333388112938984914">মিটারড কানেকশনে ফাইল আপলোড করা যাচ্ছে না।</translation>
-<translation id="7333669215417470379">আপনার অ্যাপ এবং সেটিংসের ব্যাক-আপ নিয়ে সেগুলি রিস্টোর করুন</translation>
 <translation id="7335974957018254119">এই ভাষাগুলির জন্য বানান পরীক্ষা করা যায়</translation>
 <translation id="7336799713063880535">বিজ্ঞপ্তি ব্লক করা হয়েছে।</translation>
 <translation id="7337258336304389677">আপনার ফোন বা ট্যাবলেট ব্যবহার করুন</translation>
@@ -9207,6 +9205,7 @@
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7561759921596375678">ভলিউম চালু করুন</translation>
 <translation id="7561982940498449837">মেনু বন্ধ করুন</translation>
+<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">ব্রাউজার উইন্ডো খুলুন</translation>
 <translation id="7564847347806291057">সমাপ্তি প্রক্রিয়া</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />সেটিংস<ph name="LINK_END" /> থেকে আপনি সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। বিভিন্ন ওয়েবসাইট এবং অ্যাপে আপনি যেসব অনুমতি দিয়েছেন সেগুলি সবকটি অ্যাকাউন্টে প্রয়োগ করা হতে পারে। আপনি বিভিন্ন সাইট বা অ্যাপকে অ্যাকাউন্টের তথ্যে অ্যাক্সেস দিতে না চাইলে, <ph name="DEVICE_TYPE" />-এ গেস্ট হিসেবে সাইন-ইন করতে পারেন অথবা <ph name="LINK_2_BEGIN" />ছদ্মবেশী উইন্ডো<ph name="LINK_2_END" />তে ওয়েব ব্রাউজ করতে পারেন।</translation>
@@ -10896,6 +10895,7 @@
 <translation id="8737966899544698733">'লোকেশন অ্যাকুরেসি' সেটিং (শুধুমাত্র Android-এ উপলভ্য)</translation>
 <translation id="8738418093147087440">দেশ, ভাষা বা ইনপুটের নাম অনুযায়ী সার্চ করুন</translation>
 <translation id="8740086188450289493">Google অ্যাকাউন্টের পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="874023689350909633">এটি ব্যবহার করে দেখুন</translation>
 <translation id="8740247629089392745">আপনি এই Chromebook <ph name="SUPERVISED_USER_NAME" />-কে ফেরত দিতে পারেন। সেটআপ প্রায় হয়ে গেছে, তারপর আপনি সব সুবিধা চেক করে দেখতে পারবেন।</translation>
 <translation id="8740672167979365981">ChromeOS Flex আপডেট করতে হবে</translation>
 <translation id="8741944563400125534">সুইচ দিয়ে অ্যাক্সেসের সেটআপ গাইড</translation>
@@ -11329,7 +11329,6 @@
 <translation id="9032513103438497286">এই <ph name="DEVICE_TYPE" /> ডিভাইসে ইনস্টল করা অ্যাপ ব্লক করুন। অ্যাপ বা কন্টেন্ট ডাউনলোড করাতে বিধিনিষেধ আরোপ করতে, Google Play সেটিংসে যান।</translation>
 <translation id="9033765790910064284">যাই হোক, চালিয়ে যান</translation>
 <translation id="9033857511263905942">&amp;প্রতিলেপন</translation>
-<translation id="9034408118624208974">Chromebook-এ নতুন? আপনার পছন্দগুলির যাতে ব্যাক-আপ নেওয়া যায় সেজন্য় সিঙ্ক চালু করুন।</translation>
 <translation id="903480517321259405">পিন আবার টাইপ করুন</translation>
 <translation id="9036484080057916082">সই করা সার্টিফিকেট টাইমস্ট্যাম্প সংক্রান্ত তালিকা</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> নামের ব্লুটুথ ডিভাইসের সাথে কানেক্ট করা আছে</translation>
@@ -11375,7 +11374,6 @@
 <translation id="9068598199622656904">একই সময়ে একাধিক কী প্রেস করে ধরে রাখার পরিবর্তে, কীবোর্ড শর্টকাটের জন্য একটি কী প্রেস করুন</translation>
 <translation id="9068878141610261315">ফাইলের ধরন অনুপযুক্ত</translation>
 <translation id="9069417381769492963">আপনার সার্চের সাথে ম্যাচ করে এমন বুকমার্ক নেই</translation>
-<translation id="9069665781180028115">এই Chromebook-এ বাছাই করা আইটেমগুলি উপলভ্য হবে। আপনি Chromebook-এ নতুন হলে, আপনার পছন্দগুলির ব্য়াক-আপ নিতে সব আইটেম সিঙ্ক করুন। 'সেটিংস &gt; অ্যাকাউন্ট' থেকে যেকোনও সময় পরিবর্তন করুন।</translation>
 <translation id="9070231741075992882">আপনি <ph name="APP_NAME" />-এর জন্য যে অনুমতি দেন তা এর ইনস্টল ও স্ট্রিম করা অ্যাপের ক্ষেত্রেও দেওয়া হবে।</translation>
 <translation id="9070342919388027491">ট্যাব বাঁদিকে সরে গেছে</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>

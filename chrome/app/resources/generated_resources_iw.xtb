@@ -541,6 +541,7 @@
 <translation id="1368603372088757436">‏ב-<ph name="DEVICE_TYPE" /> שלך אין תמיכה ב-Linux. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">‏כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google</translation>
 <translation id="1370384480654163477">הצגה ועריכה של קבצים מהביקור האחרון שלך באתר הזה:</translation>
+<translation id="1372259917802609049">משהו השתבש במהלך מחיקת המגבלה</translation>
 <translation id="1372841398847029212">סנכרון עם החשבון שלך</translation>
 <translation id="1373176046406139583">הרשאות הגישה של המכשיר קובעות מי יכול לשתף איתך כשהמסך לא נעול. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">האישור הנדרש על ידי הרשת "<ph name="NETWORK_NAME" />" אינו מותקן או שכבר אינו חוקי. יש לקבל אישור חדש ולנסות להתחבר שוב.</translation>
@@ -1487,6 +1488,7 @@
     אפליקציות או תוכן במכשירים אחרים לא יושפעו.</translation>
 <translation id="2018189721942291407">לא בטוחים אם כדאי להירשם?</translation>
 <translation id="2018352199541442911">מצטערים, מכשיר האחסון החיצוני שלך אינו נתמך בשלב זה.</translation>
+<translation id="2019213483156307334">קרתה שגיאה במהלך הוספת המגבלה</translation>
 <translation id="2019718679933488176">&amp;פתיחת אודיו בכרטיסייה חדשה</translation>
 <translation id="2020183425253392403">הצגת ההגדרות של כתובת הרשת</translation>
 <translation id="2020225359413970060">סריקת קובץ</translation>
@@ -1756,7 +1758,6 @@
 <translation id="2209841631181508629">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK" /> של האתר הזה.</translation>
 <translation id="2210462644007531147">אי אפשר להשלים את ההתקנה</translation>
 <translation id="2211043920024403606">פרטי הפרופיל</translation>
-<translation id="2211245494465528624">ניהול אפשרויות הסנכרון</translation>
 <translation id="221297410904507041">‏מחיקת ההיסטוריה, קובצי ה-Cookie, המטמון ועוד</translation>
 <translation id="2213410656650624348">בינוני</translation>
 <translation id="2214018885812055163">תיקיות משותפות</translation>
@@ -2753,7 +2754,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> ו-<ph name="NUMBER_OF_DEVICES" /> נוספים</translation>
 <translation id="2889043468805635730">לא נמצאו בעיות</translation>
 <translation id="2889064240420137087">פתיחת קישור באמצעות...</translation>
-<translation id="2890206081124517553">הגדרה של אותו רקע בשולחן העבודה במכשירים שונים</translation>
 <translation id="2891464434568738544">אין אתרים זמינים כרגע. צריך לבקר באתר כדי שהוא יתווסף לרשימה הזו.</translation>
 <translation id="2891922230654533301">להשתמש במכשיר שלך כדי להיכנס לחשבון באתר <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
@@ -3151,6 +3151,7 @@
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3188465121994729530">ממוצע נע</translation>
 <translation id="3189187154924005138">סמן גדול</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{‏סיסמה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}one{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3192586965067888278">‏יש לתאר בפירוט את הבעיה. המשוב יישלח אל Google לבדיקה אנושית, ויכול להיות שנשתמש בו כדי לשפר או לפתח מוצרים ושירותים של Google.</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
@@ -3621,6 +3622,7 @@
 <translation id="3537881477201137177">ניתן לשנות זאת מאוחר יותר ב'הגדרות'</translation>
 <translation id="3538066758857505094">‏קרתה שגיאה בהסרת ההתקנה של Linux. צריך לנסות שוב.</translation>
 <translation id="3539537154248488260">הצגה או הסתרה של הרעיונות להשראה</translation>
+<translation id="3539791442352537591">קרתה שגיאה בשמירת השינוי במצב האמינות</translation>
 <translation id="3540173484406326944">אין חיבור לרשת דרך <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">‏מתאם AC</translation>
 <translation id="354068948465830244">התוסף יכול לקרוא ולשנות נתוני אתרים</translation>
@@ -4808,6 +4810,7 @@
 <translation id="4361745360460842907">פתיחה ככרטיסייה</translation>
 <translation id="4363262124589131906">‏הסנכרון האוטומטי של קבצים חדשים ב'אחסון שלי' יופסק ב-Chromebook הזה</translation>
 <translation id="4364327530094270451">מלון</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{‏פריט אחד שמור רק במכשיר הזה. כדי להשתמש בו במכשירים אחרים, צריך לשמור אותו בחשבון Google.}one{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫{ITEM_COUNT} פריטים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> משתף חלון.</translation>
 <translation id="4364830672918311045">הצגת הודעות</translation>
 <translation id="4367971618859387374">השם המוצג</translation>
@@ -5731,6 +5734,7 @@
 <translation id="5029287942302939687">הסיסמה הוגדרה</translation>
 <translation id="5029873138381728058">‏נכשל הניסיון לבדיקת מכונות VM</translation>
 <translation id="503155457707535043">הורדת האפליקציות מתבצעת</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{כתובות}=1{כתובות ({SELECTED_ITEMS})}one{Addresses ({SELECTED_ITEMS})}two{כתובות ({SELECTED_ITEMS})}other{כתובות ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
 <translation id="5033137252639132982">לא מורשים להשתמש בחיישני תנועה</translation>
 <translation id="5035846135112863536">לקבלת מידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, צריך לבחור באפשרות 'פרטים נוספים' למטה.</translation>
@@ -6480,6 +6484,7 @@
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="5568525251731145240">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות?</translation>
 <translation id="5568602038816065197">לאתרים יש הרשאה להשתמש בתכונות מתקדמות של כל מדפסת שלמכשיר יש גישה אליה, בלי להציג את בקשת ההדפסה הרגילה</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{סיסמאות}=1{סיסמאות ({SELECTED_ITEMS})}one{Passwords ({SELECTED_ITEMS})}two{סיסמאות ({SELECTED_ITEMS})}other{סיסמאות ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">‏Bluetooth מופעל</translation>
 <translation id="5571092938913434726">פקדי מדיה גלובליים</translation>
 <translation id="5571832155627049070">התאמה אישית של הפרופיל</translation>
@@ -6982,6 +6987,7 @@
 <translation id="5941153596444580863">הוספת משתמש...</translation>
 <translation id="5941343993301164315">כניסה ל-<ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">מזעור</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏סיסמה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google.}one{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}two{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}other{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}}</translation>
 <translation id="594221546068848596">חיפוש בדף באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">הרשאות גישה למכשיר</translation>
 <translation id="5943127421590245687">האימות הסתיים בהצלחה. כדי לבטל את הנעילה של הנתונים המקומיים ולשחזר אותם, יש להזין את הסיסמה הקודמת שלך עבור <ph name="DEVICE_TYPE" />.</translation>
@@ -8370,7 +8376,6 @@
 <translation id="6949434160682548041">סיסמה (אופציונלי)</translation>
 <translation id="6950143189069683062">פרטי הזיכרון</translation>
 <translation id="6950627417367801484">שחזור אפליקציות</translation>
-<translation id="6954910832698269894">‏צריך להפעיל את הסנכרון במכשיר כדי לשחזר את האפליקציות, ההגדרות, רשתות ה-Wi-Fi והטפט ממכשיר Chromebook הקודם. תמיד אפשר לערוך שינויים דרך 'הגדרות' &gt; 'חשבונות'.</translation>
 <translation id="6954936693361896459">‏הפעלת Cast של הכרטיסייה הזו</translation>
 <translation id="6955446738988643816">בדיקת חלון מוקפץ</translation>
 <translation id="6955535239952325894">ההגדרה הזו מושבתת בדפדפנים מנוהלים</translation>
@@ -8503,6 +8508,7 @@
 <translation id="7036706669646341689">‏מומלץ לפנות שטח אחסון של <ph name="DISK_SIZE" /> להתקנת Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="7037157058268992880">שכחתי את קוד האימות</translation>
 <translation id="7037509989619051237">טקסט לתצוגה מקדימה</translation>
+<translation id="7037633074390821254">‏מגבלת DNS או CIDR</translation>
 <translation id="7038632520572155338">גישה באמצעות מתג</translation>
 <translation id="7038710352229712897">‏הוספה של חשבון Google נוסף עבור <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">‏גישה למכשירי USB של <ph name="VENDOR_NAME" /></translation>
@@ -8752,6 +8758,7 @@
 <translation id="7231260028442989757">יש לך אפשרות להציג ולסגור את ההתראות בטלפון ולהשיב להן</translation>
 <translation id="7231347196745816203">להשתמש בטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7232750842195536390">המערכת לא הצליחה לשנות את השם</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{‏סימנייה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}one{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫{BOOKMARK_COUNT} סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
 <translation id="723343421145275488">חיפוש תמונות דרך <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">‏המערכת מבטלת את שחזור Linux</translation>
 <translation id="7235305658956131898">‏אפליקציית Android שהותקנה על ידי האדמין של המכשיר.</translation>
@@ -8878,6 +8885,7 @@
 <translation id="7327989755579928735">‏ניפוי באגים באמצעות ADB הושבת על-ידי <ph name="MANAGER" />. לאחר הפעלה מחדש של <ph name="DEVICE_TYPE" />, לא תהיה יותר אפשרות להתקין אפליקציות ממקור לא ידוע.</translation>
 <translation id="7328119182036084494">נשמר ב-<ph name="WEB_DRIVE" /></translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{‏סימנייה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google.}one{‏‫{BOOKMARK_COUNT} סימניות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}two{‏‫{BOOKMARK_COUNT} סימניות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}other{‏‫{BOOKMARK_COUNT} סימניות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google.}}</translation>
 <translation id="7328867076235380839">שילוב לא חוקי</translation>
 <translation id="7329154610228416156">הכניסה נכשלה מפני שהוגדר שימוש בכתובת אתר לא מאובטחת (<ph name="BLOCKED_URL" />). יש ליצור קשר עם מנהל המערכת.</translation>
 <translation id="7330533963640151632">ההגדרות של <ph name="FEATURE_NAME" /> למכשיר של <ph name="USER_NAME" />. השיתוף מתבצע בחשבון <ph name="USER_EMAIL" />.</translation>
@@ -8885,7 +8893,6 @@
 <translation id="7332053360324989309">עובד ייעודי: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">כרטיסיות כפולות</translation>
 <translation id="7333388112938984914">לא ניתן להעלות קבצים כשמחוברים בחיבור עם חיוב לפי שימוש בנתונים.</translation>
-<translation id="7333669215417470379">גיבוי ושחזור של האפליקציות וההגדרות</translation>
 <translation id="7335974957018254119">שימוש בבדיקת איות בשביל</translation>
 <translation id="7336799713063880535">התראות נחסמו.</translation>
 <translation id="7337258336304389677">שימוש בטלפון או בטאבלט</translation>
@@ -10422,6 +10429,7 @@
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
 <translation id="8399282673057829204">הצגת הסיסמה</translation>
 <translation id="839949601275221554">אירעה שגיאה במכשיר. צריך להפעיל אותו מחדש ולנסות שוב.</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{סימניות}=1{סימניות ({SELECTED_ITEMS})}one{Bookmarks ({SELECTED_ITEMS})}two{סימניות ({SELECTED_ITEMS})}other{סימניות ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
 <translation id="8403807918453631441">ל<ph name="BRAND" /> יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
@@ -11336,7 +11344,6 @@
 <translation id="9032513103438497286">‏חסימת אפליקציות שמותקנות במכשיר <ph name="DEVICE_TYPE" /> הזה. כדי להגביל הורדה של אפליקציות או תוכן, צריך לעבור להגדרות של Google Play.</translation>
 <translation id="9033765790910064284">אני רוצה להמשיך בכל זאת</translation>
 <translation id="9033857511263905942">&amp;הדבקה</translation>
-<translation id="9034408118624208974">‏זהו מכשיר Chromebook הראשון שלך? כדאי להפעיל את הסנכרון כדי שההעדפות שלך יגובו.</translation>
 <translation id="903480517321259405">יש להקליד שוב את קוד האימות</translation>
 <translation id="9036484080057916082">רשימת חותמות הזמן של אישורים חתומים</translation>
 <translation id="9037054491984310631">‏יש חיבור אל מכשיר Bluetooth בשם <ph name="DEVICE" /></translation>
@@ -11382,7 +11389,6 @@
 <translation id="9068598199622656904">מקישים אחד-אחד על רצף של מקשי קיצור, ולא צריך ללחוץ עליהם בו-זמנית.</translation>
 <translation id="9068878141610261315">סוג הקובץ לא נתמך</translation>
 <translation id="9069417381769492963">אין סימניות שתואמות לחיפוש שביצעת</translation>
-<translation id="9069665781180028115">‏הפריטים שנבחרו יהיו זמינים במכשיר Chromebook הזה. אם זהו מכשיר Chromebook הראשון שלך, כדאי לסנכרן את כל הפריטים כדי שההעדפות יגובו. תמיד אפשר לערוך שינויים דרך 'הגדרות' &gt; 'חשבונות'.</translation>
 <translation id="9070231741075992882">ההרשאות שיוענקו לאפליקציה <ph name="APP_NAME" /> יוענקו גם לאפליקציות המותקנות ולאפליקציות הסטרימינג שלה.</translation>
 <translation id="9070342919388027491">הכרטיסייה הועברה ימינה</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -11678,6 +11684,7 @@
 <translation id="97905529126098460">החלון הזה ייסגר לאחר השלמת הביטול.</translation>
 <translation id="980731642137034229">לחצן תפריט פעולות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
+<translation id="982083952953998237">הוספת מגבלות</translation>
 <translation id="98235653036850093">שלום, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – המצלמה והמיקרופון מקליטים</translation>

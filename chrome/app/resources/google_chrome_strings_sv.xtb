@@ -245,6 +245,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3889417619312448367">Avinstallera Google Chrome</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3941890832296813527">Installationsfel: Installationens filnamn är ogiltigt eller stöds inte.</translation>
+<translation id="3968962723676998462">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome vill radera din data i Google Lösenordshantering. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="398236277091248993">Chrome fortsätter att vara snabb med prestandahöjande funktioner</translation>
 <translation id="3999683152997576765">Du kan se och ta bort intressanta ämnen som används på webbplatser för att visa annonser för dig. Uppskattningen av vad du är intresserad av görs utifrån den senaste webbhistoriken i Chrome.</translation>
@@ -309,6 +310,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4728575227883772061">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Google Chrome, om det är igång, och försök sedan igen.</translation>
 <translation id="4741235124132242877">Fäst! Använd Google Lens igen från verktygsfältet</translation>
 <translation id="4747730611090640388">Chrome kan göra en uppskattning av dina intressen.  Sedan kan en webbplats fråga efter dina intressen i Chrome för att anpassa vilka annonser som visas.</translation>
+<translation id="475321580758063259">Uppdatera Chrome för att fortsätta använda Chrome-data i Google-kontot, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4793679854893018356">Läs mer om hur du skyddas i Chrome</translation>
@@ -585,6 +587,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen misslyckades eftersom datorn inte uppfyller minimikraven för hårdvara.</translation>
 <translation id="8111297389482307122">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut finns denna data kvar på enheten.</translation>
+<translation id="8113883687556086139">Verifiera din identitet för att använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Skicka feedback för sökning med Lens</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initierar …</translation>

@@ -461,6 +461,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1777422078676229054">Picha (Ya Hifadhi)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Ungependa iweke programu za wavuti kwenye kifaa?</translation>
+<translation id="1791415068765905273">Onyesha Majedwali yote ya Ulinganishaji</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili udhibiti maelezo, faragha na usalama wako katika Akaunti yako ya Google</translation>
 <translation id="1793631236004319016">Ilitumika mara ya mwisho <ph name="NUM_HOURS_MINUTES_SECONDS" /> zilizopita</translation>
@@ -2197,6 +2198,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4918221908152712722">Sakinisha <ph name="APP_NAME" /> (huhitaji kupakua)</translation>
 <translation id="4920457992177678649">Makazi ya Likizo na Kukaa kwa Muda Mfupi</translation>
 <translation id="4920710383559189047">Kipochi</translation>
+<translation id="4920921410507315601">Majedwali ya Ulinganishaji</translation>
 <translation id="4922104989726031751">Ili utumie Kidhibiti cha Manenosiri kwenye mfumo wa uendeshaji unaotumia, fungua tena Chromium na uruhusu ufikiaji wa kidhibiti cha manenosiri katika kompyuta yako. Vichupo vyako vitafunguka upya ukishafungua tena.</translation>
 <translation id="4923459931733593730">Malipo</translation>
 <translation id="4926049483395192435">Sharti ibainishwe.</translation>
@@ -2390,6 +2392,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5278778426231952189">Pakia sasa</translation>
 <translation id="5279286380302340275">Dhibiti vipakuliwa</translation>
 <translation id="5280963125494874678">programu za wavuti</translation>
+<translation id="5282008206326321696">{count,plural, =0{Alamisho #}=1{Alamisho #}other{Alamisho #}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Sifa za hati</translation>
 <translation id="528468243742722775">Mwisho</translation>
@@ -2585,6 +2588,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="561165882404867731">Tafsiri ukurasa huu ukitumia Google Tafsiri</translation>
 <translation id="5612720917913232150"><ph name="URL" /> inataka kutumia maelezo ya mahali kompyuta yako ilipo</translation>
 <translation id="5614520971155863709">Michezo ya Kadi</translation>
+<translation id="5617785978844309968">Onyesha majedwali yote ya ulinganishaji</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> imekuelekeza upya mara nyingi mno.</translation>
 <translation id="5619721953841297650">Weka mipangilio mapema</translation>
 <translation id="5624120631404540903">Dhibiti manenosiri</translation>

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
 <translation id="1396327438254055134">Sitenin, V8 optimize ediciyi kullanmasına izin verin.</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
+<translation id="1415855080660575082">Chrome'un son sekmelerinizi cihazınızla paylaşmasına izin verdiğinizde bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından etkinleştirebilir veya devre dışı bırakabilirsiniz.</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> site}}</translation>
 <translation id="1500473259453106018">Sekmelerdeki fiyat düşüşleri kartını gizle</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Bu sitenin, üçüncü taraf çerezlerini kullanmasına geçici olarak izin verdiniz. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir. <ph name="BEGIN_LINK" />Geri bildirim gönderin<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Bazı sitelerdeki özellikler Gizli modda çalışmayabilir</translation>
 <translation id="2442870161001914531">Her zaman masaüstü sitesini iste</translation>
+<translation id="2445311670906052406">Chrome artık son sekmelerinizi cihazınızla paylaşıyor. Bu sekmeleri cihazınızın uygulama listesinde ve arama sonuçlarında görebilirsiniz. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="2469312991797799607">Bu işlem, <ph name="ORIGIN" /> ve altındaki tüm sitelere ait verilerin ve çerezlerin tamamını temizler</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Siteler, kimlik hizmetlerinden gelen oturum açma istemlerini gösterebilir.</translation>
 <translation id="2787357173144933081">Çok amaçlı adres çubuğuna hızlı başlangıç</translation>
 <translation id="2790501146643349491">Bu düğme açıkken yeni kapatılan siteler veri gönderip alma işlemini bitirebilir. Düğme kapalıyken yeni kapatılan siteler veri gönderip alma işlemini bitiremez.</translation>
+<translation id="2814830417943086299">Chrome artık son sekmelerinizi cihazınızın uygulama listesinde ve arama sonuçlarında gösteriyor. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> için tüm site izinlerini sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="2850913818900871965">Mobil cihaz görünümü iste</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
 <translation id="9138217887606523162">Şu anki yakınlaştırma düzeyi %%<ph name="ZOOM_LEVEL" /></translation>
+<translation id="9156722768168878035">Chrome'un son sekmelerinizi cihazınızın uygulama listesinde ve arama sonuçlarında göstermesine izin verin. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="9162462602695099906">Bu sayfa tehlikeli</translation>
 <translation id="947156494302904893">Ziyaret ettiğiniz siteler, bot olmadığınızı ve gerçek bir kişi olduğunuzu doğrulayabilir</translation>
 <translation id="959682366969460160">Organize çalışın</translation>

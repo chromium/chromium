@@ -1743,7 +1743,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2209841631181508629">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK" />xidmət şərtlərinə<ph name="END_LINK" /> baxın.</translation>
 <translation id="2210462644007531147">Quraşdırmanı tamamlamaq alınmadı</translation>
 <translation id="2211043920024403606">Profil məlumatı</translation>
-<translation id="2211245494465528624">Sinxronlaşdırma seçimlərini idarə edin</translation>
 <translation id="221297410904507041">Tarixçə, kuki, keş və s. datanı silin</translation>
 <translation id="2213410656650624348">Orta</translation>
 <translation id="2214018885812055163">Paylaşılmış qovluqlar</translation>
@@ -2740,7 +2739,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="288734198558082692"><ph name="DEVICE" /> və digər <ph name="NUMBER_OF_DEVICES" /> cihaz</translation>
 <translation id="2889043468805635730">Problem tapılmadı</translation>
 <translation id="2889064240420137087">Linki bununla açın:</translation>
-<translation id="2890206081124517553">Desktop arxa fonu cihazlarda yadda saxlanır</translation>
 <translation id="2891464434568738544">Əlçatan sayt yoxdur. Bu siyahıya əlavə etmək üçün sayta daxil olun.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> tətbiqinə daxil olmaq üçün cihazınız istifadə edilsin?</translation>
 <translation id="2893168226686371498">Defolt brauzer</translation>
@@ -4600,6 +4598,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4220648711404560261">Aktivasiya zamanı xəta baş verdi.</translation>
 <translation id="4222917615373664617">Qiymətin izlənilməsi aktivdir. Qiymət: <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofona icazə verilmir</translation>
+<translation id="4224541845943007092">Ünvan panelindən klaviatura daxiletməsinin oxunması və yadda saxlanması</translation>
 <translation id="4225397296022057997">Bütün saytlarda</translation>
 <translation id="4228071595943929139">Təşkilatın e-poçt ünvanından istifadə edin</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu artırmaya icazə verilmir}other{Bəzi artırmalara icazə verilmir}}</translation>
@@ -8347,7 +8346,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6949434160682548041">Parol (istəyə görə)</translation>
 <translation id="6950143189069683062">Yaddaş detalları</translation>
 <translation id="6950627417367801484">Tətbiqləri bərpa edin</translation>
-<translation id="6954910832698269894">Əvvəlki Chromebook-dan tətbiq, ayar, Wi-Fi şəbəkələrini və divar kağızını bərpa etmək üçün cihazda sinxronlaşdırmanı aktiv edin. Ayarlar &gt; Hesablar bölməsində dəyişə bilərsiniz.</translation>
 <translation id="6954936693361896459">Əvəzinə bu tabı yayımlayın</translation>
 <translation id="6955446738988643816">Popap göstərin</translation>
 <translation id="6955535239952325894">Bu ayar idarə edilən brauzerlərdə deaktiv edilib</translation>
@@ -8606,6 +8604,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7134951043985383439">Təhlükəli fayl endirildi</translation>
 <translation id="7135729336746831607">Bluetooth aktiv edilsin?</translation>
 <translation id="7136694880210472378">Defolt edin</translation>
+<translation id="7137277889990479760"><ph name="EMAIL" /> kimi davam edin</translation>
 <translation id="7137771508221868414">Sayt və quraşdırılmış tətbiqlərin saxladığı <ph name="TOTAL_USAGE" /> data silinəcək</translation>
 <translation id="7138678301420049075">Digər</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonunuzdan istifadə edir</translation>
@@ -8860,7 +8859,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7332053360324989309">Xüsusi İşçi: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Dublikat tablar</translation>
 <translation id="7333388112938984914">Ölçülü əlaqədə fayl yükləmək olmur.</translation>
-<translation id="7333669215417470379">Tətbiq və ayarların yedəklənməsi, bərpası</translation>
 <translation id="7335974957018254119">Bu dillər üçün orfoqrafik yoxlanışdan istifadə edin:</translation>
 <translation id="7336799713063880535">Bildirişlər blok edilib.</translation>
 <translation id="7337258336304389677">Telefon və ya planşetdən istifadə edin</translation>
@@ -9184,6 +9182,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7561759921596375678">Səs səviyyəsini aktiv edin</translation>
 <translation id="7561982940498449837">Menyunu bağlayın</translation>
+<translation id="7563970324931922582">[yertutan mətni]</translation>
 <translation id="756445078718366910">Brauzer pəncərəsini açın</translation>
 <translation id="7564847347806291057">Prosesi bitirin</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ayarlardan<ph name="LINK_END" /> daxil olmuş Google Hesablarını idarə edə bilərsiniz. Veb saytlar və tətbiqlərə verdiyiniz icazələr bütün hesablara tətbiq oluna bilər. Saytlar və ya tətbiqlərin hesab məlumatlarınıza giriş etməsini istəmirsinizsə, <ph name="DEVICE_TYPE" /> cihazınıza qonaq kimi daxil ola və ya <ph name="LINK_2_BEGIN" />Anonim pəncərədə<ph name="LINK_2_END" /> vebdə baxış keçirə bilərsiniz.</translation>
@@ -10873,6 +10872,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8737966899544698733">Məkan dəqiqliyi (yalnız Android)</translation>
 <translation id="8738418093147087440">Ölkə, dil və ya daxiletmə adı ilə axtarın</translation>
 <translation id="8740086188450289493">Google Hesabı parolundan istifadə edin</translation>
+<translation id="874023689350909633">Sınayın</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
 <translation id="8740672167979365981">ChromeOS Flex güncəllənməsi tələb olunur</translation>
 <translation id="8741944563400125534">Düymə ilə Giriş ayarlama bələdçisi</translation>
@@ -11303,7 +11303,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9032513103438497286">Bu <ph name="DEVICE_TYPE" /> cihazında quraşdırılan tətbiqləri bloklayın. Tətbiqlər və ya kontentin endirilməsini məhdudlaşdırmaq üçün Google Play Ayarlarına keçin.</translation>
 <translation id="9033765790910064284">Yenə də davam edin</translation>
 <translation id="9033857511263905942">&amp;Yerləşdirin</translation>
-<translation id="9034408118624208974">Chromebook-da yenisiniz? Tərcihlərin yedəklənməsi üçün sinxronlaşdırmanı aktiv edin.</translation>
 <translation id="903480517321259405">PİN kodu yenidən yazın</translation>
 <translation id="9036484080057916082">İmzalı sertifikatın vaxt möhürü siyahısı</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> adlı Bluetooth cihazına qoşulub</translation>
@@ -11349,7 +11348,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9068598199622656904">Klaviatura qısayolları üçün düymələri eyni vaxtda basıb saxlamaq əvəzinə bir düyməyə basın</translation>
 <translation id="9068878141610261315">Dəstəklənməyən fayl növü</translation>
 <translation id="9069417381769492963">Axtarışa uyğun əlfəcin yoxdur</translation>
-<translation id="9069665781180028115">Seçilmiş elementlər bu Chromebook-da əlçatan olacaq. Chromebook-da yenisinizsə, tərcihlərin yedəklənməsi üçün bütün elementləri sinxronlaşdırın. Ayarlar &gt; Hesablar bölməsində dəyişə bilərsiniz.</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> üçün verdiyiniz icazələr quraşdırılmış və yayımlanmış tətbiqlərə də aid ediləcək.</translation>
 <translation id="9070342919388027491">Tab sola köçürüldü</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1758,7 +1758,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2209841631181508629">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK" />mga tuntunin ng serbisyo<ph name="END_LINK" /> ng site na ito.</translation>
 <translation id="2210462644007531147">Hindi matapos ang pag-install</translation>
 <translation id="2211043920024403606">Impormasyon ng profile</translation>
-<translation id="2211245494465528624">Pamahalaan ang mga opsyon sa pag-sync</translation>
 <translation id="221297410904507041">I-delete ang history, cookies, cache, at higit pa</translation>
 <translation id="2213410656650624348">Katamtaman</translation>
 <translation id="2214018885812055163">Mga nakabahaging folder</translation>
@@ -2755,7 +2754,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="288734198558082692"><ph name="DEVICE" /> at <ph name="NUMBER_OF_DEVICES" /> pa</translation>
 <translation id="2889043468805635730">Walang nakitang problema</translation>
 <translation id="2889064240420137087">Buksan ang link gamit ang...</translation>
-<translation id="2890206081124517553">Tandaan ang background ng iyong desktop sa lahat ng device</translation>
 <translation id="2891464434568738544">Walang available na site sa kasalukuyan. Bisitahin ang isang site para idagdag ito sa listahang ito.</translation>
 <translation id="2891922230654533301">Gamitin ang iyong device para mag-sign in sa <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Default na browser</translation>
@@ -8369,7 +8367,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6949434160682548041">Password (opsyonal)</translation>
 <translation id="6950143189069683062">Mga Detalye ng Memory</translation>
 <translation id="6950627417367801484">I-restore ang mga app</translation>
-<translation id="6954910832698269894">I-on ang pag-sync ng device para ma-restore ang iyong mga app, mga setting, mga Wi-Fi network, at wallpaper mula sa dati mong Chromebook. Gumawa ng mga pagbabago sa anumang oras sa Mga Setting &gt; Mga Account.</translation>
 <translation id="6954936693361896459">I-cast na lang ang tab na ito</translation>
 <translation id="6955446738988643816">Siyasatin ang Popup</translation>
 <translation id="6955535239952325894">Naka-disable ang setting na ito sa mga pinapamahalaang browser</translation>
@@ -8884,7 +8881,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7332053360324989309">Nakalaang Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Mga duplicate na tab</translation>
 <translation id="7333388112938984914">Hindi makakapag-upload ng mga file habang gumagamit ng metered connection.</translation>
-<translation id="7333669215417470379">I-back up at i-restore ang iyong mga app at setting</translation>
 <translation id="7335974957018254119">Gumamit ng pang-check ng pagbabaybay para sa</translation>
 <translation id="7336799713063880535">Naka-block ang notifications.</translation>
 <translation id="7337258336304389677">Gamitin ang iyong telepono o tablet</translation>
@@ -11335,7 +11331,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9032513103438497286">I-block ang mga naka-install na app sa <ph name="DEVICE_TYPE" /> na ito. Para paghigpitan ang pag-download ng mga app o content, pumunta sa Mga Setting ng Google Play.</translation>
 <translation id="9033765790910064284">Magpatuloy pa rin</translation>
 <translation id="9033857511263905942">I-&amp;paste</translation>
-<translation id="9034408118624208974">Bago ka sa Chromebook? I-on ang pag-sync para ma-back up ang iyong mga preference.</translation>
 <translation id="903480517321259405">I-type ulit ang PIN</translation>
 <translation id="9036484080057916082">Listahan ng Timestamp ng Nilagdaang Certificate</translation>
 <translation id="9037054491984310631">Nakakonekta sa Bluetooth device na pinangalanang <ph name="DEVICE" /></translation>
@@ -11381,7 +11376,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="9068598199622656904">Paisa-isang pumindot ng key para sa mga keyboard shortcut sa halip na magkakasabay na pumindot nang matagal ng mga key</translation>
 <translation id="9068878141610261315">Hindi sinusuportahang uri ng file</translation>
 <translation id="9069417381769492963">Walang bookmark na tumutugma sa iyong paghahanap</translation>
-<translation id="9069665781180028115">Magiging available sa Chromebook na ito ang mga napiling item. Kung bago ka sa Chromebook, i-sync ang lahat ng item para ma-back up ang iyong mga preference. Gumawa ng mga pagbabago sa anumang oras sa Mga Setting &gt; Mga Account.</translation>
 <translation id="9070231741075992882">Ang mga pahintulot na pinayagan mo para sa <ph name="APP_NAME" /> ay papayagan din para sa mga app nitong naka-install at sini-stream.</translation>
 <translation id="9070342919388027491">Inilipat sa kaliwa ang Tab</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

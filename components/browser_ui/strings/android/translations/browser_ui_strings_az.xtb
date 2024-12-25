@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Endirmə durduruldu</translation>
 <translation id="1396327438254055134">Saytın V8 optimallaşdırıcıdan istifadə etməyinə icazə verin.</translation>
 <translation id="1415402041810619267">URL tam deyil</translation>
+<translation id="1415855080660575082">Chrome-un son tabları cihazla paylaşmasına icazə verməklə tətbiq siyahısında və axtarış nəticələrində onları görə bilərsiniz. Bunu istənilən vaxt Chrome ayarlarında aktiv və ya deaktiv edə bilərsiniz.</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
 <translation id="1500473259453106018">Tablarda qiymətin enməsi kartını gizlədin</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Bu sayta üçüncü tərəf kukilərindən müvəqqəti istifadə icazəsi verdiniz. Baxış zamanı qoruma səviyyəsi aşağı olsa da, sayt funksiyaları düzgün işləyəcək. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Bəzi saytlardakı funksiyalar Anonim rejimdə işləməyə bilər</translation>
 <translation id="2442870161001914531">Həmişə masaüstü saytını tələb edin</translation>
+<translation id="2445311670906052406">Chrome artıq son tabları cihazla paylaşır. Onları cihazın tətbiq siyahısında və axtarış nəticələrində görəcəksiniz. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="2469312991797799607">Bu əməliyyat ilə <ph name="ORIGIN" /> və ona aid saytların data və kukiləri silinəcək</translation>
 <translation id="2482878487686419369">Bildirişlər</translation>
 <translation id="2485422356828889247">Sistemdən silin</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2787357173144933081">Omnibox-u sürətlə başladın</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
+<translation id="2814830417943086299">Chrome indi cihazın tətbiq siyahısında və axtarış nəticələrində son tabları göstərir. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="2850913818900871965">Mobil görünüş tələb edin</translation>
 <translation id="2870560284913253234">Sayt</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="9138217887606523162">Cari zoom: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Chrome-un cihazın tətbiq siyahısında və axtarış nəticələrində son tabları göstərməsinə icazə verin. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="9162462602695099906">Bu səhifə təhlükəlidir</translation>
 <translation id="947156494302904893">Daxil olduğunuz saytlar bot yox, real insan olduğunuzu təsdiqləyə bilər</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>

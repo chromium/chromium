@@ -19,6 +19,7 @@
 <translation id="107147699690128016">የፋይል ቅጥያውን ከቀየሩት ፋይሉ በተለየ መተግበሪያ ሊከፈት ይችላል፣ እና መሣሪያዎን ሊጎዳ ይችላል።</translation>
 <translation id="1080365971383768617">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላት</translation>
 <translation id="1082920045291562218">ከማጠቃለያ ግብረመልስ ሉህ ጋር አጋራ ተዘግቷል</translation>
+<translation id="1087176310396019910">ሊሆን የሚችል አይፈለጌ መልዕክት</translation>
 <translation id="1089606299949659462">ግምገማ ተጠናቋል!</translation>
 <translation id="1094555143448724771">ከሌሎች መሣሪያዎችዎ ላይ ትሮችን ለማየት ትሮችዎን እና ታሪክዎን ያስምሩ።</translation>
 <translation id="1095761715416917775">የስምረት ውሂብዎን ሁልጊዜ መድረስ እንደሚችሉ ያረጋግጡ</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_MANY" /> ትር}other{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="3293181007446299124">የእርስዎ የአሰሳ ታሪክ በመሣሪያዎ ላይ የግል ሆኖ ይቆያል እና ማንነትዎን ለመጠበቅ ሪፖርቶች ዘግይተው ይላካሉ</translation>
+<translation id="3301936297336370235">የይለፍ ቃል ጥቆማ ማረጋገጫ</translation>
 <translation id="3302615849591357577">የትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> እንደ አዲስ የዳራ ትር ቡድን ወደነበረበት ይመልሱ።</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
 <translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6196315980958524839">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ባለው የGoogle የይለፍ ቃል አስተዳዳሪ ላይ ነው</translation>
 <translation id="6202812185118613467">ስምረትን ለማስጀመር መልሰው በመለያ ይግቡ</translation>
+<translation id="6204781143409202534">Chrome ከ<ph name="DOMAIN" /> ሊሆን የሚችል አይፈለጌ መልዕክትን ለይቷል።</translation>
 <translation id="6205314730813004066">የማስታወቂያ ግላዊነት</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>
 <translation id="6211386937064921208">ይህን ገፅ በቅድመ-ዕይታ በማሳየት ላይ</translation>

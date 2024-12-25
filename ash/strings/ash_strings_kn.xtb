@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಬಳಸಿ ಅಥವಾ ನಿಮ್ಮ ಫೋನ್ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="240545663114741956">ಸೈನ್ ಔಟ್ ಮಾಡಲು <ph name="ACCELERATOR" /> ಅನ್ನು ಎರಡು ಬಾರಿ ಒತ್ತಿರಿ.</translation>
 <translation id="2405664212338326887">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
+<translation id="2406710117564540804">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಫೀಚರ್ ಅನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2408955596600435184">ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ</translation>
 <translation id="2412593942846481727">ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿದೆ</translation>
 <translation id="2416438829169535743">ವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಬೇಕೇ?</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">ಸ್ಕ್ಯಾನ್ ಆಗುತ್ತಿರುವ <ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6542891623636520977">ಎಮೋಜಿ, GIF ಗಳು, ಮತ್ತು ಇತ್ಯಾದಿ</translation>
+<translation id="6543942526104794893">ಫೇಶಿಯಲ್ ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="6545382064335350438">ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ಇನ್ನೂ ದೃಢೀಕರಿಸಲಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6555373427270923730">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ ವಿಳಾಸವನ್ನು ಟೈಪ್‌ ಮಾಡಿ, ನಂತರ <ph name="MODIFIER" /><ph name="KEY" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
 <translation id="8858369206579825206">ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="8860366331836346216">eSIM ಅನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="8869149849311827122">ಮೌಸ್ ಕರ್ಸರ್ ನಿಯಂತ್ರಣವನ್ನು ಆಫ್ ಮಾಡಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="8870509716567206129">ಆ್ಯಪ್ ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="8873203135446552888">ಬಿಲ್ಟ್-ಇನ್ ಟಚ್‌ಪ್ಯಾಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ನೀವು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="8874184842967597500">ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>

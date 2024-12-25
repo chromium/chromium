@@ -1748,7 +1748,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2209841631181508629">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la <ph name="FIELDS_STRING" />. Consultă <ph name="BEGIN_LINK" />termenii și condițiile<ph name="END_LINK" /> acestui site.</translation>
 <translation id="2210462644007531147">Instalarea nu a putut fi finalizată</translation>
 <translation id="2211043920024403606">Informații de profil</translation>
-<translation id="2211245494465528624">Gestionează opțiunile de sincronizare</translation>
 <translation id="221297410904507041">Șterge istoricul, cookie-urile, memoria cache și altele</translation>
 <translation id="2213410656650624348">Moderată</translation>
 <translation id="2214018885812055163">Dosare comune</translation>
@@ -2742,7 +2741,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="288734198558082692"><ph name="DEVICE" /> și încă <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nu s-au găsit probleme</translation>
 <translation id="2889064240420137087">Deschide linkul cu...</translation>
-<translation id="2890206081124517553">Reține fundalul desktopului pe toate dispozitivele</translation>
 <translation id="2891464434568738544">Momentan nu este disponibil niciun site. Accesează un site pentru a-l adăuga în listă.</translation>
 <translation id="2891922230654533301">Folosești dispozitivul pentru a te conecta la <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browserul prestabilit</translation>
@@ -4603,6 +4601,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4220648711404560261">A apărut o eroare în timpul activării.</translation>
 <translation id="4222917615373664617">Urmărirea prețului este activată. Prețul este de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Folosirea microfonului nu este permisă</translation>
+<translation id="4224541845943007092">Citește și salvează datele introduse de la tastatură din bara de adrese</translation>
 <translation id="4225397296022057997">Pe toate site-urile</translation>
 <translation id="4228071595943929139">Folosește adresa de e-mail a organizației</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Extensia nu este permisă}few{Unele extensii nu sunt permise}other{Unele extensii nu sunt permise}}</translation>
@@ -8352,7 +8351,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6949434160682548041">Parolă (opțională)</translation>
 <translation id="6950143189069683062">Detalii despre memorie</translation>
 <translation id="6950627417367801484">Restabilește aplicațiile</translation>
-<translation id="6954910832698269894">Activează sincronizarea dispozitivelor pentru a restabili aplicațiile, setările, rețelele Wi-Fi și imaginea de fundal de pe Chromebookul anterior. Fă modificări oricând din Setări &gt; Conturi.</translation>
 <translation id="6954936693361896459">Proiectează această filă</translation>
 <translation id="6955446738988643816">Fereastră pop-up de inspectare</translation>
 <translation id="6955535239952325894">Setarea este dezactivată în browserele gestionate</translation>
@@ -8612,6 +8610,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7134951043985383439">S-a descărcat un fișier periculos</translation>
 <translation id="7135729336746831607">Activezi Bluetooth?</translation>
 <translation id="7136694880210472378">Setează ca prestabilit</translation>
+<translation id="7137277889990479760">Continuă ca <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Astfel, se vor șterge <ph name="TOTAL_USAGE" /> din datele stocate de site-uri și de aplicațiile instalate</translation>
 <translation id="7138678301420049075">Altele</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> folosește microfonul</translation>
@@ -8866,7 +8865,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7332053360324989309">Worker dedicat: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Dublează filele</translation>
 <translation id="7333388112938984914">Nu poți încărca fișiere atât timp cât folosești o conexiune contorizată.</translation>
-<translation id="7333669215417470379">Fă backup și restabilește aplicațiile și setările</translation>
 <translation id="7335974957018254119">Folosește verificarea ortografiei pentru</translation>
 <translation id="7336799713063880535">Notificări blocate.</translation>
 <translation id="7337258336304389677">Folosește telefonul sau tableta</translation>
@@ -9190,6 +9188,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="7561759921596375678">Activează sunetul</translation>
 <translation id="7561982940498449837">Închide meniul</translation>
+<translation id="7563970324931922582">[placeholder text]</translation>
 <translation id="756445078718366910">Deschide fereastra de browser</translation>
 <translation id="7564847347806291057">Oprește procesul</translation>
 <translation id="756503097602602175">Poți să gestionezi Conturile Google conectate din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />. Permisiunile pe care le-ai acordat site-urilor și aplicațiilor se pot aplica tuturor conturilor. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, poți să te conectezi pe <ph name="DEVICE_TYPE" /> ca invitat sau să navighezi pe web într-o <ph name="LINK_2_BEGIN" />fereastră incognito<ph name="LINK_2_END" />.</translation>
@@ -10880,6 +10879,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8737966899544698733">Precizia locației (numai pentru Android)</translation>
 <translation id="8738418093147087440">Caută după țară, limbă sau numele metodei de introducere a textului</translation>
 <translation id="8740086188450289493">Folosește parola Contului Google</translation>
+<translation id="874023689350909633">Încearcă</translation>
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
 <translation id="8740672167979365981">Este necesară actualizarea sistemului de operare Chrome Flex</translation>
 <translation id="8741944563400125534">Ghid de configurare pentru acces prin comutare</translation>
@@ -11313,7 +11313,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9032513103438497286">Blochează aplicațiile instalate pe <ph name="DEVICE_TYPE" />. Pentru a restricționa descărcarea aplicațiilor sau a conținutului, accesează setările Google Play.</translation>
 <translation id="9033765790910064284">Continuă oricum</translation>
 <translation id="9033857511263905942">&amp;Inserați</translation>
-<translation id="9034408118624208974">Folosești Chromebookul pentru prima dată? Activează sincronizarea pentru a face backup preferințelor tale.</translation>
 <translation id="903480517321259405">Introdu din nou codul PIN</translation>
 <translation id="9036484080057916082">Listă cu marcaje temporale pentru certificatul semnat</translation>
 <translation id="9037054491984310631">Conectat la dispozitivul Bluetooth denumit <ph name="DEVICE" /></translation>
@@ -11359,7 +11358,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9068598199622656904">Apasă pe o tastă odată pentru comenzi rapide de la tastatură în loc să ții apăsate tastele simultan</translation>
 <translation id="9068878141610261315">Tip de fișier neacceptat</translation>
 <translation id="9069417381769492963">Nu există marcaje care să corespundă căutării tale</translation>
-<translation id="9069665781180028115">Elementele selectate vor fi disponibile pe acest Chromebook. Dacă nu ai mai folosit un Chromebook, sincronizează toate elementele, astfel încât să faci backup preferințelor tale. Fă modificări oricând din Setări &gt; Conturi.</translation>
 <translation id="9070231741075992882">Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> vor fi acordate și pentru aplicațiile instalate și redate în stream.</translation>
 <translation id="9070342919388027491">Fila a fost mutată spre stânga</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

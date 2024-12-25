@@ -245,6 +245,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3889417619312448367">Deinstalirajte Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3941890832296813527">Greška prilikom instaliranja: naziv fajla programa za instaliranje nije važeći ili nije podržan.</translation>
+<translation id="3968962723676998462">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke iz Google upravitelja lozinki. Unesite svoju lozinku za Windows da to dozvolite.</translation>
 <translation id="398236277091248993">Funkcije pojačavanja performansi omogućavaju Chromeu da ostane brz</translation>
 <translation id="3999683152997576765">Možete vidjeti i uklanjati teme koje vas zanimaju, a koje web lokacije koriste da vam prikazuju oglase. Chrome procjenjuje vaša interesovanja na osnovu vaše nedavne historije pregledanja.</translation>
@@ -309,6 +310,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4741235124132242877">Zakačeno! Ponovo koristite Google Objektiv putem alatne trake</translation>
 <translation id="4747730611090640388">Chrome može procijeniti vaša interesovanja.  Kasnije, web lokacija koju ste posjetili može zatražiti od Chromea da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>
+<translation id="475321580758063259">Ažurirajte Chrome kako biste nastavili upotrebljavati podatke iz Chromea na svojem Google računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Ova usluga koristi isti alat za provjeru pravopisa koji se koristi u Google Pretraživanju. Tekst koji pišete u pregledniku šalje se Googleu. Ovo ponašanje možete uvijek promijeniti u postavkama.</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
@@ -585,6 +587,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8111297389482307122">Da se podaci mogu sačuvati na Google račun i koristiti na svim vašim uređajima, Chrome mora potvrditi vaš identitet. Ako se odjavite, ti podaci će ostati na ovom uređaju.</translation>
+<translation id="8113883687556086139">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretraživanje putem Objektiva</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>

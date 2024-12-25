@@ -244,6 +244,7 @@
 <translation id="3889417619312448367">解除安裝 Google Chrome</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
+<translation id="3968962723676998462">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="3973161977468201858">Google Chrome 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="398236277091248993">Chrome 會運用效能強化功能維持順暢運作</translation>
 <translation id="3999683152997576765">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chrome 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
@@ -308,6 +309,7 @@
 <translation id="4728575227883772061">安裝失敗，錯誤原因不明。如果目前正在執行 Google Chrome，請先關閉，然後再試一次。</translation>
 <translation id="4741235124132242877">已固定！你可透過工具列再次使用「Google 智能鏡頭」</translation>
 <translation id="4747730611090640388">Chrome 可以推測您的興趣。您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
+<translation id="475321580758063259">請更新 Chrome，以便繼續使用 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的 Chrome 資料</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">這會使用與「Google 搜尋」相同的的拼字檢查工具。您在瀏覽器輸入的文字將會傳送給 Google。您可以在設定中變更此行為。</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護使用者的網上安全</translation>
@@ -584,6 +586,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
 <translation id="8111297389482307122">Chrome 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。登出後，這類資料仍會保留在此裝置。</translation>
+<translation id="8113883687556086139">請驗證身分，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="8118331347066725040">提供你對「智能鏡頭」搜尋功能的意見</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>

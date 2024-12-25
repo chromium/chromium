@@ -396,6 +396,7 @@
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
 <translation id="240545663114741956">按兩次 <ph name="ACCELERATOR" /> 即可登出。</translation>
 <translation id="2405664212338326887">未連線</translation>
+<translation id="2406710117564540804">開啟/關閉零打擾模式</translation>
 <translation id="2408955596600435184">請輸入你的 PIN 碼</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">要離開檢視畫面嗎？</translation>
@@ -1644,6 +1645,7 @@
 <translation id="6539852571005954999">正在掃描下載項目「<ph name="FILENAME" />」</translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">表情符號、GIF 和其他內容</translation>
+<translation id="6543942526104794893">確定要關閉臉部表情功能嗎？</translation>
 <translation id="6545382064335350438">系統仍無法驗證 PIN 碼，請再試一次。</translation>
 <translation id="6555373427270923730">在網址列輸入網址，然後按下 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
@@ -2308,6 +2310,7 @@
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">隱私權控制項</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>
+<translation id="8869149849311827122">確定要關閉滑鼠游標控制功能嗎？</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8873203135446552888">確認要停用內建觸控板</translation>
 <translation id="8874184842967597500">未連線</translation>

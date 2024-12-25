@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
 <translation id="1396327438254055134">Permite site-ului să folosească instrumentul de optimizare V8.</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
+<translation id="1415855080660575082">Permite ca Chrome să-ți trimită filele recente pe dispozitiv ca să le vezi în lista de aplicații și în rezultatele căutării pe dispozitiv. Poți să activezi sau să dezactivezi opțiunea din setările Chrome.</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
 <translation id="1500473259453106018">Ascunde scăderile de preț din cardul File</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Ai permis temporar acestui site să utilizeze cookie-uri terță parte, ceea ce înseamnă mai puțină protecție la navigare, dar există șanse mai mari ca funcțiile site-ului să ruleze conform așteptărilor. <ph name="BEGIN_LINK" />Trimite feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze în modul incognito</translation>
 <translation id="2442870161001914531">Solicită întotdeauna site-ul pentru computer</translation>
+<translation id="2445311670906052406">Chrome îți trimite acum filele recente pe dispozitiv. Le vei vedea în lista de aplicații a dispozitivului și în rezultatele căutării. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="2469312991797799607">Această acțiune va șterge toate datele și cookie-urile pentru <ph name="ORIGIN" /> și toate site-urile subordonate</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Site-urile pot afișa solicitări de conectare de la servicii de identitate.</translation>
 <translation id="2787357173144933081">Pornește direct în caseta polivalentă</translation>
 <translation id="2790501146643349491">Când opțiunea este activată, site-urile închise recent pot să finalizeze trimiterea și primirea datelor. Când opțiunea este dezactivată, site-urile închise recent nu pot finaliza trimiterea sau primirea datelor.</translation>
+<translation id="2814830417943086299">Chrome afișează acum filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="2822354292072154809">Sigur dorești să resetezi toate permisiunile la nivel de site pentru <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicită afișarea pe mobil</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Nivelul de zoom actual este <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Permite ca Chrome să-ți afișeze filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>

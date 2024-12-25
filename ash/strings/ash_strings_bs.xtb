@@ -396,6 +396,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2402411679569069051">Da otključate Chromebook, koristite otisak prsta ili otključajte telefon</translation>
 <translation id="240545663114741956">Pritisnite <ph name="ACCELERATOR" /> dvaput da se odjavite.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
+<translation id="2406710117564540804">Uključivanje/isključivanje značajke "Ne uznemiravaj"</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
 <translation id="2416438829169535743">Izaći iz prikaza?</translation>
@@ -2314,7 +2315,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodajte eSIM</translation>
-<translation id="8869149849311827122">Jeste li sigurni da želite isključiti upravljanje pokazivačem miša?</translation>
+<translation id="8869149849311827122">Jeste li sigurni da želite isključiti upravljanje kursorom miša?</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
 <translation id="8873203135446552888">Potvrdite da želite onemogućiti ugrađenu dodirnu podlogu</translation>
 <translation id="8874184842967597500">Nije povezano</translation>

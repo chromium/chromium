@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ukibadilisha kiendelezi cha faili, faili inaweza kufunguka katika programu tofauti na huenda ikawa hatari kwa kifaa chako.</translation>
 <translation id="1080365971383768617">Manenosiri kwenye vifaa vyako vyote</translation>
 <translation id="1082920045291562218">Laha ya kutuma ukitumia maoni kwa muhtasari imefungwa</translation>
+<translation id="1087176310396019910">Uwezekano wa taka</translation>
 <translation id="1089606299949659462">Ukaguzi umekamilika!</translation>
 <translation id="1094555143448724771">Ili uone vichupo kutoka kwenye vifaa vyako vingine, sawazisha vichupo na historia yako</translation>
 <translation id="1095761715416917775">Hakikisha kwamba unaweza kufikia data yako inayosawazishwa, kila wakati</translation>
@@ -508,6 +509,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, kichupo <ph name="TAB_COUNT_ONE" />}other{<ph name="TAB_GROUPS_PART" />, vichupo <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="3293181007446299124">Historia yako ya kuvinjari huwekwa kwa faragha kwenye kifaa chako na ripoti huchelewa kutumwa ili kulinda utambulisho wako</translation>
+<translation id="3301936297336370235">Uthibitishaji wa pendekezo la nenosiri</translation>
 <translation id="3302615849591357577">Rejesha kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, chenye rangi ya <ph name="COLOR_NAME" />, kiwe kikundi kipya cha vichupo kinachofanya kazi chinichini.</translation>
 <translation id="3303414029551471755">Ungependa kuendelea kupakua maudhui?</translation>
 <translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
@@ -1136,6 +1138,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6193448654517602979">Chagua vichupo</translation>
 <translation id="6196315980958524839">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki</translation>
 <translation id="6202812185118613467">Ingia tena katika akaunti ili uanze kusawazisha</translation>
+<translation id="6204781143409202534">Chrome imetambua uwezekano wa taka kutoka kwa <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Faragha ya matangazo</translation>
 <translation id="6210748933810148297">Wewe si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Unaangalia onyesho la kukagua ukurasa huu</translation>

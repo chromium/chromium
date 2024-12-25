@@ -1647,6 +1647,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6539852571005954999">Pregledovanje prenosa: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Predvajanje v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodžiji, GIF-i in drugo</translation>
+<translation id="6543942526104794893">Ali ste prepričani, da želite izklopiti obrazne poteze?</translation>
 <translation id="6545382064335350438">Kode PIN še vedno ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="6555373427270923730">Vnesite spletni naslov v naslovno vrstico, nato pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Nova namestitev</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
 <translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8860366331836346216">Dodajanje kartice e-SIM</translation>
+<translation id="8869149849311827122">Ali ste prepričani, da želite izklopiti upravljanje s kazalcem miške?</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
 <translation id="8873203135446552888">Potrdite onemogočenje vgrajene sledilne ploščice</translation>
 <translation id="8874184842967597500">Ni povezano</translation>

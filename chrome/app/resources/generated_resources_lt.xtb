@@ -1763,7 +1763,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2209841631181508629">Kad būtų galima tęsti, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bendrins jūsų <ph name="FIELDS_STRING" /> su šia svetaine. Žr. svetainės <ph name="BEGIN_LINK" />paslaugų teikimo sąlygas<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Nepavyko baigti diegimo</translation>
 <translation id="2211043920024403606">Profilio informacija</translation>
-<translation id="2211245494465528624">Tvarkyti sinchronizavimo parinktis</translation>
 <translation id="221297410904507041">Ištrinti istoriją, slapukus, talpyklos duomenis ir kt.</translation>
 <translation id="2213410656650624348">Vidutinė</translation>
 <translation id="2214018885812055163">Bendrinami aplankai</translation>
@@ -2760,7 +2759,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="288734198558082692"><ph name="DEVICE" /> ir dar <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nerasta jokių problemų</translation>
 <translation id="2889064240420137087">Atidaryti nuorodą naudojant...</translation>
-<translation id="2890206081124517553">Įsiminti darbalaukio foną keliuose įrenginiuose</translation>
 <translation id="2891464434568738544">Šiuo metu nėra pasiekiamų svetainių. Apsilankykite svetainėje, kad pridėtumėte ją prie šio sąrašo.</translation>
 <translation id="2891922230654533301">Naudoti jūsų įrenginį prisijungiant prie „<ph name="APP_NAME" />“?</translation>
 <translation id="2893168226686371498">Numatytoji naršyklė</translation>
@@ -8386,7 +8384,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6949434160682548041">Slaptažodis (nebūtinas)</translation>
 <translation id="6950143189069683062">Išsami atminties informacija</translation>
 <translation id="6950627417367801484">Atkurti programas</translation>
-<translation id="6954910832698269894">Įjunkite įrenginio sinchronizavimą, kad galėtumėte atkurti programas, nustatymus, „Wi-Fi“ tinklus ir ekrano foną iš ankstesnio „Chromebook“. Bet kuriuo metu atlikite pakeitimų skiltyje „Nustatymai“ &gt; „Paskyros“.</translation>
 <translation id="6954936693361896459">Perduoti šį skirtuką</translation>
 <translation id="6955446738988643816">Tikrinti iššokantįjį langą</translation>
 <translation id="6955535239952325894">Šis nustatymas išjungtas tvarkomose naršyklėse</translation>
@@ -8904,7 +8901,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7332053360324989309">Skirtasis elementas: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tikslios skirtukų kopijos</translation>
 <translation id="7333388112938984914">Negalima įkelti failų, kai naudojamas apribotas ryšys.</translation>
-<translation id="7333669215417470379">Programų ir nustatymų atsarginės kopijos kūrimas ir atkūrimas</translation>
 <translation id="7335974957018254119">Naudoti rašybos tikrinimą</translation>
 <translation id="7336799713063880535">Praneš. užblokuoti.</translation>
 <translation id="7337258336304389677">Naudokite telefoną arba planšetinį kompiuterį</translation>
@@ -11358,7 +11354,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9032513103438497286">Blokuokite programas, įdiegtas šiame „<ph name="DEVICE_TYPE" />“. Jei norite apriboti programų ar turinio atsisiuntimą, eikite į „Google Play“ nustatymų skiltį.</translation>
 <translation id="9033765790910064284">Vis tiek tęsti</translation>
 <translation id="9033857511263905942">&amp;Įklijuoti</translation>
-<translation id="9034408118624208974">Pirmą kartą naudojate „Chromebook“? Įjunkite sinchronizavimą, kad būtų sukurtos atsarginės nuostatų kopijos.</translation>
 <translation id="903480517321259405">Dar kartą įveskite PIN kodą</translation>
 <translation id="9036484080057916082">Pasirašyto sertifikato laiko žymių sąrašas</translation>
 <translation id="9037054491984310631">Prisijungta prie „Bluetooth“ įrenginio pavadinimu „<ph name="DEVICE" />“</translation>
@@ -11404,7 +11399,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9068598199622656904">Naudokite sparčiuosius klavišus vienu metu paspaudę vieną klavišą, o ne laikydami nuspaudę klavišus</translation>
 <translation id="9068878141610261315">Nepalaikomas failo tipas</translation>
 <translation id="9069417381769492963">Nėra paiešką atitinkančių žymių</translation>
-<translation id="9069665781180028115">Pasirinkti elementai bus pasiekiami šiame „Chromebook“. Jei „Chromebook“ naudojate pirmą kartą, sinchronizuokite visus elementus, kad būtų kuriamos atsarginės nuostatų kopijos. Bet kuriuo metu atlikite pakeitimų skiltyje „Nustatymai“ &gt; „Paskyros“.</translation>
 <translation id="9070231741075992882">Leidimai, kuriuos suteikiate „<ph name="APP_NAME" />“, taip pat bus leidžiami jos įdiegtoms ir srautu perduodamoms programoms.</translation>
 <translation id="9070342919388027491">Skirtukas perkeltas kairėn</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

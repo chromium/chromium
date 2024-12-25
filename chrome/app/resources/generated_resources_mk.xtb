@@ -1758,7 +1758,6 @@
 <translation id="2209841631181508629">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето <ph name="FIELDS_STRING" /> со сајтов. Погледнете ги <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" /> на сајтов.</translation>
 <translation id="2210462644007531147">Инсталацијата не можеше да се заврши</translation>
 <translation id="2211043920024403606">Податоци за профилот</translation>
-<translation id="2211245494465528624">Управувајте со опциите за синхронизација</translation>
 <translation id="221297410904507041">Избришете ги историјата, колачињата, кешот и друго</translation>
 <translation id="2213410656650624348">Умерено</translation>
 <translation id="2214018885812055163">Споделени папки</translation>
@@ -2755,7 +2754,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> и уште <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Не се најдени проблеми</translation>
 <translation id="2889064240420137087">Отвори ја врската со…</translation>
-<translation id="2890206081124517553">Запомнете за заднината на вашата работна површина на уредите</translation>
 <translation id="2891464434568738544">Нема достапни сајтови во моментов. Одете на некој сајт или додајте го во списоков.</translation>
 <translation id="2891922230654533301">Дали сакате да го користите вашиот уред за најавување на <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Стандарден прелистувач</translation>
@@ -4617,6 +4615,7 @@
 <translation id="4220648711404560261">Грешка при активацијата.</translation>
 <translation id="4222917615373664617">Овозможено е следење на цената. Цената е <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Микрофонот не е дозволен</translation>
+<translation id="4224541845943007092">Читајте и зачувувајте го внесувањето со тастатурата во лентата за адреса</translation>
 <translation id="4225397296022057997">На сите сајтови</translation>
 <translation id="4228071595943929139">Користете ја адресата на е-пошта на вашата организација</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Екстензијава не е дозволена}one{Некои екстензии не се дозволени}other{Некои екстензии не се дозволени}}</translation>
@@ -8368,7 +8367,6 @@
 <translation id="6949434160682548041">Лозинка (изборно)</translation>
 <translation id="6950143189069683062">Детали за меморија</translation>
 <translation id="6950627417367801484">Врати ги апликациите</translation>
-<translation id="6954910832698269894">Вклучете синхронизација на уредот за враќање на вашите апликации, поставки, Wi-Fi мрежи и тапет од вашиот претходен Chromebook. Променете во секое време во „Поставки &gt; Сметки“.</translation>
 <translation id="6954936693361896459">Наместо тоа, емитувај ја картичкава</translation>
 <translation id="6955446738988643816">Провери појавен прозорец</translation>
 <translation id="6955535239952325894">Поставкава е оневозможена на управувани прелистувачи</translation>
@@ -8627,6 +8625,7 @@
 <translation id="7134951043985383439">Преземена е опасна датотека</translation>
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
+<translation id="7137277889990479760">Продолжете како <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Ова ќе ги избрише податоците (<ph name="TOTAL_USAGE" />) што ги складирале сајтовите и инсталираните апликации</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> го користи микрофонот</translation>
@@ -8881,7 +8880,6 @@
 <translation id="7332053360324989309">Доделен работник: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Дупликат картички</translation>
 <translation id="7333388112938984914">Не може да се прикачат датотеки додека сте на врска што се плаќа.</translation>
-<translation id="7333669215417470379">Бекап и враќање на вашите апликации и поставки</translation>
 <translation id="7335974957018254119">Користете проверка на правопис за</translation>
 <translation id="7336799713063880535">Извес. се блокирани.</translation>
 <translation id="7337258336304389677">Користете го телефонот или таблетот</translation>
@@ -9205,6 +9203,7 @@
 <translation id="7561196759112975576">Секогаш</translation>
 <translation id="7561759921596375678">Вклучи звук</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
+<translation id="7563970324931922582">[текст на резервирано место]</translation>
 <translation id="756445078718366910">Отвори прозорец на прелистувач</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Може да управувате со најавените сметки на Google од <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />. Дозволите што сте им ги одобриле на веб-сајтовите и апликациите можеби ќе важат за сите сметки. Ако не сакате сајтовите или апликациите да пристапуваат до податоците за сметката, може да се најавите на вашиот <ph name="DEVICE_TYPE" /> како гостин или да прелистувате на интернет во <ph name="LINK_2_BEGIN" />прозорец „Инкогнито“<ph name="LINK_2_END" />.</translation>
@@ -10897,6 +10896,7 @@
 <translation id="8737966899544698733">Прецизност на локација (само за Android)</translation>
 <translation id="8738418093147087440">Пребарувајте според земји, јазик или имиња на внесени елементи</translation>
 <translation id="8740086188450289493">Употребете ја лозинката за сметката на Google</translation>
+<translation id="874023689350909633">Испробајте</translation>
 <translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
 <translation id="8740672167979365981">Потребно е ажурирање на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Водич за поставување на „Пристап со прекинувачи“</translation>
@@ -11330,7 +11330,6 @@
 <translation id="9032513103438497286">Блокирајте ги апликациите инсталирани на овој <ph name="DEVICE_TYPE" />. За да го ограничите преземањето апликации или содржини, одете во „Поставки за Google Play“.</translation>
 <translation id="9033765790910064284">Сепак продолжи</translation>
 <translation id="9033857511263905942">&amp;Залепи</translation>
-<translation id="9034408118624208974">Нови сте на Chromebook? Вклучете синхронизација за да се направи бекап на вашите поставки.</translation>
 <translation id="903480517321259405">Повторно напишете го PIN-бројот</translation>
 <translation id="9036484080057916082">Список со временски печати на потпишан сертификат</translation>
 <translation id="9037054491984310631">Поврзани со уред со Bluetooth именуван <ph name="DEVICE" /></translation>
@@ -11376,7 +11375,6 @@
 <translation id="9068598199622656904">Притискајте едно по едно копче за кратенки од тастатура наместо да држите копчиња истовремено</translation>
 <translation id="9068878141610261315">Неподдржан тип датотека</translation>
 <translation id="9069417381769492963">Нема обележувачи што се совпаѓаат со вашето пребарување</translation>
-<translation id="9069665781180028115">Одредени ставки ќе бидат достапни на овој Chromebook. Ако сте нов корисник на Chromebook, синхронизирајте ги сите ставки за да се направи бекап на вашите поставки. Променете во секое време во „Поставки &gt; Сметки“.</translation>
 <translation id="9070231741075992882">Дозволите за <ph name="APP_NAME" /> ќе се дозволат и за нејзините инсталирани и стримувани апликации.</translation>
 <translation id="9070342919388027491">Картичката е преместена налево</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

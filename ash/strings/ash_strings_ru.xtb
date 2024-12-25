@@ -901,7 +901,7 @@
 <translation id="4119928251231465047">Слишком много попыток ввода PIN-кода.</translation>
 <translation id="412298498316631026">окно</translation>
 <translation id="4123259114412175274">Чтобы разблокировать Chromebook, включите Bluetooth на телефоне</translation>
-<translation id="4123868835475902435">Это были основные сведения. Ещё больше информации вы найдете во встроенном приложении "Возможности": инструкции по началу работы, специальные предложения и новые функции вашего устройства <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4123868835475902435">Это был краткий обзор. Во встроенном приложении "Возможности" вы узнаете, как работать с <ph name="PRODUCT_NAME" />, а также о новых функциях и специальных предложениях.</translation>
 <translation id="4125970834901680537">Приложения нельзя транслировать в режиме планшета. Повторите попытку в режиме ноутбука.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" /> °C - Текущая скорость: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4136724716305260864">Вкл. до рассвета</translation>
@@ -1647,6 +1647,7 @@
 <translation id="6539852571005954999">Выполняется проверка скачиваемого файла "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6542891623636520977">Эмодзи, GIF и не только</translation>
+<translation id="6543942526104794893">Отключить мимические жесты?</translation>
 <translation id="6545382064335350438">Снова не удалось подтвердить PIN-код. Повторите попытку.</translation>
 <translation id="6555373427270923730">Введите веб-адрес в адресной строке и нажмите <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835">"<ph name="APP_NAME" />"
@@ -2313,6 +2314,7 @@
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>
 <translation id="8860366331836346216">Добавить eSIM</translation>
+<translation id="8869149849311827122">Отключить управление указателем мыши?</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8873203135446552888">Подтвердите отключение встроенной сенсорной панели</translation>
 <translation id="8874184842967597500">Не подключено</translation>

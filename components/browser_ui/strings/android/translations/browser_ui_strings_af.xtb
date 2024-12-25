@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1396327438254055134">Laat werf toe om V8-optimeerder te gebruik.</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
+<translation id="1415855080660575082">Laat Chrome jou onlangse oortjies met jou toestel deel om dit in jou toestel se applys en soekresultate te sien. Jy kan dit in Chrome-instellings aan- of afskakel.</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> werf}other{<ph name="SITE_COUNT" /> werwe}}</translation>
 <translation id="1500473259453106018">Versteek Prysdalings op oortjies-kaart</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Jy het hierdie werf tydelik toegelaat om derdepartywebkoekies te gebruik, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Kenmerke op sommige werwe sal dalk nie in Incognitomodus werk nie</translation>
 <translation id="2442870161001914531">Versoek altyd rekenaarwerf</translation>
+<translation id="2445311670906052406">Chrome deel nou jou onlangse oortjies met jou toestel. Jy sal hulle in jou toestel se applys en soekresultate sien. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="2469312991797799607">Hierdie handeling sal alle data en webkoekies vir <ph name="ORIGIN" /> en alle werwe onder dit uitvee</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
 <translation id="2787357173144933081">Kitsaktiveer Omnibox</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
+<translation id="2814830417943086299">Chrome wys nou jou onlangse oortjies in jou toestel se applys en soekresultate. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
 <translation id="2870560284913253234">Werf</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Skakel toestemmings vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="9138217887606523162">Huidige zoem is <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Laat Chrome jou onlangse oortjies in jou toestel se applys en soekresultate wys. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="9162462602695099906">Hierdie bladsy is gevaarlik</translation>
 <translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
 <translation id="959682366969460160">Raak georganiseerd</translation>

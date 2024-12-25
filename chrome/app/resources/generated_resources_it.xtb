@@ -1750,7 +1750,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2209841631181508629">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Vedi i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" /> del sito.</translation>
 <translation id="2210462644007531147">Impossibile completare l'installazione</translation>
 <translation id="2211043920024403606">Dati profilo</translation>
-<translation id="2211245494465528624">Gestisci le opzioni di sincronizzazione</translation>
 <translation id="221297410904507041">Elimina la cronologia, i cookie e altri dati e svuota la cache</translation>
 <translation id="2213410656650624348">Moderato</translation>
 <translation id="2214018885812055163">Cartelle condivise</translation>
@@ -2744,7 +2743,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="288734198558082692"><ph name="DEVICE" /> e altri <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nessun problema rilevato</translation>
 <translation id="2889064240420137087">Apri link con...</translation>
-<translation id="2890206081124517553">Ricorda lo sfondo del desktop su tutti i dispositivi</translation>
 <translation id="2891464434568738544">Nessun sito attualmente disponibile. Visita un sito per aggiungerlo a questo elenco.</translation>
 <translation id="2891922230654533301">Vuoi usare il tuo dispositivo per accedere al sito <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Browser predefinito</translation>
@@ -8359,7 +8357,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6949434160682548041">Password (facoltativa)</translation>
 <translation id="6950143189069683062">Dettagli memoria</translation>
 <translation id="6950627417367801484">Ripristina le app</translation>
-<translation id="6954910832698269894">Attiva la sincronizzazione dei dispositivi per ripristinare app, impostazioni, reti Wi-Fi e sfondo del tuo Chromebook precedente. Puoi apportare modifiche in qualsiasi momento in Impostazioni &gt; Account.</translation>
 <translation id="6954936693361896459">Trasmetti invece questa scheda</translation>
 <translation id="6955446738988643816">Ispeziona popup</translation>
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
@@ -8877,7 +8874,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7332053360324989309">Worker dedicato: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Schede duplicate</translation>
 <translation id="7333388112938984914">Impossibile caricare file durante una connessione a consumo.</translation>
-<translation id="7333669215417470379">Esegui il backup e ripristina app e impostazioni</translation>
 <translation id="7335974957018254119">Utilizza il controllo ortografico per</translation>
 <translation id="7336799713063880535">Notifiche bloccate.</translation>
 <translation id="7337258336304389677">Usa lo smartphone o il tablet</translation>
@@ -11328,7 +11324,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9032513103438497286">Blocca le app installate su: <ph name="DEVICE_TYPE" />. Per limitare il download di app o contenuti, vai alle Impostazioni di Google Play.</translation>
 <translation id="9033765790910064284">Continua comunque</translation>
 <translation id="9033857511263905942">&amp;Incolla</translation>
-<translation id="9034408118624208974">Non hai mai usato Chromebook? Attiva la sincronizzazione per eseguire il backup delle tue preferenze.</translation>
 <translation id="903480517321259405">Digita di nuovo il PIN</translation>
 <translation id="9036484080057916082">Elenco di timestamp dei certificati firmati</translation>
 <translation id="9037054491984310631">Connessione a dispositivo Bluetooth con nome <ph name="DEVICE" /></translation>
@@ -11374,7 +11369,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9068598199622656904">Premi un tasto alla volta per le scorciatoie da tastiera anziché tenere premuti contemporaneamente i tasti</translation>
 <translation id="9068878141610261315">Tipo di file non supportato</translation>
 <translation id="9069417381769492963">Non è presente nessun preferito corrispondente alla ricerca</translation>
-<translation id="9069665781180028115">Gli elementi selezionati saranno disponibili su questo Chromebook. Se è la prima volta che utilizzi Chromebook, sincronizza tutti gli elementi in modo che venga eseguito il backup delle tue preferenze. Puoi apportare modifiche in qualsiasi momento in Impostazioni &gt; Account.</translation>
 <translation id="9070231741075992882">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per le relative app installate e in streaming.</translation>
 <translation id="9070342919388027491">Scheda spostata a sinistra</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -385,6 +385,7 @@
 <translation id="5941830788786076944">Setează Google Chrome ca browser prestabilit</translation>
 <translation id="5947104538377036631">Comandă rapidă pentru Chrome</translation>
 <translation id="5953954252731207958">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION" />.</translation>
+<translation id="5980111191913430208">Extensiile, aplicațiile și temele din surse necunoscute pot să dăuneze dispozitivului. Chrome recomandă să le instalezi numai din <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
 <translation id="6014316319780893079">Cu <ph name="BEGIN_LINK" />instrumentele din Chrome<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
@@ -603,6 +604,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
 <translation id="8425765582779547329">Pentru a fi mai în siguranță online cu alegerile părintelui, conectează-te la Chrome</translation>
 <translation id="8428213095426709021">Setări</translation>
+<translation id="8429214465555795676">Pentru a continua, va trebui să te conectezi la Chrome cu <ph name="EMAIL" />. Astfel, se asigură respectarea politicilor organizației.</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="8496177819998570653">Manager de p&amp;arole Google</translation>

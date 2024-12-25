@@ -461,6 +461,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1777422078676229054">Photo (Archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Želite namestiti spletne aplikacije?</translation>
+<translation id="1791415068765905273">Prikaži vse primerjalne tabele</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati podatke, zasebnost in varnost v računu Google</translation>
 <translation id="1793631236004319016">Nazadnje uporabljeno pred: <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
@@ -2197,6 +2198,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4918221908152712722">Namestite <ph name="APP_NAME" /> (prenos ni potreben)</translation>
 <translation id="4920457992177678649">Oddajanje počitniških in kratkotrajnih namestitev</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4920921410507315601">Primerjalne tabele</translation>
 <translation id="4922104989726031751">Če želite z operacijskim sistemom uporabljati upravitelja gesel, znova zaženite Chromium in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="4923459931733593730">Plačilo</translation>
 <translation id="4926049483395192435">Vrednost mora biti določena.</translation>
@@ -2390,6 +2392,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5278778426231952189">Naloži zdaj</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>
 <translation id="5280963125494874678">spletne aplikacije</translation>
+<translation id="5282008206326321696">{count,plural, =0{# zaznamkov}=1{# zaznamek}one{# zaznamek}two{# zaznamka}few{# zaznamki}other{# zaznamkov}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Lastnosti dokumenta</translation>
 <translation id="528468243742722775">Konec</translation>
@@ -2585,6 +2588,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="561165882404867731">Prevajanje te strani z Google Prevajalnikom</translation>
 <translation id="5612720917913232150"><ph name="URL" /> želi uporabljati lokacijo vašega računalnika</translation>
 <translation id="5614520971155863709">Igre s kartami</translation>
+<translation id="5617785978844309968">Prikaži vse primerjalne tabele</translation>
 <translation id="5617949217645503996">Spletno mesto <ph name="HOST_NAME" /> vas je prevečkrat preusmerilo.</translation>
 <translation id="5619721953841297650">Prednastavljeno</translation>
 <translation id="5624120631404540903">Upravljanje gesel</translation>
@@ -4416,7 +4420,7 @@ Dodatne podrobnosti:
 <translation id="8919895429178014996">Skrij vse elemente</translation>
 <translation id="8922013791253848639">Vedno dovoli oglase na tem spletnem mestu</translation>
 <translation id="8922734931659847428">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do <ph name="BEGIN_LINK" />starejših tehnoloških dogodkov<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, URL-je strani, s katerih ste kopirali podatke, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
+<translation id="8924109546403192898">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, URL-je strani, s katerih ste kopirali podatke, imena ali metapodatke datotek, zrušitve brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="892588693504540538">Luknjanje zgoraj desno</translation>
 <translation id="8926389886865778422">Ne sprašuj več</translation>
 <translation id="8932102934695377596">Ura zaostaja</translation>

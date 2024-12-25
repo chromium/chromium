@@ -122,6 +122,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="2583187216237139145">El administrador del perfil de trabajo puede quitar cualquier dato de Chromium que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Seguir usando Chromium</translation>
 <translation id="259935314519650377">El instalador que se descargó no se almacenó en la caché. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Verifica tu identidad para usar y guardar datos de Chromium en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium se ejecuta más rápido, y las funciones que usan JavaScript deberían funcionar según lo previsto (recomendado)</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
 <translation id="2661879430930417727">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chromium según sus preferencias.</translation>
@@ -445,6 +446,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6980074797973263542">Tu organización puede ver y administrar los datos de navegación, como tus favoritos, historial y contraseñas. No puede ver los datos de navegación en los perfiles personales de Chromium.</translation>
 <translation id="6985329841647292029">Condiciones de Chromium OS</translation>
 <translation id="6990124437352146030">Chromium necesita permiso para acceder a tu micrófono para este sitio</translation>
+<translation id="7003299027384820442">Ingresa tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">La instalación falló porque esta versión del sistema operativo no es compatible.</translation>
 <translation id="7024536598735240744">Error al momento de desempaquetar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Se detuvo la instalación.</translation>
@@ -538,6 +540,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8330519371938183845">Accede para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8357820681460164151">A fin de ver el contenido de tu navegador Chromium en todos tus dispositivos, accede a tu cuenta y activa la sincronización</translation>
+<translation id="8359544530202147897">Actualiza Chromium para seguir usando los datos de Chromium en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para obtener las próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 8.</translation>
 <translation id="8362914115861174987">Traducir al</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>

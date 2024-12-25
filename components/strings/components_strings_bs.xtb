@@ -461,7 +461,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1777422078676229054">Fotografija (arhivska)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Instalirati web aplikacije?</translation>
-<translation id="1791415068765905273">Prikaži sve tablice za usporedbu</translation>
+<translation id="1791415068765905273">Prikaži sve tabele poređenja</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
 <translation id="1793631236004319016">Posljednji put je korišteno prije <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -962,6 +962,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2688969097326701645">Da, nastavi</translation>
 <translation id="2690699652723742414">Posljednjih 30 dana</translation>
 <translation id="2691924980723297736">Sigurnosno upozorenje</translation>
+<translation id="2697248912349197812">Pitajte <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Dostupan je podmeni; pritisnite <ph name="SHORTCUT" /> da odete u dodatne opcije.</translation>
 <translation id="2701514975700770343">Odštampana strana prema dolje</translation>
 <translation id="2702592986366989640">Opcija s niskom cijenom</translation>
@@ -2066,6 +2067,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="469028408546145398">Dugme Zatvori anonimni prozor, aktivirajte da zatvorite sve anonimne prozore koji su trenutno otvoreni</translation>
 <translation id="4691093235373904540">Pokrivanje krova</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Pitajte <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Borilački sportovi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strana</translation>
@@ -2198,7 +2200,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (nije potrebno preuzeti)</translation>
 <translation id="4920457992177678649">Privatni smještaj i kratki boravci</translation>
 <translation id="4920710383559189047">Omotnica</translation>
-<translation id="4920921410507315601">Tablice za usporedbu</translation>
+<translation id="4920921410507315601">Tabele poređenja</translation>
 <translation id="4922104989726031751">Da koristite Upravitelj lozinki sa svojim operativnim sistemom, ponovo pokrenite Chromium i dozvolite pristup upravitelju lozinki računara. Kartice će se ponovo otvoriti nakon ponovnog pokretanja.</translation>
 <translation id="4923459931733593730">Plaćanje</translation>
 <translation id="4926049483395192435">Mora se navesti.</translation>
@@ -2588,7 +2590,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="561165882404867731">Prevedite ovu stranicu pomoću Google Prevodioca</translation>
 <translation id="5612720917913232150"><ph name="URL" /> želi koristiti lokaciju vašeg računara</translation>
 <translation id="5614520971155863709">Kartaške igre</translation>
-<translation id="5617785978844309968">Prikaži sve tablice za usporedbu</translation>
+<translation id="5617785978844309968">Prikaži sve tabele poređenja</translation>
 <translation id="5617949217645503996">Host računar <ph name="HOST_NAME" /> vas je preusmjerio previše puta</translation>
 <translation id="5619721953841297650">Zadana postavka</translation>
 <translation id="5624120631404540903">Upravljajte lozinkama</translation>

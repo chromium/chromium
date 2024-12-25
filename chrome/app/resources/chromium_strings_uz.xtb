@@ -121,6 +121,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2583187216237139145">Bu profil ishlatilganda yaratilgan har qanday Chromium maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium yopilmasin</translation>
 <translation id="259935314519650377">Yuklab olingan oʻrnatish vositasi keshlanmadi. Xato: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388"><ph name="ACCOUNT_EMAIL" /> hisobingizda Chromium maʼlumotlaridan foydalanish va saqlash uchun shaxsingizni tasdiqlang</translation>
 <translation id="264613044588233783">Chromium tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
 <translation id="2648074677641340862">O‘rnatish vaqtida operatsion tizim xatoligi yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="2661879430930417727">Agar qurilmangizdan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chromium brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
@@ -446,6 +447,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6980074797973263542">Tashkilotingiz bukmarklar, tarix va parollar kabi brauzer maʼlumotlaringizni koʻrishi va boshqarishi mumkin. Shaxsiy Chromium profillaridagi brauze maʼlumotlarini koʻra olmaydi.</translation>
 <translation id="6985329841647292029">ChromiumOS shartlari</translation>
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
+<translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> hisobingizda Chromium maʼlumotlaridan foydalanish va saqlash uchun kalit iborangizni kiriting</translation>
 <translation id="7011190694940573312">Operatsion tizim versiyasi mos emasligi sababli oʻrnatilmadi.</translation>
 <translation id="7024536598735240744">Arxivdan chiqarish xatosi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Oʻrnatish toʻxtatildi.</translation>
@@ -541,6 +543,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8330519371938183845">Chromiumni barcha qurilmalaringizda sinxronlash va o‘zingizga moslash uchun hisobingizga kiring</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hisobi avvallari Chromium’da ishlatilgan</translation>
 <translation id="8357820681460164151">Chromium brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
+<translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google hisobingizdagi Chromium maʼlumotlaridan foydalanishda davom etish uchun Chromium brauzerini yangilang</translation>
 <translation id="8360718212975266891">Chromium yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 8.</translation>
 <translation id="8362914115861174987">Bu tilga tarjima qilish</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>

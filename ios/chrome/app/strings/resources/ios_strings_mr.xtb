@@ -1398,6 +1398,7 @@
 <translation id="7248046129087111453">तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />शोध इतिहास<ph name="END_LINK" /> आणि <ph name="BEGIN_LINK" />ॲक्टिव्हिटीचे इतर प्रकार<ph name="END_LINK" /> सेव्ह केले जाऊ शकतात.</translation>
 <translation id="7253951228444156601">पासवर्ड तपासत आहे…</translation>
 <translation id="7261217796641151584">गट शेअर करा</translation>
+<translation id="7266578100016339897">यामुळे तुम्हाला टापटीप राहण्यात मदत होते. तुम्ही हे सेटिंग्जमध्ये कधीही बदलू शकता.</translation>
 <translation id="7271220006028561438">ऑटोमॅटिक पासकी अपग्रेडना अनुमती द्या</translation>
 <translation id="7272437679830969316">तुमच्या ओळखीची पडताळणी करता आली नाही. पासवर्ड कॉपी केला नाही.</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
@@ -1592,6 +1593,7 @@
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="8084285576995584326">तुमच्या Google खाते चा डेटा नियंत्रित करा</translation>
 <translation id="809543534949702122">शोध इतिहास</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{तुम्ही वापरत नसलेले टॅब {COUNT} दिवसानंतर इथे हलवले जातात}other{तुम्ही वापरत नसलेले टॅब {COUNT} दिवसांनंतर इथे हलवले जातात}}</translation>
 <translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">न</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>

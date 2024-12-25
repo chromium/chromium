@@ -19,6 +19,7 @@
 <translation id="107147699690128016">שינוי של סיומת הקובץ עשוי לגרום לכך שהקובץ ייפתח באפליקציה אחרת. מצב זה עלול לסכן את המכשיר.</translation>
 <translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1082920045291562218">גיליון השיתוף עם סיכום המשוב נסגר</translation>
+<translation id="1087176310396019910">ספאם אפשרי</translation>
 <translation id="1089606299949659462">הבדיקה הושלמה!</translation>
 <translation id="1094555143448724771">כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את הכרטיסיות ואת ההיסטוריה</translation>
 <translation id="1095761715416917775">כדאי לוודא שניתן לגשת לנתונים המסונכרנים בכל רגע</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" />, כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}two{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}other{‫<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="3293181007446299124">היסטוריית הגלישה נשמרת באופן פרטי במכשיר, והדוחות נשלחים לאחר השהיה כדי להגן על הפרטיות שלך.</translation>
+<translation id="3301936297336370235">אישור של ההצעה לסיסמה</translation>
 <translation id="3302615849591357577">שחזור של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" />, בצבע <ph name="COLOR_NAME" />, כקבוצת כרטיסיות חדשה ברקע.</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6196315980958524839">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="6202812185118613467">עליך להיכנס שוב כדי להתחיל את הסנכרון</translation>
+<translation id="6204781143409202534">‏‫Chrome זיהה משהו שנראה כמו ספאם מהכתובת <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>

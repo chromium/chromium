@@ -389,6 +389,7 @@
 <translation id="5941830788786076944">Google Chrome-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="5947104538377036631">Chrome-এর শর্টকার্ট</translation>
 <translation id="5953954252731207958">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
+<translation id="5980111191913430208">অজানা সোর্স থেকে এক্সটেনশন, অ্যাপ এবং থিম আপনার ডিভাইসের ক্ষতি করতে পারে। Chrome শুধুমাত্র <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> থেকে সেগুলি ইনস্টল করার সাজেশন দেয়</translation>
 <translation id="6003112304606738118">ডাউনলোড হচ্ছে... <ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-এর টুল<ph name="END_LINK" /> দিয়ে আপনি নিরাপদে ব্রাউজ ও কন্ট্রোল করতে পারবেন</translation>
 <translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
@@ -607,6 +608,7 @@
 <translation id="842386925677997438">Chrome-এর নিরাপত্তা টুল</translation>
 <translation id="8425765582779547329">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, Chrome-এ সাইন-ইন করো</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
+<translation id="8429214465555795676">চালিয়ে যেতে, <ph name="EMAIL" /> ব্যবহার করে Chrome-এ আপনাকে সাইন-ইন করতে হবে। এটি আপনার প্রতিষ্ঠানের নীতি মেনে যে চলছে তা নিশ্চিত করে।</translation>
 <translation id="8433638294851456451">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> আপনার অ্যাকাউন্ট ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর এই Chrome ব্রাউজার প্রোফাইল ও বুকমার্ক, ইতিহাস ও পাসওয়ার্ডের মতো ডেটা দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

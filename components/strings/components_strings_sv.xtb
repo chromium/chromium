@@ -962,6 +962,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2688969097326701645">Ja, fortsätt</translation>
 <translation id="2690699652723742414">Senaste 30 dagarna</translation>
 <translation id="2691924980723297736">Säkerhetsvarning</translation>
+<translation id="2697248912349197812">Fråga <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Undermeny finns. Använd <ph name="SHORTCUT" /> för att navigera till ytterligare alternativ.</translation>
 <translation id="2701514975700770343">Framsidan nedåt</translation>
 <translation id="2702592986366989640">Lågprisalternativ</translation>
@@ -2066,6 +2067,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="469028408546145398">Knappen Stäng inkognitofönster: aktivera om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="4691093235373904540">Takläggning</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Fråga <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Kampsport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sida</translation>

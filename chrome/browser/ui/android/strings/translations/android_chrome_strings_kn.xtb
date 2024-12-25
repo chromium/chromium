@@ -19,6 +19,7 @@
 <translation id="107147699690128016">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಾಯಿಸಿದರೆ, ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಫೈಲ್‌ ಅನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹಾನಿಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1080365971383768617">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1082920045291562218">ಸಾರಾಂಶ ಫೀಡ್‌ಬ್ಯಾಕ್ ಶೀಟ್ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="1087176310396019910">ಸಂಭಾವ್ಯ ಸ್ಪ್ಯಾಮ್</translation>
 <translation id="1089606299949659462">ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
 <translation id="1094555143448724771">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1095761715416917775">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾಕ್ಕೆ ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಿ</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="3293181007446299124">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಖಾಸಗಿಯಾಗಿ ಉಳಿಯುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಗುರುತನ್ನು ರಕ್ಷಿಸಲು ವರದಿಗಳನ್ನು ತಡವಾಗಿ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="3301936297336370235">ಪಾಸ್‌ವರ್ಡ್ ಸಲಹೆಯ ದೃಢೀಕರಣ</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.</translation>
 <translation id="3303414029551471755">ವಿಷಯವನ್ನು ಡೌನ್‌ಲೊಡ್‌ ಮಾಡಲು ಮುಂದುವರಿಯುವುದೇ?</translation>
 <translation id="3303855915957856445">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -1135,6 +1137,7 @@
 <translation id="6193448654517602979">ಟ್ಯಾಬ್‌ ಆಯ್ಕೆ</translation>
 <translation id="6196315980958524839">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Google Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6202812185118613467">ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಮರಳಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
+<translation id="6204781143409202534"><ph name="DOMAIN" /> ನಲ್ಲಿ ಸಂಭವನೀಯ ಸ್ಪ್ಯಾಮ್ ಅನ್ನು Chrome ಪತ್ತೆಹಚ್ಚಿದೆ.</translation>
 <translation id="6205314730813004066">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ಅಲ್ಲವೇ?</translation>
 <translation id="6211386937064921208">ಈ ಪುಟವನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>

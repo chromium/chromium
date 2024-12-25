@@ -108,6 +108,7 @@
 <translation id="143681031165817424">Ikheli lilondolozwe kuphela kule divayisi</translation>
 <translation id="1445276840641906250">Wonke amathebhu akho kubhrawuza eyodwa</translation>
 <translation id="1450170672351507823">Ukuvikela okujwayelekile kuvuliwe. Ukuze uthole ukuvikeleka okwengeziwe, sebenzisa ukuvikela Okuthuthukisiwe.</translation>
+<translation id="1454615514353469963">Amaphasiwedi, okhiye bokudlula, nenye idatha kuzosulwa unomphela kuMphathi Wephasiwedi YeGoogle</translation>
 <translation id="1455660774629812862">Ungafihli</translation>
 <translation id="1460751212339734034">Yonga isikhathi, thayipha kancane</translation>
 <translation id="1466035273550360103">Awekho amathebhu avuliwe</translation>
@@ -1396,6 +1397,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Umlando wokusesha<ph name="END_LINK" /> <ph name="BEGIN_LINK" />nezinye izindlela zomsebenzi<ph name="END_LINK" /> zingahle zilondolozwe kuGoogle Account yakho</translation>
 <translation id="7253951228444156601">Ihlola amaphasiwedi…</translation>
 <translation id="7261217796641151584">Yabelana Ngeqembu</translation>
+<translation id="7266578100016339897">Lokhu kukusiza ukuba uhlale uhlelekile. Ungashintsha lokhu kumasethingi noma nini</translation>
 <translation id="7271220006028561438">Vumela ukuthuthukiswa kukakhiye wokudlula okuzenzakalelayo</translation>
 <translation id="7272437679830969316">Ayikwazi ukuqinisekisa ubunikazi bakho. Iphasiwedi ayikopishiwe.</translation>
 <translation id="7293429513719260019">Khetha ulimi</translation>
@@ -1590,6 +1592,7 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="8080028325999236607">Vala wonke amathebhu</translation>
 <translation id="8084285576995584326">Lawula idatha ye-akhawunti yakho ye-Google</translation>
 <translation id="809543534949702122">Umlando wosesho</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kosuku olu-{COUNT}}one{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kwezinsuku ezingu-{COUNT}}other{Amathebhu ongawasebenzisi adluliselwa lapha ngemva kwezinsuku ezingu-{COUNT}}}</translation>
 <translation id="8101409298456377967">Yenza, londoloza, futhi uphathe amaphasiwedi akho ukuze ungene ngemvume kalula kumasayithi nama-app. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">Ukulanda ifayela kuyatholakala. Izinketho zitholakala eduze kwangaphansi kwesikrini.</translation>

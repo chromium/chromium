@@ -1746,7 +1746,6 @@
 <translation id="2209841631181508629">ચાલુ રાખવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> આ સાઇટ સાથે તમારું <ph name="FIELDS_STRING" /> શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> જુઓ.</translation>
 <translation id="2210462644007531147">ઇન્સ્ટૉલેશન પૂર્ણ કરી શકાયું નથી</translation>
 <translation id="2211043920024403606">પ્રોફાઇલ માહિતી</translation>
-<translation id="2211245494465528624">સિંક કરવાના વિકલ્પોને મેનેજ કરો</translation>
 <translation id="221297410904507041">બ્રાઉઝિંગ ઇતિહાસ, કુકી, કૅશ મેમરી અને બીજું ઘણું ડિલીટ કરો</translation>
 <translation id="2213410656650624348">મધ્યમ</translation>
 <translation id="2214018885812055163">શેર કરેલા ફોલ્ડરો</translation>
@@ -2741,7 +2740,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> અને અન્ય <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">કોઈ સમસ્યા મળી નથી</translation>
 <translation id="2889064240420137087">આની સાથે લિંક ખોલો...</translation>
-<translation id="2890206081124517553">સમગ્ર ડિવાઇસ પર તમારા ડેસ્કટૉપ બૅકગ્રાઉન્ડને યાદ રાખો</translation>
 <translation id="2891464434568738544">હાલમાં કોઈ સાઇટ ઉપલબ્ધ નથી. આ સૂચિમાં કોઈ સાઇટને ઉમેરવા માટે, તેની મુલાકાત લો.</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" />માં સાઇન ઇન કરવા માટે તમારા ડિવાઇસનો ઉપયોગ કરીએ?</translation>
 <translation id="2893168226686371498">ડિફૉલ્ટ બ્રાઉઝર</translation>
@@ -8363,7 +8361,6 @@ USB ડિવાઇસ</translation>
 <translation id="6949434160682548041">પાસવર્ડ (વૈકલ્પિક)</translation>
 <translation id="6950143189069683062">મેમરીની વિગતો</translation>
 <translation id="6950627417367801484">ઍપ પુનઃપ્રાપ્ત કરો</translation>
-<translation id="6954910832698269894">તમારા પહેલાની Chromebookમાંથી તમારી ઍપ, સેટિંગ, વાઇ-ફાઇ નેટવર્ક અને વૉલપેપરને રિસ્ટોર કરવા માટે ડિવાઇસ સિંકની સુવિધાને ચાલુ કરો. સેટિંગ &gt; એકાઉન્ટમાં જઈને કોઈપણ સમયે ફેરફાર કરો.</translation>
 <translation id="6954936693361896459">તેના બદલે આ ટૅબ કાસ્ટ કરો</translation>
 <translation id="6955446738988643816">પૉપઅપની તપાસ કરો</translation>
 <translation id="6955535239952325894">મેનેજ કરાયેલા બ્રાઉઝર પર આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
@@ -8881,7 +8878,6 @@ USB ડિવાઇસ</translation>
 <translation id="7332053360324989309">સમર્પિત કર્મચારી: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ડુપ્લિકેટ ટૅબ</translation>
 <translation id="7333388112938984914">જ્યારે મીટર્ડ કનેક્શન પર હોય, ત્યારે ફાઇલો અપલોડ કરી શકતા નથી.</translation>
-<translation id="7333669215417470379">તમારા ઍપ અને સેટિંગનું બૅકઅપ લેવું અને તેને રિસ્ટોર કરવું</translation>
 <translation id="7335974957018254119">આ માટે જોડણીની તપાસનો ઉપયોગ કરો</translation>
 <translation id="7336799713063880535">નોટિફિકેશન બ્લૉક કર્યા.</translation>
 <translation id="7337258336304389677">તમારા ફોન કે ટૅબ્લેટનો ઉપયોગ કરો</translation>
@@ -11325,7 +11321,6 @@ USB ડિવાઇસ</translation>
 <translation id="9032513103438497286">આ <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપને બ્લૉક કરો. ઍપ અથવા કન્ટેન્ટ ડાઉનલોડ કરવા પર પ્રતિબંધ મૂકવા માટે, Google Playના સેટિંગ પર જાઓ.</translation>
 <translation id="9033765790910064284">તો પણ ચાલુ રાખો</translation>
 <translation id="9033857511263905942">&amp;પેસ્ટ કરો</translation>
-<translation id="9034408118624208974">Chromebook પર નવા છો? સિંક કરવાનું ચાલુ કરો જેથી કરીને તમારી પસંદગીઓનું બૅકઅપ લેવામાં આવશે.</translation>
 <translation id="903480517321259405">ફરીથી પિન ટાઇપ કરો</translation>
 <translation id="9036484080057916082">હસ્તાક્ષરિત સર્ટિફિકેટ ટાઇમસ્ટેમ્પની સૂચિ</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> નામના બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટેડ છે</translation>
@@ -11371,7 +11366,6 @@ USB ડિવાઇસ</translation>
 <translation id="9068598199622656904">એજ સમયે કીને દબાવી રાખવાને બદલે એક સમયે એક જ કી દબાવો</translation>
 <translation id="9068878141610261315">ફાઇલના પ્રકારને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="9069417381769492963">તમારી શોધ સાથે મેળ ખાતું કોઈ બુકમાર્ક નથી</translation>
-<translation id="9069665781180028115">પસંદ કરેલી આઇટમ આ Chromebook પર ઉપલબ્ધ હશે. જો તમે Chromebook પર નવા છો, તો બધી આઇટમ સિંક કરો જેથી કરીને તમારી પસંદગીઓનું બૅકઅપ લેવામાં આવશે. સેટિંગ &gt; એકાઉન્ટમાં જઈને કોઈપણ સમયે ફેરફાર કરો.</translation>
 <translation id="9070231741075992882">તમે <ph name="APP_NAME" /> માટે જે પરવાનગીઓ મંજૂર કરો છો તે તેની ઇન્સ્ટૉલ કરેલી અને સ્ટ્રીમ કરેલી ઍપ માટે પણ મંજૂરી કરવામાં આવશે.</translation>
 <translation id="9070342919388027491">ટૅબને ડાબે ખસેડી</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>

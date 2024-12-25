@@ -1750,7 +1750,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2209841631181508629">Aby można było kontynuować, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni tej witrynie Twoje <ph name="FIELDS_STRING" />. Zobacz jej <ph name="BEGIN_LINK" />warunki korzystania z usługi<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Nie udało się ukończyć instalacji</translation>
 <translation id="2211043920024403606">Informacje o profilu</translation>
-<translation id="2211245494465528624">Zarządzaj opcjami synchronizacji</translation>
 <translation id="221297410904507041">Usuń historię, pliki cookie, pamięć podręczną i inne dane</translation>
 <translation id="2213410656650624348">Umiarkowane</translation>
 <translation id="2214018885812055163">Foldery udostępnione</translation>
@@ -2121,7 +2120,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464079411014186876">Lody</translation>
 <translation id="2467755475704469005">Nie wykryto urządzeń. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
-<translation id="2467933879189426525">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> inne osoby</translation>
+<translation id="2467933879189426525">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i inne osoby (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="2468178265280335214">Przyspieszenie przewijania na touchpadzie</translation>
 <translation id="2468205691404969808">Zapisuje Twoje ustawienia w plikach cookie, nawet jeśli nie odwiedzasz tych stron</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
@@ -2264,7 +2263,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="256481480019204378">Identyfikator konta Google</translation>
 <translation id="256517381556987641">Do tej pory funkcja synchronizacji plików znalazła <ph name="ITEMS_FOUND" /> pliki(-ów) i nadal sprawdza dostępne miejsce. Spróbuj włączyć ją ponownie za kilka minut.</translation>
 <translation id="2565214867520763227">Włącz czytnik ekranu</translation>
-<translation id="2566146433999774844">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i <ph name="NUM_OTHER_MEMBERS" /> innych osób</translation>
+<translation id="2566146433999774844">Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i inne osoby (<ph name="NUM_OTHER_MEMBERS" />)</translation>
 <translation id="2568694057933302218">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem w różnych witrynach. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="2568774940984945469">Kontener paska informacji</translation>
 <translation id="2569972178052279830">Nazwa sprzedawcy</translation>
@@ -2273,7 +2272,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2571655996835834626">Możesz zmienić swoje ustawienia kontrolujące dostęp witryn internetowych do plików cookie, kodu JavaScript, wtyczek, geolokalizacji, mikrofonu, kamery itd.</translation>
 <translation id="257175846174451436">Sugerowana grupa kart</translation>
 <translation id="2572032849266859634">Uprawnienia tylko do odczytu dysku <ph name="VOLUME_NAME" /> zostały przyznane.</translation>
-<translation id="2573147659521059501">Liczba kart: <ph name="NUM" /></translation>
+<translation id="2573147659521059501">Karty: <ph name="NUM" /></translation>
 <translation id="2573276323521243649">Powrót ze strony wyboru awatara</translation>
 <translation id="2573417407488272418">Przed aktualizacją zapisz kopie zapasowe aplikacji i plików tutaj: Pliki &gt; Moje pliki.</translation>
 <translation id="2573831315551295105">Przypisz przełącznik do czynności „<ph name="ACTION" />”</translation>
@@ -2731,7 +2730,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="288734198558082692"><ph name="DEVICE" /> i jeszcze <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nie znaleziono problemów</translation>
 <translation id="2889064240420137087">Otwórz link przy użyciu...</translation>
-<translation id="2890206081124517553">Zapamiętaj tło pulpitu na wszystkich urządzeniach</translation>
 <translation id="2891464434568738544">Obecnie brak dostępnych witryn. Odwiedź stronę, aby dodać ją do tej listy.</translation>
 <translation id="2891922230654533301">Chcesz logować się na <ph name="APP_NAME" /> za pomocą tego urządzenia?</translation>
 <translation id="2893168226686371498">Domyślna przeglądarka</translation>
@@ -8344,7 +8342,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6949434160682548041">Hasło (opcjonalnie)</translation>
 <translation id="6950143189069683062">Informacje dotyczące pamięci</translation>
 <translation id="6950627417367801484">Przywróć aplikacje</translation>
-<translation id="6954910832698269894">Włącz synchronizację urządzenia, aby przywrócić aplikacje, ustawienia, sieci Wi-Fi i tapetę z poprzedniego Chromebooka. W każdej chwili możesz wprowadzić zmiany w sekcji Ustawienia &gt; Konta.</translation>
 <translation id="6954936693361896459">Zamiast tego przesyłaj tę kartę</translation>
 <translation id="6955446738988643816">Sprawdź wyskakujące okienko</translation>
 <translation id="6955535239952325894">To ustawienie jest wyłączone w zarządzanych przeglądarkach</translation>
@@ -8862,7 +8859,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7332053360324989309">Dedykowana instancja robocza: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Zduplikowane karty</translation>
 <translation id="7333388112938984914">Nie można przesyłać plików w przypadku połączenia z pomiarem użycia danych.</translation>
-<translation id="7333669215417470379">Twórz kopie zapasowe oraz przywracaj aplikacje i ustawienia</translation>
 <translation id="7335974957018254119">Używaj sprawdzania pisowni dla języka:</translation>
 <translation id="7336799713063880535">Zablokowane.</translation>
 <translation id="7337258336304389677">Użyj telefonu lub tabletu</translation>
@@ -11310,7 +11306,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9032513103438497286">Blokuj aplikacje zainstalowane na tym urządzeniu <ph name="DEVICE_TYPE" />. Aby ograniczyć pobieranie aplikacji lub treści, otwórz Ustawienia Google Play.</translation>
 <translation id="9033765790910064284">Kontynuuj mimo to</translation>
 <translation id="9033857511263905942">&amp;Wklej</translation>
-<translation id="9034408118624208974">Dopiero zaczynasz korzystać z Chromebooka? Włącz synchronizację, aby utworzyć kopię zapasową swoich ustawień.</translation>
 <translation id="903480517321259405">Ponownie wpisz kod PIN</translation>
 <translation id="9036484080057916082">Lista sygnatur czasowych podpisanego certyfikatu</translation>
 <translation id="9037054491984310631">Połączono z urządzeniem Bluetooth o nazwie <ph name="DEVICE" /></translation>
@@ -11353,7 +11348,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9068598199622656904">Aby użyć skrótu klawiszowego, nie przytrzymuj klawiszy jednocześnie, a naciskaj je pojedynczo</translation>
 <translation id="9068878141610261315">Nieobsługiwany typ pliku</translation>
 <translation id="9069417381769492963">Brak zakładek pasujących do wyszukiwania</translation>
-<translation id="9069665781180028115">Wybrane elementy będą dostępne na tym Chromebooku. Jeśli dopiero zaczynasz korzystać z Chromebooka, zsynchronizuj wszystkie elementy, aby utworzyć kopię zapasową swoich ustawień. W każdej chwili możesz wprowadzić zmiany w sekcji Ustawienia &gt; Konta.</translation>
 <translation id="9070231741075992882">Uprawnienia przyznane aplikacji <ph name="APP_NAME" /> będą też dotyczyć jej wersji zainstalowanych i przesyłanych.</translation>
 <translation id="9070342919388027491">Karta została przesunięta w lewo</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1753,7 +1753,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2209841631181508629">Før du kan fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele <ph name="FIELDS_STRING" /> med dette nettstedet. Se <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" /> av dette nettstedet.</translation>
 <translation id="2210462644007531147">Kunne ikke fullføre installasjonen</translation>
 <translation id="2211043920024403606">Profilinformasjon</translation>
-<translation id="2211245494465528624">Administrer alternativer for synkronisering</translation>
 <translation id="221297410904507041">Slett loggen, informasjonskapsler, bufferen med mer</translation>
 <translation id="2213410656650624348">Middels</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
@@ -2750,7 +2749,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> til</translation>
 <translation id="2889043468805635730">Fant ingen problemer</translation>
 <translation id="2889064240420137087">Åpne link med</translation>
-<translation id="2890206081124517553">Husk skrivebordsbakgrunnen på tvers av enheter</translation>
 <translation id="2891464434568738544">Ingen nettsteder er tilgjengelige for øyeblikket. Gå til et nettsted for å legge det til på denne listen.</translation>
 <translation id="2891922230654533301">Vil du bruke enheten din til å logge på <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Standardnettleser</translation>
@@ -4612,6 +4610,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4220648711404560261">Det oppsto en feil under aktiveringen.</translation>
 <translation id="4222917615373664617">Prissporing er på. Prisen er <ph name="CURRENT_PRICE" />.</translation>
 <translation id="4223404254440398437">Mikrofon er ikke tillatt</translation>
+<translation id="4224541845943007092">Les og lagre tastaturinndata fra adressefeltet</translation>
 <translation id="4225397296022057997">På alle nettsteder</translation>
 <translation id="4228071595943929139">Bruk organisasjonens e-postadresse</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er ikke tillatt}other{Noen utvidelser er ikke tillatt}}</translation>
@@ -8362,7 +8361,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6949434160682548041">Passord (valgfritt)</translation>
 <translation id="6950143189069683062">Minnedetaljer</translation>
 <translation id="6950627417367801484">Gjenopprett apper</translation>
-<translation id="6954910832698269894">Slå på enhetssynkronisering for å gjenopprette appene, innstillingene, wifi-nettverkene og bakgrunnen fra den gamle Chromebooken. Du kan når som helst gjøre endringer i Innstillinger &gt; Kontoer.</translation>
 <translation id="6954936693361896459">Cast denne fanen i stedet</translation>
 <translation id="6955446738988643816">Undersøk forgrunnsvindu</translation>
 <translation id="6955535239952325894">Denne innstillingen er slått av for administrerte nettlesere</translation>
@@ -8880,7 +8878,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7332053360324989309">Dedikert arbeider: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Dupliserte faner</translation>
 <translation id="7333388112938984914">Du kan ikke laste opp filer via tilkoblinger med datamåling.</translation>
-<translation id="7333669215417470379">Sikkerhetskopier og gjenopprett appene og innstillingene dine</translation>
 <translation id="7335974957018254119">Bruk stavekontroll for</translation>
 <translation id="7336799713063880535">Varsler er blokkert.</translation>
 <translation id="7337258336304389677">Bruk telefonen eller nettbrettet</translation>
@@ -11329,7 +11326,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9032513103438497286">Blokker apper som er installert på <ph name="DEVICE_TYPE" />. For å begrense nedlasting av apper eller innhold, gå til Google Play-innstillingene.</translation>
 <translation id="9033765790910064284">Fortsett likevel</translation>
 <translation id="9033857511263905942">&amp;Lim inn</translation>
-<translation id="9034408118624208974">Første gang du bruker Chromebook? Slå på synkronisering, slik at innstillingene dine blir sikkerhetskopiert.</translation>
 <translation id="903480517321259405">Skriv inn PIN-koden på nytt</translation>
 <translation id="9036484080057916082">Liste over tidsstempler for signerte sertifikater</translation>
 <translation id="9037054491984310631">Koblet til Bluetooth-enheten <ph name="DEVICE" /></translation>
@@ -11375,7 +11371,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9068598199622656904">Trykk på én tast om gangen for hurtigtaster i stedet for å holde inne flere taster samtidig</translation>
 <translation id="9068878141610261315">Filtypen støttes ikke</translation>
 <translation id="9069417381769492963">Ingen bokmerker samsvarer med søket ditt</translation>
-<translation id="9069665781180028115">De valgte elementene blir tilgjengelige på denne Chromebooken. Hvis du ikke har brukt Chromebook før, kan du synkronisere alle elementene, slik at innstillingene dine blir sikkerhetskopiert. Du kan når som helst gjøre endringer i Innstillinger &gt; Kontoer.</translation>
 <translation id="9070231741075992882">Tillatelser du gir <ph name="APP_NAME" />, blir også gitt til appene den installerer og strømmer.</translation>
 <translation id="9070342919388027491">Fanen er flyttet til venstre</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

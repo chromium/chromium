@@ -1647,6 +1647,7 @@ No devices connected.</translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs and more</translation>
+<translation id="6543942526104794893">Are you sure that you want to turn off facial gestures?</translation>
 <translation id="6545382064335350438">Your PIN still couldn't be verified. Try again.</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>
 <translation id="8860366331836346216">Add eSIM</translation>
+<translation id="8869149849311827122">Are you sure that you want to turn off mouse cursor control?</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8873203135446552888">Confirm that you want to disable the built-in touchpad</translation>
 <translation id="8874184842967597500">Not connected</translation>

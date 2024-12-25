@@ -385,6 +385,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="5947104538377036631">Ярлик Chrome</translation>
 <translation id="5953954252731207958">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував дозвіл "<ph name="PERMISSION" />".</translation>
+<translation id="5980111191913430208">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chrome – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6014316319780893079">Безпечно переглядайте веб-сторінки й керуйте налаштуваннями завдяки <ph name="BEGIN_LINK" />інструментам від Chrome<ph name="END_LINK" /></translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
@@ -603,6 +604,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="842386925677997438">Інструменти безпеки Chrome</translation>
 <translation id="8425765582779547329">Щоб користуватися безпечнішими налаштуваннями, які вибрали твої батьки, увійди в Chrome</translation>
 <translation id="8428213095426709021">Налаштування</translation>
+<translation id="8429214465555795676">Щоб продовжити, увійдіть у Chrome за допомогою облікового запису <ph name="EMAIL" />. Цього вимагають правила вашої організації.</translation>
 <translation id="8433638294851456451">Щоб надіслати номер на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8451192282033883849">Вашим обліковим записом керує <ph name="MANAGER_NAME" />. Адміністратор вашої організації може бачити й редагувати цей профіль у веб-переглядачі Chrome і його дані, зокрема закладки, історію та паролі.</translation>
 <translation id="8496177819998570653">Google М&amp;енеджер паролів</translation>

@@ -1750,7 +1750,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je <ph name="FIELDS_STRING" /> met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK" />servicevoorwaarden<ph name="END_LINK" /> van deze site.</translation>
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="2211043920024403606">Profielgegevens</translation>
-<translation id="2211245494465528624">Synchronisatieopties beheren</translation>
 <translation id="221297410904507041">Verwijder de geschiedenis, cookies, het cachegeheugen en andere items</translation>
 <translation id="2213410656650624348">Gemiddeld</translation>
 <translation id="2214018885812055163">Gedeelde mappen</translation>
@@ -2744,7 +2743,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="288734198558082692"><ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> andere</translation>
 <translation id="2889043468805635730">Geen problemen gevonden</translation>
 <translation id="2889064240420137087">Link openen met...</translation>
-<translation id="2890206081124517553">Bureaubladachtergrond onthouden op verschillende apparaten</translation>
 <translation id="2891464434568738544">Er zijn op dit moment geen sites beschikbaar. Ga naar een site om die aan deze lijst toe te voegen.</translation>
 <translation id="2891922230654533301">Je apparaat gebruiken om in te loggen bij <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Standaardbrowser</translation>
@@ -8355,7 +8353,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6949434160682548041">Wachtwoord (optioneel)</translation>
 <translation id="6950143189069683062">Geheugendetails</translation>
 <translation id="6950627417367801484">Apps herstellen</translation>
-<translation id="6954910832698269894">Zet apparaatsynchronisatie aan om de apps, instellingen, wifi-netwerken en achtergrond van je vorige Chromebook te herstellen. Je kunt altijd wijzigingen aanbrengen via Instellingen &gt; Accounts.</translation>
 <translation id="6954936693361896459">In plaats daarvan dit tabblad casten</translation>
 <translation id="6955446738988643816">Pop-up controleren</translation>
 <translation id="6955535239952325894">Deze instelling staat uit in beheerde browsers</translation>
@@ -8873,7 +8870,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7332053360324989309">Specifieke worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tabbladen dupliceren</translation>
 <translation id="7333388112938984914">Kan geen bestanden uploaden via een verbinding met datalimiet.</translation>
-<translation id="7333669215417470379">Een back-up van je apps en instellingen maken en herstellen</translation>
 <translation id="7335974957018254119">Spellingcontrole gebruiken voor</translation>
 <translation id="7336799713063880535">Meldingen geblokkeerd.</translation>
 <translation id="7337258336304389677">Je telefoon of tablet gebruiken</translation>
@@ -11323,7 +11319,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9032513103438497286">Apps blokkeren die zijn geïnstalleerd op deze <ph name="DEVICE_TYPE" />. Ga naar de Google Play-instellingen om het downloaden van apps of content te beperken.</translation>
 <translation id="9033765790910064284">Toch doorgaan</translation>
 <translation id="9033857511263905942">&amp;Plakken</translation>
-<translation id="9034408118624208974">Nieuw bij Chromebook? Zet synchronisatie aan om een back-up van je voorkeuren te maken.</translation>
 <translation id="903480517321259405">Typ de pincode nog een keer</translation>
 <translation id="9036484080057916082">Lijst met tijdstempels voor ondertekend certificaat</translation>
 <translation id="9037054491984310631">Verbonden met het bluetooth-apparaat <ph name="DEVICE" /></translation>
@@ -11369,7 +11364,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9068598199622656904">Druk op 1 toets tegelijk voor sneltoetsen in plaats van dat je toetsen tegelijk ingedrukt moet houden.</translation>
 <translation id="9068878141610261315">Niet-ondersteund bestandstype</translation>
 <translation id="9069417381769492963">Er zijn geen bookmarks die overeenkomen met je zoekopdracht</translation>
-<translation id="9069665781180028115">Geselecteerde items zijn beschikbaar op deze Chromebook. Als je nieuw bent bij Chromebook, synchroniseer je alle items om een back-up van je voorkeuren te maken. Je kunt altijd wijzigingen aanbrengen via Instellingen &gt; Accounts.</translation>
 <translation id="9070231741075992882">Rechten die je toestaat voor <ph name="APP_NAME" />, zijn ook toegestaan voor de geïnstalleerde en gestreamde versies van de app.</translation>
 <translation id="9070342919388027491">Tabblad naar links verplaatst</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

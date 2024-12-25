@@ -112,6 +112,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2513154137948333830">Потрібен перезапуск. <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Щоб продовжити, увійдіть у Chromium за допомогою облікового запису <ph name="EMAIL" />. Цього вимагають правила вашої організації.</translation>
 <translation id="2542968102051442371">Виберіть текст за допомогою функції пошуку за зображенням</translation>
 <translation id="2554739539410784893">Chromium намагається замінити наявні паролі. Щоб дозволити це, введіть пароль Windows.</translation>
 <translation id="2560420686485554789">Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>

@@ -1748,7 +1748,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2209841631181508629">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti <ph name="FIELDS_STRING" /> sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK" />uslove korišćenja usluge<ph name="END_LINK" /> za ovaj sajt.</translation>
 <translation id="2210462644007531147">Dovršavanje instaliranja nije uspelo</translation>
 <translation id="2211043920024403606">Informacije o profilu</translation>
-<translation id="2211245494465528624">Upravljajte opcijama sinhronizacije</translation>
 <translation id="221297410904507041">Izbrišite istoriju, kolačiće, keš i drugo</translation>
 <translation id="2213410656650624348">Umereno</translation>
 <translation id="2214018885812055163">Deljeni direktorijumi</translation>
@@ -2742,7 +2741,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="288734198558082692"><ph name="DEVICE" /> i još <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Nije pronađen nijedan problem</translation>
 <translation id="2889064240420137087">Otvori link koristeći...</translation>
-<translation id="2890206081124517553">Pamćenje pozadine radne površine na svim uređajima</translation>
 <translation id="2891464434568738544">Trenutno nije dostupan nijedan sajt. Posetite sajt da biste ga dodali na ovu listu.</translation>
 <translation id="2891922230654533301">Želite da koristite uređaj za prijavljivanje u aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Podrazumevani pregledač</translation>
@@ -8364,7 +8362,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6949434160682548041">Lozinka (opcionalno)</translation>
 <translation id="6950143189069683062">Detalji memorije</translation>
 <translation id="6950627417367801484">Vrati aplikacije</translation>
-<translation id="6954910832698269894">Uključite sinhronizaciju na uređaju da biste vratili aplikacije, podešavanja, WiFi mreže i pozadinu sa prethodnog Chromebook-a. Unesite izmene u bilo kom trenutku u odeljku Podešavanja &gt; Nalozi.</translation>
 <translation id="6954936693361896459">Bolje prebaci ovu karticu</translation>
 <translation id="6955446738988643816">Ispitivanje iskačućeg prozora</translation>
 <translation id="6955535239952325894">Ovo podešavanje je onemogućeno u pregledačima kojima se upravlja</translation>
@@ -8882,7 +8879,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7332053360324989309">Namenski obrađivač: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Duplikati kartica</translation>
 <translation id="7333388112938984914">Ne možete da otpremate fajlove dok koristite vezu ograničenog prometa podataka.</translation>
-<translation id="7333669215417470379">Pravite rezervne kopije aplikacija i podešavanja i vraćajte ih</translation>
 <translation id="7335974957018254119">Koristite proveru pravopisa za:</translation>
 <translation id="7336799713063880535">Obaveštenja su blokirana.</translation>
 <translation id="7337258336304389677">Koristite telefon ili tablet</translation>
@@ -11335,7 +11331,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9032513103438497286">Blokirajte aplikacije instalirane na ovom uređaju <ph name="DEVICE_TYPE" />. Da biste ograničili preuzimanje aplikacija ili sadržaja, idite u podešavanja Google Play-a.</translation>
 <translation id="9033765790910064284">Ipak nastavi</translation>
 <translation id="9033857511263905942">&amp;Nalepi</translation>
-<translation id="9034408118624208974">Prvi put koristite Chromebook? Uključite sinhronizaciju da bi bile napravljene rezervne kopije podešavanja.</translation>
 <translation id="903480517321259405">Ponovo unesite PIN</translation>
 <translation id="9036484080057916082">Lista vremenskih oznaka potpisanih sertifikata</translation>
 <translation id="9037054491984310631">Povezani ste sa Bluetooth uređajem pod nazivom <ph name="DEVICE" /></translation>
@@ -11381,7 +11376,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9068598199622656904">Pritiskajte jedan po jedan taster da biste koristili tasterske prečice umesto da istovremeno držite tastere</translation>
 <translation id="9068878141610261315">Tip fajla nije podržan</translation>
 <translation id="9069417381769492963">Nema obeleživača koji se podudaraju sa pretragom</translation>
-<translation id="9069665781180028115">Izabrane stavke će biti dostupne na ovom Chromebook-u. Ako ste tek počeli da koristite Chromebook, sinhronizujte sve stavke da biste napravili rezervnu kopiju podešavanja. Unesite izmene u bilo kom trenutku u odeljku Podešavanja &gt; Nalozi.</translation>
 <translation id="9070231741075992882">Dozvole koje dozvolite za aplikaciju <ph name="APP_NAME" /> će biti dozvoljene i za instalirane i strimovane aplikacije.</translation>
 <translation id="9070342919388027491">Kartica je pomerena ulevo</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

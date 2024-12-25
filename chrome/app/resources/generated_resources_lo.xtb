@@ -1758,7 +1758,6 @@
 <translation id="2209841631181508629">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນ <ph name="FIELDS_STRING" /> ຂອງທ່ານກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="2210462644007531147">ບໍ່ສາມາດຕິດຕັ້ງໃຫ້ສຳເລັດໄດ້</translation>
 <translation id="2211043920024403606">ຂໍ້ມູນໂປຣໄຟລ໌</translation>
-<translation id="2211245494465528624">ຈັດການຕົວເລືອກການຊິ້ງ</translation>
 <translation id="221297410904507041">ລຶບປະຫວັດ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆ</translation>
 <translation id="2213410656650624348">ປານກາງ</translation>
 <translation id="2214018885812055163">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນ</translation>
@@ -2756,7 +2755,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> ແລະ ອີກ <ph name="NUMBER_OF_DEVICES" /> ອຸປະກອນອື່ນໆ</translation>
 <translation id="2889043468805635730">ບໍ່ພົບບັນຫາໃດໆ</translation>
 <translation id="2889064240420137087">ເປີດລິ້ງກັບ...</translation>
-<translation id="2890206081124517553">ຈື່ພາບພື້ນຫຼັງຂອງເດັສທັອບຂອງທ່ານໃນທົ່ວອຸປະກອນຕ່າງໆໄດ້</translation>
 <translation id="2891464434568738544">ບໍ່ສາມາດເຂົ້າເບິ່ງເວັບໄຊໃດໄດ້ໃນຕອນນີ້. ເຂົ້າເບິ່ງເວັບໄຊເພື່ອເພີ່ມມັນໃສ່ລາຍຊື່ນີ້.</translation>
 <translation id="2891922230654533301">ໃຊ້ອຸປະກອນຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ <ph name="APP_NAME" /> ບໍ?</translation>
 <translation id="2893168226686371498">ບຣາວ​ເຊີມາດຕະຖານ</translation>
@@ -8374,7 +8372,6 @@
 <translation id="6949434160682548041">ລະຫັດຜ່ານ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6950143189069683062">ລາຍລະອຽດໜ່ວຍຄວາມຈຳ</translation>
 <translation id="6950627417367801484">ກູ້ຄືນແອັບ</translation>
-<translation id="6954910832698269894">ເປີດການຊິ້ງອຸປະກອນເພື່ອກູ້ຄືນແອັບ, ການຕັ້ງຄ່າ, ເຄືອຂ່າຍ Wi-Fi ແລະ ຮູບພື້ນຫຼັງຂອງທ່ານຈາກ Chromebook ເຄື່ອງເກົ່າຂອງທ່ານ. ປ່ຽນແປງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ &gt; ບັນຊີ.</translation>
 <translation id="6954936693361896459">ສົ່ງສັນຍານແຖບນີ້ແທນ</translation>
 <translation id="6955446738988643816">ກວດກາປັອບອັບ</translation>
 <translation id="6955535239952325894">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
@@ -8891,7 +8888,6 @@
 <translation id="7332053360324989309">ຜູ້ເຮັດວຽກສະເພາະຢ່າງ: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ແຖບທີ່ຊ້ຳກັນ</translation>
 <translation id="7333388112938984914">ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ໄດ້ໃນລະຫວ່າງທີ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ມີການວັດແທກ.</translation>
-<translation id="7333669215417470379">ສຳຮອງຂໍ້ມູນ ແລະ ກູ້ຄືນແອັບ ແລະ ການຕັ້ງຄ່າຂອງທ່ານ</translation>
 <translation id="7335974957018254119">ໃຊ້ການກວດການສະກົດຄໍາສຳລັບ</translation>
 <translation id="7336799713063880535">ບລັອກການແຈ້ງເຕືອນແລ້ວ.</translation>
 <translation id="7337258336304389677">ໃຊ້ໂທລະສັບ ຫຼື ແທັບເລັດຂອງທ່ານ</translation>
@@ -11339,7 +11335,6 @@
 <translation id="9032513103438497286">ບລັອກແອັບທີ່ຕິດຕັ້ງໃນ <ph name="DEVICE_TYPE" /> ນີ້. ເພື່ອຈຳກັດການດາວໂຫຼດແອັບ ຫຼື ເນື້ອຫາ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ Google Play.</translation>
 <translation id="9033765790910064284">ຢືນຢັນດຳເນີນການຕໍ່</translation>
 <translation id="9033857511263905942">ແປະໃສ່</translation>
-<translation id="9034408118624208974">ຍັງບໍ່ເຄີຍໃຊ້ Chromebook ບໍ? ເປີດການຊິ້ງເພື່ອໃຫ້ລະບົບສຳຮອງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>
 <translation id="903480517321259405">ພິມ PIN ອີກເທື່ອໜຶ່ງ</translation>
 <translation id="9036484080057916082">ລາຍຊື່ເວລາໃບຮັບຮອງທີ່ໄດ້ເຊັນ</translation>
 <translation id="9037054491984310631">ເຊື່ອມຕໍ່ຫາອຸປະກອນ Bluetooth ຊື່ <ph name="DEVICE" /> ແລ້ວ</translation>
@@ -11385,7 +11380,6 @@
 <translation id="9068598199622656904">ກົດເທື່ອລະປຸ່ມສໍາລັບຄີລັດແທນທີ່ຈະກົດປຸ່ມຄ້າງໄວ້ພ້ອມກັນ</translation>
 <translation id="9068878141610261315">ປະເພດໄຟລ໌ບໍ່ຮອງຮັບ</translation>
 <translation id="9069417381769492963">ບໍ່ມີບຸກມາກທີ່ກົງກັບການຊອກຫາຂອງທ່ານ</translation>
-<translation id="9069665781180028115">ລາຍການທີ່ເລືອກຈະພ້ອມນຳໃຊ້ຢູ່ Chromebook ເຄື່ອງນີ້. ຫາກທ່ານຍັງບໍ່ເຄີຍໃຊ້ Chromebook, ໃຫ້ຊິ້ງລາຍການທັງໝົດເພື່ອໃຫ້ລະບົບສຳຮອງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ. ປ່ຽນແປງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ &gt; ບັນຊີ.</translation>
 <translation id="9070231741075992882">ນອກຈາກນັ້ນ, ສິດທີ່ທ່ານອະນຸຍາດໃຫ້ສຳລັບ <ph name="APP_NAME" /> ຈະໄດ້ຮັບການອະນຸຍາດສຳລັບແອັບທີ່ຕິດຕັ້ງ ແລະ ສະຕຣີມນຳ.</translation>
 <translation id="9070342919388027491">ຍ້າຍແຖບໄປເບື້ອງຊ້າຍແລ້ວ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1748,7 +1748,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá con este sitio os seguintes datos: <ph name="FIELDS_STRING" />. Consulta as <ph name="BEGIN_LINK" />condicións de servizo<ph name="END_LINK" /> do sitio.</translation>
 <translation id="2210462644007531147">Non puido completarse a instalación</translation>
 <translation id="2211043920024403606">Información de perfil</translation>
-<translation id="2211245494465528624">Xestionar as opcións de sincronización</translation>
 <translation id="221297410904507041">Eliminar o historial de navegación, as cookies, a memoria caché e moito máis</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Cartafoles compartidos</translation>
@@ -2742,7 +2741,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="288734198558082692"><ph name="DEVICE" /> e <ph name="NUMBER_OF_DEVICES" /> máis</translation>
 <translation id="2889043468805635730">Non se atoparon problemas</translation>
 <translation id="2889064240420137087">Abrir ligazón con...</translation>
-<translation id="2890206081124517553">Recorda o fondo de escritorio en todos os teus dispositivos</translation>
 <translation id="2891464434568738544">Non hai ningún sitio dispoñible actualmente. Visita un para engadilo a esta lista.</translation>
 <translation id="2891922230654533301">Queres utilizar o teu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
@@ -8360,7 +8358,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6949434160682548041">Contrasinal (opcional)</translation>
 <translation id="6950143189069683062">Detalles da memoria</translation>
 <translation id="6950627417367801484">Restaurar aplicacións</translation>
-<translation id="6954910832698269894">Activa a sincronización do dispositivo para restaurar as aplicacións, a configuración, as redes wifi e o fondo de pantalla do teu Chromebook anterior. Podes facer cambios en calquera momento en Configuración &gt; Contas.</translation>
 <translation id="6954936693361896459">Emitir esta pestana no seu lugar</translation>
 <translation id="6955446738988643816">Inspeccionar ventá emerxente</translation>
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>
@@ -8877,7 +8874,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7332053360324989309">Traballador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Pestanas duplicadas</translation>
 <translation id="7333388112938984914">Non é posible cargar ficheiros mentres haxa unha conexión de pago por consumo.</translation>
-<translation id="7333669215417470379">Facer copias de seguranza e restaurar as aplicacións e a configuración</translation>
 <translation id="7335974957018254119">Utilizar o corrector ortográfico para</translation>
 <translation id="7336799713063880535">Notificacións bloqueadas.</translation>
 <translation id="7337258336304389677">Usa o teu teléfono ou a tableta</translation>
@@ -11325,7 +11321,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9032513103438497286">Bloquea as aplicacións instaladas neste dispositivo (<ph name="DEVICE_TYPE" />). Para restrinxir a descarga de aplicacións ou contido, vai á configuración de Google Play.</translation>
 <translation id="9033765790910064284">Continuar igualmente</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
-<translation id="9034408118624208974">Acabas de empezar a usar Chromebook? Activa a sincronización para facer unha copia de seguranza das túas preferencias.</translation>
 <translation id="903480517321259405">Volve escribir o PIN</translation>
 <translation id="9036484080057916082">Lista de marcas de tempo dos certificados asinados</translation>
 <translation id="9037054491984310631">Conexión establecida co dispositivo Bluetooth chamado "<ph name="DEVICE" />"</translation>
@@ -11371,7 +11366,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9068598199622656904">Preme as teclas dos atallos de teclado unha por unha en lugar de mantelas premidas ao mesmo tempo</translation>
 <translation id="9068878141610261315">O tipo de ficheiro non é compatible</translation>
 <translation id="9069417381769492963">Non hai ningún marcador que coincida coa túa busca</translation>
-<translation id="9069665781180028115">Os elementos seleccionados tamén estarán dispoñibles neste Chromebook. Se é o teu primeiro Chromebook, sincroniza todos os elementos para que se faga unha copia de seguranza das túas preferencias. Podes facer cambios en calquera momento en Configuración &gt; Contas.</translation>
 <translation id="9070231741075992882">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán ás súas aplicacións instaladas e de acceso en remoto.</translation>
 <translation id="9070342919388027491">A pestana moveuse á esquerda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">If you change the file extension, the file may open in a different application and potentially be a hazard to your device.</translation>
 <translation id="1080365971383768617">Passwords on all of your devices</translation>
 <translation id="1082920045291562218">Share with summary feedback sheet closed</translation>
+<translation id="1087176310396019910">Possible spam</translation>
 <translation id="1089606299949659462">Review complete!</translation>
 <translation id="1094555143448724771">To see tabs from your other devices, sync your tabs and history</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
@@ -508,6 +509,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}}</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
+<translation id="3301936297336370235">Password suggestion confirmation</translation>
 <translation id="3302615849591357577">Restore tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />, as a new background tab group.</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
 <translation id="3303855915957856445">No search results found</translation>
@@ -1136,6 +1138,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
 <translation id="6202812185118613467">Sign back in to start sync</translation>
+<translation id="6204781143409202534">Chrome detected possible spam from <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>

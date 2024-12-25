@@ -122,6 +122,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="2583187216237139145">A profil használata során generált összes Chromium-adatot (pl. könyvjelzőket, előzményeket, jelszavakat és egyéb beállításokat) eltávolíthatja a munkaprofil rendszergazdája. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">A Chromium használatának folytatása</translation>
 <translation id="259935314519650377">A letöltött telepítő gyorsítótárazása sikertelen. Hiba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Igazolja személyazonosságát, ha a Chromium-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="264613044588233783">A Chromium gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük (ajánlott)</translation>
 <translation id="2648074677641340862">Az operációs rendszer hibát jelzett a telepítés során. Kérjük, töltse le újra a Chromiumot.</translation>
 <translation id="2661879430930417727">Ha megoszt egy eszközt, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chromiumot.</translation>
@@ -447,6 +448,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6980074797973263542">Szervezete láthatja és kezelheti a böngészési adatokat (például a könyvjelzőket, az előzményeket és a jelszavakat). A személyes Chromium-profilokban lévő böngészési adatokat viszont nem láthatja.</translation>
 <translation id="6985329841647292029">A ChromiumOS feltételei</translation>
 <translation id="6990124437352146030">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél</translation>
+<translation id="7003299027384820442">Adja meg összetett jelszavát, ha a Chromium-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="7011190694940573312">A telepítés sikertelen volt, mert az operációs rendszer aktuális verziója nem támogatott.</translation>
 <translation id="7024536598735240744">Kicsomagolási hiba: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Telepítés leállítva.</translation>
@@ -542,6 +544,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8330519371938183845">Jelentkezzen be, hogy szinkronizálhassa és személyre szabhassa a Chromiumot minden eszközén</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> előzőleg Chromiumot használt</translation>
 <translation id="8357820681460164151">Ha szeretne minden eszközén hozzáférni Chromium böngészőhöz tartozó anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
+<translation id="8359544530202147897">Frissítse a Chromiumot, hogy továbbra is használhassa a Google-fiókjában (<ph name="ACCOUNT_EMAIL" />) lévő Chromium-adatokat</translation>
 <translation id="8360718212975266891">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="8362914115861174987">Fordítás a következő nyelvre:</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>

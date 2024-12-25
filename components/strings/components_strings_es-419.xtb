@@ -962,6 +962,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2688969097326701645">Sí, continuar</translation>
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691924980723297736">Advertencia de seguridad</translation>
+<translation id="2697248912349197812">Preguntarle a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú disponible. Utiliza <ph name="SHORTCUT" /> para navegar a las opciones adicionales.</translation>
 <translation id="2701514975700770343">Hacia abajo</translation>
 <translation id="2702592986366989640">Opción de precio bajo</translation>
@@ -2067,6 +2068,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="469028408546145398">Botón Cerrar ventanas de incógnito: actívalo para cerrar todas las ventanas de incógnito que estén abiertas</translation>
 <translation id="4691093235373904540">Tejados</translation>
 <translation id="4692623383562244444">Motores de búsqueda</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Preguntarle a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Deportes de combate</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>

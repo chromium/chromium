@@ -392,6 +392,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5941830788786076944">Nastavit Google Chrome jako výchozí prohlížeč</translation>
 <translation id="5947104538377036631">Zkratka Chromu</translation>
 <translation id="5953954252731207958">V poslední době jste nenavštívili. Chrome odebral toto oprávnění: <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chrome doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Stahování… Zbývající čas: <ph name="HOURS" /> h.</translation>
 <translation id="6014316319780893079">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chrome<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
 <translation id="6022659036123304283">Přizpůsobte si Chrome</translation>
@@ -610,6 +611,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="842386925677997438">Bezpečnostní nástroje prohlížeče Chrome</translation>
 <translation id="8425765582779547329">Pokud na internetu chceš být víc v bezpečí s nastavením od rodičů, přihlas se do Chromu</translation>
 <translation id="8428213095426709021">Nastavení</translation>
+<translation id="8429214465555795676">Pokud chcete pokračovat, budete se muset do Chromu přihlásit pomocí účtu <ph name="EMAIL" />. Zajistíte tak soulad se zásadami své organizace.</translation>
 <translation id="8433638294851456451">Pokud odtud chcete odeslat číslo do telefonu Android, v obou zařízeních se přihlaste do Chromu.</translation>
 <translation id="8451192282033883849">Váš účet je spravován doménou <ph name="MANAGER_NAME" />. Tento profil prohlížeče Chrome a jeho data, jako jsou záložky, historie a hesla, může zobrazit a upravovat váš administrátor.</translation>
 <translation id="8496177819998570653">Správce &amp;hesel Google</translation>

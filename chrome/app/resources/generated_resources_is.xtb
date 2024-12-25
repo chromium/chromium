@@ -1760,7 +1760,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> mun deila <ph name="FIELDS_STRING" /> með þessu vefsvæði til að geta haldið áfram. Sjá <ph name="BEGIN_LINK" />þjónustuskilmála<ph name="END_LINK" /> þessa vefsvæðis.</translation>
 <translation id="2210462644007531147">Ekki tókst að ljúka við uppsetningu</translation>
 <translation id="2211043920024403606">Prófílupplýsingar</translation>
-<translation id="2211245494465528624">Stjórna samstillingarkostum</translation>
 <translation id="221297410904507041">Eyddu ferli, fótsporum, skyndiminni og fleiru</translation>
 <translation id="2213410656650624348">Í meðallagi</translation>
 <translation id="2214018885812055163">Samnýttar möppur</translation>
@@ -2757,7 +2756,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> í viðbót</translation>
 <translation id="2889043468805635730">Engin vandamál fundust</translation>
 <translation id="2889064240420137087">Opna tengil með...</translation>
-<translation id="2890206081124517553">Muna bakgrunn skjáborðsins milli tækja</translation>
 <translation id="2891464434568738544">Engin vefsvæði tiltæk eins og er. Opnaðu vefsvæði til að bæta því á þennan lista.</translation>
 <translation id="2891922230654533301">Nota tækið þitt til að skrá þig inn á <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Sjálfgefinn vafri</translation>
@@ -8377,7 +8375,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6949434160682548041">Aðgangsorð (valfrjálst)</translation>
 <translation id="6950143189069683062">Upplýsingar um minni</translation>
 <translation id="6950627417367801484">Endurheimta forrit</translation>
-<translation id="6954910832698269894">Kveiktu á samstillingu tækja til að endurheimta forritin, stillingarnar, WiFi-netin og veggfóðrið úr gömlu Chromebook-tölvunni. Þú getur breytt þessu hvenær sem er í „Stillingar &gt; Reikningar“.</translation>
 <translation id="6954936693361896459">Senda þennan flipa út í staðinn</translation>
 <translation id="6955446738988643816">Könnunarsprettigluggi</translation>
 <translation id="6955535239952325894">Slökkt er á þessari stillingu í stýrðum vöfrum</translation>
@@ -8894,7 +8891,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7332053360324989309">Tilgreindur vefvirki: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tvíteknir flipar</translation>
 <translation id="7333388112938984914">Ekki er hægt að hlaða upp skrám með gagnamældri tengingu.</translation>
-<translation id="7333669215417470379">Taktu afrit af og endurheimtu forritin og stillingarnar þínar.</translation>
 <translation id="7335974957018254119">Nota ritvilluleit fyrir</translation>
 <translation id="7336799713063880535">Lokað á tilkynningar</translation>
 <translation id="7337258336304389677">Notaðu síma eða spjaldtölvu</translation>
@@ -11343,7 +11339,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9032513103438497286">Settu forrit sem hafa verið sett upp í þessari <ph name="DEVICE_TYPE" /> á bannlista. Opnaðu stillingar Google Play til að takmarka niðurhal forrita eða efnis.</translation>
 <translation id="9033765790910064284">Halda samt áfram</translation>
 <translation id="9033857511263905942">Líma</translation>
-<translation id="9034408118624208974">Ertu að nota Chromebook í fyrsta sinn? Kveiktu á samstillingu til að kjörstillingarnar þínar verði afritaðar.</translation>
 <translation id="903480517321259405">Sláðu PIN-númerið aftur inn</translation>
 <translation id="9036484080057916082">Tímastimplalisti undirritaðra vottorða</translation>
 <translation id="9037054491984310631">Tengdist Bluetooth-tækinu <ph name="DEVICE" /></translation>
@@ -11389,7 +11384,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9068598199622656904">Ýta á einn takka í einu fyrir flýtilykla í stað þess að halda mörgum tökkum inni á sama tíma</translation>
 <translation id="9068878141610261315">Óstudd skráargerð</translation>
 <translation id="9069417381769492963">Engin bókamerki passa við leitina þína</translation>
-<translation id="9069665781180028115">Valin atriði verða tiltæk í þessari Chromebook-tölvu. Ef þú ert að nota Chromebook í fyrsta sinn skaltu samstilla öll atriði til að kjörstillingarnar þínar verði afritaðar. Þú getur breytt þessu hvenær sem er í „Stillingar &gt; Reikningar“.</translation>
 <translation id="9070231741075992882">Heimildir sem þú veitir fyrir <ph name="APP_NAME" /> verða einnig notaðar fyrir uppsett forrit og streymisforrit þess.</translation>
 <translation id="9070342919388027491">Flipi færður til vinstri</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

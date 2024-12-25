@@ -1204,6 +1204,7 @@
 <translation id="6418346271604475326">กำลังเตรียม PDF</translation>
 <translation id="6429213933892582367">เปิดตัวเลือกรหัสผ่าน</translation>
 <translation id="6434591244308415567">เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง</translation>
+<translation id="6435307030888827407">อยู่ในโหมดออกจากระบบ</translation>
 <translation id="6436318499800111867">แชร์กับฉันแล้วเมื่อวันที่ <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">ยกเลิกการปักหมุดแท็บ</translation>
 <translation id="6443118737398455446">วันหมดอายุไม่ถูกต้อง</translation>
@@ -1397,6 +1398,7 @@
 <translation id="7248046129087111453">ระบบอาจบันทึก<ph name="BEGIN_LINK" />ประวัติการค้นหา<ph name="END_LINK" />และ<ph name="BEGIN_LINK" />กิจกรรมรูปแบบอื่น<ph name="END_LINK" />ในบัญชี Google</translation>
 <translation id="7253951228444156601">กำลังตรวจสอบรหัสผ่าน…</translation>
 <translation id="7261217796641151584">แชร์กลุ่ม</translation>
+<translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="7271220006028561438">อนุญาตให้อัปเกรดพาสคีย์อัตโนมัติ</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7293429513719260019">เลือกภาษา</translation>
@@ -1591,6 +1593,7 @@
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="8084285576995584326">ควบคุมข้อมูลในบัญชี Google ของคุณ</translation>
 <translation id="809543534949702122">ประวัติการค้นหา</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{แท็บที่คุณไม่ได้ใช้งานจะย้ายมาที่นี่หลังจากผ่านไป {COUNT} วัน}other{แท็บที่คุณไม่ได้ใช้งานจะย้ายมาที่นี่หลังจากผ่านไป {COUNT} วัน}}</translation>
 <translation id="8101409298456377967">สร้าง บันทึก และจัดการรหัสผ่านเพื่อจะได้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>

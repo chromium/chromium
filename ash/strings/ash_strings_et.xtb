@@ -1648,6 +1648,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6539852571005954999">Allalaaditava faili <ph name="FILENAME" /> skannimine</translation>
 <translation id="6542521951477560771">Ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emotikonid, GIF-id ja muu</translation>
+<translation id="6543942526104794893">Kas soovite kindlasti näoliigutused välja lülitada?</translation>
 <translation id="6545382064335350438">Teie PIN-koodi ei õnnestunud ikka kinnitada. Proovige uuesti.</translation>
 <translation id="6555373427270923730">Sisestage veebiaadress aadressiribale ja vajutage klahvikombinatsiooni <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2315,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8855885154700222542">Täisekraani klahv</translation>
 <translation id="8858369206579825206">Privaatsuse seaded</translation>
 <translation id="8860366331836346216">eSIM-i lisamine</translation>
+<translation id="8869149849311827122">Kas soovite kindlasti kursoriga juhtimise välja lülitada?</translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
 <translation id="8873203135446552888">Kinnitage, kas soovite sisseehitatud puuteplaadi keelata</translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>

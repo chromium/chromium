@@ -1397,6 +1397,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account.</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
 <translation id="7261217796641151584">Share group</translation>
+<translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7271220006028561438">Allow automatic passkey upgrades</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7293429513719260019">Select language</translation>
@@ -1591,6 +1592,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>
 <translation id="809543534949702122">Search history</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Tabs that you don't use get moved here after {COUNT} day}other{Tabs that you don't use get moved here after {COUNT} days}}</translation>
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>

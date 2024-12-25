@@ -108,6 +108,7 @@
 <translation id="143681031165817424">Adresse enregistrée uniquement sur cet appareil</translation>
 <translation id="1445276840641906250">Tous vos onglets dans un seul navigateur</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
+<translation id="1454615514353469963">Les mots de passe, clés d'accès et autres données seront définitivement supprimés du Gestionnaire de mots de passe de Google</translation>
 <translation id="1455660774629812862">Ne pas masquer</translation>
 <translation id="1460751212339734034">Tapez moins et gagnez du temps</translation>
 <translation id="1466035273550360103">Aucun onglet ouvert</translation>
@@ -1689,7 +1690,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8545276357312221485">Vérifier les réglages par défaut de votre navigateur</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
-<translation id="8558046478684552694">Fermez le groupe.</translation>
+<translation id="8558046478684552694">Fermer le groupe.</translation>
 <translation id="8560253818350321773">Afficher en premier les éléments fréquemment utilisés.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} option de mot de passe disponible au-dessus de votre clavier.}one{{count} option de mot de passe disponible au-dessus de votre clavier.}other{{count} options de mot de passe disponibles au-dessus de votre clavier.}}</translation>
 <translation id="8564894539416715395">Page Nouvel onglet</translation>

@@ -389,6 +389,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5941830788786076944">Google Chrome'u defolt brauzer edin</translation>
 <translation id="5947104538377036631">Chrome qısayolu</translation>
 <translation id="5953954252731207958">Bu yaxınlarda daxil olmamısınız. Chrome sildi: <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Naməlum mənbələrdən olan artırma, tətbiq və temalar cihaza zərər verə bilər. Chrome onları yalnız buradan quraşdırmağı tövsiyə edir: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Endirilir... <ph name="HOURS" /> saat qalıb</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome alətləri ilə<ph name="END_LINK" /> təhlükəsiz nəzər sala və nəzarət edə bilərsiniz</translation>
 <translation id="6022659036123304283">Chrome'u özünüzküləşdirin</translation>
@@ -607,6 +608,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="842386925677997438">Chrome-un güvənlik alətləri</translation>
 <translation id="8425765582779547329">Onlayn təhlükəsizliyinizi valideyninizin seçimləri ilə qorumaq üçün Chrome-a daxil olun</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8429214465555795676">Davam etməklə Chrome-a <ph name="EMAIL" /> ilə daxil olmalı olacaqsınız. Bu, təşkilatınızın siyasətlərinə uyğunluğu təmin edir.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chrome'a daxil olun.</translation>
 <translation id="8451192282033883849">Hesabınızı <ph name="MANAGER_NAME" /> idarə edir. Administratorunuz bu Chrome brauzer profilini və onun əlfəcinlər, tarixçə və parollar kimi datasını görə və redaktə edə bilər.</translation>
 <translation id="8496177819998570653">Google Parol Meneceri</translation>

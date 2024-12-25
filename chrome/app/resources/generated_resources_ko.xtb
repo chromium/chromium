@@ -1760,7 +1760,6 @@
 <translation id="2209841631181508629">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
 <translation id="2211043920024403606">프로필 정보</translation>
-<translation id="2211245494465528624">동기화 옵션 관리</translation>
 <translation id="221297410904507041">방문 기록, 쿠키, 캐시 등 삭제</translation>
 <translation id="2213410656650624348">보통</translation>
 <translation id="2214018885812055163">공유 폴더</translation>
@@ -2758,7 +2757,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개</translation>
 <translation id="2889043468805635730">문제가 발견되지 않음</translation>
 <translation id="2889064240420137087">다음으로 링크 열기...</translation>
-<translation id="2890206081124517553">여러 기기에서 데스크톱 배경 기억하기</translation>
 <translation id="2891464434568738544">현재 사용 가능한 사이트가 없습니다. 사이트를 방문하여 이 목록에 추가하세요.</translation>
 <translation id="2891922230654533301">기기를 사용하여 <ph name="APP_NAME" />에 로그인하시겠습니까?</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
@@ -8375,7 +8373,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6949434160682548041">비밀번호(선택사항)</translation>
 <translation id="6950143189069683062">메모리 세부정보</translation>
 <translation id="6950627417367801484">앱 복원</translation>
-<translation id="6954910832698269894">이전 Chromebook의 앱, 설정, Wi-Fi 네트워크, 배경화면을 복원하려면 기기 동기화를 사용 설정합니다. 설정 &gt; 계정에서 언제든지 변경할 수 있습니다.</translation>
 <translation id="6954936693361896459">대신 이 탭 전송</translation>
 <translation id="6955446738988643816">팝업 검사</translation>
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
@@ -8893,7 +8890,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7332053360324989309">전용 작업자: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">중복 탭</translation>
 <translation id="7333388112938984914">데이터 종량제 연결에서는 파일을 업로드할 수 없습니다.</translation>
-<translation id="7333669215417470379">앱과 설정 백업 및 복원하기</translation>
 <translation id="7335974957018254119">맞춤법 검사 사용</translation>
 <translation id="7336799713063880535">알림 차단됨</translation>
 <translation id="7337258336304389677">휴대전화 또는 태블릿 사용</translation>
@@ -11342,7 +11338,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9032513103438497286">이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단합니다. 앱 또는 콘텐츠 다운로드를 제한하려면 Google Play 설정으로 이동하세요.</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
-<translation id="9034408118624208974">Chromebook을 처음 사용하시나요? 환경설정을 백업할 수 있도록 동기화를 사용 설정하세요.</translation>
 <translation id="903480517321259405">PIN 다시 입력</translation>
 <translation id="9036484080057916082">서명된 인증서 타임스탬프 목록</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> 블루투스 기기에 연결되었습니다</translation>
@@ -11388,7 +11383,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9068598199622656904">키를 동시에 누르는 대신 한 번에 하나의 키를 눌러 단축키에 사용하세요</translation>
 <translation id="9068878141610261315">지원되지 않는 파일 형식입니다.</translation>
 <translation id="9069417381769492963">검색어와 일치하는 북마크가 없습니다.</translation>
-<translation id="9069665781180028115">선택한 항목을 이 Chromebook에서 사용할 수 있습니다. Chromebook을 처음 사용하는 경우 모든 항목을 동기화하여 환경설정을 백업합니다. 설정 &gt; 계정에서 언제든지 변경할 수 있습니다.</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" />에 허용하는 권한은 설치된 앱 및 스트리밍된 앱에도 허용됩니다.</translation>
 <translation id="9070342919388027491">왼쪽으로 탭을 이동함</translation>
 <translation id="9074739597929991885">블루투스</translation>

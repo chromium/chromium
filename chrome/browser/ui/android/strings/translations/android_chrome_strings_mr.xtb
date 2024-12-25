@@ -19,6 +19,7 @@
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
 <translation id="1080365971383768617">तुमच्या सर्व डिव्हाइसवरील पासवर्ड</translation>
 <translation id="1082920045291562218">सारांशाच्या फीडबॅकची शीट बंद असताना शेअर करा</translation>
+<translation id="1087176310396019910">संभाव्य स्पॅम</translation>
 <translation id="1089606299949659462">पुनरावलोकन पूर्ण झाले आहे!</translation>
 <translation id="1094555143448724771">तुमच्या इतर डिव्हाइसवरील टॅब पाहण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा</translation>
 <translation id="1095761715416917775">तुम्हाला तुमचा सिंक डेटा नेहमी अ‍ॅक्सेस करता येईल याची खात्री करा</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> टॅब}}</translation>
 <translation id="3293181007446299124">तुमचा ब्राउझिंग इतिहास तुमच्या डिव्हाइसवर खाजगी ठेवला जातो आणि तुमची ओळख संरक्षित करण्यासाठी अहवाल विलंबाने पाठवले जातात</translation>
+<translation id="3301936297336370235">पासवर्डसंबंधित सूचना कन्फर्म करणे</translation>
 <translation id="3302615849591357577">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TITLE_OF_GROUP" /> टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6196315980958524839">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये या डिव्हाइसवर सेव्ह केले जातात</translation>
 <translation id="6202812185118613467">सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
+<translation id="6204781143409202534">Chrome ने <ph name="DOMAIN" /> कडील संभाव्य स्पॅम डिटेक्ट केले आहे.</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>

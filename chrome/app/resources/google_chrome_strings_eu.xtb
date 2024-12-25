@@ -392,6 +392,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="5947104538377036631">Chrome-ren lasterbidea</translation>
 <translation id="5953954252731207958">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION" /> erabiltzeko baimena kendu dio.</translation>
+<translation id="5980111191913430208">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chrome-k.</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ren tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="6022659036123304283">Zeureganatu Chrome</translation>
@@ -610,6 +611,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="842386925677997438">Chrome-ren segurtasun-tresnak</translation>
 <translation id="8425765582779547329">Gurasoen aukerekin sarean seguruago egoteko, hasi saioa Chrome-n</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
+<translation id="8429214465555795676">Aurrera egiteko, Chrome-n saioa hasi behar duzu <ph name="EMAIL" /> kontuarekin. Horrela, erakundearen gidalerroak gordetzen direla bermatuko da.</translation>
 <translation id="8433638294851456451">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> administratzaileak kudeatzen du kontua. Chrome arakatzaileko profil hau eta profil honetako datuak (esaterako, laster-markak, historia eta pasahitzak) ikusi eta edita ditzake administratzaileak.</translation>
 <translation id="8496177819998570653">Google-ren Pasahitz-kudeatzailea</translation>

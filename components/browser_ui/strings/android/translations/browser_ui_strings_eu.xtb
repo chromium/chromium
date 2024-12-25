@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
 <translation id="1396327438254055134">Eman V8 optimizatzailea erabiltzeko baimena webguneari.</translation>
 <translation id="1415402041810619267">URLa moztuta dago</translation>
+<translation id="1415855080660575082">Eman zure azkenaldiko fitxak gailuarekin partekatzeko aukera Chrome-ri, gailuko aplikazioen zerrendan eta bilaketa-emaitzetan ikusi ahal izan ditzazun. Aukera hori aktibatu edo desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
 <translation id="1500473259453106018">Ezkutatu fitxetako prezio-jaitsieren txartela</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Hirugarrenen cookieak aldi baterako erabiltzeko baimena eman diozu webgune honi. Babes txikiagoa izango duzu, baina webgunearen eginbideek espero bezala funtzionatzeko probabilitate handiagoa izango dute. <ph name="BEGIN_LINK" />Bidali oharrak<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Baliteke ezkutuko modua aktibatuta dagoenean webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="2442870161001914531">Eskatu beti ordenagailuetarako webgunea</translation>
+<translation id="2445311670906052406">Orain, azkenaldiko fitxak gailuarekin partekatzen ditu Chrome-k. Gailuko aplikazioen zerrendan eta bilaketa-emaitzetan ikusiko dituzu. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> webgunearen eta haren mendeko webgune guztien datu eta cookie guztiak ezabatuko dira</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
 <translation id="2787357173144933081">Abiarazi bizkor arakatzaileko barra</translation>
 <translation id="2790501146643349491">Aktibatuta dagoenean, berriki itxitako webguneek datuak bidaltzen eta jasotzen amai dezakete. Desaktibatuta dagoenean, berriki itxitako webguneek ezin dute amaitu datuak bidaltzen eta jasotzen.</translation>
+<translation id="2814830417943086299">Orain, azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusten ditu Chrome-k. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2850913818900871965">Eskatu mugikorretarako ikuspegia</translation>
 <translation id="2870560284913253234">Webgunea</translation>
@@ -557,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Oraingo zooma: %% <ph name="ZOOM_LEVEL" /></translation>
+<translation id="9156722768168878035">Eman azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusteko baimena Chrome-ri. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="9162462602695099906">Orri hau arriskutsua da</translation>
 <translation id="947156494302904893">Bisitatzen dituzun webguneek benetako pertsona bat zarela eta robot bat ez zarela egiazta dezakete</translation>
 <translation id="959682366969460160">Antola zaitez</translation>

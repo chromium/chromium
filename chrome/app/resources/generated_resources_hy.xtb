@@ -1749,7 +1749,6 @@
 <translation id="2209841631181508629">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK" />օգտագործման պայմաններին<ph name="END_LINK" />։</translation>
 <translation id="2210462644007531147">Չհաջողվեց ավարտել տեղադրումը</translation>
 <translation id="2211043920024403606">Պրոֆիլի տվյալներ</translation>
-<translation id="2211245494465528624">Կառավարել համաժամացման կարգավորումները</translation>
 <translation id="221297410904507041">Ջնջել պատմությունը, քուքիները, քեշը և ավելին</translation>
 <translation id="2213410656650624348">Չափավոր</translation>
 <translation id="2214018885812055163">Ընդհանուր պանակներ</translation>
@@ -1907,7 +1906,7 @@
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2308798336967462263">Հետևյալ ստեղները չեն աջակցվում՝ Tab, Shift, Ctrl, Esc, Caps Lock և ձայնի ուժգնության կառավարման ստեղները</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
-<translation id="2310414604104802967">Ստուգվում է՝ արդյոք մտած եք հաշիվ…</translation>
+<translation id="2310414604104802967">Ստուգվում է՝ արդյոք մտել եք հաշիվ…</translation>
 <translation id="2310923358723722542">Էկրան և խոշորացում</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
@@ -2741,7 +2740,6 @@
 <translation id="288734198558082692">«<ph name="DEVICE" />» սարքն ու ևս <ph name="NUMBER_OF_DEVICES" /> սարք</translation>
 <translation id="2889043468805635730">Որևէ խնդիր չի հայտնաբերվել</translation>
 <translation id="2889064240420137087">Բացել հղումը` օգտագործելով…</translation>
-<translation id="2890206081124517553">Օգտագործեք աշխատասեղանի նույն ֆոնը բոլոր սարքերում</translation>
 <translation id="2891464434568738544">Այս պահին հասանելի կայքեր չկան։ Այցելեք կայք՝ այս ցուցակում ավելացնելու համար։</translation>
 <translation id="2891922230654533301">Օգտագործե՞լ ձեր սարքը՝ <ph name="APP_NAME" /> հավելվածում հաշիվ մտնելու համար</translation>
 <translation id="2893168226686371498">Կանխադրված դիտարկիչ</translation>
@@ -8349,7 +8347,6 @@
 <translation id="6949434160682548041">Գաղտնաբառ (պարտադիր չէ)</translation>
 <translation id="6950143189069683062">Հիշողության վերաբերյալ մանրամասներ</translation>
 <translation id="6950627417367801484">Վերականգնել հավելվածները</translation>
-<translation id="6954910832698269894">Միացրեք սարքի համաժամացումը՝ հավելվածները, կարգավորումները, Wi-Fi ցանցերը և պաստառները ձեր նախորդ Chromebook-ից վերականգնելու համար։ Ցանկացած ժամանակ կարող եք փոփոխություններ անել՝ անցնելով Կարգավորումներ &gt; Հաշիվներ։</translation>
 <translation id="6954936693361896459">Փոխարենը հեռարձակել այս ներդիրը</translation>
 <translation id="6955446738988643816">Հետազոտել ելնող պատուհանը</translation>
 <translation id="6955535239952325894">Այս կարգավորումը ցուցադրվում է կառավարվող դիտարկիչներում</translation>
@@ -8608,6 +8605,7 @@
 <translation id="7134951043985383439">Ներբեռնվել է վտանգավոր ֆայլ</translation>
 <translation id="7135729336746831607">Միացնե՞լ Bluetooth-ը</translation>
 <translation id="7136694880210472378">Դարձնել կանխադրված</translation>
+<translation id="7137277889990479760">Շարունակել որպես <ph name="EMAIL" /></translation>
 <translation id="7137771508221868414">Կայքերի և տեղադրված հավելվածների կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր խոսափողը</translation>
@@ -8862,7 +8860,6 @@
 <translation id="7332053360324989309">Dedicated Worker` <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Կրկնօրինակ ներդիրներ</translation>
 <translation id="7333388112938984914">Հնարավոր չէ ֆայլեր վերբեռնել՝ վճարովի թրաֆիկով կապ օգտագործելու դեպքում։</translation>
-<translation id="7333669215417470379">Պահուստավորեք և վերականգնեք ձեր հավելվածներն ու կարգավորումները</translation>
 <translation id="7335974957018254119">Օգտագործել ուղղագրության ստուգումը հետևյալ լեզուների համար՝</translation>
 <translation id="7336799713063880535">Ծանուցումներն արգելափակված են։</translation>
 <translation id="7337258336304389677">Օգտագործեք ձեր հեռախոսը կամ պլանշետը</translation>
@@ -9186,6 +9183,7 @@
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7561759921596375678">Միացնել ձայնը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
+<translation id="7563970324931922582">[տեղապահ տեքստ]</translation>
 <translation id="756445078718366910">Բացել դիտարկիչի պատուհան</translation>
 <translation id="7564847347806291057">Ավարտել գործընթացը</translation>
 <translation id="756503097602602175">Դուք կարող եք <ph name="LINK_BEGIN" />Կարգավորումներում<ph name="LINK_END" /> կառավարել Google հաշիվները, որոնցում մուտք եք գործել։ Կայքերին ու հավելվածներին տրված ձեր թույլտվությունները կարող են կիրառվել բոլոր հաշիվների համար։ Եթե չեք ուզում, որ ձեր հաշվի տվյալները հասանելի լինեն կայքերին ու հավելվածներին, կարող եք <ph name="DEVICE_TYPE" /> սարքում մուտք գործել որպես հյուր կամ կայքերը բացել <ph name="LINK_2_BEGIN" />ինկոգնիտո պատուհանում<ph name="LINK_2_END" />։</translation>
@@ -10874,6 +10872,7 @@
 <translation id="8737966899544698733">Տեղորոշման ճշգրտություն (միայն Android-ի համար)</translation>
 <translation id="8738418093147087440">Որոնեք ըստ երկրների, լեզուների կամ ներածման մեթոդների</translation>
 <translation id="8740086188450289493">Օգտագործել Google հաշվի գաղտնաբառը</translation>
+<translation id="874023689350909633">Փորձել</translation>
 <translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
 <translation id="8740672167979365981">Թարմացրեք ChromeOS Flex-ը</translation>
 <translation id="8741944563400125534">Switch Access-ի կարգավորման ուղեցույց</translation>
@@ -11257,7 +11256,7 @@
 <translation id="9007688236643268728">&amp;Նորից մուտք գործեք</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>
-<translation id="9008425116680857079">Chrome-ը կարող է փոխել ձեր գաղտնաբառը, երբ հաշիվ եք մտած։</translation>
+<translation id="9008425116680857079">Chrome-ը կարող է փոխել ձեր գաղտնաբառը, երբ մտնեք հաշիվ։</translation>
 <translation id="9008828754342192581">Դուք նախկինում թույլատրել եք բոլոր ընդլայնումները <ph name="ORIGIN" /> էջում</translation>
 <translation id="9009369504041480176">Վերբեռնում (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009707268312089299">Windows-ից ներմուծված</translation>
@@ -11307,7 +11306,6 @@
 <translation id="9032513103438497286">Արգելափակեք այս սարքում (<ph name="DEVICE_TYPE" />) տեղադրված հավելվածները։ Հավելվածների կամ բովանդակության ներբեռնումը սահմանափակելու համար անցեք Google Play-ի կարգավորումներ։</translation>
 <translation id="9033765790910064284">Շարունակել</translation>
 <translation id="9033857511263905942">&amp;Տեղադրել</translation>
-<translation id="9034408118624208974">Առաջին անգա՞մ եք օգտվում Chromebook-ից։ Միացրեք համաժամացումը, որպեսզի ձեր կարգավորումները պահուստավորվեն։</translation>
 <translation id="903480517321259405">Նորից մուտքագրեք PIN կոդը</translation>
 <translation id="9036484080057916082">Ստորագրված հավաստագրերի ժամադրոշմների ցանկ</translation>
 <translation id="9037054491984310631">Կապ է հաստատվել «<ph name="DEVICE" />» Bluetooth սարքի հետ</translation>
@@ -11353,7 +11351,6 @@
 <translation id="9068598199622656904">Ստեղնային դյուրանցումների կոճակները սեղմեք հերթով, այլ ոչ թե միաժամանակ</translation>
 <translation id="9068878141610261315">Ֆայլի տեսակը չի աջակցվում</translation>
 <translation id="9069417381769492963">Ձեր որոնմանը համապատասխանող էջանիշներ չկան</translation>
-<translation id="9069665781180028115">Ընտրված տարրերը հասանելի կլինեն այս Chromebook-ում։ Եթե առաջին անգամ եք օգտվում Chromebook-ից, ապա համաժամացրեք բոլոր տարրերը, որպեսզի ձեր կարգավորումները պահուստավորվեն։ Ցանկացած ժամանակ կարող եք փոփոխություններ անել՝ անցնելով Կարգավորումներ &gt; Հաշիվներ։</translation>
 <translation id="9070231741075992882">Թույլտվությունները, որոնք տրամադրում եք <ph name="APP_NAME" /> հավելվածին, նաև կգործեն այդ հավելվածի կողմից տեղադրված և հեռարձակվող հավելվածների համար։</translation>
 <translation id="9070342919388027491">Ներդիրը տեղափոխվեց ձախ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

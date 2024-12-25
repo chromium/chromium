@@ -240,6 +240,7 @@
 <translation id="3889417619312448367">Google Chrome をアンインストール</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
+<translation id="3968962723676998462">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="3973161977468201858">Google Chrome が Google パスワード マネージャーのデータの削除をリクエストしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="398236277091248993">パフォーマンス ブースト機能で Chrome を高速に保ちます</translation>
 <translation id="3999683152997576765">サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
@@ -304,6 +305,7 @@
 <translation id="4728575227883772061">原因不明のエラーによりインストールが失敗しました。実行中の Google Chrome を終了してからやり直してください。</translation>
 <translation id="4741235124132242877">固定しました。ツールバーから Google レンズを使用できます</translation>
 <translation id="4747730611090640388">Chrome はユーザーの興味 / 関心を推定する場合があります。その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chrome にユーザーの興味 / 関心を確認するよう依頼できます。</translation>
+<translation id="475321580758063259">Google アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome データを引き続き使用するには、Chrome を更新してください</translation>
 <translation id="4754614261631455953">Google Chrome Canary（mDNS インバウンド）</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4793679854893018356">Chrome のユーザー保護の仕組みについて</translation>
@@ -576,6 +578,7 @@
 <translation id="8077579734294125741">その他の Chrome プロフィール</translation>
 <translation id="8086881907087796310">パソコンがハードウェアの最小要件を満たしていないため、インストールできませんでした。</translation>
 <translation id="8111297389482307122">Google アカウントに一部のデータを保存してすべてのデバイスで使用できるようにするには、Chrome で本人確認を行う必要があります。ログアウトしても、このデータはこのデバイスに残ります。</translation>
+<translation id="8113883687556086139">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、本人確認を行ってください</translation>
 <translation id="8118331347066725040">Google レンズでの検索に関するフィードバックを送信する</translation>
 <translation id="8129812357326543296">Google Chrome について(&amp;G)</translation>
 <translation id="813913629614996137">初期化しています...</translation>

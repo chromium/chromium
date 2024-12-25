@@ -1749,7 +1749,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2209841631181508629">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta los <ph name="BEGIN_LINK" />términos del servicio<ph name="END_LINK" /> de este sitio.</translation>
 <translation id="2210462644007531147">No se ha podido completar la instalación</translation>
 <translation id="2211043920024403606">Información del perfil</translation>
-<translation id="2211245494465528624">Gestionar opciones de sincronización</translation>
 <translation id="221297410904507041">Elimina el historial, las cookies, la caché y más</translation>
 <translation id="2213410656650624348">Moderado</translation>
 <translation id="2214018885812055163">Carpetas compartidas</translation>
@@ -2744,7 +2743,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="288734198558082692"><ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> más</translation>
 <translation id="2889043468805635730">No se han encontrado problemas</translation>
 <translation id="2889064240420137087">Abrir enlace con...</translation>
-<translation id="2890206081124517553">Recuerda tu fondo de escritorio en todos los dispositivos</translation>
 <translation id="2891464434568738544">No hay ningún sitio disponible en este momento. Visita un sitio para añadirlo a esta lista.</translation>
 <translation id="2891922230654533301">¿Usar tu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
@@ -8359,7 +8357,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6949434160682548041">Contraseña (opcional)</translation>
 <translation id="6950143189069683062">Detalles de memoria</translation>
 <translation id="6950627417367801484">Restaurar aplicaciones</translation>
-<translation id="6954910832698269894">Activa la sincronización del dispositivo para restaurar las aplicaciones, los ajustes, las redes Wi-Fi y el fondo de pantalla de tu Chromebook anterior. Puedes hacer cambios en cualquier momento en Configuración &gt; Cuentas.</translation>
 <translation id="6954936693361896459">Enviar esta otra pestaña</translation>
 <translation id="6955446738988643816">Inspeccionar ventana emergente</translation>
 <translation id="6955535239952325894">Este ajuste está inhabilitado en los navegadores administrados</translation>
@@ -8877,7 +8874,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7332053360324989309">Worker dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Duplicar pestañas</translation>
 <translation id="7333388112938984914">No se pueden subir archivos si se tiene una conexión medida.</translation>
-<translation id="7333669215417470379">Crear copias de seguridad y restaurar tus aplicaciones y ajustes</translation>
 <translation id="7335974957018254119">Utilizar la revisión ortográfica con los siguientes idiomas</translation>
 <translation id="7336799713063880535">Notificaciones bloq.</translation>
 <translation id="7337258336304389677">Usar tu teléfono o tablet</translation>
@@ -11326,7 +11322,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9032513103438497286">Bloquea las aplicaciones instaladas en este <ph name="DEVICE_TYPE" />. Para restringir la descarga de aplicaciones o contenido, ve a Ajustes en Google Play.</translation>
 <translation id="9033765790910064284">Continuar de todos modos</translation>
 <translation id="9033857511263905942">&amp;Pegar</translation>
-<translation id="9034408118624208974">¿Es tu primer Chromebook? Activa la sincronización para crear una copia de seguridad de tus preferencias.</translation>
 <translation id="903480517321259405">Vuelve a escribir el PIN</translation>
 <translation id="9036484080057916082">Lista de marcas de tiempo de certificados firmados</translation>
 <translation id="9037054491984310631">Conectado a un dispositivo Bluetooth llamado <ph name="DEVICE" /></translation>
@@ -11372,7 +11367,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9068598199622656904">Para las combinaciones de teclas, pulsa las teclas de una en una en lugar de mantenerlas pulsadas todas a la vez</translation>
 <translation id="9068878141610261315">Tipo de archivo no admitido</translation>
 <translation id="9069417381769492963">No hay marcadores que coincidan con tu búsqueda</translation>
-<translation id="9069665781180028115">Los elementos seleccionados estarán disponibles en este Chromebook. Si es la primera vez que usas Chromebook, sincroniza todos los elementos para crear una copia de seguridad de tus preferencias. Puedes hacer cambios en cualquier momento en Configuración &gt; Cuentas.</translation>
 <translation id="9070231741075992882">Los permisos que concedas a <ph name="APP_NAME" /> también se concederán en sus aplicaciones instaladas y de streaming.</translation>
 <translation id="9070342919388027491">Pestaña movida a la izquierda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

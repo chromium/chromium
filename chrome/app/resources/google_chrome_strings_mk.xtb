@@ -393,6 +393,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="5947104538377036631">Кратенка за Chrome</translation>
 <translation id="5953954252731207958">Не сте отвориле одамна. Chrome ја отстрани следнава дозвола: <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Екстензии, апликации и теми од непознати извори може да му наштетат на вашиот уред. Chrome препорачува да ги инсталирате само од <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079">Со <ph name="BEGIN_LINK" />алатките од Chrome<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
@@ -611,6 +612,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="842386925677997438">Алатки за безбедност на Chrome</translation>
 <translation id="8425765582779547329">За поголема безбедност онлајн со изборите на твојот родител, најави се на Chrome</translation>
 <translation id="8428213095426709021">Поставки</translation>
+<translation id="8429214465555795676">За да продолжите, ќе треба да се најавите на Chrome со <ph name="EMAIL" />. Ова гарантира сообразност со правилата на вашата организација.</translation>
 <translation id="8433638294851456451">За да испратите број оттука до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8451192282033883849">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chrome и податоците за него, како обележувачи, историја и лозинки.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>

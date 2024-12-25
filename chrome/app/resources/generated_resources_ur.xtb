@@ -1748,7 +1748,6 @@
 <translation id="2209841631181508629">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے <ph name="FIELDS_STRING" /> کا اشتراک کرے گا۔ اس سائٹ کی <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="2210462644007531147">انسٹالیشن مکمل نہیں ہو سکی</translation>
 <translation id="2211043920024403606">پروفائل کی معلومات</translation>
-<translation id="2211245494465528624">مطابقت پذیری کے اختیارات کا نظم کریں</translation>
 <translation id="221297410904507041">‏سرگزشت، کوکیز، cache وغیرہ کو حذف کریں</translation>
 <translation id="2213410656650624348">معتدل</translation>
 <translation id="2214018885812055163">اشتراک کردہ فولڈرز</translation>
@@ -2743,7 +2742,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> اور <ph name="NUMBER_OF_DEVICES" /> دیگر</translation>
 <translation id="2889043468805635730">کوئی مسئلہ نہیں ملا</translation>
 <translation id="2889064240420137087">اس کے ساتھ لنک کھولیں…</translation>
-<translation id="2890206081124517553">تمام آلات پر اپنے ڈیسک ٹاپ کا پس منظر یاد رکھیں</translation>
 <translation id="2891464434568738544">فی الحال کوئی سائٹ دستیاب نہیں ہے۔ کوئی سائٹ ملاحظہ کر کے اسے اس فہرست میں شامل کریں۔</translation>
 <translation id="2891922230654533301"><ph name="APP_NAME" /> میں سائن ان کرنے کیلئے آپ کے آلے کا استعمال کریں؟</translation>
 <translation id="2893168226686371498">ڈیفالٹ براؤزر</translation>
@@ -8350,7 +8348,6 @@
 <translation id="6949434160682548041">پاس ورڈ (اختیاری)</translation>
 <translation id="6950143189069683062">میموری کی تفصیلات</translation>
 <translation id="6950627417367801484">ایپس بحال کریں</translation>
-<translation id="6954910832698269894">‏اپنے پچھلے Chromebook سے اپنی ایپس، ترتیبات، Wi-Fi نیٹ ورکس اور وال پیپر کو بحال کرنے کے لیے آلے کی مطابقت پذیری کو آن کریں۔ ترتیبات &gt; اکاؤنٹس میں کسی بھی وقت تبدیلیاں کریں۔</translation>
 <translation id="6954936693361896459">اس کے بجائے اس ٹیب کو کاسٹ کریں</translation>
 <translation id="6955446738988643816">پاپ اپ کا معائنہ کریں</translation>
 <translation id="6955535239952325894">یہ ترتیب نظم کردہ براؤزرز پر غیر فعال ہے</translation>
@@ -8864,7 +8861,6 @@
 <translation id="7332053360324989309">سرشار کارکن: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ڈپلیکیٹ ٹیبز</translation>
 <translation id="7333388112938984914">میٹرڈ کنکشن کے دوران فائلیں اپ لوڈ نہیں کی جا سکتیں۔</translation>
-<translation id="7333669215417470379">اپنی ایپس اور ترتیبات کا بیک اپ لیں اور بحال کریں</translation>
 <translation id="7335974957018254119">درج ذیل کے لیے املا کی جانچ کا استعمال کریں</translation>
 <translation id="7336799713063880535">اطلاعات مسدود ہیں۔</translation>
 <translation id="7337258336304389677">اپنا فون یا ٹیبلیٹ استعمال کریں</translation>
@@ -11311,7 +11307,6 @@
 <translation id="9032513103438497286">‏اس <ph name="DEVICE_TYPE" /> پر انسٹال کردہ ایپس کو مسدود کریں۔ ایپس یا مواد کو ڈاؤن لوڈ کرنے پر پابندی لگانے کے لیے، Google Play کی ترتیبات پر جائیں۔</translation>
 <translation id="9033765790910064284">بہرصورت جاری رکھیں</translation>
 <translation id="9033857511263905942">&amp;پیسٹ کریں</translation>
-<translation id="9034408118624208974">‏Chromebook پر نئے ہیں؟ مطابقت پذیری کو آن کریں تاکہ آپ کی ترجیحات کا بیک اپ لیا جائے۔</translation>
 <translation id="903480517321259405">‏PIN دوبارہ ٹائپ کریں</translation>
 <translation id="9036484080057916082">سائن کردہ سرٹیفیکیٹ کی ٹائم سٹیمپ کی فہرست</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> نام والے بلوٹوتھ آلے سے منسلک کیا گیا</translation>
@@ -11357,7 +11352,6 @@
 <translation id="9068598199622656904">کی بورڈ شارٹ کٹس کے لیے، ایک ہی وقت میں کلیدوں کو دبائے رکھنے کے بجائے ایک وقت میں ایک کلید دبائیں</translation>
 <translation id="9068878141610261315">فائل کی غیر تعاون یافتہ قسم</translation>
 <translation id="9069417381769492963">آپ کی تلاش سے مماثل کوئی بُک مارک نہیں ہے</translation>
-<translation id="9069665781180028115">‏منتخب کردہ آئٹمز اس Chromebook پر دستیاب ہوں گے۔ اگر آپ Chromebook پر نئے ہیں تو تمام آئٹمز کی مطابقت پذیری کریں تاکہ آپ کی ترجیحات کا بیک اپ لیا جائے۔ ترتیبات &gt; اکاؤنٹس میں کسی بھی وقت تبدیلیاں کریں۔</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> کی دی گئی اجازتیں اس کی انسٹال کردہ اور اسٹریم شدہ ایپس کے لیے بھی قابل اطلاق ہوں گی۔</translation>
 <translation id="9070342919388027491">ٹیب بائیں طرف منتقل کیا گیا</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>

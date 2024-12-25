@@ -1746,7 +1746,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2209841631181508629"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website. Die Nutzungsbedingungen der Website <ph name="BEGIN_LINK" />findest du hier<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Installation konnte nicht abgeschlossen werden</translation>
 <translation id="2211043920024403606">Profilinformationen</translation>
-<translation id="2211245494465528624">Synchronisierungsoptionen verwalten</translation>
 <translation id="221297410904507041">Verlauf, Cookies und andere Daten löschen sowie Cache leeren</translation>
 <translation id="2213410656650624348">Mäßig</translation>
 <translation id="2214018885812055163">Freigegebene Ordner</translation>
@@ -2740,7 +2739,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="288734198558082692">„<ph name="DEVICE" />“ und <ph name="NUMBER_OF_DEVICES" /> weitere</translation>
 <translation id="2889043468805635730">Keine Probleme gefunden</translation>
 <translation id="2889064240420137087">Link öffnen mit...</translation>
-<translation id="2890206081124517553">Desktop-Hintergrund geräteübergreifend speichern</translation>
 <translation id="2891464434568738544">Derzeit sind keine Websites verfügbar. Rufe eine Website auf, um sie dieser Liste hinzuzufügen.</translation>
 <translation id="2891922230654533301">Möchtest du dich mit deinem Gerät auf <ph name="APP_NAME" /> anmelden?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
@@ -8351,7 +8349,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6949434160682548041">Passwort (optional)</translation>
 <translation id="6950143189069683062">Arbeitsspeicherdetails</translation>
 <translation id="6950627417367801484">Apps wiederherstellen</translation>
-<translation id="6954910832698269894">Aktiviere die Gerätesynchronisierung, um deine Apps, Einstellungen, WLANs und den Hintergrund von deinem alten Chromebook wiederherzustellen. Unter „Einstellungen“ &gt; „Konten“ kannst du jederzeit Änderungen vornehmen.</translation>
 <translation id="6954936693361896459">Stattdessen diesen Tab streamen</translation>
 <translation id="6955446738988643816">Pop-up prüfen</translation>
 <translation id="6955535239952325894">Diese Einstellung ist bei verwalteten Browsern deaktiviert</translation>
@@ -8869,7 +8866,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tab-Duplikate</translation>
 <translation id="7333388112938984914">Dateien können nicht hochgeladen werden, wenn eine getaktete Verbindung verwendet wird.</translation>
-<translation id="7333669215417470379">Apps und Einstellungen sichern und wiederherstellen</translation>
 <translation id="7335974957018254119">Rechtschreibprüfung verwenden für</translation>
 <translation id="7336799713063880535">Benachr. blockiert.</translation>
 <translation id="7337258336304389677">Smartphone oder Tablet verwenden</translation>
@@ -11318,7 +11314,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9032513103438497286">Hier kannst du Apps blockieren, die auf diesem <ph name="DEVICE_TYPE" /> installiert sind. Wenn du das Herunterladen von Apps oder Inhalten einschränken möchtest, rufe die Google Play-Einstellungen auf.</translation>
 <translation id="9033765790910064284">Trotzdem fortfahren</translation>
 <translation id="9033857511263905942">&amp;Einfügen</translation>
-<translation id="9034408118624208974">Neu bei Chromebook? Aktiviere die Synchronisierung, damit deine Einstellungen gesichert werden.</translation>
 <translation id="903480517321259405">PIN noch einmal eingeben</translation>
 <translation id="9036484080057916082">Liste mit Zeitstempeln der signierten Zertifikate</translation>
 <translation id="9037054491984310631">Mit dem Bluetooth-Gerät namens „<ph name="DEVICE" />“ verbunden</translation>
@@ -11364,7 +11359,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9068598199622656904">Tasten für Tastenkombinationen können nacheinander gedrückt werden, anstatt sie gleichzeitig gedrückt zu halten</translation>
 <translation id="9068878141610261315">Nicht unterstützter Dateityp</translation>
 <translation id="9069417381769492963">Es gibt keine Lesezeichen, die deiner Suche entsprechen</translation>
-<translation id="9069665781180028115">Die ausgewählten Elemente sind auf diesem Chromebook verfügbar. Wenn du neu bei Chromebook bist, synchronisiere alle Elemente, damit deine Einstellungen gesichert werden. Unter „Einstellungen“ &gt; „Konten“ kannst du jederzeit Änderungen vornehmen.</translation>
 <translation id="9070231741075992882">Für die App „<ph name="APP_NAME" />“ erteilte Berechtigungen werden auch auf Apps übertragen, die von der App installiert oder gestreamt werden.</translation>
 <translation id="9070342919388027491">Tab wurde nach links verschoben</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -1760,7 +1760,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2209841631181508629">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit/din <ph name="FIELDS_STRING" /> med dette website. Se dette websites <ph name="BEGIN_LINK" />servicevilkår<ph name="END_LINK" />.</translation>
 <translation id="2210462644007531147">Installationen kunne ikke gennemføres</translation>
 <translation id="2211043920024403606">Profiloplysninger</translation>
-<translation id="2211245494465528624">Administrer indstillinger for synkronisering</translation>
 <translation id="221297410904507041">Slet historik, cookies, cache m.m.</translation>
 <translation id="2213410656650624348">Moderat</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
@@ -2757,7 +2756,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="288734198558082692"><ph name="DEVICE" /> og <ph name="NUMBER_OF_DEVICES" /> andre</translation>
 <translation id="2889043468805635730">Der blev ikke fundet nogen problemer</translation>
 <translation id="2889064240420137087">Åbn link med...</translation>
-<translation id="2890206081124517553">Husk din skrivebordsbaggrund på alle enheder</translation>
 <translation id="2891464434568738544">Der er i øjeblikket ingen tilgængelige websites. Gå til et website for at føje det til denne liste.</translation>
 <translation id="2891922230654533301">Vil du logge ind på <ph name="APP_NAME" /> med din enhed?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
@@ -8377,7 +8375,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6949434160682548041">Adgangskode (valgfrit)</translation>
 <translation id="6950143189069683062">Hukommelsesoplysninger</translation>
 <translation id="6950627417367801484">Gendan apps</translation>
-<translation id="6954910832698269894">Aktivér enhedssynkronisering for at gendanne apps, indstillinger, Wi-Fi-netværk og baggrunden fra din tidligere Chromebook. Du kan til enhver tid foretage ændringer ved at gå til Indstillinger &gt; Konti.</translation>
 <translation id="6954936693361896459">Cast denne fane i stedet</translation>
 <translation id="6955446738988643816">Undersøg pop op-vindue</translation>
 <translation id="6955535239952325894">Denne indstilling er deaktiveret i administrerede browsere</translation>
@@ -8895,7 +8892,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Dubletter af faner</translation>
 <translation id="7333388112938984914">Du kan ikke uploade filer, når du benytter en forbrugsbaseret forbindelse.</translation>
-<translation id="7333669215417470379">Sikkerhedskopiér og gendan dine apps og indstillinger</translation>
 <translation id="7335974957018254119">Brug stavekontrol for</translation>
 <translation id="7336799713063880535">Notifikationer blokeres.</translation>
 <translation id="7337258336304389677">Brug din telefon eller tablet</translation>
@@ -11345,7 +11341,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9032513103438497286">Bloker apps, der er installeret på denne <ph name="DEVICE_TYPE" />. Hvis du vil begrænse download af apps eller indhold, skal du gå til indstillingerne for Google Play.</translation>
 <translation id="9033765790910064284">Fortsæt alligevel</translation>
 <translation id="9033857511263905942">&amp;Indsæt</translation>
-<translation id="9034408118624208974">Har du ikke brugt Chromebook før? Aktivér synkronisering, så dine præferencer sikkerhedskopieres.</translation>
 <translation id="903480517321259405">Angiv pinkoden igen</translation>
 <translation id="9036484080057916082">Liste over tidsstempler for signeret certifikat</translation>
 <translation id="9037054491984310631">Der er oprettet forbindelse til Bluetooth-enheden <ph name="DEVICE" /></translation>
@@ -11391,7 +11386,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9068598199622656904">Tryk på én tast ad gangen for at bruge tastaturgenveje i stedet for at holde tasterne nede samtidigt</translation>
 <translation id="9068878141610261315">Filtypen understøttes ikke</translation>
 <translation id="9069417381769492963">Der er ingen bogmærker, som matcher din søgning</translation>
-<translation id="9069665781180028115">De valgte elementer bliver tilgængelige på denne Chromebook. Hvis du ikke har brugt Chromebook før, skal du synkronisere alle elementer, så dine præferencer sikkerhedskopieres. Du kan til enhver tid foretage ændringer ved at gå til Indstillinger &gt; Konti.</translation>
 <translation id="9070231741075992882">Tilladelser, du giver <ph name="APP_NAME" />, gives også til de apps, som den installerer og streamer.</translation>
 <translation id="9070342919388027491">Fanen blev flyttet til venstre</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -386,6 +386,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5941830788786076944">Google Chrome varsayılan tarayıcı olsun</translation>
 <translation id="5947104538377036631">Chrome Kısayolu</translation>
 <translation id="5953954252731207958">Son zamanlarda ziyaret etmediniz. Chrome, <ph name="PERMISSION" /> iznini kaldırdı.</translation>
+<translation id="5980111191913430208">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chrome bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome araçları<ph name="END_LINK" /> ile güvenli bir şekilde göz atabilir ve kontrolü elinizde tutabilirsiniz</translation>
 <translation id="6022659036123304283">Chrome'u kendinize uyarlayın</translation>
@@ -604,6 +605,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="842386925677997438">Chrome'un güvenlik araçları</translation>
 <translation id="8425765582779547329">Anne veya babanızın seçimleriyle internette daha güvende olmak için Chrome'da oturum açın</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
+<translation id="8429214465555795676">Devam etmek için Chrome'da <ph name="EMAIL" /> hesabıyla oturum açmanız gerekiyor. Bu şekilde kuruluşunuzun politikalarına uymanız sağlanır.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8451192282033883849">Hesabınız <ph name="MANAGER_NAME" /> tarafından yönetiliyor. Yöneticiniz bu Chrome tarayıcı profilinin yanı sıra yer işaretleri, geçmiş ve şifreler gibi verilerini görüntüleyip düzenleyebilir.</translation>
 <translation id="8496177819998570653">Google Ş&amp;ifre Yöneticisi</translation>

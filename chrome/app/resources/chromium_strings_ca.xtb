@@ -112,6 +112,7 @@
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2513154137948333830">Reinici necessari: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Per continuar, cal que iniciïs la sessió a Chromium amb <ph name="EMAIL" />. D'aquesta manera, es garanteix el compliment de les polítiques de la teva organització.</translation>
 <translation id="2542968102051442371">Selecciona text amb la cerca d'imatges</translation>
 <translation id="2554739539410784893">Chromium està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="2560420686485554789">Chromium necessita accedir a l'emmagatzematge per baixar fitxers</translation>

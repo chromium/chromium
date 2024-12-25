@@ -385,6 +385,7 @@
 <translation id="5941830788786076944">Estableix Google Chrome com el navegador predeterminat</translation>
 <translation id="5947104538377036631">Drecera de Chrome</translation>
 <translation id="5953954252731207958">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION" />.</translation>
+<translation id="5980111191913430208">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
 <translation id="6014316319780893079">Amb les <ph name="BEGIN_LINK" />eines de Chrome<ph name="END_LINK" />, pots navegar de manera segura i mantenir el control</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
@@ -603,6 +604,7 @@
 <translation id="842386925677997438">Eines de seguretat de Chrome</translation>
 <translation id="8425765582779547329">Per protegir-te més en línia amb les eleccions del teu pare o mare, inicia la sessió a Chrome</translation>
 <translation id="8428213095426709021">Configuració</translation>
+<translation id="8429214465555795676">Per continuar, cal que iniciïs la sessió a Chrome amb <ph name="EMAIL" />. D'aquesta manera, es garanteix el compliment de les polítiques de la teva organització.</translation>
 <translation id="8433638294851456451">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chrome i les dades associades, com ara les adreces d'interès, l'historial i les contrasenyes.</translation>
 <translation id="8496177819998570653">G&amp;estor de contrasenyes de Google</translation>

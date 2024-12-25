@@ -427,6 +427,7 @@
 <translation id="1282436639288565079">ਟੈਬ ਗਰੁੱਪ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
 <translation id="1283126956823499975">ਇਸ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="1284277788676816155">ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
+<translation id="1284912418686719556">Chrome ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਬਣਾ ਰਿਹਾ ਹੈ। ਤੁਹਾਨੂੰ ਇਸਨੂੰ ਯਾਦ ਰੱਖਣ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ ਕਿਉਂਕਿ ਇਹ ਤੁਹਾਡੇ ਲਈ <ph name="EMAIL" /> ਦੇ <ph name="GOOGLE_PASSWORD_MANAGER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1285320974508926690">ਕਦੇ ਵੀ ਇਸ ਸਾਈਟ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="1285484354230578868">ਆਪਣੇ Google Drive ਖਾਤੇ ਵਿੱਚ ਡਾਟਾ ਸਟੋਰ ਕਰੋ</translation>
 <translation id="1285625592773741684">ਮੌਜੂਦਾ ਡਾਟਾ ਵਰਤੋਂ ਸੰਬੰਧੀ ਸੈਟਿੰਗ 'ਮੋਬਾਈਲ ਡਾਟਾ' ਹੈ</translation>
@@ -1758,7 +1759,6 @@
 <translation id="2209841631181508629">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ <ph name="FIELDS_STRING" /> ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੇ <ph name="BEGIN_LINK" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="END_LINK" /> ਦੇਖੋ।</translation>
 <translation id="2210462644007531147">ਸਥਾਪਨਾ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="2211043920024403606">ਪ੍ਰੋਫਾਈਲ ਜਾਣਕਾਰੀ</translation>
-<translation id="2211245494465528624">ਸਿੰਕ ਵਿਕਲਪਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="221297410904507041">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="2213410656650624348">ਔਸਤ</translation>
 <translation id="2214018885812055163">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ</translation>
@@ -2757,7 +2757,6 @@
 <translation id="288734198558082692"><ph name="DEVICE" /> ਅਤੇ <ph name="NUMBER_OF_DEVICES" /> ਹੋਰ</translation>
 <translation id="2889043468805635730">ਕੋਈ ਸਮੱਸਿਆ ਨਹੀਂ ਮਿਲੀ</translation>
 <translation id="2889064240420137087">ਇਸ ਨਾਲ ਲਿੰਕ ਖੋਲ੍ਹੇੋ...</translation>
-<translation id="2890206081124517553">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਡੈਸਕਟਾਪ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਯਾਦ ਰੱਖੋ</translation>
 <translation id="2891464434568738544">ਫ਼ਿਲਹਾਲ ਕੋਈ ਸਾਈਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਿਸੇ ਸਾਈਟ ਨੂੰ ਇਸ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਸ ਸਾਈਟ 'ਤੇ ਜਾਓ।</translation>
 <translation id="2891922230654533301">ਕੀ <ph name="APP_NAME" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="2893168226686371498">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ</translation>
@@ -4618,6 +4617,7 @@
 <translation id="4220648711404560261">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦੌਰਾਨ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="4222917615373664617">ਕੀਮਤ ਦੀ ਟਰੈਕਿੰਗ ਚਾਲੂ ਹੈ। ਕੀਮਤ <ph name="CURRENT_PRICE" /> ਹੈ।</translation>
 <translation id="4223404254440398437">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="4224541845943007092">ਪਤਾ ਬਾਰ ਤੋਂ ਕੀ-ਬੋਰਡ ਇਨਪੁੱਟ ਪੜ੍ਹੋ ਅਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4225397296022057997">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ</translation>
 <translation id="4228071595943929139">ਆਪਣੀ ਸੰਸਥਾ ਦੇ ਈਮੇਲ ਪਤੇ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}other{ਕੁਝ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ}}</translation>
@@ -7573,6 +7573,7 @@
 <translation id="637642201764944055">ਦਸੰਬਰ 2022 ਤੋਂ ਬਾਅਦ Chrome ਐਪਾਂ ਦੇ ਪੁਰਾਣੇ ਵਰਜ਼ਨ Linux ਡੀਵਾਈਸਾਂ 'ਤੇ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੇ। ਨਵੇਂ ਵਰਜਨ ਵਿੱਚ ਅੱਪਡੇਟ ਕਰਨ ਜਾਂ ਇਸ ਐਪ ਨੂੰ ਹਟਾਉਣ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ਲਈ 1 ਨਤੀਜਾ</translation>
 <translation id="6378392501584240055">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="6379228010899751161">ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਨੂੰ ਕਦੇ ਵੀ ਵਰਤ ਸਕੋ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="6380143666419481200">ਸਵੀਕਾਰ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6383382161803538830">ਇਸ ਪੰਨੇ 'ਤੇ ਪੜ੍ਹਨ ਦਾ ਮੋਡ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="638418309848716977">ਸਮਰਥਿਤ ਲਿੰਕ</translation>
@@ -8369,7 +8370,6 @@
 <translation id="6949434160682548041">ਪਾਸਵਰਡ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="6950143189069683062">ਮੈਮਰੀ ਵੇਰਵੇ</translation>
 <translation id="6950627417367801484">ਐਪਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
-<translation id="6954910832698269894">ਆਪਣੀ ਪਿਛਲੀ Chromebook ਤੋਂ ਆਪਣੀਆਂ ਐਪਾਂ, ਸੈਟਿੰਗਾਂ, ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ, ਅਤੇ ਵਾਲਪੇਪਰ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਕਿਸੇ ਵੀ ਸਮੇਂ ਸੈਟਿੰਗਾਂ &gt; ਖਾਤੇ ਵਿੱਚ ਜਾ ਕੇ ਤਬਦੀਲੀਆਂ ਕਰੋ।</translation>
 <translation id="6954936693361896459">ਇਸ ਦੀ ਬਜਾਏ ਇਹ ਟੈਬ ਕਾਸਟ ਕਰੋ</translation>
 <translation id="6955446738988643816">ਪੌਪਅਪ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6955535239952325894">ਇਹ ਸੈਟਿੰਗ ਪ੍ਰਬੰਧਿਤ ਬ੍ਰਾਊਜ਼ਰਾਂ 'ਤੇ ਬੰਦ ਹੈ</translation>
@@ -8883,7 +8883,6 @@
 <translation id="7332053360324989309">ਸਮਰਪਿਤ ਕਰਮਚਾਰੀ: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ</translation>
 <translation id="7333388112938984914">ਮੀਟਰਬੱਧ ਕਨੈਕਸ਼ਨ 'ਤੇ ਹੋਣ ਦੌਰਾਨ ਫ਼ਾਈਲਾਂ ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ।</translation>
-<translation id="7333669215417470379">ਆਪਣੀਆਂ ਐਪਾਂ ਅਤੇ ਸੈਟਿੰਗਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ ਅਤੇ ਇਨ੍ਹਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="7335974957018254119">ਇਹਨਾਂ ਲਈ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਰਤੋ</translation>
 <translation id="7336799713063880535">ਸੂਚਨਾਵਾਂ ਬਲਾਕ ਹਨ।</translation>
 <translation id="7337258336304389677">ਆਪਣੇ ਫ਼ੋਨ ਜਾਂ ਟੈਬਲੈੱਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
@@ -9623,6 +9622,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੀਆਂ ChromeOS ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਦੀ ਆਗਿਆ ਦੇਣਾ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ਜੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਲਈ ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ Android ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। account.google.com 'ਤੇ ਤੁਸੀਂ ਆਪਣਾ ਡਾਟਾ ਦੇਖ ਸਕਦੇ ਹੋ, ਇਸਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ ਅਤੇ ਆਪਣੀਆਂ ਖਾਤਾ ਸੈਟਿੰਗਾਂ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ਨੋਟ ਕਰੋ<ph name="END_BOLD" />: ਕੋਈ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਰਿਕਾਰਡਿੰਗ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਜਾਂ ਤੁਹਾਡੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ। ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ, ਤੁਸੀਂ ਆਪਣੀਆਂ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ "Ok Google" ਨੂੰ ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ ਜਦੋਂ ਇਹ ਡੀਵਾਈਸ ਕਿਸੇ ਪਾਵਰ ਦੇ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਹੋਵੇ।</translation>
+<translation id="7851196412551419054">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7851457902707056880">ਸਾਈਨ-ਇਨ ਨੂੰ ਸਿਰਫ਼ ਮਾਲਕ ਖਾਤੇ ਤੱਕ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਰੀਬੂਟ ਕਰਕੇ ਮਾਲਕ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ। ਮਸ਼ੀਨ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਸਵੈ ਰੀਬੂਟ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="7851716364080026749">ਹਮੇਸ਼ਾਂ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਪਹੁੰਚ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="7851720427268294554">IPP ਪਾਰਸਰ</translation>
@@ -11209,6 +11209,7 @@
 <translation id="8962863356073277855">URL ਫਾਰਮੈਟ https://www.example.com ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="8962918469425892674">ਇਹ ਸਾਈਟ ਮੋਸ਼ਨ ਜਾਂ ਲਾਈਟ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="8963117664422609631">ਸਾਈਟ ਦੀਆਂ ਸੈਟਿੰਗਾਂ 'ਤ ਜਾਓ</translation>
+<translation id="8964927371396953727">ਆਪਣੇ ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ ਪਾਸਵਰਡ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8965037249707889821">ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ</translation>
 <translation id="8966809848145604011">ਹੋਰ ਪ੍ਰੋਫਾਈਲ</translation>
 <translation id="8967427617812342790">ਵਾਚਣ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -11330,7 +11331,6 @@
 <translation id="9032513103438497286">ਇਸ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ। ਐਪਾਂ ਜਾਂ ਸਮੱਗਰੀ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ 'ਤੇ ਪਾਬੰਦੀ ਲਗਾਉਣ ਲਈ, Google Play ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
 <translation id="9033765790910064284">ਫਿਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="9033857511263905942">&amp;ਪੇਸਟ ਕਰੋ</translation>
-<translation id="9034408118624208974">ਕੀ Chromebook 'ਤੇ ਨਵੇਂ ਹੋ? ਆਪਣੀਆਂ ਤਰਜੀਹਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="903480517321259405">ਪਿੰਨ ਦੁਬਾਰਾ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="9036484080057916082">ਹਸਤਾਖਰ ਕੀਤੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਟਾਈਮਸਟੈਂਪ ਸੂਚੀ</translation>
 <translation id="9037054491984310631"><ph name="DEVICE" /> ਨਾਮ ਦੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
@@ -11376,7 +11376,6 @@
 <translation id="9068598199622656904">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟਾਂ ਲਈ ਇੱਕੋ ਸਮੇਂ 'ਤੇ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖਣ ਦੀ ਬਜਾਏ, ਇੱਕ ਵਾਰ ਵਿੱਚ ਇੱਕੋ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="9068878141610261315">ਅਸਮਰਥਿਤ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ</translation>
 <translation id="9069417381769492963">ਤੁਹਾਡੀ ਖੋਜ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਕੋਈ ਬੁੱਕਮਾਰਕ ਨਹੀਂ ਹੈ</translation>
-<translation id="9069665781180028115">ਚੁਣੀਆਂ ਹੋਈਆਂ ਆਈਟਮਾਂ ਇਸ Chromebook 'ਤੇ ਉਪਲਬਧ ਹੋਣਗੀਆਂ। ਜੇ ਤੁਸੀਂ Chromebook 'ਤੇ ਨਵੇਂ ਹੋ, ਤਾਂ ਸਾਰੀਆਂ ਆਈਟਮਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ ਤਾਂ ਜੋ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾਵੇ। ਕਿਸੇ ਵੀ ਸਮੇਂ ਸੈਟਿੰਗਾਂ &gt; ਖਾਤੇ ਵਿੱਚ ਜਾ ਕੇ ਤਬਦੀਲੀਆਂ ਕਰੋ।</translation>
 <translation id="9070231741075992882">ਉਹ ਇਜਾਜ਼ਤਾਂ ਜੋ ਤੁਸੀਂ <ph name="APP_NAME" /> ਲਈ ਦਿੰਦੇ ਹੋ, ਉਨ੍ਹਾਂ ਦੀ ਆਗਿਆ ਇਸ ਦੀਆਂ ਸਥਾਪਤ ਅਤੇ ਸਟ੍ਰੀਮ ਕੀਤੀਆਂ ਐਪਾਂ ਲਈ ਵੀ ਦਿੱਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="9070342919388027491">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>

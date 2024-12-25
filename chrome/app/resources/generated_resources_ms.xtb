@@ -1759,7 +1759,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2209841631181508629">Untuk meneruskan pendaftaran, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi <ph name="FIELDS_STRING" /> anda dengan laman ini. Lihat <ph name="BEGIN_LINK" />syarat perkhidmatan<ph name="END_LINK" /> laman ini.</translation>
 <translation id="2210462644007531147">Tidak dapat menyelesaikan pemasangan</translation>
 <translation id="2211043920024403606">Maklumat profil</translation>
-<translation id="2211245494465528624">Urus pilihan penyegerakan</translation>
 <translation id="221297410904507041">Padamkan sejarah, kuki, cache dan pelbagai lagi</translation>
 <translation id="2213410656650624348">Sederhana</translation>
 <translation id="2214018885812055163">Folder kongsi</translation>
@@ -2756,7 +2755,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="288734198558082692"><ph name="DEVICE" /> dan <ph name="NUMBER_OF_DEVICES" /> yang lain</translation>
 <translation id="2889043468805635730">Tiada masalah ditemukan</translation>
 <translation id="2889064240420137087">Buka pautan dengan...</translation>
-<translation id="2890206081124517553">Ingat latar desktop anda merentas peranti</translation>
 <translation id="2891464434568738544">Tiada laman tersedia pada masa ini. Lawati laman untuk menambahkan laman tersebut pada senarai ini.</translation>
 <translation id="2891922230654533301">Gunakan peranti anda untuk log masuk ke <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Penyemak imbas lalai</translation>
@@ -4121,7 +4119,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3857807444929313943">Angkat jari, kemudian sentuh lagi</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="385939467708172187">Gunakan Kata Laluan Kukuh</translation>
-<translation id="3859987779882450877">Mencadangkan dan membuat kumpulan daripada laman terbuka anda secara automatik</translation>
+<translation id="3859987779882450877">Mencadangkan dan membuat kumpulan daripada tab terbuka anda secara automatik</translation>
 <translation id="386009056910366930">Urus Kumpulan Tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3861852898230054539">Menggunakan kata laluan Google Account pada masa ini. Anda boleh menetapkan kata laluan <ph name="DEVICE_TYPE" /> untuk memudahkan log masuk.</translation>
@@ -4900,7 +4898,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4415748029120993980">Lengkung eliptik SECG secp384r1 (alias NIST P-384)</translation>
 <translation id="4415815425191869676">Sentiasa pastikan laman ini aktif</translation>
 <translation id="4416582610654027550">Taip URL yang sah</translation>
-<translation id="4421932172707401417">Cadangan penulisan berdasarkan gesaan anda dan kandungan halaman web</translation>
+<translation id="4421932172707401417">Cadangan penulisan adalah berdasarkan gesaan anda dan kandungan halaman web</translation>
 <translation id="4421932782753506458">Gebu</translation>
 <translation id="4423376891418188461">Pulihkan Tetapan</translation>
 <translation id="4423525817792153232">Tunjukkan kesemua gigi anda</translation>
@@ -8374,7 +8372,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6949434160682548041">Kata laluan (pilihan)</translation>
 <translation id="6950143189069683062">Butiran Memori</translation>
 <translation id="6950627417367801484">Pulihkan apl</translation>
-<translation id="6954910832698269894">Hidupkan penyegerakan peranti untuk memulihkan apl, tetapan, rangkaian Wi-Fi dan hiasan latar anda daripada Chromebook terdahulu anda. Buat perubahan pada bila-bila masa dalam Tetapan &gt; Akaun.</translation>
 <translation id="6954936693361896459">Hantar tab ini pula</translation>
 <translation id="6955446738988643816">Semak Pop Timbul</translation>
 <translation id="6955535239952325894">Tetapan ini dilumpuhkan pada penyemak imbas terurus</translation>
@@ -8892,7 +8889,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7332053360324989309">Pekerja Khusus: <ph name="SCRIPT_URL" /></translation>
 <translation id="7332138995369063163">Tab pendua</translation>
 <translation id="7333388112938984914">Tidak dapat memuat naik fail semasa disambungkan kepada sambungan bermeter.</translation>
-<translation id="7333669215417470379">Sandarkan dan pulihkan apl dan tetapan anda</translation>
 <translation id="7335974957018254119">Gunakan semak ejaan untuk</translation>
 <translation id="7336799713063880535">Pmberitahuan dsekat.</translation>
 <translation id="7337258336304389677">Gunakan telefon atau tablet anda</translation>
@@ -11342,7 +11338,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9032513103438497286">Sekat apl yang dipasang pada <ph name="DEVICE_TYPE" /> ini. Untuk menyekat muat turun apl atau kandungan, akses Tetapan Google Play.</translation>
 <translation id="9033765790910064284">Teruskan juga</translation>
 <translation id="9033857511263905942">&amp;Tampal</translation>
-<translation id="9034408118624208974">Belum mengetahui selok-belok Chromebook? Hidupkan penyegerakan supaya pilihan anda akan disandarkan.</translation>
 <translation id="903480517321259405">Taip PIN sekali lagi</translation>
 <translation id="9036484080057916082">Senarai Cap Masa Sijil yang Ditandatangani</translation>
 <translation id="9037054491984310631">Disambungkan kepada peranti Bluetooth yang bernama <ph name="DEVICE" /></translation>
@@ -11388,7 +11383,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9068598199622656904">Tekan satu kekunci pada satu masa untuk pintasan papan kekunci dan bukannya menahan kekunci secara serentak.</translation>
 <translation id="9068878141610261315">Jenis fail tidak disokong</translation>
 <translation id="9069417381769492963">Tiada penanda halaman yang sepadan dengan carian anda</translation>
-<translation id="9069665781180028115">Item yang dipilih akan tersedia pada Chromebook ini. Jika anda belum mengetahui selok-belok Chromebook, segerakkan semua item supaya pilihan anda akan disandarkan. Buat perubahan pada bila-bila masa dalam Tetapan &gt; Akaun.</translation>
 <translation id="9070231741075992882">Kebenaran yang anda benarkan untuk <ph name="APP_NAME" /> juga akan dibenarkan untuk apl yang dipasang dan distrim oleh apl tersebut.</translation>
 <translation id="9070342919388027491">Tab dialihkan ke kiri</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -385,6 +385,7 @@
 <translation id="5941830788786076944">Google Chrome ஐ இயல்புநிலை உலாவியாக அமை</translation>
 <translation id="5947104538377036631">Chrome ஷார்ட்கட்</translation>
 <translation id="5953954252731207958">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION" /> அனுமதியை Chrome அகற்றிவிட்டது</translation>
+<translation id="5980111191913430208">அறியப்படாத மூலங்களில் இருந்து பெறும் நீட்டிப்புகள், ஆப்ஸ், தீம்கள் ஆகியவை உங்கள் சாதனத்திற்குத் தீங்கு விளைவிக்கலாம். <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> இல் இருந்து மட்டும் இவற்றை நிறுவும்படி Chrome பரிந்துரைக்கிறது.</translation>
 <translation id="6003112304606738118">பதிவிறக்குகிறது... <ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeமின் கருவிகள்<ph name="END_LINK" /> மூலம் பாதுகாப்பாக உலாவலாம், உங்கள் வசமே கட்டுப்பாட்டை வைத்திருக்கலாம்</translation>
 <translation id="6022659036123304283">Chromeமை உங்களுடையதாக்குங்கள்</translation>
@@ -603,6 +604,7 @@
 <translation id="842386925677997438">Chromeமின் பாதுகாப்புக் கருவிகள்</translation>
 <translation id="8425765582779547329">உங்கள் பெற்றோர் தேர்வுசெய்துள்ள அமைப்புகளுடன் ஆன்லைனில் பாதுகாப்பாக இருக்க, Chromeமில் உள்நுழையுங்கள்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
+<translation id="8429214465555795676">தொடர, <ph name="EMAIL" /> கணக்கின் மூலம் Chromeமில் உள்நுழைய வேண்டும். உங்கள் நிறுவனத்தின் கொள்கைகளுடன் இணங்குவதை இது உறுதிசெய்கிறது.</translation>
 <translation id="8433638294851456451">இதிலிருந்து உங்கள் Android மொபைலுக்கு ஓர் எண்ணை அனுப்ப, இரு சாதனங்களிலும் Chromeமில் உள்நுழையுங்கள்.</translation>
 <translation id="8451192282033883849">உங்கள் கணக்கை <ph name="MANAGER_NAME" /> நிர்வகிக்கிறது. இந்த Chrome உலாவியின் சுயவிவரத்தையும் புக்மார்க்குகள், பதிவுகள், கடவுச்சொற்கள் போன்ற அதன் தரவையும் உங்கள் நிர்வாகி பார்க்கலாம் திருத்தலாம்.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>

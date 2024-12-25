@@ -113,6 +113,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2483889755041906834">V prohlížeči Chromium</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
 <translation id="2513154137948333830">Je vyžadován restart: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Pokud chcete pokračovat, budete se muset do prohlížeče Chromium přihlásit pomocí účtu <ph name="EMAIL" />. Zajistíte tak soulad se zásadami své organizace.</translation>
 <translation id="2542968102051442371">Vyberte text pomocí vyhledávání obrázků</translation>
 <translation id="2554739539410784893">Chromium se pokouší nahradit stávající hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2560420686485554789">Aby bylo možné stahovat soubory, potřebuje Chromium přístup k úložišti</translation>
