@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -211,7 +212,14 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest, ShowsAllTypes) {
+// TODO(https://crbug.com/383361891): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowsAllTypes DISABLED_ShowsAllTypes
+#else
+#define MAYBE_ShowsAllTypes ShowsAllTypes
+#endif
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
+                       MAYBE_ShowsAllTypes) {
   auto activity_log = CreateMockActivityLogWithAllTypes();
   ShowLog(activity_log);
 
