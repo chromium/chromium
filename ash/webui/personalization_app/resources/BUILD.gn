@@ -18,56 +18,53 @@ build_webui("build") {
   # `static_files` are non-js files, e.g. image, html, plain css.
 
   static_files = [
-    "hub_icon_64.png",
+    "css/base.css",
     "hub_icon_128.png",
     "hub_icon_192.png",
     "hub_icon_256.png",
+    "hub_icon_64.png",
     "icon_192.png",
-
-    "index.html",
-
     "images/ambient_mode_disabled.svg",
     "images/ambient_mode_disabled_dark.svg",
     "images/feel_the_breeze.png",
     "images/float_on_by.png",
     "images/google_photos.svg",
-    "images/no_images.svg",
     "images/no_google_photos_images.svg",
     "images/no_google_photos_images_dark.svg",
+    "images/no_images.svg",
     "images/slideshow.png",
-
-    "css/base.css",
+    "index.html",
   ]
 
   web_component_files = [
     "js/ambient/album_list_element.ts",
     "js/ambient/albums_subpage_element.ts",
+    "js/ambient/ambient_duration_element.ts",
     "js/ambient/ambient_preview_large_element.ts",
     "js/ambient/ambient_preview_small_element.ts",
-    "js/ambient/art_album_dialog_element.ts",
-    "js/ambient/ambient_duration_element.ts",
     "js/ambient/ambient_subpage_element.ts",
-    "js/ambient/ambient_zero_state_svg_element.ts",
-    "js/ambient/ambient_weather_element.ts",
     "js/ambient/ambient_theme_item_element.ts",
     "js/ambient/ambient_theme_list_element.ts",
+    "js/ambient/ambient_weather_element.ts",
+    "js/ambient/ambient_zero_state_svg_element.ts",
+    "js/ambient/art_album_dialog_element.ts",
     "js/ambient/toggle_row_element.ts",
     "js/ambient/topic_source_item_element.ts",
     "js/ambient/topic_source_list_element.ts",
     "js/ambient/zero_state_element.ts",
-    "js/keyboard_backlight/keyboard_backlight_element.ts",
-    "js/keyboard_backlight/zone_customization_element.ts",
+    "js/geolocation_dialog.ts",
     "js/keyboard_backlight/color_icon_element.ts",
     "js/keyboard_backlight/color_selector_element.ts",
+    "js/keyboard_backlight/keyboard_backlight_element.ts",
+    "js/keyboard_backlight/zone_customization_element.ts",
+    "js/personalization_breadcrumb_element.ts",
     "js/personalization_main_element.ts",
     "js/personalization_router_element.ts",
     "js/personalization_toast_element.ts",
-    "js/personalization_breadcrumb_element.ts",
-    "js/geolocation_dialog.ts",
-    "js/time_of_day_banner_element.ts",
-    "js/theme/personalization_theme_element.ts",
     "js/theme/color_scheme_icon_svg_element.ts",
     "js/theme/dynamic_color_element.ts",
+    "js/theme/personalization_theme_element.ts",
+    "js/time_of_day_banner_element.ts",
     "js/user/avatar_camera_element.ts",
     "js/user/avatar_list_element.ts",
     "js/user/user_preview_element.ts",
@@ -133,6 +130,7 @@ build_webui("build") {
     "js/utils.ts",
     "js/wallpaper/constants.ts",
     "js/wallpaper/google_photos_metrics_logger.ts",
+    "js/wallpaper/index.ts",
     "js/wallpaper/utils.ts",
     "js/wallpaper/wallpaper_actions.ts",
     "js/wallpaper/wallpaper_controller.ts",
@@ -140,7 +138,6 @@ build_webui("build") {
     "js/wallpaper/wallpaper_observer.ts",
     "js/wallpaper/wallpaper_reducers.ts",
     "js/wallpaper/wallpaper_state.ts",
-    "js/wallpaper/index.ts",
   ]
 
   icons_html_files = [ "common/icons.html" ]
@@ -150,8 +147,8 @@ build_webui("build") {
     "//ash/style/mojom:color_scheme_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.ts",
     "$root_gen_dir/ash/style/mojom/color_scheme.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.ts",
   ]
 
   ts_composite = true

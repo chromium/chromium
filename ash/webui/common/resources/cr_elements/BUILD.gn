@@ -49,13 +49,13 @@ build_webui("build") {
     "cr_container_shadow_mixin.ts",
     "cr_lazy_render/cr_lazy_render.ts",
     "cr_menu_selector/cr_menu_selector.ts",
+    "cr_radio_button/cr_radio_button_mixin.ts",
     "cr_scrollable_mixin.ts",
+    "cr_search_field/cr_search_field_mixin.ts",
     "find_shortcut_mixin.ts",
     "focus_row_mixin.ts",
     "i18n_mixin.ts",
     "list_property_update_mixin.ts",
-    "cr_radio_button/cr_radio_button_mixin.ts",
-    "cr_search_field/cr_search_field_mixin.ts",
     "policy/cr_policy_indicator_mixin.ts",
     "store_client/store_client.ts",
     "web_ui_listener_mixin.ts",
@@ -65,7 +65,6 @@ build_webui("build") {
 
   css_files = [
     "action_link.css",
-    "cros_color_overrides.css",
     "cr_actionable_row_style.css",
     "cr_hidden_style.css",
     "cr_icons.css",
@@ -75,6 +74,7 @@ build_webui("build") {
     "cr_radio_button/cr_radio_button_style.css",
     "cr_shared_style.css",
     "cr_shared_vars.css",
+    "cros_color_overrides.css",
     "md_select.css",
     "search_highlight_style.css",
   ]

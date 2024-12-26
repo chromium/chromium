@@ -9,9 +9,9 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 build_webui("build") {
   static_files = [
-    "index.html",
     "app_icon_192.png",
     "app_icon_256.png",
+    "index.html",
   ]
 
   web_component_files = [ "connectivity_diagnostics.ts" ]

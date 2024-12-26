@@ -15,9 +15,9 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
-    "view/info_card/info_card.ts",
     "view/info_card/cpu_card.ts",
     "view/info_card/fan_card.ts",
+    "view/info_card/info_card.ts",
     "view/info_card/memory_card.ts",
     "view/info_card/power_card.ts",
     "view/info_card/thermal_card.ts",

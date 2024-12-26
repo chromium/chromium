@@ -11,8 +11,8 @@ build_webui("build") {
   grd_prefix = "ash_scanner_feedback_ui"
 
   static_files = [
-    "index.html",
     "index.css",
+    "index.html",
   ]
 
   web_component_files = [ "app.ts" ]

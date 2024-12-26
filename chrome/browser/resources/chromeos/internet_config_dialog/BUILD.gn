@@ -27,10 +27,10 @@ build_webui("build") {
     optimize_webui_host = "internet-config-dialog"
     optimize_webui_in_files = [ "internet_config_dialog.js" ]
     optimize_webui_excludes = [
+      "chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
       "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js",
-      "chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js",
     ]
   }
 
