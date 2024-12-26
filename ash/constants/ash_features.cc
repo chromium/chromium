@@ -1764,12 +1764,6 @@ BASE_FEATURE(kLockScreenHideSensitiveNotificationsSupport,
              "LockScreenHideSensitiveNotificationsSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables inline reply on notifications on the lock screen.
-// This option is effective when |kLockScreenNotification| is enabled.
-BASE_FEATURE(kLockScreenInlineReply,
-             "LockScreenInlineReply",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables notifications on the lock screen.
 BASE_FEATURE(kLockScreenNotifications,
              "LockScreenNotifications",
@@ -3972,10 +3966,6 @@ bool AreGameDashboardUtilitiesEnabled() {
 
 bool IsAppLaunchShortcutEnabled() {
   return base::FeatureList::IsEnabled(kAppLaunchShortcut);
-}
-
-bool IsLockScreenInlineReplyEnabled() {
-  return base::FeatureList::IsEnabled(kLockScreenInlineReply);
 }
 
 bool IsLockScreenNotificationsEnabled() {
