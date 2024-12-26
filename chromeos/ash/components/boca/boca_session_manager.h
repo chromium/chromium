@@ -45,6 +45,7 @@ class BocaSessionManager
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
+  inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
   inline static constexpr char kPollingResultHistName[] =
       "Ash.Boca.PollingResult";
 
@@ -178,6 +179,10 @@ class BocaSessionManager
 
   SessionClientImpl* session_client_impl() { return session_client_impl_; }
 
+  base::OneShotTimer& session_duration_timer_for_testing() {
+    return session_duration_timer_;
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -199,6 +204,10 @@ class BocaSessionManager
   void NotifySessionCaptionConfigUpdate();
   void NotifyRosterUpdate();
   void NotifyConsumerActivityUpdate();
+  void HandleSessionUpdate(std::unique_ptr<::boca::Session> previous_session,
+                           std::unique_ptr<::boca::Session> current_session,
+                           bool dispatch_event);
+  void UpdateLocalSessionDurationTracker();
 
   const bool is_producer_;
   bool is_app_opened_ = false;
@@ -209,7 +218,17 @@ class BocaSessionManager
   base::RepeatingTimer in_session_timer_;
   // Timer used for indefinite session polling.
   base::RepeatingTimer indefinite_timer_;
+  // Timer used for tracking session duration on client. This is to make sure we
+  // still end the session in time if device lose network access.
+  base::OneShotTimer session_duration_timer_;
   base::TimeTicks last_session_load_;
+  // Tracking session start time from remote. Use remote session start time
+  // instead of local timesticks since device don't always join when session
+  // start. The calculation used by this time will be subject to device drift,
+  // but is in sync with the UI remaining time.
+  base::Time last_session_start_time_;
+  base::TimeDelta last_session_duration_;
+
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;
   bool is_network_connected_ = false;

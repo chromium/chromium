@@ -10,6 +10,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -202,13 +203,10 @@ void BocaSessionManager::UpdateCurrentSession(
     HandleTakeOver(dispatch_event, std::move(session));
     return;
   }
-  previous_session_ = std::move(current_session_);
-  current_session_ = std::move(session);
-  last_session_load_ = base::TimeTicks::Now();
 
-  if (dispatch_event) {
-    DispatchEvent();
-  }
+  last_session_load_ = base::TimeTicks::Now();
+  HandleSessionUpdate(std::move(current_session_), std::move(session),
+                      /*dispatch_event=*/true);
 }
 
 ::boca::Session* BocaSessionManager::GetCurrentSession() {
@@ -361,16 +359,9 @@ void BocaSessionManager::RecordPollingResult(
 void BocaSessionManager::HandleTakeOver(
     bool dispatch_event,
     std::unique_ptr<::boca::Session> session) {
-  previous_session_ = std::move(current_session_);
-  current_session_ = nullptr;
-  if (dispatch_event) {
-    DispatchEvent();
-  }
-  previous_session_ = nullptr;
-  current_session_ = std::move(session);
-  if (dispatch_event) {
-    DispatchEvent();
-  }
+  HandleSessionUpdate(std::move(current_session_), nullptr,
+                      /*dispatch_event=*/true);
+  HandleSessionUpdate(nullptr, std::move(session), /*dispatch_event=*/true);
 }
 
 void BocaSessionManager::DispatchEvent() {
@@ -497,6 +488,52 @@ void BocaSessionManager::NotifyConsumerActivityUpdate() {
       }
       return;
     }
+  }
+}
+
+void BocaSessionManager::HandleSessionUpdate(
+    std::unique_ptr<::boca::Session> previous_session,
+    std::unique_ptr<::boca::Session> current_session,
+    bool dispatch_event) {
+  previous_session_ = std::move(previous_session);
+  current_session_ = std::move(current_session);
+  UpdateLocalSessionDurationTracker();
+  if (dispatch_event) {
+    DispatchEvent();
+  }
+}
+
+void BocaSessionManager::UpdateLocalSessionDurationTracker() {
+  // Update timer to track session duration on client side.
+  if (IsSessionActive(current_session_.get())) {
+    if (!IsSessionActive(previous_session_.get())) {
+      const auto nanos = current_session_->start_time().nanos();
+      const auto seconds = current_session_->start_time().seconds();
+      last_session_start_time_ = base::Time::FromSecondsSinceUnixEpoch(
+          seconds +
+          static_cast<double>(nanos) / base::Time::kNanosecondsPerSecond);
+    }
+    base::TimeDelta current_session_duration =
+        base::Seconds(current_session_.get()->duration().seconds());
+    // Update session duration to 0 should never happen, this is just sanity
+    // check to ensure backwards compatibility.
+    if (current_session_duration != base::Seconds(0) &&
+        current_session_duration != last_session_duration_) {
+      last_session_duration_ = current_session_duration;
+      base::TimeDelta session_remaining =
+          last_session_start_time_ + last_session_duration_ - base::Time::Now();
+      session_duration_timer_.Start(
+          // Add buffer to account for device drift. It's ok if we slightly
+          // delay sign out after session end when network is lost.
+          FROM_HERE,
+          session_remaining +
+              base::Seconds(kLocalSessionTrackerBufferInSeconds),
+          base::BindOnce(&BocaSessionManager::UpdateCurrentSession,
+                         base::Unretained(this), /*session=*/nullptr,
+                         /*dispatch_event=*/true));
+    }
+  } else {
+    session_duration_timer_.Stop();
   }
 }
 
