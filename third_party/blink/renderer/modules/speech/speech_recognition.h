@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_mode.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -86,12 +87,8 @@ class MODULES_EXPORT SpeechRecognition final
   void setMaxAlternatives(unsigned max_alternatives) {
     max_alternatives_ = max_alternatives;
   }
-  void setLocalService(bool local_service) { local_service_ = local_service; }
-  bool localService() const { return local_service_; }
-  void setAllowCloudFallback(bool allow_cloud_fallback) {
-    allow_cloud_fallback_ = allow_cloud_fallback;
-  }
-  bool allowCloudFallback() const { return allow_cloud_fallback_; }
+  V8SpeechRecognitionMode mode() const { return mode_; }
+  void setMode(const V8SpeechRecognitionMode& mode) { mode_ = mode; }
 
   // Callable by the user. Methods may be called after the execution context is
   // destroyed.
@@ -163,8 +160,8 @@ class MODULES_EXPORT SpeechRecognition final
   bool continuous_ = false;
   bool interim_results_ = false;
   uint32_t max_alternatives_ = 1;
-  bool local_service_ = true;
-  bool allow_cloud_fallback_ = true;
+  V8SpeechRecognitionMode mode_ = V8SpeechRecognitionMode{
+      V8SpeechRecognitionMode::Enum::kOndevicePreferred};
 
   Member<SpeechRecognitionController> controller_;
   bool started_ = false;

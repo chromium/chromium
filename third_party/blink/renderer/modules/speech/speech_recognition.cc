@@ -347,11 +347,15 @@ void SpeechRecognition::StartController(
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
-  controller_->Start(std::move(session_receiver), std::move(session_client),
-                     *grammars_, lang_, continuous_, interim_results_,
-                     max_alternatives_, local_service_, allow_cloud_fallback_,
-                     std::move(audio_forwarder_receiver),
-                     std::move(audio_parameters));
+  controller_->Start(
+      std::move(session_receiver), std::move(session_client), *grammars_, lang_,
+      continuous_, interim_results_, max_alternatives_,
+      /*on_device=*/
+      (mode_ == V8SpeechRecognitionMode::Enum::kOndevicePreferred ||
+       mode_ == V8SpeechRecognitionMode::Enum::kOndeviceOnly),
+      /*allow_cloud_fallback=*/
+      (mode_ != V8SpeechRecognitionMode::Enum::kOndeviceOnly),
+      std::move(audio_forwarder_receiver), std::move(audio_parameters));
 }
 
 SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)
