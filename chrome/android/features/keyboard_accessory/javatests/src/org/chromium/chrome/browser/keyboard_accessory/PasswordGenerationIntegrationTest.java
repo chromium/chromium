@@ -41,13 +41,13 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -94,8 +94,9 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        PasswordManagerTestHelper.setAccountForPasswordStore(TestAccounts.ACCOUNT1.getEmail());
-        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
+        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManualFillingTestHelper.disableServerPredictions();
 
         runOnUiThreadBlocking(
