@@ -4179,11 +4179,6 @@ bool IsOsSettingsDeprecateDnsDialogEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsDeprecateDnsDialog);
 }
 
-bool IsOsSettingsRevampWayfindingEnabled() {
-  // TODO(crbug.com/370836442): remove after all code cleanup is done.
-  return true;
-}
-
 bool IsOsSyncConsentRevampEnabled() {
   return base::FeatureList::IsEnabled(kOsSyncConsentRevamp);
 }

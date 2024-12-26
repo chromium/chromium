@@ -183,11 +183,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-  html_source->AddBoolean("isRevampWayfindingEnabled", kIsRevampEnabled);
-  html_source->AddString("chromeRefresh2023Attribute",
-                         kIsRevampEnabled ? "chrome-refresh-2023" : "");
+  html_source->AddString("chromeRefresh2023Attribute", "chrome-refresh-2023");
 
   auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
   html_source->AddBoolean("isGuest", IsGuestModeActive(user));

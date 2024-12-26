@@ -1260,7 +1260,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDisplaySizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeSplitModifierKeyboardInfoEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeInputMethodsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsDeprecateDnsDialogEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsRevampWayfindingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSyncConsentRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsParentAccessJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPasswordlessGaiaEnabledForConsumers();
