@@ -18,8 +18,5 @@ const char kMoreThanOneActivity[] =
 const char kMoreThanOneMethodData[] =
     "At most one payment method specific data is supported.";
 
-const char kUnableToConnectToAsh[] =
-    "Cannot connect to the OS from Lacros browser.";
-
 }  // namespace errors
 }  // namespace payments
