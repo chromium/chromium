@@ -102,6 +102,18 @@ using set_up_list_prefs::SetUpListItemState;
       .complete;
 }
 
++ (BOOL)setUpListItemDockingInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kDockingItemID)
+      .complete;
+}
+
++ (BOOL)setUpListItemAddressBarInMagicStackIsComplete {
+  return ntp_home::SetUpListItemViewInMagicStackWithAccessibilityId(
+             set_up_list::kAddressBarItemID)
+      .complete;
+}
+
 + (NSString*)setUpListTitle {
   return content_suggestions::SetUpListTitleString();
 }
