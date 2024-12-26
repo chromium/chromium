@@ -14,3 +14,11 @@ per-file recording_service_browsertest.cc=file://ash/capture_mode/OWNERS
 per-file thumbnail_loader*=file://chrome/browser/ui/ash/holding_space/OWNERS
 per-file system_tray_tray_cast_browsertest_media_router_chromeos.cc=file://chrome/browser/media/router/discovery/access_code/OWNERS
 per-file annotator_client_impl_browsertest.cc=file://ash/webui/annotator/OWNERS
+
+# We're trying to avoid taking new dependencies on ash. But when they
+# happen, we want the chrome-side review to be easy for OWNERS there,
+# leaving the ash-side to approve or reject the new dependency.
+per-file DEPS=set noparent
+per-file DEPS=file://chrome/browser/ash/REFACTORING_OWNERS
+per-file .../DEPS=set noparent
+per-file .../DEPS=file://chrome/browser/ash/REFACTORING_OWNERS
