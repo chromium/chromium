@@ -123,6 +123,12 @@ class IpProtectionCoreHost
   FRIEND_TEST_ALL_PREFIXES(IpProtectionCoreHostUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
 
+  // Creating a generic callback in order for `RequestOAuthToken()` to work for
+  // `TryGetAuthTokens()` and `GetProxyConfig()`.
+  using RequestOAuthTokenInternalCallback =
+      base::OnceCallback<void(GoogleServiceAuthError error,
+                              signin::AccessTokenInfo access_token_info)>;
+
   // Set up `ip_protection_proxy_config_fetcher_` and
   // `ip_protection_token_fetcher_` if
   // not already initialized. This accomplishes lazy loading of these components
@@ -153,12 +159,6 @@ class IpProtectionCoreHost
       ip_protection::TryGetAuthTokensResult result,
       std::optional<base::TimeDelta> duration = std::nullopt);
 
-  // Creating a generic callback in order for `RequestOAuthToken()` to work for
-  // `TryGetAuthTokens()` and `GetProxyConfig()`.
-  using RequestOAuthTokenInternalCallback =
-      base::OnceCallback<void(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info)>;
-
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user. This method must only be called when
   // `CanRequestOAuthToken()` returns true.
@@ -172,6 +172,22 @@ class IpProtectionCoreHost
   // Returns whether IP Protection should be disabled for managed users and/or
   // devices.
   bool ShouldDisableIpProtectionForManaged();
+
+  // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
+  // ignore any previously sent `try_again_after` times.
+  void InvalidateNetworkContextTryAgainAfterTime();
+
+  // IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
+
+  // TrackingProtectionSettingsObserver:
+  void OnIpProtectionEnabledChanged() override;
 
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
@@ -192,22 +208,6 @@ class IpProtectionCoreHost
   // NOTE: If this is used in any `GetForProfile()` call, ensure that there is a
   // corresponding dependency (if needed) registered in the factory class.
   raw_ptr<Profile> profile_;
-
-  // Instruct the `IpProtectionConfigCache()`(s) in the Network Service to
-  // ignore any previously sent `try_again_after` times.
-  void InvalidateNetworkContextTryAgainAfterTime();
-
-  // IdentityManager::Observer:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error,
-      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
-      override;
-
-  // TrackingProtectionSettingsObserver:
-  void OnIpProtectionEnabledChanged() override;
 
   std::unique_ptr<ip_protection::IpProtectionProxyConfigDirectFetcher>
       ip_protection_proxy_config_fetcher_;
