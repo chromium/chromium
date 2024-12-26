@@ -456,8 +456,8 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   if (change_list.size() != 1) {
     string err_msg = base::StringPrintf("Received %d theme changes: ",
                                         static_cast<int>(change_list.size()));
-    for (size_t i = 0; i < change_list.size(); ++i) {
-      base::StringAppendF(&err_msg, "[%s] ", change_list[i].ToString().c_str());
+    for (const auto& i : change_list) {
+      base::StringAppendF(&err_msg, "[%s] ", i.ToString().c_str());
     }
     return syncer::ModelError(FROM_HERE, err_msg);
   }

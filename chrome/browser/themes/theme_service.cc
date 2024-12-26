@@ -484,9 +484,9 @@ void ThemeService::RemoveUnusedThemes() {
   // are installed but not loaded because they are blocked by a management
   // policy provider.
 
-  for (size_t i = 0; i < remove_list.size(); ++i) {
-    service->UninstallExtension(
-        remove_list[i], extensions::UNINSTALL_REASON_ORPHANED_THEME, nullptr);
+  for (const auto& i : remove_list) {
+    service->UninstallExtension(i, extensions::UNINSTALL_REASON_ORPHANED_THEME,
+                                nullptr);
   }
 }
 

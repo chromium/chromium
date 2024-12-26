@@ -452,12 +452,12 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   std::vector<std::pair<int, SkColor>> normal;
   int xy = 0;
   SkColor color = rep3.GetBitmap().getColor(xy, xy);
-  normal.push_back(std::make_pair(xy, color));
+  normal.emplace_back(xy, color);
   for (xy = 0; xy < 40; ++xy) {
     SkColor next_color = rep3.GetBitmap().getColor(xy, xy);
     if (next_color != color) {
       color = next_color;
-      normal.push_back(std::make_pair(xy, color));
+      normal.emplace_back(xy, color);
     }
   }
   EXPECT_EQ(static_cast<size_t>(9), normal.size());
@@ -469,9 +469,9 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   EXPECT_EQ(120, rep4.GetBitmap().height());
   // We expect the same colors and at locations scaled by 2
   // since this bitmap was scaled by 2.
-  for (size_t i = 0; i < normal.size(); ++i) {
-    xy = 2 * normal[i].first;
-    color = normal[i].second;
+  for (auto& i : normal) {
+    xy = 2 * i.first;
+    color = i.second;
     EXPECT_EQ(color, rep4.GetBitmap().getColor(xy, xy));
   }
 }
