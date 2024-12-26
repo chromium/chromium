@@ -670,6 +670,10 @@ public class FeedSurfaceMediator
 
                                             // Null if the stream has not been binded yet.
                                             if (mCoordinator.getHybridListRenderer() != null
+                                                    && mCoordinator
+                                                                    .getHybridListRenderer()
+                                                                    .getListLayoutHelper()
+                                                            != null
                                                     && mPositionToRestore
                                                             != RecyclerView.NO_POSITION
                                                     && mGetRestoringStateSupplier.get()
