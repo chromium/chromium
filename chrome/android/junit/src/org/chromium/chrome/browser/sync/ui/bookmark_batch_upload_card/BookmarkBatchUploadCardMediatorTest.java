@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -46,11 +45,7 @@ import java.util.Set;
 
 /** Unit tests for {@link BookmarkBatchUploadCardMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP
-})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class BookmarkBatchUploadCardMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

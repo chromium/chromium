@@ -117,7 +117,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
@@ -284,14 +283,9 @@ public class ManageSyncSettingsTest {
                         Arrays.asList(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE,
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE,
-                                ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
-            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE);
-        }
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)) {
-            expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE);
-        }
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE,
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE,
+                                ManageSyncSettings.PREF_ACCOUNT_SECTION_READING_LIST_TOGGLE));
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE);
