@@ -12,6 +12,8 @@ static_library("arc") {
     "app/arc_app_launch_notifier.h",
     "appfuse/arc_appfuse_bridge.cc",
     "appfuse/arc_appfuse_bridge.h",
+    "arc_dlc_install_notification/arc_dlc_install_notification_manager.cc",
+    "arc_dlc_install_notification/arc_dlc_install_notification_manager.h",
     "audio/arc_audio_bridge.cc",
     "audio/arc_audio_bridge.h",
     "bluetooth/bluetooth_type_converters.cc",
@@ -129,6 +131,7 @@ static_library("arc") {
     "//ash/style",
     "//ash/style/mojom:color_scheme_shared_cpp_sources",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/arc:arc_proto",
@@ -170,6 +173,7 @@ static_library("arc") {
     "//content/public/browser",
     "//media/capture:capture_lib",
     "//third_party/re2",
+    "//ui/base",
     "//ui/base/ime/ash",
     "//ui/chromeos:chromeos",
     "//ui/chromeos/strings",
@@ -178,6 +182,7 @@ static_library("arc") {
     "//ui/display/manager",
     "//ui/display/util",
     "//ui/events/ozone",
+    "//ui/message_center",
     "//ui/wm/public",
   ]
 
@@ -423,6 +428,7 @@ source_set("unit_tests") {
   sources = [
     "app/arc_app_launch_notifier_unittest.cc",
     "appfuse/arc_appfuse_bridge_unittest.cc",
+    "arc_dlc_install_notification/arc_dlc_install_notification_manager_unittest.cc",
     "arc_features_parser_unittest.cc",
     "arc_util_unittest.cc",
     "audio/arc_audio_bridge_unittest.cc",
@@ -504,6 +510,7 @@ source_set("unit_tests") {
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/session_manager/core:core",
+    "//components/strings:components_strings_grit",
     "//components/user_manager",
     "//components/user_manager:test_support",
     "//components/user_prefs/test:test_support",

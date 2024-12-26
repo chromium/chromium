@@ -105,6 +105,7 @@ static_library("session") {
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/common",
     "//chrome/common:channel_info",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/arc:arcvm_data_migrator_proto_lib",
     "//chromeos/ash/components/dbus/cdm_factory_daemon",

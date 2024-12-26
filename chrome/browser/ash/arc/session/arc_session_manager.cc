@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/app/arc_app_constants.h"
+#include "ash/components/arc/arc_dlc_install_notification/arc_dlc_install_notification_manager.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -21,6 +22,7 @@
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/serial_number_util.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_pai_starter.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/arc/arc_demo_mode_delegate_impl.h"
+#include "chrome/browser/ash/arc/arc_dlc_install_notification_delegate_impl.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_mount_provider.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -64,6 +67,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -857,6 +861,18 @@ void ArcSessionManager::Initialize() {
     SetUserInfo();
   }
 
+  if (const AccountId* account_id = ash::AnnotatedAccountId::Get(profile_)) {
+    auto delegate =
+        std::make_unique<arc::ArcDlcInstallNotificationManagerDelegateImpl>(
+            profile_);
+    arc_dlc_install_notification_manager_ =
+        std::make_unique<arc::ArcDlcInstallNotificationManager>(
+            std::move(delegate), *account_id);
+  } else {
+    // TODO to clean up later.
+    CHECK_IS_TEST();
+  }
+
   // Create the support host at initialization. Note that, practically,
   // ARC support Chrome app is rarely used (only opt-in and re-auth flow).
   // So, it may be better to initialize it lazily.
@@ -916,6 +932,7 @@ void ArcSessionManager::Shutdown() {
   pai_starter_.reset();
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
+  arc_dlc_install_notification_manager_.reset();
   profile_ = nullptr;
   state_ = State::NOT_INITIALIZED;
   if (scoped_opt_in_tracker_) {
@@ -1980,6 +1997,13 @@ void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
                "from DLC.";
     dlcservice::InstallRequest install_request;
     install_request.set_id(kArcvmDlcId);
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. arc_vm preload will start during a reboot or
+    // when the Chrome session is restarted.
+    if (arc_dlc_install_notification_manager_) {
+      arc_dlc_install_notification_manager_->Show(
+          NotificationType::kArcVmPreloadStarted);
+    }
     ash::DlcserviceClient::Get()->Install(
         install_request,
         base::BindOnce(&ArcSessionManager::OnDlcInstalled,
@@ -1996,6 +2020,14 @@ void ArcSessionManager::OnDlcInstalled(
     std::deque<JobDesc> jobs,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. A notification will be sent requesting the
+    // user to log out and log back in to use the VPN apps on Flex once the
+    // installation is complete.
+    if (arc_dlc_install_notification_manager_) {
+      arc_dlc_install_notification_manager_->Show(
+          NotificationType::kArcVmPreloadSucceeded);
+    }
     jobs.emplace_front(JobDesc{
         kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
     ConfigureUpstartJobs(
@@ -2004,6 +2036,13 @@ void ArcSessionManager::OnDlcInstalled(
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "Failed to install arcvm DLC: " << install_result.error;
+    // arc_dlc_install_notification_manager_ will be available only after the
+    // primary user has logged in. An error notification will be sent if the DLC
+    // preload fails.
+    if (arc_dlc_install_notification_manager_) {
+      arc_dlc_install_notification_manager_->Show(
+          NotificationType::kArcVmPreloadFailed);
+    }
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
