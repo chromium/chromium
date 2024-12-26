@@ -16,11 +16,11 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {getTemplate} from './searchbox.html.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
+import {SideType} from './searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
 
 interface Input {
@@ -110,6 +110,12 @@ export class SearchboxElement extends SearchboxElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('searchboxMatchSearchboxTheme'),
         reflectToAttribute: true,
+      },
+
+      /** The aria description to include on the input element. */
+      searchboxAriaDescription: {
+        type: String,
+        value: '',
       },
 
       /** Whether the Google Lens icon should be visible in the searchbox. */
@@ -503,7 +509,7 @@ export class SearchboxElement extends SearchboxElementBase {
       if (loadTimeData.getBoolean('reportMetrics')) {
         const metricsReporter = MetricsReporterImpl.getInstance();
         if (!metricsReporter.hasLocalMark('CharTyped')) {
-            metricsReporter.mark('CharTyped');
+          metricsReporter.mark('CharTyped');
         }
       }
 

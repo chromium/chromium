@@ -277,7 +277,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     });
     this.eventTracker_.add(
         document, 'pointermove', this.updateCursorPosition.bind(this));
-
     this.performanceTracker.startSession();
   }
 
@@ -549,6 +548,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const g = parseInt(hex.substring(3, 5), 16);
     const b = parseInt(hex.substring(5, 7), 16);
     return `${r}, ${g}, ${b}`;
+  }
+
+  private getSearchboxAriaDescription(): string {
+    // Get the the text from the ghost loader to add to the searchbox aria
+    // description.
+    return this.$.searchboxGhostLoader.getText();
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {

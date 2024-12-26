@@ -197,8 +197,16 @@
         on-click="onBackArrowClick" aria-label="$i18n{backButton}">
     </cr-icon-button>
   </template>
-  <cr-searchbox id="searchbox" placeholder-text="{{placeholderText}}"></cr-searchbox>
-  <cr-searchbox-ghost-loader show-error-state="{{showErrorState}}"></cr-searchbox-ghost-loader>
+  <cr-searchbox
+    id="searchbox"
+    placeholder-text="{{placeholderText}}"
+    searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]"
+  >
+  </cr-searchbox>
+  <cr-searchbox-ghost-loader
+      id="searchboxGhostLoader"
+      show-error-state="{{showErrorState}}">
+  </cr-searchbox-ghost-loader>
 </div>
 
 <!-- Network error UI that is initially hidden -->

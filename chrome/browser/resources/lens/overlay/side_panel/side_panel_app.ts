@@ -17,6 +17,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loader.js';
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 import {handleEscapeSearchbox, onSearchboxKeydown} from '../searchbox_utils.js';
@@ -36,6 +37,7 @@ export interface LensSidePanelAppElement {
     ghostLoader: SidePanelGhostLoaderElement,
     networkErrorPage: HTMLDivElement,
     searchbox: SearchboxElement,
+    searchboxGhostLoader: SearchboxGhostLoaderElement,
   };
 }
 
@@ -269,6 +271,12 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private computePlaceholderText(): string {
     return this.isContextualSearchbox ? this.i18n('searchBoxHintContextual') :
                                         '';
+  }
+
+  private getSearchboxAriaDescription(): string {
+    // Get the the text from the ghost loader to add to the searchbox aria
+    // description.
+    return this.$.searchboxGhostLoader.getText();
   }
 
   private suppressGhostLoader_() {
