@@ -255,6 +255,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - Private
 
 - (void)stopManageAccountsCoordinator {
+  _manageAccountsCoordinator.delegate = nil;
   [_manageAccountsCoordinator stop];
   _manageAccountsCoordinator = nil;
 }
@@ -470,7 +471,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showAccountsPage {
-  CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
+  // Stopping the manage accounts coordinator if it’s already opened. See
+  // crbug.com/383373460
+  [self stopManageAccountsCoordinator];
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
