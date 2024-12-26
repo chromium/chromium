@@ -288,6 +288,7 @@
 -external/wpt/css/css-inline/baseline-source/baseline-source-first-textarea-002.tentative.html
 -external/wpt/css/css-inline/baseline-source/baseline-source-last-textarea-002.tentative.html
 -external/wpt/css/css-inline/initial-letter/*
+-external/wpt/css/css-inline/text-box-trim/text-box-trim-initial-letter-end-001.html
 -external/wpt/css/css-layout-api/baseline/orthogonal-baseline.https.html
 -external/wpt/css/css-layout-api/fallback-intrinsic-sizes/constructor-error.https.html
 -external/wpt/css/css-layout-api/fallback-layout/constructor-error.https.html
@@ -299,6 +300,7 @@
 -external/wpt/css/css-lists/li-insert-child.html
 -external/wpt/css/css-lists/list-marker-with-lineheight-and-overflow-hidden-001.html
 -external/wpt/css/css-lists/list-style-type-string-005b.html
+-external/wpt/css/css-masking/clip-path/clip-path-inline-001.html
 -external/wpt/css/css-masking/clip-path/clip-path-inline-002.html
 -external/wpt/css/css-masking/clip-path/clip-path-inline-003.html
 -external/wpt/css/css-masking/clip-path/clip-path-inline-004.html
@@ -410,6 +412,7 @@
 -external/wpt/css/css-pseudo/target-text-shadow-vertical.html
 -external/wpt/css/css-ruby/block-ruby-003.html
 -external/wpt/css/css-ruby/ruby-inlinize-recursive-simple.html
+-external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html
 -external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html
 -external/wpt/css/css-scoping/css-scoping-shadow-host-rule.html
 -external/wpt/css/css-scoping/css-scoping-shadow-root-hides-children.html
