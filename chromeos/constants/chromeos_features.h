@@ -159,7 +159,6 @@ bool IsGeminiAppPreinstallFeatureManagementEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsGeminiAppPreinstallEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsJellyEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsJellyrollEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMahiEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMahiSendingUrl();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMahiManagedEnabled();

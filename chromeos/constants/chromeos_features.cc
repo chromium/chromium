@@ -458,12 +458,6 @@ bool IsJellyEnabled() {
   return base::FeatureList::IsEnabled(kJelly);
 }
 
-bool IsJellyrollEnabled() {
-  // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
-  // this to behave.
-  return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
-}
-
 // Sparkly depends on Mahi, so we turn on Mahi if the sparky flag is enabled.
 // Sparky doesn't work on LACROS so that case is ignored.
 bool IsMahiEnabled() {
