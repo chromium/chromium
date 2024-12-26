@@ -2664,7 +2664,18 @@ TEST_F(PrivacySandboxServiceTest, RecordPrivacySandbox4StartupMetrics_APIs) {
 
 class PrivacySandboxNoticeActionToStorageTests
     : public PrivacySandboxServiceTest,
-      public testing::WithParamInterface<NoticeTestingParameters> {};
+      public testing::WithParamInterface<NoticeTestingParameters> {
+ public:
+  PrivacySandboxNoticeActionToStorageTests() {
+    feature_list()->Reset();
+    feature_list()->InitWithFeaturesAndParameters(
+        /*enabled_features=*/{GetParam().feature_flag,
+                              {privacy_sandbox::
+                                   kPsDualWritePrefsToNoticeStorage,
+                               {}}},
+        /*disabled_features=*/{});
+  }
+};
 
 using TopicsConsentTest = PrivacySandboxNoticeActionToStorageTests;
 using NoticeAckTest = PrivacySandboxNoticeActionToStorageTests;
@@ -2672,13 +2683,6 @@ using NoticeShownTest = PrivacySandboxNoticeActionToStorageTests;
 using NoticeSettingsTest = PrivacySandboxNoticeActionToStorageTests;
 
 TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
-  feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{GetParam().feature_flag,
-                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
-                             {}}},
-      /*disabled_features=*/{});
-
   // Show then OptIn
   privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
                                                   GetParam().surface_type);
@@ -2700,13 +2704,6 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
 }
 
 TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
-  feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{GetParam().feature_flag,
-                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
-                             {}}},
-      /*disabled_features=*/{});
-
   // Show then OptOut
   privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown,
                                                   GetParam().surface_type);
@@ -2728,13 +2725,6 @@ TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
 }
 
 TEST_P(NoticeShownTest, NoticeShownUpdateNoticeStorage) {
-  feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{GetParam().feature_flag,
-                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
-                             {}}},
-      /*disabled_features=*/{});
-
   privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
                                                   GetParam().surface_type);
 
@@ -2744,13 +2734,6 @@ TEST_P(NoticeShownTest, NoticeShownUpdateNoticeStorage) {
 }
 
 TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
-  feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{GetParam().feature_flag,
-                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
-                             {}}},
-      /*disabled_features=*/{});
-
   // Show then ack
   privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
                                                   GetParam().surface_type);
@@ -2772,13 +2755,6 @@ TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
 }
 
 TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
-  feature_list()->Reset();
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{GetParam().feature_flag,
-                            {privacy_sandbox::kPsDualWritePrefsToNoticeStorage,
-                             {}}},
-      /*disabled_features=*/{});
-
   // Show then open settings
   privacy_sandbox_service()->PromptActionOccurred(GetParam().shown_type,
                                                   GetParam().surface_type);
