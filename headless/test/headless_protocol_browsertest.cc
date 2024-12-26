@@ -650,6 +650,12 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "--screen-info={devicePixelRatio=3.0}")
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenWorkArea,
+    "sanity/screen-work-area.js",
+    "--screen-info={ workAreaLeft=100 workAreaRight=100"
+    " workAreaTop=100 workAreaBottom=100 }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     ScreenSizeOrientation,
     "sanity/screen-size-orientation.js",
     "--screen-info={600x800}")

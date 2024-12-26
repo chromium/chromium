@@ -86,9 +86,15 @@ HeadlessScreen::HeadlessScreen(const gfx::Size& window_size,
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
     display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
+
+    if (!it.work_area_insets.IsEmpty()) {
+      display.UpdateWorkAreaFromInsets(it.work_area_insets);
+    }
+
     if (it.is_internal) {
       internal_display_ids.insert(display.id());
     }
+
     is_natural_landscape_map_.insert({display.id(), display.is_landscape()});
     ProcessDisplayChanged(display, is_primary);
     is_primary = false;
