@@ -330,7 +330,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that the alert is shown and filled when an affiliated site contains the
 // plus address during the creation.
-- (void)testAffiliationError {
+//
+// TODO(crbug.com/386193395): This test is flaky.
+- (void)FLAKY_testAffiliationError {
   [PlusAddressAppInterface setShouldReturnAffiliatedPlusProfileOnConfirm:YES];
   [self openCreatePlusAddressBottomSheet];
 
