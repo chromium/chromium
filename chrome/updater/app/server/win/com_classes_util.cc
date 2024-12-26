@@ -149,49 +149,32 @@ std::optional<RegistrationRequest> ValidateRegistrationRequest(
     const wchar_t* version,
     const wchar_t* existence_checker_path,
     const wchar_t* install_id) {
-  const std::optional<std::string> app_id_validated = ValidateAppId(app_id);
-  if (!app_id_validated) {
-    return {};
-  }
-  const std::optional<std::string> brand_code_validated =
-      ValidateBrandCode(brand_code);
-  if (!brand_code_validated) {
-    return {};
-  }
-  const std::optional<base::FilePath> brand_path_validated =
-      ValidateBrandPath(brand_path);
-  if (!brand_path_validated) {
-    return {};
-  }
-  const std::optional<std::string> ap_validated = ValidateAP(ap);
-  if (!ap_validated) {
-    return {};
-  }
-  const std::optional<base::Version> version_validated =
-      ValidateVersion(version);
-  if (!version_validated) {
-    return {};
-  }
-  const std::optional<base::FilePath> existence_checker_path_validated =
-      ValidateExistenceCheckerPath(existence_checker_path);
-  if (!existence_checker_path_validated) {
-    return {};
-  }
-  const std::optional<std::string> install_id_validated =
-      ValidateInstallId(install_id);
-  if (!install_id_validated) {
-    return {};
-  }
+  return [](std::optional<std::string> app_id,
+            std::optional<std::string> brand_code,
+            std::optional<base::FilePath> brand_path,
+            std::optional<std::string> ap, std::optional<base::Version> version,
+            std::optional<base::FilePath> existence_checker_path,
+            std::optional<std::string> install_id)
+             -> std::optional<RegistrationRequest> {
+    if (!app_id || !brand_code || !brand_path || !ap || !version ||
+        !existence_checker_path || !install_id) {
+      return {};
+    }
 
-  RegistrationRequest request;
-  request.app_id = *app_id_validated;
-  request.brand_code = *brand_code_validated;
-  request.brand_path = *brand_path_validated;
-  request.ap = *ap_validated;
-  request.version = *version_validated;
-  request.existence_checker_path = *existence_checker_path_validated;
-  request.install_id = *install_id_validated;
-  return request;
+    RegistrationRequest request;
+    request.app_id = *app_id;
+    request.brand_code = *brand_code;
+    request.brand_path = *brand_path;
+    request.ap = *ap;
+    request.version = *version;
+    request.existence_checker_path = *existence_checker_path;
+    request.install_id = *install_id;
+    return request;
+  }(ValidateAppId(app_id), ValidateBrandCode(brand_code),
+             ValidateBrandPath(brand_path), ValidateAP(ap),
+             ValidateVersion(version),
+             ValidateExistenceCheckerPath(existence_checker_path),
+             ValidateInstallId(install_id));
 }
 
 }  // namespace updater
