@@ -173,8 +173,8 @@ android_library("unit_device_javatests") {
   ]
 
   sources = [
-    "java/src/org/chromium/components/signin/AccountManagerFacadeTest.java",
-    "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java",
+    "javatests/src/org/chromium/components/signin/AccountManagerFacadeTest.java",
+    "javatests/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java",
   ]
 }
 
