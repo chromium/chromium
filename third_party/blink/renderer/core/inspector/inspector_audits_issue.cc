@@ -790,6 +790,67 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
       AuditsIssue(std::move(issue)));
 }
 
+namespace {
+
+protocol::Audits::SelectElementAccessibilityIssueReason
+SelectElementAccessibilityIssueReasonToProtocol(
+    SelectElementAccessibilityIssueReason reason) {
+  switch (reason) {
+    case SelectElementAccessibilityIssueReason::kDisallowedSelectChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          DisallowedSelectChild;
+    case SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          DisallowedOptGroupChild;
+    case SelectElementAccessibilityIssueReason::kNonPhrasingContentOptionChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          NonPhrasingContentOptionChild;
+    case SelectElementAccessibilityIssueReason::kInteractiveContentOptionChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          InteractiveContentOptionChild;
+    case SelectElementAccessibilityIssueReason::kInteractiveContentLegendChild:
+      return protocol::Audits::SelectElementAccessibilityIssueReasonEnum::
+          InteractiveContentLegendChild;
+    case SelectElementAccessibilityIssueReason::kValidChild:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+// static
+void AuditsIssue::ReportSelectElementAccessibilityIssue(
+    Document* document,
+    DOMNodeId node_id,
+    SelectElementAccessibilityIssueReason issue_reason,
+    bool has_disallowed_attributes) {
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  CHECK(RuntimeEnabledFeatures::
+            CustomizableSelectElementAccessibilityIssuesEnabled());
+
+  auto select_accessibility_issue_details =
+      protocol::Audits::SelectElementAccessibilityIssueDetails::create()
+          .setNodeId(node_id)
+          .setSelectElementAccessibilityIssueReason(
+              SelectElementAccessibilityIssueReasonToProtocol(issue_reason))
+          .setHasDisallowedAttributes(has_disallowed_attributes)
+          .build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::create()
+                     .setSelectElementAccessibilityIssueDetails(
+                         std::move(select_accessibility_issue_details))
+                     .build();
+
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                SelectElementAccessibilityIssue)
+                   .setDetails(std::move(details))
+                   .build();
+
+  document->GetExecutionContext()->AddInspectorIssue(
+      AuditsIssue(std::move(issue)));
+}
+
 AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
     const blink::SecurityPolicyViolationEventInit& violation_data,
     bool is_report_only,

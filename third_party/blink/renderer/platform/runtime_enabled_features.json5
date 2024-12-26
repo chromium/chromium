@@ -1349,6 +1349,12 @@
       depends_on: ["SelectParserRelaxation"],
     },
     {
+      // If a node within a customizable <select> doesn't obey the content model, an Issue is reported to DevTools so that web authors get more context on why this can impact the accessibility behavior of the <select>.
+      name: "CustomizableSelectElementAccessibilityIssues",
+      status: "experimental",
+      depends_on: ["CustomizableSelect"],
+    },
+    {
       name: "Database",
       public: true,
       status: "experimental",

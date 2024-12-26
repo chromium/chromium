@@ -63,6 +63,15 @@ enum class ClientHintIssueReason {
   kMetaTagModifiedHTML,
 };
 
+enum class SelectElementAccessibilityIssueReason {
+  kDisallowedSelectChild,
+  kDisallowedOptGroupChild,
+  kNonPhrasingContentOptionChild,
+  kInteractiveContentOptionChild,
+  kInteractiveContentLegendChild,
+  kValidChild,
+};
+
 // |AuditsIssue| is a thin wrapper around the Audits::InspectorIssue
 // protocol class.
 //
@@ -184,6 +193,12 @@ class CORE_EXPORT AuditsIssue {
       WTF::OrdinalNumber initiator_line,
       WTF::OrdinalNumber initiator_column,
       const String& failureMessage);
+
+  static void ReportSelectElementAccessibilityIssue(
+      Document* document,
+      DOMNodeId node_id,
+      SelectElementAccessibilityIssueReason issue_reason,
+      bool has_disallowed_attributes);
 
  private:
 

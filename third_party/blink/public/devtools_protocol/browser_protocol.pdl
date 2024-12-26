@@ -984,6 +984,22 @@ experimental domain Audits
       string failureMessage
       optional Network.RequestId requestId
 
+  type SelectElementAccessibilityIssueReason extends string
+    enum
+      DisallowedSelectChild
+      DisallowedOptGroupChild
+      NonPhrasingContentOptionChild
+      InteractiveContentOptionChild
+      InteractiveContentLegendChild
+
+  # This isue warns about errors in the select element content model.
+  type SelectElementAccessibilityIssueDetails extends object
+    properties
+      DOM.BackendNodeId nodeId
+      SelectElementAccessibilityIssueReason selectElementAccessibilityIssueReason
+      boolean hasDisallowedAttributes
+
+
   type StyleSheetLoadingIssueReason extends string
     enum
       LateImportRule
@@ -1044,6 +1060,7 @@ experimental domain Audits
       FederatedAuthUserInfoRequestIssue
       PropertyRuleIssue
       SharedDictionaryIssue
+      SelectElementAccessibilityIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -1071,6 +1088,7 @@ experimental domain Audits
       optional PropertyRuleIssueDetails propertyRuleIssueDetails
       optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
+      optional SelectElementAccessibilityIssueDetails selectElementAccessibilityIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

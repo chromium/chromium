@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -196,11 +197,19 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   void AddDescendantDisallowedErrorToNode(Node& node) {
-    if (!IsAllowedDescendant(node)) {
+    SelectElementAccessibilityIssueReason issue_reason = CheckForIssue(node);
+    if (issue_reason != SelectElementAccessibilityIssueReason::kValidChild) {
       if (!IsAllowedInteractiveElement(node)) {
         select_->IncreaseContentModelViolationCount();
       }
-      // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
+      if (RuntimeEnabledFeatures::
+              CustomizableSelectElementAccessibilityIssuesEnabled()) {
+        Document& document = select_->GetDocument();
+        AuditsIssue::ReportSelectElementAccessibilityIssue(
+            &document, node.GetDomNodeId(), issue_reason,
+            /* has_disallowed_attributes = */ HasTabIndexAttribute(node) ||
+                IsContenteditable(node));
+      }
       node.AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRecommendation,
           mojom::blink::ConsoleMessageLevel::kError,
@@ -233,44 +242,60 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     return false;
   }
 
-  bool IsAllowedDescendant(const Node& descendant) {
+  SelectElementAccessibilityIssueReason CheckForIssue(const Node& descendant) {
     // Get the parent of the descendant.
     const Node* parent = descendant.parentNode();
     // If the node has no parent, assume it is being appended to a
     // `HTMLSelectedContentElement`.
     if (!parent) {
-      return IsAllowedDescendantOfOption(descendant);
+      return CheckDescedantOfOption(descendant);
     }
     if (!IsA<HTMLElement>(*parent)) {
-      return parent->IsSVGElement();
+      if (parent->IsSVGElement()) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
     }
     if (IsA<HTMLSelectElement>(*parent)) {
-      return IsAllowedDescendantOfSelect(descendant);
+      if (IsAllowedDescendantOfSelect(descendant)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
     }
     if (IsA<HTMLOptGroupElement>(*parent)) {
-      return IsAllowedDescendantOfOptgroup(descendant);
+      if (IsAllowedDescendantOfOptgroup(descendant)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      return SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild;
     }
     if (IsA<HTMLOptionElement>(*parent) ||
         IsA<HTMLSelectedContentElement>(*parent) ||
         (IsAllowedPhrasingContent(*parent) && !IsA<HTMLSpanElement>(*parent))) {
-      return IsAllowedDescendantOfOption(descendant);
+      return CheckDescedantOfOption(descendant);
     }
     if (IsA<HTMLDivElement>(*parent) || IsA<HTMLSpanElement>(*parent)) {
       return TraverseAncestorsAndCheckDescendant(descendant);
     }
-    if (IsA<HTMLNoScriptElement>(*parent) || IsA<HTMLScriptElement>(*parent) ||
-        IsA<HTMLTemplateElement>(*parent)) {
-      if (descendant.IsTextNode()) {
-        return true;
-      }
+    if ((IsA<HTMLNoScriptElement>(*parent) || IsA<HTMLScriptElement>(*parent) ||
+         IsA<HTMLTemplateElement>(*parent)) &&
+        !descendant.IsTextNode()) {
       return TraverseAncestorsAndCheckDescendant(descendant);
     }
     if (IsA<HTMLButtonElement>(*parent)) {
-      return IsA<HTMLSelectedContentElement>(descendant) ||
-             IsAllowedDescendantOfOption(descendant);
+      if (IsA<HTMLSelectedContentElement>(descendant)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      return CheckDescedantOfOption(descendant);
     }
-    return IsA<HTMLLegendElement>(*parent) &&
-           IsAllowedPhrasingContent(descendant);
+    if (IsA<HTMLLegendElement>(*parent)) {
+      if (IsAllowedPhrasingContent(descendant) &&
+          !HasTabIndexAttribute(descendant) && !IsContenteditable(descendant)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
+      }
+      return SelectElementAccessibilityIssueReason::
+          kInteractiveContentLegendChild;
+    }
+    return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
   }
 
   bool IsAllowedDescendantOfSelect(const Node& descendant) {
@@ -298,11 +323,19 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLTemplateElement>(descendant);
   }
 
-  bool IsAllowedDescendantOfOption(const Node& descendant) {
+  SelectElementAccessibilityIssueReason CheckDescedantOfOption(
+      const Node& descendant) {
+    if (!IsA<HTMLDivElement>(descendant) &&
+        !IsAllowedPhrasingContent(descendant)) {
+      return SelectElementAccessibilityIssueReason::
+          kNonPhrasingContentOptionChild;
+    }
     // Check tabindex and contenteditable attributes of the descendant as well.
-    return (IsA<HTMLDivElement>(descendant) ||
-            IsAllowedPhrasingContent(descendant)) &&
-           !HasTabIndexAttribute(descendant) && !IsContenteditable(descendant);
+    if (!HasTabIndexAttribute(descendant) && !IsContenteditable(descendant)) {
+      return SelectElementAccessibilityIssueReason::kValidChild;
+    }
+    return SelectElementAccessibilityIssueReason::
+        kInteractiveContentOptionChild;
   }
 
   bool HasTabIndexAttribute(const Node& node) {
@@ -322,22 +355,27 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     return false;
   }
 
-  bool TraverseAncestorsAndCheckDescendant(const Node& descendant) {
+  SelectElementAccessibilityIssueReason TraverseAncestorsAndCheckDescendant(
+      const Node& descendant) {
     // As we've already checked the descendant's parent, we can directly look at
     // the grandparent.
     for (const Node* ancestor = descendant.parentNode()->parentNode(); ancestor;
          ancestor = ancestor->parentNode()) {
       if (IsA<HTMLOptionElement>(*ancestor)) {
-        return IsAllowedDescendantOfOption(descendant);
+        return CheckDescedantOfOption(descendant);
       }
       if (IsA<HTMLOptGroupElement>(*ancestor)) {
-        return IsAllowedDescendantOfOptgroup(descendant);
+        if (IsAllowedDescendantOfOptgroup(descendant)) {
+          return SelectElementAccessibilityIssueReason::kValidChild;
+        }
+        return SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild;
       }
-      if (IsA<HTMLSelectElement>(*ancestor)) {
-        return IsAllowedDescendantOfSelect(descendant);
+      if (IsA<HTMLSelectElement>(*ancestor) &&
+          IsAllowedDescendantOfSelect(descendant)) {
+        return SelectElementAccessibilityIssueReason::kValidChild;
       }
     }
-    return false;
+    return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
   }
 
   bool IsWhitespaceOrEmpty(const Node& node) {
