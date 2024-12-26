@@ -93,8 +93,6 @@
 -ios_internal/
 -native_client/
 -net/third_party/
--remoting/host/
--remoting/client/input/
 -testing/iossim/
 -third_party/
 +third_party/blink/
