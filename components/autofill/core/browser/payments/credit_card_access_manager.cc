@@ -223,9 +223,7 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
     case UnmaskAuthFlowType::kOtp:
       autofill_metrics::LogServerCardUnmaskResult(
           autofill_metrics::ServerCardUnmaskResult::kAuthenticationUnmasked,
-          card_->record_type() == CreditCard::RecordType::kVirtualCard
-              ? PaymentsRpcCardType::kVirtualCard
-              : PaymentsRpcCardType::kServerCard,
+          PaymentsRpcCardType::kVirtualCard,
           autofill_metrics::ServerCardUnmaskFlowType::kOtpOnly);
       break;
     case UnmaskAuthFlowType::kOtpFallbackFromFido:
@@ -485,26 +483,9 @@ void CreditCardAccessManager::StartAuthenticationFlowForMaskedServerCard(
     bool fido_auth_enabled) {
   UnmaskAuthFlowType flow_type;
 #if BUILDFLAG(IS_IOS)
-  // On iOS only the CVC auth is available for masked server card.
+  // There is no FIDO auth available on iOS, so offer CVC auth immediately.
   flow_type = UnmaskAuthFlowType::kCvc;
 #else
-  // We check if the card is enrolled in runtime retrieval and only SMS OTP
-  // challenge option is present, then render the challenge option selection
-  // dialog. Currently the selection dialog box is only supported for SMS OTP
-  // challenge for masked server cards.
-  std::vector<CardUnmaskChallengeOption>& challenge_options =
-      risk_based_authentication_response_.card_unmask_challenge_options;
-  if (card_->card_info_retrieval_enrollment_state() ==
-          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled &&
-      challenge_options.size() == 1 &&
-      challenge_options[0].type == CardUnmaskChallengeOptionType::kSmsOtp) {
-    selected_challenge_option_ = &challenge_options[0];
-    ShowUnmaskAuthenticatorSelectionDialog();
-    return;
-  }
-
-  // If not enrolled in runtime retrieval then currently only FIDO and CVC auth
-  // are available for masked server card.
   if (!fido_auth_enabled) {
     // If FIDO auth is not enabled we offer CVC auth.
     flow_type = UnmaskAuthFlowType::kCvc;
@@ -623,8 +604,6 @@ void CreditCardAccessManager::Authenticate(
     }
     case UnmaskAuthFlowType::kOtp:
     case UnmaskAuthFlowType::kOtpFallbackFromFido: {
-      CHECK(card_->record_type() == CreditCard::RecordType::kVirtualCard ||
-            card_->record_type() == CreditCard::RecordType::kMaskedServerCard);
       // Delegate the task to CreditCardOtpAuthenticator.
       DCHECK(selected_challenge_option_);
       payments_autofill_client()
@@ -1547,9 +1526,6 @@ void CreditCardAccessManager::ShowUnmaskAuthenticatorSelectionDialog() {
 CardUnmaskChallengeOption*
 CreditCardAccessManager::GetCardUnmaskChallengeOptionForChallengeId(
     const std::string& challenge_id) {
-  CreditCard::RecordType card_record_type = card_->record_type();
-  CHECK(card_record_type == CreditCard::RecordType::kVirtualCard ||
-        card_record_type == CreditCard::RecordType::kMaskedServerCard);
   std::vector<CardUnmaskChallengeOption>& challenge_options =
       risk_based_authentication_response_.card_unmask_challenge_options;
   auto card_unmask_challenge_options_it = base::ranges::find(

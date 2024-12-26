@@ -1798,10 +1798,9 @@ TEST_F(CreditCardAccessManagerTest,
            CardUnmaskChallengeOptionType::kEmailOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
-      /*is_user_verifiable=*/false, challenge_options,
-      /*selected_index=*/0, CreditCard::RecordType::kVirtualCard);
+      /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);
 
-  CreditCard card = test::GetVirtualCard();
+  CreditCard card = test::GetCreditCard();
   credit_card_access_manager().OnOtpAuthenticationComplete(
       CreditCardOtpAuthenticator::OtpAuthenticationResponse()
           .with_result(CreditCardOtpAuthenticator::OtpAuthenticationResponse::
@@ -1838,8 +1837,7 @@ TEST_F(CreditCardAccessManagerTest,
           {CardUnmaskChallengeOptionType::kCvc});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
-      /*is_user_verifiable=*/false, challenge_options,
-      /*selected_index=*/0, CreditCard::RecordType::kVirtualCard);
+      /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);
 
   CreditCard card = test::GetCreditCard();
   credit_card_access_manager().OnCvcAuthenticationComplete(
@@ -1942,12 +1940,11 @@ TEST_F(CreditCardAccessManagerTest,
        selected_index++) {
     MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
         /*fido_authenticator_is_user_opted_in=*/false,
-        /*is_user_verifiable=*/false, challenge_options, selected_index,
-        CreditCard::RecordType::kVirtualCard);
+        /*is_user_verifiable=*/false, challenge_options, selected_index);
 
     switch (challenge_options[selected_index].type) {
       case CardUnmaskChallengeOptionType::kSmsOtp: {
-        CreditCard card = test::GetVirtualCard();
+        CreditCard card = test::GetCreditCard();
         credit_card_access_manager().OnOtpAuthenticationComplete(
             CreditCardOtpAuthenticator::OtpAuthenticationResponse()
                 .with_result(CreditCardOtpAuthenticator::
@@ -1957,7 +1954,7 @@ TEST_F(CreditCardAccessManagerTest,
         break;
       }
       case CardUnmaskChallengeOptionType::kCvc: {
-        CreditCard card = test::GetVirtualCard();
+        CreditCard card = test::GetCreditCard();
         credit_card_access_manager().OnCvcAuthenticationComplete(
             CreditCardCvcAuthenticator::CvcAuthenticationResponse()
                 .with_did_succeed(true)
@@ -2003,8 +2000,7 @@ TEST_F(
           {CardUnmaskChallengeOptionType::kSmsOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
-      /*is_user_verifiable=*/false, challenge_options,
-      /*selected_index=*/0, CreditCard::RecordType::kVirtualCard);
+      /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);
 
   // This check already happens in
   // MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(), but double
@@ -2245,13 +2241,12 @@ TEST_F(
           {CardUnmaskChallengeOptionType::kSmsOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
-      /*is_user_verifiable=*/true, challenge_options,
-      /*selected_index=*/0, CreditCard::RecordType::kVirtualCard);
+      /*is_user_verifiable=*/true, challenge_options, /*selected_index=*/0);
 
   CreditCardOtpAuthenticator::OtpAuthenticationResponse otp_response;
   otp_response.result =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse::Result::kSuccess;
-  CreditCard card = test::GetVirtualCard();
+  CreditCard card = test::GetCreditCard();
   otp_response.card = &card;
   otp_response.cvc = u"123";
   credit_card_access_manager().OnOtpAuthenticationComplete(otp_response);
@@ -2277,8 +2272,7 @@ TEST_F(
           {CardUnmaskChallengeOptionType::kSmsOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/true,
-      /*is_user_verifiable=*/true, challenge_options,
-      /*selected_index=*/0, CreditCard::RecordType::kVirtualCard);
+      /*is_user_verifiable=*/true, challenge_options, /*selected_index=*/0);
 
   CreditCardOtpAuthenticator::OtpAuthenticationResponse otp_response;
   otp_response.result =

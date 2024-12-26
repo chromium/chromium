@@ -116,8 +116,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
       std::string server_id = std::string(),
       const char16_t* cvc = kTestCvc16,
       CreditCard::RecordType record_type =
-          CreditCard::RecordType::kMaskedServerCard,
-      bool is_card_info_retrieval_enrolled = false);
+          CreditCard::RecordType::kMaskedServerCard);
 
   CreditCardCvcAuthenticator& GetCvcAuthenticator();
 
@@ -173,9 +172,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
       bool fido_authenticator_is_user_opted_in,
       bool is_user_verifiable,
       const std::vector<CardUnmaskChallengeOption>& challenge_options,
-      int selected_index,
-      CreditCard::RecordType record_type,
-      bool is_card_info_retrieval_enrolled = false);
+      int selected_index);
 
   void VerifyOnSelectChallengeOptionInvoked();
 

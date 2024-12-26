@@ -63,11 +63,6 @@ class CreditCardRiskBasedAuthenticator {
       context_token = std::move(s);
       return *this;
     }
-    RiskBasedAuthenticationResponse& with_card_unmask_challenge_options(
-        std::vector<CardUnmaskChallengeOption> c) {
-      card_unmask_challenge_options = std::move(c);
-      return *this;
-    }
 
     // The `result` will be used to notify requesters of the outcome of the
     // risk-based authentication.

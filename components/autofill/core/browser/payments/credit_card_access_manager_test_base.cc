@@ -146,8 +146,7 @@ const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
     std::string number,
     std::string server_id,
     const char16_t* cvc,
-    CreditCard::RecordType record_type,
-    bool is_card_info_retrieval_enrolled) {
+    CreditCard::RecordType record_type) {
   CreditCard server_card = CreditCard();
   test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
                           test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -155,10 +154,6 @@ const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
   server_card.set_guid(guid);
   server_card.set_record_type(record_type);
   server_card.set_server_id(server_id);
-  if (is_card_info_retrieval_enrolled) {
-    server_card.set_card_info_retrieval_enrollment_state(
-        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-  }
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
   return personal_data().payments_data_manager().GetCreditCardByGUID(guid);
 }
@@ -350,12 +345,10 @@ void CreditCardAccessManagerTestBase::
         bool fido_authenticator_is_user_opted_in,
         bool is_user_verifiable,
         const std::vector<CardUnmaskChallengeOption>& challenge_options,
-        int selected_index,
-        CreditCard::RecordType record_type,
-        bool is_card_info_retrieval_enrolled) {
+        int selected_index) {
   CreateServerCard(kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
-                   record_type, is_card_info_retrieval_enrolled);
-  const CreditCard* card =
+                   CreditCard::RecordType::kVirtualCard);
+  const CreditCard* virtual_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -369,8 +362,8 @@ void CreditCardAccessManagerTestBase::
   test_api(credit_card_access_manager())
       .set_is_user_verifiable(is_user_verifiable);
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+      virtual_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                                   accessor_->GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -411,7 +404,7 @@ void CreditCardAccessManagerTestBase::
 #endif
 
   const CardUnmaskChallengeOption& challenge_option =
-      challenge_options[selected_index];
+      response.card_unmask_challenge_options[selected_index];
 
   payments::PaymentsWindowManager::Vcn3dsContext vcn_3ds_context;
   if (challenge_option.type ==
@@ -466,8 +459,8 @@ void CreditCardAccessManagerTestBase::
                 u"a******b@google.com");
       break;
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
-      EXPECT_EQ(vcn_3ds_context.context_token, "fake_context_token");
-      EXPECT_EQ(vcn_3ds_context.card, *card);
+      EXPECT_EQ(vcn_3ds_context.context_token, response.context_token);
+      EXPECT_EQ(vcn_3ds_context.card, *virtual_card);
       EXPECT_EQ(vcn_3ds_context.challenge_option.type,
                 CardUnmaskChallengeOptionType::kThreeDomainSecure);
       EXPECT_TRUE(vcn_3ds_context.user_consent_already_given);
@@ -482,6 +475,8 @@ void CreditCardAccessManagerTestBase::VerifyOnSelectChallengeOptionInvoked() {
   EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
   EXPECT_EQ(otp_authenticator_->card().number(),
             base::UTF8ToUTF16(std::string(kTestNumber)));
+  EXPECT_EQ(otp_authenticator_->card().record_type(),
+            CreditCard::RecordType::kVirtualCard);
   EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
 }
 
