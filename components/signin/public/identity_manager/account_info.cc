@@ -248,6 +248,27 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
   return account;
 }
 
+AccountInfo ConvertFromJavaAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_account_info) {
+  CHECK(j_account_info);
+  AccountInfo account;
+  account.account_id = ConvertFromJavaCoreAccountId(
+      env, signin::Java_CoreAccountInfo_getId(env, j_account_info));
+  account.gaia = GaiaId(base::android::ConvertJavaStringToUTF8(
+      signin::Java_CoreAccountInfo_getGaiaId(env, j_account_info)));
+  account.email = base::android::ConvertJavaStringToUTF8(
+      signin::Java_CoreAccountInfo_getEmail(env, j_account_info));
+  account.full_name = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getFullName(env, j_account_info));
+  account.given_name = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getGivenName(env, j_account_info));
+  account.hosted_domain = base::android::ConvertJavaStringToUTF8(
+      signin::Java_AccountInfo_getRawHostedDomain(env, j_account_info));
+  // TODO(crbug.com/348373729): Marshal account image & capabilities from Java.
+  return account;
+}
+
 CoreAccountId ConvertFromJavaCoreAccountId(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_core_account_id) {

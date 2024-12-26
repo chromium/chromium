@@ -148,6 +148,11 @@ CoreAccountInfo ConvertFromJavaCoreAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_core_account_info);
 
+// Constructs a C++ AccountInfo from the provided Java AccountInfo
+AccountInfo ConvertFromJavaAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_account_info);
+
 // Constructs a C++ CoreAccountId from the provided Java CoreAccountId
 CoreAccountId ConvertFromJavaCoreAccountId(
     JNIEnv* env,

@@ -9,8 +9,8 @@ import androidx.annotation.Nullable;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 
@@ -72,11 +72,11 @@ public class IdentityMutator {
     }
 
     public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId primaryAccountId) {
+            List<AccountInfo> accounts, @Nullable CoreAccountId primaryAccountId) {
         IdentityMutatorJni.get()
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                         mNativeIdentityMutator,
-                        coreAccountInfos.toArray(new CoreAccountInfo[0]),
+                        accounts.toArray(new AccountInfo[0]),
                         primaryAccountId);
     }
 
@@ -97,7 +97,7 @@ public class IdentityMutator {
 
         public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 long nativeJniIdentityMutator,
-                CoreAccountInfo[] coreAccountInfos,
+                AccountInfo[] accounts,
                 @Nullable CoreAccountId primaryAccountId);
     }
 }

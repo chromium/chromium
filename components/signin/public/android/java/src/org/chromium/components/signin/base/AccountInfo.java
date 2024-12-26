@@ -137,11 +137,13 @@ public class AccountInfo extends CoreAccountInfo {
     }
 
     /** Returns the full name of the account. */
+    @CalledByNative
     public String getFullName() {
         return mFullName;
     }
 
     /** Returns the given name of the account. */
+    @CalledByNative
     public String getGivenName() {
         return mGivenName;
     }
@@ -184,5 +186,10 @@ public class AccountInfo extends CoreAccountInfo {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    @CalledByNative
+    private String getRawHostedDomain() {
+        return mHostedDomain;
     }
 }

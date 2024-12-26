@@ -248,18 +248,18 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-        const std::vector<CoreAccountInfo>& core_account_infos,
+        const std::vector<AccountInfo>& accounts,
         const std::optional<CoreAccountId>& primary_account_id) {
   // Seeds the accounts but doesn't remove the stale accounts from the
   // AccountTrackerService yet. We first need to send OnRefreshTokenRevoked
   // notifications for accounts being removed. Therefore we keep the accounts
   // until the notifications have been processed.
   account_tracker_service_->SeedAccountsInfo(
-      core_account_infos, primary_account_id,
+      accounts, primary_account_id,
       /*should_remove_stale_accounts=*/false);
   std::vector<CoreAccountId> account_ids;
-  for (const CoreAccountInfo& account_info : core_account_infos) {
-    CoreAccountId id(account_info.account_id);
+  for (const auto& account : accounts) {
+    CoreAccountId id(account.account_id);
     if (!id.empty()) {
       account_ids.push_back(std::move(id));
     }
@@ -269,7 +269,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
   UpdateAccountList(primary_account_id, GetValidAccounts(), account_ids);
   // Seeds again, now removing stale accounts
   account_tracker_service_->SeedAccountsInfo(
-      core_account_infos, primary_account_id,
+      accounts, primary_account_id,
       /*should_remove_stale_accounts=*/true);
 }
 
@@ -389,10 +389,10 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
   // safe to assume that the account list is empty here.
   // TODO(crbug.com/40287987): Once we expose the list of accounts all the
   // time, this assumption should be re-evaluated.
-  const std::vector<CoreAccountInfo> empty_accounts_list =
-      std::vector<CoreAccountInfo>();
+  const std::vector<AccountInfo> empty_accounts_list =
+      std::vector<AccountInfo>();
   SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      std::vector<CoreAccountInfo>(), std::nullopt);
+      std::vector<AccountInfo>(), std::nullopt);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(

@@ -676,13 +676,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void seedThenReloadAllAccountsFromSystem(@Nullable CoreAccountId primaryAccountId) {
-        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+        if (!mAccountManagerFacade.getAccounts().isFulfilled()) {
             throw new IllegalStateException("Account information should be available when seeding");
         }
         mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
-        mIdentityManager.refreshAccountInfoIfStale(
-                mAccountManagerFacade.getCoreAccountInfos().getResult());
+                mAccountManagerFacade.getAccounts().getResult(), primaryAccountId);
+        mIdentityManager.refreshAccountInfoIfStale(mAccountManagerFacade.getAccounts().getResult());
         // Should be called after re-seeding accounts to make sure that we get the new email.
         maybeUpdateLegacyPrimaryAccountEmail();
     }

@@ -61,7 +61,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -176,14 +176,14 @@ public class SigninManagerImplTest {
     }
 
     @Test
-    public void testOnCoreAccountInfosChanged() {
+    public void testOnAccountsChanged() {
         createSigninManager();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
-        List<CoreAccountInfo> coreAccountInfos =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+        List<AccountInfo> accounts =
+                AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
         verify(mIdentityMutator)
-                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(coreAccountInfos, null);
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(accounts, null);
     }
 
     @Test
@@ -201,8 +201,8 @@ public class SigninManagerImplTest {
         // Sign out is not allowed.
         assertFalse(mSigninManager.isSignOutAllowed());
 
-        List<CoreAccountInfo> coreAccountInfos =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+        List<AccountInfo> accounts =
+                AccountManagerFacadeProvider.getInstance().getAccounts().getResult();
 
         doAnswer(
                         (args) -> {
@@ -225,7 +225,7 @@ public class SigninManagerImplTest {
 
         verify(mIdentityMutator)
                 .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                        coreAccountInfos, TestAccounts.ACCOUNT1.getId());
+                        accounts, TestAccounts.ACCOUNT1.getId());
         verify(mIdentityMutator)
                 .setPrimaryAccount(
                         eq(TestAccounts.ACCOUNT1.getId()),
