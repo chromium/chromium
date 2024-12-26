@@ -9371,7 +9371,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
      flag_descriptions::kCollaborationMessagingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(collaboration::messaging::kCollaborationMessaging)},
+     FEATURE_VALUE_TYPE(collaboration::features::kCollaborationMessaging)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-fake-keyboard-heuristic",

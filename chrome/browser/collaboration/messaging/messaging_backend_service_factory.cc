@@ -65,7 +65,8 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature) ||
       !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) ||
-      !base::FeatureList::IsEnabled(kCollaborationMessaging)) {
+      !base::FeatureList::IsEnabled(
+          collaboration::features::kCollaborationMessaging)) {
     return std::make_unique<EmptyMessagingBackendService>();
   }
 

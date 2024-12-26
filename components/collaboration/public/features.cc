@@ -6,10 +6,14 @@
 
 #include "base/feature_list.h"
 
-namespace collaboration::messaging {
+namespace collaboration::features {
 
 BASE_FEATURE(kCollaborationMessaging,
              "CollaborationMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace collaboration::messaging
+BASE_FEATURE(kCollaborationFlowAndroid,
+             "CollaborationFlowAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace collaboration::features

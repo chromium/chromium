@@ -2262,7 +2262,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kLensOverlayPriceInsightsCounterfactual)},
     {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
      flag_descriptions::kCollaborationMessagingDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(collaboration::messaging::kCollaborationMessaging)},
+     FEATURE_VALUE_TYPE(collaboration::features::kCollaborationMessaging)},
     {"lens-single-tap-text-selection-disabled",
      flag_descriptions::kLensSingleTapTextSelectionDisabledName,
      flag_descriptions::kLensSingleTapTextSelectionDisabledDescription,
