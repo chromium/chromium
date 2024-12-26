@@ -84,6 +84,11 @@ class ASH_EXPORT TrayItemView : public views::View,
     // yet changed. `target_visibility` is the visibility the tray item is going
     // to have.
     virtual void OnTrayItemVisibilityAboutToChange(bool target_visibility) = 0;
+
+    // Update observers that have dependencies on the presence of the
+    // `image_view_` or the `label_`. Since the TrayItem can only have an image
+    // view or a label, combine this into one function.
+    virtual void OnTrayItemChildViewChanged() = 0;
   };
 
   explicit TrayItemView(Shelf* shelf);
