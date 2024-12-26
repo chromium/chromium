@@ -4208,6 +4208,11 @@
       status: "stable",
     },
     {
+      // crbug.com/359420112
+      name: "TextEmphasisNoPunctuation",
+      status: "stable",
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },

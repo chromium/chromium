@@ -136,7 +136,15 @@ void TextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
   }
 
   const int font_ascent = font_data->GetFontMetrics().Ascent();
-  const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
+  // https://drafts.csswg.org/css-writing-modes/#text-combine-layout
+  // > For other text layout purposes, e.g. emphasis marks, text-decoration,
+  // > spacing, etc. the resulting composition is treated as a single glyph
+  // > representing the Object Replacement Character U+FFFC.
+  //
+  // However the shape size of U+FFFC isn't suitable for emphasis mark
+  // positioning. We use Hiragana Letter A instead. See crbug.com/40386493
+  const TextRun placeholder_text_run(&WTF::unicode::kHiraganaLetterACharacter,
+                                     1);
   const gfx::PointF emphasis_mark_text_origin =
       gfx::PointF(text_origin()) +
       gfx::Vector2dF(0, font_ascent + emphasis_mark_offset());
