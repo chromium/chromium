@@ -331,9 +331,9 @@ LayoutUnit MenuListIntrinsicInlineSize(const HTMLSelectElement& select,
   const ComputedStyle& style = box.StyleRef();
   float max_option_width = 0;
   if (!box.ShouldApplySizeContainment()) {
-    for (auto* const option : select.GetOptionList()) {
+    for (const auto& option : select.GetOptionList()) {
       String text =
-          style.ApplyTextTransform(option->TextIndentedToRespectGroupLabel());
+          style.ApplyTextTransform(option.TextIndentedToRespectGroupLabel());
       // We apply SELECT's style, not OPTION's style because max_option_width is
       // used to determine intrinsic width of the menulist box.
       max_option_width =
