@@ -33,6 +33,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_priority_delegate.h"
 #include "base/strings/strcat.h"
@@ -51,6 +52,20 @@ BASE_FEATURE(kOneGroupPerRenderer,
 #else
              FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+BASE_FEATURE(kFlattenCpuCgroups,
+             "FlattenCpuCgroups",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+// If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
+// processes uses /sys/fs/cgroup/cpu/ui cgroup instead of
+// /sys/fs/cgroup/cpu/chrome_renderers sharing the cpu cgroup with the browser
+// process and others.
+BASE_FEATURE_PARAM(bool,
+                   kFlattenCpuCgroupsUnified,
+                   &kFlattenCpuCgroups,
+                   "unified_cpu_cgroup",
+                   false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -72,6 +87,9 @@ const char kControlPath[] = "/sys/fs/cgroup/cpu%s/cgroup.procs";
 const char kFullRendererCgroupRoot[] = "/sys/fs/cgroup/cpu/chrome_renderers";
 const char kForeground[] = "/chrome_renderers/foreground";
 const char kBackground[] = "/chrome_renderers/background";
+const char kForegroundExperiment[] = "/chrome_renderers";
+const char kForegroundUnifiedExperiment[] = "/ui";
+const char kBackgroundExperiment[] = "/chrome_renderers_background";
 const char kProcPath[] = "/proc/%d/cgroup";
 const char kUclampMinFile[] = "cpu.uclamp.min";
 const char kUclampMaxFile[] = "cpu.uclamp.max";
@@ -110,8 +128,17 @@ struct CGroups {
   std::string uclamp_max;
 
   CGroups() {
-    foreground_file = FilePath(StringPrintf(kControlPath, kForeground));
-    background_file = FilePath(StringPrintf(kControlPath, kBackground));
+    if (FeatureList::IsEnabled(kFlattenCpuCgroups)) {
+      foreground_file =
+          FilePath(StringPrintf(kControlPath, kFlattenCpuCgroupsUnified.Get()
+                                                  ? kForegroundUnifiedExperiment
+                                                  : kForegroundExperiment));
+      background_file =
+          FilePath(StringPrintf(kControlPath, kBackgroundExperiment));
+    } else {
+      foreground_file = FilePath(StringPrintf(kControlPath, kForeground));
+      background_file = FilePath(StringPrintf(kControlPath, kBackground));
+    }
     enabled = PathIsCGroupFileSystem(foreground_file) &&
               PathIsCGroupFileSystem(background_file);
 

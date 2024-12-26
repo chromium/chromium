@@ -9772,6 +9772,33 @@
             ]
         }
     ],
+    "FlattenCpuCgroups": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithFlattenCpuCgroups",
+                    "params": {
+                        "unified_cpu_cgroup": "false"
+                    },
+                    "enable_features": [
+                        "FlattenCpuCgroups"
+                    ]
+                },
+                {
+                    "name": "EnabledWithUnifiedCpuCgroup",
+                    "params": {
+                        "unified_cpu_cgroup": "true"
+                    },
+                    "enable_features": [
+                        "FlattenCpuCgroups"
+                    ]
+                }
+            ]
+        }
+    ],
     "Floss": [
         {
             "platforms": [
