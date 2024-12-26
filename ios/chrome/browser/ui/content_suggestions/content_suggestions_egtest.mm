@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -116,6 +117,7 @@ void TapSecondaryActionButton() {
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
     config.features_disabled.push_back(kIOSTipsNotifications);
+    config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   }
   if ([self isRunningTest:@selector(testMVTInMagicStack)]) {
     std::string enable_mvt_arg = std::string(kMagicStack.name) + ":" +
@@ -149,11 +151,13 @@ void TapSecondaryActionButton() {
 
 - (void)setUp {
   [super setUp];
+  [NewTabPageAppInterface disableSetUpList];
 }
 
 - (void)tearDownHelper {
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey removeFirstRunSentinel];
+  [NewTabPageAppInterface resetSetUpListPrefs];
   [super tearDownHelper];
 }
 

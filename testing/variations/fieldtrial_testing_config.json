@@ -11927,6 +11927,24 @@
             ]
         }
     ],
+    "IOSSetUpListInFirstRun": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SetUpListInFirstRunParam": "1"
+                    },
+                    "enable_features": [
+                        "SetUpListInFirstRun"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSetUpListShortenedDuration": [
         {
             "platforms": [
