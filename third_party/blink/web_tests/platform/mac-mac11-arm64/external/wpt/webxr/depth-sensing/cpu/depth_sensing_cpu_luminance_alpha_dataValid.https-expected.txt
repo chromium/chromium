@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Ensures depth data is returned and values match expectation, cpu-optimized, luminance-alpha. - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures depth data is returned and values match expectation, cpu-optimized, luminance-alpha. - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
