@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
@@ -1800,43 +1801,8 @@ void PrefetchContainer::MakeResourceRequest(
   net::IsolationInfo isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, origin, origin,
       net::SiteForCookies::FromOrigin(origin));
-  network::ResourceRequest::TrustedParams trusted_params;
-  trusted_params.isolation_info = isolation_info;
 
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
-  request->method = "GET";
-  request->referrer = referrer_.url;
-  request->referrer_policy =
-      Referrer::ReferrerPolicyForUrlRequest(referrer_.policy);
-  request->enable_load_timing = true;
-  // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
-  // separate network context, which means responses cached before the prefetch
-  // are not visible to the prefetch, and anything cached by this request will
-  // not be visible outside of the network context.
-  request->load_flags = net::LOAD_PREFETCH;
-  request->credentials_mode = network::mojom::CredentialsMode::kInclude;
-  request->headers.MergeFrom(additional_headers_);
-  request->headers.MergeFrom(additional_headers);
-  request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
-  request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));
-  request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
-
-  // There are sometimes other headers that are set during navigation.  These
-  // aren't yet supported for prefetch, including browsing topics.
-
-  request->trusted_params = trusted_params;
-  request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
-
-  // This causes us to reset the site for cookies on cross-site redirect. This
-  // is correct as long as we are looking at top-level navigations. If we ever
-  // implement prefetching for subframes, this will need to consider that.
-  // See also the code which sets this in |NavigationUrlLoaderImpl|.
-  request->update_first_party_url_on_redirect = true;
-
-  request->devtools_request_id = RequestId();
-
-  request->priority = [&] {
+  auto priority = [&] {
     if (IsSpeculationRuleType(prefetch_type_.trigger_type())) {
       // This may seem inverted (surely eager prefetches would be higher
       // priority), but the fact that we're doing this at all for more
@@ -1865,14 +1831,42 @@ void PrefetchContainer::MakeResourceRequest(
     }
   }();
 
-  AddClientHintsHeaders(origin, &request->headers);
-  AddXClientDataHeader(*request.get());
-
+  mojo::PendingRemote<network::mojom::DevToolsObserver>
+      devtools_observer_remote;
   if (std::optional<mojo::PendingRemote<network::mojom::DevToolsObserver>>
           devtools_observer = MakeSelfOwnedNetworkServiceDevToolsObserver()) {
-    request->trusted_params->devtools_observer =
-        std::move(devtools_observer.value());
+    devtools_observer_remote = std::move(devtools_observer.value());
   }
+
+  // If we ever implement prefetching for subframes, this value should be
+  // reconsidered, as this causes us to reset the site for cookies on cross-site
+  // redirect.
+  const bool is_main_frame = true;
+
+  auto request = CreateResourceRequestForNavigation(
+      net::HttpRequestHeaders::kGetMethod, url,
+      network::mojom::RequestDestination::kEmpty, referrer_, isolation_info,
+      std::move(devtools_observer_remote), priority, is_main_frame);
+
+  // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
+  // separate network context, which means responses cached before the prefetch
+  // are not visible to the prefetch, and anything cached by this request will
+  // not be visible outside of the network context.
+  request->load_flags = net::LOAD_PREFETCH;
+
+  request->headers.MergeFrom(additional_headers_);
+  request->headers.MergeFrom(additional_headers);
+  request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
+  request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));
+  request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  // There are sometimes other headers that are set during navigation.  These
+  // aren't yet supported for prefetch, including browsing topics.
+
+  request->devtools_request_id = RequestId();
+
+  AddClientHintsHeaders(origin, &request->headers);
+  AddXClientDataHeader(*request.get());
 
   resource_request_ = std::move(request);
 }
