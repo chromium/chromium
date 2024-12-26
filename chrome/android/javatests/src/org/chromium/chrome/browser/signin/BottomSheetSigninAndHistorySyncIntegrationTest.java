@@ -372,6 +372,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)
     public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
         // Sign-in, toggle bookmarks and reading list off, then sign out.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
