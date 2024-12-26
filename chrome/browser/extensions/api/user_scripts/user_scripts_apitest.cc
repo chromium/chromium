@@ -56,14 +56,15 @@ class UserScriptsAPITest : public ExtensionApiTest {
   // for most tests because the `userScripts` API is restricted to dev mode.
   virtual bool ShouldEnableDevMode() { return true; }
 
-  // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
+  // Some userScripts API methods are currently behind a feature restriction.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 UserScriptsAPITest::UserScriptsAPITest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kApiUserScriptsMultipleWorlds);
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{extensions_features::kApiUserScriptsMultipleWorlds,
+                            extensions_features::kApiUserScriptsExecute},
+      /*disabled_features=*/{});
 }
 
 // TODO(crbug.com/40935741, crbug.com/335421977): Flaky on Linux debug and on
