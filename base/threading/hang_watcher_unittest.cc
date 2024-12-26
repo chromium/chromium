@@ -409,17 +409,6 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   ASSERT_TRUE(hang_event_.IsSignaled());
 }
 
-TEST_F(HangWatcherTest, ValidNow) {
-  // Watch state start with a deadline set to the maximum value it can
-  // internally represent.
-  const internal::HangWatchState watch_state(
-      HangWatcher::ThreadType::kMainThread);
-
-  // If `TimeTicks::Now()` returns something that cannot be represented in
-  // HangWatcher deadlines then none of the functionality will work.
-  ASSERT_LT(base::TimeTicks::Now(), watch_state.GetDeadline());
-}
-
 TEST_F(HangWatcherTest, NestedScopes) {
   // Create a state object for the test thread since this test is single
   // threaded.
@@ -737,23 +726,6 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   }
 }
 
-TEST_F(HangWatcherSnapshotTest, ValidNowUnderMockTime) {
-  hang_watcher_.Start();
-
-  // Watch state start with a deadline set to the maximum value it can
-  // internally represent.
-  const internal::HangWatchState watch_state(
-      HangWatcher::ThreadType::kMainThread);
-
-  // If `TimeTicks::Now()` returns something that cannot be represented in
-  // HangWatcher deadlines then none of the functionality will work.
-  ASSERT_LT(base::TimeTicks::Now(), watch_state.GetDeadline());
-
-  // Minor adjustments don't break assumptions.
-  task_environment_.AdvanceClock(kSmallCPUQuantum);
-  ASSERT_LT(base::TimeTicks::Now(), watch_state.GetDeadline());
-}
-
 // TODO(crbug.com/40187449): On MAC, the base::PlatformThread::CurrentId(...)
 // should return the system wide IDs. The HungThreadIDs test fails because the
 // reported process ids do not match.
@@ -763,9 +735,6 @@ TEST_F(HangWatcherSnapshotTest, ValidNowUnderMockTime) {
 #define MAYBE_HungThreadIDs HungThreadIDs
 #endif
 
-// NOTE: If this test becomes flaky on a new platform please look at results for
-// HangWatcherTest.ValidNow and
-// HangWatcherSnapshotTest.ValidNowUnderMockTime.
 TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
   // During hang capture the list of hung threads should be populated.
   hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {

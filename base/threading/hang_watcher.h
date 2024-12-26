@@ -651,12 +651,6 @@ class BASE_EXPORT HangWatchState {
   // Returns the type of the thread under watch.
   HangWatcher::ThreadType thread_type() const { return thread_type_; }
 
-  // Functions used to coordinate capture of the trace event per hung thread.
-  // These functions need to evolve if HangWatcher starts logging more than one
-  // trace event per hung thread.
-  bool TraceEventStarted() const;
-  void MarkTraceEventStarted(bool capturing);
-
  private:
   // The thread that creates the instance should be the class that updates
   // the deadline.
@@ -685,8 +679,6 @@ class BASE_EXPORT HangWatchState {
 
   // The type of the thread under watch.
   const HangWatcher::ThreadType thread_type_;
-
-  bool trace_event_started_ = false;
 
 #if DCHECK_IS_ON()
   // Used to keep track of the current WatchHangsInScope and detect improper

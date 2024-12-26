@@ -772,12 +772,6 @@ void HangWatcher::WatchStateSnapShot::Init(
       hung_counts_per_thread_type[hang_count_index] = 0;
     }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-    const PlatformThreadId thread_id = watch_state.get()->GetThreadID();
-    const auto track = perfetto::Track::FromPointer(
-        this, perfetto::ThreadTrack::ForThread(thread_id));
-#endif
-
     // Only copy hung threads.
     if (deadline <= now) {
       ++hung_counts_per_thread_type[hang_count_index];
@@ -791,11 +785,12 @@ void HangWatcher::WatchStateSnapShot::Init(
       // Emit trace events for monitored threads.
       if (ThreadTypeLoggingLevelGreaterOrEqual(watch_state.get()->thread_type(),
                                                LoggingLevel::kUmaOnly)) {
-        if (!watch_state.get()->TraceEventStarted()) {
-          TRACE_EVENT_BEGIN("latency", "HangWatcher::ThreadHung", track,
-                            deadline - kMonitoringPeriod, "id", thread_id);
-          watch_state.get()->MarkTraceEventStarted(true);
-        }
+        const PlatformThreadId thread_id = watch_state.get()->GetThreadID();
+        const auto track = perfetto::Track::FromPointer(
+            this, perfetto::ThreadTrack::ForThread(thread_id));
+        TRACE_EVENT_BEGIN("latency", "HangWatcher::ThreadHung", track,
+                          deadline);
+        TRACE_EVENT_END("latency", track, now);
       }
 #endif
 
@@ -814,13 +809,6 @@ void HangWatcher::WatchStateSnapShot::Init(
       } else {
         all_threads_marked = false;
       }
-    } else {  // For threads that are not hung.
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-      if (watch_state.get()->TraceEventStarted()) {
-        TRACE_EVENT_END("latency", track, now - kMonitoringPeriod);
-        watch_state.get()->MarkTraceEventStarted(false);
-      }
-#endif
     }
   }
 
@@ -1047,17 +1035,6 @@ void HangWatcher::UnregisterThread() {
 
   // Thread should be registered to get unregistered.
   CHECK(it != watch_states_.end(), base::NotFatalUntil::M125);
-
-  // If a trace event was started it will never be finished if the thread
-  // unregisters so finish it now.
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  const internal::HangWatchState& watch_state = *(it->get());
-  if (watch_state.TraceEventStarted()) {
-    const auto track = perfetto::Track::FromPointer(
-        this, perfetto::ThreadTrack::ForThread(watch_state.GetThreadID()));
-    TRACE_EVENT_END("latency", track, base::TimeTicks::Now());
-  }
-#endif
 
   watch_states_.erase(it);
 }
@@ -1344,14 +1321,6 @@ uint64_t HangWatchState::GetSystemWideThreadID() const {
   CHECK(thread_id_ > 0);
   return static_cast<uint64_t>(thread_id_);
 #endif
-}
-
-bool HangWatchState::TraceEventStarted() const {
-  return trace_event_started_;
-}
-
-void HangWatchState::MarkTraceEventStarted(bool capturing) {
-  trace_event_started_ = capturing;
 }
 
 }  // namespace internal
