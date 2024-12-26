@@ -92,8 +92,9 @@ bool RequestAdapter::HasHeader(const std::string& name) {
 }
 
 void RequestAdapter::RemoveRequestHeaderByName(const std::string& name) {
-  if (!base::Contains(*headers_to_remove_, name))
+  if (!base::Contains(*headers_to_remove_, name)) {
     headers_to_remove_->push_back(name);
+  }
 }
 
 void RequestAdapter::SetExtraHeaderByName(const std::string& name,
@@ -101,8 +102,9 @@ void RequestAdapter::SetExtraHeaderByName(const std::string& name,
   modified_headers_->SetHeader(name, value);
 
   auto it = base::ranges::find(*headers_to_remove_, name);
-  if (it != headers_to_remove_->end())
+  if (it != headers_to_remove_->end()) {
     headers_to_remove_->erase(it);
+  }
 }
 
 std::string BuildMirrorRequestCookieIfPossible(

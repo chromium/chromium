@@ -127,8 +127,9 @@ void RunRevokeConsentTest(
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   // With the exception of ClearPrimaryAccount_AuthInProgress, every other
   // ClearPrimaryAccount_* test requires a primary account to be signed in.
@@ -399,8 +400,9 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_NoAccount) {
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   EXPECT_FALSE(
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -425,8 +427,9 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_UnknownAccount) {
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   AccountInfo account_info =
       environment.MakeAccountAvailable(kPrimaryAccountEmail);
@@ -457,8 +460,9 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   AccountInfo primary_account_info =
       environment.MakeAccountAvailable(kPrimaryAccountEmail);
@@ -593,8 +597,9 @@ TEST_F(PrimaryAccountMutatorTest,
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   AccountInfo primary_account_info =
       environment.MakeAccountAvailable(kPrimaryAccountEmail);
@@ -628,8 +633,9 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
 
   // Abort the test if the current platform does not support mutation of the
   // primary account (the returned PrimaryAccountMutator* will be null).
-  if (!primary_account_mutator)
+  if (!primary_account_mutator) {
     return;
+  }
 
   // Trying to signout an account that hasn't signed in first should fail.
   EXPECT_FALSE(

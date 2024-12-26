@@ -108,8 +108,9 @@ void CompareErrorStatusAndCallClosure(
     const base::RepeatingClosure& quit_closure) {
   GoogleServiceAuthError error =
       identity_manager->GetErrorStateOfRefreshTokenForAccount(account_id);
-  if (predicate.Run(error))
+  if (predicate.Run(error)) {
     quit_closure.Run();
+  }
 }
 
 }  // namespace
@@ -238,8 +239,9 @@ void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
   load_credentials_observer.SetOnRefreshTokensLoadedCallback(
       run_loop.QuitClosure());
 
-  if (identity_manager->AreRefreshTokensLoaded())
+  if (identity_manager->AreRefreshTokensLoaded()) {
     return;
+  }
 
   // Do NOT explicitly load credentials here:
   // 1. It is not re-entrant and will DCHECK fail.
@@ -303,8 +305,9 @@ void SetInvalidRefreshTokenForPrimaryAccount(
 }
 
 void RemoveRefreshTokenForPrimaryAccount(IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return;
+  }
 
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(ConsentLevel::kSignin);
@@ -331,8 +334,9 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 // TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync)) {
     return;
+  }
 
   DCHECK(identity_manager->GetPrimaryAccountMutator());
   base::RunLoop run_loop;
@@ -358,8 +362,9 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
-  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
+  if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return;
+  }
 
   DCHECK(identity_manager->GetPrimaryAccountMutator());
   base::RunLoop run_loop;
@@ -382,8 +387,9 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
 void WaitForPrimaryAccount(IdentityManager* identity_manager,
                            ConsentLevel consent_level,
                            const CoreAccountId& account_id) {
-  if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+  if (identity_manager->GetPrimaryAccountId(consent_level) == account_id) {
     return;
+  }
 
   base::RunLoop run_loop;
   TestIdentityManagerObserver primary_account_observer(identity_manager);
@@ -391,8 +397,10 @@ void WaitForPrimaryAccount(IdentityManager* identity_manager,
       [](IdentityManager* identity_manager, ConsentLevel consent_level,
          const CoreAccountId& account_id, base::RunLoop* run_loop,
          PrimaryAccountChangeEvent event) {
-        if (identity_manager->GetPrimaryAccountId(consent_level) == account_id)
+        if (identity_manager->GetPrimaryAccountId(consent_level) ==
+            account_id) {
           run_loop->Quit();
+        }
       },
       identity_manager, consent_level, account_id, &run_loop));
   run_loop.Run();
@@ -505,8 +513,9 @@ void SetInvalidRefreshTokenForAccount(
 
 void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
                                   const CoreAccountId& account_id) {
-  if (!identity_manager->HasAccountWithRefreshToken(account_id))
+  if (!identity_manager->HasAccountWithRefreshToken(account_id)) {
     return;
+  }
 
   base::RunLoop run_loop;
   TestIdentityManagerObserver token_updated_observer(identity_manager);

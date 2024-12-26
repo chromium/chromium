@@ -106,8 +106,9 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
 
       // It should trigger OnAccessTokenRemovedFromCache from
       // IdentityManager::DiagnosticsObserver.
-      for (auto& observer : GetDiagnosticsObserversForTesting())
+      for (auto& observer : GetDiagnosticsObserversForTesting()) {
         observer.OnAccessTokenRemoved(account_id, scopes);
+      }
 
       std::move(on_access_token_invalidated_callback_).Run();
     }
@@ -210,8 +211,9 @@ class TestIdentityManagerDiagnosticsObserver
     token_requestor_consumer_id_ = consumer_id;
     token_requestor_scopes_ = scopes;
 
-    if (on_access_token_requested_callback_)
+    if (on_access_token_requested_callback_) {
       std::move(on_access_token_requested_callback_).Run();
+    }
   }
 
   void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
@@ -230,8 +232,9 @@ class TestIdentityManagerDiagnosticsObserver
     access_token_request_completed_scopes_ = scopes;
     access_token_request_completed_error_ = error;
 
-    if (on_access_token_request_completed_callback_)
+    if (on_access_token_request_completed_callback_) {
       std::move(on_access_token_request_completed_callback_).Run();
+    }
   }
 
   raw_ptr<IdentityManager> identity_manager_;
@@ -340,8 +343,9 @@ class IdentityManagerTest : public testing::Test {
     // trigger a DCHECK because there are still living observers.
     identity_manager_observer_.reset();
     identity_manager_diagnostics_observer_.reset();
-    if (identity_manager_)
+    if (identity_manager_) {
       identity_manager_->Shutdown();
+    }
     identity_manager_.reset();
 
     if (temp_profile_dir_.IsValid()) {
@@ -1871,10 +1875,11 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
             ? accounts_in_cookie_jar_info.GetSignedOutAccounts()[i++]
             : accounts_in_cookie_jar_info
                   .GetPotentiallyInvalidSignedInAccounts()[j++];
-    if (!signed_out_status.account_1)
+    if (!signed_out_status.account_1) {
       EXPECT_EQ(
           identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail),
           listed_account1.id);
+    }
     EXPECT_EQ(kTestGaiaId, listed_account1.gaia_id.ToString());
     EXPECT_EQ(kTestEmail, listed_account1.email);
 
@@ -1883,10 +1888,11 @@ TEST_F(IdentityManagerTest, CallbackSentOnUpdateToSignOutAccountsInCookie) {
             ? accounts_in_cookie_jar_info.GetSignedOutAccounts()[i++]
             : accounts_in_cookie_jar_info
                   .GetPotentiallyInvalidSignedInAccounts()[j++];
-    if (!signed_out_status.account_2)
+    if (!signed_out_status.account_2) {
       EXPECT_EQ(identity_manager()->PickAccountIdForAccount(kTestGaiaId2,
                                                             kTestEmail2),
                 listed_account2.id);
+    }
     EXPECT_EQ(kTestGaiaId2, listed_account2.gaia_id.ToString());
     EXPECT_EQ(kTestEmail2, listed_account2.email);
   }

@@ -262,8 +262,9 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       GURL continue_url = GURL(params.continue_url);
       DLOG_IF(ERROR, !params.continue_url.empty() && !continue_url.is_valid())
           << "Invalid continuation URL: \"" << continue_url << "\"";
-      if (delegate_)
+      if (delegate_) {
         delegate_->OnGoIncognito(continue_url);
+      }
       break;
     }
     case signin::GAIA_SERVICE_TYPE_SIGNUP:
@@ -284,13 +285,15 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           return;
         }
       }
-      if (delegate_)
+      if (delegate_) {
         delegate_->OnAddAccount();
+      }
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      if (delegate_)
+      if (delegate_) {
         delegate_->OnManageAccounts();
+      }
       break;
     case signin::GAIA_SERVICE_TYPE_NONE:
       NOTREACHED();
@@ -313,15 +316,17 @@ void AccountConsistencyService::AccountConsistencyHandler::
     // is not in an inconsistent state (where the identities on the device
     // are different than those on the web). Fallback to asking the user to
     // add an account.
-    if (delegate_)
+    if (delegate_) {
       delegate_->OnAddAccount();
+    }
     return;
   }
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnRestoreGaiaCookies();
+  }
   LogIOSGaiaCookiesState(
       GaiaCookieStateOnSignedInNavigation::kGaiaCookieRestoredOnShowInfobar);
 }

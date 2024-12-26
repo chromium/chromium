@@ -32,8 +32,9 @@ void OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
     AccessTokenInfo access_token_info) {
   EXPECT_EQ(expected_error, error);
-  if (expected_error == GoogleServiceAuthError::AuthErrorNone())
+  if (expected_error == GoogleServiceAuthError::AuthErrorNone()) {
     EXPECT_EQ(expected_access_token_info, access_token_info);
+  }
 
   std::move(done_closure).Run();
 }

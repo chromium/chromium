@@ -65,8 +65,7 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     bool is_regular_profile) {
   return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
       signin_client, account_tracker_service, network_connection_tracker,
-      account_manager_facade,
-      is_regular_profile);
+      account_manager_facade, is_regular_profile);
 }
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -151,8 +150,7 @@ CreateOAuth2TokenServiceDelegate(
 #elif BUILDFLAG(IS_CHROMEOS)
   return CreateCrOsOAuthDelegate(signin_client, account_tracker_service,
                                  network_connection_tracker,
-                                 account_manager_facade,
-                                 is_regular_profile);
+                                 account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
   // other than Android, iOS, and Chrome OS (Ash and Lacros).

@@ -73,8 +73,9 @@ void MirrorAccountReconcilorDelegate::OnPrimaryAccountChanged(
   // DisableReconcile logs out all accounts even if it was already disabled.
   bool should_enable_reconcile =
       identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
-  if (reconcile_enabled_ == should_enable_reconcile)
+  if (reconcile_enabled_ == should_enable_reconcile) {
     return;
+  }
 
   reconcile_enabled_ = should_enable_reconcile;
   if (should_enable_reconcile) {

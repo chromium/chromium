@@ -111,8 +111,9 @@ class PersistentErrorsHelper : public base::RefCounted<PersistentErrorsHelper> {
       const GoogleServiceAuthError& error) {
     DCHECK_GT(outstanding_requests_, 0);
     persistent_errors_.emplace(account, error);
-    if (--outstanding_requests_ == 0)
+    if (--outstanding_requests_ == 0) {
       std::move(callback_).Run(persistent_errors_);
+    }
   }
 
   AccountToErrorMap persistent_errors_;
@@ -264,7 +265,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ProfileOAuth2TokenServiceDelegateChromeOS::GetURLLoaderFactory() const {
-    return nullptr;
+  return nullptr;
 }
 
 void ProfileOAuth2TokenServiceDelegateChromeOS::OnGetAccounts(

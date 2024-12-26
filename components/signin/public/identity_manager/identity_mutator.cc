@@ -114,9 +114,10 @@ IdentityMutator::IdentityMutator(
 
 IdentityMutator::~IdentityMutator() {
 #if BUILDFLAG(IS_ANDROID)
-  if (java_identity_mutator_)
+  if (java_identity_mutator_) {
     Java_IdentityMutator_destroy(base::android::AttachCurrentThread(),
                                  java_identity_mutator_);
+  }
 #endif
 }
 

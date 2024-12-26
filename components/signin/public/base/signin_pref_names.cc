@@ -4,7 +4,6 @@
 
 #include "components/signin/public/base/signin_pref_names.h"
 
-
 namespace prefs {
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -86,15 +86,17 @@ AccountReconcilorDelegate::ReorderChromeAccountsForReconcile(
                                               chrome_accounts.end());
 
   // Start from the gaia accounts.
-  for (const gaia::ListedAccount& account : gaia_accounts)
+  for (const gaia::ListedAccount& account : gaia_accounts) {
     ordered_accounts.push_back(account.id);
+  }
 
   // Keep only accounts that are in chrome_accounts_set.
   for (CoreAccountId& account : ordered_accounts) {
-    if (chrome_accounts_set.find(account) == chrome_accounts_set.end())
+    if (chrome_accounts_set.find(account) == chrome_accounts_set.end()) {
       account = CoreAccountId();
-    else
+    } else {
       chrome_accounts_set.erase(account);
+    }
   }
 
   // At this point, ordered_accounts only contains accounts that must be kept,
@@ -124,8 +126,9 @@ AccountReconcilorDelegate::ReorderChromeAccountsForReconcile(
   // First in empty spots.
   auto remaining_accounts_it = chrome_accounts_set.begin();
   for (CoreAccountId& account : ordered_accounts) {
-    if (remaining_accounts_it == chrome_accounts_set.end())
+    if (remaining_accounts_it == chrome_accounts_set.end()) {
       break;
+    }
     if (account.empty()) {
       account = *remaining_accounts_it;
       ++remaining_accounts_it;
@@ -141,14 +144,16 @@ AccountReconcilorDelegate::ReorderChromeAccountsForReconcile(
   auto compacting_it = ordered_accounts.begin();
   while (compacting_it != ordered_accounts.end()) {
     // Remove all the empty accounts at the end.
-    while (!ordered_accounts.empty() && ordered_accounts.back().empty())
+    while (!ordered_accounts.empty() && ordered_accounts.back().empty()) {
       ordered_accounts.pop_back();
+    }
     // Find next empty slot.
     compacting_it =
         std::find(compacting_it, ordered_accounts.end(), CoreAccountId());
     // Swap it with the last element.
-    if (compacting_it != ordered_accounts.end())
+    if (compacting_it != ordered_accounts.end()) {
       std::swap(*compacting_it, ordered_accounts.back());
+    }
   }
 
   // All accounts have been added, and ordered_accounts now has the same
@@ -156,8 +161,9 @@ AccountReconcilorDelegate::ReorderChromeAccountsForReconcile(
   DCHECK_EQ(ordered_accounts.size(), chrome_accounts.size());
 
   // Keep only kMaxGaiaAccounts.
-  if (ordered_accounts.size() > kMaxGaiaAccounts)
+  if (ordered_accounts.size() > kMaxGaiaAccounts) {
     ordered_accounts.resize(kMaxGaiaAccounts);
+  }
 
   return ordered_accounts;
 }

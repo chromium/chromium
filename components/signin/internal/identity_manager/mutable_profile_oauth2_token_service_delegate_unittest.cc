@@ -112,7 +112,7 @@ const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
 };
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-}
+}  // namespace
 
 class MutableProfileOAuth2TokenServiceDelegateTest
     : public testing::Test,

@@ -102,15 +102,17 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 
 IdentityManager::~IdentityManager() {
 #if BUILDFLAG(IS_ANDROID)
-  if (java_identity_manager_)
+  if (java_identity_manager_) {
     Java_IdentityManager_destroy(base::android::AttachCurrentThread(),
                                  java_identity_manager_);
+  }
 #endif
 }
 
 void IdentityManager::Shutdown() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnIdentityManagerShutdown(this);
+  }
 
   // It is no longer safe to use the SigninClient beyond this point, everything
   // depending on it must be destroyed.
@@ -252,8 +254,9 @@ AccountInfo IdentityManager::FindExtendedAccountInfo(
 
 AccountInfo IdentityManager::FindExtendedAccountInfoByAccountId(
     const CoreAccountId& account_id) const {
-  if (!HasAccountWithRefreshToken(account_id))
+  if (!HasAccountWithRefreshToken(account_id)) {
     return AccountInfo();
+  }
 
   // AccountTrackerService returns an empty AccountInfo if the account is not
   // found.
@@ -385,8 +388,9 @@ base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::GetPrimaryAccountInfo(JNIEnv* env, jint consent_level) const {
   CoreAccountInfo account_info =
       GetPrimaryAccountInfo(static_cast<ConsentLevel>(consent_level));
-  if (account_info.IsEmpty())
+  if (account_info.IsEmpty()) {
     return nullptr;
+  }
   return ConvertToJavaCoreAccountInfo(env, account_info);
 }
 
@@ -396,8 +400,9 @@ IdentityManager::FindExtendedAccountInfoByEmailAddress(
     const base::android::JavaParamRef<jstring>& j_email) const {
   AccountInfo account_info = FindExtendedAccountInfoByEmailAddress(
       base::android::ConvertJavaStringToUTF8(env, j_email));
-  if (account_info.IsEmpty())
+  if (account_info.IsEmpty()) {
     return nullptr;
+  }
   return ConvertToJavaAccountInfo(env, account_info);
 }
 
@@ -526,13 +531,15 @@ void IdentityManager::OnRefreshTokenRevoked(const CoreAccountId& account_id) {
 }
 
 void IdentityManager::OnRefreshTokensLoaded() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnRefreshTokensLoaded();
+  }
 }
 
 void IdentityManager::OnEndBatchChanges() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnEndBatchOfRefreshTokenStateChanges();
+  }
 }
 
 void IdentityManager::OnAuthErrorChanged(
@@ -542,9 +549,10 @@ void IdentityManager::OnAuthErrorChanged(
   CoreAccountInfo account_info =
       GetAccountInfoForAccountWithRefreshToken(account_id);
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnErrorStateOfRefreshTokenUpdatedForAccount(
         account_info, auth_error, token_operation_source);
+  }
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -592,31 +600,35 @@ void IdentityManager::OnFetchAccessTokenComplete(
     const ScopeSet& scopes,
     const GoogleServiceAuthError& error,
     base::Time expiration_time) {
-  for (auto& observer : diagnostics_observation_list_)
+  for (auto& observer : diagnostics_observation_list_) {
     observer.OnAccessTokenRequestCompleted(account_id, consumer_id, scopes,
                                            error, expiration_time);
+  }
 }
 
 void IdentityManager::OnAccessTokenRemoved(const CoreAccountId& account_id,
                                            const ScopeSet& scopes) {
-  for (auto& observer : diagnostics_observation_list_)
+  for (auto& observer : diagnostics_observation_list_) {
     observer.OnAccessTokenRemovedFromCache(account_id, scopes);
+  }
 }
 
 void IdentityManager::OnRefreshTokenAvailableFromSource(
     const CoreAccountId& account_id,
     bool is_refresh_token_valid,
     const std::string& source) {
-  for (auto& observer : diagnostics_observation_list_)
+  for (auto& observer : diagnostics_observation_list_) {
     observer.OnRefreshTokenUpdatedForAccountFromSource(
         account_id, is_refresh_token_valid, source);
+  }
 }
 
 void IdentityManager::OnRefreshTokenRevokedFromSource(
     const CoreAccountId& account_id,
     const std::string& source) {
-  for (auto& observer : diagnostics_observation_list_)
+  for (auto& observer : diagnostics_observation_list_) {
     observer.OnRefreshTokenRemovedForAccountFromSource(account_id, source);
+  }
 }
 
 void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
@@ -650,10 +662,11 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
 
 void IdentityManager::OnAccountRemoved(const AccountInfo& info) {
 #if (BUILDFLAG(IS_ANDROID))
-    account_fetcher_service_->DestroyFetchers(info.account_id);
+  account_fetcher_service_->DestroyFetchers(info.account_id);
 #endif
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnExtendedAccountInfoRemoved(info);
+  }
 }
 
 }  // namespace signin

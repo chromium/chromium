@@ -40,7 +40,7 @@ class SharedURLLoaderFactory;
 namespace mojom {
 class CookieManager;
 class NetworkContext;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace version_info {

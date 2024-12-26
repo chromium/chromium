@@ -53,8 +53,9 @@ std::string BuildImageURLOptionsString(int image_size,
   url_options.push_back(
       base::StringPrintf(kImageURLOptionSizeFormat, image_size));
   url_options.push_back(kImageURLOptionSquareCrop);
-  if (no_silhouette)
+  if (no_silhouette) {
     url_options.push_back(kImageURLOptionNoSilhouette);
+  }
   return base::JoinString(url_options, kImageURLOptionSeparator);
 }
 
@@ -64,8 +65,9 @@ std::vector<std::string> TryProcessAsLegacyImageURL(
     std::vector<std::string> url_components,
     int image_size,
     bool no_silhouette) {
-  if (url_components.back().empty())
+  if (url_components.back().empty()) {
     return {};
+  }
 
   if (url_components.size() == kLegacyURLPathComponentsCount) {
     url_components.insert(

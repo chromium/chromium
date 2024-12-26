@@ -47,8 +47,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
     base::OnceClosure prefs_committed_callback) {
   DCHECK(!account_id.empty());
   AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
-  if (account_info.IsEmpty())
+  if (account_info.IsEmpty()) {
     return PrimaryAccountError::kAccountInfoEmpty;
+  }
 
   DCHECK_EQ(account_info.account_id, account_id);
   DCHECK(!account_info.email.empty());
@@ -56,8 +57,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   bool is_signin_allowed = pref_service_->GetBoolean(prefs::kSigninAllowed);
-  if (!is_signin_allowed)
+  if (!is_signin_allowed) {
     return PrimaryAccountError::kSigninNotAllowed;
+  }
 #endif
 
   switch (consent_level) {
@@ -66,8 +68,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
       // TODO(crbug.com/40067025): Replace with NOTREACHED on iOS after all
       // flows have been migrated away from kSync. See ConsentLevel::kSync
       // documentation for details.
-      if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
+      if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
         return PrimaryAccountError::kSyncConsentAlreadySet;
+      }
 #endif
       break;
     case ConsentLevel::kSignin:
@@ -113,8 +116,9 @@ void PrimaryAccountMutatorImpl::RevokeSyncConsent(
 
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     signin_metrics::ProfileSignout source_metric) {
-  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin))
+  if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin)) {
     return false;
+  }
 
   primary_account_manager_->ClearPrimaryAccount(source_metric);
   return true;

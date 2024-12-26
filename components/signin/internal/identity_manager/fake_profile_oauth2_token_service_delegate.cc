@@ -71,30 +71,34 @@ void FakeProfileOAuth2TokenServiceDelegate::
 std::string FakeProfileOAuth2TokenServiceDelegate::GetRefreshToken(
     const CoreAccountId& account_id) const {
   auto it = refresh_tokens_.find(account_id);
-  if (it != refresh_tokens_.end())
+  if (it != refresh_tokens_.end()) {
     return it->second;
+  }
   return std::string();
 }
 
 std::vector<CoreAccountId> FakeProfileOAuth2TokenServiceDelegate::GetAccounts()
     const {
   std::vector<CoreAccountId> account_ids;
-  for (const auto& account_id : account_ids_)
+  for (const auto& account_id : account_ids_) {
     account_ids.push_back(account_id);
+  }
   return account_ids;
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
     signin_metrics::SourceForRefreshTokenOperation source) {
   std::vector<CoreAccountId> account_ids = GetAccounts();
-  if (account_ids.empty())
+  if (account_ids.empty()) {
     return;
+  }
 
   // Use `ScopedBatchChange` so that `OnEndBatchOfRefreshTokenStateChanges()` is
   // fired only once, like in production.
   ScopedBatchChange batch(this);
-  for (const auto& account : account_ids)
+  for (const auto& account : account_ids) {
     RevokeCredentials(account, source);
+  }
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(

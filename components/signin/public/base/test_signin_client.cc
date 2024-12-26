@@ -67,8 +67,9 @@ TestSigninClient::GetURLLoaderFactory() {
 }
 
 network::mojom::CookieManager* TestSigninClient::GetCookieManager() {
-  if (!cookie_manager_)
+  if (!cookie_manager_) {
     cookie_manager_ = std::make_unique<network::TestCookieManager>();
+  }
   return cookie_manager_.get();
 }
 
@@ -80,8 +81,9 @@ network::mojom::NetworkContext* TestSigninClient::GetNetworkContext() {
 }
 
 network::TestURLLoaderFactory* TestSigninClient::GetTestURLLoaderFactory() {
-  if (test_url_loader_factory_)
+  if (test_url_loader_factory_) {
     return test_url_loader_factory_;
+  }
 
   if (!default_test_url_loader_factory_) {
     default_test_url_loader_factory_ =

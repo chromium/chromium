@@ -188,8 +188,9 @@ std::string Str(const std::vector<TrackingEvent>& events) {
   std::string str = "[";
   bool needs_comma = false;
   for (const TrackingEvent& event : events) {
-    if (needs_comma)
+    if (needs_comma) {
       str += ",\n ";
+    }
     needs_comma = true;
     str += event.ToString();
   }
@@ -282,8 +283,9 @@ class AccountTrackerServiceTest : public testing::Test {
   testing::AssertionResult CheckAccountTrackerEvents(
       const std::vector<TrackingEvent>& events) {
     std::string maybe_newline;
-    if ((events.size() + account_tracker_events_.size()) > 2)
+    if ((events.size() + account_tracker_events_.size()) > 2) {
       maybe_newline = "\n";
+    }
 
     testing::AssertionResult result(
         (account_tracker_events_ == events)

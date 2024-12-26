@@ -82,8 +82,9 @@ std::string ApplyAccountIdPrefix(const std::string& account_id) {
 // (|prefixed_account_id|) and returns the non-prefixed account id or an empty
 // account id if |prefixed_account_id| is not correctly prefixed.
 CoreAccountId RemoveAccountIdPrefix(const std::string& prefixed_account_id) {
-  if (!base::StartsWith(prefixed_account_id, kAccountIdPrefix))
+  if (!base::StartsWith(prefixed_account_id, kAccountIdPrefix)) {
     return CoreAccountId();
+  }
 
   return CoreAccountId::FromString(
       prefixed_account_id.substr(/*pos=*/strlen(kAccountIdPrefix)));
@@ -252,8 +253,9 @@ MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
 bool MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
     ShouldRetry(GaiaAuthConsumer::TokenRevocationStatus status) {
   // Token revocation can be retried up to 3 times.
-  if (attempt_ >= 2)
+  if (attempt_ >= 2) {
     return false;
+  }
 
   switch (status) {
     case GaiaAuthConsumer::TokenRevocationStatus::kServerError:
@@ -486,8 +488,9 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  if (!primary_account_id.empty())
+  if (!primary_account_id.empty()) {
     ValidateAccountId(primary_account_id);
+  }
   DCHECK(loading_primary_account_id_.empty());
   DCHECK_EQ(0, web_data_service_request_);
 
@@ -756,8 +759,9 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInMemory(
     // when it is updated to a new valid one (otherwise the new refresh token
     // would also be invalidated server-side).
     // See http://crbug.com/865189 for more information about this regression.
-    if (is_refresh_token_invalidated)
+    if (is_refresh_token_invalidated) {
       RevokeCredentialsOnServer(refresh_tokens_.at(account_id).value());
+    }
 
     refresh_tokens_.insert_or_assign(account_id,
                                      crypto::ProcessBoundString(refresh_token));
@@ -820,16 +824,19 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(
 
   // Make a temporary copy of the account ids.
   std::vector<CoreAccountId> accounts;
-  for (const auto& token : refresh_tokens_)
+  for (const auto& token : refresh_tokens_) {
     accounts.push_back(token.first);
-  for (const auto& account : accounts)
+  }
+  for (const auto& account : accounts) {
     RevokeCredentials(account, source);
+  }
 
   DCHECK_EQ(0u, refresh_tokens_.size());
 
   // Make sure all tokens are removed from storage.
-  if (token_web_data_)
+  if (token_web_data_) {
     token_web_data_->RemoveAllTokens();
+  }
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
@@ -852,8 +859,9 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsOnServer(
     const std::string& refresh_token) {
   DCHECK(!refresh_token.empty());
 
-  if (refresh_token == GaiaConstants::kInvalidRefreshToken)
+  if (refresh_token == GaiaConstants::kInvalidRefreshToken) {
     return;
+  }
 
   // Keep track or all server revoke requests.  This way they can be deleted
   // before the token service is shutdown and won't outlive the profile.

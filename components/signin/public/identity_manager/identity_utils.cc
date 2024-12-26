@@ -28,16 +28,18 @@ namespace {
 
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern) {
-  if (pattern.empty())
+  if (pattern.empty()) {
     return true;
+  }
 
   // Patterns like "*@foo.com" are not accepted by our regex engine (since they
   // are not valid regular expressions - they should instead be ".*@foo.com").
   // For convenience, detect these patterns and insert a "." character at the
   // front.
   std::u16string utf16_pattern = base::UTF8ToUTF16(pattern);
-  if (utf16_pattern[0] == L'*')
+  if (utf16_pattern[0] == L'*') {
     utf16_pattern.insert(utf16_pattern.begin(), L'.');
+  }
 
   // See if the username matches the policy-provided pattern.
   UErrorCode status = U_ZERO_ERROR;

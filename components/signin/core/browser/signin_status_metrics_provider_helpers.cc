@@ -16,8 +16,9 @@ SigninOrSyncStatus GetStatus(size_t opened_profiles,
                              size_t profiles_in_state,
                              size_t profiles_in_error) {
   CHECK_LE(profiles_in_state + profiles_in_error, opened_profiles);
-  if (opened_profiles == 0)
+  if (opened_profiles == 0) {
     return SigninOrSyncStatus::kUnknown;
+  }
   if (opened_profiles == profiles_in_state) {
     return SigninOrSyncStatus::kAllProfiles;
   }

@@ -135,8 +135,9 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
 }
 
 IdentityManagerDependenciesOwner::~IdentityManagerDependenciesOwner() {
-  if (owned_signin_client_)
+  if (owned_signin_client_) {
     owned_signin_client_->Shutdown();
+  }
 }
 
 sync_preferences::TestingPrefServiceSyncable*
@@ -213,8 +214,9 @@ IdentityTestEnvironment::IdentityTestEnvironment(
     network::TestURLLoaderFactory* test_url_loader_factory) {
   dependencies_owner_ = std::move(dependencies_owner);
   TestSigninClient* test_signin_client = dependencies_owner_->signin_client();
-  if (test_url_loader_factory)
+  if (test_url_loader_factory) {
     test_signin_client->OverrideTestUrlLoaderFactory(test_url_loader_factory);
+  }
   test_url_loader_factory_ = test_signin_client->GetTestURLLoaderFactory();
 
   sync_preferences::TestingPrefServiceSyncable* test_pref_service =
@@ -388,8 +390,9 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
 }
 
 IdentityTestEnvironment::~IdentityTestEnvironment() {
-  if (owned_identity_manager_)
+  if (owned_identity_manager_) {
     owned_identity_manager_->Shutdown();
+  }
 }
 
 IdentityManager* IdentityTestEnvironment::identity_manager() {
@@ -631,10 +634,12 @@ void IdentityTestEnvironment::HandleOnAccessTokenRequested(
 
   for (auto it = requesters_.begin(); it != requesters_.end(); ++it) {
     if (!it->account_id || (it->account_id.value() == account_id)) {
-      if (it->state == AccessTokenRequestState::kAvailable)
+      if (it->state == AccessTokenRequestState::kAvailable) {
         return;
-      if (it->on_available)
+      }
+      if (it->on_available) {
         std::move(it->on_available).Run();
+      }
       requesters_.erase(it);
       return;
     }

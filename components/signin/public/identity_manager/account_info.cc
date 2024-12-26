@@ -30,11 +30,13 @@ namespace {
 bool UpdateField(std::string* field,
                  const std::string& new_value,
                  const char* default_value) {
-  if (*field == new_value || new_value.empty())
+  if (*field == new_value || new_value.empty()) {
     return false;
+  }
 
-  if (!field->empty() && default_value && new_value == default_value)
+  if (!field->empty() && default_value && new_value == default_value) {
     return false;
+  }
 
   *field = new_value;
   return true;

@@ -88,8 +88,9 @@ class PrimaryAccountManagerTest : public testing::Test,
   }
 
   ~PrimaryAccountManagerTest() override {
-    if (manager_)
+    if (manager_) {
       ShutDownManager();
+    }
     test_signin_client_.Shutdown();
   }
 

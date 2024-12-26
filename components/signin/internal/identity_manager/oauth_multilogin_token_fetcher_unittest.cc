@@ -90,8 +90,9 @@ class OAuthMultiloginTokenFetcherTest : public testing::Test {
 
   // Returns the status of the token fetch.
   FetchStatus GetFetchStatus() const {
-    if (success_callback_called_)
+    if (success_callback_called_) {
       return FetchStatus::kSuccess;
+    }
     return failure_callback_called_ ? FetchStatus::kFailure
                                     : FetchStatus::kPending;
   }
