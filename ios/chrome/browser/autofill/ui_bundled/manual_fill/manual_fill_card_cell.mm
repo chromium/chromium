@@ -799,6 +799,7 @@ CGFloat GPayIconTopAnchorOffset() {
   }
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -812,6 +813,25 @@ CGFloat GPayIconTopAnchorOffset() {
         withTitle:[textView.text substringWithRange:characterRange]];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (textView != self.virtualCardInstructionTextView) {
+    return defaultAction;
+  }
+
+  GURL URL = autofill::payments::GetVirtualCardEnrollmentSupportUrl();
+  NSString* text = textView.text;
+  NSRange range = textItem.range;
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    // The learn more link was clicked.
+    [weakSelf.navigationDelegate openURL:[[CrURL alloc] initWithGURL:URL]
+                               withTitle:[text substringWithRange:range]];
+  }];
 }
 
 // Creates and configures the GPay icon image view.
