@@ -675,6 +675,11 @@ void LensOverlayController::NotifyResultsPanelOpened() {
 }
 
 void LensOverlayController::TriggerCopyText() {
+  // This prevents a race condition where the overlay is closed as a keyboard
+  // event is being processed.
+  if (!page_) {
+    return;
+  }
   page_->TriggerCopyText();
 }
 
