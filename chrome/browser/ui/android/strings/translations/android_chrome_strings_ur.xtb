@@ -19,6 +19,7 @@
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
 <translation id="1080365971383768617">آپ کے تمام آلات پر پاس ورڈز</translation>
 <translation id="1082920045291562218">خلاصہ پر تاثرات فراہم کرنے کے لیے استعمال ہونے والی شیٹ کے ساتھ اشتراک کی سہولت بند ہے</translation>
+<translation id="1087176310396019910">ممکنہ اسپام</translation>
 <translation id="1089606299949659462">جائزہ مکمل ہو گیا!</translation>
 <translation id="1094555143448724771">اپنے دیگر آلات سے ٹیبز کو دیکھنے کے لیے، اپنے ٹیبز اور سرگزشت کو مطابقت پذیر بنائیں</translation>
 <translation id="1095761715416917775">یقینی بنائیں کہ آپ ہمیشہ اپنے مطابقت پذیر ڈیٹا تک رسائی حاصل کر سکتے ہیں</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="3293181007446299124">آپ کی براؤزنگ کی سرگزشت کو آپ کے آلے پر نجی رکھا جاتا ہے اور رپورٹس کو تاخیر سے بھیجا جاتا ہے تاکہ آپ کی شناخت کی حفاظ کی جائے</translation>
+<translation id="3301936297336370235">پاس ورڈ کی تجویز کی تصدیق</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> رنگ کے <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6196315980958524839">‏پاس ورڈز اس آلہ پر Google پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں</translation>
 <translation id="6202812185118613467">مطابقت پذیری شروع کرنے کے لیے دوبارہ سائن ان کریں</translation>
+<translation id="6204781143409202534">‏‫Chrome کو <ph name="DOMAIN" /> سے ممکنہ اسپام کا پتہ چلا۔</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
 <translation id="6211386937064921208">اس صفحہ کا پیش منظر دکھایا جا رہا ہے</translation>

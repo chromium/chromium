@@ -427,6 +427,7 @@
 <translation id="1282436639288565079">የትር ቡድን ዝርዝሮች</translation>
 <translation id="1283126956823499975">መሣሪያውን በማዘጋጀት ላይ የሆነ ስህተት ተከስቷል</translation>
 <translation id="1284277788676816155">ውሂብ ለማስቀመጥ አይፍቀዱ</translation>
+<translation id="1284912418686719556">Chrome ለእርስዎ ጠንካራ የይለፍ ቃል በመፍጠር ላይ ነው። ለ<ph name="EMAIL" /> <ph name="GOOGLE_PASSWORD_MANAGER" /> ውስጥ ስለተቀመጠልዎት ማስታወስ አያስፈልግዎትም።</translation>
 <translation id="1285320974508926690">ይህን ጣቢያ በጭራሽ አትተርጉም</translation>
 <translation id="1285484354230578868">ውሂብ በእርስዎ Google Drive መለያ ላይ ያከማቹ</translation>
 <translation id="1285625592773741684">የአሁኑ የውሂብ አጠቃቀም ቅንብር የተንቀሳቃሽ ስልክ ውሂብ ነው</translation>
@@ -7573,6 +7574,7 @@
 <translation id="637642201764944055">የድሮ የChrome መተግበሪያዎች ስሪቶች ከዲሴምበር 2022 በኋላ በLinux መሣሪያዎች ላይ አይከፍቱም። ወደ አዲስ ስሪት ለማዘመን ወይም ይህን መተግበሪያ ለማስወገድ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="6377268785556383139">ለ«<ph name="SEARCH_TEXT" />» 1 ውጤት</translation>
 <translation id="6378392501584240055">በWi-Fi አውታረ መረቦች ክፈት</translation>
+<translation id="6379228010899751161">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ ያሉትን የይለፍ ቃሎች ሁልጊዜ መጠቀም እንደሚችሉ ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6380143666419481200">ይቀበሉ እና ይቀጥሉ</translation>
 <translation id="6383382161803538830">የንባብ ሁነታ በዚህ ገጽ ላይ አይገኝም</translation>
 <translation id="638418309848716977">የሚደገፉ አገናኞች</translation>
@@ -9625,6 +9627,7 @@
     <ph name="BEGIN_PARAGRAPH2" />በማንኛውም ጊዜ በእርስዎ የChromeOS መሣሪያ ቅንብሮች ውስጥ እነዚህን ሪፖርቶች መፍቀድ መጀመር ወይም ማቆም ይችላሉ። እርስዎ የጎራ አስተዳዳሪ ከሆኑ ይህን ቅንብር በአስተዳዳሪ መሥሪያው ውስጥ መቀየር ይችላሉ።<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />የGoogle መለያዎ የድር እና የመተግበሪያ እንቅስቃሴ ቅንብር ከበራ የAndroid ውሂብዎ ወደ የGoogle መለያዎ ሊቀመጥ ይችላል። account.google.com ላይ የእርስዎን ውሂብ ማየት፣ መሰረዝ እና የእርስዎን መለያ ቅንብሮች መለወጥ ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቅጂ የግል ውጤቶችዎን ወይም ረዳትዎን ሊደርስባቸው ይችላል። ባትሪ ለመቆጠብ ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ «Hey Google» እንዲበራ በረዳት ቅንብሮችዎ ውስጥ መምረጥ ይችላሉ።</translation>
+<translation id="7851196412551419054">የይለፍ ቃልዎን በመለወጥ ላይ...</translation>
 <translation id="7851457902707056880">በመለያ መግባት ለመለያው ባለቤት ብቻ ተገድቧል። እባክዎ ዳግም ያስነሱና በባለቤቱ መለያ ይግቡ። ማሽኑ በ30 ሰከንዶች ውስጥ ዳግም ይነሳል።</translation>
 <translation id="7851716364080026749">የካሜራ እና ማይክሮፎን መዳረሻ ሁልጊዜ አግድ</translation>
 <translation id="7851720427268294554">IPP ተንታኝ</translation>
@@ -11218,6 +11221,7 @@ nil</translation>
 <translation id="8962863356073277855">የዩአርኤል ቅርጸት https://www.example.com መሆን አለበት</translation>
 <translation id="8962918469425892674">ይህ ጣቢያ የእንቅስቃሴ ወይም የብርሃን ዳሳሾችን እየተጠቀመ ነው።</translation>
 <translation id="8963117664422609631">ወደ የጣቢያ ቅንብሮች ይሂዱ</translation>
+<translation id="8964927371396953727">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ የይለፍ ቃሎችን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="8965037249707889821">የድሮ ይለፍ ቃል ያስገቡ</translation>
 <translation id="8966809848145604011">ሌሎች መገለጫዎች</translation>
 <translation id="8967427617812342790">ወደ የንባብ ዝርዝር አክል</translation>

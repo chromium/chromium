@@ -120,6 +120,7 @@
 <translation id="2583187216237139145">‏يمكن لمشرف ملف العمل إزالة أي بيانات مرتبطة بمتصفِّح Chromium والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">‏يُرجى إثبات هويتك لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="264613044588233783">‏سيعمل Chromium بشكل أسرع ومن المفترض أن تعمل الميزات التي تستخدِم JavaScript على النحو المطلوب (خيار يُنصَح به).</translation>
 <translation id="2648074677641340862">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="2661879430930417727">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chromium على النحو المفضّل لديهم.</translation>
@@ -447,6 +448,7 @@
 <translation id="6980074797973263542">‏يمكن لمؤسستك الاطّلاع على بيانات التصفّح وإدارتها، مثل الإشارات المرجعية والسجلّ وكلمات المرور. ولا يمكنها الاطّلاع على بيانات التصفّح في الملفات الشخصية على Chromium.</translation>
 <translation id="6985329841647292029">‏بنود نظام التشغيل Chromium</translation>
 <translation id="6990124437352146030">‏يحتاج Chromium إلى إذن للوصول إلى الميكروفون من أجل الموقع الإلكتروني هذا.</translation>
+<translation id="7003299027384820442">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chromium وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="7011190694940573312">تعذّر تثبيت هذا الإصدار من نظام التشغيل لأنّه غير متوافق.</translation>
 <translation id="7024536598735240744">حدث خطأ في فك ضغط الحزمة: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
@@ -542,6 +544,7 @@
 <translation id="8330519371938183845">‏يمكنك تسجيل الدخول لمزامنة Chromium وتخصيصه على جميع أجهزتك.</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
 <translation id="8357820681460164151">‏للوصول إلى بياناتك في متصفّح Chromium من جميع أجهزتك، سجِّل الدخول وفعِّل المزامنة.</translation>
+<translation id="8359544530202147897">‏يُرجى تحديث متصفّح Chromium لمواصلة استخدام بياناته في حسابك على Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8360718212975266891">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام كمبيوتر يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 8.</translation>
 <translation id="8362914115861174987">الترجمة إلى</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>

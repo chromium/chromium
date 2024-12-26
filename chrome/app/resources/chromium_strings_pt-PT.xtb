@@ -122,6 +122,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2583187216237139145">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuar a usar o Chromium</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Valide a sua identidade para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
 <translation id="2661879430930417727">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
@@ -449,6 +450,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6980074797973263542">A sua organização pode ver e gerir os dados de navegação, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação em perfis pessoais do Chromium.</translation>
 <translation id="6985329841647292029">Termos do ChromiumOS</translation>
 <translation id="6990124437352146030">O Chromium necessita de autorização de acesso ao microfone para este site.</translation>
+<translation id="7003299027384820442">Introduza a sua frase de acesso para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">A instalação falhou porque esta versão do sistema operativo não é suportada.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalação interrompida.</translation>
@@ -544,6 +546,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8330519371938183845">Inicie sessão para sincronizar e personalizar o Chromium em todos os dispositivos.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>
 <translation id="8357820681460164151">Para aceder aos seus itens do navegador Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
+<translation id="8359544530202147897">Atualize o Chromium para continuar a usar os dados do Chromium na sua Conta Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.</translation>
 <translation id="8362914115861174987">Traduzir para</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>

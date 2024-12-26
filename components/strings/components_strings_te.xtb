@@ -957,6 +957,7 @@
 <translation id="2688969097326701645">అవును, కొనసాగించండి</translation>
 <translation id="2690699652723742414">గత 30 రోజులు</translation>
 <translation id="2691924980723297736">భద్రతా హెచ్చరిక</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />‌ని అడగండి</translation>
 <translation id="2699273987028089219">సబ్‌మెనూ అందుబాటులో ఉంది, అదనపు ఆప్షన్‌లకు నావిగేట్ చేయడానికి <ph name="SHORTCUT" />‌ని ఉపయోగించండి.</translation>
 <translation id="2701514975700770343">ఫేస్ డౌన్</translation>
 <translation id="2702592986366989640">తక్కువ ధర ఉన్న ఆప్షన్</translation>
@@ -2061,6 +2062,7 @@
 <translation id="469028408546145398">'అజ్ఞాత విండోలను మూసివేయండి' బటన్, ప్రస్తుతం తెరిచి ఉన్న అజ్ఞాత విండోలన్నింటినీ మూసివేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="4691093235373904540">పై కప్పు వేయడం</translation>
 <translation id="4692623383562244444">సెర్చ్ ఇంజిన్‌లు</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />ని అడగండి</translation>
 <translation id="4698692901173737941">పోరాట క్రీడలు</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">పక్కన</translation>

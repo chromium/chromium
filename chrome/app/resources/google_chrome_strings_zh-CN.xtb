@@ -240,6 +240,7 @@
 <translation id="3889417619312448367">卸载 Google Chrome</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
+<translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="3973161977468201858">Google Chrome 想要删除您的 Google 密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="398236277091248993">Chrome 会借助性能提升功能保持快速运行</translation>
 <translation id="3999683152997576765">您可看到并移除被网站用来向您展示广告的兴趣主题。Chrome 会根据您近期的浏览记录推测出您的兴趣。</translation>
@@ -304,6 +305,7 @@
 <translation id="4728575227883772061">未知错误导致安装失败。如果 Google Chrome 浏览器正在运行，请将其关闭，然后重试。</translation>
 <translation id="4741235124132242877">已固定！可通过工具栏再次使用 Google 智能镜头</translation>
 <translation id="4747730611090640388">Chrome 可以推测出您的兴趣。之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。</translation>
+<translation id="475321580758063259">请更新 Chrome，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chrome 数据</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
@@ -576,6 +578,7 @@
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
 <translation id="8111297389482307122">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，并在您的所有设备上使用。如果您退出账号，这些数据将保留在此设备上。</translation>
+<translation id="8113883687556086139">请验证您的身份，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>

@@ -540,6 +540,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1368603372088757436">Hindi sinusuportahan ang Linux sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account</translation>
 <translation id="1370384480654163477">Tumingin at mag-edit ng mga file mula sa huling beses na binisita mo ang site na ito:</translation>
+<translation id="1372259917802609049">Nagkaroon ng error sa pag-delete ng limitasyon</translation>
 <translation id="1372841398847029212">I-sync sa iyong account</translation>
 <translation id="1373176046406139583">Kinokontrol ng pagiging visible ng device mo kung sino ang puwedeng magbahagi sa iyo habang naka-unlock ang screen mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Ang certificate na kinakailangan ng network na "<ph name="NETWORK_NAME" />" ay maaaring hindi naka-install o wala nang bisa.  Mangyaring kumuha ng isang bagong certificate at subukang kumonekta muli.</translation>
@@ -1489,6 +1490,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
     Hindi ito nakakaapekto sa mga app o content sa iba pang device.</translation>
 <translation id="2018189721942291407">Hindi sigurado kung dapat kang mag-enroll?</translation>
 <translation id="2018352199541442911">Paumanhin, hindi sinusuportahan ang iyong panlabas na device sa storage sa oras na ito.</translation>
+<translation id="2019213483156307334">Nagkaroon ng error sa pagdaragdag ng limitasyon</translation>
 <translation id="2019718679933488176">&amp;Buksan ang Audio sa Bagong Tab</translation>
 <translation id="2020183425253392403">Ipakita ang mga setting ng address ng network</translation>
 <translation id="2020225359413970060">I-scan ang file</translation>
@@ -3151,6 +3153,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3188465121994729530">Average ng Paglipat</translation>
 <translation id="3189187154924005138">Malaking cursor</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{Mase-save ang 1 password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}one{Mase-save ang {PASSWORD_COUNT} password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {PASSWORD_COUNT} na password at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="3190558889382726167">Nai-save ang password</translation>
 <translation id="3192586965067888278">Ilarawan nang detalyado ang isyu. Ipapadala ang feedback sa Google para sa pagsusuri ng tao at posibleng gamitin ito para sa pagpapahusay o pag-develop ng mga produkto at serbisyo ng Google.</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
@@ -3621,6 +3624,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3537881477201137177">Puwede itong baguhin sa ibang pagkakataon sa Mga Setting</translation>
 <translation id="3538066758857505094">Nagkaroon ng error sa pag-uninstall sa Linux. Pakisubukang muli.</translation>
 <translation id="3539537154248488260">I-toggle ang Inspirasyon</translation>
+<translation id="3539791442352537591">Nagkaroon ng error sa pag-save ng pagbabago sa katayuan ng trust</translation>
 <translation id="3540173484406326944">Walang network sa pamamagitan ng <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">AC adapter</translation>
 <translation id="354068948465830244">Mari-read at mababago nito ang data ng site</translation>
@@ -4808,6 +4812,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4361745360460842907">Buksan bilang tab</translation>
 <translation id="4363262124589131906">Hihinto sa awtomatikong pag-sync sa Chromebook na ito ang mga bagong file sa Aking Drive</translation>
 <translation id="4364327530094270451">Melon</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{Mase-save ang 1 item sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang {ITEM_COUNT} item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {ITEM_COUNT} na item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
 <translation id="4367971618859387374">Display name</translation>
@@ -5730,6 +5735,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5029287942302939687">Nakatakda na ang iyong password</translation>
 <translation id="5029873138381728058">Hindi nasuri ang mga VM</translation>
 <translation id="503155457707535043">Dina-download ang mga app</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Mga address}=1{Mga address ({SELECTED_ITEMS})}one{Mga address ({SELECTED_ITEMS})}other{Mga address ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
 <translation id="5033137252639132982">Hindi pinapayagang gumamit ng mga sensor ng paggalaw</translation>
 <translation id="5035846135112863536">Piliin ang "Higit pang detalye" sa ibaba para kumuha ng higit pang impormasyon mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -6479,6 +6485,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5568069709869097550">Hindi makapag-sign in</translation>
 <translation id="5568525251731145240">I-delete ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" />, lahat ng site sa ilalim nito, at mga naka-install na app?</translation>
 <translation id="5568602038816065197">Puwedeng gumamit ang mga site ng mga advanced na feature mula sa anumang printer na naa-access ng device mo nang hindi dumadaan sa karaniwang prompt ng Pag-print</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Mga password}=1{Mga password ({SELECTED_ITEMS})}one{Mga password ({SELECTED_ITEMS})}other{Mga password ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">Pinapagana ang Bluetooth</translation>
 <translation id="5571092938913434726">Mga Kontrol ng Pangkalahatang Media</translation>
 <translation id="5571832155627049070">I-customize ang iyong profile</translation>
@@ -6981,6 +6988,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5941153596444580863">Magdagdag ng tao...</translation>
 <translation id="5941343993301164315">Mangyaring mag-sign in sa <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">I-minimize</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{Mase-save ang 1 password sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang {PASSWORD_COUNT} password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {PASSWORD_COUNT} na password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="594221546068848596">Hanapin ang page gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5942779427914696408">Visibility ng device</translation>
 <translation id="5943127421590245687">Matagumpay ang iyong pag-verify. Para i-unlock at i-restore ang iyong lokal na data, pakilagay ang lumang password mo sa <ph name="DEVICE_TYPE" />.</translation>
@@ -8499,6 +8507,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> na espasyo ang inirerekomenda para sa Linux. Para madagdagan ang bakanteng espasyo, mag-delete ng mga file sa iyong device.</translation>
 <translation id="7037157058268992880">Nakalimutan ang PIN</translation>
 <translation id="7037509989619051237">Text na ipi-preview</translation>
+<translation id="7037633074390821254">Limitasyon sa DNS o CIDR</translation>
 <translation id="7038632520572155338">Switch access</translation>
 <translation id="7038710352229712897">Magdagdag ng isa pang Google Account para kay <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Mag-access ng mga USB device mula sa <ph name="VENDOR_NAME" /></translation>
@@ -8748,6 +8757,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7231260028442989757">Tingnan, i-dismiss, at sagutin ang mga notification ng iyong telepono</translation>
 <translation id="7231347196745816203">Gamitin ang iyong telepono para i-unlock ang <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="7232750842195536390">Hindi napalitan ang pangalan</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{Mase-save ang 1 bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}one{Mase-save ang {BOOKMARK_COUNT} bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {BOOKMARK_COUNT} na bookmark at iba pang item sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="723343421145275488">Maghanap ng Mga Larawan gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Kinakansela ang pag-restore ng Linux</translation>
 <translation id="7235305658956131898">Na-install ang Android app ng administrator ng iyong device.</translation>
@@ -8874,6 +8884,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7327989755579928735">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Kapag na-restart mo ang iyong <ph name="DEVICE_TYPE" />, hindi ka makakapag-sideload ng mga app.</translation>
 <translation id="7328119182036084494">Naka-save sa <ph name="WEB_DRIVE" /></translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{Mase-save ang 1 bookmark sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang {BOOKMARK_COUNT} bookmark sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang {BOOKMARK_COUNT} na bookmark sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="7328867076235380839">Invalid ang kumbinasyon</translation>
 <translation id="7329154610228416156">Hindi nakapag-sign in dahil naka-configure ito sa paggamit ng isang hindi secure na URL (<ph name="BLOCKED_URL" />). Mangyaring makipag-ugnayan sa iyong administrator.</translation>
 <translation id="7330533963640151632">Mga setting ng <ph name="FEATURE_NAME" /> para sa device ni <ph name="USER_NAME" />, na nagshe-share sa ilalim ng account na <ph name="USER_EMAIL" />.</translation>
@@ -10416,6 +10427,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8398877366907290961">Magpatuloy</translation>
 <translation id="8399282673057829204">Tingnan ang password</translation>
 <translation id="839949601275221554">Nagka-error sa device. Paki-restart ang iyong device at subukan ulit.</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{Mga bookmark}=1{Mga bookmark ({SELECTED_ITEMS})}one{Mga bookmark ({SELECTED_ITEMS})}other{Mga bookmark ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
 <translation id="8403807918453631441">Masusuri ng <ph name="BRAND" /> ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="8405046151008197676">Kunin ang mga highlight mula sa pinakabagong update</translation>
@@ -11671,6 +11683,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="97905529126098460">Magsasara ang window na ito kapag tapos na ang pagkansela.</translation>
 <translation id="980731642137034229">Button ng menu ng pagkilos</translation>
 <translation id="981121421437150478">Offline</translation>
+<translation id="982083952953998237">Magdagdag ng Mga Limitasyon</translation>
 <translation id="98235653036850093">Kumusta, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - Nagre-record ang camera at mikropono</translation>

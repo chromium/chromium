@@ -3150,7 +3150,7 @@
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
-<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{這 1 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {PASSWORD_COUNT} 組密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{PASSWORD_COUNT} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192586965067888278">請詳細描述問題。意見將會傳送到 Google 以作人手審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音效檔案</translation>
@@ -4802,7 +4802,7 @@
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至此 Chromebook</translation>
 <translation id="4364327530094270451">蜜瓜</translation>
-<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{這 1 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {ITEM_COUNT} 個項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{ITEM_COUNT} 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
@@ -6974,7 +6974,7 @@
 <translation id="5941153596444580863">新增使用者…</translation>
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
-<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {PASSWORD_COUNT} 組密碼只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{PASSWORD_COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="594221546068848596">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋網頁</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5943127421590245687">您已完成驗證程序。如果要解鎖並還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
@@ -8741,7 +8741,7 @@
 <translation id="7231260028442989757">查看、關閉和回覆手機的通知</translation>
 <translation id="7231347196745816203">使用手機解鎖你的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
-<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{這 1 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {BOOKMARK_COUNT} 個書籤和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{1 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{BOOKMARK_COUNT} 個書籤和其他項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="723343421145275488">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
 <translation id="7235305658956131898">由裝置管理員安裝的 Android 應用程式。</translation>
@@ -8868,7 +8868,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
 <translation id="7328119182036084494">已儲存至「<ph name="WEB_DRIVE" />」</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{這 1 個書籤只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}other{這 {BOOKMARK_COUNT} 個書籤只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。}}</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{{BOOKMARK_COUNT} 個書籤只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="7328867076235380839">無效的組合</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
 <translation id="7330533963640151632">「<ph name="USER_NAME" />」裝置的「<ph name="FEATURE_NAME" />」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>

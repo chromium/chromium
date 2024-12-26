@@ -1610,6 +1610,29 @@ Jika kebijakan ini tidak disetel, fitur Terjemahan Langsung mula-mula akan dinon
 <translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
       Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada kebijakan yang akan diganti.</translation>
+<translation id="2158028663273824412">Mengontrol mode resolver DNS-over-HTTPS. Perlu diingat bahwa kebijakan
+ini hanya akan menyetel mode default untuk setiap kueri. Mode tersebut mungkin
+digantikan untuk jenis kueri khusus seperti permintaan untuk me-resolve
+hostname server DNS-over-HTTPS.
+
+Mode <ph name="SECURE_DNS_MODE_OFF" /> akan menonaktifkan
+DNS-over-HTTPS.
+
+Mode <ph name="SECURE_DNS_MODE_AUTOMATIC" /> akan mengirim
+kueri DNS-over-HTTPS terlebih dahulu jika server DNS-over-HTTPS tersedia dan
+mungkin berganti mengirim kueri yang tidak aman tentang error.
+
+Mode <ph name="SECURE_DNS_MODE_SECURE" /> hanya akan mengirim
+kueri DNS-over-HTTPS dan akan gagal me-resolve error.
+
+Di <ph name="ANDROID_VERSION" /> dan yang lebih baru, jika DNS-over-TLS
+aktif, <ph name="PRODUCT_NAME" /> tidak akan mengirim
+permintaan DNS yang tidak aman.
+
+Jika kebijakan ini tidak disetel, kueri DNS-over-HTTPS tidak akan
+dikirim untuk
+perangkat terkelola. Jika tidak, browser mungkin akan mengirim permintaan DNS-over-HTTPS ke
+resolver yang terkait dengan resolver sistem terkonfigurasi milik pengguna.</translation>
 <translation id="2158741059065130266">Jika kebijakan disetel ke Benar (True), pengguna aplikasi File <ph name="PRODUCT_OS_NAME" /> akan melihat Sampah dan file di bagian File saya dan Download (termasuk turunan yang dibuat oleh pengguna) akan dikirim ke sana saat dihapus.
 
       Jika kebijakan disetel ke Salah (False), file yang sebelumnya berada di sampah akan tetap tersedia dengan menampilkan file tersembunyi dan menemukan direktori .Trash di bagian File saya atau Download.</translation>
@@ -1715,6 +1738,11 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="2202787915587511214">Aktifkan NTLMv2</translation>
 <translation id="2204379573346866896">Menit berlalu dalam jam saat ini.</translation>
 <translation id="2204753382813641270">Kontrol sembunyi otomatis rak</translation>
+<translation id="2208092773610663977">Jika kebijakan ini disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
+
+Jika kebijakan ini disetel ke Nonaktif, pengguna tidak diizinkan menjalankan fungsi ini.
+
+      Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika kebijakan ini tidak disetel, pemeriksaan kebocoran kredensial akan diizinkan, tetapi pengguna dapat menonaktifkannya.</translation>
 <translation id="2208976000652006649">Parameter untuk URL penelusuran yang menggunakan POST</translation>
 <translation id="2212011154693551439">Halaman histori Chrome yang diatur ke dalam grup akan dapat dilihat di chrome://history/grouped secara default.</translation>
 <translation id="2212207215880394506">Jangan izinkan Pengeditan Foto AI Generatif.</translation>
@@ -6291,6 +6319,13 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="545817252640069915">Aktifkan intersepsi login</translation>
 <translation id="5460797984317417682">Aktifkan peringatan layar penuh</translation>
 <translation id="5462898272514237681">Mengontrol akses <ph name="PRODUCT_OS_NAME" /> ke layanan lokasi Google</translation>
+<translation id="5464786290880338716">Kebijakan untuk mengontrol apakah fitur Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> harus diaktifkan.
+
+Jika kebijakan ini disetel ke Nonaktif, fitur Perlindungan IP akan dinonaktifkan dan pengguna tidak akan dapat mengaktifkan fitur tersebut melalui setelan UI.
+Jika kebijakan ini disetel ke Aktif, fitur Perlindungan IP akan diaktifkan dan pengguna tidak akan dapat menonaktifkan fitur tersebut melalui setelan UI.
+Jika kebijakan ini tidak disetel, fitur Perlindungan IP akan dinonaktifkan untuk pengguna yang browser atau perangkatnya dikelola dan pengguna tidak akan dapat mengaktifkan fitur tersebut melalui setelan UI. Pengguna di browser dan perangkat yang tidak dikelola akan dapat mengaktifkan atau menonaktifkan fitur Perlindungan IP di perangkatnya melalui setelan UI.
+
+Catatan: Perilaku fitur Perlindungan IP untuk pengguna versi bisnis mungkin berbeda-beda dari waktu ke waktu saat kebijakan ini disetel ke Aktif atau saat kebijakan ini tidak disetel dan fitur ini diaktifkan melalui setelan UI.</translation>
 <translation id="5464816904705580310">Mengonfigurasi setelan untuk pengguna terkelola.</translation>
 <translation id="5466596281866046569">Melaporkan informasi aplikasi</translation>
 <translation id="5467175549232776406">Halaman pengujian kebijakan dapat diakses</translation>
@@ -8855,6 +8890,7 @@ apa pun dengan SPKI yang cocok (SubjectPublicKeyInfo) akan tidak dipercaya.</tra
 <translation id="7177293255621000064">Jika kebijakan ditetapkan ke Benar (True), semua jenis media penyimpanan eksternal (USB, flash drive, hard drive eksternal, kartu SD dan kartu memori lainnya, penyimpanan optik) akan menjadi tidak tersedia di file browser. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna akan dapat menggunakan penyimpanan eksternal di perangkat mereka.
 
       Catatan: Kebijakan tidak memengaruhi Google Drive dan penyimpanan internal. Pengguna masih dapat mengakses file yang disimpan di folder Download.</translation>
+<translation id="7177645313697913767">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Perlindungan IP <ph name="PRIVACY_SANDBOX_NAME" /> di perangkatnya jika browser dan perangkat tidak dikelola.</translation>
 <translation id="7177857088692019405">Membuka kunci dengan cepat</translation>
 <translation id="7179157174254421614">Kecuali kebijakan <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> menonaktifkan deteksi zona waktu otomatis, menyetel kebijakan akan menguraikan metode deteksi zona waktu otomatis, yang tidak dapat diubah pengguna.
 

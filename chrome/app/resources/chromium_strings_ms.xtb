@@ -122,6 +122,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2583187216237139145">Sebarang data Chromium yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Sahkan identiti anda untuk menggunakan dan menyimpan data Chromium dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk (disyorkan)</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
@@ -449,6 +450,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6980074797973263542">Organisasi anda dapat melihat dan mengurus data penyemakan imbas, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chromium peribadi.</translation>
 <translation id="6985329841647292029">Syarat Chromium OS</translation>
 <translation id="6990124437352146030">Chromium memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
+<translation id="7003299027384820442">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chromium dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Pemasangan gagal kerana versi sistem operasi ini tidak disokong.</translation>
 <translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
@@ -544,6 +546,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8330519371938183845">Log masuk untuk menyegerakkan dan memperibadikan Chromium pada semua peranti anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> menggunakan Chromium sebelum ini</translation>
 <translation id="8357820681460164151">Untuk mengakses bahan penyemak imbas Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
+<translation id="8359544530202147897">Kemas kinikan Chromium untuk terus menggunakan data Chromium dalam Google Account anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.</translation>
 <translation id="8362914115861174987">Terjemahkan kepada</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>

@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">是的，继续</translation>
 <translation id="2690699652723742414">过去 30 天</translation>
 <translation id="2691924980723297736">安全警告</translation>
+<translation id="2697248912349197812">向 <ph name="KEYWORD_SHORT_NAME" /> 提问</translation>
 <translation id="2699273987028089219">子菜单可用，使用<ph name="SHORTCUT" />可找到其他选项。</translation>
 <translation id="2701514975700770343">正面朝下</translation>
 <translation id="2702592986366989640">低价选项</translation>
@@ -2062,6 +2063,7 @@
 <translation id="469028408546145398">“关闭无痕式窗口”按钮，激活它即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="4691093235373904540">屋顶修缮</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - 向 <ph name="KEYWORD_SHORT_NAME" /> 提问</translation>
 <translation id="4698692901173737941">格斗运动</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /><ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">侧边</translation>

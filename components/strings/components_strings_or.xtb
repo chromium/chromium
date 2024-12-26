@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ଫଟୋ (ଆର୍କାଇଭାଲ)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ୱେବ ଆପ୍ସ ଇନଷ୍ଟଲ କରିବେ?</translation>
+<translation id="1791415068765905273">ସମସ୍ତ ତୁଳନା ଟେବୁଲ ଦେଖାନ୍ତୁ</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ସୂଚନା, ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷାକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="1793631236004319016">ଗତଥର <ph name="NUM_HOURS_MINUTES_SECONDS" /> ପୂର୍ବେ ବ୍ୟବହାର କରାଯାଇଛି</translation>
@@ -2194,6 +2195,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ (ଡାଉନ୍‌ଲୋଡ୍‌ର ଆବଶ୍ୟକତା ନାହିଁ)</translation>
 <translation id="4920457992177678649">ଛୁଟି କାଟିବା ପାଇଁ ଭଡ଼ା ଏବଂ ସ୍ୱଳ୍ପ-କାଳୀନ ରହଣି</translation>
 <translation id="4920710383559189047">ସ୍ଲିଭ</translation>
+<translation id="4920921410507315601">ତୁଳନା ଟେବୁଲ</translation>
 <translation id="4922104989726031751">ଆପଣଙ୍କ ଅପରେଟିଂ ସିଷ୍ଟମ ସହ Password Manager ବ୍ୟବହାର କରିବା ପାଇଁ Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରି ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରର Password Managerକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ। ପୁଣି ଲଞ୍ଚ ହେବା ପରେ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ପୁଣି ଖୋଲିବ।</translation>
 <translation id="4923459931733593730">ପେମେଣ୍ଟ</translation>
 <translation id="4926049483395192435">ନିର୍ଦ୍ଦିଷ୍ଟ କରିବା ଉଚିତ।</translation>
@@ -2387,6 +2389,7 @@
 <translation id="5278778426231952189">ବର୍ତ୍ତମାନ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5279286380302340275">ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="5280963125494874678">ୱେବ ଆପ୍ଲିକେସନ</translation>
+<translation id="5282008206326321696">{count,plural, =0{# ବୁକମାର୍କ}=1{# ବୁକମାର୍କ}other{# ବୁକମାର୍କ}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ଡକ୍ୟୁମେଣ୍ଟର ପ୍ରପର୍ଟିଗୁଡ଼ିକ</translation>
 <translation id="528468243742722775">ସମାପ୍ତ କରନ୍ତୁ</translation>
@@ -2582,6 +2585,7 @@
 <translation id="561165882404867731">Google Translate ସାହାଯ୍ୟରେ ଏହି ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="5612720917913232150"><ph name="URL" /> ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="5614520971155863709">କାର୍ଡ ଗେମଗୁଡ଼ିକ</translation>
+<translation id="5617785978844309968">ସମସ୍ତ ତୁଳନା ଟେବୁଲ ଦେଖାନ୍ତୁ</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" />, ଆପଣଙ୍କୁ ଅନେକ ଥର ରିଡାଇରେକ୍ଟ କରିଛି।</translation>
 <translation id="5619721953841297650">ପ୍ରିସେଟ</translation>
 <translation id="5624120631404540903">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>

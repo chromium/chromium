@@ -962,6 +962,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2688969097326701645">Jah, jätka</translation>
 <translation id="2690699652723742414">Viimased 30 päeva</translation>
 <translation id="2691924980723297736">Ohutusalane hoiatus</translation>
+<translation id="2697248912349197812">Küsige mudelilt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Alammenüü on saadaval, kasutage lisavalikute juurde navigeerimiseks otseteed <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Esikülg allapoole</translation>
 <translation id="2702592986366989640">Soodne valik</translation>
@@ -2066,6 +2067,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="469028408546145398">Nupp Sule inkognito aknad, aktiveerige nupp kõigi praegu avatud inkognito akende sulgemiseks</translation>
 <translation id="4691093235373904540">Katusetööd</translation>
 <translation id="4692623383562244444">Otsingumootorid</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – küsige mudelilt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Võitlussport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Külg</translation>

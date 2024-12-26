@@ -240,6 +240,7 @@
 <translation id="3889417619312448367">Odinstaluj Google Chrome</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
+<translation id="3968962723676998462">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="3973161977468201858">Google Chrome chce usunąć Twoje dane z Menedżera haseł Google. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="398236277091248993">Chrome działa szybciej dzięki funkcjom zwiększającym wydajność</translation>
 <translation id="3999683152997576765">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chrome ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
@@ -304,6 +305,7 @@
 <translation id="4728575227883772061">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Google Chrome jest aktualnie uruchomiony, zamknij aplikację i spróbuj ponownie.</translation>
 <translation id="4741235124132242877">Przypięto. Obiektyw Google znajdziesz teraz na pasku narzędzi</translation>
 <translation id="4747730611090640388">Chrome może szacować Twoje zainteresowania.  Później odwiedzana przez Ciebie witryna może wykorzystać te informacje, żeby spersonalizować wyświetlane Ci reklamy.</translation>
+<translation id="475321580758063259">Zaktualizuj Chrome, aby nadal korzystać z danych Chrome na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
 <translation id="4793679854893018356">Jak Chrome dba o Twoje bezpieczeństwo</translation>
@@ -576,6 +578,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8077579734294125741">Inne profile Chrome</translation>
 <translation id="8086881907087796310">Instalacja się nie udała, ponieważ komputer nie spełnia minimalnych wymagań sprzętowych.</translation>
 <translation id="8111297389482307122">Aby niektóre dane mogły być zapisywane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chrome musi zweryfikować Twoją tożsamość. Jeśli się wylogujesz, te dane pozostaną na tym urządzeniu.</translation>
+<translation id="8113883687556086139">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="8118331347066725040">Prześlij opinię na temat wyszukiwania z użyciem Obiektywu</translation>
 <translation id="8129812357326543296">&amp;Google Chrome – informacje</translation>
 <translation id="813913629614996137">Inicjuję…</translation>

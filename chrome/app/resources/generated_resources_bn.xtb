@@ -540,6 +540,7 @@
 <translation id="1368603372088757436">আপনার <ph name="DEVICE_TYPE" />-এ Linux কাজ করে না। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">আপনার অন্যান্য ডিভাইসেও সেগুলি ব্যবহার করতে হলে, Google অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="1370384480654163477">আপনি শেষবার এই সাইট ভিজিট করাকালীন অনুমতি দেওয়া ফাইল দেখুন ও এডিট করুন:</translation>
+<translation id="1372259917802609049">সমস্যা মোছার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="1372841398847029212">আপনার অ্যাকাউন্টে সিঙ্ক করুন</translation>
 <translation id="1373176046406139583">'ডিভাইসের দৃশ্যমানতা' ফিচার ব্যবহার করে আপনার স্ক্রিন আনলক থাকাকালীন কারা আপনার সাথে ফাইল শেয়ার করতে পারবেন তা নিয়ন্ত্রণ করা যায়। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">নেটওয়ার্কের প্রয়োজনীয় সার্টিফিকেট "<ph name="NETWORK_NAME" />" হয় ইনস্টল করা নেই অথবা তা আর বৈধ নয়৷ অনুগ্রহ করে একটি নতুন সার্টিফিকেট আনুন আর সংযোগ করতে পুনরায় চেষ্টা করুন৷</translation>
@@ -1489,6 +1490,7 @@
     অন্য ডিভাইসে থাকা অ্যাপ ও কন্টেন্টের উপরে এর কোনও প্রভাব পড়বে না।</translation>
 <translation id="2018189721942291407">এনরোল করা উচিত হবে কিনা সেই ব্যাপারে নিশ্চিত নন?</translation>
 <translation id="2018352199541442911">আপনার বাহ্যিক স্টোরেজের ডিভাইসটি এই মুহুর্তে সমর্থিত নয়৷</translation>
+<translation id="2019213483156307334">সমস্যা যোগ করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="2019718679933488176">নতুন ট্যাবে অডিও &amp;খুলুন</translation>
 <translation id="2020183425253392403">নেটওয়ার্ক ঠিকানার সেটিংস দেখান</translation>
 <translation id="2020225359413970060">ফাইল স্ক্যান করুন</translation>
@@ -3151,6 +3153,7 @@
 <translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3188465121994729530">সরানোর গড়</translation>
 <translation id="3189187154924005138">বড় কার্সর</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{শুধু ১টি পাসওয়ার্ড ও অন্যান্য আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}one{শুধু {PASSWORD_COUNT}টি পাসওয়ার্ড ও অন্যান্য আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {PASSWORD_COUNT}টি পাসওয়ার্ড ও অন্যান্য আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
 <translation id="3192586965067888278">সমস্যার বিস্তারিত বিবরণ দিন। হিউম্যান রিভিউয়ের জন্য মতামত Google-এ পাঠানো হবে এবং Google প্রোডাক্ট ও পরিষেবা উন্নত অথবা ডেভেলপ করতে তা ব্যবহার করা হতে পারে।</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
@@ -3621,6 +3624,7 @@
 <translation id="3537881477201137177">এটিকে সেটিংসে গিয়ে পরে পরিবর্তন করা যেতে পারে</translation>
 <translation id="3538066758857505094">Linux আনইনস্টল করতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।</translation>
 <translation id="3539537154248488260">সার্চের সাজেশন টগল করুন</translation>
+<translation id="3539791442352537591">ট্রাস্ট স্ট্যাটাস পরিবর্তন সেভ করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />-এর সাহায্যে ইন্টারনেট কানেক্ট নেই</translation>
 <translation id="354060433403403521">AC অ্যাডপ্টার</translation>
 <translation id="354068948465830244">এটি সাইট ডেটা পড়তে এবং পরিবর্তন করতে পারে</translation>
@@ -4808,6 +4812,7 @@
 <translation id="4361745360460842907">ট্যাব রূপে খুলুন</translation>
 <translation id="4363262124589131906">এই Chromebook-এ 'আমার ড্রাইভ'-এর নতুন ফাইল সিঙ্ক করার প্রসেস অটোমেটিক বন্ধ করে দেবে</translation>
 <translation id="4364327530094270451">ফুটি</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{শুধু ১টি আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটিকে সেভ করুন।}one{শুধু {ITEM_COUNT}টি আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {ITEM_COUNT}টি আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4367971618859387374">যে নাম দেখানো হবে</translation>
@@ -5730,6 +5735,7 @@
 <translation id="5029287942302939687">আপনার পাসওয়ার্ড সেট করা হয়েছে</translation>
 <translation id="5029873138381728058">VM চেক করা যায়নি</translation>
 <translation id="503155457707535043">অ্যাপ ডাউনলোড করা হচ্ছে</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ঠিকানা}=1{ঠিকানা ({SELECTED_ITEMS}টি)}one{ঠিকানা ({SELECTED_ITEMS}টি)}other{ঠিকানা ({SELECTED_ITEMS}টি)}}</translation>
 <translation id="5032430150487044192">QR কোড তৈরি করা যায়নি</translation>
 <translation id="5033137252639132982">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে আরও তথ্য পেতে নিচে "আরও বিবরণ" বিকল্প বেছে নিন।</translation>
@@ -6479,6 +6485,7 @@
 <translation id="5568069709869097550">প্রবেশ করতে পারছেন না</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" />, এটির অধীনে সব সাইট ও ইনস্টল করা অ্যাপের জন্য সাইট ডেটা ও অনুমতি মুছে দেবেন?</translation>
 <translation id="5568602038816065197">সাইট, সাধারণ প্রিন্ট প্রম্পটে না গিয়েই আপনার ডিভাইসে অ্যাক্সেস করা যাবে এমন প্রিন্টার থেকে উন্নত ফিচার ব্যবহার করতে পারে</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{পাসওয়ার্ড}=1{পাসওয়ার্ড ({SELECTED_ITEMS}টি)}one{পাসওয়ার্ড ({SELECTED_ITEMS}টি)}other{পাসওয়ার্ড ({SELECTED_ITEMS}টি)}}</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
 <translation id="5571092938913434726">গ্লোবাল মিডিয়া কন্ট্রোল</translation>
 <translation id="5571832155627049070">আপনার প্রোফাইল কাস্টমাইজ করুন</translation>
@@ -6982,6 +6989,7 @@
 <translation id="5941153596444580863">ব্যক্তিকে যোগ করুন...</translation>
 <translation id="5941343993301164315">অনুগ্রহ করে <ph name="TOKEN_NAME" />-এ সাইন-ইন করুন৷</translation>
 <translation id="5941711191222866238">ছোট করুন</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{শুধু ১টি পাসওয়ার্ড এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটিকে সেভ করুন।}one{শুধু {PASSWORD_COUNT}টি পাসওয়ার্ড এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {PASSWORD_COUNT}টি পাসওয়ার্ড এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে পৃষ্ঠা সার্চ করুন</translation>
 <translation id="5942779427914696408">ডিভাইসের দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপনার যাচাইকরণ সম্পূর্ণ হয়েছে। আপনার স্থানীয় ডেটা আনলক করে ফিরিয়ে আনতে, আপনার পুরনো <ph name="DEVICE_TYPE" /> পাসওয়ার্ড লিখুন।</translation>
@@ -8500,6 +8508,7 @@
 <translation id="7036706669646341689">Linux-এর জন্য <ph name="DISK_SIZE" /> জায়গা খালি রাখার জন্য সাজেস্ট করা হয়েছে। খালি জায়গা বাড়াতে, আপনার ডিভাইস থেকে ফাইল মুছে দিন।</translation>
 <translation id="7037157058268992880">পিন ভুলে গেছি</translation>
 <translation id="7037509989619051237">প্রিভিউ করার টেক্সট</translation>
+<translation id="7037633074390821254">DNS অথবা CIDR সংক্রান্ত সমস্যা</translation>
 <translation id="7038632520572155338">অ্যাক্সেস পাল্টান</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" />-এর জন্য অন্য একটি Google অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="7039326228527141150">USB ডিভাইসগুলি <ph name="VENDOR_NAME" /> থেকে অ্যাক্সেস করুন</translation>
@@ -8749,6 +8758,7 @@
 <translation id="7231260028442989757">আপনার ফোনের বিজ্ঞপ্তি দেখুন, বাতিল করুন এবং উত্তর দিন</translation>
 <translation id="7231347196745816203">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে ফোন ব্যবহার করুন।</translation>
 <translation id="7232750842195536390">নাম পরিবর্তন করা যায়নি</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{শুধু ১টি বুকমার্ক ও অন্যান্য আইটেম এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}one{শুধু {BOOKMARK_COUNT}টি বুকমার্ক ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {BOOKMARK_COUNT}টি বুকমার্ক ও অন্যান্য আইটেম শুধু এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে ছবি সার্চ করুন</translation>
 <translation id="7234010996000898150">Linux ফিরিয়ে আনা বাতিল করা হচ্ছে</translation>
 <translation id="7235305658956131898">আপনার ডিভাইস অ্যাডমিনিস্ট্রেটরের ইনস্টল করা Android অ্যাপ।</translation>
@@ -8875,6 +8885,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> ADB ডিবাগিং বন্ধ করে দিয়েছে। আপনার <ph name="DEVICE_TYPE" /> রিস্টার্ট করার পরে, আর কোনও অ্যাপ সাইডলোড করতে পারবেন না।</translation>
 <translation id="7328119182036084494"><ph name="WEB_DRIVE" />-এ সেভ করা হয়েছে</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{শুধু ১টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেটিকে সেভ করুন।}one{শুধু {BOOKMARK_COUNT}টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}other{শুধু {BOOKMARK_COUNT}টি বুকমার্ক এই ডিভাইসে সেভ করা হয়েছে। অন্যান্য ডিভাইসে ব্যবহার করতে, আপনার Google অ্যাকাউন্টে সেগুলিকে সেভ করুন।}}</translation>
 <translation id="7328867076235380839">এই কম্বিনেশন ব্যবহার করা যাবে না</translation>
 <translation id="7329154610228416156">এটি নিরাপদ নয় এমন একটি URL (<ph name="BLOCKED_URL" />) ব্যবহারের জন্য কনফিগার করা থাকায় সাইন-ইন করা যায়নি। অনুগ্রহ করে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />-এর ডিভাইসের জন্য <ph name="FEATURE_NAME" /> সেটিংস, <ph name="USER_EMAIL" /> অ্যাকাউন্টের অধীনে শেয়ার করা হচ্ছে।</translation>
@@ -10416,6 +10427,7 @@
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
 <translation id="8399282673057829204">পাসওয়ার্ড দেখুন</translation>
 <translation id="839949601275221554">ডিভাইসে কিছু সমস্যা হয়েছে। ডিভাইস রিস্টার্ট করে আবার চেষ্টা করুন।</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{বুকমার্ক}=1{বুকমার্ক ({SELECTED_ITEMS}টি)}one{বুকমার্ক ({SELECTED_ITEMS}টি)}other{বুকমার্ক ({SELECTED_ITEMS}টি)}}</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
 <translation id="8403807918453631441">আপনি পাসওয়ার্ড সেভ করলে <ph name="BRAND" /> সেটি চেক করতে পারবে</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
@@ -11669,6 +11681,7 @@
 <translation id="97905529126098460">বাতিল করা হয়ে গেলে এই উইন্ডো বন্ধ হয়ে যাবে।</translation>
 <translation id="980731642137034229">অ্যাকশন মেনু বোতাম</translation>
 <translation id="981121421437150478">অফলাইন</translation>
+<translation id="982083952953998237">সমস্যা যোগ করুন</translation>
 <translation id="98235653036850093">হ্যালো, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ক্যামেরা এবং মাইক্রোফোন রেকর্ড করছে</translation>

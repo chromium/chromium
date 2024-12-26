@@ -541,6 +541,7 @@
 <translation id="1368603372088757436">Լինուքսը ձեր <ph name="DEVICE_TYPE" /> սարքում չի աջակցվում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">Գաղտնաբառերը ձեր մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում</translation>
 <translation id="1370384480654163477">Դիտեք և խմբագրեք ֆայլերը, որոնց համար թույլտվություն եք տվել վերջին անգամ այս կայք այցելելիս՝</translation>
+<translation id="1372259917802609049">Սխալի պատճառով չհաջողվեց ջնջել սահմանափակումը</translation>
 <translation id="1372841398847029212">Համաժամացնել ձեր հաշվի հետ</translation>
 <translation id="1373176046406139583">Տեսանելիության կարգավորումների միջոցով դուք կարող եք նշել, թե ում եք թույլատրում կիսվել ձեզ հետ տվյալներով, երբ ձեր սարքն ապակողպված է։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">«<ph name="NETWORK_NAME" />» ցանցի պահանջած վկայագիրը կամ տեղադրված չէ, կամ այլևս վավեր չէ: Ստացեք նոր վկայագիր և կրկին փորձեք կապակցել:</translation>
@@ -1480,6 +1481,7 @@
     Սա չի ազդի այլ սարքերում առկա հավելվածների և բովանդակության վրա։</translation>
 <translation id="2018189721942291407">Վստահ չե՞ք՝ արդյոք պետք է գրանցվեք</translation>
 <translation id="2018352199541442911">Ձեր արտաքին պահեստի սարքը չի աջակցվում:</translation>
+<translation id="2019213483156307334">Սխալի պատճառով չհաջողվեց ավելացնել սահմանափակումը</translation>
 <translation id="2019718679933488176">&amp;Բացել ձայնանյութը նոր ներդիրով</translation>
 <translation id="2020183425253392403">Ցուցադրել ցանցային հասցեի կարգավորումները</translation>
 <translation id="2020225359413970060">Սկանավորել ֆայլը</translation>
@@ -3137,6 +3139,7 @@
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3188465121994729530">Սահող միջին</translation>
 <translation id="3189187154924005138">Մեծ նշորդ</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}one{{PASSWORD_COUNT} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}other{{PASSWORD_COUNT} գաղտնաբառ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}}</translation>
 <translation id="3190558889382726167">Գաղտնաբառը պահվեց</translation>
 <translation id="3192586965067888278">Մանրամասն նկարագրեք խնդիրը։ Կարծիքը կուղարկվի Google-ին՝ մասնագետի կողմից ստուգման համար, և կարող է օգտագործվել Google-ի պրոդուկտներն ու ծառայությունները բարելավելու կամ նորերը ստեղծելու նպատակով։</translation>
 <translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
@@ -3605,6 +3608,7 @@
 <translation id="3537881477201137177">Ավելի ուշ կարող եք սա կարգավորումներում փոխել</translation>
 <translation id="3538066758857505094">Չհաջողվեց ապատեղադրել Linux-ը: Նորից փորձեք:</translation>
 <translation id="3539537154248488260">Ցուցադրել կամ թաքցնել «Ոգեշնչում» բաժինը</translation>
+<translation id="3539791442352537591">Սխալի պատճառով չհաջողվեց պահել վստահության կարգավիճակի փոփոխությունը</translation>
 <translation id="3540173484406326944">Չկա միացում ցանցին «<ph name="HOST_DEVICE_NAME" />» սարքի միջոցով</translation>
 <translation id="354060433403403521">AC հարմարիչ</translation>
 <translation id="354068948465830244">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքի տվյալները</translation>
@@ -4792,6 +4796,7 @@
 <translation id="4361745360460842907">Բացել որպես ներդիր</translation>
 <translation id="4363262124589131906">«Իմ դրայվը» պանակի նոր ֆայլերն ավտոմատ կդադարեն համաժամացվել այս Chromebook-ի հետ</translation>
 <translation id="4364327530094270451">Սեխ</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 տարր պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}one{{ITEM_COUNT} տարր պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}other{{ITEM_COUNT} տարր պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> հավելվածը կիսվում է պատուհանով:</translation>
 <translation id="4364830672918311045">Ցույց տալ ծանուցումները</translation>
 <translation id="4367971618859387374">Ցուցադրվող անունը</translation>
@@ -5714,6 +5719,7 @@
 <translation id="5029287942302939687">Ձեր գաղտնաբառը սահմանված է</translation>
 <translation id="5029873138381728058">Չհաջողվեց ստուգել վիրտուալ մեքենաները</translation>
 <translation id="503155457707535043">Հավելվածները ներբեռնվում են</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{Հասցեներ}=1{Հասցեներ ({SELECTED_ITEMS})}one{Հասցեներ ({SELECTED_ITEMS})}other{Հասցեներ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="5033137252639132982">Չի թույլատրվում օգտագործել շարժման տվիչները</translation>
 <translation id="5035846135112863536">Ընտրեք «Այլ մանրամասներ» ստորև՝ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ից լրացուցիչ տեղեկություններ ստանալու համար։</translation>
@@ -6462,6 +6468,7 @@
 <translation id="5568069709869097550">Չհաջողվեց մուտք գործել</translation>
 <translation id="5568525251731145240">Հեռացնե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև տեղադրված հավելվածների կայքի տվյալներն ու թույլտվությունները</translation>
 <translation id="5568602038816065197">Կայքերը կարող են օգտագործել ձեր սարքին հասանելի ցանկացած տպիչի ընդլայնված գործառույթները՝ բաց թողնելով տպման սովորական հարցումը</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{Գաղտնաբառեր}=1{Գաղտնաբառեր ({SELECTED_ITEMS})}one{Գաղտնաբառեր ({SELECTED_ITEMS})}other{Գաղտնաբառեր ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">Bluetooth-ը միացված է</translation>
 <translation id="5571092938913434726">Մեդիաֆայլերի կառավարման ընդհանուր տարրեր</translation>
 <translation id="5571832155627049070">Անհատականացրեք ձեր պրոֆիլը</translation>
@@ -6962,6 +6969,7 @@
 <translation id="5941153596444580863">Ավելացնել անձ…</translation>
 <translation id="5941343993301164315">Մուտք գործեք <ph name="TOKEN_NAME" />:</translation>
 <translation id="5941711191222866238">Նվազեցնել</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 գաղտնաբառ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}one{{PASSWORD_COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}other{{PASSWORD_COUNT} գաղտնաբառ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}}</translation>
 <translation id="594221546068848596">Որոնել էջում <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="5942779427914696408">Սարքի տեսանելիությունը</translation>
 <translation id="5943127421590245687">Ձեր հաշիվը հաստատվել է։ Տվյալներն ապակողպելու և վերականգնելու համար մուտքագրեք <ph name="DEVICE_TYPE" />-ի ձեր հին գաղտնաբառը։</translation>
@@ -8478,6 +8486,7 @@
 <translation id="7036706669646341689">Լինուքսը տեղադրելու համար խորհուրդ է տրվում ունենալ <ph name="DISK_SIZE" /> տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="7037157058268992880">Մոռացել եմ PIN կոդը</translation>
 <translation id="7037509989619051237">Տեքստի նախադիտում</translation>
+<translation id="7037633074390821254">DNS-ի կամ CIDR-ի սահմանափակում</translation>
 <translation id="7038632520572155338">Switch Access</translation>
 <translation id="7038710352229712897">Ավելացրեք ևս մեկ Google հաշիվ <ph name="USER_NAME" /> օգտատիրոջ համար</translation>
 <translation id="7039326228527141150">Մտնել <ph name="VENDOR_NAME" />-ի USB սարքեր</translation>
@@ -8727,6 +8736,7 @@
 <translation id="7231260028442989757">Թույլ է տալիս դիտել և անտեսել հեռախոսի ծանուցումները, ինչպես նաև պատասխանել դրանց։</translation>
 <translation id="7231347196745816203">Ապակողպեք <ph name="DEVICE_TYPE" /> սարքը հեռախոսի միջոցով։</translation>
 <translation id="7232750842195536390">Չհաջողվեց վերանվանել</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{1 էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}one{{BOOKMARK_COUNT} էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}other{{BOOKMARK_COUNT} էջանիշ և այլ տարրեր պահվում են միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}}</translation>
 <translation id="723343421145275488">Որոնել պատկերներ՝ օգտագործելով <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Լինուքսի վերականգնումը չեղարկվում է</translation>
 <translation id="7235305658956131898">Android-ի համար հավելված է տեղադրվել սարքի ադմինիստրատորի կողմից։</translation>
@@ -8853,6 +8863,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ Ձեր <ph name="DEVICE_TYPE" /> սարքը վերագործարկելուց հետո դուք չեք կարողանա բեռնել հավելվածներ անհայտ աղբյուրներից։</translation>
 <translation id="7328119182036084494">Պահվեց <ph name="WEB_DRIVE" /> քարտեզի վրա</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 էջանիշ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}one{{BOOKMARK_COUNT} էջանիշ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}other{{BOOKMARK_COUNT} էջանիշ պահվում է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար պահեք դրանք ձեր Google հաշվում։}}</translation>
 <translation id="7328867076235380839">Սխալ համադրություն</translation>
 <translation id="7329154610228416156">Մուտքը չհաջողվեց, քանի որ դրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />-ի սարքի համար «<ph name="FEATURE_NAME" />» գործառույթի կարգավորումներն ուղարկվում են <ph name="USER_EMAIL" /> հաշվի միջոցով։</translation>
@@ -10393,6 +10404,7 @@
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8399282673057829204">Ցույց տալ գաղտնաբառը</translation>
 <translation id="839949601275221554">Սարքում սխալ առաջացավ։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{Էջանիշներ}=1{Էջանիշներ ({SELECTED_ITEMS})}one{Էջանիշներ ({SELECTED_ITEMS})}other{Էջանիշներ ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
 <translation id="8403807918453631441">«<ph name="BRAND" />» գործառույթը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
@@ -11646,6 +11658,7 @@
 <translation id="97905529126098460">Այս պատուհանը կփակվի, հենց որ չեղարկման գործընթացն ավարտվի:</translation>
 <translation id="980731642137034229">Գործողությունների ընտրացանկի կոճակ</translation>
 <translation id="981121421437150478">Անցանց</translation>
+<translation id="982083952953998237">Ավելացնել սահմանափակումներ</translation>
 <translation id="98235653036850093">Ողջույն, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Փակել բոլոր ներդիրները</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Տեսախցիկով և խոսափողով տեսագրում</translation>

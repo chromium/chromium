@@ -392,6 +392,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="5947104538377036631">Shkurtorja e Chrome</translation>
 <translation id="5953954252731207958">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION" />)</translation>
+<translation id="5980111191913430208">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chrome rekomandon që t'i instalosh ato vetëm nga "<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />"</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
 <translation id="6014316319780893079">Me <ph name="BEGIN_LINK" />veglat nga Chrome<ph name="END_LINK" />, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
 <translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
@@ -610,6 +611,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="842386925677997438">Veglat e sigurisë të Chrome</translation>
 <translation id="8425765582779547329">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, identifikohu në Chrome</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8429214465555795676">Për të vazhduar, do të të duhet të identifikohesh në Chrome me <ph name="EMAIL" />. Kjo siguron përputhjen me politikat e organizatës sate.</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8451192282033883849">Llogaria jote menaxhohet nga <ph name="MANAGER_NAME" />. Administratori yt mund ta shikojë dhe ta modifikojë këtë profil të shfletuesit Chrome dhe të dhënat e tij, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet.</translation>
 <translation id="8496177819998570653">Men&amp;axheri i fjalëkalimeve i Google</translation>

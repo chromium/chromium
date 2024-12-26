@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">예, 계속 진행합니다</translation>
 <translation id="2690699652723742414">지난 30일</translation>
 <translation id="2691924980723297736">안전 경고</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> 질문하기</translation>
 <translation id="2699273987028089219">하위 메뉴를 사용할 수 있습니다. 추가 옵션으로 이동하려면 <ph name="SHORTCUT" />를 사용하세요.</translation>
 <translation id="2701514975700770343">인쇄면이 아래로</translation>
 <translation id="2702592986366989640">저렴한 가격 옵션</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">시크릿 창 닫기 버튼, 현재 열려 있는 시크릿 창을 모두 닫으려면 활성화하세요.</translation>
 <translation id="4691093235373904540">지붕 수리</translation>
 <translation id="4692623383562244444">검색엔진</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />에게 질문하기</translation>
 <translation id="4698692901173737941">격투기</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">사이드</translation>

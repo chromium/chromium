@@ -396,6 +396,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2402411679569069051">Pentru a debloca Chromebookul, folosește amprenta sau deblochează telefonul</translation>
 <translation id="240545663114741956">Apasă de două ori pe <ph name="ACCELERATOR" /> pentru a te deconecta.</translation>
 <translation id="2405664212338326887">Nu s-a conectat</translation>
+<translation id="2406710117564540804">Activează / dezactivează funcția Nu deranja</translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
 <translation id="2412593942846481727">Actualizare disponibilă</translation>
 <translation id="2416438829169535743">Ieși din vizualizare?</translation>
@@ -1647,6 +1648,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6539852571005954999">Se scanează <ph name="FILENAME" /> pentru descărcare</translation>
 <translation id="6542521951477560771">Se proiectează conținut la <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojiuri, GIF-uri și altele</translation>
+<translation id="6543942526104794893">Sigur dorești să dezactivezi expresiile faciale?</translation>
 <translation id="6545382064335350438">Codul tău PIN tot nu a putut fi confirmat. Încearcă din nou.</translation>
 <translation id="6555373427270923730">Introdu o adresă web în bara de adrese, apoi apasă pe <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8858369206579825206">Opțiuni de confidențialitate</translation>
 <translation id="8860366331836346216">Adaugă un eSIM</translation>
+<translation id="8869149849311827122">Sigur dorești să dezactivezi controlul cursorului mouse-ului?</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8873203135446552888">Confirmă că dorești să dezactivezi touchpadul încorporat</translation>
 <translation id="8874184842967597500">Neconectat</translation>

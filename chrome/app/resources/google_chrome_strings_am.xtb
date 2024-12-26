@@ -245,6 +245,7 @@
 <translation id="3889417619312448367">Google Chromeን አራግፍ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
+<translation id="3968962723676998462">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ የይለፍ ሐረግዎን ያስገቡ</translation>
 <translation id="3973161977468201858">Google Chrome የGoogle የይለፍ ቃል አስተዳዳሪ ውሂብዎን መሰረዝ ይፈልጋል። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="398236277091248993">Chrome አፈጻጸምን ከሚጨምሩ ባህሪያት ጋር ፈጣን እንደሆነ ይቆያል</translation>
 <translation id="3999683152997576765">ማስታወቂያዎችን ለእርስዎ ለማሳየት የሚጠቀሙባቸውን የዝንባሌ ጣቢያዎች ርዕሶች ማየት እና ማስወገድ ይችላሉ። Chrome በቅርብ ጊዜ የአሰሳ ታሪክዎ ላይ ተመስርቶ የእርስዎን ዝንባሌዎች ይገምታል።</translation>
@@ -309,6 +310,7 @@
 <translation id="4728575227883772061">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። Google Chrome አሁን እያሄደ ከሆነ ፣ እባክዎ ይዝጉትና እንደገና ይሞክሩ።</translation>
 <translation id="4741235124132242877">ተሰክቷል! ከመሣሪያ አሞሌው Google ሌንስን እንደገና ይጠቀሙ</translation>
 <translation id="4747730611090640388">Chrome የእርስዎን ዝንባሌዎች ሊገምት ይችላል።  በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chrome ዝንባሌዎችዎን እንዲያይ ሊጠይቅ ይችላል።</translation>
+<translation id="475321580758063259">በእርስዎ Google መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን መጠቀም ለመቀጠል Chromeን ያዘምኑ</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">ይህ በ Google ፍለጋ ውስጥ ጥቅም ላይ ጋር ተመሳሳይ የፊደል አራሚ ይጠቀማል። በአሳሽ ውስጥ የሚተይቡት ጽሁፍ ወደ Google ይላካል። ይህን ባህሪ ሁልጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="4793679854893018356">Chrome እንዴት ደህንነትዎን እንደሚጠብቅ ይወቁ</translation>
@@ -585,6 +587,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
 <translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8111297389482307122">የተወሰነ ውሂብ በGoogle መለያዎ ውስጥ መቀመጥ እና በሁሉም መሣሪያዎችዎ ላይ ስራ ላይ መዋል ከመቻሉ በፊት Chrome ማንነትዎን ማረጋገጥ አለበት። ዘግተው ከወጡ ይህ ውሂብ በዚህ መሣሪያ ላይ ይቆያል።</translation>
+<translation id="8113883687556086139">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="8118331347066725040">በሌንስ ለፍለጋ ግብረ መልስ ይላኩ</translation>
 <translation id="8129812357326543296">ስለ &amp;Google Chrome</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>

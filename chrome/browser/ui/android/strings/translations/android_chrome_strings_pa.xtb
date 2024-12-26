@@ -19,6 +19,7 @@
 <translation id="107147699690128016">ਜੇ ਤੁਸੀਂ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਬਦਲਦੇ ਹੋ, ਤਾਂ ਫ਼ਾਈਲ ਸ਼ਾਇਦ ਕਿਸੇ ਵੱਖਰੀ ਐਪਲੀਕੇਸ਼ਨ ਵਿੱਚ ਖੁੱਲ੍ਹੇ ਅਤੇ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਨੁਕਸਾਨ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1080365971383768617">ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="1082920045291562218">ਸਾਰਾਂਸ਼ ਵਿਚਾਰ ਸ਼ੀਟ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਹੈ</translation>
+<translation id="1087176310396019910">ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ</translation>
 <translation id="1089606299949659462">ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ!</translation>
 <translation id="1094555143448724771">ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1095761715416917775">ਪੱਕਾ ਕਰੋ ਤੁਸੀਂ ਆਪਣੇ ਸਿੰਕ ਕੀਤੇ ਡਾਟੇ ਤੱਕ ਹਮੇਸ਼ਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ਟੈਬ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="3293181007446299124">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਈਵੇਟ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਰਿਪੋਰਟਾਂ ਨੂੰ ਦੇਰੀ ਨਾਲ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="3301936297336370235">ਪਾਸਵਰਡ ਸੁਝਾਅ ਸੰਬੰਧੀ ਤਸਦੀਕ</translation>
 <translation id="3302615849591357577">ਟੈਬ ਗਰੁੱਪ <ph name="TITLE_OF_GROUP" />, ਰੰਗ <ph name="COLOR_NAME" /> ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
 <translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
 <translation id="6196315980958524839">ਪਾਸਵਰਡ ਇਸ ਡੀਵਾਈਸ ਦੇ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ</translation>
 <translation id="6202812185118613467">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="6204781143409202534">Chrome ਨੇ <ph name="DOMAIN" /> ਤੋਂ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ ਦਾ ਪਤਾ ਲਗਾਇਆ।</translation>
 <translation id="6205314730813004066">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ਨਹੀਂ ਹੋ?</translation>
 <translation id="6211386937064921208">ਇਸ ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>

@@ -124,6 +124,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="2583187216237139145">Bu profilin istifadəsi zamanı yaranan hər hansı bir Chromium datası (əlfəcinlər, tarixçələr, parolların yaradılması və digər ayarlar kimi) iş profili administratoru tərəfindən silinə bilər. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium istifadəsinə davam edin</translation>
 <translation id="259935314519650377">Endirilmiş quraşdırıcı keşlənmədi. Xəta: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Chromium datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="264613044588233783">Chromium sürətli işləyir və JavaScript istifadə edən funksiyalar nəzərdə tutulan kimi işləməlidir (tövsiyə olunur)</translation>
 <translation id="2648074677641340862">Quraşdırma zamanı əməliyyat sistemi xətası baş verdi. Chromium'u yenidən endirin.</translation>
 <translation id="2661879430930417727">Cihaz paylaşsanız, dostlarınız və ailəniz ayrıca baxış keçirə bilər və Chromium'u istədikləri kimi ayarlaya bilər.</translation>
@@ -449,6 +450,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6980074797973263542">Təşkilat əlfəcin, tarixçə və parollar kimi axtarış datasını görə və idarə edə bilər. Şəxsi Chromium profillərində axtarış datasını görə bilməz.</translation>
 <translation id="6985329841647292029">ChromiumOS şərtləri</translation>
 <translation id="6990124437352146030">Chromium bu sayt üçün mikrofona giriş tələb edir</translation>
+<translation id="7003299027384820442">Chromium datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün parol ifadəsini daxil edin</translation>
 <translation id="7011190694940573312">Əməliyyat sisteminin bu versiyası dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="7024536598735240744">Paketin açılması xətası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Quraşdırma Dayandırılıb.</translation>
@@ -542,6 +544,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8330519371938183845">Chromium'u cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün daxil olun</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> əvvəl Chromium istifadə edirdi</translation>
 <translation id="8357820681460164151">Bütün cihazlarınızda Chromium brauzerinin elementlərinə giriş etmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
+<translation id="8359544530202147897">Chromium datasını Google Hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək üçün Chromium-u güncəlləyin</translation>
 <translation id="8360718212975266891">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8 istifadə edir.</translation>
 <translation id="8362914115861174987">Hədəf dil:</translation>
 <translation id="8370517070665726704">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>

@@ -426,6 +426,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1282436639288565079">Detalhes do grupo de separadores</translation>
 <translation id="1283126956823499975">Algo correu mal com a configuração do dispositivo</translation>
 <translation id="1284277788676816155">Não permitir guardar dados</translation>
+<translation id="1284912418686719556">O Chrome está a criar uma palavra-passe forte para si. Não precisa de a memorizar porque está guardada no <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1285484354230578868">Armazenar dados na sua conta Google Drive</translation>
 <translation id="1285625592773741684">A definição de utilização de dados atual é Dados móveis.</translation>
@@ -7568,6 +7569,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="637642201764944055">As versões antigas das Apps do Chrome não vão abrir nos dispositivos Linux depois de dezembro de 2022. Contacte o seu administrador para atualizar para uma nova versão ou remover esta app.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir nas redes Wi-Fi</translation>
+<translation id="6379228010899751161">Valide a sua identidade para se certificar de que pode sempre usar as palavras-passe na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links suportados</translation>
@@ -9618,6 +9620,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo Chrome OS. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se a definição Atividade da Web e de apps estiver ativada para a sua Conta Google, os seus dados Android podem ser guardados na sua Conta Google. Pode ver os seus dados, eliminá-los e alterar as definições da conta em account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos seus resultados pessoais ou ao Assistente. Para poupar bateria, nas Definições do Assistente, pode optar por ativar o comando "OK Google" apenas quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
+<translation id="7851196412551419054">A alterar a palavra-passe…</translation>
 <translation id="7851457902707056880">O início de sessão foi restringido apenas ao proprietário da conta. Reinicie e inicie sessão com a conta de proprietário. A máquina reiniciará automaticamente dentro de 30 segundos.</translation>
 <translation id="7851716364080026749">Impedir sempre o acesso à câmara e microfone</translation>
 <translation id="7851720427268294554">Analisador de IPP</translation>
@@ -11205,6 +11208,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8962863356073277855">O formato do URL deve ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este site está a utilizar sensores de movimento ou de luz.</translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>
+<translation id="8964927371396953727">Valide a sua identidade para usar e guardar palavras-passe na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Introduzir palavra-passe antiga</translation>
 <translation id="8966809848145604011">Outros perfis</translation>
 <translation id="8967427617812342790">Adicionar à lista de leitura</translation>

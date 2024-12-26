@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Dezinstalează Google Chrome</translation>
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="3941890832296813527">Eroare la instalare: numele de fișier al programului de instalare nu este valid sau acceptat.</translation>
+<translation id="3968962723676998462">Introdu expresia de acces pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome dorește să șteargă datele din Managerul de parole Google. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="398236277091248993">Chrome rămâne rapid cu funcții de optimizare a performanței</translation>
 <translation id="3999683152997576765">Poți să vezi și să elimini subiecte de interes folosite de site-uri pentru a-ți afișa anunțuri. Chrome îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">Instalarea nu a reușit din cauza unei erori necunoscute. Dacă Google Chrome rulează în acest moment, închide-l și încearcă din nou.</translation>
 <translation id="4741235124132242877">S-a fixat! Folosește din nou Google Lens din bara de instrumente</translation>
 <translation id="4747730611090640388">Chrome îți poate estima interesele.  Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
+<translation id="475321580758063259">Actualizează Chrome pentru a folosi în continuare datele Chrome din Contul Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google. Poți schimba acest comportament în setări.</translation>
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
@@ -577,6 +579,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
 <translation id="8111297389482307122">Chrome trebuie să-ți confirme identitatea pentru ca unele date să poată fi salvate în Contul Google și folosite pe toate dispozitivele. Dacă te deconectezi, datele vor rămâne pe acest dispozitiv.</translation>
+<translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>

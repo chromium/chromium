@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">አዎ፣ ቀጥል</translation>
 <translation id="2690699652723742414">ያለፉት 30 ቀናት</translation>
 <translation id="2691924980723297736">የደህንነት ማስጠንቀቂያ</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ይጠይቁ</translation>
 <translation id="2699273987028089219">ንዑስ ምናሌ ይገኛል፣ ወደ ተጨማሪ አማራጮች ለማሰስ <ph name="SHORTCUT" /> ይጠቀሙ።</translation>
 <translation id="2701514975700770343">ፊት ወደ ታች</translation>
 <translation id="2702592986366989640">ዝቅተኛ ዋጋ ያለው አማራጭ</translation>
@@ -2065,6 +2066,7 @@
 <translation id="469028408546145398">ማንነትን የማያሳውቅ የመስኮት አዝራርን ይዝጉ፣ አሁን ክፍት የሆኑትን ሁሉንም ማንነት የማያሳውቁ መስኮቶች ለመዝጋት ያግብሩ</translation>
 <translation id="4691093235373904540">የጣሪያ ሥራ</translation>
 <translation id="4692623383562244444">የፍለጋ ፕሮግራሞች</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ይጠይቁ</translation>
 <translation id="4698692901173737941">የትግል ስፖርት</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ጎን</translation>

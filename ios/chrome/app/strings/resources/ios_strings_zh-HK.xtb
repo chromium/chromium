@@ -1398,7 +1398,7 @@
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。</translation>
 <translation id="7253951228444156601">正在檢查密碼…</translation>
 <translation id="7261217796641151584">分享群組</translation>
-<translation id="7266578100016339897">這麼做可有效整理分頁，保持井然有序。你隨時可以前往「設定」變更這項設定。</translation>
+<translation id="7266578100016339897">這有助你保持條理。你可隨時在設定中修改。</translation>
 <translation id="7271220006028561438">允許自動升級密鑰</translation>
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="7293429513719260019">選取語言</translation>
@@ -1593,7 +1593,7 @@
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
 <translation id="809543534949702122">在記錄中搜尋</translation>
-<translation id="8095985449280932182">{COUNT,plural, =1{閒置 {COUNT} 天後，分頁會移到這裡}other{閒置 {COUNT} 天後，分頁會移到這裡}}</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{未使用的分頁將於 {COUNT} 天後移到這裡}other{未使用的分頁將於 {COUNT} 天後移到這裡}}</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">新</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>

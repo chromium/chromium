@@ -426,6 +426,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1282436639288565079">Detalles del grupo de pestañas</translation>
 <translation id="1283126956823499975">Se ha producido un error al configurar el dispositivo</translation>
 <translation id="1284277788676816155">No permitir que guarde datos</translation>
+<translation id="1284912418686719556">Chrome está creando una contraseña segura para ti. No tienes que recordarla porque se ha guardado en <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos en tu cuenta de Google Drive</translation>
 <translation id="1285625592773741684">La configuración actual de uso de datos es Datos móviles</translation>
@@ -7564,6 +7565,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="637642201764944055">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Linux después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir en Redes Wi‑Fi</translation>
+<translation id="6379228010899751161">Verifica que eres tú para asegurarte de que siempre puedas usar las contraseñas de tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="6383382161803538830">El modo Lectura no está disponible en esta página</translation>
 <translation id="638418309848716977">Enlaces compatibles</translation>
@@ -9614,6 +9616,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si el ajuste Actividad en la Web y en Aplicaciones está activado en tu cuenta de Google, es posible que tus datos de Android se guarden en tu cuenta de Google. Puedes ver tus datos, eliminarlos y cambiar la configuración de tu cuenta en account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una voz similar a la tuya, o con una grabación de tu voz, pueda acceder a tus resultados personales o al Asistente. Para ahorrar batería, puedes modificar los ajustes del Asistente para que se active "Hey Google" solo cuando este dispositivo esté conectado a una fuente de alimentación.</translation>
+<translation id="7851196412551419054">Cambiando tu contraseña...</translation>
 <translation id="7851457902707056880">El inicio de sesión se ha restringido únicamente a la cuenta del propietario. Reinicia el sistema e inicia sesión con la cuenta del propietario. El ordenador se reiniciará automáticamente en 30 segundos.</translation>
 <translation id="7851716364080026749">Bloquear siempre el acceso a la cámara y al micrófono</translation>
 <translation id="7851720427268294554">Analizador de IPP</translation>
@@ -11201,6 +11204,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8962863356073277855">El formato de la URL debería ser https://www.example.com</translation>
 <translation id="8962918469425892674">Este sitio web está usando los sensores de luz o movimiento.</translation>
 <translation id="8963117664422609631">Ir a configuración del sitio</translation>
+<translation id="8964927371396953727">Verifica que eres tú para usar y guardar contraseñas en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">Introducir contraseña anterior</translation>
 <translation id="8966809848145604011">Otros perfiles</translation>
 <translation id="8967427617812342790">Añadir a lista de lectura</translation>

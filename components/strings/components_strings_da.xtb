@@ -962,6 +962,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2688969097326701645">Ja, fortsæt</translation>
 <translation id="2690699652723742414">Seneste 30 dage</translation>
 <translation id="2691924980723297736">Sikkerhedsadvarsel</translation>
+<translation id="2697248912349197812">Spørg <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Der er en tilgængelig undermenu. Brug <ph name="SHORTCUT" /> til at gå til yderligere valgmuligheder.</translation>
 <translation id="2701514975700770343">Forside nedad</translation>
 <translation id="2702592986366989640">Købsmulighed med lav pris</translation>
@@ -2066,6 +2067,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="4691093235373904540">Tagdækning</translation>
 <translation id="4692623383562244444">Søgemaskiner</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Spørg <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Kampsport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Side</translation>

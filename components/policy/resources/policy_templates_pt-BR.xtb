@@ -1551,6 +1551,27 @@ Se for deixada sem definição, a Tradução instantânea ficará desativada ini
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
       Definir a política como falsa ou deixá-la sem definição não substituirá nenhuma política.</translation>
+<translation id="2158028663273824412">Controla o modo do resolvedor de DNS sobre HTTPS. Esta política vai definir
+apenas o modo padrão para cada consulta. O modo pode ser
+substituído para tipos especiais de consultas, como solicitações para resolver um
+nome do host de servidor DNS sobre HTTPS.
+
+O modo <ph name="SECURE_DNS_MODE_OFF" /> vai desativar o
+DNS sobre HTTPS.
+
+O modo <ph name="SECURE_DNS_MODE_AUTOMATIC" /> enviará
+consultas DNS sobre HTTPS primeiro se houver um servidor DNS sobre HTTPS disponível e poderá voltar a enviar consultas não seguras quando houver um erro.
+
+O modo <ph name="SECURE_DNS_MODE_SECURE" /> só enviará
+consultas DNS sobre HTTPS e não será concluído quando houver erro.
+
+No <ph name="ANDROID_VERSION" /> e versões mais recentes, se o DNS sobre TLS
+estiver ativo, o <ph name="PRODUCT_NAME" /> não enviará
+solicitações DNS não seguras.
+
+Se a política não for definida, as consultas DNS sobre HTTPS não serão
+enviadas para dispositivos gerenciados. Caso contrário, o navegador poderá enviar solicitações DNS sobre HTTPS para um
+resolvedor associado ao resolvedor do sistema configurado pelo usuário.</translation>
 <translation id="2158741059065130266">Se a política for definida como verdadeira, os usuários do app Arquivos do <ph name="PRODUCT_OS_NAME" /> vão poder ver uma lixeira, e os arquivos em "Meus arquivos" e "Downloads", incluindo os descendentes criados pelo usuário, vão ser enviados para lá após a exclusão.
 
       Se a política for definida como falsa, os arquivos que estavam na lixeira ainda vão estar disponíveis, mostrando os arquivos ocultos e encontrando o diretório .Trash em "Meus arquivos" ou "Downloads".</translation>
@@ -1656,6 +1677,11 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="2202787915587511214">Ativar NTLMv2</translation>
 <translation id="2204379573346866896">Minutos decorridos da hora atual.</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
+<translation id="2208092773610663977">Se a política for ativada, os usuários poderão permitir que o <ph name="PRODUCT_NAME" /> verifique se os nomes de usuário e as senhas usados foram comprometidos em um vazamento.
+
+Se a política for desativada, os usuários não terão acesso a essa funcionalidade.
+
+      Se a política for definida, os usuários não poderão mudá-la no <ph name="PRODUCT_NAME" />. Se ela for deixada sem definição, a verificação de vazamento de credenciais será permitida, mas os usuários poderão desativá-la.</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
 <translation id="2212011154693551439">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped por padrão.</translation>
 <translation id="2212207215880394506">Não permitir a edição de fotos com IA generativa.</translation>
@@ -6123,6 +6149,13 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5462898272514237681">Controlar o acesso do <ph name="PRODUCT_OS_NAME" /> aos Serviços de localização do Google</translation>
+<translation id="5464786290880338716">Uma política para controlar se o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> precisa ser ativado.
+
+Se a política for desativada, o recurso de proteção de IP também será e os usuários não poderão ativá-lo nas configurações da interface.
+Se a política for ativada, o recurso também será e os usuários não poderão desativá-lo nas configurações da interface.
+Se a política for deixada sem definição, o recurso de proteção de IP será desativado para os usuários que tiverem o navegador ou o dispositivo gerenciado e eles não poderão ativar o recurso pelas configurações da interface. Os usuários em navegadores e dispositivos não gerenciados podem ativar ou desativar o recurso de proteção de IP pelas configurações da interface.
+
+Observação: o comportamento do recurso de proteção de IP para usuários corporativos pode variar com o tempo quando a política é ativada ou quando ela é deixada sem definição e o recurso é ativado nas configurações da interface.</translation>
 <translation id="5464816904705580310">Definir configurações para usuários gerenciados.</translation>
 <translation id="5466596281866046569">Relatar informações sobre aplicativos</translation>
 <translation id="5467175549232776406">A página de teste da política pode ser acessada</translation>
@@ -8624,6 +8657,7 @@ certificados com SPKI (SubjectPublicKeyInfo) correspondentes não serão conside
 <translation id="7177293255621000064">Definir a política como verdadeira torna todos os tipos de mídia de armazenamento externo (como pen drives, discos rígidos externos, cartões SD e outros cartões de memória, armazenamento óptico etc.) indisponíveis no navegador de arquivos. Definir a política como falsa ou deixá-la sem definição significa que os usuários podem usar o armazenamento externo no dispositivo.
 
       Observação: a política não afeta o Google Drive e o armazenamento interno. Os usuários ainda podem acessar arquivos salvos na pasta "Downloads".</translation>
+<translation id="7177645313697913767">Permitir que os usuários ativem ou desativem o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" /> no dispositivo se o navegador e o dispositivo deles não for gerenciado.</translation>
 <translation id="7177857088692019405">Desbloqueio rápido</translation>
 <translation id="7179157174254421614">A menos que a política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desative a detecção automática de fuso horário, a definição da política especificará o método de detecção automática, que não poderá ser modificado pelos usuários.
 

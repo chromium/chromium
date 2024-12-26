@@ -461,6 +461,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1777422078676229054">Photo (Archival)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Mag-install ng mga web app?</translation>
+<translation id="1791415068765905273">Ipakita ang Lahat ng Talahanayan sa Paghahambing</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang iyong impormasyon, privacy, at seguridad sa iyong Google Account</translation>
 <translation id="1793631236004319016">Huling ginamit <ph name="NUM_HOURS_MINUTES_SECONDS" /> ang nakalipas</translation>
@@ -2197,6 +2198,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4918221908152712722">I-install ang <ph name="APP_NAME" /> (hindi kinakailangang i-download)</translation>
 <translation id="4920457992177678649">Mga Pinaparentahang Bakasyunan at Panandaliang Pananatili</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4920921410507315601">Mga Talahanayan sa Paghahambing</translation>
 <translation id="4922104989726031751">Para gamitin ang Password Manager sa iyong operating system, ilunsad ulit ang Chromium at payagan ang pag-access sa password manager ng iyong computer. Bubukas ulit ang iyong mga tab pagkatapos malunsad ulit.</translation>
 <translation id="4923459931733593730">Pagbabayad</translation>
 <translation id="4926049483395192435">Dapat na tukuyin.</translation>
@@ -2390,6 +2392,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5278778426231952189">I-upload ngayon</translation>
 <translation id="5279286380302340275">Pamahalaan ang mga download</translation>
 <translation id="5280963125494874678">mga web application</translation>
+<translation id="5282008206326321696">{count,plural, =0{# bookmark}=1{# bookmark}one{# bookmark}other{# na bookmark}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Mga katangian ng dokumento</translation>
 <translation id="528468243742722775">Tapusin</translation>
@@ -2585,6 +2588,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="561165882404867731">Isalin ang page na ito gamit ang Google Translate</translation>
 <translation id="5612720917913232150">Gustong gamitin ng <ph name="URL" /> ang lokasyon ng iyong computer</translation>
 <translation id="5614520971155863709">Mga Card Game</translation>
+<translation id="5617785978844309968">Ipakita ang lahat ng talahanayan sa paghahambing</translation>
 <translation id="5617949217645503996">Masyadong maraming beses kang na-redirect ng <ph name="HOST_NAME" />.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Pamahalaan ang mga password</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">আপনি ফাইলের এক্সটেনশন পরিবর্তন করলে, সেটি অন্য অ্যাপ্লিকেশনে খুলতে পারে এবং আপনার ডিভাইসে সমস্যার সৃষ্টি করতে পারে।</translation>
 <translation id="1080365971383768617">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড</translation>
 <translation id="1082920045291562218">সারসংক্ষেপ সম্পর্কিত মতামত শেয়ার করার শিট বন্ধ আছে</translation>
+<translation id="1087176310396019910">সম্ভাব্য স্প্যাম</translation>
 <translation id="1089606299949659462">রিভিউ সম্পূর্ণ হয়েছে!</translation>
 <translation id="1094555143448724771">আপনার অন্যান্য ডিভাইস থেকে ট্যাব দেখতে, আপনার ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1095761715416917775">আপনি সিঙ্ক করা ডেটা সবসময় ব্যবহার করছেন কিনা দেখে নিন</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />টি ট্যাব}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="3293181007446299124">আপনার ডিভাইসে আপনার ব্রাউজিং ইতিহাস সুরক্ষিত রাখা হয় এবং আপনার পরিচয় সুরক্ষিত রাখতে দেরি করে রিপোর্ট পাঠানো হয়</translation>
+<translation id="3301936297336370235">পাসওয়ার্ড সাজেশনের কনফার্মেশন</translation>
 <translation id="3302615849591357577">নতুন ব্যাকগ্রাউন্ড ট্যাপ গ্রুপ হিসেবে, <ph name="COLOR_NAME" /> কালার সহ <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ ফিরিয়ে আনুন।</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6196315980958524839">পাসওয়ার্ড এই ডিভাইসের Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা হয়</translation>
 <translation id="6202812185118613467">সিঙ্ক শুরু করার জন্য আবার সাইন-ইন করুন</translation>
+<translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-এর থেকে সম্ভাব্য স্প্যাম শনাক্ত করেছে।</translation>
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>

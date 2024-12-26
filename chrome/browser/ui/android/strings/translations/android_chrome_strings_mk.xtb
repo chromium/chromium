@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Ако ја промените наставката на датотеката, таа може да се отвори во друга апликација и да стане потенцијална опасност за вашиот уред.</translation>
 <translation id="1080365971383768617">Лозинки на сите ваши уреди</translation>
 <translation id="1082920045291562218">Листот за споделување повратни информации за резиме е затворен</translation>
+<translation id="1087176310396019910">Можен спам</translation>
 <translation id="1089606299949659462">Прегледот е завршен!</translation>
 <translation id="1094555143448724771">За да ги гледате картичките од другите ваши уреди, синхронизирајте ги вашите картички и историја</translation>
 <translation id="1095761715416917775">Погрижете се секогаш да имате пристап до синхронизираните податоци</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> картичка}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> картички}}</translation>
 <translation id="3293181007446299124">Историјата на прелистувањето останува приватна на вашиот уред, а извештаите се испраќаат со одложување за да се заштити вашиот идентитет</translation>
+<translation id="3301936297336370235">Потврда на предлогот за лозинка</translation>
 <translation id="3302615849591357577">Вратете ја групата картички <ph name="TITLE_OF_GROUP" />, боја: <ph name="COLOR_NAME" /> како нова група картички во заднина.</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6196315980958524839">Лозинките се зачувани во „Управникот со лозинки на Google“ на уредов</translation>
 <translation id="6202812185118613467">Најавете се повторно за да започнете со синхронизација</translation>
+<translation id="6204781143409202534">Chrome откри можен спам од <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Приватност за реклами</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>

@@ -1541,6 +1541,17 @@ Si no se le asigna ningún valor, Traducción instantánea se inhabilitará inic
 <translation id="2157842368188031417">La política solo se aplica a las sesiones de invitado administradas. Tiene que estar habilitada para que el modo de estación de trabajo compartida de Imprivata permita cambios de usuario durante la sesión.
       Si se le asigna el valor True a la política, se forzará la anulación de determinadas políticas de funciones, que conservan datos de usuario sensibles y no se gestionan mediante el mecanismo de limpieza usado en los cambios de usuario durante la sesión del modo de estación de trabajo compartida de Imprivata.
       Si se le asigna el valor False a la política o no se define, no se anulará ninguna política.</translation>
+<translation id="2158028663273824412">Controla el modo de resolución de DNS-over-HTTPS. Ten en cuenta que esta política solo definirá el modo predeterminado de cada solicitud. El modo se puede anular en tipos de solicitudes especiales, como las que se usan para resolver el nombre de host de un servidor con el protocolo DNS-over-HTTPS.
+
+El modo <ph name="SECURE_DNS_MODE_OFF" /> inhabilitará DNS-over-HTTPS.
+
+El modo <ph name="SECURE_DNS_MODE_AUTOMATIC" /> enviará primero solicitudes de DNS-over-HTTPS si hay un servidor de este tipo disponible. En caso de error, es posible que recurra a solicitudes inseguras.
+
+El modo <ph name="SECURE_DNS_MODE_SECURE" /> solo enviará solicitudes de DNS-over-HTTPS. En caso de error, no resolverá.
+
+En la versión <ph name="ANDROID_VERSION" /> y posteriores, si el protocolo DNS a través de TLS está activo, <ph name="PRODUCT_NAME" /> no enviará solicitudes de DNS inseguras.
+
+Si no se define esta política, no se enviarán las consultas de DNS-over-HTTPS de dispositivos gestionados. Si no, es posible que el navegador envíe solicitudes de DNS-over-HTTPS a un sistema de resolución asociado al sistema de resolución configurado por el usuario.</translation>
 <translation id="2158741059065130266">Si se le asigna el valor True a esta política, los usuarios de la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /> verán una papelera, y los archivos que se encuentren en Mis archivos y en Descargas (incluidos sus descendientes creados por el usuario) se enviarán allí cuando se eliminen.
 
       Si se le asigna el valor False a esta política, los archivos que estuvieran previamente en la papelera seguirán disponibles y se podrán ver mostrando los archivos ocultos y buscando el directorio .Trash en Mis archivos o en Descargas.</translation>
@@ -1646,6 +1657,11 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="2202787915587511214">Activar NTLMv2</translation>
 <translation id="2204379573346866896">Minutos transcurridos en la hora actual.</translation>
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
+<translation id="2208092773610663977">Si se habilita esta política, se permitirá que los usuarios hagan que <ph name="PRODUCT_NAME" /> compruebe si los nombres de usuario y las contraseñas que han escrito forman parte de alguna filtración de datos.
+
+Si se inhabilita esta política, los usuarios no podrán usar esta función.
+
+      Si se asigna un valor a esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no se le asigna ningún valor, se permitirá la comprobación de filtraciones de credenciales, pero el usuario podrá desactivarla.</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
 <translation id="2212011154693551439">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped de forma predeterminada.</translation>
 <translation id="2212207215880394506">No permitir la edición de fotos basada en IA generativa.</translation>
@@ -6065,6 +6081,13 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
 <translation id="545817252640069915">Habilitar interceptación de inicio de sesión</translation>
 <translation id="5460797984317417682">Habilitar la alerta en pantalla completa</translation>
 <translation id="5462898272514237681">Controlar el acceso de <ph name="PRODUCT_OS_NAME" /> a los servicios de ubicación de Google</translation>
+<translation id="5464786290880338716">Política para controlar si se habilitará la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.
+
+Si se inhabilita esta política, se inhabilitará la función Protección de IP y los usuarios no podrán habilitarla mediante la configuración de UI.
+Si se habilita esta política, se habilitará la función Protección de IP y los usuarios no podrán inhabilitarla mediante la configuración de UI.
+Si no se define esta política, la función Protección de IP se inhabilitará en los navegadores y dispositivos gestionados de los usuarios y no podrán habilitarla mediante la configuración de UI. Los usuarios de navegadores y dispositivos no gestionados podrán activar o desactivar la función Protección de IP en su dispositivo mediante la configuración de UI.
+
+Nota: El comportamiento de la función Protección de IP para los usuarios de empresa puede variar a lo largo del tiempo si se habilita esta política o si esta política no se define y la función Protección de IP se habilita mediante la configuración de UI.</translation>
 <translation id="5464816904705580310">Permite establecer opciones de configuración de usuarios administrados.</translation>
 <translation id="5466596281866046569">Enviar información sobre las aplicaciones</translation>
 <translation id="5467175549232776406">Se puede acceder a la página de prueba de políticas</translation>
@@ -8520,6 +8543,7 @@ El valor de la política es una lista de certificados X.509 codificados en Base6
 <translation id="7177293255621000064">Si se le asigna el valor "true" a esta política, todos los tipos de medios de almacenamiento externo (unidades flash USB, unidades de disco duro externas, tarjetas SD, otras tarjetas de memoria, otros tipos de almacenamiento óptico, etc.) dejarán de estar disponibles en el explorador de archivos. Si se le asigna el valor "false" o no se le asigna ningún valor, los usuarios podrán usar el almacenamiento externo en su dispositivo.
 
       Nota: La política no afecta a Google Drive ni al almacenamiento interno. Los usuarios pueden seguir accediendo a los archivos guardados en la carpeta Descargas.</translation>
+<translation id="7177645313697913767">Permitir que los usuarios activen o desactiven la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" /> en su dispositivo si su navegador y su dispositivo no están gestionados.</translation>
 <translation id="7177857088692019405">Desbloqueo rápido</translation>
 <translation id="7179157174254421614">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, que los usuarios no pueden cambiar.
 

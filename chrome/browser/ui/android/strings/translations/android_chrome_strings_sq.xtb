@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Nëse e ndryshon prapashtesën e skedarit, skedari mund të hapet në një aplikacion tjetër dhe mund të jetë një rrezik për pajisjen tënde.</translation>
 <translation id="1080365971383768617">Fjalëkalimet në të gjitha pajisjet e tua</translation>
 <translation id="1082920045291562218">Fleta për ndarjen e komenteve për përmbledhjen u mbyll</translation>
+<translation id="1087176310396019910">Përmbajtje e mundshme e bezdisshme</translation>
 <translation id="1089606299949659462">Shqyrtimi përfundoi!</translation>
 <translation id="1094555143448724771">Për të parë skedat nga pajisjet e tua të tjera, sinkronizo skedat dhe historikun</translation>
 <translation id="1095761715416917775">Sigurohu që gjithmonë të mund të qasesh në të dhënat e tua të sinkronizimit</translation>
@@ -508,6 +509,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skeda}}</translation>
 <translation id="3293181007446299124">Historiku yt i shfletimit ruhet privat në pajisjen tënde dhe raportet dërgohen me një vonesë për të mbrojtur identitetin tënd</translation>
+<translation id="3301936297336370235">Konfirmimi i sugjerimit të fjalëkalimit</translation>
 <translation id="3302615849591357577">Restauro grupin e skedave "<ph name="TITLE_OF_GROUP" />", ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
@@ -972,6 +974,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5444999712122199445">Kthehu prapa te sajti</translation>
 <translation id="544776284582297024">Për të hapur skedat dhe për të vizituar faqe të ndryshme njëkohësisht, trokit butonin e skedave të hapura</translation>
 <translation id="5454166040603940656">me <ph name="PROVIDER" /></translation>
+<translation id="5454215368971121976">Kur pajisja jote është e palosur, mund të zgjedhësh një opsion ose të prekësh dhe të mbash shtypur shiritin e adresës për të ndryshuar pozicionin.</translation>
 <translation id="5458366071038729214">Sajtet që ndjek do t'i gjesh këtu</translation>
 <translation id="5468068603361015296">Do ta shkarkosh <ph name="FILE_NAME" /> gjithsesi?</translation>
 <translation id="548278423535722844">Hape në aplikacionin e hartave</translation>
@@ -1135,6 +1138,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6196315980958524839">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="6202812185118613467">Identifikohu përsëri për të nisur sinkronizimin</translation>
+<translation id="6204781143409202534">Chrome zbuloi një përmbajtje të mundshme të bezdisshme nga <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6210748933810148297">Nuk je <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>

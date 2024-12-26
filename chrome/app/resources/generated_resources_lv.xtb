@@ -428,6 +428,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1282436639288565079">Informācija par ciļņu grupu</translation>
 <translation id="1283126956823499975">Iestatot šo ierīci, radās problēma</translation>
 <translation id="1284277788676816155">Neatļaut saglabāt datus</translation>
+<translation id="1284912418686719556">Pārlūkā Chrome tiek veidota droša parole. Jums tā nav jāiegaumē, jo tā ir saglabāta kontā <ph name="EMAIL" />, izmantojot pakalpojumu <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1285320974508926690">Nekad netulkot šo vietni</translation>
 <translation id="1285484354230578868">Saglabāt datus jūsu Google diska kontā</translation>
 <translation id="1285625592773741684">Pašreizējais datu lietojuma iestatījums ir “Mobilie dati”</translation>
@@ -7562,6 +7563,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="637642201764944055">Pēc 2022. gada decembra Chrome lietotņu iepriekšējās versijas netiks atvērtas Linux ierīcēs. Sazinieties ar administratoru, lai atjauninātu šo lietotni uz jaunu versiju vai noņemtu to.</translation>
 <translation id="6377268785556383139">1 rezultāts vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6378392501584240055">Atvērt Wi-Fi tīklu sarakstu</translation>
+<translation id="6379228010899751161">Lai vienmēr varētu izmantot kontā <ph name="ACCOUNT_EMAIL" /> saglabātās paroles, apstipriniet savu identitāti.</translation>
 <translation id="6380143666419481200">Apstiprināt un turpināt</translation>
 <translation id="6383382161803538830">Lasīšanas režīms šajā lapā nav pieejams.</translation>
 <translation id="638418309848716977">Atbalstītās saites</translation>
@@ -9615,6 +9617,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
     <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā. Lai skatītu vai dzēstu datus vai mainītu konta iestatījumus, atveriet vietni account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Ir iespējams, ka persona ar līdzīgu balsi vai ar jūsu balss ierakstu var piekļūt jūsu personīgajiem rezultātiem vai Asistentam. Lai taupītu akumulatora enerģiju, Asistenta iestatījumos varat atlasīt, ka īsinājumvārda “Ok Google” noteikšanai jādarbojas tikai tad, ja šī ierīce ir pievienota barošanas avotam.</translation>
+<translation id="7851196412551419054">Notiek paroles mainīšana…</translation>
 <translation id="7851457902707056880">Drīkst pierakstīties tikai īpašnieka kontā. Lūdzu, atsāknējiet ierīci un pierakstieties īpašnieka kontā. Ierīce tiks automātiski atsāknēta pēc 30 sekundēm.</translation>
 <translation id="7851716364080026749">Vienmēr bloķēt piekļuvi kamerai un mikrofonam</translation>
 <translation id="7851720427268294554">IPP parsētājs</translation>
@@ -11204,6 +11207,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8962863356073277855">URL formātam jābūt šādam: https://www.example.com.</translation>
 <translation id="8962918469425892674">Šajā vietnē tiek izmantoti kustību vai gaismas sensori.</translation>
 <translation id="8963117664422609631">Pāriet uz vietnes iestatījumiem</translation>
+<translation id="8964927371396953727">Lai izmantotu un saglabātu paroles kontā <ph name="ACCOUNT_EMAIL" />, apstipriniet savu identitāti.</translation>
 <translation id="8965037249707889821">Ievadiet veco paroli</translation>
 <translation id="8966809848145604011">Citi profili</translation>
 <translation id="8967427617812342790">Pievienot sarakstam</translation>

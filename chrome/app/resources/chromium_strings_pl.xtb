@@ -121,6 +121,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chromium na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="264613044588233783">Chromium działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
@@ -446,6 +447,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6980074797973263542">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w osobistych profilach Chromium.</translation>
 <translation id="6985329841647292029">Warunki korzystania z systemu operacyjnego Chromium</translation>
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
+<translation id="7003299027384820442">Wpisz hasło, aby móc zapisywać dane z Chromium na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="7011190694940573312">Instalacja się nie udała, ponieważ ta wersja systemu operacyjnego nie jest obsługiwana.</translation>
 <translation id="7024536598735240744">Błąd rozpakowywania: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacja zatrzymana.</translation>
@@ -541,6 +543,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8330519371938183845">Zaloguj się, by synchronizować dane Chromium i korzystać z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>
 <translation id="8357820681460164151">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację</translation>
+<translation id="8359544530202147897">Zaktualizuj Chromium, aby nadal korzystać z danych Chromium na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Aby w przyszłości otrzymywać aktualizacje Chromium, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.</translation>
 <translation id="8362914115861174987">Tłumacz na</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>

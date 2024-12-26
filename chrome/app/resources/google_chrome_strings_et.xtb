@@ -243,6 +243,7 @@
 <translation id="3889417619312448367">Google Chrome'i desinstallimine</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3941890832296813527">Installimisviga: installiprogrammi failinimi on sobimatu või seda ei toetata.</translation>
+<translation id="3968962723676998462">Sisestage pääsukood, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
 <translation id="3973161977468201858">Google Chrome tahab kustutada teie Google'i paroolihalduri andmed. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="398236277091248993">Chrome püsib jõudluse tõhustamise funktsioonide abil kiirena</translation>
 <translation id="3999683152997576765">Saate vaadata ja eemaldada huvipakkuvaid teemasid, mida saidid teile reklaamide näitamiseks kasutavad. Chrome prognoosib teie huvisid teie hiljutise sirvimisajaloo põhjal.</translation>
@@ -307,6 +308,7 @@
 <translation id="4728575227883772061">Install ebaõnnestus määramata vea tõttu. Kui Google Chrome parasjagu töötab, siis palun sulgege see ja proovige uuesti.</translation>
 <translation id="4741235124132242877">Kinnitatud! Kasutage Google Lensi uuesti tööriistariba kaudu.</translation>
 <translation id="4747730611090640388">Chrome suudab teie huvisid prognoosida.  Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
+<translation id="475321580758063259">Värskendage Chrome, et jätkata Chrome'i kasutamist oma Google'i kontol <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
 <translation id="4793679854893018356">Vaadake, kuidas Chrome teid kaitseb</translation>
@@ -581,6 +583,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
 <translation id="8086881907087796310">Installimine ebaõnnestus, kuna arvuti ei vasta riistvara miinimumnõuetele.</translation>
 <translation id="8111297389482307122">Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chrome teie isiku kinnitama. Väljalogimisel jäävad need andmed sellesse seadmesse.</translation>
+<translation id="8113883687556086139">Kinnitage oma isik, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
 <translation id="8118331347066725040">Saatke Lensiga otsimise kohta tagasisidet</translation>
 <translation id="8129812357326543296">Teave &amp;Google Chrome'i kohta</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>

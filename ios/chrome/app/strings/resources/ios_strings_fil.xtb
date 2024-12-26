@@ -1397,6 +1397,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7248046129087111453">Posibleng naka-save sa iyong Google Account ang <ph name="BEGIN_LINK" />history ng paghahanap<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />iba pang anyo ng aktibidad<ph name="END_LINK" />.</translation>
 <translation id="7253951228444156601">Sinusuri ang mga password…</translation>
 <translation id="7261217796641151584">I-share ang Grupo</translation>
+<translation id="7266578100016339897">Makakatulong ito sa iyong manatiling organisado. Puwede mo itong baguhin sa mga setting anumang oras.</translation>
 <translation id="7271220006028561438">Payagan ang mga awtomatikong pag-upgrade sa passkey</translation>
 <translation id="7272437679830969316">Hindi ma-verify ang iyong pagkakakilanlan. Hindi nakopya ang password.</translation>
 <translation id="7293429513719260019">Pumili ng wika</translation>
@@ -1591,6 +1592,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8080028325999236607">Isara ang Lahat ng Tab</translation>
 <translation id="8084285576995584326">Kontrolin ang data sa iyong Google Account</translation>
 <translation id="809543534949702122">History ng Paghahanap</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} araw}one{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} araw}other{Ililipat dito ang mga tab na hindi mo ginagamit pagkatapos ng {COUNT} na araw}}</translation>
 <translation id="8101409298456377967">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">Available ang pag-download ng file. Available ang mga opsyon malapit sa ibaba ng screen.</translation>

@@ -963,6 +963,7 @@
 <translation id="2688969097326701645">نعم، متابعة</translation>
 <translation id="2690699652723742414">آخر 30 يومًا</translation>
 <translation id="2691924980723297736">تحذير متعلق بالأمان</translation>
+<translation id="2697248912349197812">طرح سؤال على <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">هناك قائمة فرعية متاحة، يمكنك استخدام <ph name="SHORTCUT" /> للانتقال إلى خيارات إضافية.</translation>
 <translation id="2701514975700770343">الوجه للأسفل</translation>
 <translation id="2702592986366989640">خيار السعر المنخفض</translation>
@@ -2068,6 +2069,7 @@
 <translation id="469028408546145398">زر إغلاق نوافذ التصفّح المتخفي: انقر على هذا الزر لإغلاق جميع نوافذ التصفّح المتخفي المفتوحة حاليًا.</translation>
 <translation id="4691093235373904540">خدمات تسقيف</translation>
 <translation id="4692623383562244444">محرّكات البحث</translation>
+<translation id="4695702626068620848">‫<ph name="KEYWORD" /> - طرح سؤال على <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">رياضات قتالية</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" />‏ <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">الجانب</translation>

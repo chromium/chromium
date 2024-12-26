@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1080365971383768617">Mga password sa lahat ng iyong device</translation>
 <translation id="1082920045291562218">Isinara ang sheet sa pag-share nang may feedback sa buod</translation>
+<translation id="1087176310396019910">Posibleng spam</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
 <translation id="1094555143448724771">Para makita ang mga tab mula sa iba mong device, i-sync ang iyong mga tab at history</translation>
 <translation id="1095761715416917775">Tiyaking maa-access mo sa anumang oras ang iyong sini-sync na data</translation>
@@ -508,6 +509,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> na tab}}</translation>
 <translation id="3293181007446299124">Pinapanatiling pribado ang iyong history ng pag-browse sa device mo at inaantala ang pagpapadala ng mga ulat para maprotektahan ang iyong pagkakakilanlan</translation>
+<translation id="3301936297336370235">Kumpirmasyon ng suhestyon sa password</translation>
 <translation id="3302615849591357577">I-restore ang grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
@@ -1136,6 +1138,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6196315980958524839">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
 <translation id="6202812185118613467">Mag-sign in ulit para simulan ang pag-sync</translation>
+<translation id="6204781143409202534">Naka-detect ang Chrome ng posibleng spam mula sa <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>

@@ -122,6 +122,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continuă să folosești Chromium</translation>
 <translation id="259935314519650377">Programul de instalare descărcat nu a putut fi stocat în memoria cache. Eroare: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Confirmă-ți identitatea pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze conform destinației lor (recomandat)</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
 <translation id="2661879430930417727">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc</translation>
@@ -449,6 +450,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6980074797973263542">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din profilurile Chromium personale.</translation>
 <translation id="6985329841647292029">Condiții pentru sistemul de operare Chromium</translation>
 <translation id="6990124437352146030">Chromium are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
+<translation id="7003299027384820442">Introdu expresia de acces pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Nu s-a instalat deoarece această versiune a sistemului de operare nu este acceptată.</translation>
 <translation id="7024536598735240744">Eroare la despachetare: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalare oprită.</translation>
@@ -544,6 +546,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8330519371938183845">Conectează-te pentru a sincroniza și a personaliza Chromium pe toate dispozitivele</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> a folosit Chromium anterior</translation>
 <translation id="8357820681460164151">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
+<translation id="8359544530202147897">Actualizează Chromium pentru a folosi în continuare datele Chromium din Contul Google <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.</translation>
 <translation id="8362914115861174987">Tradu în</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>

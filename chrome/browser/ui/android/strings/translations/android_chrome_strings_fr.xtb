@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
 <translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1082920045291562218">Partager avec la fiche de commentaires récapitulative fermée</translation>
+<translation id="1087176310396019910">Spam potentiel</translation>
 <translation id="1089606299949659462">Examen terminé</translation>
 <translation id="1094555143448724771">Synchronisez vos onglets et l'historique pour voir les onglets de vos autres appareils</translation>
 <translation id="1095761715416917775">Veillez à toujours avoir accès à vos données synchronisées</translation>
@@ -508,6 +509,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
+<translation id="3301936297336370235">Confirmation de la suggestion de mot de passe</translation>
 <translation id="3302615849591357577">Restaurer le groupe d'onglets "<ph name="TITLE_OF_GROUP" />" (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
@@ -1136,6 +1138,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil</translation>
 <translation id="6202812185118613467">Reconnectez-vous pour lancer la synchronisation</translation>
+<translation id="6204781143409202534">Chrome a détecté un spam potentiel de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>

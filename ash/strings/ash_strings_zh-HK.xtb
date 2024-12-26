@@ -1647,7 +1647,7 @@
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji、GIF 等</translation>
-<translation id="6543942526104794893">確定要關閉臉部表情功能嗎？</translation>
+<translation id="6543942526104794893">確定要停止使用面部表情操作嗎？</translation>
 <translation id="6545382064335350438">系統仍然無法驗證你的 PIN，請再試一次。</translation>
 <translation id="6555373427270923730">在網址列中輸入網址，然後按 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
@@ -2313,7 +2313,7 @@
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">私隱權設定</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>
-<translation id="8869149849311827122">確定要關閉滑鼠游標控制功能嗎？</translation>
+<translation id="8869149849311827122">確定要停用滑鼠游標控制嗎？</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
 <translation id="8873203135446552888">確認要停用內置觸控板</translation>
 <translation id="8874184842967597500">未連線</translation>

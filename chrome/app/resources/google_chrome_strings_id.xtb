@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Hapus Penginstalan Google Chrome</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
+<translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ingin menghapus data Pengelola Sandi Google Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="398236277091248993">Chrome tetap cepat dengan fitur peningkatan performa</translation>
 <translation id="3999683152997576765">Anda dapat melihat dan menghapus topik terkait minat yang digunakan situs untuk menampilkan iklan kepada Anda. Chrome memperkirakan minat Anda berdasarkan histori penjelajahan terbaru Anda.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>
 <translation id="4741235124132242877">Disematkan. Gunakan Google Lens lagi dari toolbar</translation>
 <translation id="4747730611090640388">Chrome dapat memperkirakan minat Anda.  Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="475321580758063259">Update Chrome untuk terus menggunakan data Chrome di Akun Google Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4793679854893018356">Pelajari cara Chrome menjaga keamanan Anda</translation>
@@ -577,6 +579,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
 <translation id="8111297389482307122">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout, data ini akan tetap berada di perangkat ini.</translation>
+<translation id="8113883687556086139">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulai...</translation>

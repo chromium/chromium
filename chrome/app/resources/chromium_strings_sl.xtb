@@ -124,6 +124,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2583187216237139145">Podatke v Chromiumu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Še naprej uporabljaj Chromium</translation>
 <translation id="259935314519650377">Prenesenega namestitvenega programa ni bilo mogoče predpomniti. Napaka: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Potrdite, da ste to vi, če želite podatke iz Chromiuma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno (priporočeno)</translation>
 <translation id="2648074677641340862">Napaka v operacijskem sistemu med namestitvijo. Znova prenesite Chromium.</translation>
 <translation id="2661879430930417727">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
@@ -451,6 +452,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6980074797973263542">Vaša organizacija si lahko ogleda in upravlja podatke brskanja, na primer zaznamke, zgodovino in gesla. V osebnih profilih v Chromiumu si ne more ogledati podatkov brskanja.</translation>
 <translation id="6985329841647292029">Pogoji za Chromium OS</translation>
 <translation id="6990124437352146030">Chromium potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>
+<translation id="7003299027384820442">Vnesite geslo, če želite podatke iz Chromiuma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Namestitev ni uspela, ker ta različica operacijskega sistema ni podprta.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>
@@ -546,6 +548,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8330519371938183845">Prijavite se, da boste lahko Chromium sinhronizirali in prilagodili v vseh svojih napravah</translation>
 <translation id="8340674089072921962">Uporabnik <ph name="USER_EMAIL_ADDRESS" /> je prej uporabljal Chromium</translation>
 <translation id="8357820681460164151">Če želite do stvari v brskalniku Chromium dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
+<translation id="8359544530202147897">Posodobite Chromium, če želite podatke v Chromiumu še naprej uporabljati v računu Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Če želite prejemati prihodnje posodobitve Chromiuma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.</translation>
 <translation id="8362914115861174987">Prevedi v jezik</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>

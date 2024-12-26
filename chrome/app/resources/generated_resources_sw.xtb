@@ -426,6 +426,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1282436639288565079">Maelezo ya Kikundi cha Vichupo</translation>
 <translation id="1283126956823499975">Hitilafu fulani imetokea wakati wa kuweka mipangilio ya kifaa</translation>
 <translation id="1284277788676816155">Hairuhusu kuhifadhi data</translation>
+<translation id="1284912418686719556">Chrome inakuandalia nenosiri thabiti. Huhitaji kulikumbuka kwa sababu limehifadhiwa kwenye <ph name="GOOGLE_PASSWORD_MANAGER" /> katika <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
 <translation id="1285484354230578868">Hifadhi data katika akaunti yako ya Hifadhi ya Google</translation>
 <translation id="1285625592773741684">Mipangilio ya sasa ya matumizi ya data ni 'Data ya Mtandao wa Simu'</translation>
@@ -7574,6 +7575,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="637642201764944055">Matoleo ya zamani ya Programu za Chrome hayatafunguka tena kwenye vifaa vya Linux baada ya Desemba 2022. Wasiliana na msimamizi wako ili asasishe kuwa toleo jipya au aondoe programu hii.</translation>
 <translation id="6377268785556383139">Imepata tokeo 1 la '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Fungua katika mitandao ya Wi-Fi</translation>
+<translation id="6379228010899751161">Thibitisha kuwa ni wewe ili uhakikishe kuwa unaweza kutumia manenosiri katika akaunti yako kila wakati, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Kubali na uendelee</translation>
 <translation id="6383382161803538830">Hali ya kusoma haipatikani kwenye ukurasa huu</translation>
 <translation id="638418309848716977">Viungo vinavyoweza kutumika</translation>
@@ -9625,6 +9627,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ikiwa umewasha mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu katika Akaunti yako ya Google, huenda data yako ya Android ikahifadhiwa kwenye Akaunti yako ya Google. Unaweza kuona data yako, kuifuta na kubadilisha mipangilio ya akaunti yako katika account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" /> Huenda sauti au rekodi ya sauti inayolingana na yako ikaweza pia kufikia matokeo yako ya binafsi au programu yako ya Mratibu. Ili kuokoa betri, unaweza kuchagua kipengele cha “Ok Google” kiwashwe tu wakati kifaa hiki kimeunganishwa kwenye chanzo cha nishati, katika mipangilio ya programu yako ya Mratibu.</translation>
+<translation id="7851196412551419054">Inabadilisha nenosiri lako...</translation>
 <translation id="7851457902707056880">Kuingia katika akaunti kunaruhusiwa kwa mmiliki wa akaunti pekee. Tafadhali washa upya na uingie katika akaunti ya mmiliki. Mashine itawashwa upya ndani ya sekunde 30.</translation>
 <translation id="7851716364080026749">Zuia ufikiaji wa kamera na maikrofoni kila wakati</translation>
 <translation id="7851720427268294554">Kichanganuzi cha IPP</translation>
@@ -11212,6 +11215,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8962863356073277855">Ni lazima muundo wa URL uwe https://www.example.com</translation>
 <translation id="8962918469425892674">Tovuti hii inatumia vitambuzi vya mwangaza au mwendo.</translation>
 <translation id="8963117664422609631">Nenda kwenye mipangilio ya tovuti</translation>
+<translation id="8964927371396953727">Thibitisha kuwa ni wewe ili utumie na uhifadhi manenosiri katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Weka nenosiri la zamani</translation>
 <translation id="8966809848145604011">Aina Zingine za Wasifu</translation>
 <translation id="8967427617812342790">Ongeza kwenye orodha ya kusoma</translation>

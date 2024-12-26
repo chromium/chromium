@@ -19,6 +19,7 @@
 <translation id="107147699690128016">আপুনি যদি ফাইল এক্সটেনশ্বন সলনি কৰে ফাইলটো হয়তো বেলেগ এটা এপ্লিকেশ্বনত খুলিব আৰু সেয়া আপোনাৰ ডিভাইচটোৰ বাবে এক সম্ভাব্য বিপদ হ’ব পাৰে।</translation>
 <translation id="1080365971383768617">আপোনাৰ আটাইবোৰ ডিভাইচত পাছৱৰ্ড</translation>
 <translation id="1082920045291562218">সাৰাংশৰ ওপৰত মতামত শ্বেয়াৰ কৰা শ্বীট বন্ধ কৰা আছে</translation>
+<translation id="1087176310396019910">সম্ভাব্য স্পাম</translation>
 <translation id="1089606299949659462">পৰ্যালোচনা সম্পূৰ্ণ হ’ল!</translation>
 <translation id="1094555143448724771">আপোনাৰ অন্য ডিভাইচৰ পৰা টেবসমূহ চাবলৈ, আপোনাৰ টেব আৰু ইতিহাস ছিংক কৰক</translation>
 <translation id="1095761715416917775">নিশ্চিত হৈ লওক যে আপুনি যাতে নিজৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পাৰে</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> টা টেব}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> টা টেব}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> টা টেব}}</translation>
 <translation id="3293181007446299124">আপোনাৰ ডিভাইচটোত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যক্তিগত কৰি ৰখা হয় আৰু ৰিপ’ৰ্টসমূহ আপোনাৰ পৰিচয় সুৰক্ষিত কৰিবলৈ পলমকৈ পঠিওৱা হয়</translation>
+<translation id="3301936297336370235">পাছৱৰ্ডৰ পৰামৰ্শৰ নিশ্চিতকৰণ</translation>
 <translation id="3302615849591357577">এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TITLE_OF_GROUP" /> টা টেবৰ গোট, <ph name="COLOR_NAME" /> ৰং পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="3303414029551471755">সমলখিনি ডাউনল’ড কৰিবলৈ আগবাঢ়িবনে?</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
 <translation id="6196315980958524839">পাছৱৰ্ডসমূহ এই ডিভাইচটোত থকা Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়</translation>
 <translation id="6202812185118613467">ছিংক কৰাটো আৰম্ভ কৰিবলৈ পুনৰ ছাইন ইন কৰক</translation>
+<translation id="6204781143409202534">Chromeএ <ph name="DOMAIN" />ৰ পৰা সম্ভাব্য স্পাম চিনাক্ত কৰিছে।</translation>
 <translation id="6205314730813004066">বিজ্ঞাপনৰ গোপনীয়তা</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> নহয় নেকি?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন কৰি আছে</translation>

@@ -122,6 +122,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2583187216237139145">Alle Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af arbejdsprofilens administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Verificer din identitet for at bruge og gemme Chromium-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium kører hurtigere, og funktioner, der bruger JavaScript, bør fungere som forventet (anbefales)</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
@@ -449,6 +450,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6980074797973263542">Din organisation kan se og administrere browserdata, f.eks. bogmærker, historik og adgangskoder. Den kan ikke se browserdata på dine personlige Chromium-profiler.</translation>
 <translation id="6985329841647292029">Vilkår for Chromium OS</translation>
 <translation id="6990124437352146030">Chromium skal have tilladelse til at bruge din mikrofon på dette website</translation>
+<translation id="7003299027384820442">Angiv din adgangssætning for at bruge og gemme Chromium-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installationen mislykkedes, fordi denne version af operativsystemet ikke understøttes.</translation>
 <translation id="7024536598735240744">Fejl under udpakning: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installationen blev afbrudt.</translation>
@@ -544,6 +546,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8330519371938183845">Log ind for at synkronisere og personligt tilpasse Chromium på alle dine enheder</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brugte tidligere Chromium</translation>
 <translation id="8357820681460164151">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder</translation>
+<translation id="8359544530202147897">Opdater Chromium for at fortsætte med at bruge Chromium-dataene på din Google-konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Hvis du vil have fremtidige Chromium-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>

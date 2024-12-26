@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ফট’ (আৰ্কাইভেল)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">ৱেব এপ্‌ ইনষ্টল কৰিবনে?</translation>
+<translation id="1791415068765905273">আটাইবোৰ তুলনাৰ তালিকা দেখুৱাওক</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপোনাৰ Google একাউণ্টত নিজৰ তথ্য, গোপনীয়তা আৰু সুৰক্ষা পৰিচালনা কৰিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="1793631236004319016">অন্তিমবাৰ <ph name="NUM_HOURS_MINUTES_SECONDS" /> পূর্বে ব্যৱহাৰ কৰা হৈছিল</translation>
@@ -2195,6 +2196,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনষ্টল কৰক (ডাউনল’ড কৰাৰ প্ৰয়োজন নাই)</translation>
 <translation id="4920457992177678649">বন্ধৰ দিনৰ ভাড়া আৰু হ্ৰস্বম্যাদী থকাৰ ব্যৱস্থা</translation>
 <translation id="4920710383559189047">ছ্লীভ</translation>
+<translation id="4920921410507315601">তুলনাৰ তালিকা</translation>
 <translation id="4922104989726031751">আপোনাৰ অপাৰেটিং ছিষ্টেমৰ সৈতে Password Manager ব্যৱহাৰ কৰিবলৈ, পুনৰ Chromium লঞ্চ কৰক আৰু আপোনাৰ কম্পিউটাৰৰ পাছৱৰ্ড পৰিচালক এক্সেছ কৰাৰ অনুমতি দিয়ক। পুনৰ লঞ্চ কৰাৰ পাছত আপোনাৰ টেবসমূহ পুনৰ খোল খাব।</translation>
 <translation id="4923459931733593730">পৰিশোধ</translation>
 <translation id="4926049483395192435">নির্দিষ্ট হ’বই লাগিব।</translation>
@@ -2388,6 +2390,7 @@
 <translation id="5278778426231952189">এতিয়াই আপল’ড কৰক</translation>
 <translation id="5279286380302340275">ডাউনল’ডসমূহ পৰিচালনা কৰক</translation>
 <translation id="5280963125494874678">ৱেব এপ্লিকেশ্বন</translation>
+<translation id="5282008206326321696">{count,plural, =0{# টা বুকমাৰ্ক}=1{# টা বুকমাৰ্ক}one{# টা বুকমাৰ্ক}other{# টা বুকমাৰ্ক}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">নথিৰ বৈশিষ্ট্য</translation>
 <translation id="528468243742722775">সমাপ্ত</translation>
@@ -2583,6 +2586,7 @@
 <translation id="561165882404867731">Google Translateৰ জৰিয়তে এই পৃষ্ঠাখন অনুবাদ কৰক</translation>
 <translation id="5612720917913232150"><ph name="URL" />এ আপোনাৰ কম্পিউটাৰৰ অৱস্থান জানিব খোজে</translation>
 <translation id="5614520971155863709">কাৰ্ড গে’ম</translation>
+<translation id="5617785978844309968">আটাইবোৰ তুলনাৰ তালিকা দেখুৱাওক</translation>
 <translation id="5617949217645503996">আপোনাক <ph name="HOST_NAME" />এ বহুত বেছি বাৰ অন্য পৃষ্ঠালৈ নিছে।</translation>
 <translation id="5619721953841297650">প্ৰিছেট</translation>
 <translation id="5624120631404540903">পাছৱৰ্ড সলনি কৰক</translation>

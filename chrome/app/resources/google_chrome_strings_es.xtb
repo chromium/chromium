@@ -245,6 +245,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3941890832296813527">Error de instalación: el nombre de archivo del instalador no es válido o no se admite.</translation>
+<translation id="3968962723676998462">Introduce tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">Google Chrome quiere eliminar tus datos del Gestor de contraseñas de Google. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="398236277091248993">Chrome mantiene su rapidez gracias a funciones que mejoran el rendimiento</translation>
 <translation id="3999683152997576765">Puedes ver y eliminar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses según tu historial de navegación reciente.</translation>
@@ -309,6 +310,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4728575227883772061">Debido a un error desconocido, la instalación no se ha llevado a cabo. Si Google Chrome se está ejecutando, ciérralo y vuelve a intentarlo.</translation>
 <translation id="4741235124132242877">¡Fijado! Vuelve a usar Google Lens desde la barra de herramientas.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Después, un sitio que visites puede pedirle a Chrome consultar tus intereses para personalizar los anuncios que veas.</translation>
+<translation id="475321580758063259">Actualiza Chrome para seguir usando los datos de Chrome en tu cuenta de Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
 <translation id="479167709087336770">Utiliza el mismo corrector ortográfico que se usa en la Búsqueda de Google. El texto que escribas en el navegador se enviará a Google. Puedes cambiar esta opción en cualquier momento desde los ajustes.</translation>
 <translation id="4793679854893018356">Descubre cómo te protege Chrome</translation>
@@ -585,6 +587,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">No se ha podido realizar la instalación porque tu ordenador no cumple los requisitos mínimos de hardware.</translation>
 <translation id="8111297389482307122">Chrome debe verificar que eres tú para poder guardar algunos datos en tu cuenta de Google y usarlos en todos tus dispositivos. Si cierras sesión, los datos permanecerán en este dispositivo.</translation>
+<translation id="8113883687556086139">Verifica que eres tú para usar y guardar los datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8118331347066725040">Enviar comentarios sobre la búsqueda con Lens</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>

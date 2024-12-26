@@ -124,6 +124,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="2583187216237139145">Data yoyote ya Chromium inayozalishwa unapotumia wasifu huu (kama vile alamisho ulizoweka, historia, manenosiri na mipangilio mingine) inaweza kuondolewa na msimamizi wa wasifu huu wa kazini. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Endelea kutumia Chromium</translation>
 <translation id="259935314519650377">Imeshindwa kuweka akiba ya kisakinishaji kilichopakuliwa. Hitilafu: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Thibitisha kuwa ni wewe ili utumie na uhifadhi data ya Chromium katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium hufanya kazi kwa kasi na vipengele vinavyotumia JavaScript vinapaswa kufanya kazi kama vilivyobuniwa (inapendekezwa)</translation>
 <translation id="2648074677641340862">Hitilafu ya mfumo wa uendeshaji imetokea wakati wa usakinishaji. Tafadhali pakua Chromium tena.</translation>
 <translation id="2661879430930417727">Kama unatumia kifaa pamoja na wengine, marafiki na familia wanaweza kuvinjari kivyao na kuweka mipangilio ya Chromium wapendavyo</translation>
@@ -451,6 +452,7 @@ Baadhi ya vipengele huenda visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="6980074797973263542">Shirika lako linaweza kuona na kudhibiti data ya kuvinjari, kama vile alamisho, historia na manenosiri yako. Haliwezi kuona data ya kuvinjari katika wasifu wa binafsi kwenye Chromium.</translation>
 <translation id="6985329841647292029">Sheria na masharti ya Mfumo wa Uendeshaji wa Chromium</translation>
 <translation id="6990124437352146030">Chromium inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
+<translation id="7003299027384820442">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chromium katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Imeshindwa kusakinisha kwa sababu toleo hili la mfumo wa uendeshaji halitumiki.</translation>
 <translation id="7024536598735240744">Hitilafu ya kutekeleza kiendelezi cha ndani: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Usakinishaji Umesimamishwa.</translation>
@@ -546,6 +548,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8330519371938183845">Ingia katika akaunti ili usawazishe na uweke mapendeleo kwenye Chromium katika vifaa vyako vyote</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ilikuwa ikitumia Chromium awali</translation>
 <translation id="8357820681460164151">Ili uweze kufikia vitu vyako vya kivinjari cha Chromium kwenye vifaa vyako vyote, ingia katika akaunti kisha uwashe kipengele cha kusawazisha.</translation>
+<translation id="8359544530202147897">Sasisha Chromium ili iendelee kutumia data ya Chromium katika Akaunti yako ya Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Ili upate masasisho yajayo ya Chromium, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo la Windows 8.</translation>
 <translation id="8362914115861174987">Tafsiri kwa</translation>
 <translation id="8370517070665726704">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>

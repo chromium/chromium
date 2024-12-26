@@ -1647,6 +1647,7 @@ Walang nakakonektang device.</translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Mga emoji, GIF, at higit pa</translation>
+<translation id="6543942526104794893">Sigurado ka bang gusto mong i-off ang mga galaw ng mukha?</translation>
 <translation id="6545382064335350438">Hindi pa rin ma-verify ang iyong PIN. Subukan ulit.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2311,6 +2312,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>
 <translation id="8860366331836346216">Magdagdag ng eSIM</translation>
+<translation id="8869149849311827122">Sigurado ka bang gusto mong i-off ang kontrol ng cursor ng mouse?</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
 <translation id="8873203135446552888">Kumpirmahing gusto mong i-disable ang naka-built in na touchpad</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>

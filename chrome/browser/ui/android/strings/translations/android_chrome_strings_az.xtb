@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Fayl artırmasını dəyişsəniz, fayl başqa tətbiqdə açıla bilər və cihaz üçün potensial zərərli ola bilər.</translation>
 <translation id="1080365971383768617">Bütün cihazlarınızda parollar</translation>
 <translation id="1082920045291562218">Xülasə rəyi ilə paylaşım vərəqi bağlanıb</translation>
+<translation id="1087176310396019910">Mümkün spam</translation>
 <translation id="1089606299949659462">Nəzərdən keçirmə tamamlandı!</translation>
 <translation id="1094555143448724771">Digər cihazlardakı tablara baxmaq üçün tab və tarixçəni sinxronlaşdırın</translation>
 <translation id="1095761715416917775">Sinxronlaşdırma datasına həmişə girişinizin olduğuna əmin olun</translation>
@@ -508,6 +509,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3282568296779691940">Chrome'a daxil olun</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3293181007446299124">Baxış tarixçəniz cihazınızda məxfi saxlanılır və şəxsiyyətinizi qorumaq üçün hesabatlar gecikmə ilə göndərilir</translation>
+<translation id="3301936297336370235">Parol təklifinin təsdiqi</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> rəngli <ph name="TITLE_OF_GROUP" /> tab qrupunu yeni arxa fon tab qrupu olaraq bərpa edin.</translation>
 <translation id="3303414029551471755">Kontentin endirilməsinə davam etmək istəyirsiniz?</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
@@ -1136,6 +1138,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6196315980958524839">Parollar bu cihazda Google Parol Menecerində saxlanılır</translation>
 <translation id="6202812185118613467">Sinxronizasiyanı başlatmaq üçün yenidən daxil olun</translation>
+<translation id="6204781143409202534">Chrome <ph name="DOMAIN" /> domenindən mümkün spam aşkarladı.</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> deyil?</translation>
 <translation id="6211386937064921208">Bu səhifə önizlənir</translation>

@@ -426,6 +426,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1282436639288565079">Vahelehegrupi üksikasjad</translation>
 <translation id="1283126956823499975">Seadme seadistamisel läks midagi valesti</translation>
 <translation id="1284277788676816155">Ära luba andmeid salvestada</translation>
+<translation id="1284912418686719556">Chrome loob teile tugeva parooli. Seda pole vaja meeles pidada, sest <ph name="GOOGLE_PASSWORD_MANAGER" /> salvestab selle teie kontole <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1285484354230578868">Salvestage andmed oma Google Drive'i kontole</translation>
 <translation id="1285625592773741684">Praegune andmekasutuse seade on Mobiilne andmeside</translation>
@@ -7570,6 +7571,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="637642201764944055">Chrome'i rakenduste vanad versioonid ei avane Linuxi seadmetes enam pärast 2022. aasta detsembrit. Uuele versioonile värskendamiseks võtke ühendust administraatoriga või eemaldage see rakendus.</translation>
 <translation id="6377268785556383139">1 tulemus otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6378392501584240055">Ava WiFi-võrkude loend</translation>
+<translation id="6379228010899751161">Kinnitage oma isik, et oma kontol <ph name="ACCOUNT_EMAIL" /> olevaid paroole kasutada</translation>
 <translation id="6380143666419481200">Nõustu ja jätka</translation>
 <translation id="6383382161803538830">Lugemisrežiim pole sellel lehel saadaval</translation>
 <translation id="638418309848716977">Toetatud lingid</translation>
@@ -9620,6 +9622,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Need aruanded saate Chrome OS-i seadme seadetes igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Kui veebi- ja rakendustegevused on teie Google'i kontol sisse lülitatud, võidakse teie Androidi andmed salvestada teie Google'i kontole. Saidil account.google.com saate oma andmeid vaadata, neid kustutada ja konto seadeid muuta.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Sarnase hääle või salvestisega võib pääseda ligi teie personaalsetele tulemustele või assistendile. Aku säästmiseks võite assistendi seadetes valida, et funktsioon „Ok Google” on ainult siis sisse lülitatud, kui seade on toiteallikaga ühendatud.</translation>
+<translation id="7851196412551419054">Parooli muutmine…</translation>
 <translation id="7851457902707056880">Sisse saab logida vaid omaniku kontoga. Taaskäivitage seade ja logige sisse omaniku kontoga. Seade taaskäivitub automaatselt 30 sekundi pärast.</translation>
 <translation id="7851716364080026749">Blokeeri alati juurdepääs kaamerale ja mikrofonile</translation>
 <translation id="7851720427268294554">IPP-parser</translation>
@@ -11207,6 +11210,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8962863356073277855">URL-i vorming peab olema https://www.example.com</translation>
 <translation id="8962918469425892674">Sait kasutab liikumis- või valgusandureid.</translation>
 <translation id="8963117664422609631">Saidi seadete avamine</translation>
+<translation id="8964927371396953727">Kinnitage oma isik, et oma kontol <ph name="ACCOUNT_EMAIL" /> paroole kasutada ja salvestada</translation>
 <translation id="8965037249707889821">Sisestage vana parool</translation>
 <translation id="8966809848145604011">Muud profiilid</translation>
 <translation id="8967427617812342790">Lisa lugemisloendisse</translation>

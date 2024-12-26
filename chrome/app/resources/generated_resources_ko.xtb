@@ -426,6 +426,7 @@
 <translation id="1282436639288565079">탭 그룹 세부정보</translation>
 <translation id="1283126956823499975">기기를 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
+<translation id="1284912418686719556">Chrome에서 안전한 비밀번호를 생성 중입니다. <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장되므로 기억하지 않아도 됩니다.</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1285484354230578868">Google Drive 계정에 데이터 저장</translation>
 <translation id="1285625592773741684">현재 데이터 사용 설정은 모바일 데이터입니다.</translation>
@@ -7580,6 +7581,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="637642201764944055">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Linux 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
 <translation id="6378392501584240055">Wi-Fi 네트워크에서 열기</translation>
+<translation id="6379228010899751161"><ph name="ACCOUNT_EMAIL" /> 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
 <translation id="6383382161803538830">이 페이지에서는 읽기 모드를 사용할 수 없음</translation>
 <translation id="638418309848716977">지원되는 링크</translation>
@@ -9629,6 +9631,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google 계정에 이미 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다. account.google.com에서 내 데이터를 보고 삭제하거나 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 다른 사람이 비슷한 목소리 또는 녹음된 음성을 사용하여 내 개인 검색결과 또는 어시스턴트에 액세스할 수도 있습니다. 어시스턴트 설정에서 이 기기가 전원에 연결되어 있을 때만 'Hey Google'을 사용하도록 설정하면 배터리를 절약할 수 있습니다.</translation>
+<translation id="7851196412551419054">비밀번호를 변경하는 중입니다…</translation>
 <translation id="7851457902707056880">로그인이 소유자 계정으로만 제한되었습니다. 다시 부팅하여 소유자 계정으로 로그인하세요. 컴퓨터가 30초 뒤에 자동으로 다시 부팅됩니다.</translation>
 <translation id="7851716364080026749">카메라 및 마이크 액세스 항상 차단</translation>
 <translation id="7851720427268294554">IPP 파서</translation>
@@ -11217,6 +11220,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8962863356073277855">URL 형식이 https://www.example.com이어야 합니다.</translation>
 <translation id="8962918469425892674">사이트에서 모션 센서 또는 조도 센서를 사용 중입니다.</translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
+<translation id="8964927371396953727"><ph name="ACCOUNT_EMAIL" /> 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
 <translation id="8966809848145604011">기타 프로필</translation>
 <translation id="8967427617812342790">읽기 목록에 추가</translation>

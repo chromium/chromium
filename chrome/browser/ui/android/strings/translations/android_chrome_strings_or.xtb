@@ -19,6 +19,7 @@
 <translation id="107147699690128016">ଯଦି ଆପଣ ଫାଇଲ୍‍ର ଏକ୍ସଟେନ୍‍ସନ୍ ବଦଳାନ୍ତି, ତେବେ ଫାଇଲ୍‍ଟି ଏକ ଭିନ୍ନ ଆପ୍ଲିକେସନ୍‍‍ରେ ଖୋଲିପାରେ ଏବଂ ଆପଣଙ୍କର ଡିଭାଇସ୍ ପାଇଁ ଏକ ସମ୍ଭାବ୍ୟ ବିପଦ ହୋଇପାରେ।</translation>
 <translation id="1080365971383768617">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ</translation>
 <translation id="1082920045291562218">ସାରାଂଶ ମତାମତ ସିଟ ବନ୍ଦ ଥିବା ବେଳେ ସେୟାର କରନ୍ତୁ</translation>
+<translation id="1087176310396019910">ସମ୍ଭାବ୍ୟ ସ୍ପାମ</translation>
 <translation id="1089606299949659462">ସମୀକ୍ଷା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="1094555143448724771">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଟାବଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ଆପଣଙ୍କ ଟାବ ଏବଂ ଇତିହାସ ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="1095761715416917775">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କର ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟା ଆକ୍ସେସ୍ କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ଟାବ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ଟାବ}}</translation>
 <translation id="3293181007446299124">ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ବ୍ୟକ୍ତିଗତ ରଖାଯାଏ ଏବଂ ଆପଣଙ୍କର ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ବିଳମ୍ବରେ ରିପୋର୍ଟଗୁଡ଼ିକ ପଠାଯାଏ</translation>
+<translation id="3301936297336370235">ପାସୱାର୍ଡର ପରାମର୍ଶର ସୁନିଶ୍ଚିତକରଣ</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକେଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="3303414029551471755">ବିଷୟବସ୍ତୁ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବା ପାଇଁ ଆଗକୁ ବଢ଼ିବେ?</translation>
 <translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6196315980958524839">ଏହି ଡିଭାଇସ Google Password Managerରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6202812185118613467">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="6204781143409202534">Chrome <ph name="DOMAIN" />ରୁ ସମ୍ଭାବ୍ୟ ସ୍ପାମର ଚିହ୍ନଟ କରିଛି।</translation>
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ନୁହେଁ?</translation>
 <translation id="6211386937064921208">ଏହି ପୃଷ୍ଠା ପ୍ରିଭ୍ୟୁ କରାଯାଉଛି</translation>

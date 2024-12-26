@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
 <translation id="1080365971383768617">Parole disponibile pe toate dispozitivele</translation>
 <translation id="1082920045291562218">Opțiunea Distribuie cu foaia de feedback pentru rezumat a fost închisă</translation>
+<translation id="1087176310396019910">Posibil spam</translation>
 <translation id="1089606299949659462">Examinare finalizată!</translation>
 <translation id="1094555143448724771">Pentru a vedea filele de pe alte dispozitive, sincronizează filele și istoricul</translation>
 <translation id="1095761715416917775">Asigură-te că ai în permanență acces la datele sincronizate</translation>
@@ -508,6 +509,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> file}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> de file}}</translation>
 <translation id="3293181007446299124">Istoricul de navigare este păstrat privat pe dispozitivul tău și rapoartele sunt trimise cu întârziere pentru a-ți proteja identitatea</translation>
+<translation id="3301936297336370235">Confirmarea sugestiei de parolă</translation>
 <translation id="3302615849591357577">Restabilește grupul de file <ph name="TITLE_OF_GROUP" /> de culoare <ph name="COLOR_NAME" /> ca pe un nou grup de file din fundal.</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
@@ -1136,6 +1138,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6196315980958524839">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv</translation>
 <translation id="6202812185118613467">Conectează-te din nou pentru a începe sincronizarea</translation>
+<translation id="6204781143409202534">Chrome a detectat posibil spam de la <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Confidențialitatea anunțurilor</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previzualizare a paginii</translation>

@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">‏הסרת Google Chrome</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
+<translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="398236277091248993">‏‫Chrome ממשיך לפעול במהירות עם תכונות שמשפרות את הביצועים</translation>
 <translation id="3999683152997576765">‏יש לך אפשרות לראות ולהסיר את תחומי העניין שלפיהם האתרים מציגים לך את המודעות. ההערכה של תחומי העניין ב-Chrome מתבססת על היסטוריית הגלישה שלך מהזמן האחרון.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Google Chrome פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4741235124132242877">‏התכונה הוצמדה. מעכשיו, אפשר להשתמש ב-Google Lens מסרגל הכלים</translation>
 <translation id="4747730611090640388">‏Chrome יכול להעריך מהם תחומי העניין שלך.  לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chrome כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך.</translation>
+<translation id="475321580758063259">‏כדי להמשיך להשתמש בנתונים של Chrome בחשבון שלך ב-Google (<ph name="ACCOUNT_EMAIL" />), צריך לעדכן את Chrome</translation>
 <translation id="4754614261631455953">‏גרסה ניסיונית של Google Chrome‏ (mDNS-In)</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
 <translation id="4793679854893018356">‏איך מערכת Chromium שומרת על האבטחה שלך</translation>
@@ -577,6 +579,7 @@
 <translation id="8077579734294125741">‏פרופילים אחרים ב-Chrome</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
 <translation id="8111297389482307122">‏‫Chrome צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יישארו במכשיר הזה.</translation>
+<translation id="8113883687556086139">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
 <translation id="8118331347066725040">‏שליחת משוב על חיפוש באמצעות Lens</translation>
 <translation id="8129812357326543296">‏מידע על Google Chrome&amp;</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>

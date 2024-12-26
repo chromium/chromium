@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Se você mudar a extensão do arquivo, ele poderá ser aberto em um aplicativo diferente e colocar em risco seu dispositivo.</translation>
 <translation id="1080365971383768617">Senhas em todos os seus dispositivos</translation>
 <translation id="1082920045291562218">Compartilhar com a página de feedback do resumo fechada</translation>
+<translation id="1087176310396019910">Possível spam</translation>
 <translation id="1089606299949659462">Revisão concluída</translation>
 <translation id="1094555143448724771">Para conferir as guias dos seus outros dispositivos, sincronize-as com o histórico</translation>
 <translation id="1095761715416917775">Tenha sempre acesso aos seus dados sincronizados</translation>
@@ -508,6 +509,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> guia}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> guias}}</translation>
 <translation id="3293181007446299124">Seu histórico de navegação é mantido no seu dispositivo, e os relatórios são enviados com um atraso para proteger sua identidade</translation>
+<translation id="3301936297336370235">Confirmação da sugestão de senha</translation>
 <translation id="3302615849591357577">Restaurar grupo <ph name="TITLE_OF_GROUP" />, cor <ph name="COLOR_NAME" />, como um novo grupo de guias em segundo plano.</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
@@ -1137,6 +1139,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6196315980958524839">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo</translation>
 <translation id="6202812185118613467">Faça login novamente para iniciar a sincronização</translation>
+<translation id="6204781143409202534">O Chrome detectou um possível spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6210748933810148297">Não é <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizando esta página</translation>

@@ -541,6 +541,7 @@
 <translation id="1368603372088757436">আপোনাৰ <ph name="DEVICE_TYPE" />ত Linux সমৰ্থন নকৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
 <translation id="1370384480654163477">আপুনি অন্তিমবাৰ এই ছাইটটোলৈ অহাৰ সময়ৰ পৰা ফাইলসমূহ চাওক আৰু সম্পাদনা কৰক:</translation>
+<translation id="1372259917802609049">সীমাবদ্ধতা মচোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="1372841398847029212">আপোনাৰ একাউণ্টত ছিংক কৰক</translation>
 <translation id="1373176046406139583">আপোনাৰ ডিভাইচৰ দৃশ্যমানতাই আপোনাৰ ডিভাইচটোৰ স্ক্ৰীন আনলক থকা অৱস্থাত আপোনাৰ সৈতে কোনে শ্বেয়াৰ কৰিব পাৰে সেয়া নিয়ন্ত্ৰণ কৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">নেটৱৰ্কে "<ph name="NETWORK_NAME" />" বিচৰা প্ৰমাণপত্ৰ হয়তো ইনষ্টল কৰা নাই বা সেইয়া এতিয়া আৰু মান্য নহয়।  অনুগ্ৰহ কৰি এখন নতুন প্ৰমাণপত্ৰ লওক আৰু আকৌ সংযোগ কৰাৰ চেষ্টা কৰক।</translation>
@@ -1487,6 +1488,7 @@
     ই অন্য ডিভাইচসমূহত থকা এপ্‌ অথবা সমলৰ ওপৰত প্ৰভাৱ নেপেলায়।</translation>
 <translation id="2018189721942291407">আপুনি পঞ্জীয়ন কৰা উচিত বুলি নিশ্চিত নহয় নেকি?</translation>
 <translation id="2018352199541442911">দুঃখিত, আপোনাৰ বাহ্যিক ষ্ট’ৰেজ ডিভাইচটো এই মুহূৰ্তত সমৰ্থিত নহয়।</translation>
+<translation id="2019213483156307334">সীমাবদ্ধতা যোগ দিওঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="2019718679933488176">অডিঅ’ নতুন টেবত খোলক</translation>
 <translation id="2020183425253392403">নেটৱর্ক ঠিকনাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="2020225359413970060">ফাইল স্কেন কৰক</translation>
@@ -3149,6 +3151,7 @@
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3188465121994729530">গতিশীল গঢ়</translation>
 <translation id="3189187154924005138">ডাঙৰ কাৰ্ছৰ</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{১ টা পাছৱৰ্ড আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{{PASSWORD_COUNT} টা পাছৱৰ্ড আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{{PASSWORD_COUNT} টা পাছৱৰ্ড আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="3190558889382726167">পাছৱর্ড ছেভ কৰা হ'ল</translation>
 <translation id="3192586965067888278">সমস্যাটোৰ সবিশেষ বৰ্ণনা কৰক। মানৱ পৰ্যালোচনাৰ বাবে Googleলৈ মতামত পঠিওৱা হ’ব আৰু সেয়া Googleৰ প্ৰ’ডাক্ট আৰু সেৱাসমূহৰ উন্নতি বা বিকাশৰ বাবে ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
@@ -3619,6 +3622,7 @@
 <translation id="3537881477201137177">এইটো পাছত ছেটিংসমূহত সংশোধন কৰিব পাৰি</translation>
 <translation id="3538066758857505094">Linux আনইনষ্টল কৰাত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3539537154248488260">অনুপ্ৰেৰণা ট’গল কৰক</translation>
+<translation id="3539791442352537591">বিশ্বাসৰ স্থিতিৰ পৰিৱৰ্তন ছেভ কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" />ৰ জৰিয়তে কোনো নেটৱৰ্ক পোৱা নাই</translation>
 <translation id="354060433403403521">এচি এডাপ্টৰ</translation>
 <translation id="354068948465830244">ই ছাইট ডেটা পঢ়িব আৰু সলনি কৰিব পাৰে</translation>
@@ -4805,6 +4809,7 @@
 <translation id="4361745360460842907">টেব হিচাপে খোলক</translation>
 <translation id="4363262124589131906">মোৰ ড্ৰাইভত নতুন ফাইলসমূহ এই Chromebookৰ সৈতে স্বয়ংক্ৰিয়ভাৱে ছিংক হোৱাটো বন্ধ হ’ব</translation>
 <translation id="4364327530094270451">মেল’ন</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{১ টা বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{{ITEM_COUNT} টা বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{{ITEM_COUNT} টা বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />এ এখন ৱিণ্ড' শ্বেয়াৰ কৰি আছে।</translation>
 <translation id="4364830672918311045">জাননী দেখুওৱা</translation>
 <translation id="4367971618859387374">প্ৰদৰ্শিত নাম</translation>
@@ -5727,6 +5732,7 @@
 <translation id="5029287942302939687">আপোনাৰ পাছৱৰ্ডটো ছেট কৰা হৈছে</translation>
 <translation id="5029873138381728058">VM পৰীক্ষা কৰিব পৰা নগ’ল</translation>
 <translation id="503155457707535043">এপ্‌ ডাউনল’ড হৈ আছে</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ঠিকনা}=1{ঠিকনা ({SELECTED_ITEMS})}one{ঠিকনা ({SELECTED_ITEMS})}other{ঠিকনা ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="5033137252639132982">ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ পৰা অধিক তথ্য লাভ কৰিবলৈ তলত "অধিক সবিশেষ" বাছনি কৰক।</translation>
@@ -6476,6 +6482,7 @@
 <translation id="5568069709869097550">ছাইন ইন কৰিব নোৱাৰি</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> আৰু ইয়াৰ অন্তৰ্গত আটাইবোৰ ছাইটৰ আৰু ইনষ্টল কৰি থোৱা এপ্‌সমূহৰ বাবে ছাইটৰ ডেটা আৰু অনুমতিসমূহ মচিবনে?</translation>
 <translation id="5568602038816065197">ছাইটসমূহে মানক প্ৰিণ্টৰ প্ৰ’ম্পট্‌ৰ মাজেৰে নোযোৱাকৈ আপোনাৰ ডিভাইচৰ পৰা এক্সেছ কৰিব পৰা যিকোনো প্ৰিণ্টাৰৰ পৰা উচ্চখাপৰ সুবিধা ব্যৱহাৰ কৰিব পাৰে</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{পাছৱৰ্ড}=1{পাছৱৰ্ড ({SELECTED_ITEMS})}one{পাছৱৰ্ড ({SELECTED_ITEMS})}other{পাছৱৰ্ড ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">ব্লুটুথ সক্ষম কৰা হ'ল</translation>
 <translation id="5571092938913434726">গ্ল’বেল মিডিয়া নিয়ন্ত্ৰণবোৰ</translation>
 <translation id="5571832155627049070">আপোনাৰ প্ৰ’ফাইলটো কাষ্টমাইজ কৰক</translation>
@@ -6978,6 +6985,7 @@
 <translation id="5941153596444580863">নতুন লোক যোগ কৰক...</translation>
 <translation id="5941343993301164315">অনুগ্ৰহ কৰি <ph name="TOKEN_NAME" />ত ছাইন ইন কৰক।</translation>
 <translation id="5941711191222866238">সৰু কৰক</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{১ টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{{PASSWORD_COUNT} টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{{PASSWORD_COUNT} টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" />জৰিয়তে পৃষ্ঠাখন সন্ধান কৰক</translation>
 <translation id="5942779427914696408">ডিভাইচৰ দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপোনাৰ সত্যাপনৰ প্ৰক্ৰিয়াটো সফল হৈছে। আপোনাৰ স্থানীয় ডেটা আনলক আৰু পুনঃস্থাপন কৰিবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পুৰণি পাছৱৰ্ডটো দিয়ক।</translation>
@@ -8496,6 +8504,7 @@
 <translation id="7036706669646341689">Linuxৰ বাবে <ph name="DISK_SIZE" /> ঠাই থকাটো চুপাৰিছ কৰা হয়। খালী ঠাই বঢ়াবলৈ আপোনাৰ ডিভাইচৰ পৰা ফাইলসমূহ মচক।</translation>
 <translation id="7037157058268992880">পিনটো পাহৰিছোঁ</translation>
 <translation id="7037509989619051237">পূর্বদৰ্শনৰ বাবে থকা পাঠ</translation>
+<translation id="7037633074390821254">DNS বা CIDRৰ সীমাবদ্ধতা</translation>
 <translation id="7038632520572155338">ছুইচৰ দ্বাৰা এক্সেছ</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" />ৰ বাবে অন্য এটা Google একাউণ্ট যোগ দিয়ক</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" />ৰ পৰা USB ডিভাইচসমূহ এক্সেছ কৰক</translation>
@@ -8745,6 +8754,7 @@
 <translation id="7231260028442989757">আপোনাৰ ফ’নৰ জাননী চাওক, অগ্ৰাহ্য কৰক আৰু প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="7231347196745816203">আপোনাৰ <ph name="DEVICE_TYPE" /> আনলক কৰিবলৈ আপোনাৰ ফ’নটো ব্যৱহাৰ কৰক।</translation>
 <translation id="7232750842195536390">নাম সলনি কৰিব পৰা নগ’ল</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{১ টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{{BOOKMARK_COUNT} টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{{BOOKMARK_COUNT} টা বুকমাৰ্ক আৰু অন্য বস্তু কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />ৰে প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="7234010996000898150">Linux পুনঃস্থাপন কৰাটো বাতিল কৰি থকা হৈছে</translation>
 <translation id="7235305658956131898">আপোনাৰ ডিভাইচৰ প্ৰশাসকে ইনষ্টল কৰা Android এপ্।</translation>
@@ -8871,6 +8881,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" />এ ADB ডিবাগিং অক্ষম কৰিছে। আপুনি <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট কৰিলে আপুনি এপ্‌ ছাইডল’ড কৰিব নোৱাৰিব।</translation>
 <translation id="7328119182036084494"><ph name="WEB_DRIVE" />ত ছেভ কৰা হৈছে</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{১ টা বুকমাৰ্ক কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{{BOOKMARK_COUNT} টা বুকমাৰ্ক কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{{BOOKMARK_COUNT} টা বুকমাৰ্ক কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="7328867076235380839">অমান্য যুটি</translation>
 <translation id="7329154610228416156">এটা অসুৰক্ষিত URL (<ph name="BLOCKED_URL" />) ব্যৱহাৰ কৰিবলৈ কনফিগাৰ কৰি ৰখা কাৰণে ছাইন ইন কৰিব নগ‘ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" />ৰ ডিভাইচৰ <ph name="FEATURE_NAME" />ৰ ছেটিং, <ph name="USER_EMAIL" /> একাউণ্টৰ অধীনত শ্বেয়াৰ কৰি থকা হৈছে।</translation>
@@ -10413,6 +10424,7 @@
 <translation id="8398877366907290961">যিকোনো প্ৰকাৰে অব্যাহত ৰাখক</translation>
 <translation id="8399282673057829204">পাছৱৰ্ড চাওক</translation>
 <translation id="839949601275221554">ডিভাইচটোত কিবা আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{বুকমাৰ্ক}=1{বুকমাৰ্ক ({SELECTED_ITEMS})}one{বুকমাৰ্ক ({SELECTED_ITEMS})}other{বুকমাৰ্ক ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">আপোনাৰ স্মাৰ্ট কাৰ্ডখনৰ সৈতে জড়িত পিনটো দিয়ক।</translation>
 <translation id="8403807918453631441">আপুনি নিজৰ পাছৱৰ্ডসমূহ ছেভ কৰিলে <ph name="BRAND" />এ সেইসমূহ পৰীক্ষা কৰিব পাৰে</translation>
 <translation id="8405046151008197676">শেহতীয়া আপডে'টটোত হোৱা পৰিৱর্তনবোৰৰ সাৰাংশ পাওক</translation>
@@ -11667,6 +11679,7 @@
 <translation id="97905529126098460">বাতিল কৰা সম্পূৰ্ণ হ'লে এই ৱিণ্ড'খন বন্ধ হ'ব।</translation>
 <translation id="980731642137034229">কামৰ তালিকাৰ বুটাম</translation>
 <translation id="981121421437150478">অফলাইন</translation>
+<translation id="982083952953998237">সীমাবদ্ধতা যোগ দিয়ক</translation>
 <translation id="98235653036850093">নমস্কাৰ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">সকলো টেব বন্ধ কৰক</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - কেমেৰা আৰু মাইক্ৰ’ফ’নৰ ৰেকৰ্ডিং</translation>

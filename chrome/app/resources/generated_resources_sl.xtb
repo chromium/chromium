@@ -429,6 +429,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1282436639288565079">Podrobnosti o skupini zavihkov</translation>
 <translation id="1283126956823499975">Pri nastavljanju naprave je prišlo do napake</translation>
 <translation id="1284277788676816155">Ne dovoli shranjevanja podatkov</translation>
+<translation id="1284912418686719556">Chrome ustvarja močno geslo za vas. Ni si vam ga treba zapomniti, ker je shranjen v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1285484354230578868">Shranjevanje podatkov v računu za Google Drive</translation>
 <translation id="1285625592773741684">Trenutna nastavitev za preneseno količino podatkov je »Prenos podatkov v mobilnem omrežju«.</translation>
@@ -7584,6 +7585,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="637642201764944055">Stare različice aplikacij za Chrome se po decembru 2022 ne bodo odprle v napravah s sistemom Linux. Obrnite se na skrbnika, da to aplikacijo posodobi na novo različico ali jo odstrani.</translation>
 <translation id="6377268785556383139">1 rezultat za »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="6378392501584240055">Odpri v omrežjih Wi-Fi</translation>
+<translation id="6379228010899751161">Potrdite, da ste to vi, da boste lahko vedno uporabljali gesla v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Sprejmite in nadaljujte</translation>
 <translation id="6383382161803538830">Način za branje na tej strani ni na voljo</translation>
 <translation id="638418309848716977">Podprte povezave</translation>
@@ -9640,6 +9642,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
     <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave s sistemom Chrome OS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Če ste za račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki naprave Android morda shranjeni v računu Google. Na account.google.com si lahko ogledate podatke in jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom je morda mogoče dostopati do vaših osebnih rezultatov ali Pomočnika. Zaradi varčevanja z baterijo lahko v nastavitvah Pomočnika izberete, da je sprožilna besedna zveza »Hey Google« vklopljena samo, ko je ta naprava priključena na vir napajanja.</translation>
+<translation id="7851196412551419054">Spreminjanje gesla …</translation>
 <translation id="7851457902707056880">Prijava je omejena na račun lastnika. Znova zaženite napravo in se prijavite z računom lastnika. Naprava se bo samodejno znova zagnala čez 30 sekund.</translation>
 <translation id="7851716364080026749">Vedno blokiraj dostop do kamere in mikrofona</translation>
 <translation id="7851720427268294554">Razčlenjevalnik IPP</translation>
@@ -11230,6 +11233,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8962863356073277855">URL mora biti v obliki https://www.example.com.</translation>
 <translation id="8962918469425892674">To spletno mesto uporablja tipala gibanja ali svetlobe.</translation>
 <translation id="8963117664422609631">Na nastavitve spletnega mesta</translation>
+<translation id="8964927371396953727">Potrdite, da ste to vi, če želite uporabljati in shranjevati gesla v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Vnesite staro geslo</translation>
 <translation id="8966809848145604011">Drugi profili</translation>
 <translation id="8967427617812342790">Add to reading list</translation>

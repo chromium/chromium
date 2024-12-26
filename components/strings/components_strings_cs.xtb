@@ -461,6 +461,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1777422078676229054">Fotografie (archivační)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Nainstalovat webové aplikace?</translation>
+<translation id="1791415068765905273">Zobrazit všechny srovnávací tabulky</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter můžete spravovat své údaje, ochranu soukromí a zabezpečení v účtu Google</translation>
 <translation id="1793631236004319016">Naposledy použito před <ph name="NUM_HOURS_MINUTES_SECONDS" />.</translation>
@@ -2193,6 +2194,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4918221908152712722">Nainstalujte si aplikaci <ph name="APP_NAME" /> (není potřeba nic stahovat)</translation>
 <translation id="4920457992177678649">Pronájmy na dovolenou a krátkodobé pobyty</translation>
 <translation id="4920710383559189047">Rukávec</translation>
+<translation id="4920921410507315601">Srovnávací tabulky</translation>
 <translation id="4922104989726031751">Pokud chcete Správce hesel používat s operačním systémem, spusťte Chromium znovu a povolte přístup ke správci hesel v počítači. Karty se po opětovném spuštění znovu otevřou.</translation>
 <translation id="4923459931733593730">Platba</translation>
 <translation id="4926049483395192435">Musí být uvedeno</translation>
@@ -2386,6 +2388,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5278778426231952189">Nahrát</translation>
 <translation id="5279286380302340275">Spravovat stahování</translation>
 <translation id="5280963125494874678">webové aplikace</translation>
+<translation id="5282008206326321696">{count,plural, =0{# záložek}=1{# záložka}few{# záložky}many{# záložky}other{# záložek}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Vlastnosti dokumentu</translation>
 <translation id="528468243742722775">Konec</translation>
@@ -2581,6 +2584,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="561165882404867731">Přeložte tuto stránku pomocí Překladače Google</translation>
 <translation id="5612720917913232150">Web <ph name="URL" /> chce použít polohu vašeho počítače</translation>
 <translation id="5614520971155863709">Karetní hry</translation>
+<translation id="5617785978844309968">Zobrazit všechny srovnávací tabulky</translation>
 <translation id="5617949217645503996">Web <ph name="HOST_NAME" /> vás přesměroval příliš mnohokrát.</translation>
 <translation id="5619721953841297650">Předvolba</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>

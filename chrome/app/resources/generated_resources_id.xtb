@@ -426,6 +426,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1282436639288565079">Detail Grup Tab</translation>
 <translation id="1283126956823499975">Terjadi error saat menyiapkan perangkat</translation>
 <translation id="1284277788676816155">Jangan izinkan penyimpanan data</translation>
+<translation id="1284912418686719556">Chrome sedang membuat sandi kuat untuk Anda. Anda tidak perlu mengingatnya karena sandi sudah disimpan di <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
 <translation id="1285484354230578868">Simpan data di akun Google Drive Anda</translation>
 <translation id="1285625592773741684">Setelan penggunaan data saat ini adalah Data Seluler</translation>
@@ -7579,6 +7580,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="637642201764944055">Aplikasi Chrome versi lama tidak dapat dibuka di perangkat Linux setelah Desember 2022. Hubungi administrator untuk mengupdate ke versi baru atau hapus aplikasi ini.</translation>
 <translation id="6377268785556383139">1 hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Buka di jaringan Wi-Fi</translation>
+<translation id="6379228010899751161">Verifikasi diri Anda untuk memastikan Anda selalu dapat menggunakan sandi di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Setujui dan lanjutkan</translation>
 <translation id="6383382161803538830">Mode baca tidak tersedia di halaman ini</translation>
 <translation id="638418309848716977">Link yang didukung</translation>
@@ -9628,6 +9630,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat ChromeOS. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jika setelan Aktivitas Web &amp; Aplikasi diaktifkan untuk Akun Google Anda, data Android Anda mungkin akan disimpan ke Akun Google tersebut. Anda dapat melihat atau menghapus data dan mengubah setelan akun Anda di account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Suara atau rekaman yang mirip mungkin juga dapat mengakses hasil personal atau Asisten Anda. Untuk menghemat baterai, Anda dapat memilih di setelan Asisten agar hanya mengaktifkan "Ok Google" saat perangkat ini dicolokkan ke sumber listrik.</translation>
+<translation id="7851196412551419054">Mengubah sandi Anda...</translation>
 <translation id="7851457902707056880">Proses masuk telah dibatasi untuk akun pemilik saja. Nyalakan ulang dan masuk dengan akun pemilik. Mesin akan memulai ulang secara otomatis dalam 30 detik.</translation>
 <translation id="7851716364080026749">Selalu blokir akses mikrofon dan kamera</translation>
 <translation id="7851720427268294554">Parser IPP</translation>
@@ -11215,6 +11218,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8962863356073277855">Format URL harus berupa https://www.example.com</translation>
 <translation id="8962918469425892674">Situs ini menggunakan sensor gerakan atau sensor cahaya.</translation>
 <translation id="8963117664422609631">Buka setelan situs</translation>
+<translation id="8964927371396953727">Verifikasi diri Anda untuk menggunakan dan menyimpan sandi di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Masukkan sandi lama</translation>
 <translation id="8966809848145604011">Profil Lainnya</translation>
 <translation id="8967427617812342790">Tambahkan ke daftar bacaan</translation>

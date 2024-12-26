@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Файлдын кеңейтүүсүн өзгөртсөңүз, ал башка колдонмодо ачылып, түзмөгүңүзгө зыян келтириши мүмкүн.</translation>
 <translation id="1080365971383768617">Бардык түзмөктөрүңүздөгү сырсөздөр</translation>
 <translation id="1082920045291562218">Бириктирилген пикир билдирүү баракчасы аркылуу бөлүшүү жабылды</translation>
+<translation id="1087176310396019910">Спам болушу мүмкүн</translation>
 <translation id="1089606299949659462">Карап чыгуу аяктады!</translation>
 <translation id="1094555143448724771">Башка түзмөктөрүңүздөгү өтмөктөрдү көрүү үчүн өтмөктөрүңүздү жана таржымалды шайкештириңиз</translation>
 <translation id="1095761715416917775">Шайкештирилген маалыматыңызга каалаган убакта кире аларыңызды текшериңиз</translation>
@@ -508,6 +509,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="3293181007446299124">Серепчиден көргөн нерселериңиз түзмөктө сакталып, өзүңүзгө гана көрүнөт. Жеке маалыматыңызды сактоо үчүн отчёттор бир аз кечигип жөнөтүлөт.</translation>
+<translation id="3301936297336370235">Сунушталган сырсөздү ырастоо</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобун, <ph name="COLOR_NAME" /> түсүн фондогу жаңы өтмөктөр тобу катары калыбына келтирүү.</translation>
 <translation id="3303414029551471755">Мазмун жүктөлүп алына берсинби?</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
@@ -1136,6 +1138,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6196315980958524839">Сырсөздөр ушул түзмөктө Google Сырсөздөрдү башкаргычка сакталат</translation>
 <translation id="6202812185118613467">Шайкештирип баштоо үчүн кайра кириңиз</translation>
+<translation id="6204781143409202534">Chrome <ph name="DOMAIN" /> доменинен шектүү билдирмени аныктады.</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> эмеспи?</translation>
 <translation id="6211386937064921208">Барак алдын ала көрсөтүлүүдө</translation>

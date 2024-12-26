@@ -426,6 +426,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1282436639288565079">Butiran Kumpulan Tab</translation>
 <translation id="1283126956823499975">Ada masalah ketika menyediakan peranti</translation>
 <translation id="1284277788676816155">Jangan benarkan penyimpanan data</translation>
+<translation id="1284912418686719556">Chrome sedang membuat kata laluan kukuh untuk anda. Anda tidak perlu mengingati kata laluan itu kerana kata laluan tersebut disimpan untuk anda dalam <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1285484354230578868">Simpan data dalam akaun Google Drive anda</translation>
 <translation id="1285625592773741684">Tetapan penggunaan data semasa ialah Data Mudah Alih</translation>
@@ -7579,6 +7580,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="637642201764944055">Versi lama Apl Chrome tidak akan dibuka pada peranti Linux selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="6377268785556383139">1 hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Buka dalam rangkaian Wi-Fi</translation>
+<translation id="6379228010899751161">Sahkan identiti anda untuk memastikan anda sentiasa boleh menggunakan kata dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Terima dan teruskan</translation>
 <translation id="6383382161803538830">Mod bacaan tidak tersedia pada halaman ini</translation>
 <translation id="638418309848716977">Pautan yang disokong</translation>
@@ -9629,6 +9631,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
     <ph name="BEGIN_PARAGRAPH2" />Anda boleh memulakan atau menghentikan tindakan membenarkan laporan ini pada bila-bila masa dalam tetapan peranti ChromeOS anda. Jika anda seorang pentadbir domain, anda boleh menukar tetapan ini dalam konsol pentadbiran.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jika tetapan Aktiviti Web &amp; Apl dihidupkan untuk Google Account anda, data Android anda mungkin disimpan pada Google Account anda. Anda boleh melihat data anda, memadamkan data itu dan menukar tetapan akaun anda di account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian atau Assistant anda. Untuk menjimatkan bateri, dalam tetapan Assistant, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
+<translation id="7851196412551419054">Menukar kata laluan anda...</translation>
 <translation id="7851457902707056880">Log masuk telah dihadkan untuk akaun pemilik sahaja. Sila mulakan semula dan log masuk dengan akaun pemilik. Mesin akan mula semula secara automatik dalam 30 saat.</translation>
 <translation id="7851716364080026749">Sentiasa halang akses kamera dan mikrofon</translation>
 <translation id="7851720427268294554">Penghurai IPP</translation>
@@ -11217,6 +11220,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8962863356073277855">Format URL hendaklah https://www.example.com</translation>
 <translation id="8962918469425892674">Tapak ini menggunakan penderia gerakan atau cahaya.</translation>
 <translation id="8963117664422609631">Pergi ke tetapan laman</translation>
+<translation id="8964927371396953727">Sahkan identiti anda untuk menggunakan dan menyimpan kata laluan dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Masukkan kata laluan lama</translation>
 <translation id="8966809848145604011">Profil Lain</translation>
 <translation id="8967427617812342790">Tambahkan pada senarai bacaan</translation>

@@ -1051,7 +1051,7 @@
 <translation id="5744274077973758795">Уведомления "<ph name="FEATURE_NAME" />" включены.</translation>
 <translation id="574762237186762643">Мероприятия</translation>
 <translation id="5748177854685749242">Доставка: <ph name="DATE" /></translation>
-<translation id="5749158352074143502">Продолжите просмотр этой вкладки</translation>
+<translation id="5749158352074143502">Снова открыть эту вкладку</translation>
 <translation id="5753021559215751319">Сохранить пароль</translation>
 <translation id="5756525336488841345">Скрыть раздел "Закладки"</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
@@ -1204,6 +1204,7 @@
 <translation id="6418346271604475326">Подготовка PDF</translation>
 <translation id="6429213933892582367">Откройте раздел "Настройки паролей".</translation>
 <translation id="6434591244308415567">Произошла ошибка. Повторите попытку позже.</translation>
+<translation id="6435307030888827407">Не входить</translation>
 <translation id="6436318499800111867">Доступно с <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Открепить вкладку</translation>
 <translation id="6443118737398455446">Недопустимый срок действия</translation>

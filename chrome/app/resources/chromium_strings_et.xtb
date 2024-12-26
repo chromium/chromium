@@ -122,6 +122,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2583187216237139145">Kõik Chromiumi andmed, mis luuakse selle profiili kasutamise ajal (nt järjehoidjad, ajalugu, paroolid ja muud seaded), saab tööprofiili administraator eemaldada. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Jätkan Chromiumi kasutamist</translation>
 <translation id="259935314519650377">Allalaaditud installiprogrammi vahemällu salvestamine ebaõnnestus. Viga: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Kinnitage oma isik, et oma kontol <ph name="ACCOUNT_EMAIL" /> Chromiumi andmeid kasutada ja salvestada</translation>
 <translation id="264613044588233783">Chromium töötab kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil (soovitatav)</translation>
 <translation id="2648074677641340862">Installimisel ilmnes operatsioonisüsteemi viga. Laadige Chromium uuesti alla.</translation>
 <translation id="2661879430930417727">Kui jagate seadet, saavad sõbrad ja pereliikmed eraldi sirvida ning seadistada Chromiumi just nii, nagu neile meeldib.</translation>
@@ -449,6 +450,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6980074797973263542">Teie organisatsioon saab vaadata ja hallata sirvimisandmeid, nt teie järjehoidjaid, ajalugu ja paroole. Isiklike Chromiumi profiilide sirvimisandmeid organisatsioon ei näe.</translation>
 <translation id="6985329841647292029">Chromium OS-i tingimused</translation>
 <translation id="6990124437352146030">Chromium vajab selle saidi puhul luba, et teie mikrofonile juurde pääseda</translation>
+<translation id="7003299027384820442">Sisestage pääsukood, et oma kontol <ph name="ACCOUNT_EMAIL" /> Chromiumi andmeid kasutada ja salvestada</translation>
 <translation id="7011190694940573312">Installimine ebaõnnestus, kuna operatsioonisüsteemi seda versiooni ei toetata.</translation>
 <translation id="7024536598735240744">Viga lahtipakkimisel: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installimine on peatatud.</translation>
@@ -544,6 +546,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8330519371938183845">Logige sisse, et Chromium kõigis oma seadmetes sünkroonida ja isikupärastada</translation>
 <translation id="8340674089072921962">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> kasutas varem Chromiumi</translation>
 <translation id="8357820681460164151">Selleks et oma Chromiumi brauseri sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine</translation>
+<translation id="8359544530202147897">Värskendage Chromium, et jätkata Chromiumi andmete kasutamist oma Google'i kontol <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>
 <translation id="8362914115861174987">Tõlke sihtkeel</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>

@@ -124,6 +124,7 @@
 <translation id="2583187216237139145">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChromium ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="259935314519650377">የወረደውን ጫኝ መሸጎጥ አልተሳካም። ስህተት፦ <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chromium ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="264613044588233783">Chromium ይበልጥ በፍጥነት ይሰራል እና ጃቫስክሪፕት የሚጠቀሙ ባህሪያት በተነደፉት መስራት አለባቸው (የሚመከር)</translation>
 <translation id="2648074677641340862">በጭነት ጊዜ የስርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Chromiumን እንደገና ያውርዱት።</translation>
 <translation id="2661879430930417727">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromiumን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
@@ -451,6 +452,7 @@
 <translation id="6980074797973263542">ድርጅትዎ እንደ የእርስዎ እልባቶች፣ ታሪክ እና የይለፍ ቃሎች ያለ የአሰሳ ውሂብን ማየት እና ማስተዳደር ይችላል። በግል የChromium መገለጫዎች ውስጥ የአሰሳ ውሂብን ማየት አይችልም።</translation>
 <translation id="6985329841647292029">የChromiumOS ውል</translation>
 <translation id="6990124437352146030">Chromium ለዚህ ጣቢያ የእርስዎን ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
+<translation id="7003299027384820442">Chromium ውሂብን በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ ለመጠቀም እና ለማስቀመጥ የይለፍ ሐረግዎን ያስገቡ</translation>
 <translation id="7011190694940573312">ይህ የስርዓተ ክወናው ስሪት ስለማይደገፍ መጫኑ አልተሳካም።</translation>
 <translation id="7024536598735240744">ተጠናቆ ያለማቅረብ ስህተት፦ <ph name="UNPACK_ERROR" />።</translation>
 <translation id="7025789849649390912">መጫኑ ቆሟል።</translation>
@@ -546,6 +548,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8330519371938183845">Chromiumን በመላ መሣሪያዎችዎ ላይ ለማሳመር እና ግላዊነት ለማላበስ</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ከዚህ ቀደም Chromiumን እየተጠቀመ ነበር</translation>
 <translation id="8357820681460164151">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የChromium አሳሽ ነገሮች ለመድረስ ይግቡ፣ ከዚያ ስምረትን ያብሩ</translation>
+<translation id="8359544530202147897">በእርስዎ Google መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chromium ውሂብን መጠቀም ለመቀጠል Chromiumን ያዘምኑ</translation>
 <translation id="8360718212975266891">የወደፊት የChromium ዝማኔዎችን ለማግኘት Windows 10 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር Windows 8 እየተጠቀመ ነው።</translation>
 <translation id="8362914115861174987">ወደዚህ መተርጎም</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>

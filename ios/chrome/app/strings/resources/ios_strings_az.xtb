@@ -1204,6 +1204,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6418346271604475326">PDF hazırlanır</translation>
 <translation id="6429213933892582367">Parol Seçimlərini açın</translation>
 <translation id="6434591244308415567">Xəta baş verdi. Yenidən cəhd edin.</translation>
+<translation id="6435307030888827407">Hesaba giriş etməyin</translation>
 <translation id="6436318499800111867">Mənimlə paylaşılıb: <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Tabı sancmayın</translation>
 <translation id="6443118737398455446">Yanlış bitmə tarixi</translation>
@@ -1397,6 +1398,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Axtarış tarixçəsi<ph name="END_LINK" /> və <ph name="BEGIN_LINK" />digər fəaliyyət formaları<ph name="END_LINK" /> Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7253951228444156601">Parollar yoxlanılır…</translation>
 <translation id="7261217796641151584">Qrupu paylaşın</translation>
+<translation id="7266578100016339897">Bu, səliqəli olmağınızı təmin edir. Bunu istənilən vaxt ayarlarda dəyişə bilərsiniz.</translation>
 <translation id="7271220006028561438">Avtomatik giriş açarı təkmilləşdirmələrinə icazə verin</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
 <translation id="7293429513719260019">Dil seçin</translation>
@@ -1591,6 +1593,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8080028325999236607">Bütün Panelləri Qapadın</translation>
 <translation id="8084285576995584326">Google Hesab datanıza nəzarət edin</translation>
 <translation id="809543534949702122">Axtarış Tarixçəsi</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{İstifadə etmədiyiniz tablar {COUNT} gün sonra bura köçürülür}other{İstifadə etmədiyiniz tablar {COUNT} gün sonra bura köçürülür}}</translation>
 <translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Y</translation>
 <translation id="8114753159095730575">Fayl endirilməsi əlçatandır. Seçimlər ekranın aşağısında əlçatandır.</translation>

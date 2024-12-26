@@ -962,6 +962,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2688969097326701645">Tak, kontynuuj</translation>
 <translation id="2690699652723742414">Ostatnie 30 dni</translation>
 <translation id="2691924980723297736">Ostrzeżenie zabezpieczeń</translation>
+<translation id="2697248912349197812">Zapytaj <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Dostępne jest menu podrzędne. Aby przejść do dodatkowych opcji, naciśnij <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">W dół</translation>
 <translation id="2702592986366989640">Niska cena</translation>
@@ -2066,6 +2067,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="469028408546145398">Przycisk Zamknij okna incognito; aktywuj, aby zamknąć wszystkie otwarte okna incognito</translation>
 <translation id="4691093235373904540">Dekarstwo</translation>
 <translation id="4692623383562244444">Wyszukiwarki</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – zapytaj <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Sporty walki</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Strona</translation>

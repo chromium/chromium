@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ஆர்கைவல் ஃபோட்டோ</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">வெப் ஆப்ஸை நிறுவ வேண்டுமா?</translation>
+<translation id="1791415068765905273">ஒப்பீட்டு அட்டவணைகள் எல்லாவற்றையும் காட்டு</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, உங்கள் Google கணக்கில் உள்ள தகவல்கள், தனியுரிமை, பாதுகாப்பு ஆகியவற்றை நிர்வகிக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="1793631236004319016">கடைசியாகப் பயன்படுத்தியது: <ph name="NUM_HOURS_MINUTES_SECONDS" /> முன்பு</translation>
@@ -2193,6 +2194,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" />ஐ நிறுவு (பதிவிறக்க வேண்டியதில்லை)</translation>
 <translation id="4920457992177678649">சுற்றுலா விடுதிகள் &amp; குறைந்த காலம் தங்கும் இடங்கள்</translation>
 <translation id="4920710383559189047">ஸ்லீவ்</translation>
+<translation id="4920921410507315601">ஒப்பீட்டு அட்டவணைகள்</translation>
 <translation id="4922104989726031751">உங்கள் ஆப்ரேட்டிங் சிஸ்டம் உடன் Password Managerரைப் பயன்படுத்த, Chromiumமை மீண்டும் தொடங்கிவிட்டு உங்கள் கம்ப்யூட்டரின் கடவுச்சொல் நிர்வாகிக்கான அணுகலை வழங்கவும். மீண்டும் தொடங்கியதும் உங்கள் உலாவிப் பக்கங்கள் மீண்டும் திறக்கும்.</translation>
 <translation id="4923459931733593730">கட்டண முறை</translation>
 <translation id="4926049483395192435">கட்டாயம் குறிப்பிட வேண்டும்.</translation>
@@ -2386,6 +2388,7 @@
 <translation id="5278778426231952189">இப்போது பதிவேற்று</translation>
 <translation id="5279286380302340275">பதிவிறக்கங்களை நிர்வகிக்கவும்</translation>
 <translation id="5280963125494874678">வெப் ஆப்ஸ்</translation>
+<translation id="5282008206326321696">{count,plural, =0{# புக்மார்க்குகள்}=1{# புக்மார்க்}other{# புக்மார்க்குகள்}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ஆவண விவரங்கள்</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
@@ -2581,6 +2584,7 @@
 <translation id="561165882404867731">இந்தப் பக்கத்தை Google Translate மூலம் மொழிபெயர்</translation>
 <translation id="5612720917913232150"><ph name="URL" /> உங்கள் கம்ப்யூட்டரின் இருப்பிடத்தைப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="5614520971155863709">கார்டு கேம்கள்</translation>
+<translation id="5617785978844309968">ஒப்பீட்டு அட்டவணைகள் எல்லாவற்றையும் காட்டு</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> உங்களைப் பலமுறை திசைதிருப்பம் செய்தது.</translation>
 <translation id="5619721953841297650">முன்னமைவு</translation>
 <translation id="5624120631404540903">கடவுச்சொற்களை நிர்வகி</translation>

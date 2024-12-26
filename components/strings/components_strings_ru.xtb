@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">Да, продолжить</translation>
 <translation id="2690699652723742414">Последние 30 дней</translation>
 <translation id="2691924980723297736">Предупреждение</translation>
+<translation id="2697248912349197812">Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Доступно подменю. Чтобы открыть дополнительные варианты, нажмите <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Лицевой стороной вниз</translation>
 <translation id="2702592986366989640">Недорогой вариант</translation>
@@ -2065,6 +2066,7 @@
 <translation id="469028408546145398">Кнопка "Закрыть окна в режиме инкогнито". Нажмите ее, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="4691093235373904540">Кровельные работы</translation>
 <translation id="4692623383562244444">Поисковые системы</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Запрос к <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Спортивные единоборства</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>

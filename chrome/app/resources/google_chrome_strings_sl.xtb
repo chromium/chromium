@@ -245,6 +245,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3889417619312448367">Odstrani Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="3941890832296813527">Napaka pri namestitvi: Ime datoteke namestitvenega programa je neveljavno ali ni podprto.</translation>
+<translation id="3968962723676998462">Vnesite geslo, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke v Googlovem upravitelju gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="398236277091248993">Chrome ostane hiter s funkcijami za izboljšanje delovanja</translation>
 <translation id="3999683152997576765">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chrome oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
@@ -309,6 +310,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4741235124132242877">Pripeto. Google Lens lahko znova uporabite v orodni vrstici.</translation>
 <translation id="4747730611090640388">Chrome lahko oceni vaša zanimanja.  Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
+<translation id="475321580758063259">Posodobite Chrome, če želite podatke v Chromu še naprej uporabljati v računu Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4793679854893018356">Preberite, kako vas Chrome varuje</translation>
@@ -585,6 +587,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8077579734294125741">Drugi profili v Chromu</translation>
 <translation id="8086881907087796310">Namestitev ni uspela, ker računalnik ne izpolnjuje najnižjih zahtev za strojno opremo.</translation>
 <translation id="8111297389482307122">Chrome mora preveriti vašo identiteto, preden bo mogoče nekatere podatke shraniti v račun Google in jih uporabiti v vseh vaših napravah. Če se odjavite, bodo ti podatki ostali v tej napravi.</translation>
+<translation id="8113883687556086139">Potrdite, da ste to vi, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Pošiljanje povratnih informacij za iskanje z Googlom Lens</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>

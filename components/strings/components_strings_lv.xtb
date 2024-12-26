@@ -962,6 +962,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2688969097326701645">Jā, turpināt</translation>
 <translation id="2690699652723742414">Pēdējās 30 dienas</translation>
 <translation id="2691924980723297736">Drošības brīdinājums</translation>
+<translation id="2697248912349197812">Jautāt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Apakšizvēlne ir pieejama. Izmantojiet īsinājumtaustiņu (<ph name="SHORTCUT" />), lai pārietu uz papildu opcijām.</translation>
 <translation id="2701514975700770343">Virspuse uz leju</translation>
 <translation id="2702592986366989640">Zemas cenas opcija</translation>
@@ -2064,6 +2065,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="469028408546145398">Poga “Aizvērt inkognito režīma logus”. Aktivizējiet, lai aizvērtu visus atvērtos inkognito režīma logus.</translation>
 <translation id="4691093235373904540">Jumta seguma darbi</translation>
 <translation id="4692623383562244444">Meklētājprogrammas</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> — jautāt <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Cīņas sporta veidi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">sānu</translation>
@@ -3349,7 +3351,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7003322000677139268">Transportlīdzekļu daļas un piederumi</translation>
 <translation id="7004499039102548441">Nesen atvērtas cilnes</translation>
 <translation id="7006930604109697472">Tomēr sūtīt</translation>
-<translation id="7009364359744329733">Virtuālā karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
+<translation id="7009364359744329733">Šī karte pašlaik nav pieejama. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="7010658264061801199">Pārtika un dzērieni</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Var lūgt bloķēt un izmantot peli</translation>

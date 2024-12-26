@@ -1561,6 +1561,17 @@ Nếu bạn không đặt chính sách này, thì ban đầu, tính năng Dịch
 <translation id="2157842368188031417">Chính sách này chỉ áp dụng cho các phiên khách được quản lý. Cần phải bật chính sách này thì chế độ máy trạm chia sẻ của Imprivata mới được phép chuyển đổi người dùng trong phiên.
       Nếu bạn bật chính sách này thì hệ thống sẽ bắt buộc ghi đè một số chính sách nhất định của các tính năng. Điều này sẽ dẫn đến việc dữ liệu nhạy cảm của người dùng vẫn tồn tại và không được xử lý bởi cơ chế dọn dẹp được dùng cho các chuyển đổi người dùng trong phiên với chế độ máy trạm chia sẻ của Imprivata.
       Nếu bạn tắt hoặc không đặt chính sách này, thì hệ thống sẽ không ghi đè bất kỳ chính sách nào.</translation>
+<translation id="2158028663273824412">Kiểm soát chế độ của trình phân giải DNS-over-HTTPS. Xin lưu ý rằng chính sách này sẽ chỉ đặt chế độ mặc định cho mỗi truy vấn. Chế độ này có thể bị ghi đè đối với các loại truy vấn đặc biệt, chẳng hạn như yêu cầu phân giải tên máy chủ DNS-over-HTTPS.
+
+Chế độ <ph name="SECURE_DNS_MODE_OFF" /> sẽ tắt giao thức DNS-over-HTTPS.
+
+Trước tiên, chế độ <ph name="SECURE_DNS_MODE_AUTOMATIC" /> sẽ gửi các truy vấn DNS-over-HTTPS nếu có máy chủ DNS-over-HTTPS, đồng thời có thể là phương án dự phòng cho các truy vấn không an toàn khi xảy ra lỗi.
+
+Chế độ <ph name="SECURE_DNS_MODE_SECURE" /> sẽ chỉ gửi các truy vấn DNS-over-HTTPS và không phân giải được khi xảy ra lỗi.
+
+Trên <ph name="ANDROID_VERSION" /> trở lên, nếu DNS-over-TLS đang hoạt động, thì <ph name="PRODUCT_NAME" /> sẽ không gửi các yêu cầu DNS không an toàn.
+
+Nếu bạn không đặt chính sách này, thì các truy vấn DNS-over-HTTPS sẽ không được gửi cho các thiết bị được quản lý. Nếu không, thì trình duyệt có thể gửi các yêu cầu DNS-over-HTTPS đến một trình phân giải liên kết với trình phân giải hệ thống đã định cấu hình của người dùng.</translation>
 <translation id="2158741059065130266">Nếu bạn đặt chính sách này thành Đúng, người dùng ứng dụng Files <ph name="PRODUCT_OS_NAME" /> sẽ nhìn thấy Thùng rác. Các tệp trong mục Tệp của tôi và Tệp đã tải xuống (bao gồm cả các tệp con tương ứng do người dùng tạo) sẽ được gửi đến đó khi bị xoá.
 
       Nếu bạn đặt chính sách này thành Sai, các tệp từng nằm trong thùng rác vẫn sẽ hiển thị khi người dùng cho hiện các tệp bị ẩn và tìm thư mục .Trash trong mục Tệp của tôi hoặc Tệp đã tải xuống.</translation>
@@ -1666,6 +1677,11 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 <translation id="2202787915587511214">Bật NTLMv2</translation>
 <translation id="2204379573346866896">Số phút đã trôi qua trong giờ hiện tại.</translation>
 <translation id="2204753382813641270">Kiểm soát tự động ẩn giá</translation>
+<translation id="2208092773610663977">Nếu bạn đặt chính sách này thành Bật, người dùng có thể yêu cầu <ph name="PRODUCT_NAME" /> kiểm tra xem tên người dùng và mật khẩu đã nhập có bị rò rỉ hay không.
+
+Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không có chức năng này.
+
+      Nếu bạn đặt chính sách này, người dùng sẽ không thay đổi được trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, hệ thống sẽ cho phép kiểm tra xem thông tin đăng nhập có bị rò rỉ hay không. Tuy nhiên, người dùng có thể tắt tính năng này.</translation>
 <translation id="2208976000652006649">Tham số cho URL tìm kiếm sử dụng POST</translation>
 <translation id="2212011154693551439">Trang Nhật ký duyệt web trên Chrome được sắp xếp theo nhóm sẽ hiển thị tại chrome://history/grouped theo mặc định.</translation>
 <translation id="2212207215880394506">Không cho phép dùng tính năng Chỉnh sửa ảnh bằng AI tạo sinh.</translation>
@@ -6149,6 +6165,13 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
 <translation id="545817252640069915">Bật tùy chọn chặn đăng nhập</translation>
 <translation id="5460797984317417682">Bật cảnh báo toàn màn hình</translation>
 <translation id="5462898272514237681">Kiểm soát quyền truy cập của <ph name="PRODUCT_OS_NAME" /> vào dịch vụ vị trí của Google</translation>
+<translation id="5464786290880338716">Đây là chính sách kiểm soát việc có bật tính năng Bảo vệ địa chỉ IP của <ph name="PRIVACY_SANDBOX_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này thành Tắt, thì tính năng Bảo vệ địa chỉ IP sẽ bị tắt và người dùng sẽ không bật được tính năng này thông qua chế độ cài đặt giao diện người dùng.
+Nếu bạn đặt chính sách này thành Bật, thì tính năng Bảo vệ địa chỉ IP sẽ được bật và người dùng sẽ không tắt được tính năng này thông qua chế độ cài đặt giao diện người dùng.
+Nếu bạn không đặt chính sách này, thì tính năng Bảo vệ địa chỉ IP sẽ bị tắt đối với những người dùng có trình duyệt hoặc thiết bị đang được quản lý và họ sẽ không bật được tính năng này thông qua chế độ cài đặt giao diện người dùng. Người dùng trên trình duyệt và thiết bị không được quản lý có thể bật hoặc tắt tính năng Bảo vệ địa chỉ IP trên thiết bị của họ thông qua chế độ cài đặt giao diện người dùng.
+
+Lưu ý: Hành vi của tính năng Bảo vệ địa chỉ IP dành cho người dùng doanh nghiệp có thể thay đổi theo thời gian khi bạn đặt chính sách này thành Bật hoặc khi bạn không đặt chính sách này và tính năng này được bật thông qua chế độ cài đặt giao diện người dùng.</translation>
 <translation id="5464816904705580310">Định cấu hình cài đặt cho người dùng được quản lý.</translation>
 <translation id="5466596281866046569">Báo cáo thông tin ứng dụng</translation>
 <translation id="5467175549232776406">Có thể truy cập vào trang thử nghiệm chính sách</translation>
@@ -8647,6 +8670,7 @@ Giá trị chính sách là danh sách chứng chỉ X.509 được mã hoá bas
 <translation id="7177293255621000064">Nếu bạn đặt chính sách này thành True, thì hệ thống sẽ vô hiệu hóa mọi loại phương tiện lưu trữ bên ngoài (ổ USB flash, ổ đĩa cứng bên ngoài, thẻ SD và các loại thẻ nhớ khác, bộ nhớ quang) trong trình duyệt tệp. Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì người dùng có thể sử dụng bộ nhớ ngoài trên thiết bị.
 
       Lưu ý: Chính sách này không ảnh hưởng đến Google Drive và bộ nhớ trong. Người dùng vẫn có thể truy cập vào các tệp lưu trong thư mục Tệp đã tải xuống.</translation>
+<translation id="7177645313697913767">Cho phép người dùng bật hoặc tắt chế độ cài đặt Bảo vệ địa chỉ IP của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị nếu trình duyệt và thiết bị của họ không được quản lý.</translation>
 <translation id="7177857088692019405">Mở khóa nhanh</translation>
 <translation id="7179157174254421614">Nếu bạn đặt chính sách này, đồng thời, chính sách <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> không tắt tính năng tự động phát hiện múi giờ, thì hệ thống sẽ chỉ định phương thức tự động phát hiện múi giờ và người dùng không thể thay đổi phương thức này.
 

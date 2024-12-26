@@ -1647,6 +1647,7 @@ Aucun appareil connecté.</translation>
 <translation id="6539852571005954999">Téléchargement en cours d'analyse : <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Diffusion vers <ph name="RECEIVER_NAME" />…</translation>
 <translation id="6542891623636520977">Emoji, GIF et plus</translation>
+<translation id="6543942526104794893">Voulez-vous vraiment désactiver les expressions faciales ?</translation>
 <translation id="6545382064335350438">Impossible de valider votre code pour la deuxième fois. Réessayez.</translation>
 <translation id="6555373427270923730">Saisissez une adresse Web dans la barre d'adresse, puis appuyez sur <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2314,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8855885154700222542">Touche de plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8860366331836346216">Ajouter une eSIM</translation>
+<translation id="8869149849311827122">Voulez-vous vraiment désactiver le contrôle avec le curseur de la souris ?</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
 <translation id="8873203135446552888">Confirmer que vous voulez désactiver le pavé tactile intégré</translation>
 <translation id="8874184842967597500">Non connecté</translation>

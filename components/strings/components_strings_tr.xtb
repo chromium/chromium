@@ -461,6 +461,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1777422078676229054">Fotoğraf (Arşiv)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Web uygulamaları yüklensin mi?</translation>
+<translation id="1791415068765905273">Tüm Karşılaştırma Tablolarını Göster</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="1793631236004319016">En son <ph name="NUM_HOURS_MINUTES_SECONDS" /> önce kullanıldı.</translation>
@@ -2197,6 +2198,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4918221908152712722"><ph name="APP_NAME" /> uygulamasını yükleyin (indirmek gerekmez)</translation>
 <translation id="4920457992177678649">Kiralık Tatil Evleri ve Kısa Süreli Konaklama</translation>
 <translation id="4920710383559189047">Sleeve</translation>
+<translation id="4920921410507315601">Karşılaştırma Tabloları</translation>
 <translation id="4922104989726031751">Şifre Yöneticisi'ni işletim sisteminizle kullanmak için Chromium'u yeniden başlatıp bilgisayarınızın şifre yöneticisine erişim izni verin. Chromium yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="4923459931733593730">Ödeme</translation>
 <translation id="4926049483395192435">Belirtilmelidir.</translation>
@@ -2390,6 +2392,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5278778426231952189">Şimdi yükle</translation>
 <translation id="5279286380302340275">İndirilenleri yönet</translation>
 <translation id="5280963125494874678">web uygulamaları</translation>
+<translation id="5282008206326321696">{count,plural, =0{# yer işareti}=1{# yer işareti}other{# yer işareti}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Doküman özellikleri</translation>
 <translation id="528468243742722775">Son</translation>
@@ -2585,6 +2588,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="561165882404867731">Bu sayfayı Google Çeviri'yle çevirin</translation>
 <translation id="5612720917913232150"><ph name="URL" />, bilgisayarınızın konumunu kullanmak istiyor</translation>
 <translation id="5614520971155863709">Kağıt Oyunları</translation>
+<translation id="5617785978844309968">Tüm karşılaştırma tablolarını göster</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> sizi çok fazla kez yönlendirdi.</translation>
 <translation id="5619721953841297650">Ön ayarlı</translation>
 <translation id="5624120631404540903">Şifreleri yönetin</translation>

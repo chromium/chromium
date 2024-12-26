@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
 <translation id="1080365971383768617">Գաղտնաբառերը ձեր բոլոր սարքերում</translation>
 <translation id="1082920045291562218">Ամփոփագրի մասին կարծիքով կիսվելու թերթը փակվեց</translation>
+<translation id="1087176310396019910">Հնարավոր սպամ</translation>
 <translation id="1089606299949659462">Ստուգումն ավարտված է</translation>
 <translation id="1094555143448724771">Ձեր մյուս սարքերի ներդիրները տեսնելու համար համաժամացրեք ձեր ներդիրներն ու պատմությունը</translation>
 <translation id="1095761715416917775">Համոզվեք, որ ձեր համաժամացված տվյալները միշտ հասանելի են ձեզ</translation>
@@ -508,6 +509,7 @@
 <translation id="3282568296779691940">Մուտք գործել Chrome</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="3293181007446299124">Ձեր այցելությունների պատմությունը պահվում է ձեր սարքում և հասանելի է միայն ձեզ, իսկ անձնական տվյալները պաշտպանելու նպատակով հաշվետվություններն ուղարկվում են ոչ անմիջապես</translation>
+<translation id="3301936297336370235">Առաջարկվող գաղտնաբառի հաստատում</translation>
 <translation id="3302615849591357577">Վերականգնել <ph name="TITLE_OF_GROUP" /> ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="3303414029551471755">Ներբեռնե՞լ բովանդակությունը:</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
@@ -1136,6 +1138,7 @@
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6196315980958524839">Գաղտնաբառերը պահվում են այս սարքի Google Գաղտնաբառերի կառավարիչում</translation>
 <translation id="6202812185118613467">Նորից մուտք գործեք՝ համաժամացումը սկսելու համար</translation>
+<translation id="6204781143409202534">Chrome-ը հնարավոր սպամ է հայտնաբերել <ph name="DOMAIN" /> տիրույթից։</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>

@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">Иә, жалғастырамын</translation>
 <translation id="2690699652723742414">Соңғы 30 күн</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="2701514975700770343">Төмен қарату</translation>
 <translation id="2702592986366989640">Бағасы төмен опция</translation>
@@ -2065,6 +2066,7 @@
 <translation id="469028408546145398">"Инкогнито терезелерін жабу" түймесі, қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін белсендіріңіз</translation>
 <translation id="4691093235373904540">Шатырларды жөндеу</translation>
 <translation id="4692623383562244444">Іздеу жүйелері</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – <ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="4698692901173737941">Спорттық жекпе-жек</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бүйірлік</translation>

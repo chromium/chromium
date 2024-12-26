@@ -1397,6 +1397,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Arama geçmişi<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />diğer etkinlik biçimleri<ph name="END_LINK" /> Google Hesabınıza kaydedilmiş olabilir.</translation>
 <translation id="7253951228444156601">Şifreler kontrol ediliyor…</translation>
 <translation id="7261217796641151584">Grubu paylaş</translation>
+<translation id="7266578100016339897">Böylece düzenli şekilde çalışabilirsiniz. Bunu dilediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="7271220006028561438">Otomatik geçiş anahtarı yükseltmelerine izin ver</translation>
 <translation id="7272437679830969316">Kimliğiniz doğrulanamıyor. Şifre kopyalanmadı.</translation>
 <translation id="7293429513719260019">Dil seç</translation>
@@ -1591,6 +1592,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8080028325999236607">Tüm Sekmeleri Kapat</translation>
 <translation id="8084285576995584326">Google Hesabı verilerinizi yönetin</translation>
 <translation id="809543534949702122">Geçmişte arayın</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Kullanmadığınız sekmeler {COUNT} gün sonra buraya taşınır}other{Kullanmadığınız sekmeler {COUNT} gün sonra buraya taşınır}}</translation>
 <translation id="8101409298456377967">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifrelerinizi oluşturun, kaydedin ve yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">Y</translation>
 <translation id="8114753159095730575">Dosya indirme işlevi kullanılabilir. Seçenekler ekranın alt tarafındadır.</translation>

@@ -19,6 +19,7 @@
 <translation id="107147699690128016">Pokud změníte příponu souboru, může se soubor otevřít v jiné aplikaci a potenciálně může být rizikem pro vaše zařízení.</translation>
 <translation id="1080365971383768617">Hesla ve všech vašich zařízeních</translation>
 <translation id="1082920045291562218">Sdílet se zavřenou tabulkou zpětné vazby ke shrnutí</translation>
+<translation id="1087176310396019910">Možný spam</translation>
 <translation id="1089606299949659462">Kontrola dokončena.</translation>
 <translation id="1094555143448724771">Pokud chcete zobrazit karty ze svých ostatních zařízení, synchronizujte karty a historii</translation>
 <translation id="1095761715416917775">Zajistěte, abyste k synchronizovaným datům měli vždy přístup</translation>
@@ -508,6 +509,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karet}}</translation>
 <translation id="3293181007446299124">Vaše historie prohlížení zůstává soukromá ve vašem zařízení a přehledy se z důvodu ochrany vaší totožnosti odesílají se zpožděním.</translation>
+<translation id="3301936297336370235">Potvrzení návrhu hesla</translation>
 <translation id="3302615849591357577">Obnovit skupinu karet <ph name="TITLE_OF_GROUP" /> v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.</translation>
 <translation id="3303414029551471755">Chcete pokračovat ke stažení obsahu?</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
@@ -1136,6 +1138,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení</translation>
 <translation id="6202812185118613467">Přihlásit se a zahájit synchronizaci</translation>
+<translation id="6204781143409202534">Chrome zjistil možný spam z domény <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>

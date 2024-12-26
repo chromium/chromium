@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Afinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3941890832296813527">Installationsfejl: Installationens filnavn er ugyldigt eller understøttes ikke.</translation>
+<translation id="3968962723676998462">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome anmoder om tilladelse til at slette dine data i Google Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="398236277091248993">Chrome forbliver hurtig takket være funktioner, der booster ydeevnen</translation>
 <translation id="3999683152997576765">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
@@ -305,6 +306,7 @@
 <translation id="4728575227883772061">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Google Chrome kører, bedes du lukke programmet og prøve igen.</translation>
 <translation id="4741235124132242877">Funktionen er fastgjort. Brug Google Lens igen via værktøjslinjen</translation>
 <translation id="4747730611090640388">Chrome kan estimere dine interesser.  Senere kan et website, du besøger, anmode Chrome om at se dine interesser med henblik på at personligt tilpasse de annoncer, du ser.</translation>
+<translation id="475321580758063259">Opdater Chrome for at fortsætte med at bruge Chrome-dataene på din Google-konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4793679854893018356">Se, hvordan Chrome beskytter dig</translation>
@@ -577,6 +579,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
 <translation id="8111297389482307122">Chrome skal verificere din identitet, før visse data kan gemmes på din Google-konto og bruges på alle dine enheder. Hvis du logger ud, forbliver disse data på denne enhed.</translation>
+<translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Send feedback om søgning via Lens</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer...</translation>

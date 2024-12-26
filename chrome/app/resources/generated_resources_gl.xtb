@@ -426,6 +426,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1282436639288565079">Detalles do grupo de pestanas</translation>
 <translation id="1283126956823499975">Produciuse un erro ao configurar o dispositivo</translation>
 <translation id="1284277788676816155">Non permitir gardar datos</translation>
+<translation id="1284912418686719556">Chrome está creando un contrasinal seguro para ti. Non tes que lembralo porque se gardou en <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos na túa conta de Google Drive</translation>
 <translation id="1285625592773741684">Nestes momentos, a opción de configuración do uso de datos é Datos móbiles</translation>
@@ -7565,6 +7566,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="637642201764944055">As versións antigas das aplicacións de Chrome non se poderán abrir nos dispositivos Linux despois de decembro de 2022. Ponte en contacto co teu administrador para actualizar esta aplicación a unha versión nova ou quitala.</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Abrir nas redes wifi</translation>
+<translation id="6379228010899751161">Verifica a túa identidade para asegurarte de poder usar sempre os contrasinais na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6380143666419481200">Aceptar e continuar</translation>
 <translation id="6383382161803538830">O modo de lectura non se pode usar nesta páxina</translation>
 <translation id="638418309848716977">Ligazóns compatibles</translation>
@@ -9614,6 +9616,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
     <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do teu dispositivo Chrome OS. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Se tes activada a opción Actividade web e das aplicacións na Conta de Google, pódense gardar nela os teus datos de Android. Podes consultar os teus datos, eliminalos e cambiar a configuración da conta en account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Cunha gravación ou voz similar á túa poderíase acceder aos teus resultados persoais ou ao teu Asistente. Para aforrar batería, podes seleccionar na configuración do teu Asistente ter activado “Hey Google” tan só cando o dispositivo está conectado a unha fonte de alimentación.</translation>
+<translation id="7851196412551419054">Cambiando o teu contrasinal…</translation>
 <translation id="7851457902707056880">O inicio de sesión restrinxiuse unicamente á conta do propietario. Reinicia o sistema e inicia sesión coa conta do propietario. O ordenador reiniciarase automaticamente en 30 segundos.</translation>
 <translation id="7851716364080026749">Bloquear sempre o acceso á cámara e ao micrófono</translation>
 <translation id="7851720427268294554">Analizador de IPP</translation>
@@ -11200,6 +11203,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8962863356073277855">O URL debería ter o seguinte formato: https://www.example.com</translation>
 <translation id="8962918469425892674">Este sitio usa sensores de movemento ou de luz.</translation>
 <translation id="8963117664422609631">Ir á configuración do sitio</translation>
+<translation id="8964927371396953727">Verifica a túa identidade para usar e gardar os contrasinais na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">Introduce o contrasinal anterior</translation>
 <translation id="8966809848145604011">Outros perfís</translation>
 <translation id="8967427617812342790">Engadir á lista de lectura</translation>

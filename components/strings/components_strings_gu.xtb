@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">હા, ચાલુ રાખો</translation>
 <translation id="2690699652723742414">છેલ્લા 30 દિવસ</translation>
 <translation id="2691924980723297736">સલામતીની ચેતવણી</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
 <translation id="2701514975700770343">નીચે તરફ</translation>
 <translation id="2702592986366989640">ઓછી કિંમતનો વિકલ્પ</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">'છૂપી વિન્ડો બંધ કરો' બટન, હાલમાં ખુલ્લી તમામ છૂપી વિન્ડો બંધ કરવા માટે સક્રિય કરો</translation>
 <translation id="4691093235373904540">છતને લગતું કામ</translation>
 <translation id="4692623383562244444">શોધ એન્જિન</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" />ને પૂછો</translation>
 <translation id="4698692901173737941">લડાઈની રમતો</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">બાજુ</translation>

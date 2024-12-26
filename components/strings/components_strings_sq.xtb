@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">modaliteti automatik "figurë brenda figurës"</translation>
 <translation id="1100782917270858593">Butoni "Vazhdo udhëtimin". Shtyp "Enter" për të vazhduar udhëtimin tënd dhe për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="1101672080107056897">Veprimi i gabimit</translation>
+<translation id="1101902632743388185">Tabelat e tua të krahasimit</translation>
 <translation id="1104409666019087579">Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.</translation>
 <translation id="1104860668737945357">Butoni "Menaxho fjalëkalimet". Aktivizoje për të parë dhe menaxhuar fjalëkalimet e tua te cilësimet e Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -460,6 +461,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1777422078676229054">Fotografi (arkivore)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Të instalohen aplikacionet e uebit?</translation>
+<translation id="1791415068765905273">Shfaq të gjitha tabelat e krahasimit</translation>
 <translation id="1791429645902722292">Smart Lock-u i Google</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp butonin Tab pastaj Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google</translation>
 <translation id="1793631236004319016">Përdorur së fundi <ph name="NUM_HOURS_MINUTES_SECONDS" /> më parë</translation>
@@ -583,6 +585,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2025186561304664664">Përfaqësuesi është i caktuar për konfigurim automatik.</translation>
 <translation id="2025891858974379949">Përmbajtje e pasigurt</translation>
 <translation id="2027465737841872819">Plastikë</translation>
+<translation id="2027707238798802149">Karta nuk ofrohet</translation>
 <translation id="2029735183873159415">Prejardhja dhe gjenealogjia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin dhe murin mbrojtës<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Shkurtorja nuk mund të jetë e njëjtë me fjalën kyçe të ofruesit të parazgjedhur të kërkimit të përcaktuar nga <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
@@ -866,6 +869,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2514548229949738417">Shtëpia dhe kopshti</translation>
 <translation id="2515629240566999685">Të kontrollosh sinjalin në zonën tënde</translation>
 <translation id="2515761554693942801">Ti zgjodhe që të verifikohesh me Touch ID në uebsajtet që përdorin <ph name="PROVIDER_ORIGIN" />. Ky ofrues mund të ketë ruajtur informacione për mënyrën tënde të pagesës, të cilat mund <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Kjo kartë nuk ofrohet. Kontakto me ofruesin e kartës.</translation>
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
 <translation id="2521736961081452453">Krijo formular</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
@@ -2194,6 +2198,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4918221908152712722">Instalo <ph name="APP_NAME" /> (nuk nevojitet shkarkim)</translation>
 <translation id="4920457992177678649">Ambiente pushimi me qira dhe për qëndrime të shkurtra</translation>
 <translation id="4920710383559189047">Mbështjellës</translation>
+<translation id="4920921410507315601">Tabelat e krahasimit</translation>
 <translation id="4922104989726031751">Për të përdorur "Menaxherin e fjalëkalimeve" me sistemin tënd operativ, nis sërish Chromium dhe lejo qasje te menaxheri i fjalëkalimeve i kompjuterit tënd. Skedat e tua do të rihapen pasi ta nisësh sërish.</translation>
 <translation id="4923459931733593730">Pagesa</translation>
 <translation id="4926049483395192435">Duhet të specifikohet.</translation>
@@ -2387,6 +2392,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5278778426231952189">Ngarko tani</translation>
 <translation id="5279286380302340275">Menaxho shkarkimet</translation>
 <translation id="5280963125494874678">aplikacionet e uebit</translation>
+<translation id="5282008206326321696">{count,plural, =0{# faqeshënues}=1{# faqeshënues}other{# faqeshënues}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
@@ -2582,6 +2588,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="561165882404867731">Përktheje këtë faqe me "Përkthe me Google"</translation>
 <translation id="5612720917913232150"><ph name="URL" /> do të përdorë vendndodhjen e kompjuterit tënd</translation>
 <translation id="5614520971155863709">Lojëra me letra</translation>
+<translation id="5617785978844309968">Shfaq të gjitha tabelat e krahasimit</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> të ridrejtoi shumë herë.</translation>
 <translation id="5619721953841297650">Paravendosja</translation>
 <translation id="5624120631404540903">Menaxho fjalëkalimet</translation>
@@ -3291,6 +3298,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
 <translation id="6926216138694948720">Art trupor</translation>
 <translation id="692638818576287323">Automjete komerciale</translation>
+<translation id="6933282894115597956">Identifikimi kërkohet nga organizata jote</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Motori i parazgjedhur i kërkimit të lejon të kërkosh në ueb dhe mundëson veçoritë e Chrome<ph name="END_BOLD" />, si p.sh. kërkimin nga shiriti i adresave dhe nga imazhet në faqet e uebit. Një veçori mund të mos ofrohet nëse ajo nuk mbështetet nga motori i kërkimit.</translation>
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
 <translation id="6935082727755903526">Punë në kontabilitet dhe financë</translation>
@@ -3342,6 +3350,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7003322000677139268">Pjesë dhe aksesorë për automjete</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
+<translation id="7009364359744329733">Kjo kartë nuk ofrohet për momentin. Provo përsëri më vonë.</translation>
 <translation id="7010658264061801199">Ushqime dhe pije</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Mund të kërkojë për të kyçur dhe përdorur miun tënd</translation>

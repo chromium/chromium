@@ -427,6 +427,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1282436639288565079">Oplysninger om fanegruppen</translation>
 <translation id="1283126956823499975">Noget gik galt under konfigurationen af enheden</translation>
 <translation id="1284277788676816155">Tillad ikke, at data gemmes</translation>
+<translation id="1284912418686719556">Chrome opretter en stærk adgangskode for dig. Du behøver ikke at huske den, fordi den er gemt i <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
 <translation id="1285484354230578868">Gemme data på din Google Drev-konto</translation>
 <translation id="1285625592773741684">Den aktuelle indstilling for dataforbrug er Mobildata</translation>
@@ -7580,6 +7581,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="637642201764944055">Gamle versioner af Chrome-apps kan ikke åbnes på Linux-enheder efter december 2022. Kontakt din administrator, hvis du vil opdatere til en ny version af denne app eller fjerne den.</translation>
 <translation id="6377268785556383139">1 resultat for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Åbn under Wi-Fi-netværk</translation>
+<translation id="6379228010899751161">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Acceptér og fortsæt</translation>
 <translation id="6383382161803538830">Læsetilstand er ikke tilgængelig på denne side</translation>
 <translation id="638418309848716977">Understøttede links</translation>
@@ -9631,6 +9633,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for disse rapporter i indstillingerne for din ChromeOS-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Hvis indstillingen Web- og appaktivitet er aktiveret for din Google-konto, gemmes dine Android-data muligvis på din Google-konto. Du kan se og slette dine data samt ændre dine kontoindstillinger på account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dine personlige resultater eller Google Assistent. Du kan spare på batteriet ved at gå til indstillingerne for Google Assistent og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
+<translation id="7851196412551419054">Din adgangskode ændres…</translation>
 <translation id="7851457902707056880">Login er begrænset til ejerens konto. Genstart, og log ind med ejerens konto. Maskinen genstartes automatisk om 30 sekunder.</translation>
 <translation id="7851716364080026749">Bloker altid adgang til kamera og mikrofon</translation>
 <translation id="7851720427268294554">IPP-parser</translation>
@@ -11220,6 +11223,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8962863356073277855">Webadresseformatet skal være https://www.eksempel.com</translation>
 <translation id="8962918469425892674">Dette website anvender bevægelses- og lyssensorer.</translation>
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
+<translation id="8964927371396953727">Verificer din identitet for at bruge og gemme adgangskoder på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Angiv den gamle adgangskode</translation>
 <translation id="8966809848145604011">Andre profiler</translation>
 <translation id="8967427617812342790">Føj til læseliste</translation>

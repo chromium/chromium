@@ -962,6 +962,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2688969097326701645">Si, continuar</translation>
 <translation id="2690699652723742414">Últimos 30 días</translation>
 <translation id="2691924980723297736">Advertencia de seguranza</translation>
+<translation id="2697248912349197812">Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Submenú dispoñible. Usa <ph name="SHORTCUT" /> para ir a outras opcións.</translation>
 <translation id="2701514975700770343">Cara abaixo</translation>
 <translation id="2702592986366989640">Opción económica</translation>
@@ -2066,6 +2067,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="469028408546145398">Botón para pechar as ventás do modo de incógnito. Actívao para pechar todas as ventás do modo de incógnito que estean abertas</translation>
 <translation id="4691093235373904540">Servizos de tellados</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Preguntar a <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Deportes de contacto</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>

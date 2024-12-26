@@ -121,6 +121,7 @@
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="264613044588233783">提高 Chromium 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
@@ -448,6 +449,7 @@
 <translation id="6980074797973263542">贵组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看 Chromium 个人资料中的浏览数据。</translation>
 <translation id="6985329841647292029">Chromium 操作系统条款</translation>
 <translation id="6990124437352146030">Chromium 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
+<translation id="7003299027384820442">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安装。</translation>
@@ -543,6 +545,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的账号，然后开启同步功能</translation>
+<translation id="8359544530202147897">请更新 Chromium，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 数据</translation>
 <translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

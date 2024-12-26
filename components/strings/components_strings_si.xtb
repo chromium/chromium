@@ -461,6 +461,7 @@
 <translation id="1777422078676229054">ඡායාරූපය (ලේඛනාගාරය)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">වෙබ් යෙදුම් ස්ථාපනය කරන්න ද?</translation>
+<translation id="1791415068765905273">සියලු සංසන්දන වගු පෙන්වන්න</translation>
 <translation id="1791429645902722292">Google ස්මාට් අගුල</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Google ගිණුමේ ඔබගේ තොරතුරු, පෞද්ගලිකත්වය සහ ආරක්ෂාව කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1793631236004319016">අවසන් වරට භාවිත කළේ <ph name="NUM_HOURS_MINUTES_SECONDS" /> පෙර</translation>
@@ -2197,6 +2198,7 @@
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
 <translation id="4920457992177678649">නිවාඩු කුලියට දීම සහ කෙටි කාලීන නවාතැන්</translation>
 <translation id="4920710383559189047">කොපුව</translation>
+<translation id="4920921410507315601">සංසන්දනාත්මක වගු</translation>
 <translation id="4922104989726031751">ඔබේ මෙහෙයුම් පද්ධතිය සමග මුරපද කළමනාකරු භාවිතය සඳහා, Chromium නැවත දියත් කර ඔබේ පරිගණකයේ මුරපද කළමනාකරු වෙත ප්‍රවේශ වීමට ඉඩ දෙන්න. ඔබේ පටිත්ත යළි දියත් කිරීමෙන් පසු නැවත විවෘත වනු ඇත.</translation>
 <translation id="4923459931733593730">ගෙවීම</translation>
 <translation id="4926049483395192435">නිශ්චිතව දැක්විය යුතුය.</translation>
@@ -2390,6 +2392,7 @@
 <translation id="5278778426231952189">දැන් උඩුගත කරන්න</translation>
 <translation id="5279286380302340275">බාගැනීම් කළමනාකරණය කරන්න</translation>
 <translation id="5280963125494874678">වෙබ් යෙදුම්</translation>
+<translation id="5282008206326321696">{count,plural, =0{පිටුසන් #ක්}=1{# පිටුසනක්}one{පිටුසන් #ක්}other{පිටුසන් #ක්}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ලේඛන ගුණාංග</translation>
 <translation id="528468243742722775">අවසන් කරන්න</translation>
@@ -2585,6 +2588,7 @@
 <translation id="561165882404867731">Google පරිවර්තනය සමඟ මෙම පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="5612720917913232150"><ph name="URL" /> හට ඔබේ පරිගණකයේ පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="5614520971155863709">කාඩ්පත් ක්‍රීඩා</translation>
+<translation id="5617785978844309968">සියලු සංසන්දන වගු පෙන්වන්න</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ඔබව බොහෝ වාර ගණනක් හරවා යවන ලදී.</translation>
 <translation id="5619721953841297650">පෙරසැකසුම</translation>
 <translation id="5624120631404540903">මුරපද පාලනය</translation>

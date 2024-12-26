@@ -1204,6 +1204,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6418346271604475326">Berei PDF voor</translation>
 <translation id="6429213933892582367">Maak Wagwoordopsies oop</translation>
 <translation id="6434591244308415567">Iets is fout. Probeer later weer.</translation>
+<translation id="6435307030888827407">Bly afgemeld</translation>
 <translation id="6436318499800111867">Met my gedeel op <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442697326824312960">Ontspeld oortjie</translation>
 <translation id="6443118737398455446">Ongeldige vervaldatum</translation>
@@ -1397,6 +1398,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Soekgeskiedenis<ph name="END_LINK" /> en <ph name="BEGIN_LINK" />ander vorme van aktiwiteit<ph name="END_LINK" /> kan in jou Google-rekening gestoor word.</translation>
 <translation id="7253951228444156601">Gaan tans wagwoorde na …</translation>
 <translation id="7261217796641151584">Deel groep</translation>
+<translation id="7266578100016339897">Dit help jou om georganiseerd te bly. Jy kan dit enige tyd in instellings verander.</translation>
 <translation id="7271220006028561438">Laat outomatiese toegangsleutelopdaterings toe</translation>
 <translation id="7272437679830969316">Kan nie jou identiteit verifieer nie. Wagwoord is nie gekopieer nie.</translation>
 <translation id="7293429513719260019">Kies taal</translation>
@@ -1591,6 +1593,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
 <translation id="8084285576995584326">Beheer jou Google-rekeningdata</translation>
 <translation id="809543534949702122">Soekgeskiedenis</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Oortjies wat jy nie gebruik nie, word na {COUNT} dag hierheen geskuif}other{Oortjies wat jy nie gebruik nie, word na {COUNT} dae hierheen geskuif}}</translation>
 <translation id="8101409298456377967">Skep, stoor en bestuur jou wagwoorde sodat jy maklik by webwerwe en apps kan aanmeld. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">Lêer kan afgelaai word. Opsies is naby die onderkant van die skerm beskikbaar.</translation>

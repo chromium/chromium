@@ -1647,6 +1647,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6539852571005954999">Skenování staženého souboru <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Odesílání do zařízení <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Smajlíky, GIFy a další</translation>
+<translation id="6543942526104794893">Opravdu chcete gesta obličejem vypnout?</translation>
 <translation id="6545382064335350438">PIN se pořád nedaří ověřit. Zkuste to znovu.</translation>
 <translation id="6555373427270923730">Zadejte do adresního řádku webovou adresu a poté stiskněte <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2311,6 +2312,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8855885154700222542">Tlačítko celé obrazovky</translation>
 <translation id="8858369206579825206">Nastavení ochrany soukromí</translation>
 <translation id="8860366331836346216">Přidat eSIM</translation>
+<translation id="8869149849311827122">Opravdu chcete ovládání kurzoru myši vypnout?</translation>
 <translation id="8870509716567206129">Aplikace nepodporuje režim rozdělené obrazovky.</translation>
 <translation id="8873203135446552888">Potvrďte, že chcete deaktivovat vestavěný touchpad</translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>

@@ -426,6 +426,7 @@
 <translation id="1282436639288565079">ٹیب گروپ کی تفصیلات</translation>
 <translation id="1283126956823499975">آلے کو سیٹ اپ کرنے کے ساتھ کچھ غلط ہو گیا</translation>
 <translation id="1284277788676816155">ڈیٹا محفوظ کرنے کی اجازت نہ دیں</translation>
+<translation id="1284912418686719556">‏‫Chrome آپ کے لیے ایک مضبوط پاس ورڈ تخلیق کر رہا ہے۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے کیونکہ یہ آپ کے لیے <ph name="EMAIL" /> کی خاطر <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہے۔</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1285484354230578868">‏اپنے Google اکاؤنٹ میں ڈیٹا اسٹور کریں</translation>
 <translation id="1285625592773741684">موجودہ ڈیٹا کے استعمال کی ترتیب موبائل ڈیٹا ہے</translation>
@@ -539,6 +540,7 @@
 <translation id="1368603372088757436">‏Linux آپ کے <ph name="DEVICE_TYPE" /> پر تعاون یافتہ نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">‏اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="1370384480654163477">آخری بار جب آپ اس سائٹ پر گئے تھے وہاں سے فائلیں دیکھیں اور ان میں ترمیم کریں:</translation>
+<translation id="1372259917802609049">رکاوٹ کو حذف کرنے میں ایک خرابی پیش آ گئی</translation>
 <translation id="1372841398847029212">اپنے اکاؤنٹ سے مطابقت پذیر بنائیں</translation>
 <translation id="1373176046406139583">آپ کے آلے کی مرئیت اس چیز کو کنٹرول کرتی ہے کہ آپ کی اسکرین کے غیر مقفل ہونے کی صورت میں کون آپ کے ساتھ اشتراک کر سکتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">نیٹ ورک "<ph name="NETWORK_NAME" />" کے ذریعے مطلوب سرٹیفکیٹ یا تو انسٹال نہیں ہے یا اب درست نہیں ہے۔ براہ کرم ایک نیا سرٹیفکیٹ حاصل کریں اور دوبارہ منسلک کرنے کی کوشش کریں۔</translation>
@@ -1478,6 +1480,7 @@
     اس سے دیگر آلات پر موجود ایپس یا مواد متاثر نہیں ہوتا ہے۔</translation>
 <translation id="2018189721942291407">پُریقین نہیں ہیں کہ آیا آپ کو اندراج کرنا چاہیے؟</translation>
 <translation id="2018352199541442911">معذرت، آپ کا خارجی اسٹوریج آلہ اس وقت تعاون یافتہ نہیں ہے۔</translation>
+<translation id="2019213483156307334">رکاوٹ شامل کرنے میں ایک خرابی پیش آ گئی</translation>
 <translation id="2019718679933488176">آڈیو کو نئے ٹیب میں &amp;کھولیں</translation>
 <translation id="2020183425253392403">نیٹ ورک پتے کی ترتیبات دکھائیں</translation>
 <translation id="2020225359413970060">فائل اسکین کریں</translation>
@@ -3137,6 +3140,7 @@
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3188465121994729530">اوسط کی منتقلی</translation>
 <translation id="3189187154924005138">بڑا کرسر</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="3190558889382726167">پاس ورڈ محفوظ ہوگیا</translation>
 <translation id="3192586965067888278">‏مسئلے کو تفصیل سے بیان کریں۔ انسانی جائزے کے لیے تاثرات Google کو بھیجے جائیں گے اور اسے Google کے پروڈکٹس اور سروسز کو بہتر بنانے یا تیار کرنے کے لیے استعمال کیا جا سکتا ہے۔</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
@@ -3607,6 +3611,7 @@
 <translation id="3537881477201137177">اس کو بعد میں ترتیبات میں تبدیل کیا جا سکتا ہے</translation>
 <translation id="3538066758857505094">‏Linux ان انسٹال کرنے میں خرابی پیش آ گئی ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="3539537154248488260">ترغیب کو ٹوگل کریں</translation>
+<translation id="3539791442352537591">ٹرسٹ کی صورتحال کی تبدیلی کو محفوظ کرنے میں ایک خرابی پیش آ گئی</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> کے ذریعے کوئی نیٹ ورک نہیں</translation>
 <translation id="354060433403403521">‏AC اڈاپٹر</translation>
 <translation id="354068948465830244">یہ سائٹ کے ڈیٹا کو پڑھ اور اسے تبدیل کر سکتا ہے</translation>
@@ -4794,6 +4799,7 @@
 <translation id="4361745360460842907">ٹیب کے بطور کھولیں</translation>
 <translation id="4363262124589131906">‏میری ڈرائیو میں موجود نئی فائلز اس Chromebook میں خودکار طور پر مطابقت پذیر ہونا بند ہو جائیں گی</translation>
 <translation id="4364327530094270451">خربوزہ</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{‏‫1 آئٹم صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{ITEM_COUNT} آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ایک ونڈو کا اشتراک کر رہی ہے۔</translation>
 <translation id="4364830672918311045">اطلاعات ڈسپلے کریں</translation>
 <translation id="4367971618859387374">ڈسپلے نام</translation>
@@ -5715,6 +5721,7 @@
 <translation id="5029287942302939687">آپ کا پاس ورڈ سیٹ ہے</translation>
 <translation id="5029873138381728058">‏VMs چیک کرنے میں ناکام</translation>
 <translation id="503155457707535043">ایپس ڈاؤن لوڈ ہو رہی ہیں</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{پتے}=1{پتے ({SELECTED_ITEMS})}other{پتے ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">‏QR کوڈ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="5033137252639132982">موشن سینسرز استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے مزید معلومات حاصل کرنے کے لیے نیچے "مزید تفصیلات" کا انتخاب کریں۔</translation>
@@ -6462,6 +6469,7 @@
 <translation id="5568069709869097550">سائن نہیں کیا جا سکتا ہے</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپس کے لیے سائٹ کا ڈیٹا اور اجازتیں حذف کریں؟</translation>
 <translation id="5568602038816065197">سائٹس معیاری پرنٹ پرامپٹ سے گزرے بغیر آپ کے آلے تک قابل رسائی کسی بھی پرنٹر سے اعلی خصوصیات کا استعمال کر سکتی ہیں</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{پاس ورڈز}=1{پاس ورڈز ({SELECTED_ITEMS})}other{پاس ورڈز ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
 <translation id="5571092938913434726">گلوبل میڈیا کنٹرولز</translation>
 <translation id="5571832155627049070">اپنی پروفائل حسب ضرورت بنائیں</translation>
@@ -6964,6 +6972,7 @@
 <translation id="5941153596444580863">شخص کو شامل کریں…</translation>
 <translation id="5941343993301164315">براہ کرم <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{PASSWORD_COUNT} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے صفحہ تلاش کریں</translation>
 <translation id="5942779427914696408">آلہ کا نظر آنا</translation>
 <translation id="5943127421590245687">آپ کی توثیق کامیاب ہو گئی۔ اپنے مقامی ڈیٹا کو غیر مقفل اور بحال کرنے کیلئے براہ کرم اپنے پرانے <ph name="DEVICE_TYPE" /> کا پاس ورڈ درج کریں۔</translation>
@@ -7555,6 +7564,7 @@
 <translation id="637642201764944055">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Linux آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6378392501584240055">‏Wi-Fi نیٹ ورکس میں کھولیں</translation>
+<translation id="6379228010899751161">یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں پاس ورڈز استعمال کر سکتے ہیں توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
 <translation id="6383382161803538830">‏Reading mode اس صفحے پر دستیاب نہیں ہے</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
@@ -8479,6 +8489,7 @@
 <translation id="7036706669646341689">‏<ph name="DISK_SIZE" /> کی جگہ Linux کے لیے تجویز کی جاتی ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="7037157058268992880">‏‫PIN بھول گئے</translation>
 <translation id="7037509989619051237">متن کا پیش منظر دیکھیں</translation>
+<translation id="7037633074390821254">‏‫DNS یا CIDR کی رکاوٹ</translation>
 <translation id="7038632520572155338">سوئچ رسائی</translation>
 <translation id="7038710352229712897">‏<ph name="USER_NAME" /> کیلئے ایک مختلف Google اکاؤنٹ شامل کریں</translation>
 <translation id="7039326228527141150">‏<ph name="VENDOR_NAME" /> سے USB آلات تک رسائی حاصل کریں</translation>
@@ -8728,6 +8739,7 @@
 <translation id="7231260028442989757">اپنے فون کی اطلاعات دیکھیں، برخاست کریں اور ان کا جواب دیں</translation>
 <translation id="7231347196745816203">اپنے <ph name="DEVICE_TYPE" /> کو غیر مقفل کرنے کے لئے اپنے فون کا استعمال کریں۔</translation>
 <translation id="7232750842195536390">نام کی تبدییلی ناکام ہو گئی</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{‏‫1 بُک مارک اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{BOOKMARK_COUNT} بُک مارکس اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> سے تصاویر تلاش کریں</translation>
 <translation id="7234010996000898150">‏Linux کی بحالی کا عمل منسوخ ہو رہا ہے</translation>
 <translation id="7235305658956131898">‏آپ کے آلے کے منتظم کے ذریعے انسٹال کردہ Android ایپ۔</translation>
@@ -8854,6 +8866,7 @@
 <translation id="7327989755579928735">‏<ph name="MANAGER" /> نے ADB ڈیبگنگ کو غیر فعال کر دیا ہے۔ اپنا <ph name="DEVICE_TYPE" /> ری اسٹارٹ کرنے کے بعد آپ ایپس سائیڈ لوڈ نہیں کر سکیں گے۔</translation>
 <translation id="7328119182036084494"><ph name="WEB_DRIVE" /> میں محفوظ ہو گیا</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{‏‫1 بُک مارک صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫{BOOKMARK_COUNT} بُک مارکس صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="7328867076235380839">غلط مجموعہ</translation>
 <translation id="7329154610228416156">‏سائن ان ناکام ہو گیا کیونکہ اسے ایک غیر محفوظ ‎URL (<ph name="BLOCKED_URL" />)‎ استعمال کرنے کیلئے کنفیگر کیا گیا تھا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="7330533963640151632"><ph name="USER_EMAIL" /> اکاؤنٹ کے تحت اشتراک کرتے ہوئے <ph name="USER_NAME" /> کے آلہ کیلئے <ph name="FEATURE_NAME" /> کی ترتیبات۔</translation>
@@ -9601,6 +9614,7 @@
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے ChromeOS آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />اگر آپ کے Google اکاؤنٹ کے لیے ویب اور ایپ کی سرگرمی کی ترتیب آن ہے تو آپ کا Android ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ آپ account.google.com پر اپنا ڈیٹا دیکھ سکتے ہیں، اسے حذف کر سکتے ہیں اور اپنے اکاؤنٹ کی ترتیبات تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355">‏<ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے آپ کے ذاتی نتائج یا آپ کی اسسٹنٹ تک رسائی حاصل کی جا سکتی ہے۔ بیٹری بچانے کے لیے، آپ اپنی اسسٹنٹ کی ترتیبات میں صرف اس آلے کے پاور کے ماخذ سے منسلک ہونے پر ہی "Ok Google" کے آن ہونے کا انتخاب کر سکتے ہیں۔</translation>
+<translation id="7851196412551419054">اپنا پاس ورڈ تبدیل کرنا...</translation>
 <translation id="7851457902707056880">سائن ان کو صرف مالک کے اکاؤنٹ تک محدود کر دیا گیا ہے۔ براہ کرم ریبوٹ کریں اور مالک کے اکاؤنٹ کے ساتھ سائن ان کریں۔ مشین 30 سیکنڈ میں خودکار طور پر ریبوٹ ہو جائے گی۔</translation>
 <translation id="7851716364080026749">کیمرا اور مائیکروفون رسائی کو ہمیشہ مسدود کریں</translation>
 <translation id="7851720427268294554">‏IPP پارسر</translation>
@@ -10395,6 +10409,7 @@
 <translation id="8398877366907290961">بہر صورت آگے بڑھیں</translation>
 <translation id="8399282673057829204">پاس ورڈ دیکھیں</translation>
 <translation id="839949601275221554">آلے میں ایک خرابی پیش آگئی۔ براہ کرم اپنا آلہ ری اسٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{بُک مارکس}=1{بُک مارکس ({SELECTED_ITEMS})}other{بُک مارکس ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">‏وہ PIN فراہم کریں جو آپ کے اسمارٹ کارڈ کے ساتھ وابستہ ہے۔</translation>
 <translation id="8403807918453631441">جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو <ph name="BRAND" /> انہیں چیک کر سکتا ہے</translation>
 <translation id="8405046151008197676">تازہ ترین اپ ڈیٹ سے ہائی لائٹس حاصل کریں</translation>
@@ -11186,6 +11201,7 @@
 <translation id="8962863356073277855">‏URL فارمیٹ https://www.example.com ہونا چاہیے</translation>
 <translation id="8962918469425892674">یہ سائٹ موشن یا لائٹ سینسرز کا استعمال کر رہی ہے۔</translation>
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>
+<translation id="8964927371396953727">اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں پاس ورڈز استعمال کرنے اور محفوظ کرنے کے لیے توثیق کریں</translation>
 <translation id="8965037249707889821">پرانا پاس ورڈ درج کریں</translation>
 <translation id="8966809848145604011">دیگر پروفائلز</translation>
 <translation id="8967427617812342790">پڑھنے کی فہرست میں شامل کریں</translation>
@@ -11647,6 +11663,7 @@
 <translation id="97905529126098460">منسوخی کا عمل مکمل ہونے کے بعد یہ ونڈو بند ہو جائے گی۔</translation>
 <translation id="980731642137034229">کارروائی مینیو بٹن</translation>
 <translation id="981121421437150478">آف لائن</translation>
+<translation id="982083952953998237">پابندیاں شامل کریں</translation>
 <translation id="98235653036850093">آداب، <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - کیمرا اور مائیکروفون سے ریکارڈنگ کی جا رہی ہے</translation>

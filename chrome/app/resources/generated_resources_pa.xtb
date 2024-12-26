@@ -541,6 +541,7 @@
 <translation id="1368603372088757436">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Linux ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1370384480654163477">ਜਦੋਂ ਪਿਛਲੀ ਵਾਰ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਆਏ ਸੀ, ਉਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ:</translation>
+<translation id="1372259917802609049">ਕੌਂਸਟਰੇਂਟ ਮਿਟਾਉਣ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="1372841398847029212">ਆਪਣੇ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="1373176046406139583">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਦਿਖਣਯੋਗਤਾ ਇਹ ਕੰਟਰੋਲ ਕਰਦੀ ਹੈ ਕਿ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਅਣਲਾਕ ਹੋਣ 'ਤੇ ਤੁਹਾਡੇ ਨਾਲ ਕੌਣ ਫ਼ਾਈਲਾਂ ਸਾਂਝੀਆਂ ਕਰ ਸਕਦਾ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">ਨੈੱਟਵਰਕ "<ph name="NETWORK_NAME" />" ਵੱਲੋਂ ਲੋੜੀਂਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ ਜਾਂ ਹੁਣ ਪ੍ਰਮਾਣਿਕ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨਵਾਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕਨੈਕਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1490,6 +1491,7 @@
     ਇਸ ਨਾਲ ਹੋਰ ਡੀਵਾਈਸਾਂ 'ਤੇ ਮੌਜੂਦ ਐਪਾਂ ਅਤੇ ਸਮੱਗਰੀ 'ਤੇ ਪ੍ਰਭਾਵ ਨਹੀਂ ਪੈਂਦਾ।</translation>
 <translation id="2018189721942291407">ਪੱਕਾ ਨਹੀਂ ਪਤਾ ਕਿ ਤੁਹਾਨੂੰ ਦਰਜ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ ਜਾਂ ਨਹੀਂ?</translation>
 <translation id="2018352199541442911">ਮਾਫ਼ ਕਰਨਾ, ਤੁਹਾਡਾ ਬਾਹਰੀ ਸਟੋਰੇਜ ਡੀਵਾਈਸ ਇਸ ਵੇਲੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
+<translation id="2019213483156307334">ਕੌਂਸਟਰੇਂਟ ਸ਼ਾਮਲ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="2019718679933488176">&amp;ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਆਡੀਓ ਖੋਲ੍ਹੋ</translation>
 <translation id="2020183425253392403">ਨੈੱਟਵਰਕ ਪਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="2020225359413970060">ਫ਼ਾਈਲ ਸਕੈਨ ਕਰੋ</translation>
@@ -3153,6 +3155,7 @@
 <translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3188465121994729530">ਮੂਵ ਕਰਨ ਦੀ ਔਸਤ</translation>
 <translation id="3189187154924005138">ਵੱਡਾ ਕਰਸਰ</translation>
+<translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{{PASSWORD_COUNT} ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{{PASSWORD_COUNT} ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3192586965067888278">ਸਮੱਸਿਆ ਦਾ ਵੇਰਵੇ ਸਹਿਤ ਵਰਣਨ ਕਰੋ। ਵਿਚਾਰ ਨੂੰ ਮਨੁੱਖੀ ਸਮੀਖਿਆ ਲਈ Google ਨੂੰ ਭੇਜਿਆ ਜਾਵੇਗਾ ਅਤੇ ਇਸਨੂੰ Google ਉਤਪਾਦਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਜਾ ਉਨ੍ਹਾਂ ਦਾ ਵਿਕਾਸ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="3192947282887913208">ਆਡੀਓ ਫਾਈਲ</translation>
@@ -3623,6 +3626,7 @@
 <translation id="3537881477201137177">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੋਧਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="3538066758857505094">Linux ਅਣਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3539537154248488260">ਖੋਜ ਸੰਬੰਧੀ ਪ੍ਰੇਰਨਾ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="3539791442352537591">ਭਰੋਸਾ ਸਥਿਤੀ ਸੰਬੰਧੀ ਤਬਦੀਲੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="3540173484406326944"><ph name="HOST_DEVICE_NAME" /> ਰਾਹੀਂ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ</translation>
 <translation id="354060433403403521">AC ਅਡਾਪਟਰ</translation>
 <translation id="354068948465830244">ਇਹ ਸਾਈਟ ਦਾ ਡਾਟਾ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ</translation>
@@ -4810,6 +4814,7 @@
 <translation id="4361745360460842907">ਟੈਬ ਵਜੋਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4363262124589131906">ਮੇਰੀ ਡਰਾਈਵ ਵਿਚਲੀਆਂ ਨਵੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਇਸ Chromebook ਨਾਲ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੀਆਂ</translation>
 <translation id="4364327530094270451">ਖਰਬੂਜ਼ਾ</translation>
+<translation id="4364417397164696363">{ITEM_COUNT,plural, =1{1 ਆਈਟਮ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{{ITEM_COUNT} ਆਈਟਮ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{{ITEM_COUNT} ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364830672918311045">ਡਿਸਪਲੇ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="4367971618859387374">ਡਿਸਪਲੇ ਨਾਮ</translation>
@@ -5731,6 +5736,7 @@
 <translation id="5029287942302939687">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="5029873138381728058">VM ਲਈ ਜਾਂਚ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="503155457707535043">ਐਪਾਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ</translation>
+<translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{ਪਤੇ}=1{ਪਤੇ ({SELECTED_ITEMS})}other{ਪਤੇ ({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5033137252639132982">ਮੋਸ਼ਨ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੋਂ ਹੋਰ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਹੇਠਾਂ "ਹੋਰ ਵੇਰਵੇ" ਚੁਣੋ।</translation>
@@ -6480,6 +6486,7 @@
 <translation id="5568069709869097550">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5568525251731145240">ਕੀ <ph name="SITE_NAME" />, ਇਸਦੇ ਅਧੀਨ ਆਉਂਦੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਅਤੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਲਈ ਸਾਈਟ ਡਾਟਾ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="5568602038816065197">ਸਾਈਟਾਂ ਮਿਆਰੀ ਪ੍ਰਿੰਟ ਉਤਪ੍ਰੇਰਕ ਰਾਹੀਂ ਜਾਏ ਬਿਨਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਪਹੁੰਚਯੋਗ ਕਿਸੇ ਵੀ ਪ੍ਰਿੰਟਰ ਤੋਂ ਅਡਵਾਂਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="5570149859473005144">{SELECTED_ITEMS,plural, =0{ਪਾਸਵਰਡ}=1{ਪਾਸਵਰਡ ({SELECTED_ITEMS})}other{ਪਾਸਵਰਡ ({SELECTED_ITEMS})}}</translation>
 <translation id="5571066253365925590">ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ</translation>
 <translation id="5571092938913434726">ਗਲੋਬਲ ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
 <translation id="5571832155627049070">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -6982,6 +6989,7 @@
 <translation id="5941153596444580863">ਵਿਅਕਤੀ ਜੋੜੋ...</translation>
 <translation id="5941343993301164315">ਕਿਰਪਾ ਕਰਕੇ <ph name="TOKEN_NAME" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="5941711191222866238">ਨਿਊਨਤਮ</translation>
+<translation id="5941854976565320351">{PASSWORD_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{{PASSWORD_COUNT} ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{{PASSWORD_COUNT} ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="594221546068848596"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਪੰਨਾ ਖੋਜੋ</translation>
 <translation id="5942779427914696408">ਡੀਵਾਈਸ ਦੀ ਦਿਖਣਯੋਗਤਾ</translation>
 <translation id="5943127421590245687">ਤੁਹਾਡਾ ਪੁਸ਼ਟੀਕਰਨ ਸਫਲ ਰਿਹਾ। ਆਪਣੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਅਣਲਾਕ ਅਤੇ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੁਰਾਣਾ <ph name="DEVICE_TYPE" /> ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
@@ -8501,6 +8509,7 @@
 <translation id="7036706669646341689">Linux ਲਈ <ph name="DISK_SIZE" /> ਜਗ੍ਹਾ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="7037157058268992880">ਪਿੰਨ ਭੁੱਲ ਗਏ</translation>
 <translation id="7037509989619051237">ਪੂਰਵ-ਝਲਕ ਲਈ ਲਿਖਤ</translation>
+<translation id="7037633074390821254">DNS ਜਾਂ CIDR ਕੌਂਸਟਰੇਂਟ</translation>
 <translation id="7038632520572155338">ਸਵਿੱਚ ਪਹੁੰਚ</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> ਲਈ ਕੋਈ ਹੋਰ Google ਖਾਤਾ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> ਤੋਂ USB ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -8750,6 +8759,7 @@
 <translation id="7231260028442989757">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖੋ, ਖਾਰਜ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਜਵਾਬ ਦਿਓ</translation>
 <translation id="7231347196745816203">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨਾ।</translation>
 <translation id="7232750842195536390">ਨਾਮ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="7232962679391151113">{BOOKMARK_COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{{BOOKMARK_COUNT} ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{{BOOKMARK_COUNT} ਬੁੱਕਮਾਰਕਾਂ ਅਤੇ ਹੋਰ ਆਈਟਮਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="7234010996000898150">Linux ਮੁੜ-ਬਹਾਲੀ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="7235305658956131898">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤੀ Android ਐਪ।</translation>
@@ -8876,6 +8886,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇੱਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ 'ਤੇ, ਤੁਸੀਂ ਅਗਿਆਤ ਸਰੋਤ ਤੋਂ ਐਪਾਂ ਸਥਾਪਤ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="7328119182036084494"><ph name="WEB_DRIVE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
+<translation id="732845903678043302">{BOOKMARK_COUNT,plural, =1{1 ਬੁੱਕਮਾਰਕ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{{BOOKMARK_COUNT} ਬੁੱਕਮਾਰਕ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{{BOOKMARK_COUNT} ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="7328867076235380839">ਅਵੈਧ ਸੁਮੇਲ</translation>
 <translation id="7329154610228416156">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋ ਗਿਆ ਕਿਉਂਕਿ ਇਹ ਕਿਸੇ ਗੈਰ-ਸੁਰੱਖਿਅਤ URL (<ph name="BLOCKED_URL" />) ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="7330533963640151632"><ph name="USER_NAME" /> ਦੇ ਡੀਵਾਈਸ ਲਈ <ph name="FEATURE_NAME" /> ਸੈਟਿੰਗਾਂ ਨੂੰ, <ph name="USER_EMAIL" /> ਖਾਤੇ ਦੇ ਅਧੀਨ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
@@ -10417,6 +10428,7 @@
 <translation id="8398877366907290961">ਫੇਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8399282673057829204">ਪਾਸਵਰਡ ਦੇਖੋ</translation>
 <translation id="839949601275221554">ਇਸ ਡੀਵਾਈਸ ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="8399889560226245071">{SELECTED_ITEMS,plural, =0{ਬੁੱਕਮਾਰਕ}=1{ਬੁੱਕਮਾਰਕ ({SELECTED_ITEMS})}other{ਬੁੱਕਮਾਰਕ ({SELECTED_ITEMS})}}</translation>
 <translation id="8401432541486058167">ਆਪਣੇ ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸੰਬੰਧਿਤ ਪਿੰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
 <translation id="8403807918453631441">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ 'ਤੇ <ph name="BRAND" /> ਉਨ੍ਹਾਂ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8405046151008197676">ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਤੋਂ ਝਲਕੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -11671,6 +11683,7 @@
 <translation id="97905529126098460">ਰੱਦ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਦੇ ਬਾਅਦ ਇਹ ਵਿੰਡੋ ਬੰਦ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="980731642137034229">ਕਾਰਵਾਈ ਮੀਨੂ ਬਟਨ</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
+<translation id="982083952953998237">ਕੌਂਸਟਰੇਂਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="98235653036850093">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ</translation>

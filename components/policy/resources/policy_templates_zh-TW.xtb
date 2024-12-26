@@ -515,13 +515,13 @@
 <translation id="1426170570389588560">設定儲存列印工作中繼資料的時間範圍 (以天為單位)</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1427655258943162134">Proxy 伺服器的地址或網址</translation>
-<translation id="1430811977802269244">允許適用裝置在 Android 停止支援後啟用延長自動更新。
+<translation id="1430811977802269244">允許適用裝置在 Android 停止支援後自動延展更新。
 
-如果將這項政策設為啟用，裝置將啟用延長自動更新。
+如果將這項政策設為啟用，裝置將自動延展更新。
 
 如果將這項政策設為停用或未設定，裝置會在自動更新期限過後停止接收更新。
 
-這項政策僅適用於不會自動接收延長更新的舊機型。
+這項政策僅適用於不會自動延展更新的舊機型。
 
 詳情請參閱 https://support.google.com/chrome/a/?p=extended_updates_support。</translation>
 <translation id="1432834104376790711">這項政策會啟用或停用省電模式設定。

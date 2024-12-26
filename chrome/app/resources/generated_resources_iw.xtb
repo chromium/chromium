@@ -428,6 +428,7 @@
 <translation id="1282436639288565079">פרטי קבוצת הכרטיסיות</translation>
 <translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
+<translation id="1284912418686719556">‏‫Chrome יוצר בשבילך סיסמה חזקה. אין צורך לזכור אותה כי היא נשמרה בשבילך ב<ph name="GOOGLE_PASSWORD_MANAGER" /> בחשבון <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">אל תתרגמו את האתר הזה</translation>
 <translation id="1285484354230578868">‏אחסון נתונים בחשבון Google Drive</translation>
 <translation id="1285625592773741684">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'נתונים סלולריים'</translation>
@@ -7579,6 +7580,7 @@
 <translation id="637642201764944055">‏גרסאות ישנות של אפליקציות Chrome לא ייפתחו במכשירי Linux אחרי דצמבר 2022. עליך לפנות לאדמין כדי לעדכן לגרסה חדשה או להסיר את האפליקציה הזו.</translation>
 <translation id="6377268785556383139">תוצאה אחת בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">‏פתיחה ברשתות ה-Wi-Fi</translation>
+<translation id="6379228010899751161">כדי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון <ph name="ACCOUNT_EMAIL" />, עליך לאמת את הזהות שלך</translation>
 <translation id="6380143666419481200">בסדר, מקובל עליי</translation>
 <translation id="6383382161803538830">מצב הקריאה לא זמין בדף הזה</translation>
 <translation id="638418309848716977">קישורים נתמכים</translation>
@@ -9632,6 +9634,7 @@
     <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות של מכשיר ChromeOS. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />אם ההגדרה 'פעילות באינטרנט ובאפליקציות' פועלת בחשבון Google שלך, יכול להיות שהנתונים של Android יישמרו בחשבון Google שלך. יש לך אפשרות להציג או למחוק את הנתונים ולשנות את הגדרות החשבון בכתובת account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת לתוצאות האישיות או ל-Assistant גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לקבוע בהגדרות של Assistant שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
+<translation id="7851196412551419054">שינוי הסיסמה מתבצע…</translation>
 <translation id="7851457902707056880">הכניסה הוגבלה לחשבון הבעלים בלבד. יש לבצע אתחול מחדש ולהיכנס באמצעות חשבון הבעלים. המערכת תבצע אתחול מחדש באופן אוטומטי בתוך 30 שניות.</translation>
 <translation id="7851716364080026749">אני רוצה לחסום תמיד גישה למצלמה ולמיקרופון</translation>
 <translation id="7851720427268294554">‏מנתח IPP</translation>
@@ -11223,6 +11226,7 @@
 <translation id="8962863356073277855">‏כתובת ה-URL צריכה להיות בפורמט https://www.example.com</translation>
 <translation id="8962918469425892674">האתר הזה משתמש בחיישני תנועה או תאורה.</translation>
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
+<translation id="8964927371396953727">עליך לאמת את הזהות שלך כדי להשתמש בסיסמאות ולשמור אותן בחשבון <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">יש להזין את הסיסמה הישנה</translation>
 <translation id="8966809848145604011">פרופילים אחרים</translation>
 <translation id="8967427617812342790">הוספה לרשימת הקריאה</translation>

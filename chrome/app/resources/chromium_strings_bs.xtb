@@ -124,7 +124,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2583187216237139145">Administrator radnog profila može ukloniti bilo koje podatke Chromiuma koji se generiraju tokom korištenja ovog profila (naprimjer kreiranje oznaka, historije, lozinki i drugih postavki). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Nastavi koristiti Chromium</translation>
 <translation id="259935314519650377">Keširanje preuzetog programa za instaliranje nije uspjelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2635452620547538388">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromiuma na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2635452620547538388">Potvrdite identitet da koristite i sačuvate podatke Chromiuma na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno (preporučeno)</translation>
 <translation id="2648074677641340862">Tokom instaliranja se pojavila greška operativnog sistema. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chromium na način koji njima odgovara</translation>
@@ -452,7 +452,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6980074797973263542">Vaša organizacija može vidjeti podatke pregledanja kao što su oznake, historija i lozinke te njima upravljati. Ne može vidjeti podatke pregledanja na ličnim Chromium profilima.</translation>
 <translation id="6985329841647292029">Uslovi korištenja ChromiumOS-a</translation>
 <translation id="6990124437352146030">Chromiumu treba odobrenje za pristup mikrofonu za ovu web lokaciju.</translation>
-<translation id="7003299027384820442">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromiuma na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="7003299027384820442">Unesite pristupni izraz da koristite i sačuvate podatke Chromiuma na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sistema nije podržana.</translation>
 <translation id="7024536598735240744">Greška prilikom otpakivanja: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je zaustavljena.</translation>
@@ -548,7 +548,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8330519371938183845">Prijavite se da sinhronizirate i personalizirate Chrome na svim svojim uređajima</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio/la Chromium</translation>
 <translation id="8357820681460164151">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim stvarima s Chromium preglednika na svim svojim uređajima</translation>
-<translation id="8359544530202147897">Ažurirajte Chromium kako biste nastavili upotrebljavati podatke iz Chromiuma na svojem Google računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="8359544530202147897">Ažurirajte Chromium da nastavite koristiti podatke Chromiuma na Google računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Da primate buduća ažuriranja za Chromium, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.</translation>
 <translation id="8362914115861174987">Prevedi na</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>

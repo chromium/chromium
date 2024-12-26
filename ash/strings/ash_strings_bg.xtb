@@ -1648,6 +1648,7 @@
 <translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6542891623636520977">Емоджи, GIF файлове и др.</translation>
+<translation id="6543942526104794893">Наистина ли искате да изключите мимиките?</translation>
 <translation id="6545382064335350438">ПИН кодът ви пак не бе потвърден. Опитайте отново.</translation>
 <translation id="6555373427270923730">Въведете уеб адрес в адресната лента, след което натиснете <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2315,7 @@
 <translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8858369206579825206">Контроли за поверителност</translation>
 <translation id="8860366331836346216">Добавяне на електронна SIM карта</translation>
+<translation id="8869149849311827122">Наистина ли искате да изключите управлението с курсора на мишката?</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
 <translation id="8873203135446552888">Потвърдете, че искате да деактивирате вградения сензорен панел</translation>
 <translation id="8874184842967597500">Няма връзка</translation>

@@ -1397,6 +1397,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7248046129087111453"><ph name="BEGIN_LINK" />Historiku i kërkimeve<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />format e tjera të aktivitetit<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="7253951228444156601">Po kontrollon fjalëkalimet…</translation>
 <translation id="7261217796641151584">Ndaj grupin</translation>
+<translation id="7266578100016339897">Kjo të ndihmon të qëndrosh i organizuar. Mund ta ndryshosh këtë te cilësimet në çdo kohë.</translation>
 <translation id="7271220006028561438">Lejo përmirësimet automatike të çelësave të kalimit</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
 <translation id="7293429513719260019">Zgjidh gjuhën</translation>
@@ -1591,6 +1592,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8080028325999236607">Mbyll të gjitha skedat</translation>
 <translation id="8084285576995584326">Kontrollo të dhënat e "Llogarisë së Google"</translation>
 <translation id="809543534949702122">Historiku i kërkimeve</translation>
+<translation id="8095985449280932182">{COUNT,plural, =1{Skedat që nuk i përdor zhvendosen këtu pas {COUNT} dite}other{Skedat që nuk i përdor zhvendosen këtu pas {COUNT} ditësh}}</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">E re</translation>
 <translation id="8114753159095730575">Ofrohet shkarkimi i skedarit. Opsionet ofrohen pranë fundit të ekranit.</translation>

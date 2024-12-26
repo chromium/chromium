@@ -428,7 +428,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1282436639288565079">Detalji o grupi kartica</translation>
 <translation id="1283126956823499975">Došlo je do greške prilikom postavljanja uređaja</translation>
 <translation id="1284277788676816155">Nemoj dozvoliti pohranjivanje podataka</translation>
-<translation id="1284912418686719556">Chrome izrađuje snažnu zaporku za vas. Ne morate je pamtiti jer je spremljena u <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
+<translation id="1284912418686719556">Chrome kreira jaku lozinku za vas. Ne morate je pamtiti jer je sačuvana za vas na usluzi <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Nikada ne prevodi ovu web lokaciju</translation>
 <translation id="1285484354230578868">Pohranite podatke na svoj račun na Google Disku</translation>
 <translation id="1285625592773741684">Trenutna postavka prijenosa podataka je Prijenos podataka na mobilnoj mreži</translation>
@@ -7579,7 +7579,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="637642201764944055">Stare verzije Chromeovih aplikacija se neće moći otvarati na Linux uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
 <translation id="6377268785556383139">1 rezultat za pojam "'<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Otvori samo putem WiFi mreža</translation>
-<translation id="6379228010899751161">Potvrdite svoj identitet kako biste uvijek mogli upotrebljavati zaporke na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6379228010899751161">Potvrdite identitet da uvijek možete koristiti lozinke na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Prihvati i nastavi</translation>
 <translation id="6383382161803538830">Način rada za čitanje nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
@@ -9634,7 +9634,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
     <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama ChromeOS uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ako je postavka Aktivnost na webu i u aplikacijama uključena za Google račun, podaci Androida se mogu pohranjivati na Google računu. Na stranici account.google.com možete vidjeti i izbrisati svoje podatke te izmijeniti postavke računa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Neko sa sličnim glasom ili snimkom može pristupiti vašim ličnim rezultatima ili Asistentu. Radi uštede baterije, u postavkama Asistenta možete odabrati da aktiviranje frazom "Ok Google" uključite samo kada je uređaj povezan na izvor napajanja.</translation>
-<translation id="7851196412551419054">Promjena zaporke...</translation>
+<translation id="7851196412551419054">Promjena lozinke…</translation>
 <translation id="7851457902707056880">Prijava je ograničena samo na račun vlasnika. Ponovo pokrenite uređaj i prijavite se s računom vlasnika. Računar će se automatski ponovo pokrenuti za 30 sekundi.</translation>
 <translation id="7851716364080026749">Uvijek blokiraj pristup kameri i mikrofonu</translation>
 <translation id="7851720427268294554">IPP raščlanjivač</translation>
@@ -11224,7 +11224,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8962863356073277855">Format URL-a treba biti https://www.example.com</translation>
 <translation id="8962918469425892674">Ova web lokacija koristi senzore pokreta ili svjetlosne senzore.</translation>
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>
-<translation id="8964927371396953727">Potvrdite svoj identitet kako biste upotrebljavali i spremali zaporke na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="8964927371396953727">Potvrdite identitet da koristite i sačuvate lozinke na računu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Unesite staru lozinku</translation>
 <translation id="8966809848145604011">Drugi profili</translation>
 <translation id="8967427617812342790">Dodaj na listu za čitanje</translation>

@@ -428,6 +428,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1282436639288565079">Szczegóły grupy kart</translation>
 <translation id="1283126956823499975">Podczas konfigurowania urządzenia coś poszło nie tak</translation>
 <translation id="1284277788676816155">Nie zezwalaj na zapisywanie danych</translation>
+<translation id="1284912418686719556">Chrome tworzy dla Ciebie silne hasło. Nie musisz go pamiętać, bo <ph name="GOOGLE_PASSWORD_MANAGER" /> zapisze je na Twoim koncie <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1285484354230578868">Przechowywanie danych na koncie Dysku Google</translation>
 <translation id="1285625592773741684">Bieżące ustawienie transmisji danych to Mobilna transmisja danych</translation>
@@ -7547,6 +7548,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="637642201764944055">Z końcem grudnia 2022 r. stare wersje aplikacji Chrome przestaną działać na urządzeniach z Linuksem. Skontaktuj się z administratorem, aby zaktualizować tę aplikację do nowej wersji lub ją usunąć.</translation>
 <translation id="6377268785556383139">1 wynik dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6378392501584240055">Otwórz listę sieci Wi-Fi</translation>
+<translation id="6379228010899751161">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Zaakceptuj i kontynuuj</translation>
 <translation id="6383382161803538830">Tryb czytania jest niedostępny na tej stronie</translation>
 <translation id="638418309848716977">Obsługiwane linki</translation>
@@ -9598,6 +9600,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, mogą być na nim zapisywane dane Androida. Na account.google.com możesz je zobaczyć, usunąć oraz zmienić ustawienia konta.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> osoba, która ma podobny głos lub użyje nagrania, również może mieć dostęp do Twoich wyników lub Asystenta. Aby oszczędzać baterię, możesz wybrać w ustawieniach Asystenta opcję powodującą, że „OK Google” jest włączone tylko wtedy, gdy urządzenie jest podłączone do źródła zasilania.</translation>
+<translation id="7851196412551419054">Zmieniam hasło…</translation>
 <translation id="7851457902707056880">Logowanie zostało ograniczone tylko do konta właściciela. Uruchom ponownie i zaloguj się na nie. Komputer automatycznie uruchomi się ponownie za 30 sekund.</translation>
 <translation id="7851716364080026749">Zawsze blokuj dostęp do kamery i mikrofonu</translation>
 <translation id="7851720427268294554">Parser IPP</translation>
@@ -11185,6 +11188,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8962863356073277855">URL powinien być w formacie https://www.example.com</translation>
 <translation id="8962918469425892674">Ta witryna używa czujników ruchu lub oświetlenia.</translation>
 <translation id="8963117664422609631">Otwórz ustawienia witryny</translation>
+<translation id="8964927371396953727">Potwierdź swoją tożsamość, aby móc zapisywać hasła na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
 <translation id="8965037249707889821">Wpisz stare hasło</translation>
 <translation id="8966809848145604011">Inne profile</translation>
 <translation id="8967427617812342790">Dodaj do listy Do przeczytania</translation>

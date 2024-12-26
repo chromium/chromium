@@ -461,6 +461,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1777422078676229054">Photo (archive)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Installer des applis Web ?</translation>
+<translation id="1791415068765905273">Afficher tous les tableaux comparatifs</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer vos infos, votre vie privée et votre sécurité dans votre compte Google</translation>
 <translation id="1793631236004319016">Dernière utilisation il y a <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -2197,6 +2198,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (aucun téléchargement requis)</translation>
 <translation id="4920457992177678649">Locations de vacances et courts séjours</translation>
 <translation id="4920710383559189047">Pochette</translation>
+<translation id="4920921410507315601">Tableaux comparatifs</translation>
 <translation id="4922104989726031751">Pour utiliser le Gestionnaire de mots de passe avec votre système d'exploitation, relancez Chromium et autorisez l'accès au gestionnaire de mots de passe de votre ordinateur. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="4923459931733593730">Paiement</translation>
 <translation id="4926049483395192435">Doit être spécifié.</translation>
@@ -2390,6 +2392,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5278778426231952189">Importer maintenant</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
 <translation id="5280963125494874678">applis Web</translation>
+<translation id="5282008206326321696">{count,plural, =0{# favori}=1{# favori}one{# favori}other{# favoris}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriétés du document</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -2585,6 +2588,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="561165882404867731">Traduisez cette page avec Google Traduction</translation>
 <translation id="5612720917913232150"><ph name="URL" /> souhaite utiliser la position de votre ordinateur</translation>
 <translation id="5614520971155863709">Jeux de cartes</translation>
+<translation id="5617785978844309968">Afficher tous les tableaux comparatifs</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> vous a redirigé à de trop nombreuses reprises.</translation>
 <translation id="5619721953841297650">Préréglage</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>

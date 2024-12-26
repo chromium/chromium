@@ -19,6 +19,7 @@
 <translation id="107147699690128016">As jy die lêeruitbreiding verander, sal die lêer dalk in 'n ander program oopmaak en sal dit potensieel skadelik wees vir jou toestel.</translation>
 <translation id="1080365971383768617">Wagwoorde op al jou toestelle</translation>
 <translation id="1082920045291562218">Deel met opsommingsterugvoerblad toe</translation>
+<translation id="1087176310396019910">Moontlike strooipos</translation>
 <translation id="1089606299949659462">Kontrolering is afgehandel!</translation>
 <translation id="1094555143448724771">Sinkroniseer jou oortjies en geskiedenis om oortjies van jou ander toestelle af te sien</translation>
 <translation id="1095761715416917775">Maak seker dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
@@ -508,6 +509,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> oortjie}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> oortjies}}</translation>
 <translation id="3293181007446299124">Jou blaai-aktiwiteit word privaat op jou toestel gehou en verslae word met ’n vertraging gestuur om jou identiteit te beskerm</translation>
+<translation id="3301936297336370235">Bevestiging van wagwoordvoorstel</translation>
 <translation id="3302615849591357577">Stel oortjiegroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />, terug as ’n nuwe agtergrondoortjiegroep.</translation>
 <translation id="3303414029551471755">Gaan voort om die inhoud af te laai?</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
@@ -1136,6 +1138,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6196315980958524839">Wagwoorde word op hierdie toestel in Google Wagwoordbestuurder gestoor</translation>
 <translation id="6202812185118613467">Meld weer aan om sinkronisering te begin</translation>
+<translation id="6204781143409202534">Chrome het moontlike strooipos van <ph name="DOMAIN" /> af bespeur.</translation>
 <translation id="6205314730813004066">Advertensieprivaatheid</translation>
 <translation id="6210748933810148297">Nie <ph name="EMAIL" /> nie?</translation>
 <translation id="6211386937064921208">Voorbeskou tans hierdie bladsy</translation>

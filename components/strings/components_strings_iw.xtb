@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">כן, אני רוצה להמשיך</translation>
 <translation id="2690699652723742414">30 הימים האחרונים</translation>
 <translation id="2691924980723297736">אזהרת אבטחה</translation>
+<translation id="2697248912349197812">לשאול את <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">בתפריט המשנה הזמין אפשר להשתמש ב<ph name="SHORTCUT" /> כדי לעבור לאפשרויות נוספות.</translation>
 <translation id="2701514975700770343">פנים כלפי מטה</translation>
 <translation id="2702592986366989640">אפשרות במחיר נמוך</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">הלחצן לסגירת החלונות הפרטיים, מפעילים אותו כדי לסגור את כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="4691093235373904540">טיפול בגגות</translation>
 <translation id="4692623383562244444">מנועי חיפוש</translation>
+<translation id="4695702626068620848">‫<ph name="KEYWORD" /> – לשאול את <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">אומנויות לחימה</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">צד</translation>

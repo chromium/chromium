@@ -962,6 +962,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2688969097326701645">Da, nadaljuj</translation>
 <translation id="2690699652723742414">Zadnjih 30 dni</translation>
 <translation id="2691924980723297736">Varnostno opozorilo</translation>
+<translation id="2697248912349197812">Vprašajte: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Na voljo je podmeni, uporabite <ph name="SHORTCUT" /> za pomik do dodatnih možnosti.</translation>
 <translation id="2701514975700770343">Z licem navzdol</translation>
 <translation id="2702592986366989640">Možnost z nizko ceno</translation>
@@ -2066,6 +2067,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="469028408546145398">Gumb za zapiranje anonimnih oken, aktivirajte, če želite zapreti vsa trenutno odprta anonimna okna</translation>
 <translation id="4691093235373904540">Krovstvo</translation>
 <translation id="4692623383562244444">Iskalniki</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> – Vprašajte: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Borilni športi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Stran</translation>
