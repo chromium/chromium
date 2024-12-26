@@ -4015,12 +4015,6 @@ extern const char kImeSwitchCheckConnectionStatusDescription[];
 extern const char kIppFirstSetupForUsbPrintersName[];
 extern const char kIppFirstSetupForUsbPrintersDescription[];
 
-extern const char kLacrosProfileMigrationForceOffName[];
-extern const char kLacrosProfileMigrationForceOffDescription[];
-
-extern const char kLacrosProfileBackwardMigrationName[];
-extern const char kLacrosProfileBackwardMigrationDescription[];
-
 extern const char kHindiInscriptLayoutName[];
 extern const char kHindiInscriptLayoutDescription[];
 
@@ -4041,9 +4035,6 @@ extern const char kImeUsEnglishModelUpdateDescription[];
 
 extern const char kCrosComponentsName[];
 extern const char kCrosComponentsDescription[];
-
-extern const char kLacrosWaylandLoggingName[];
-extern const char kLacrosWaylandLoggingDescription[];
 
 extern const char kLanguagePacksInSettingsName[];
 extern const char kLanguagePacksInSettingsDescription[];

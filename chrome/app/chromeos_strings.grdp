@@ -4642,43 +4642,6 @@
     OK
   </message>
 
-  <!-- Lacros data migration screen. -->
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE" desc="Title of the data migration screen.">
-    Updating Chrome browser
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE" desc="Shows the % of progress.">
-    <ph name="PERCENT">$1<ex>100</ex></ph>% completed
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON" desc="Skip button for data migration.">
-    Skip
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION" desc="Message shown when skip button is visible.">
-    This is taking longer than expected, you can skip or wait until it's done.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_TITLE" desc="Shown if the lacros migration fails.">
-    Chrome browser could not be updated
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_LOW_DISK_SPACE" desc="Shown if the lacros migration failed with low disk space error.">
-    There isn't enough space on this device to complete this update. Clean up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again from your Chrome browser.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if the lacros migration failed other than low disk space error.">
-    You can try again later in Chrome.
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_CANCEL_BUTTON" desc="Text button shown on the lacros data migration failure to cancel everything">
-    Cancel
-  </message>
-  <message name="IDS_LACROS_DATA_MIGRATION_SCREEN_ERROR_GOTO_FILES_BUTTON" desc="Text button shown on the lacros data migration failure to open files.app in the following user session">
-    Go to files
-  </message>
-
-  <!-- Lacros data backward migration screen. -->
-  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_SUBTITLE" desc="Shown if Lacros data backward migration fails.">
-    If you click “Cancel”, it may affect your browser data and you may need to perform a factory reset.
-  </message>
-  <message name="IDS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_ERROR_RETRY_BUTTON" desc="Shown if Lacros data backward migration fails.">
-    Retry
-  </message>
-
   <!-- Print Job Notification -->
   <message name="IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE" desc="The context title of printing notification.">
     Print

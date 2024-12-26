@@ -317,11 +317,6 @@
 #include "ui/events/ozone/features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chrome/common/webui_url_constants.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -1017,7 +1012,6 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
      std::size(kZinkEnableRecommended), nullptr},
     {"for all apps", kZinkEnableAll, std::size(kZinkEnableAll), nullptr}};
 
-const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
 
@@ -4741,15 +4735,6 @@ const FeatureEntry kFeatureEntries[] = {
         kOsCrOS,
         FEATURE_VALUE_TYPE(ash::features::kEnableBrightnessControlInSettings),
     },
-    // Used to carry the policy value crossing the Chrome process lifetime.
-    {kLacrosWaylandLoggingInternalName,
-     flag_descriptions::kLacrosWaylandLoggingName,
-     flag_descriptions::kLacrosWaylandLoggingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLacrosWaylandLogging)},
-    {"lacros-trigger-profile-backward-migration",
-     flag_descriptions::kLacrosProfileBackwardMigrationName,
-     flag_descriptions::kLacrosProfileBackwardMigrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kLacrosProfileBackwardMigration)},
     {"list-all-display-modes", flag_descriptions::kListAllDisplayModesName,
      flag_descriptions::kListAllDisplayModesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(display::features::kListAllDisplayModes)},

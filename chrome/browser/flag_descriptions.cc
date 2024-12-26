@@ -6931,18 +6931,6 @@ const char kCrosComponentsName[] = "Cros Components";
 const char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";
 
-const char kLacrosWaylandLoggingName[] = "Lacros Wayland logging";
-const char kLacrosWaylandLoggingDescription[] =
-    "Enables Wayland logging for Lacros. This generates a significant amount "
-    "of logs on disk. Logs are cleared after two restarts.";
-
-const char kLacrosProfileBackwardMigrationName[] =
-    "Trigger Lacros profile backward migration";
-const char kLacrosProfileBackwardMigrationDescription[] =
-    "Trigger data migration back from the Lacros profile directory to the Ash "
-    "profile directory on next restart. Set this flag only together with "
-    "disabling the Lacros availability flag, otherwise it has no effect.";
-
 const char kLanguagePacksInSettingsName[] = "Language Packs in Settings";
 const char kLanguagePacksInSettingsDescription[] =
     "Enables the UI and logic to manage Language Packs in Settings. This is "

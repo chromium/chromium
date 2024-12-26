@@ -1648,18 +1648,6 @@ BASE_FEATURE(kKioskEnableSystemWebApps,
              "KioskEnableSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When this feature is enabled, wayland logging is enabled for Lacros.
-BASE_FEATURE(kLacrosWaylandLogging,
-             "LacrosWaylandLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, it is allowed to migrate data from lacros back to ash, provided
-// that other conditions are also met (e.g. the policy is enabled, or the
-// command line flag is passed).
-BASE_FEATURE(kLacrosProfileBackwardMigration,
-             "LacrosProfileBackwardMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
 BASE_FEATURE(kLanguagePacksFonts,
