@@ -3344,6 +3344,8 @@ data/accessibility/html/custom-select-expected-blink.txt
 data/accessibility/html/custom-select-expected-mac.txt
 data/accessibility/html/custom-select-expected-uia-win.txt
 data/accessibility/html/custom-select-expected-win.txt
+data/accessibility/html/custom-select-label-element-expected-blink.txt
+data/accessibility/html/custom-select-label-element.html
 data/accessibility/html/custom-select-mixed-options-expected-auralinux.txt
 data/accessibility/html/custom-select-mixed-options-expected-blink.txt
 data/accessibility/html/custom-select-mixed-options.html
