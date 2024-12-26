@@ -1700,7 +1700,7 @@ void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
   const LayoutBlock* containing_block = ContainingBlock();
   while (object != containing_block) {
     object->SetChildNeedsLayout(kMarkOnlyThis);
-    object = object->Parent();
+    object = object->Container();
   }
   // Finally mark the parent block for layout. This will mark everything which
   // has an OOF-positioned object or column spanner in a LayoutResult as
