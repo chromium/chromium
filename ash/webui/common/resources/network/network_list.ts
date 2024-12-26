@@ -11,10 +11,12 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/ash/common/cr_scrollable_behavior.js';
-import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from '//resources/ash/common/list_property_update_behavior.js';
+import {CrScrollableMixin} from '//resources/ash/common/cr_elements/cr_scrollable_mixin.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {ListPropertyUpdateMixin} from '//resources/ash/common/cr_elements/list_property_update_mixin.js';
 import {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
+import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_list.html.js';
 import {NetworkList} from './network_list_types.js';
@@ -24,19 +26,12 @@ import {OncMojo} from './onc_mojo.js';
  * Polymer class definition for 'network-list'.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {ListPropertyUpdateBehaviorInterface}
- */
-const NetworkListElementBase = mixinBehaviors(
-    [CrScrollableBehavior, ListPropertyUpdateBehavior], PolymerElement);
+const NetworkListElementBase =
+    I18nMixin(CrScrollableMixin(ListPropertyUpdateMixin(PolymerElement)));
 
-/** @polymer */
-class NetworkListElement extends NetworkListElementBase {
+export class NetworkListElement extends NetworkListElementBase {
   static get is() {
-    return 'network-list';
+    return 'network-list' as const;
   }
 
   static get template() {
@@ -47,7 +42,6 @@ class NetworkListElement extends NetworkListElementBase {
     return {
       /**
        * The list of network state properties for the items to display.
-       * @type {!Array<!OncMojo.NetworkStateProperties>}
        */
       networks: {
         type: Array,
@@ -58,7 +52,6 @@ class NetworkListElement extends NetworkListElementBase {
 
       /**
        * The list of custom items to display after the list of networks.
-       * @type {!Array<!NetworkList.CustomItemState>}
        */
       customItems: {
         type: Array,
@@ -79,7 +72,6 @@ class NetworkListElement extends NetworkListElementBase {
 
       /**
        * Reflects the iron-list selecteditem property.
-       * @type {!NetworkList.NetworkListItemType}
        */
       selectedItem: {
         type: Object,
@@ -92,11 +84,9 @@ class NetworkListElement extends NetworkListElementBase {
       /**
        * DeviceState associated with the type of |networks| listed, or undefined
        * if none was provided.
-       * @private {!OncMojo.DeviceStateProperties|undefined} deviceState
        */
       deviceState: Object,
 
-      /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
       isBuiltInVpnManagementBlocked: {
@@ -106,7 +96,6 @@ class NetworkListElement extends NetworkListElementBase {
 
       /**
        * Contains |networks| + |customItems|.
-       * @private {!Array<!NetworkList.NetworkListItemType>}
        */
       listItems_: {
         type: Array,
@@ -117,13 +106,11 @@ class NetworkListElement extends NetworkListElementBase {
 
       /**
        * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
        */
       lastFocused_: Object,
 
       /**
        * Used by FocusRowBehavior to track if the list has been blurred.
-       * @private
        */
       listBlurred_: Boolean,
 
@@ -136,22 +123,36 @@ class NetworkListElement extends NetworkListElementBase {
     return ['updateListItems_(networks, customItems)'];
   }
 
-  /** @override */
+
+  activationUnavailable: boolean;
+  customItems: NetworkList.NetworkListItemType[];
+  deviceState: OncMojo.DeviceStateProperties|undefined;
+  disabled: boolean;
+  globalPolicy: GlobalPolicy|undefined;
+  isBuiltInVpnManagementBlocked: boolean;
+  networks: OncMojo.NetworkStateProperties[];
+  selectedItem: NetworkList.NetworkListItemType;
+  showButtons: boolean;
+  showTechnologyBadge: boolean;
+
+  private focusRequested_: boolean;
+  private lastFocused_: Object;
+  private listBlurred_: boolean;
+  private listItems_: NetworkList.NetworkListItemType[];
+  private resizeObserver_: ResizeObserver|null;
+
   constructor() {
     super();
 
     /**
-     * @private @type {ResizeObserver} used to observer size changes to this
-     *     element
+     * used to observer size changes to this element
      */
     this.resizeObserver_ = null;
 
-    /** @private {boolean} */
     this.focusRequested_ = false;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // This is a required work around to get the iron-list to display on first
@@ -159,10 +160,9 @@ class NetworkListElement extends NetworkListElementBase {
     // element is not visible. Because there are some instances where this
     // component might not be visible when the items are bound, we listen for
     // resize events and manually call notifyResize on the iron-list
-    this.resizeObserver_ = new ResizeObserver(entries => {
+    this.resizeObserver_ = new ResizeObserver(_entries => {
       const networkList =
-          /** @type {IronListElement} */ (
-              this.shadowRoot.querySelector('#networkList'));
+          this.shadowRoot!.querySelector<IronListElement>('#networkList');
       if (networkList) {
         networkList.notifyResize();
       }
@@ -170,45 +170,59 @@ class NetworkListElement extends NetworkListElementBase {
     this.resizeObserver_.observe(this);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
-
-    this.resizeObserver_.disconnect();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
   }
 
-  focus() {
+  override focus() {
     this.focusRequested_ = true;
     this.focusFirstItem_();
   }
 
-  /** @private */
-  updateListItems_() {
-    const beforeNetworks =
-        this.customItems.filter(n => n.showBeforeNetworksList === true);
-    const afterNetworks =
-        this.customItems.filter(n => n.showBeforeNetworksList === false);
+  private updateListItems_() {
+    // TODO(http://b/386245333): Remove testing existence of the property
+    // showBeforeNetworksList.
+    const beforeNetworks = this.customItems.filter(
+        n =>
+            ('showBeforeNetworksList' in n &&
+             n.showBeforeNetworksList === true));
+    const afterNetworks = this.customItems.filter(
+        n =>
+            !('showBeforeNetworksList' in n &&
+              n.showBeforeNetworksList === true));
     const newList = beforeNetworks.concat(this.networks, afterNetworks);
 
-    this.updateList('listItems_', item => item.guid, newList);
+    // TODO(http://b/386245333): Remove testing existence of the property guid.
+    this.updateList(
+        'listItems_', item => ('guid' in item) ? item.guid : '', newList);
 
-    this.updateScrollableContents();
+    if (this.resizeObserver_) {
+      this.updateScrollableContents();
+    }
     if (this.focusRequested_) {
-      microTask.run(function() {
+      microTask.run(() => {
         this.focusFirstItem_();
       });
     }
   }
 
-  /** @private */
-  focusFirstItem_() {
+  private focusFirstItem_() {
     // Select the first network-list-item if there is one.
-    const item = this.shadowRoot.querySelector('network-list-item');
+    const item = this.shadowRoot!.querySelector('network-list-item');
     if (!item) {
       return;
     }
     item.focus();
     this.focusRequested_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkListElement.is]: NetworkListElement;
   }
 }
 
