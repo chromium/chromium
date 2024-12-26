@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_state_tracker.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
+#include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
