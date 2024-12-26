@@ -1363,20 +1363,4 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
 
-// DO NOT USE. Functions in this namespace are only for the migration of DIPS to
-// the content/ folder. They will be deleted soon.
-//
-// TODO: crbug.com/369813097 - Remove this after DIPS migrates to //content.
-namespace dips_move {
-void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                     const net::SchemefulSite& top_frame_site,
-                                     const net::SchemefulSite& accessing_site,
-                                     base::TimeDelta ttl,
-                                     bool ignore_schemes);
-bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               const blink::StorageKey& storage_key);
-}  // namespace dips_move
-
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

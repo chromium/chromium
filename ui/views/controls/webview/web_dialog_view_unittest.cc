@@ -69,11 +69,11 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   void SetUp() override {
     views::test::WidgetTest::SetUp();
 
-    browser_context_ = std::make_unique<content::TestBrowserContext>();
-
     // Set the test content browser client to avoid pulling in needless
     // dependencies from content.
     SetBrowserClientForTesting(&test_browser_client_);
+
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
 
     web_dialog_delegate_ =
         std::make_unique<TestWebDialogViewWebDialogDelegate>();

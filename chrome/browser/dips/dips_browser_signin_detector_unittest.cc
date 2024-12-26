@@ -18,8 +18,6 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -29,6 +27,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/dips_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -132,9 +131,6 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
       base::StrCat({"foo@", kIdentityProviderDomain}), kIdentityProviderDomain};
 
  private:
-  ScopedInitFeature feature_{features::kDIPS,
-                             /*enable:*/ true,
-                             /*params:*/ {{"persist_database", "true"}}};
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

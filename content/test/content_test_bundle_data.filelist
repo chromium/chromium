@@ -6368,6 +6368,8 @@ data/coreferencingframe_1.html
 data/coreferencingframe_2.html
 data/corp-cross-origin.html
 data/corp-cross-origin.html.mock-http-headers
+data/cors-ok.txt
+data/cors-ok.txt.mock-http-headers
 data/counter.html
 data/cross-origin-isolated-credentialless.html
 data/cross-origin-isolated-credentialless.html.mock-http-headers
@@ -6439,6 +6441,13 @@ data/devtools/test.jpg
 data/devtools/worker_imported_classic.js
 data/devtools/worker_imported_module.js
 data/devtools/zoom.html
+data/dips/v1.sql
+data/dips/v2.sql
+data/dips/v3.sql
+data/dips/v4.sql
+data/dips/v5.sql
+data/dips/v6.sql
+data/dips/v7.sql
 data/direct_sockets/open.html
 data/direct_sockets/open.html.mock-http-headers
 data/direct_sockets/open.js
@@ -6560,6 +6569,8 @@ data/fenced_frames/report1.html
 data/fenced_frames/report2.html
 data/fenced_frames/sandbox_flags.html
 data/fenced_frames/sandbox_flags.html.mock-http-headers
+data/fenced_frames/set_cookie_header.html
+data/fenced_frames/set_cookie_header.html.mock-http-headers
 data/fenced_frames/title0.html
 data/fenced_frames/title0.html.mock-http-headers
 data/fenced_frames/title1.html
@@ -7508,6 +7519,7 @@ data/nested_page_with_subresources.html
 data/net/cache/file_enumerator/dir/another.txt
 data/net/cache/file_enumerator/test.txt
 data/net_info.html
+data/no-favicon.html
 data/no_color_scheme_meta_slow.html
 data/no_vary_search_a.html
 data/no_vary_search_a.html.mock-http-headers
@@ -8222,6 +8234,8 @@ data/workers/fetch_from_shared_worker.html
 data/workers/fetch_from_shared_worker.js
 data/workers/fetch_from_worker.html
 data/workers/fetch_from_worker.js
+data/workers/fetcher_treat_as_public.js
+data/workers/fetcher_treat_as_public.js.mock-http-headers
 data/workers/frame_factory.html
 data/workers/iframe_basic_auth.html
 data/workers/incognito_worker.html
@@ -8243,6 +8257,8 @@ data/workers/queued_shared_worker_shutdown.html
 data/workers/send-beacon.html
 data/workers/service_worker.js
 data/workers/service_worker_setup.html
+data/workers/shared_fetcher_treat_as_public.js
+data/workers/shared_fetcher_treat_as_public.js.mock-http-headers
 data/workers/shared_post_ready.js
 data/workers/shared_post_ready_with_pna_headers.js
 data/workers/shared_post_ready_with_pna_headers.js.mock-http-headers
