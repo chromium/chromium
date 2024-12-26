@@ -294,7 +294,9 @@
     </template>
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" class="no-hr"
+        <settings-secure-dns prefs="{{prefs}}"
+            class$="[[computeSecureDnsSettingClass_(
+                      enablePasswordLeakToggleMove_)]]"
             id="secureDnsSettingNew">
         </settings-secure-dns>
       </template>
