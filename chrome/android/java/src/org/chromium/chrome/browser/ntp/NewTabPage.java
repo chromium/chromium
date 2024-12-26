@@ -43,6 +43,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -197,7 +198,6 @@ public class NewTabPage
     @VisibleForTesting
     public static class NtpSmoothTransitionDelegate implements SmoothTransitionDelegate {
         private static final int SMOOTH_TRANSITION_DURATION_MS = 100;
-        private static final int MAX_FEED_RESTORATION_DURATION = 1000;
 
         private View mView;
         private Animator mAnimator;
@@ -214,6 +214,7 @@ public class NewTabPage
                             mRestoringState.removeObserver(this);
                             mAnimatorStarted = true;
                             mHandler.removeCallbacks(mFallback);
+                            BackPressMetrics.recordNTPSmoothTransitionMethod(false);
                         }
                     }
                 };
@@ -223,6 +224,7 @@ public class NewTabPage
                         mAnimator.start();
                         mAnimatorStarted = true;
                         mRestoringState.removeObserver(mOnScrollStateChanged);
+                        BackPressMetrics.recordNTPSmoothTransitionMethod(true);
                     }
                 };
 
@@ -230,6 +232,22 @@ public class NewTabPage
             mView = view;
             mAnimator = buildSmoothTransition(view);
             mRestoringState = restoringState;
+
+            // Fallback added for metric records only.
+            restoringState.addObserver(
+                    new Callback<Integer>() {
+                        long mStart;
+
+                        @Override
+                        public void onResult(Integer result) {
+                            if (result == RestoringState.WAITING_TO_RESTORE) {
+                                mStart = TimeUtils.currentTimeMillis();
+                            } else if (result == RestoringState.RESTORED) {
+                                BackPressMetrics.recordNTPFeedRestorationDuration(
+                                        TimeUtils.currentTimeMillis() - mStart);
+                            }
+                        }
+                    });
         }
 
         @Override
@@ -253,7 +271,8 @@ public class NewTabPage
                         }
                     });
             mRestoringState.addObserver(mOnScrollStateChanged);
-            mHandler.postDelayed(mFallback, MAX_FEED_RESTORATION_DURATION);
+            mHandler.postDelayed(
+                    mFallback, BackPressMetrics.maxFallbackDelayOfNtpSmoothTransition());
         }
 
         @Override
