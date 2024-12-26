@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -197,6 +198,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void checkChildAccountStatus(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
         if (coreAccountInfo.getEmail().startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
+            listener.onStatusReady(true, coreAccountInfo);
+        } else {
+            listener.onStatusReady(false, /* childAccount= */ null);
+        }
+    }
+
+    @Override
+    public void checkIsSubjectToParentalControls(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
+        AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
+        if (accountHolder.getAccountCapabilities().isSubjectToParentalControls() == Tribool.TRUE) {
             listener.onStatusReady(true, coreAccountInfo);
         } else {
             listener.onStatusReady(false, /* childAccount= */ null);

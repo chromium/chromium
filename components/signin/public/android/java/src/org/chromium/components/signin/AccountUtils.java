@@ -146,6 +146,37 @@ public class AccountUtils {
         }
     }
 
+    /**
+     * Checks the parental control subjectivity of the accounts on the device based on the list of
+     * (zero or more) provided {@param coreAccountInfos}.
+     *
+     * <p>If there are no coreAccountInfo subject to parental controls on the device, the listener
+     * will be invoked with isChild = false. If there is an account subject to parental controls on
+     * device, the listener will be called with that account and isChild = true. Note that it is not
+     * currently possible to have more than one account subject to parental controls on device.
+     *
+     * <p>It should be safe to invoke this method before the native library is initialized.
+     *
+     * @param accountManagerFacade The singleton instance of {@link AccountManagerFacade}.
+     * @param coreAccountInfos The list of {@link CoreAccountInfo} on device.
+     * @param listener The listener is called when the status of the account (whether it is subject
+     *     to parental controls) is ready.
+     */
+    public static void checkIsSubjectToParentalControls(
+            @NonNull AccountManagerFacade accountManagerFacade,
+            @NonNull List<CoreAccountInfo> coreAccountInfos,
+            @NonNull ChildAccountStatusListener listener) {
+        if (coreAccountInfos.size() >= 1) {
+            // If an account subject to parental controls is present then there can be only one, and
+            // it must be the first
+            // account on the device.
+            accountManagerFacade.checkIsSubjectToParentalControls(
+                    coreAccountInfos.get(0), listener);
+        } else {
+            listener.onStatusReady(false, null);
+        }
+    }
+
     /** Canonicalizes the account email. */
     static String canonicalizeEmail(String email) {
         String[] parts = AT_SYMBOL.split(email);

@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import static org.chromium.components.signin.AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -257,6 +259,33 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             protected void onPostExecute(Boolean isChild) {
                 // TODO(crbug.com/40201126): rework this interface to avoid passing a null account.
                 listener.onStatusReady(isChild, isChild ? coreAccountInfo : null);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public void checkIsSubjectToParentalControls(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
+        ThreadUtils.assertOnUiThread();
+        new AsyncTask<Boolean>() {
+            @Override
+            public Boolean doInBackground() {
+                Account account = AccountUtils.createAccountFromName(coreAccountInfo.getEmail());
+                @CapabilityResponse
+                int capability =
+                        mDelegate.hasCapability(
+                                account,
+                                getAndroidCapabilityName(
+                                        IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME));
+                return capability == CapabilityResponse.YES;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isSubjectToParentalControls) {
+                // TODO(crbug.com/40201126): rework this interface to avoid passing a null account.
+                listener.onStatusReady(
+                        isSubjectToParentalControls,
+                        isSubjectToParentalControls ? coreAccountInfo : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

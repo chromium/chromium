@@ -8243,6 +8243,14 @@ const char kSupervisedProfileShowKiteBadgeDescription[] =
 
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSupervisedUserForceSigninWithCapabilitiesName[] =
+    "Use capabilities for supervised user forced sign-in";
+const char kSupervisedUserForceSigninWithCapabilitiesDescription[] =
+    "Migrate the usage of USM flags to force supervised user accounts to be "
+    "signed in to Chrome to instead use account capabilities.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

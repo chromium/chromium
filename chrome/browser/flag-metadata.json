@@ -8226,6 +8226,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "supervised-force-signin-with-capabilities",
+    "owners": [
+      "fernandex@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "supervised-profile-blocked-site-reauth",
     "owners": [
       "ljjlee@google.com",

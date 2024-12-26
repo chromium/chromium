@@ -136,7 +136,20 @@ public interface AccountManagerFacade {
      *     one) is ready.
      */
     @MainThread
+    // TODO(crbug.com/355388109): Remove this method following the migration to
+    // `checkIsSubjectToParentalControls`.
     void checkChildAccountStatus(
+            CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
+
+    /**
+     * Check whether the account is subject to parental controls.
+     *
+     * @param coreAccountInfo The CoreAccountInfo to check is subject to parental controls.
+     * @param listener The listener is called when the status of the account (whether it is subject
+     *     to parental controls) is ready.
+     */
+    @MainThread
+    void checkIsSubjectToParentalControls(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener);
 
     /**

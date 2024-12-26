@@ -4836,6 +4836,11 @@ extern const char kSupervisedProfileShowKiteBadgeDescription[];
 
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
+extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

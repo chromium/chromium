@@ -15,6 +15,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -64,8 +66,13 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
     }
 
     private void checkChildAccount(List<CoreAccountInfo> coreAccountInfos) {
-        AccountUtils.checkChildAccountStatus(
-                mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)) {
+            AccountUtils.checkIsSubjectToParentalControls(
+                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        } else {
+            AccountUtils.checkChildAccountStatus(
+                    mAccountManagerFacade, coreAccountInfos, this::onChildAccountStatusReady);
+        }
     }
 
     private void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {

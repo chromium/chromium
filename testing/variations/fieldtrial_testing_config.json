@@ -9948,6 +9948,21 @@
             ]
         }
     ],
+    "ForceSupervisedSigninWithCapabilities": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceSupervisedSigninWithCapabilities"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForestFeature": [
         {
             "platforms": [

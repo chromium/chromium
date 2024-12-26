@@ -50,6 +50,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
@@ -475,6 +476,52 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckIsSubjectToParentalControls() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.YES)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, accountInfo);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckNotIsSubjectToParentalControls() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.NO)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void testCheckIsSubjectToParentalControlsWithException() {
+        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
+
+        doReturn(CapabilityResponse.EXCEPTION)
+                .when(mDelegate)
+                .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
+
+        facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testCheckChildAccount() {
         final CoreAccountInfo coreAccountInfo =
                 setFeaturesForAccount(
@@ -487,6 +534,7 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
     public void testCheckChildAccountForAdult() {
         final CoreAccountInfo coreAccountInfo = setFeaturesForAccount("adult@gmail.com");
 

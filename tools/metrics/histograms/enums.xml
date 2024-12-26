@@ -22248,6 +22248,8 @@ from previous Chrome versions.
   <int value="727270087" label="PromosOnLocalNtp:enabled"/>
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>
+  <int value="728463882"
+      label="ForceSupervisedSigninWithCapabilities:disabled"/>
   <int value="728550541"
       label="BoundaryEventDispatchTracksNodeRemoval:enabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
@@ -24270,6 +24272,8 @@ from previous Chrome versions.
   <int value="1524016321" label="QuickAppAccessTestUI:disabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>
+  <int value="1525542982"
+      label="ForceSupervisedSigninWithCapabilities:enabled"/>
   <int value="1526489044" label="NtpRealboxMatchSearchboxTheme:disabled"/>
   <int value="1526574513" label="HoldingSpaceRefresh:enabled"/>
   <int value="1526718531"
