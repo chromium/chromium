@@ -710,9 +710,23 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         event.SetDefaultHandled();
         return;
       } else if (key == keywords::kHome) {
-        // TODO(382101095): Need to implement home behavior.
+        if (auto* first_option = options.NextMatchingOption(
+                *options.begin(),
+                [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ true, /*inclusive*/ true)) {
+          first_option->Focus(focus_params);
+          event.SetDefaultHandled();
+          return;
+        }
       } else if (key == keywords::kEnd) {
-        // TODO(382101095): Need to implement end behavior.
+        if (auto* last_option = options.NextMatchingOption(
+                *options.last(),
+                [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ false, /*inclusive*/ true)) {
+          last_option->Focus(focus_params);
+          event.SetDefaultHandled();
+          return;
+        }
       } else if (key == keywords::kPageDown) {
         // TODO(382101095): Need to implement page down behavior.
       } else if (key == keywords::kPageUp) {

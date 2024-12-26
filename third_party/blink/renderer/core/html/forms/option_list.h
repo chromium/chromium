@@ -20,6 +20,7 @@ class CORE_EXPORT OptionListIterator final {
   enum class StartingPoint {
     kStart,
     kEnd,
+    kLast,
   };
   explicit OptionListIterator(
       const HTMLSelectElement& select,
@@ -28,6 +29,9 @@ class CORE_EXPORT OptionListIterator final {
     switch (starting_point) {
       case StartingPoint::kStart:
         Advance(nullptr);
+        break;
+      case StartingPoint::kLast:
+        Retreat(nullptr);
         break;
       case StartingPoint::kEnd:
         break;
@@ -74,6 +78,9 @@ class OptionList final {
   }
   Iterator end() {
     return Iterator(select_, OptionListIterator::StartingPoint::kEnd);
+  }
+  Iterator last() {
+    return Iterator(select_, OptionListIterator::StartingPoint::kLast);
   }
   bool Empty() {
     return !Iterator(select_, OptionListIterator::StartingPoint::kStart);

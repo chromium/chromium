@@ -361,6 +361,13 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     if (key_event->GetModifiers() & ignore_modifiers)
       return false;
 
+    // Customizable-<select> keydown handling is done in
+    // HTMLOptionElement::DefaultEventHandlerInternal().
+    if (IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kUpdateStyle)) {
+      return false;
+    }
+
     const AtomicString key(key_event->key());
     bool handled = true;
     HTMLOptionElement* option = select_->SelectedOption();
