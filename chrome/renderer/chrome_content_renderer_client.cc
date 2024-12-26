@@ -1720,10 +1720,7 @@ void ChromeContentRendererClient::
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // WebHID and WebUSB on service workers is only available in extensions.
   if (IsStandaloneContentExtensionProcess()) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWebUsbOnExtensionServiceWorker)) {
-      blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
-    }
+    blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
 #if !BUILDFLAG(IS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)

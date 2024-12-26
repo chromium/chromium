@@ -1145,8 +1145,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Base Test fixture with kEnableWebUsbOnExtensionServiceWorker default
-// disabled.
 class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   WebUsbExtensionBrowserTest() = default;
@@ -1336,37 +1334,6 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
-
-// Test fixture with kEnableWebUsbOnExtensionServiceWorker disabled.
-class WebUsbExtensionFeatureDisabledBrowserTest
-    : public WebUsbExtensionBrowserTest {
- public:
-  WebUsbExtensionFeatureDisabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kEnableWebUsbOnExtensionServiceWorker});
-  }
-};
-
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_FeatureDisabled DISABLED_FeatureDisabled
-#else
-#define MAYBE_FeatureDisabled FeatureDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
-                       MAYBE_FeatureDisabled) {
-  constexpr std::string_view kBackgroundJs = R"(
-    chrome.test.sendMessage("ready", async () => {
-      try {
-        chrome.test.assertEq(navigator.usb, undefined);
-        chrome.test.notifyPass();
-      } catch (e) {
-        chrome.test.fail(e.name + ':' + e.message);
-      }
-    });
-  )";
-  LoadExtensionAndRunTest(kBackgroundJs);
-}
 
 // TODO(crbug.com/41494522): Flaky on non-Mac release builds.
 #if !BUILDFLAG(IS_MAC) && defined(NDEBUG)

@@ -275,11 +275,6 @@ BASE_FEATURE(kShortcutsNotAppsRevealDesktop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Enable WebUSB on extension service workers.
-BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
-             "EnableWebUsbOnExtensionServiceWorker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
