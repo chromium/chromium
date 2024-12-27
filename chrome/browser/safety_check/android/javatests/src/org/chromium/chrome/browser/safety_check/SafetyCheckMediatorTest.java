@@ -91,7 +91,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.prefs.PrefService;
@@ -139,7 +138,6 @@ public class SafetyCheckMediatorTest {
     @Mock private Profile mProfile;
     @Mock private SafetyCheckUpdatesDelegate mUpdatesDelegate;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    @Mock private SyncConsentActivityLauncher mSyncLauncher;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private SyncService mSyncService;
     @Mock private Handler mHandler;
@@ -244,7 +242,6 @@ public class SafetyCheckMediatorTest {
                 mUpdatesDelegate,
                 new SafetyCheckBridge(mProfile),
                 mSigninLauncher,
-                mSyncLauncher,
                 mSyncService,
                 mPrefService,
                 mPasswordStoreBridge,
