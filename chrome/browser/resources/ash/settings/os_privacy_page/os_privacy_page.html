@@ -28,14 +28,14 @@
       </cr-link-row>
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
         <cr-link-row id="syncSetupRow" class="hr"
-            start-icon="os-settings:sync-revamp"
+            start-icon="os-settings:sync"
             label="$i18n{syncAndNonPersonalizedServices}"
             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
             on-click="onSyncClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <cr-link-row id="lockScreenRow" class="hr"
-            start-icon="os-settings:lock-revamp"
+            start-icon="os-settings:lock"
             on-click="onConfigureLockClick_"
             label="[[selectLockScreenTitleString_(hasPinLogin)]]"
             sub-label="[[getPasswordState_(hasPin,
