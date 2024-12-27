@@ -536,9 +536,9 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   const std::string filter_name = GetOperandName(conv2d.filter_operand_id);
   const std::string output_name = GetOperandName(conv2d.output_operand_id);
   std::vector<const char*> input_names;
+  std::string bias_name;
   if (conv2d.bias_operand_id) {
-    const std::string bias_name =
-        GetOperandName(conv2d.bias_operand_id.value());
+    bias_name = GetOperandName(conv2d.bias_operand_id.value());
     input_names = {input_name.c_str(), filter_name.c_str(), bias_name.c_str()};
   } else {
     input_names = {input_name.c_str(), filter_name.c_str()};
