@@ -158,7 +158,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8060029310790625334">Hjálparmiðstöð</translation>
 <translation id="806699900641041263">Tengist við <ph name="HOSTNAME" /></translation>
-<translation id="8073845705237259513">Til að nota fjarstjórnun tölvu í Chrome þarftu að bæta Google reikningi við tækið þitt.</translation>
+<translation id="8073845705237259513">Til að nota fjarstjórnun tölvu í Chrome þarftu að bæta Google-reikningi við tækið þitt.</translation>
 <translation id="809687642899217504">Tölvurnar mínar</translation>
 <translation id="8116630183974937060">Netvilla kom upp. Gakktu úr skugga um að tækið sé nettengt og reyndu aftur.</translation>
 <translation id="8295077433896346116">Til að nota <ph name="PRODUCT_NAME" /> þarftu að veita heimildina „Aðgengi“ til að hægt sé að senda inntak úr fjartengdu tölvunni inn í þessa Mac-tölvu.
@@ -167,7 +167,7 @@ Til að veita þessa heimild skaltu smella á <ph name="BUTTON_NAME" /> hér fyr
 
 Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja merkið og merkja svo aftur í reitinn.</translation>
 <translation id="8305209735512572429">Fjarvinnsla Web Authentication</translation>
-<translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google reikningi við tækið þitt.</translation>
+<translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google-reikningi við tækið þitt.</translation>
 <translation id="8386846956409881180">Hýsillinn er stilltur með ógildum OAuth-skilríkjum.</translation>
 <translation id="8397385476380433240">Veita <ph name="PRODUCT_NAME" /> heimild</translation>
 <translation id="8406498562923498210">Veldu lotu sem þú vilt ræsa innan fjarstjórnunar tölvu í Chrome. (Athugaðu að sumar lotugerðir styðja hugsanlega ekki keyrslu innan fjarstjórnunar Chrome og á staðbundnu stjórnborði samtímis.)</translation>
