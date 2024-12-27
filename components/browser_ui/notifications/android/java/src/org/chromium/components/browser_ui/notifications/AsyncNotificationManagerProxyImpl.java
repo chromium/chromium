@@ -184,15 +184,13 @@ import java.util.function.Function;
             @Override
             protected T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
-                    try {
-                        NotificationProxyUtils.recordNotificationEventHistogram(
-                                NotificationEvent.HAS_CALLBACK_START);
-                        return callable.call();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to call method.", e);
-                        mSuccess = false;
-                        return null;
-                    }
+                    NotificationProxyUtils.recordNotificationEventHistogram(
+                            NotificationEvent.HAS_CALLBACK_START);
+                    return callable.call();
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to call method.", e);
+                    mSuccess = false;
+                    return null;
                 }
             }
 
