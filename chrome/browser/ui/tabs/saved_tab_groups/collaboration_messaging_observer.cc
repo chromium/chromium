@@ -76,7 +76,12 @@ std::optional<int> GetTabStripIndex(LocalTabID local_tab_id,
   auto saved_tab_group = tab_group_sync_service->GetGroup(local_tab_group_id);
   CHECK(saved_tab_group);
   auto tab_offset_in_group = saved_tab_group->GetIndexOfTab(local_tab_id);
-  CHECK(tab_offset_in_group.has_value());
+
+  if (!tab_offset_in_group.has_value()) {
+    // When hiding a DIRTY_TAB message on a deleted tab (e.g. the tab was
+    // deleted by another user), this tab won't be found in the group.
+    return std::nullopt;
+  }
 
   auto tabstrip_index =
       group_offset_in_tabstrip.value() + tab_offset_in_group.value();
