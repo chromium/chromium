@@ -1558,6 +1558,17 @@ Bu politika ayarlanmadan bırakılırsa Canlı Çeviri özelliği başlangıçta
 <translation id="2157842368188031417">Bu politika, yalnızca yönetilen misafir oturumları için geçerlidir. Imprivata'nın paylaşılan iş istasyonu modunda oturum içi kullanıcı değişikliğine izin verilmesi için bu politikanın etkinleştirilmesi gerekir.
       Politika, Doğru değerine ayarlanırsa özelliklerle ilgili politikalardan Imprivata paylaşılan iş istasyonu modundaki oturum içi kullanıcı değişikliklerinde kullanılan temizleme mekanizması tarafından işlenmeyen ve hassas kullanıcı verilerini tutan belirli politikalar zorla geçersiz kılınır.
       Politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa herhangi bir politika geçersiz kılınmaz.</translation>
+<translation id="2158028663273824412">DNS-over-HTTPS çözümleyicisinin modunu denetler. Lütfen bu politikanın yalnızca her sorgu için varsayılan modu ayarlayacağını unutmayın. Bu mod, bir DNS-over-HTTPS sunucu ana makine adını çözümleme istekleri gibi özel türdeki sorgular için geçersiz kılınabilir.
+
+<ph name="SECURE_DNS_MODE_OFF" /> modu DNS-over-HTTPS'i devre dışı bırakacaktır.
+
+<ph name="SECURE_DNS_MODE_AUTOMATIC" /> modu öncelikle DNS-over-HTTPS sunucusu kullanılabiliyorsa DNS-over-HTTPS sorguları gönderecektir ve hata sonucu güvenli olmayan sorgular göndermeye geçebilir.
+
+<ph name="SECURE_DNS_MODE_SECURE" /> modu yalnızca DNS-over-HTTPS gönderecektir ve hata olması durumunda çözümlemekte başarısız olacaktır.
+
+<ph name="ANDROID_VERSION" /> sürümünde ve sonraki sürümlerde DNS-over-TLS etkinse <ph name="PRODUCT_NAME" /> güvenli olmayan DNS istekleri göndermeyecektir.
+
+Bu politika ayarlanmadan bırakılırsa, yönetilen cihazlar için DNS-over-HTTPS sorguları gönderilmez. Aksi takdirde tarayıcı, kullanıcının yapılandırılmış sistem çözümleyicisi ile ilişkilendirilmiş bir çözümleyiciye DNS-over-HTTPS istekleri gönderebilir.</translation>
 <translation id="2158741059065130266">Politika, Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasının kullanıcıları bir çöp kutusu görür ve Dosyalarım ve İndirilenler bölümlerindeki dosyalar (kullanıcıların oluşturduğu alt öğeler dahil) silindiğinde oraya gönderilir.
 
       Politika, Yanlış değerine ayarlanırsa daha önce çöp kutusunda bulunan dosyalar, gizli dosyalar gösterilerek ve Dosyalarım veya İndirilenler bölümünde .çöp kutusu dizini bulunarak kullanılabilir olmaya devam eder.</translation>
@@ -1663,6 +1674,11 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 <translation id="2202787915587511214">NTLMv2'yi aç</translation>
 <translation id="2204379573346866896">İçinde bulunulan saatte geçen dakika sayısı.</translation>
 <translation id="2204753382813641270">Rafın otomatik olarak gizlenmesini kontrol et</translation>
+<translation id="2208092773610663977">Politika, Etkin değerine ayarlanırsa kullanıcılar, <ph name="PRODUCT_NAME" /> ürününün, girilen kullanıcı adları ve şifrelerin bir sızıntının parçası olup olmadığını kontrol etmesini sağlayabilirler.
+
+Politika, Devre Dışı değerine ayarlanırsa bu işlev kullanılamaz.
+
+      Politika ayarlanırsa kullanıcılar bunu <ph name="PRODUCT_NAME" /> ürününde değiştiremezler. Politika ayarlanmazsa kimlik bilgisi sızıntısı kontrolüne izin verilir ancak kullanıcı bunu devre dışı bırakabilir.</translation>
 <translation id="2208976000652006649">POST kullanan arama URL'si için parametreler</translation>
 <translation id="2212011154693551439">Gruplar halinde düzenlenmiş Chrome geçmişi sayfası varsayılan olarak chrome://history/grouped adresinde görülebilir.</translation>
 <translation id="2212207215880394506">Üretken Yapay Zeka Fotoğraf Düzenleme özelliğine izin verme.</translation>
@@ -6141,6 +6157,13 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa gi
 <translation id="545817252640069915">Oturum açma müdahalesini etkinleştir</translation>
 <translation id="5460797984317417682">Tam ekran uyarısını etkinleştir</translation>
 <translation id="5462898272514237681"><ph name="PRODUCT_OS_NAME" /> sisteminin, Google Konum Hizmetleri'ne erişimini kontrol et</translation>
+<translation id="5464786290880338716"><ph name="PRIVACY_SANDBOX_NAME" /> IP koruması özelliğinin etkinleştirilip etkinleştirilmeyeceğini kontrol eden bir politika.
+
+Politika, Devre Dışı değerine ayarlanırsa IP koruması özelliği devre dışı bırakılır ve kullanıcılar bu özelliği kullanıcı arayüzü ayarlarından etkinleştiremez.
+Politika, Etkin değerine ayarlanırsa IP koruması özelliği etkinleştirilir ve kullanıcılar bu özelliği kullanıcı arayüzü ayarlarından devre dışı bırakamaz.
+Politika ayarlanmazsa, tarayıcısı veya cihazı yönetilen kullanıcılar için IP koruması özelliği devre dışı bırakılır ve kullanıcı arayüzü ayarlarından etkinleştirilemez. Yönetilmeyen tarayıcı ve cihazların kullanıcıları, kullanıcı arayüzü ayarlarından IP koruması özelliğini cihazlarında etkinleştirebilir veya devre dışı bırakabilir.
+
+Not: IP koruması özelliğinin kurumsal kullanıcılara yönelik davranışı, politika Etkin değerine ayarlandığında ya da ayarlanmadığında ve özellik, kullanıcı arayüzü ayarlarından etkinleştirildiğinde zaman içinde değişiklik gösterebilir.</translation>
 <translation id="5464816904705580310">Yönetilen kullanıcılar için ayarları yapılandırın.</translation>
 <translation id="5466596281866046569">Uygulama bilgilerini bildir</translation>
 <translation id="5467175549232776406">Politika test sayfasına erişilebilir</translation>
@@ -8624,6 +8647,7 @@ bir SPKI (SubjectPublicKeyInfo) içeren sertifikalara güvenilmez.</translation>
 <translation id="7177293255621000064">Politikayı Doğru (True) değerine ayarlarsanız dosya tarayıcısında her türlü harici depolama ortamı (USB flash sürücüler, harici sabit sürücüler, SD ve diğer bellek kartları, optik depolama) kullanılamaz duruma gelir. Politikayı Yanlış (False) değerine ayarlarsanız veya ayarlamadan bırakırsanız kullanıcılar cihazlarında harici depolama alanı kullanabilirler.
 
       Not: Politika, Google Drive'ı ve dahili depolamayı etkilemez. Kullanıcılar İndirilenler klasörüne kaydedilen dosyalara erişmeye devam edebilirler.</translation>
+<translation id="7177645313697913767">Tarayıcıları ve cihazları yönetilmeyen kullanıcıların, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> IP koruması ayarını etkinleştirmesine veya devre dışı bırakmasına izin ver.</translation>
 <translation id="7177857088692019405">Hızlı kilit aç</translation>
 <translation id="7179157174254421614"><ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> politikası otomatik saat dilimi algılama ayarını kapatmadıkça, politikayı ayarlamak kullanıcıların değiştiremeyeceği otomatik saat dilimi algılama yöntemini belirtir.
 

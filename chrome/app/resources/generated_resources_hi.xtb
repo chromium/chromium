@@ -427,6 +427,7 @@
 <translation id="1282436639288565079">टैब ग्रुप की जानकारी</translation>
 <translation id="1283126956823499975">डिवाइस को सेट अप करने के दौरान कोई गड़बड़ी हुई</translation>
 <translation id="1284277788676816155">साइट को डेटा सेव करने की अनुमति न दें</translation>
+<translation id="1284912418686719556">Chrome आपके लिए एक मज़बूत पासवर्ड बना रहा है. आपको इसे याद रखने की ज़रूरत नहीं है, क्योंकि यह <ph name="EMAIL" /> के लिए <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव हो जाएगा.</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
 <translation id="1285484354230578868">डेटा को अपने Google डिस्क खाते में संगृहीत करें</translation>
 <translation id="1285625592773741684">डेटा खर्च की मौजूदा सेटिंग के मुताबिक, मोबाइल डेटा इस्तेमाल होगा</translation>
@@ -2828,7 +2829,6 @@
 <translation id="2942707801577151363">Word, Excel, और PowerPoint फ़ाइलें खोलें, बदलाव करें, और सेव करें. कुछ सुविधाओं का इस्तेमाल करने के लिए सदस्यता लेनी पड़ सकती है.</translation>
 <translation id="2943268899142471972">Ansible प्लेबुक या Crostini बैक अप फ़ाइल चुनें</translation>
 <translation id="2943478529590267286">सिस्टम कीबोर्ड लेआउट में बदलाव करें</translation>
-<translation id="2946054015403765210">फ़ाइल पर जाएं</translation>
 <translation id="2946119680249604491">कनेक्शन जोड़ें</translation>
 <translation id="2946190589196900944">डिसप्ले की सीमाएं</translation>
 <translation id="2946640296642327832">ब्लूटूथ सक्षम करें</translation>
@@ -3021,7 +3021,6 @@
 <translation id="3084548735795614657">इंस्टॉल करने के लिए यहां छोड़ें</translation>
 <translation id="3084771660770137092">या तो Chrome की मेमोरी खत्म हो गई है या वेबपेज की प्रक्रिया किसी और वजह से खत्म कर दी गई है. जारी रखने के लिए, फिर लोड करें या किसी और पेज पर जाएं.</translation>
 <translation id="3085412380278336437">साइट आपके कैमरे का इस्तेमाल कर सकती है</translation>
-<translation id="3085431803365340433">Chrome ब्राउज़र को अपडेट नहीं किया जा सका</translation>
 <translation id="3088052000289932193">साइट 'मिडी' की इस्तेमाल कर रही है</translation>
 <translation id="3088128611727407543">ऐप्लिकेशन की प्रोफ़ाइल तैयार हो रही है...</translation>
 <translation id="3088325635286126843">&amp;नाम बदलें...</translation>
@@ -7577,6 +7576,7 @@
 <translation id="637642201764944055">दिसंबर 2022 के बाद, 'Chrome ऐप्स' के पुराने वर्शन, Linux डिवाइसों पर नहीं खुलेंगे. नए वर्शन पर अपडेट करने या इस ऐप्लिकेशन को हटाने के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' के लिए एक नतीजा मिला है</translation>
 <translation id="6378392501584240055">वाई-फ़ाई नेटवर्क की लिस्ट खोलें</translation>
+<translation id="6379228010899751161">अपनी पहचान की पुष्टि करें, ताकि आप जब चाहें अपने खाते <ph name="ACCOUNT_EMAIL" /> में सेव किए गए पासवर्ड इस्तेमाल कर पाएं</translation>
 <translation id="6380143666419481200">स्वीकार करें और जारी रखें</translation>
 <translation id="6383382161803538830">रीडिंग मोड इस पेज पर उपलब्ध नहीं है</translation>
 <translation id="638418309848716977">सहायता लिंक</translation>
@@ -7896,7 +7896,6 @@
 <translation id="6611972847767394631">अपने टैब यहां देखें</translation>
 <translation id="661266467055912436">वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है.</translation>
 <translation id="6613267708691765962">मैलवेयर का पता लगाने के लिए स्कैन किया जा रहा है...</translation>
-<translation id="6613668613087513143">इस अपडेट को पूरा करने के लिए, आपके डिवाइस में स्टोरेज कम है. अपने डिवाइस में, <ph name="NECESSARY_SPACE" /> स्टोरेज खाली करें और अपने Chrome ब्राउज़र में जाकर फिर से कोशिश करें.</translation>
 <translation id="6614172284067813496">पेज को रीडिंग लिस्ट में जोड़ा गया</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="6619058681307408113">लाइन प्रिंटर डेमन (LPD)</translation>
@@ -8019,7 +8018,6 @@
 <translation id="6702639462873609204">&amp;संपादित करें...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> का इस्तेमाल करने के लिए, ब्लूटूथ और वाई-फ़ाई चालू करें</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">कुछ देर बाद Chrome में जाकर, फिर से कोशिश की जा सकती है.</translation>
 <translation id="6703254819490889819">बैक अप वापस लाएं</translation>
 <translation id="6703613667804166784">यह फ़ाइल, <ph name="USER_EMAIL" /> समेत आपके निजी और सोशल नेटवर्क खातों को नुकसान पहुंचा सकती है</translation>
 <translation id="6707122714992751648">ChromeOS में गड़बड़ी की जानकारी देने वाले टेस्ट करता है</translation>
@@ -8435,7 +8433,6 @@
 <translation id="6991665348624301627">गंतव्य को चुनें</translation>
 <translation id="6992554835374084304">'बेहतर स्पेलिंग जाँच' चालू करें</translation>
 <translation id="6993000214273684335">टैब को बिना नाम वाले ग्रुप से हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Chrome ब्राउज़र अपडेट हो रहा है</translation>
 <translation id="6995984090981858039">ChromeOS डिवाइस की जानकारी और डेटा ऐक्सेस करें</translation>
 <translation id="6996245928508281884">अपने फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू करें</translation>
 <translation id="6996438701394974959">डिसप्ले और टेक्स्ट का साइज़ बढ़ाएं</translation>
@@ -9627,6 +9624,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ChromeOS वाले डिवाइस की सेटिंग में जाकर, अपने-आप रिपोर्ट भेजने की इस सुविधा को किसी भी समय चालू या बंद किया जा सकता है. डोमेन एडमिन, Admin console में जाकर इस सेटिंग को बदल सकता है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />अगर आपके Google खाते की वेब और ऐप्लिकेशन गतिविधि वाली सेटिंग चालू है, तो आपके Android डिवाइस का डेटा आपके Google खाते में सेव हो सकता है. account.google.com पर जाकर, डेटा को देखा और मिटाया जा सकता है. साथ ही, खाते की सेटिंग भी बदली जा सकती हैं.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है. बैटरी बचाने के लिए, आप अपनी Assistant की सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
+<translation id="7851196412551419054">पासवर्ड बदला जा रहा है...</translation>
 <translation id="7851457902707056880">साइन इन की सिर्फ़ मालिक के खाते तक पाबंदी लगाई गई है. कृपया 'रीबूट' करें और मालिक खाते से साइन इन करें. मशीन 30 सेकंड में अपने आप 'रीबूट' हो जाएगी.</translation>
 <translation id="7851716364080026749">कैमरा और माइक्रोफ़ोन एक्सेस कभी भी ब्लॉक करें</translation>
 <translation id="7851720427268294554">आईपीपी पार्सर</translation>
@@ -9742,9 +9740,7 @@
 <translation id="7933486544522242079">&amp;सेव और शेयर करें</translation>
 <translation id="7933518760693751884">बुकमार्क आइकॉन पर क्लिक करके, किसी पेज को बाद में पढ़ने के लिए सेव करें</translation>
 <translation id="7933634003144813719">शेयर किए गए फ़ोल्डर प्रबंधित करें</translation>
-<translation id="793474285422359265">“रद्द करें” पर क्लिक करने से, आपके ब्राउज़र के डेटा पर असर पड़ सकता है. साथ ही, आपको डिवाइस को फ़ैक्ट्री रीसेट करना पड़ सकता है.</translation>
 <translation id="793531125873261495">वर्चुअल मशीन डाउनलोड करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% पूरा हो गया है</translation>
 <translation id="7936195481975600746">स्क्रीन शेयर करने के लिए, अपने सिस्टम के स्क्रीन पिकर का इस्तेमाल करें</translation>
 <translation id="7937809006412909895">गड़बड़ी की जानकारी का डेटा इकट्ठा किया जा रहा है</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10771,7 +10767,6 @@
 <translation id="8661290697478713397">लिंक को गुप्त&amp; विंडो में खोलें</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> में साइन इन करें</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
-<translation id="8662733268723715832">इसमें उम्मीद से ज़्यादा समय लग रहा है. आप चाहें, तो इसे स्किप कर दें या फिर इसके पूरा होने का इंतज़ार करें.</translation>
 <translation id="8662795692588422978">लोग</translation>
 <translation id="8662911384982557515">अपना होम पेज: <ph name="HOME_PAGE" /> में बदलें</translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट नहीं कर सकता.</translation>
@@ -11215,6 +11210,7 @@
 <translation id="8962863356073277855">यूआरएल का फ़ॉर्मैट https://www.example.com होना चाहिए</translation>
 <translation id="8962918469425892674">यह साइट गति या रोशनी के सेंसर का इस्तेमाल कर रही है.</translation>
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
+<translation id="8964927371396953727">अपनी पहचान की पुष्टि करें, ताकि आप अपने खाते <ph name="ACCOUNT_EMAIL" /> में पासवर्ड सेव कर पाएं और सेव किए गए पासवर्ड इस्तेमाल कर पाएं</translation>
 <translation id="8965037249707889821">पुराना पासवर्ड डालें</translation>
 <translation id="8966809848145604011">अन्य प्रोफ़ाइलें</translation>
 <translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>

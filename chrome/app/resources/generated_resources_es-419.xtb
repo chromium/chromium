@@ -2812,7 +2812,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2942707801577151363">Abre, edita y guarda archivos de Word, Excel y PowerPoint. Es posible que se requiera una suscripción para acceder a algunas funciones.</translation>
 <translation id="2943268899142471972">Crear a partir de un archivo de copia de seguridad de Crostini o de playbook de Ansible</translation>
 <translation id="2943478529590267286">Cambiar el diseño del teclado del sistema</translation>
-<translation id="2946054015403765210">Ir a Archivos</translation>
 <translation id="2946119680249604491">Agregar conexión</translation>
 <translation id="2946190589196900944">Límites de visualización</translation>
 <translation id="2946640296642327832">Activar Bluetooth</translation>
@@ -3005,7 +3004,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">El proceso de la página web puede haber finalizado por agotamiento de la memoria de Chrome o por algún otro motivo. Para continuar, reinicia la página o accede a otra página.</translation>
 <translation id="3085412380278336437">El sitio puede usar la cámara</translation>
-<translation id="3085431803365340433">No se pudo actualizar el navegador Chrome</translation>
 <translation id="3088052000289932193">El sitio está usando la conexión MIDI</translation>
 <translation id="3088128611727407543">Preparando el perfil de la app…</translation>
 <translation id="3088325635286126843">Cambia&amp;r nombre...</translation>
@@ -7882,7 +7880,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6611972847767394631">Encuentra tus pestañas aquí</translation>
 <translation id="661266467055912436">Mejora la seguridad para ti y todos los usuarios de la Web.</translation>
 <translation id="6613267708691765962">Buscando software malicioso…</translation>
-<translation id="6613668613087513143">No hay espacio suficiente en el dispositivo para completar la actualización. Limpia <ph name="NECESSARY_SPACE" /> en el dispositivo y vuelve a intentarlo desde el navegador Chrome.</translation>
 <translation id="6614172284067813496">Se agregó la página a la lista de lectura</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8005,7 +8002,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6702639462873609204">&amp;Editar</translation>
 <translation id="6702859741546259407">Para usar <ph name="FEATURE_NAME" />, activa Bluetooth y Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Vuelve a intentarlo más tarde desde Chrome.</translation>
 <translation id="6703254819490889819">Restablecer la copia de seguridad</translation>
 <translation id="6703613667804166784">Este archivo puede dañar tus cuentas de redes sociales y personales, incluido <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Ejecutar pruebas de diagnóstico de ChromeOS</translation>
@@ -8421,7 +8417,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6991665348624301627">Seleccionar un destino</translation>
 <translation id="6992554835374084304">Activa el corrector ortográfico mejorado</translation>
 <translation id="6993000214273684335">Se quitó la pestaña del grupo sin nombre - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Se está actualizando el navegador Chrome</translation>
 <translation id="6995984090981858039">Leer la información y los datos del dispositivo ChromeOS</translation>
 <translation id="6996245928508281884">Activa el Bluetooth y el Wi-Fi del teléfono</translation>
 <translation id="6996438701394974959">Aumentar el tamaño de la pantalla y del texto</translation>
@@ -9731,9 +9726,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7933486544522242079">&amp;Guardar y compartir</translation>
 <translation id="7933518760693751884">Si quieres guardar una página para verla más tarde, haz clic en el ícono de favoritos.</translation>
 <translation id="7933634003144813719">Administrar carpetas compartidas</translation>
-<translation id="793474285422359265">Si haces clic en "Cancelar", es posible que se vean afectados los datos de tu navegador y que debas restablecer la configuración de fábrica.</translation>
 <translation id="793531125873261495">Se produjo un error al descargar la máquina virtual. Vuelve a intentarlo.</translation>
-<translation id="7935451262452051102">Se completó el <ph name="PERCENT" />%</translation>
 <translation id="7936195481975600746">Para compartir tu pantalla, usa el selector de pantalla del sistema</translation>
 <translation id="7937809006412909895">Se están recopilando los datos de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10760,7 +10753,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8661290697478713397">Abrir vínculo en una ventana de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Accede a <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
-<translation id="8662733268723715832">Esta acción está tardando más de lo normal. Puedes omitirla o esperar a que se complete.</translation>
 <translation id="8662795692588422978">Personas</translation>
 <translation id="8662911384982557515">Cambiar la página principal por <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome no puede establecer el fondo de pantalla.</translation>

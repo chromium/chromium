@@ -2824,7 +2824,6 @@
 <translation id="2942707801577151363">Word, Excel болон PowerPoint файлуудыг нээх, засах болон хадгална уу. Зарим онцлогт захиалга шаардлагатай байж магадгүй.</translation>
 <translation id="2943268899142471972">Ansible гарын авлага эсвэл Crostini-н нөөцлөлтийн файлыг сонгоно уу</translation>
 <translation id="2943478529590267286">Системийн гарын бүдүүвчийг өөрчлөх</translation>
-<translation id="2946054015403765210">Файлууд руу очих</translation>
 <translation id="2946119680249604491">Холболт нэмэх</translation>
 <translation id="2946190589196900944">Дэлгэцийн хязгаарууд</translation>
 <translation id="2946640296642327832">Bluetooth-г идэвхжүүлнэ үү</translation>
@@ -3017,7 +3016,6 @@
 <translation id="3084548735795614657">Суулгахаар хадгалах</translation>
 <translation id="3084771660770137092">Chrome-ын санах ой дууссанаас гадна веб хуудасны үйл ажиллагаа зарим шалтгааны улмаас зогссон байна. Үргэлжлүүлэхийн тулд дахин ачаалж эсвэл өөр хуудас руу очно уу.</translation>
 <translation id="3085412380278336437">Сайт таны камерыг ашиглах боломжтой</translation>
-<translation id="3085431803365340433">Chrome хөтчийг шинэчилж чадсангүй</translation>
 <translation id="3088052000289932193">Сайт MIDI-г ашиглаж байна</translation>
 <translation id="3088128611727407543">Аппын профайлыг бэлтгэж байна...</translation>
 <translation id="3088325635286126843">&amp; Дахин нэр өгөх...</translation>
@@ -7893,7 +7891,6 @@
 <translation id="6611972847767394631">Эндээс табуудаа олоорой</translation>
 <translation id="661266467055912436">Таны болон веб дэх хүн бүрийн аюулгүй байдлыг нэмэгдүүлдэг.</translation>
 <translation id="6613267708691765962">Хортой программыг скан хийж байна...</translation>
-<translation id="6613668613087513143">Энэ шинэчлэлтийг дуусгахад энэ төхөөрөмж дээр хангалттай зай байхгүй байна. Төхөөрөмж дээрээ <ph name="NECESSARY_SPACE" />-г цэвэрлээд, Chrome хөтчөөсөө дахин оролдоно уу.</translation>
 <translation id="6614172284067813496">Хуудсыг унших жагсаалтад нэмсэн</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
 <translation id="6619058681307408113">Шугам хэвлэгчийн Дэмон (LPD)</translation>
@@ -8016,7 +8013,6 @@
 <translation id="6702639462873609204">&amp;Засах ...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" />-г ашиглахын тулд Bluetooth болон Wi-Fi-г асаана уу</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Та дараа Chrome-д дахин оролдох боломжтой.</translation>
 <translation id="6703254819490889819">Нөөцлөлтийг сэргээх</translation>
 <translation id="6703613667804166784">Энэ файл <ph name="USER_EMAIL" />-г оруулаад таны хувийн болон сошиал сүлжээний бүртгэлүүдэд хор хөнөөл учруулах боломжтой</translation>
 <translation id="6707122714992751648">ChromeOS-н оношилгооны туршилтыг ажиллуулах</translation>
@@ -8432,7 +8428,6 @@
 <translation id="6991665348624301627">Тухайн газраа сонго</translation>
 <translation id="6992554835374084304">Зөв бичгийн алдаа шалгах сайжруулсан онцлогийг асаах</translation>
 <translation id="6993000214273684335">Табыг нэргүй бүлгээс хассан - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Chrome хөтчийг шинэчилж байна</translation>
 <translation id="6995984090981858039">ChromeOS төхөөрөмжийн мэдээлэл болон өгөгдлийг унших</translation>
 <translation id="6996245928508281884">Утасныхаа Bluetooth болон Wi-Fi-г асаана уу</translation>
 <translation id="6996438701394974959">Дэлгэц болон текстийн хэмжээг томруулах</translation>
@@ -9740,9 +9735,7 @@
 <translation id="7933486544522242079">&amp;Хадгалах болон хуваалцах</translation>
 <translation id="7933518760693751884">Хуудсыг дараа уншихаар хадгалахын тулд Хавчуурганы дүрс тэмдгийг товшино уу</translation>
 <translation id="7933634003144813719">Хуваалцсан фолдерыг удирдах</translation>
-<translation id="793474285422359265">Хэрэв та “Цуцлах”-ыг товшвол энэ нь таны интернэтээр үзсэн өгөгдөлд нөлөөлж болох бөгөөд үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай болж магадгүй.</translation>
 <translation id="793531125873261495">Виртуал машиныг татаж авахад алдаа гарлаа. Дахин оролдоно уу.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />%-ийг гүйцэтгэсэн</translation>
 <translation id="7936195481975600746">Дэлгэцээ хуваалцахын тулд системийнхээ дэлгэц сонгогчийг ашиглана уу</translation>
 <translation id="7937809006412909895">Оношилгооны өгөгдөл цуглуулж байна</translation>
 <translation id="7938881824185772026">Лаб</translation>
@@ -10767,7 +10760,6 @@
 <translation id="8661290697478713397">Холбоосыг нууцлалтай цонхонд нээх</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-д нэвтрэх</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> сүлжээнд нэгдэх</translation>
-<translation id="8662733268723715832">Энэ нь ердийнхөөс удаж байгаа бөгөөд та алгасах эсвэл үүнийг дуусах хүртэл нь хүлээх боломжтой.</translation>
 <translation id="8662795692588422978">Хүмүүс</translation>
 <translation id="8662911384982557515">Нүүр хуудсаа <ph name="HOME_PAGE" />-аар солих</translation>
 <translation id="8662978096466608964">Chrome нь дэлгэцийн зургийг тохируулж чадахгүй байна.</translation>

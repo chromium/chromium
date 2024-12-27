@@ -2814,7 +2814,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2942707801577151363">Abre, edita e garda ficheiros de Word, Excel e PowerPoint. Talvez teñas que subscribirte para poder desfrutar dalgunhas funcións.</translation>
 <translation id="2943268899142471972">Seleccionar guía de Ansible ou un ficheiro de copia de seguranza de Crostini</translation>
 <translation id="2943478529590267286">Cambiar o deseño do teclado do sistema</translation>
-<translation id="2946054015403765210">Ir aos ficheiros</translation>
 <translation id="2946119680249604491">Engadir conexión</translation>
 <translation id="2946190589196900944">Mostrar os límites</translation>
 <translation id="2946640296642327832">Activar Bluetooth</translation>
@@ -3007,7 +3006,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">É posible que finalizase o proceso da páxina web ao esgotarse a memoria de Chrome ou por algún outro motivo. Para continuar, volve cargar a páxina ou accede a outra.</translation>
 <translation id="3085412380278336437">O sitio pode usar a túa cámara</translation>
-<translation id="3085431803365340433">Non se puido actualizar o navegador Chrome</translation>
 <translation id="3088052000289932193">O sitio está utilizando MIDI</translation>
 <translation id="3088128611727407543">Preparando perfil da aplicación...</translation>
 <translation id="3088325635286126843">&amp;Cambiar o nome...</translation>
@@ -7884,7 +7882,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6611972847767394631">Atopa aquí as túas pestanas</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6613267708691765962">Analizando en busca de software malicioso...</translation>
-<translation id="6613668613087513143">Non hai espazo suficiente neste dispositivo para completar a actualización. Libera <ph name="NECESSARY_SPACE" /> de espazo e téntao de novo desde o navegador Chrome.</translation>
 <translation id="6614172284067813496">Engadiuse a páxina á lista de lectura</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8007,7 +8004,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para poder usar <ph name="FEATURE_NAME" />, activa o Bluetooth e a wifi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Podes tentalo de novo máis tarde en Chrome.</translation>
 <translation id="6703254819490889819">Restaurar copia de seguranza</translation>
 <translation id="6703613667804166784">Este ficheiro pode danar as túas contas de redes sociais e persoais, como <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Executar probas de diagnóstico de ChromeOS</translation>
@@ -8423,7 +8419,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6991665348624301627">Seleccionar un destino</translation>
 <translation id="6992554835374084304">Activar corrector ortográfico mellorado</translation>
 <translation id="6993000214273684335">A pestana quitouse do grupo sen nome (<ph name="GROUP_CONTENTS" />)</translation>
-<translation id="6993050154661569036">Actualizando navegador Chrome</translation>
 <translation id="6995984090981858039">Ler datos e información dos dispositivos con ChromeOS</translation>
 <translation id="6996245928508281884">Activa o Bluetooth e a wifi do teu teléfono</translation>
 <translation id="6996438701394974959">Aumentar o tamaño do texto e da pantalla</translation>
@@ -9732,9 +9727,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7933486544522242079">&amp;Gardar e compartir</translation>
 <translation id="7933518760693751884">Se queres gardar unha páxina para lela despois, fai clic na icona do marcador</translation>
 <translation id="7933634003144813719">Xestionar cartafoles compartidos</translation>
-<translation id="793474285422359265">Se fas clic en Cancelar, pode que os datos de navegación se vexan afectados e que teñas que restablecer a configuración de fábrica.</translation>
 <translation id="793531125873261495">Produciuse un erro ao descargar a máquina virtual. Téntao de novo.</translation>
-<translation id="7935451262452051102">Progreso: <ph name="PERCENT" /> %</translation>
 <translation id="7936195481975600746">Para compartir a pantalla, usa o selector de pantallas do sistema</translation>
 <translation id="7937809006412909895">Recompilando datos de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10760,7 +10753,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8661290697478713397">Abrir ligazón na ventá de incó&amp;gnito</translation>
 <translation id="8662474268934425487">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
-<translation id="8662733268723715832">Este proceso está demorándose máis do previsto. Podes omitilo ou agardar a que remate.</translation>
 <translation id="8662795692588422978">Persoas</translation>
 <translation id="8662911384982557515">Cambiar a páxina de inicio a: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome non pode establecer o fondo de pantalla.</translation>

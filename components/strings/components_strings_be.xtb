@@ -963,6 +963,7 @@
 <translation id="2688969097326701645">Так, працягнуць</translation>
 <translation id="2690699652723742414">Апошнія 30 дзён</translation>
 <translation id="2691924980723297736">Папярэджанне сістэмы бяспекі</translation>
+<translation id="2697248912349197812">Спытаць <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Падменю даступнае. Каб адкрыць дадатковыя варыянты, націсніце <ph name="SHORTCUT" />.</translation>
 <translation id="2701514975700770343">Рабочым бокам уніз</translation>
 <translation id="2702592986366989640">Недарагі варыянт</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">Кнопка "Закрыць вокны ў рэжыме інкогніта". Каб закрыць усе адкрытыя вокны ў рэжыме інкогніта, націсніце яе.</translation>
 <translation id="4691093235373904540">Дахавыя работы</translation>
 <translation id="4692623383562244444">Пошукавыя сістэмы</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Спытаць <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="4698692901173737941">Спартыўныя адзінаборствы</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Бакавы</translation>

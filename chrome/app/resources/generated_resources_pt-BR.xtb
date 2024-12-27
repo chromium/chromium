@@ -2828,7 +2828,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2942707801577151363">Abra, edite e salve arquivos do Word, Excel e PowerPoint. Uma assinatura pode ser necessária para usar alguns recursos.</translation>
 <translation id="2943268899142471972">Selecione um playbook Ansible ou arquivo de backup do Crostini</translation>
 <translation id="2943478529590267286">Mudar o layout do teclado do sistema</translation>
-<translation id="2946054015403765210">Ir para os arquivos</translation>
 <translation id="2946119680249604491">Adicionar conexão</translation>
 <translation id="2946190589196900944">Limites da exibição</translation>
 <translation id="2946640296642327832">Ativar Bluetooth</translation>
@@ -3021,7 +3020,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">O Google Chrome ficou sem memória ou o processo da página foi encerrado por algum outro motivo. Para continuar, atualize a página ou vá para outra página.</translation>
 <translation id="3085412380278336437">O site pode usar sua câmera</translation>
-<translation id="3085431803365340433">Não foi possível atualizar o navegador Chrome</translation>
 <translation id="3088052000289932193">O site está usando um dispositivo MIDI</translation>
 <translation id="3088128611727407543">Preparando perfil de app…</translation>
 <translation id="3088325635286126843">&amp;Renomear...</translation>
@@ -7902,7 +7900,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6611972847767394631">Veja suas guias aqui</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6613267708691765962">Procurando malware...</translation>
-<translation id="6613668613087513143">Não há espaço suficiente neste dispositivo para concluir a atualização. Libere <ph name="NECESSARY_SPACE" /> no dispositivo e tente novamente pelo navegador Chrome.</translation>
 <translation id="6614172284067813496">Página adicionada à Lista de leitura</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6619058681307408113">Daemon de impressora de linha (LPD)</translation>
@@ -8025,7 +8022,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6702639462873609204">&amp;Editar...</translation>
 <translation id="6702859741546259407">Para usar o <ph name="FEATURE_NAME" />, ative o Bluetooth e o Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Tente novamente mais tarde no Chrome.</translation>
 <translation id="6703254819490889819">Restaurar backup</translation>
 <translation id="6703613667804166784">Este arquivo pode prejudicar suas contas pessoais e de redes sociais, incluindo <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Executar testes de diagnóstico no ChromeOS</translation>
@@ -8441,7 +8437,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6991665348624301627">Selecione um destino</translation>
 <translation id="6992554835374084304">Ativar a verificação ortográfica aprimorada</translation>
 <translation id="6993000214273684335">Guia removida do grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Atualizando o navegador Chrome</translation>
 <translation id="6995984090981858039">Ler dados e informações do dispositivo ChromeOS</translation>
 <translation id="6996245928508281884">Ative o Bluetooth e o Wi-Fi do smartphone</translation>
 <translation id="6996438701394974959">Aumentar o tamanho de visualização da tela e do texto</translation>
@@ -9751,9 +9746,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7933486544522242079">Salvar e compartilhar</translation>
 <translation id="7933518760693751884">Para salvar uma página para depois, clique no ícone "Adicionar aos favoritos"</translation>
 <translation id="7933634003144813719">Gerenciar pastas compartilhadas</translation>
-<translation id="793474285422359265">Clicar em "Cancelar" pode afetar os dados do navegador. Pode ser necessário redefinir o dispositivo para a configuração original.</translation>
 <translation id="793531125873261495">Erro ao fazer o download da máquina virtual. Tente novamente.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% concluído</translation>
 <translation id="7936195481975600746">Use o seletor de telas do sistema para compartilhar uma</translation>
 <translation id="7937809006412909895">Como coletar dados de diagnóstico</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10780,7 +10773,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8661290697478713397">Abrir link na janela &amp;anônima</translation>
 <translation id="8662474268934425487">Fazer login no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Entrar na rede <ph name="TYPE" /></translation>
-<translation id="8662733268723715832">Isso está demorando mais do que o esperado. Você pode pular ou esperar a conclusão.</translation>
 <translation id="8662795692588422978">Pessoas</translation>
 <translation id="8662911384982557515">Alterar sua página inicial para: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">O Google Chrome não pode definir o plano de fundo.</translation>

@@ -2813,7 +2813,6 @@
 <translation id="2942707801577151363">Отварајте, мењајте и чувајте Word, Excel и PowerPoint фајлове. За неке функције је можда потребна претплата.</translation>
 <translation id="2943268899142471972">Изаберите Ansible водич или Crostini резервни фајл</translation>
 <translation id="2943478529590267286">Промена распореда тастатуре система</translation>
-<translation id="2946054015403765210">Иди на фајлове</translation>
 <translation id="2946119680249604491">Додај везу</translation>
 <translation id="2946190589196900944">Прикажи границе</translation>
 <translation id="2946640296642327832">Омогући Bluetooth</translation>
@@ -3006,7 +3005,6 @@
 <translation id="3084548735795614657">Отпустите за инсталацију</translation>
 <translation id="3084771660770137092">Chrome прегледачу је понестало меморије или је процес за веб-страницу прекинут из неког другог разлога. Да бисте наставили, поново учитајте страницу или идите на неку другу страницу.</translation>
 <translation id="3085412380278336437">Сајт може да користи камеру</translation>
-<translation id="3085431803365340433">Ажурирање Chrome прегледача није успело</translation>
 <translation id="3088052000289932193">Сајт користи MIDI</translation>
 <translation id="3088128611727407543">Припрема се профил апликације...</translation>
 <translation id="3088325635286126843">&amp;Преименуј...</translation>
@@ -7886,7 +7884,6 @@
 <translation id="6611972847767394631">Пронађите картице овде</translation>
 <translation id="661266467055912436">Побољшава безбедност за вас и друге на вебу.</translation>
 <translation id="6613267708691765962">Тражи се малвер...</translation>
-<translation id="6613668613087513143">Нема довољно места на овом уређају да би се ово ажурирање завршило. Ослободите <ph name="NECESSARY_SPACE" /> на уређају и пробајте поново из Chrome прегледача.</translation>
 <translation id="6614172284067813496">Страница је додата на листу за читање</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8009,7 +8006,6 @@
 <translation id="6702639462873609204">&amp;Измени...</translation>
 <translation id="6702859741546259407">Да бисте користили <ph name="FEATURE_NAME" />, укључите Bluetooth и WiFi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Можете поново да пробате касније у Chrome-у.</translation>
 <translation id="6703254819490889819">Врати резервну копију</translation>
 <translation id="6703613667804166784">Овај фајл може да нашкоди личним налозима и налозима на друштвеним мрежама, укључујући <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Покретање ChromeOS дијагностичких тестова</translation>
@@ -8425,7 +8421,6 @@
 <translation id="6991665348624301627">Изаберите одредиште</translation>
 <translation id="6992554835374084304">Укључите побољшану проверу правописа</translation>
 <translation id="6993000214273684335">Картица је уклоњена из неименоване групе – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Прегледач Chrome се ажурира</translation>
 <translation id="6995984090981858039">Читање информација о ChromeOS уређају и података са уређаја</translation>
 <translation id="6996245928508281884">Укључите Bluetooth и WiFi на телефону</translation>
 <translation id="6996438701394974959">Повећајте величину приказа и текста</translation>
@@ -9735,9 +9730,7 @@
 <translation id="7933486544522242079">Сачувај и дели</translation>
 <translation id="7933518760693751884">Да бисте сачували страницу за касније, кликните на икону Обележивач</translation>
 <translation id="7933634003144813719">Управљајте дељеним директоријумима</translation>
-<translation id="793474285422359265">Ако кликнете на Откажи, то може да утиче на податке прегледача и можда треба да обавите ресетовање на фабричка подешавања.</translation>
 <translation id="793531125873261495">Грешка при преузимању виртуелне машине. Пробајте поново.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% је завршено</translation>
 <translation id="7936195481975600746">Да бисте делили екран, користите системски бирач екрана</translation>
 <translation id="7937809006412909895">Прикупљају се дијагностички подаци</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10764,7 +10757,6 @@
 <translation id="8661290697478713397">Отвори линк у прозору за пре&amp;гледање без архивирања</translation>
 <translation id="8662474268934425487">Пријавите се на <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>
-<translation id="8662733268723715832">Ово траје дуже од очекиваног, па можете да прескочите или да сачекате док не буде готово.</translation>
 <translation id="8662795692588422978">Особе</translation>
 <translation id="8662911384982557515">Промените почетну страницу у: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не може да подеси позадину.</translation>

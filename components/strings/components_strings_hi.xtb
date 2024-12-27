@@ -963,6 +963,7 @@
 <translation id="2688969097326701645">हां, जारी रखें</translation>
 <translation id="2690699652723742414">पिछले 30 दिन</translation>
 <translation id="2691924980723297736">सुरक्षा की चेतावनी</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> से पूछें</translation>
 <translation id="2699273987028089219">सबमेन्यू उपलब्ध है. ज़्यादा विकल्पों पर जाने के लिए <ph name="SHORTCUT" /> का इस्तेमाल करें.</translation>
 <translation id="2701514975700770343">उलटा करके रखें</translation>
 <translation id="2702592986366989640">कम कीमत वाला विकल्प</translation>
@@ -2066,6 +2067,7 @@
 <translation id="469028408546145398">'गुप्त विंडो बंद करें' बटन, खुली हुई सभी गुप्त विंडो को बंद करने के लिए इसे चालू करें</translation>
 <translation id="4691093235373904540">छत ठीक करना</translation>
 <translation id="4692623383562244444">सर्च इंजन</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> से पूछें</translation>
 <translation id="4698692901173737941">कॉम्बैट स्पोर्ट्स</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">साइड</translation>

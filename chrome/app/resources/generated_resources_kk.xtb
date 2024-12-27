@@ -2812,7 +2812,6 @@
 <translation id="2942707801577151363">Word, Excel және PowerPoint файлдарын ашыңыз, өңдеңіз және сақтаңыз. Кейбір мүмкіндіктер үшін жазылым қажет болуы мүмкін.</translation>
 <translation id="2943268899142471972">Ansible Playbook немесе Crostini сақтық көшірме файлын таңдаңыз</translation>
 <translation id="2943478529590267286">Жүйенің пернетақта схемасын өзгерту</translation>
-<translation id="2946054015403765210">Файлдарға өту</translation>
 <translation id="2946119680249604491">Байланыс қосу</translation>
 <translation id="2946190589196900944">Дисплейдің шектік сызықтары</translation>
 <translation id="2946640296642327832">Bluetooth қосу</translation>
@@ -3005,7 +3004,6 @@
 <translation id="3084548735795614657">Орнату үшін сүйреп қойыңыз</translation>
 <translation id="3084771660770137092">Chrome жады толған немесе веб-бетке арналған процесс кейбір басқа себептер үшін тоқтатылған. Жалғастыру үшін қайта жүктеңіз немесе басқа бетке өтіңіз.</translation>
 <translation id="3085412380278336437">Сайт камераны пайдалана алады</translation>
-<translation id="3085431803365340433">Chrome браузерін жаңарту мүмкін болмады.</translation>
 <translation id="3088052000289932193">Сайт MIDI құрылғысын пайдаланып жатыр.</translation>
 <translation id="3088128611727407543">Қолданба профилі дайындалуда...</translation>
 <translation id="3088325635286126843">&amp;Атын өзгерту…</translation>
@@ -7875,7 +7873,6 @@
 <translation id="6611972847767394631">Қойындыларыңыз осы жерде</translation>
 <translation id="661266467055912436">Интернеттегі сіздің және басқалардың қауіпсіздігін күшейтеді.</translation>
 <translation id="6613267708691765962">Зиянды бағдарламаның бар-жоғы тексеріліп жатыр...</translation>
-<translation id="6613668613087513143">Бұл құрылғыда жаңартуды аяқтауға орын жеткіліксіз. Құрылғыдан <ph name="NECESSARY_SPACE" /> орын босатып, әрекетті Chrome браузерінен қайталап көріңіз.</translation>
 <translation id="6614172284067813496">Бет оқу тізіміне қосылды.</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7998,7 +7995,6 @@
 <translation id="6702639462873609204">&amp;Өзгерту…</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> функциясын пайдалану үшін Bluetooth бен Wi-Fi қосыңыз.</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Кейінірек Chrome браузерінде қайталап көріңіз.</translation>
 <translation id="6703254819490889819">Сақтық көшірмені қалпына келтіру</translation>
 <translation id="6703613667804166784">Бұл файл жеке және әлеуметтік желі аккаунттарына, оның ішінде <ph name="USER_EMAIL" /> аккаунтына зиян тигізуі мүмкін</translation>
 <translation id="6707122714992751648">ChromeOS диагностикалық сынақтарын жүргізу</translation>
@@ -8414,7 +8410,6 @@
 <translation id="6991665348624301627">Межелі орынды таңдау</translation>
 <translation id="6992554835374084304">Жетілдірілген емле тексеру құралын іске қосу</translation>
 <translation id="6993000214273684335">Қойынды атаусыз топтан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
-<translation id="6993050154661569036">Chrome браузері жаңартылуда</translation>
 <translation id="6995984090981858039">ChromeOS құрылғысы туралы ақпарат пен деректерді оқу</translation>
 <translation id="6996245928508281884">Телефонның Bluetooth және Wi-Fi функцияларын қосыңыз.</translation>
 <translation id="6996438701394974959">Дисплей мен мәтін өлшемін ұлғайту</translation>
@@ -9722,9 +9717,7 @@
 <translation id="7933486544522242079">&amp;Сақтау және бөлісу</translation>
 <translation id="7933518760693751884">Бетті кейінірек көруге сақтау үшін бетбелгі қойыңыз.</translation>
 <translation id="7933634003144813719">Ортақ қалталарды басқару</translation>
-<translation id="793474285422359265">"Бас тарту" түймесін бассаңыз, ол браузерді пайдалану деректеріне әсер етуі мүмкін және сізден зауыттық параметрлерге қайтаруыңыз қажет болуы мүмкін.</translation>
 <translation id="793531125873261495">Виртуалдық құрылғыны жүктеп алу кезінде қате шықты. Қайталап көріңіз.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% аяқталды.</translation>
 <translation id="7936195481975600746">Экранды бөлісу үшін жүйенің экран таңдау құралын пайдаланыңыз</translation>
 <translation id="7937809006412909895">Диагностикалық деректер жиналып жатыр</translation>
 <translation id="7938881824185772026">Зертханалар</translation>
@@ -10750,7 +10743,6 @@
 <translation id="8661290697478713397">Сілтемені Инко&amp;гнито терезесінде ашу</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына кіру</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> желісіне қосылу</translation>
-<translation id="8662733268723715832">Бұл әдеттегіден ұзақ уақыт алады. Оны өткізіп жіберуге немесе соңына дейін күтуге болады.</translation>
 <translation id="8662795692588422978">Байланыстар</translation>
 <translation id="8662911384982557515">Негізгі бетті келесіге өзгерту: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome тұсқағазды орната алмайды.</translation>

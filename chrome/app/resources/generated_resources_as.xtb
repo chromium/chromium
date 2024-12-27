@@ -2826,7 +2826,6 @@
 <translation id="2942707801577151363">Word, Excel আৰু PowerPoint ফাইলসমূহ খোলক, সম্পাদনা কৰক আৰু ছেভ কৰক। কিছুমান সুবিধাৰ বাবে এটা ছাবস্ক্ৰিপশ্বনৰ প্ৰয়োজন হ’ব পাৰে।</translation>
 <translation id="2943268899142471972">কোনো Ansible প্লে’বুক অথবা Crostiniৰ বেকআপ ফাইল বাছনি কৰক</translation>
 <translation id="2943478529590267286">ছিষ্টেমৰ কীব’ৰ্ডৰ লেইআউট সলনি কৰক</translation>
-<translation id="2946054015403765210">ফাইললৈ যাওক</translation>
 <translation id="2946119680249604491">সংযোগ যোগ কৰক</translation>
 <translation id="2946190589196900944">ডিছপ্লে’ৰ সীমা</translation>
 <translation id="2946640296642327832">ব্লুটুথ সক্ষম কৰক</translation>
@@ -3019,7 +3018,6 @@
 <translation id="3084548735795614657">ইনষ্টল কৰিবলৈ ড্ৰপ কৰক</translation>
 <translation id="3084771660770137092">হয়তো Chromeত মেম’ৰী শেষ হৈছে বা ৱেবপৃষ্ঠাটোৰ প্ৰক্ৰিয়া আন কিবা কাৰণত বন্ধ হৈছে।  অব্যাহত ৰাখিবলৈ পৃষ্ঠাটো পুনৰ ল’ড কৰক বা অন্য পৃষ্ঠালৈ যাওক।</translation>
 <translation id="3085412380278336437">ছাইটোৱে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব পাৰে</translation>
-<translation id="3085431803365340433">Chrome ব্ৰাউজাৰ আপডে’ট কৰিব পৰা নগ’ল</translation>
 <translation id="3088052000289932193">ছাইটটোৱে MIDI ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3088128611727407543">এপ্‌ প্ৰ’ফাইল সাজু কৰি থকা হৈছে...</translation>
 <translation id="3088325635286126843">&amp;নতুন নাম দিয়ক...</translation>
@@ -7897,7 +7895,6 @@
 <translation id="6611972847767394631">ইয়াত আপোনাৰ টেবসমূহ বিচাৰক</translation>
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>
 <translation id="6613267708691765962">মালৱেৰৰ বাবে স্কেন কৰি থকা হৈছে...</translation>
-<translation id="6613668613087513143">এই আপডে’টটো সম্পূৰ্ণ কৰিবলৈ এই ডিভাইচটোত পৰ্যাপ্ত খালী ঠাই নাই। আপোনাৰ ডিভাইচত <ph name="NECESSARY_SPACE" /> খালী কৰক আৰু আপোনাৰ Chrome ব্ৰাউজাৰৰ পৰা পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6614172284067813496">পৃষ্ঠাখন পঢ়াৰ সূচীত যোগ দিয়া হৈছে</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8020,7 +8017,6 @@
 <translation id="6702639462873609204">&amp;সম্পাদনা কৰক...</translation>
 <translation id="6702859741546259407"><ph name="FEATURE_NAME" /> ব্যৱহাৰ কৰিবলৈ, ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">আপুনি পাছত Chromeত পুনৰ চেষ্টা কৰিব পাৰে।</translation>
 <translation id="6703254819490889819">বেকআপ পুনঃস্থাপন কৰক</translation>
 <translation id="6703613667804166784">এই ফাইলটোৱে আপোনাৰ ব্যক্তিগত আৰু <ph name="USER_EMAIL" />কে ধৰি সামাজিক নেটৱৰ্কৰ একাউণ্টসমূহৰ ক্ষতি সাধন কৰিব পাৰে</translation>
 <translation id="6707122714992751648">ChromeOS ডায়েগন’ষ্টিক পৰীক্ষা চলোৱা</translation>
@@ -8436,7 +8432,6 @@
 <translation id="6991665348624301627">কোনো গন্তব্যস্থান বাছনি কৰক</translation>
 <translation id="6992554835374084304">উন্নত বানান পৰীক্ষক অন কৰক</translation>
 <translation id="6993000214273684335">নামবিহীন গোটৰ পৰা টেবটো আঁতৰোৱা হৈছে - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Chrome ব্ৰাউজাৰ আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="6995984090981858039">ChromeOS ডিভাইচৰ তথ্য আৰু ডেটা পঢ়া</translation>
 <translation id="6996245928508281884">আপোনাৰ ফ'নৰ ব্লুটুথ আৰু ৱাই-ফাই অন কৰক</translation>
 <translation id="6996438701394974959">ডিছপ্লে’ আৰু পাঠৰ আকাৰ বৃদ্ধি কৰক</translation>
@@ -9745,9 +9740,7 @@
 <translation id="7933486544522242079">ছেভ কৰক আৰু শ্বেয়াৰ কৰক</translation>
 <translation id="7933518760693751884">পৰৱৰ্তী সময়ৰ কাৰণে কোনো পৃষ্ঠা ছেভ কৰিবলৈ বুকমাৰ্কৰ চিহ্নটোত ক্লিক কৰক</translation>
 <translation id="7933634003144813719">শ্বেয়াৰ কৰা ফ'ল্ডাৰসমূহ পৰিচালনা কৰক</translation>
-<translation id="793474285422359265">যদি আপুনি “বাতিল কৰক”ত ক্লিক কৰে, তেন্তে ই আপোনাৰ ব্ৰাউজাৰ ডেটা প্ৰভাৱিত কৰিব পাৰে আৰু আপুনি ফেক্টৰী ৰিছেট কৰিব লগা হ’ব পাৰে।</translation>
 <translation id="793531125873261495">ভাৰ্চুৱেল মেচিন ডাউনল’ড কৰাত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% সম্পূৰ্ণ হ’ল</translation>
 <translation id="7936195481975600746">আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰিবলৈ, আপোনাৰ ছিষ্টেমৰ স্ক্ৰীন বাছনিকৰ্তা ব্যৱহাৰ কৰক</translation>
 <translation id="7937809006412909895">ডায়েগন’ষ্টিক ডেটা সংগ্ৰহ কৰি থকা হৈছে</translation>
 <translation id="7938881824185772026">লেব</translation>
@@ -10773,7 +10766,6 @@
 <translation id="8661290697478713397">লিংকটো ইনক’&amp;গনিট’ ৱিণ্ড'ত খোলক</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
 <translation id="8662671328352114214"><ph name="TYPE" /> নেটৱর্কত যোগদান কৰক</translation>
-<translation id="8662733268723715832">এইটোৱে আশা কৰাতকৈ বেছি সময় লৈছে, আপুনি এইটো বাদ দিব পাৰে অথবা এইটো সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰিব পাৰে।</translation>
 <translation id="8662795692588422978">লোকসকল</translation>
 <translation id="8662911384982557515">আপোনাৰ গৃহ পৃষ্ঠা ইয়ালৈ সলনি কৰক: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chromeএ ৱালপেপাৰ ছেট কৰিব নোৱাৰে।</translation>

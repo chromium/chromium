@@ -1540,6 +1540,17 @@ Si cette règle n'est pas définie, la traduction instantanée sera initialement
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucune règle n'est ignorée.</translation>
+<translation id="2158028663273824412">Permet de contrôler le mode du résolveur DNS-over-HTTPS. Sachez que cette règle définit uniquement le mode par défaut pour chaque requête. Ce mode peut être ignoré pour les requêtes spéciales, telles que celles visant à résoudre un nom d'hôte de serveur DNS-over-HTTPS.
+
+Le mode <ph name="SECURE_DNS_MODE_OFF" /> désactive DNS-over-HTTPS.
+
+Le mode <ph name="SECURE_DNS_MODE_AUTOMATIC" /> envoie d'abord des requêtes DNS-over-HTTPS si un serveur DNS-over-HTTPS est disponible. Il peut, en solution de secours, envoyer des requêtes à risque en cas d'erreur.
+
+Le mode <ph name="SECURE_DNS_MODE_SECURE" /> n'envoie que les requêtes DNS-over-HTTPS et ne permet pas de résoudre les erreurs.
+
+Sur <ph name="ANDROID_VERSION" /> et versions ultérieures, si DNS-over-TLS est activé, <ph name="PRODUCT_NAME" /> n'envoie pas les requêtes DNS à risque.
+
+Si cette règle n'est pas configurée, les requêtes DNS-over-HTTPS ne sont pas envoyées pour les appareils gérés. Sinon, le navigateur peut envoyer des requêtes DNS-over-HTTPS à un résolveur associé au résolveur configuré du système de l'utilisateur.</translation>
 <translation id="2158741059065130266">Si cette règle est définie sur "True", les utilisateurs de l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /> voient une corbeille et les fichiers sous "Mes fichiers" et "Téléchargements" (y compris leurs descendants créés par l'utilisateur) y sont envoyés lors de la suppression.
 
       Si cette règle est définie sur "False", les fichiers qui se trouvaient dans la corbeille sont disponibles en affichant les fichiers masqués et en trouvant le répertoire ".Corbeille" sous "Mes fichiers" ou "Téléchargements".</translation>
@@ -1645,6 +1656,11 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="2202787915587511214">Activer NTLMv2</translation>
 <translation id="2204379573346866896">Minutes écoulées durant l'heure en cours.</translation>
 <translation id="2204753382813641270">Règle pour masquer automatiquement l'étagère</translation>
+<translation id="2208092773610663977">Si cette règle est activée, les utilisateurs peuvent faire en sorte que <ph name="PRODUCT_NAME" /> contrôle si les noms d'utilisateur et les mots de passe saisis ont fait l'objet d'une fuite.
+
+Si elle est désactivée, les utilisateurs ne peuvent pas utiliser cette fonctionnalité.
+
+      Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />. Si elle n'est pas configurée, la vérification de fuite d'identifiants est autorisée, mais l'utilisateur peut la désactiver.</translation>
 <translation id="2208976000652006649">Paramètres pour l'URL de recherche utilisant POST</translation>
 <translation id="2212011154693551439">La page de l'historique Chrome organisée par groupes sera visible par défaut sur chrome://history/grouped.</translation>
 <translation id="2212207215880394506">Ne pas autoriser la retouche photo par IA générative.</translation>
@@ -6042,6 +6058,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="545817252640069915">Activer l'interception de connexion</translation>
 <translation id="5460797984317417682">Activer l'affichage de l'alerte plein écran</translation>
 <translation id="5462898272514237681">Contrôler l'accès de <ph name="PRODUCT_OS_NAME" /> aux services de localisation Google</translation>
+<translation id="5464786290880338716">Règle permettant de contrôler si la fonctionnalité IP Protection de la <ph name="PRIVACY_SANDBOX_NAME" /> doit être activée.
+
+Si la règle est désactivée, la fonctionnalité IP Protection sera désactivée et les utilisateurs ne pourront pas l'activer dans les paramètres de l'UI.
+Si la règle est activée, la fonctionnalité IP Protection sera activée et les utilisateurs ne pourront pas la désactiver dans les paramètres de l'UI.
+Si cette règle n'est pas configurée, la fonctionnalité IP Protection sera désactivée pour les utilisateurs dont le navigateur ou l'appareil est géré, et ils ne pourront pas l'activer dans les paramètres de l'UI. Les utilisateurs de navigateurs et d'appareils non gérés pourront activer ou désactiver la fonctionnalité IP Protection sur leur appareil dans les paramètres de l'UI.
+
+Remarque : le comportement de la fonctionnalité IP Protection pour les utilisateurs de la version Enterprise peut varier au fil du temps quand la règle est activée ou quand elle n'est pas configurée et que la fonctionnalité est activée dans les paramètres de l'UI.</translation>
 <translation id="5464816904705580310">Configurer les paramètres des utilisateurs gérés</translation>
 <translation id="5466596281866046569">Transmettre des informations sur les applications</translation>
 <translation id="5467175549232776406">La page de test des règles est accessible</translation>
@@ -8478,6 +8501,7 @@ La valeur de la règle est une liste de certificats X.509 encodés en base64. L
 <translation id="7177293255621000064">Si vous définissez cette règle sur "True", tous les types de supports de stockage externes (clés USB, disques durs externes, cartes SD, autres cartes mémoire, etc.) sont alors indisponibles dans l'explorateur de fichiers. Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent utiliser des supports de stockage externes sur leur appareil.
 
       Remarque : Cette règle n'a pas d'incidence sur Google Drive ni sur la mémoire de stockage interne. Les utilisateurs peuvent toujours accéder aux fichiers enregistrés dans le dossier "Téléchargements".</translation>
+<translation id="7177645313697913767">Autoriser les utilisateurs à activer ou désactiver le paramètre "IP Protection" de la <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil si leur navigateur et leur appareil ne sont pas gérés.</translation>
 <translation id="7177857088692019405">Déverrouillage rapide</translation>
 <translation id="7179157174254421614">Permet de définir le mode de détection automatique du fuseau horaire, sauf si la règle <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> désactive cette détection automatique. Notez que les utilisateurs ne peuvent pas modifier ce mode.
 

@@ -426,6 +426,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1282436639288565079">Tab group details</translation>
 <translation id="1283126956823499975">Something went wrong with setting up the device</translation>
 <translation id="1284277788676816155">Don’t allow to save data</translation>
+<translation id="1284912418686719556">Chrome is creating a strong password for you. You don't need to remember it because it's saved for you in <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1285484354230578868">Store data in your Google Drive account</translation>
 <translation id="1285625592773741684">Current data usage setting is mobile data</translation>
@@ -2827,7 +2828,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2942707801577151363">Open, edit and save Word, Excel and PowerPoint files. A subscription may be required for some features.</translation>
 <translation id="2943268899142471972">Select an Ansible playbook or Crostini backup file</translation>
 <translation id="2943478529590267286">Change the system keyboard layout</translation>
-<translation id="2946054015403765210">Go to files</translation>
 <translation id="2946119680249604491">Add connection</translation>
 <translation id="2946190589196900944">Display boundaries</translation>
 <translation id="2946640296642327832">Enable Bluetooth</translation>
@@ -3020,7 +3020,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3084548735795614657">Drop to install</translation>
 <translation id="3084771660770137092">Either Chrome ran out of memory or the process for the web page was terminated for some other reason. To continue, reload or go to another page.</translation>
 <translation id="3085412380278336437">Site can use your camera</translation>
-<translation id="3085431803365340433">Chrome Browser could not be updated</translation>
 <translation id="3088052000289932193">Site is using MIDI</translation>
 <translation id="3088128611727407543">Preparing app profile…</translation>
 <translation id="3088325635286126843">&amp;Rename...</translation>
@@ -7579,6 +7578,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="637642201764944055">Old versions of Chrome Apps won't open on Linux devices after December 2022. Contact your administrator to update to a new version or remove this app.</translation>
 <translation id="6377268785556383139">1 result for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6378392501584240055">Open in Wi-Fi networks</translation>
+<translation id="6379228010899751161">Verify that it's you to make sure that you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Accept and continue</translation>
 <translation id="6383382161803538830">Reading mode isn’t available on this page</translation>
 <translation id="638418309848716977">Supported links</translation>
@@ -7896,7 +7896,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6613267708691765962">Scanning for malware...</translation>
-<translation id="6613668613087513143">There isn't enough space on this device to complete this update. Clean up <ph name="NECESSARY_SPACE" /> on your device and try again from your Chrome Browser.</translation>
 <translation id="6614172284067813496">Page added to reading list</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8019,7 +8018,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6702639462873609204">&amp;Edit...</translation>
 <translation id="6702859741546259407">To use <ph name="FEATURE_NAME" />, turn on Bluetooth and Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">You can try again later in Chrome.</translation>
 <translation id="6703254819490889819">Restore backup</translation>
 <translation id="6703613667804166784">This file can harm your personal and social network accounts, including <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Run ChromeOS diagnostic tests</translation>
@@ -8435,7 +8433,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6991665348624301627">Select a destination</translation>
 <translation id="6992554835374084304">Turn on enhanced spell check</translation>
 <translation id="6993000214273684335">Tab removed from unnamed group – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Updating Chrome Browser</translation>
 <translation id="6995984090981858039">Read ChromeOS device information and data</translation>
 <translation id="6996245928508281884">Turn on your phone’s Bluetooth and Wi-Fi</translation>
 <translation id="6996438701394974959">Increase display and text size</translation>
@@ -9629,6 +9626,7 @@ Press an assigned switch or key to remove assignment.</translation>
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account. You can see your data, delete it and change your account settings at account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant. To save battery, you can select in your Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
+<translation id="7851196412551419054">Changing your password…</translation>
 <translation id="7851457902707056880">Sign-in has been restricted to the owner account only. Please reboot and sign in with the owner account. The machine will auto reboot in 30 seconds.</translation>
 <translation id="7851716364080026749">Always block camera and microphone access</translation>
 <translation id="7851720427268294554">IPP Parser</translation>
@@ -9744,9 +9742,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7933486544522242079">&amp;Save and share</translation>
 <translation id="7933518760693751884">To save a page for later, click the bookmark icon</translation>
 <translation id="7933634003144813719">Manage shared folders</translation>
-<translation id="793474285422359265">If you click 'Cancel', it may affect your browser data and you may need to perform a factory reset.</translation>
 <translation id="793531125873261495">Error downloading the virtual machine. Please try again.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" />% completed</translation>
 <translation id="7936195481975600746">To share your screen, use your system's screen picker</translation>
 <translation id="7937809006412909895">Collecting diagnostic data</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10773,7 +10769,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8661290697478713397">Open Link in Inco&amp;gnito Window</translation>
 <translation id="8662474268934425487">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Join <ph name="TYPE" /> network</translation>
-<translation id="8662733268723715832">This is taking longer than expected; you can skip or wait until it's done.</translation>
 <translation id="8662795692588422978">People</translation>
 <translation id="8662911384982557515">Change your home page to: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome cannot set wallpaper.</translation>
@@ -11216,6 +11211,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8962863356073277855">URL format should be https://www.example.com</translation>
 <translation id="8962918469425892674">This site is using motion or light sensors.</translation>
 <translation id="8963117664422609631">Go to site settings</translation>
+<translation id="8964927371396953727">Verify that it's you to use and save passwords in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Enter old password</translation>
 <translation id="8966809848145604011">Other profiles</translation>
 <translation id="8967427617812342790">Add to reading list</translation>

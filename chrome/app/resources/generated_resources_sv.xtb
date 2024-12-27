@@ -2828,7 +2828,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2942707801577151363">Öppna, redigera och spara Word-, Excel- och PowerPoint-filer. Prenumeration kan krävas för vissa funktioner.</translation>
 <translation id="2943268899142471972">Välj en säkerhetskopia av Ansible Playbook eller Crostini</translation>
 <translation id="2943478529590267286">Ändra systemets tangentbordslayout</translation>
-<translation id="2946054015403765210">Öppna Filer</translation>
 <translation id="2946119680249604491">Lägg till anslutning</translation>
 <translation id="2946190589196900944">Visningsgränser</translation>
 <translation id="2946640296642327832">Aktivera Bluetooth</translation>
@@ -3021,7 +3020,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3084548735795614657">Släpp för att installera</translation>
 <translation id="3084771660770137092">Antingen tog minnet slut i Chrome eller så avslutades processen för webbsidan av någon annan anledning. Om du vill fortsätta läser du in sidan på nytt eller öppnar en annan sida.</translation>
 <translation id="3085412380278336437">Webbplatsen har åtkomst till kameran</translation>
-<translation id="3085431803365340433">Det gick inte att uppdatera webbläsaren Chrome</translation>
 <translation id="3088052000289932193">MIDI används på webbplatsen</translation>
 <translation id="3088128611727407543">Förbereder appens profil …</translation>
 <translation id="3088325635286126843">&amp;Byt namn ...</translation>
@@ -7898,7 +7896,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6611972847767394631">Här finns dina flikar</translation>
 <translation id="661266467055912436">Förbättrar säkerheten för dig och alla andra på webben.</translation>
 <translation id="6613267708691765962">Söker efter skadlig kod …</translation>
-<translation id="6613668613087513143">Det gick inte att slutföra uppdateringen eftersom utrymmet inte räcker till. Frigör <ph name="NECESSARY_SPACE" /> på enheten och försök igen i webbläsaren Chrome.</translation>
 <translation id="6614172284067813496">Sidan har lagts till i läslistan</translation>
 <translation id="6615455863669487791">Visa mig</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8021,7 +8018,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6702639462873609204">&amp;Redigera ...</translation>
 <translation id="6702859741546259407">Aktivera Bluetooth och wifi om du vill använda <ph name="FEATURE_NAME" /></translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Du kan försöka igen senare i Chrome.</translation>
 <translation id="6703254819490889819">Återställ säkerhetskopia</translation>
 <translation id="6703613667804166784">Den här filen kan skada dina personliga konton och sociala nätverkskonton, bland annat <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Köra diagnostiska test av ChromeOS</translation>
@@ -8437,7 +8433,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6991665348624301627">Välj en plats</translation>
 <translation id="6992554835374084304">Aktivera förbättrad stavningskontroll</translation>
 <translation id="6993000214273684335">Fliken togs bort från namnlös grupp – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Webbläsaren Chrome uppdateras</translation>
 <translation id="6995984090981858039">Läsa ChromeOS-enhetsinformation och -data</translation>
 <translation id="6996245928508281884">Aktivera Bluetooth och wifi på telefonen</translation>
 <translation id="6996438701394974959">Öka visnings- och textstorleken</translation>
@@ -9747,9 +9742,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7933486544522242079">&amp;Spara och dela</translation>
 <translation id="7933518760693751884">Klicka på bokmärkesikonen om du vill spara en sida till senare</translation>
 <translation id="7933634003144813719">Hantera delade mappar</translation>
-<translation id="793474285422359265">Om du klickar på Avbryt kan det påverka webbläsardata och du kan behöva återställa standardinställningarna.</translation>
 <translation id="793531125873261495">Det gick inte att ladda ned den virtuella maskinen. Försök igen.</translation>
-<translation id="7935451262452051102"><ph name="PERCENT" /> % har slutförts</translation>
 <translation id="7936195481975600746">Använd systemets skärmväljare för att dela skärmen</translation>
 <translation id="7937809006412909895">Samla in diagnostikdata</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10776,7 +10769,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8661290697478713397">Öppna länk i inko&amp;gnitofönster</translation>
 <translation id="8662474268934425487">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Anslut till <ph name="TYPE" />-nätverket</translation>
-<translation id="8662733268723715832">Det här tar längre tid än väntat. Du kan vänta tills det är klart eller hoppa över detta.</translation>
 <translation id="8662795692588422978">Personer</translation>
 <translation id="8662911384982557515">Ändra startsida till: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Bakgrundsbilden kan inte anges i Chrome.</translation>

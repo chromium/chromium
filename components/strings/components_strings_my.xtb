@@ -967,6 +967,7 @@
 <translation id="2688969097326701645">ရှေ့ဆက်ပါ</translation>
 <translation id="2690699652723742414">ပြီးခဲ့သော ရက် ၃၀</translation>
 <translation id="2691924980723297736">ဘေးကင်းလုံခြုံမှုဆိုင်ရာ သတိပေးချက်</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
 <translation id="2699273987028089219">မီနူးခွဲရနိုင်သည်။ ထပ်ဆောင်းရွေးစရာများသို့ သွားရန် <ph name="SHORTCUT" /> သုံးပါ။</translation>
 <translation id="2701514975700770343">မှောက်ထားရန်</translation>
 <translation id="2702592986366989640">ဈေးနည်းသော ရွေးစရာ</translation>
@@ -2067,6 +2068,7 @@
 <translation id="469028408546145398">လက်ရှိဖွင့်ထားသည့် ရုပ်ဖျက် ဝင်ဒိုးအားလုံးပိတ်ရန်အတွက် ‘ရုပ်ဖျက် ဝင်ဒိုးများပိတ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="4691093235373904540">အမိုး ပြုပြင်ခြင်း</translation>
 <translation id="4692623383562244444">ရှာဖွေမှု အင်ဂျင်</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ကို မေးပါ</translation>
 <translation id="4698692901173737941">တိုက်ခိုက်ရေးအားကစား</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">ဘေး</translation>

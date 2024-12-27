@@ -2815,7 +2815,6 @@
 <translation id="2942707801577151363">Word, Excel და PowerPoint ფაილების გახსნა, რედაქტირება და შენახვა. გარკვეული ფუნქციებისთვის, შესაძლოა, საჭირო იყოს გამოწერა.</translation>
 <translation id="2943268899142471972">აირჩიეთ Ansible Playbook-ის ან Crostini-ს სარეზერვო ფაილი</translation>
 <translation id="2943478529590267286">სისტემის კლავიატურის განლაგების შეცვლა</translation>
-<translation id="2946054015403765210">ფაილებზე გადასვლა</translation>
 <translation id="2946119680249604491">კავშირის დამატება</translation>
 <translation id="2946190589196900944">ჩვენების საზღვრები</translation>
 <translation id="2946640296642327832">Bluetooth-ის ჩართვა</translation>
@@ -3008,7 +3007,6 @@
 <translation id="3084548735795614657">დააგდეთ ინსტალაციისთვის</translation>
 <translation id="3084771660770137092">შესაძლოა Chrome-ისთვის არასაკმარისი მეხსიერებაა ან ვებგვერდისთვის გაშვებული პროცესი შეწყდა სხვა მიზეზის გამო. გასაგრძელებლად, ხელახლა ჩატვირთეთ ან გადადით სხვა გვერდზე.</translation>
 <translation id="3085412380278336437">საიტს შეუძლია თქვენი კამერის გამოყენება</translation>
-<translation id="3085431803365340433">Chrome ბრაუზერი ვერ განახლდა</translation>
 <translation id="3088052000289932193">საიტი იყენებს MIDI-ს</translation>
 <translation id="3088128611727407543">მიმდინარეობს აპის პროფილის მომზადება...</translation>
 <translation id="3088325635286126843">&amp;და სახელის შეცვლა...</translation>
@@ -7885,7 +7883,6 @@
 <translation id="6611972847767394631">იპოვეთ თქვენი ჩანართი აქ</translation>
 <translation id="661266467055912436">უსაფრთხოების გაუმჯობესება თქვენთვის და ვების ყველა მომხმარებლისთვის.</translation>
 <translation id="6613267708691765962">მიმდინარეობს მავნე პროგრამების სკანირება...</translation>
-<translation id="6613668613087513143">მოწყობილობაზე არ არის საკმარისი სივრცე ამ განახლების დასასრულებლად. გაათავისუფლეთ <ph name="NECESSARY_SPACE" /> თქვენს მოწყობილობაზე და ცადეთ ხელახლა თქვენი Chrome ბრაუზერიდან.</translation>
 <translation id="6614172284067813496">გვერდი დაემატა საკითხავ სიას</translation>
 <translation id="6615455863669487791">მაჩვენე</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8008,7 +8005,6 @@
 <translation id="6702639462873609204">&amp;რედაქტირება...</translation>
 <translation id="6702859741546259407">„<ph name="FEATURE_NAME" />“ რომ გამოიყენოთ, ჩართეთ Bluetooth და Wi-Fi</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">შეგიძლიათ მოგვიანებით ხელახლა ცადოთ Chrome-იდან.</translation>
 <translation id="6703254819490889819">სარეზერვო ასლით აღდგენა</translation>
 <translation id="6703613667804166784">ამ ფაილს შეუძლია თქვენი პერსონალური და სოციალური ქსელების ანგარიშების, მათ შორის <ph name="USER_EMAIL" />-ის, დაზიანება</translation>
 <translation id="6707122714992751648">ChromeOS-ის დიაგნოსტიკური ტესტების გაშვება</translation>
@@ -8424,7 +8420,6 @@
 <translation id="6991665348624301627">აირჩიეთ დანიშნულება</translation>
 <translation id="6992554835374084304">მართლწერის გაძლიერებული შემოწმების ჩართვა</translation>
 <translation id="6993000214273684335">ჩანართი ამოიშალა უსახელო ჯგუფიდან — <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">მიმდინარეობს Chrome ბრაუზერის განახლება</translation>
 <translation id="6995984090981858039">ChromeOS მოწყობილობის ინფორმაციისა და მონაცემების წაკითხვა</translation>
 <translation id="6996245928508281884">ჩართეთ თქვენი ტელეფონის Bluetooth და Wi-Fi</translation>
 <translation id="6996438701394974959">ჩვენებისა და ტექსტის ზომის გაზრდა</translation>
@@ -9732,9 +9727,7 @@
 <translation id="7933486544522242079">შენა&amp;ხვა და გაზიარება</translation>
 <translation id="7933518760693751884">გვერდი მოგვიანებით წასაკითხად შესანახავად დააწკაპუნეთ სანიშნეს ხატულაზე</translation>
 <translation id="7933634003144813719">გაზიარებული საქაღალდეების მართვა</translation>
-<translation id="793474285422359265">„გაუქმებაზე“ დაწკაპუნება, შესაძლოა, აისახოს თქვენს დათვალიერების მონაცემებზე და ქარხნული პარამეტრების დაბრუნება დაგჭირდეთ.</translation>
 <translation id="793531125873261495">ვირტუალური მოწყობილობის ჩამოტვირთვა ვერ ხერხდება. გთხოვთ, ცადოთ ხელახლა.</translation>
-<translation id="7935451262452051102">შესრულდა <ph name="PERCENT" />%</translation>
 <translation id="7936195481975600746">ეკრანის გაზიარებისთვის გამოიყენეთ სისტემის ეკრანის ამომრჩევი</translation>
 <translation id="7937809006412909895">მიმდინარეობს დიაგნოსტიკური მონაცემების შეგროვება</translation>
 <translation id="7938881824185772026">Labs</translation>
@@ -10760,7 +10753,6 @@
 <translation id="8661290697478713397">ბმულის გახსნა ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />-ში შესვლა</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
-<translation id="8662733268723715832">ამ პროცესს მოსალოდნელზე მეტი დრო სჭირდება. სურვილისამებრ, შეგიძლიათ გამოტოვოთ ან დაელოდოთ მის დასრულებას.</translation>
 <translation id="8662795692588422978">ხალხი</translation>
 <translation id="8662911384982557515">შეცვალეთ თქვენი მთავარი გვერდი: <ph name="HOME_PAGE" />-ით</translation>
 <translation id="8662978096466608964">Chrome ვერ აყენებს ფონს.</translation>

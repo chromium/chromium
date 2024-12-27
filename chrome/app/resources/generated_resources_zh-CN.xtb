@@ -2807,7 +2807,6 @@
 <translation id="2942707801577151363">打开、编辑和保存 Word、Excel 和 PowerPoint 文件。部分功能可能需要订阅才能使用。</translation>
 <translation id="2943268899142471972">选择一个 Ansible Playbook 或 Crostini 备份文件</translation>
 <translation id="2943478529590267286">更改系统键盘布局</translation>
-<translation id="2946054015403765210">转到文件</translation>
 <translation id="2946119680249604491">添加连接</translation>
 <translation id="2946190589196900944">显示边界</translation>
 <translation id="2946640296642327832">启用蓝牙</translation>
@@ -3000,7 +2999,6 @@
 <translation id="3084548735795614657">拖放以安装</translation>
 <translation id="3084771660770137092">Chrome 浏览器内存不足或因其他原因网页进程终止。要继续，请重新加载或转到其他网页。</translation>
 <translation id="3085412380278336437">该网站可能会使用您的摄像头</translation>
-<translation id="3085431803365340433">Chrome 浏览器无法更新</translation>
 <translation id="3088052000289932193">此网站正在使用 MIDI</translation>
 <translation id="3088128611727407543">正在准备应用配置文件…</translation>
 <translation id="3088325635286126843">重命名(&amp;R)...</translation>
@@ -7869,7 +7867,6 @@
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
-<translation id="6613668613087513143">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后在 Chrome 浏览器中重试。</translation>
 <translation id="6614172284067813496">页面已添加到阅读清单</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -7992,7 +7989,6 @@
 <translation id="6702639462873609204">修改(&amp;E)...</translation>
 <translation id="6702859741546259407">若要使用“<ph name="FEATURE_NAME" />”功能，请开启蓝牙和 Wi-Fi</translation>
 <translation id="6703109186846420472">、</translation>
-<translation id="6703212423117969852">您可以稍后在 Chrome 中重试。</translation>
 <translation id="6703254819490889819">恢复备份</translation>
 <translation id="6703613667804166784">此文件可能会危害您的个人和社交网络账号，包括 <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">运行 ChromeOS 诊断测试</translation>
@@ -8408,7 +8404,6 @@
 <translation id="6991665348624301627">选择目标打印机</translation>
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">正在更新 Chrome 浏览器</translation>
 <translation id="6995984090981858039">读取 ChromeOS 设备的相关信息和数据</translation>
 <translation id="6996245928508281884">开启您手机的蓝牙和 WLAN</translation>
 <translation id="6996438701394974959">放大显示大小和文字大小</translation>
@@ -9718,9 +9713,7 @@
 <translation id="7933486544522242079">保存并分享(&amp;S)</translation>
 <translation id="7933518760693751884">如需保存某个页面以供日后阅读，请点击“书签”图标</translation>
 <translation id="7933634003144813719">管理共享的文件夹</translation>
-<translation id="793474285422359265">如果点击“取消”，可能会影响浏览器数据，而且可能需要恢复出厂设置。</translation>
 <translation id="793531125873261495">下载虚拟机时出错。请重试。</translation>
-<translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7936195481975600746">若要共享屏幕，请使用系统的屏幕选择器</translation>
 <translation id="7937809006412909895">收集诊断数据</translation>
 <translation id="7938881824185772026">Google 实验室</translation>
@@ -10747,7 +10740,6 @@
 <translation id="8661290697478713397">在隐身窗口中打开链接(&amp;G)</translation>
 <translation id="8662474268934425487">登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
-<translation id="8662733268723715832">这项操作的用时超出了预期，您可以选择跳过或继续等待。</translation>
 <translation id="8662795692588422978">用户</translation>
 <translation id="8662911384982557515">将您的主页更改为：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 无法设置壁纸。</translation>

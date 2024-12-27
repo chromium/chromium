@@ -962,6 +962,7 @@
 <translation id="2688969097326701645">ஆம், தொடர்க</translation>
 <translation id="2690699652723742414">கடந்த 30 நாட்கள்</translation>
 <translation id="2691924980723297736">பாதுகாப்பு எச்சரிக்கை</translation>
+<translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> ஐக் கேளுங்கள்</translation>
 <translation id="2699273987028089219">துணைமெனு கிடைக்கிறது, கூடுதல் விருப்பங்களுக்குச் செல்ல <ph name="SHORTCUT" /> பயன்படுத்தவும்.</translation>
 <translation id="2701514975700770343">கீழ் நோக்கியது</translation>
 <translation id="2702592986366989640">குறைவான விலை</translation>
@@ -2062,6 +2063,7 @@
 <translation id="469028408546145398">மறைநிலைச் சாளரங்களை மூடுவதற்கான பட்டன். தற்போது திறந்துள்ள மறைநிலைச் சாளரங்களை மூட இதை இயக்குங்கள்</translation>
 <translation id="4691093235373904540">மேற்கூரை பழுதுபார்த்தல்</translation>
 <translation id="4692623383562244444">தேடல் இன்ஜின்கள்</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ஐக் கேளுங்கள்</translation>
 <translation id="4698692901173737941">போர் விளையாட்டுகள்</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">சைடு</translation>

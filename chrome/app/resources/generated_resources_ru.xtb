@@ -2817,7 +2817,6 @@
 <translation id="2942707801577151363">Вы сможете открывать, редактировать и сохранять файлы Word, Excel и PowerPoint. Для некоторых функций может требоваться подписка.</translation>
 <translation id="2943268899142471972">Выберите сценарий Ansible или файл резервной копии Crostini</translation>
 <translation id="2943478529590267286">Изменение системной раскладки клавиатуры</translation>
-<translation id="2946054015403765210">Открыть файлы</translation>
 <translation id="2946119680249604491">Добавить подключение</translation>
 <translation id="2946190589196900944">Границы экрана</translation>
 <translation id="2946640296642327832">Включить Bluetooth</translation>
@@ -3010,7 +3009,6 @@
 <translation id="3084548735795614657">Чтобы установить расширение, перетащите его</translation>
 <translation id="3084771660770137092">Выполнение процесса этой веб-страницы было прекращено. Это может быть вызвано тем, что Chrome не хватает памяти, или иными причинами. Чтобы продолжить, обновите страницу или перейдите на другой URL.</translation>
 <translation id="3085412380278336437">Сайт может использовать камеру</translation>
-<translation id="3085431803365340433">Не удалось обновить браузер Chrome</translation>
 <translation id="3088052000289932193">Сайт использует MIDI-устройство</translation>
 <translation id="3088128611727407543">Подготовка профиля…</translation>
 <translation id="3088325635286126843">&amp;Переименовать</translation>
@@ -7257,7 +7255,7 @@
 <translation id="6147253937684562370">Войдите в аккаунт, используя основной адрес электронной почты: <ph name="EMAIL" />.</translation>
 <translation id="6148576794665275391">Открыть</translation>
 <translation id="614890671148262506">Всегда разрешать уведомления от этого сайта</translation>
-<translation id="6149015141270619212">Не удается подключиться к Интернету</translation>
+<translation id="6149015141270619212">Не удается подключиться к интернету</translation>
 <translation id="6149061208933997199">Использовать пароль</translation>
 <translation id="6149791593592044995">Использовать современное обозначение тонов</translation>
 <translation id="6150116777338468525">Качество звука</translation>
@@ -7892,7 +7890,6 @@
 <translation id="6611972847767394631">Здесь находятся ваши вкладки</translation>
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6613267708691765962">Поиск вредоносного ПО…</translation>
-<translation id="6613668613087513143">На устройстве недостаточно места для установки обновления. Освободите <ph name="NECESSARY_SPACE" /> и повторите попытку в браузере Chrome.</translation>
 <translation id="6614172284067813496">Страница добавлена в список для чтения.</translation>
 <translation id="6615455863669487791">Показать</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
@@ -8015,7 +8012,6 @@
 <translation id="6702639462873609204">&amp;Изменить</translation>
 <translation id="6702859741546259407">Чтобы использовать функцию "<ph name="FEATURE_NAME" />", включите Bluetooth и Wi-Fi.</translation>
 <translation id="6703109186846420472">,</translation>
-<translation id="6703212423117969852">Повторите попытку позже в браузере Chrome.</translation>
 <translation id="6703254819490889819">Восстановить данные из резервной копии</translation>
 <translation id="6703613667804166784">Этот файл может нанести вред вашему личному аккаунту или аккаунтам в социальных сетях, в том числе <ph name="USER_EMAIL" />.</translation>
 <translation id="6707122714992751648">Запуск диагностики ChromeOS</translation>
@@ -8431,7 +8427,6 @@
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Обновление браузера Chrome</translation>
 <translation id="6995984090981858039">Чтение сведений об устройстве с ChromeOS и данных на нем</translation>
 <translation id="6996245928508281884">Включите Bluetooth и Wi-Fi на телефоне.</translation>
 <translation id="6996438701394974959">Увеличить размер изображения и текста</translation>
@@ -9740,9 +9735,7 @@
 <translation id="7933486544522242079">&amp;Сохранить и поделиться</translation>
 <translation id="7933518760693751884">Чтобы сохранить страницу, нажмите на значок закладки.</translation>
 <translation id="7933634003144813719">Настроить общие папки</translation>
-<translation id="793474285422359265">Если вы нажмете "Отмена", возможно, это повлияет на ваши данные о работе в браузере и вам потребуется сбросить настройки.</translation>
 <translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
-<translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7936195481975600746">Для демонстрации экрана воспользуйтесь системной программой выбора экрана.</translation>
 <translation id="7937809006412909895">Сбор данных диагностики…</translation>
 <translation id="7938881824185772026">Лаборатория Google</translation>
@@ -10769,7 +10762,6 @@
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
 <translation id="8662474268934425487">Вход в <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662671328352114214">Присоединиться к сети <ph name="TYPE" /></translation>
-<translation id="8662733268723715832">Операция выполняется дольше, чем обычно. Вы можете подождать или пропустить этот этап.</translation>
 <translation id="8662795692588422978">Пользователи</translation>
 <translation id="8662911384982557515">Смена главной страницы на <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не может установить выбранное изображение в качестве обоев рабочего стола.</translation>
