@@ -273,6 +273,39 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
+     * Updates that account that is already present. Uses `AccountInfo.getId()` and `CoreAccountId`
+     * equality to search for the account to update. Throws if the account can't be found.
+     */
+    public void updateAccount(AccountInfo accountInfo) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    synchronized (mAccountHolders) {
+                        @Nullable
+                        AccountHolder accountHolder =
+                                mAccountHolders.stream()
+                                        .filter(
+                                                (ah) ->
+                                                        ah.getAccountInfo()
+                                                                .getId()
+                                                                .equals(accountInfo.getId()))
+                                        .findFirst()
+                                        .orElse(null);
+                        if (accountHolder == null) {
+                            throw new IllegalArgumentException(
+                                    "Account " + accountInfo.getEmail() + " can't be found!");
+                        }
+                        mAccountHolders.remove(accountHolder);
+                        mAccountHolders.add(new AccountHolder(accountInfo));
+                    }
+                    assert (mBlockedGetCoreAccountInfosPromise == null)
+                            == (mBlockedGetAccountsPromise == null);
+                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                        fireOnAccountsChangedNotification();
+                    }
+                });
+    }
+
+    /**
      * Removes an account from the fake AccountManagerFacade.
      *
      * <p>TODO(crbug.com/40274844): Migrate to the version that uses CoreAccountId below.

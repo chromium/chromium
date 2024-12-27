@@ -310,10 +310,7 @@ public class SigninManagerIntegrationTest {
         AccountInfo renamedAccount =
                 new AccountInfo.Builder("renamed@gmail.com", TestAccounts.ACCOUNT1.getGaiaId())
                         .build();
-        try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
-            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
-            mSigninTestRule.addAccount(renamedAccount);
-        }
+        mSigninTestRule.updateAccount(renamedAccount);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
