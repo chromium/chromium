@@ -58,6 +58,7 @@ constexpr char kOpTypeReciprocal[] = "Reciprocal";
 constexpr char kOpTypeCast[] = "Cast";
 
 constexpr char kOpTypeClamp[] = "Clip";
+constexpr char kOpTypeConv2d[] = "Conv";
 // constexpr char kOpTypeGemm[] = "Gemm";
 
 // Pool2d
@@ -66,6 +67,7 @@ constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
 constexpr char kOpTypeSoftmax[] = "Softmax";
+constexpr char kOpTypeTranspose[] = "Transpose";
 
 // constexpr char kBuildGraphError[] = "Failed to build graph.";
 
@@ -286,9 +288,6 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
       initializer.get_pptr()));
   CHECK_STATUS(GetOrtGraphApi()->AddInitializer(graph_.get_ptr(), name.c_str(),
                                                 initializer.get_pptr()));
-
-  CHECK(result_->operand_infos.try_emplace(constant_id, std::move(operand_info))
-            .second);
 }
 
 template <typename T>
@@ -530,6 +529,67 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
+void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
+  const std::string node_name = GetNodeName(conv2d.label);
+  const std::string input_name = GetOperandName(conv2d.input_operand_id);
+  const std::string filter_name = GetOperandName(conv2d.filter_operand_id);
+  const std::string output_name = GetOperandName(conv2d.output_operand_id);
+  std::vector<const char*> input_names;
+  if (conv2d.bias_operand_id) {
+    const std::string bias_name =
+        GetOperandName(conv2d.bias_operand_id.value());
+    input_names = {input_name.c_str(), filter_name.c_str(), bias_name.c_str()};
+  } else {
+    input_names = {input_name.c_str(), filter_name.c_str()};
+  }
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_dilations;
+  std::array<int64_t, 2> dilations = {
+      base::checked_cast<int64_t>(conv2d.dilations->height),
+      base::checked_cast<int64_t>(conv2d.dilations->width)};
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"dilations", dilations.data(), dilations.size(),
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_dilations.get_pptr()));
+
+  ScopedOrtOpAttr attr_group;
+  int64_t group = base::checked_cast<int64_t>(conv2d.groups);
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"group", &group, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_group.get_pptr()));
+
+  ScopedOrtOpAttr attr_pads;
+  std::array<int64_t, 4> pads = {
+      base::checked_cast<int64_t>(conv2d.padding->beginning->height),
+      base::checked_cast<int64_t>(conv2d.padding->beginning->width),
+      base::checked_cast<int64_t>(conv2d.padding->ending->height),
+      base::checked_cast<int64_t>(conv2d.padding->ending->width)};
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"pads", pads.data(), pads.size(),
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_pads.get_pptr()));
+
+  ScopedOrtOpAttr attr_strides;
+  std::array<int64_t, 2> strides = {
+      base::checked_cast<int64_t>(conv2d.strides->height),
+      base::checked_cast<int64_t>(conv2d.strides->width)};
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"strides", strides.data(), strides.size(),
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_strides.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 4> attributes = {
+      attr_dilations.get_pptr(),
+      attr_group.get_pptr(),
+      attr_pads.get_pptr(),
+      attr_strides.get_pptr(),
+  };
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeConv2d, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
 void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {}
 
 void GraphBuilderOrt::AddLogicalNotOperation(
@@ -592,6 +652,30 @@ void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
+void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
+  const std::string node_name = GetNodeName(transpose.label);
+  const std::string input_name = GetOperandName(transpose.input_operand_id);
+  const std::string output_name = GetOperandName(transpose.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_perm;
+  std::vector<int64_t> permutation(transpose.permutation.begin(),
+                                   transpose.permutation.end());
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"perm", permutation.data(), permutation.size(),
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_perm.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 1> attributes = {attr_perm.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeTranspose, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   ScopedOrtModel& model = result_->model;
@@ -630,6 +714,10 @@ GraphBuilderOrt::BuildModel() {
         AddElementWiseUnaryOperation(*operation->get_element_wise_unary());
         break;
       }
+      case mojom::Operation::Tag::kConv2d: {
+        AddConv2dOperation(*operation->get_conv2d());
+        break;
+      }
       case mojom::Operation::Tag::kGemm: {
         AddGemmOperation(*operation->get_gemm());
         break;
@@ -646,10 +734,13 @@ GraphBuilderOrt::BuildModel() {
         AddSoftmaxOperation(*operation->get_softmax());
         break;
       }
+      case mojom::Operation::Tag::kTranspose: {
+        AddTransposeOperation(*operation->get_transpose());
+        break;
+      }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kConcat:
-      case mojom::Operation::Tag::kConv2d:
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kElu:
@@ -685,7 +776,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kSplit:
       case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTile:
-      case mojom::Operation::Tag::kTranspose:
       case mojom::Operation::Tag::kTriangular:
       case mojom::Operation::Tag::kWhere:
         return NewNotSupportedError("op is not supported.");

@@ -136,10 +136,12 @@ class GraphBuilderOrt {
       const mojom::ElementWiseUnary& element_wise_unary);
   void AddCastOperation(const mojom::ElementWiseUnary& cast);
   void AddClampOperation(const mojom::Clamp& clamp);
+  void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
+  void AddTransposeOperation(const mojom::Transpose& transpose);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 

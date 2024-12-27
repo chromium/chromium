@@ -60,7 +60,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*cast_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*clamp_input=*/DataTypeConstraint::kFloat16To32,
        /*concat_inputs=*/{},
-       /*conv2d_input=*/{},
+       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
        /*conv_transpose2d_input=*/{},
        /*cumulative_sum_input=*/{},
        /*dequantize_linear_input=*/{},
@@ -150,7 +150,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*split_input=*/{},
        /*tanh_input=*/{},
        /*tile_input=*/{},
-       /*transpose_input=*/{},
+       /*transpose_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*triangular_input=*/{},
        /*where_condition=*/{},
        /*where_value=*/{}});

@@ -100,8 +100,10 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   const OrtApi* ort_api = GetOrtApi();
   CHECK_STATUS(ort_api->CreateSessionOptions(&session_options));
 
+  // TODO: Investigate how to apply layout optimizations (ORT_ENABLE_ALL):
+  // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
-      session_options, GraphOptimizationLevel::ORT_ENABLE_ALL));
+      session_options, GraphOptimizationLevel::ORT_ENABLE_EXTENDED));
 
   if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
       context_options->device == mojom::CreateContextOptions::Device::kNpu) {
