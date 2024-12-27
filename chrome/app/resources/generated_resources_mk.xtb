@@ -8628,7 +8628,7 @@
 <translation id="7199452998289813782">Паузирај со емитување на <ph name="DEVICE_NAME" /></translation>
 <translation id="720110658997053098">Трајно задржи го уредов во режим на киоск</translation>
 <translation id="7201118060536064622">Ставката „<ph name="DELETED_ITEM_NAME" />“ е избришана</translation>
-<translation id="7201420661433230412">Прикажи ги датотеките</translation>
+<translation id="7201420661433230412">Прегледувај ги датотеките</translation>
 <translation id="7201432510117121839">Емитувањето на аудиото од компјутерот не е поддржано на уредов</translation>
 <translation id="7201535955609308429">Почекајте да заврши потврдувањето во тек</translation>
 <translation id="7202337678781136582">Скенирајте го QR-кодот со вашиот телефон со Android</translation>
@@ -9227,7 +9227,7 @@
 <translation id="764178579712141045">Контактот <ph name="USER_EMAIL" /> е додаден</translation>
 <translation id="7642778300616172920">Скриј ги чувствителните содржини</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oтворен прозорец}one{# отворен прозорец}other{# отворени прозорци}}</translation>
-<translation id="7643932971554933646">Дали да му се дозволи на сајтот да ги прикажува датотеките?</translation>
+<translation id="7643932971554933646">Да му се дозволи на сајтот да ги прегледува датотеките?</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
 <translation id="7645681574855902035">Се откажува бекапот на Linux</translation>
 <translation id="7646499124171960488">Ве предупредува за небезбедни јавни сајтови</translation>
