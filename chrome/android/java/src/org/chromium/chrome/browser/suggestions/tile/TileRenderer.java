@@ -24,6 +24,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -241,7 +242,11 @@ public class TileRenderer {
         }
 
         tileView.setOnClickListener(delegate);
-        tileView.setOnCreateContextMenuListener(delegate);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)) {
+            tileView.setOnLongClickListener(delegate);
+        } else {
+            tileView.setOnCreateContextMenuListener(delegate);
+        }
 
         return tileView;
     }

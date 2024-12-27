@@ -213,6 +213,33 @@ public class ViewRectProviderTest {
         assertRectMatch(9, 18, 103, 204);
     }
 
+    @Test
+    public void testUseCenterPoint() {
+        mViewRectProvider.setUseCenter(true);
+
+        int expectedCounts = 0;
+        mView.layout(10, 20, 100, 200);
+        mView.getViewTreeObserver().dispatchOnPreDraw();
+        Assert.assertEquals(
+                "View changing its position on screen should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
+        // The rect represents the center of the rect.
+        assertRectMatch(55, 110, 55, 110);
+
+        // Use center works with margin.
+        mViewRectProvider.setMarginPx(1, 2, 3, 4);
+        mView.getViewTreeObserver().dispatchOnPreDraw();
+
+        Assert.assertEquals(
+                "View changing its position on screen should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
+        // New left: 9, new right: 103 => centerX = 56
+        // New top: 18, new bottom: 204 => centerY = 111
+        assertRectMatch(56, 111, 56, 111);
+    }
+
     private void assertRectMatch(int left, int top, int right, int bottom) {
         final Rect expectedRect = new Rect(left, top, right, bottom);
         Assert.assertEquals("Rect does not match.", expectedRect, mViewRectProvider.getRect());

@@ -329,6 +329,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
+    @DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();

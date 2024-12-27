@@ -548,6 +548,7 @@ public abstract class ChromeFeatureList {
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
+    public static final String TILE_CONTEXT_MENU_REFACTOR = "TileContextMenuRefactor";
     public static final String TINKER_TANK_BOTTOM_SHEET = "TinkerTankBottomSheet";
     public static final String TOOLBAR_PHONE_CLEANUP = "ToolbarPhoneCleanup";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
