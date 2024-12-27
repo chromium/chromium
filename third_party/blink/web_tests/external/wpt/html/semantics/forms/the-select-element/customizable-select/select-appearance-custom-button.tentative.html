@@ -20,8 +20,10 @@ select, select::picker(select) {
 
 <script>
 (async () => {
+  await new Promise(requestAnimationFrame);
   await test_driver.bless();
   document.querySelector('select').showPicker();
+  await new Promise(requestAnimationFrame);
   document.documentElement.classList.remove('reftest-wait');
 })();
 </script>
