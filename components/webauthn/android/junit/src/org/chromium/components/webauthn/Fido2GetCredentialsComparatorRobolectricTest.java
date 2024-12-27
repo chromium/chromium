@@ -18,21 +18,21 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class Fido2GetCredentialsComparatorRobolectricTest {
-    private static final String HISTOGRAM_BASE = "WebAuthentication.Android.Fido2VsPasskeyCache.";
+    private static final String HISTOGRAM_BASE = "WebAuthentication.Android.Fido2VsPasskeyCache";
     private static final String PASSKEY_CACHE_COUNT_HISTOGRAM =
-            HISTOGRAM_BASE + "PasskeyCacheCredentialCountWhenDifferent";
+            HISTOGRAM_BASE + ".PasskeyCacheCredentialCountWhenDifferent";
     private static final String PASSKEY_CACHE_FASTER_HISTOGRAM =
-            HISTOGRAM_BASE + "PasskeyCacheFasterMs";
+            HISTOGRAM_BASE + ".PasskeyCacheFasterMs";
     private static final String FIDO2_COUNT_HISTOGRAM =
-            HISTOGRAM_BASE + "Fido2CredentialCountWhenDifferent";
-    private static final String FIDO2_FASTER_HISTOGRAM = HISTOGRAM_BASE + "Fido2FasterMs";
-    private static final String SUCCESS_HISTOGRAM = HISTOGRAM_BASE + "SuccessState";
+            HISTOGRAM_BASE + ".Fido2CredentialCountWhenDifferent";
+    private static final String FIDO2_FASTER_HISTOGRAM = HISTOGRAM_BASE + ".Fido2FasterMs";
+    private static final String SUCCESS_HISTOGRAM = HISTOGRAM_BASE + ".SuccessState";
     private static final String COUNT_DIFFERENCE_HISTOGRAM =
-            HISTOGRAM_BASE + "CredentialCountDifference";
+            HISTOGRAM_BASE + ".CredentialCountDifference";
     private static final String GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM =
-            HISTOGRAM_BASE + "CredentialCountDifference.GoogleRp";
+            HISTOGRAM_BASE + ".CredentialCountDifference.GoogleRp";
     private static final String NON_GOOGLE_RP_COUNT_DIFFERENCE_HISTOGRAM =
-            HISTOGRAM_BASE + "CredentialCountDifference.NonGoogleRp";
+            HISTOGRAM_BASE + ".CredentialCountDifference.NonGoogleRp";
 
     @Test
     @SmallTest
@@ -42,6 +42,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(FIDO2_FASTER_HISTOGRAM)
+                        .expectAnyRecord(FIDO2_FASTER_HISTOGRAM + ".NonGoogleRp")
                         .expectNoRecords(PASSKEY_CACHE_FASTER_HISTOGRAM)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)
@@ -68,6 +69,7 @@ public class Fido2GetCredentialsComparatorRobolectricTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(FIDO2_FASTER_HISTOGRAM)
+                        .expectAnyRecord(FIDO2_FASTER_HISTOGRAM + ".GoogleRp")
                         .expectNoRecords(PASSKEY_CACHE_FASTER_HISTOGRAM)
                         .expectIntRecord(
                                 SUCCESS_HISTOGRAM, SuccessState.FIDO2_SUCCESSFUL_CACHE_SUCCESSFUL)

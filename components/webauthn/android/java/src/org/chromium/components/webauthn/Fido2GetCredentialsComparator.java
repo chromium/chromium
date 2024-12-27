@@ -66,7 +66,7 @@ public class Fido2GetCredentialsComparator {
         }
     }
 
-    private static final String HISTOGRAM_PREFIX = "WebAuthentication.Android.Fido2VsPasskeyCache.";
+    private static final String HISTOGRAM_PREFIX = "WebAuthentication.Android.Fido2VsPasskeyCache";
 
     private State mPasskeysCacheResultState;
     private State mFido2ResultState;
@@ -111,7 +111,7 @@ public class Fido2GetCredentialsComparator {
         }
 
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_PREFIX + "SuccessState", getSuccessState(), SuccessState.COUNT);
+                HISTOGRAM_PREFIX + ".SuccessState", getSuccessState(), SuccessState.COUNT);
         if (!mFido2ResultState.successful || !mPasskeysCacheResultState.successful) {
             return;
         }
@@ -119,31 +119,32 @@ public class Fido2GetCredentialsComparator {
                 Math.abs(
                         mFido2ResultState.completionTime
                                 - mPasskeysCacheResultState.completionTime);
-        String histogramName =
+        String speedHistogramName =
                 mFido2ResultState.completionTime < mPasskeysCacheResultState.completionTime
-                        ? "Fido2FasterMs"
-                        : "PasskeyCacheFasterMs";
+                        ? ".Fido2FasterMs"
+                        : ".PasskeyCacheFasterMs";
+        String rpSuffix = mIsGoogleRp ? ".GoogleRp" : ".NonGoogleRp";
 
-        RecordHistogram.recordTimesHistogram(HISTOGRAM_PREFIX + histogramName, timeDifference);
+        RecordHistogram.recordTimesHistogram(HISTOGRAM_PREFIX + speedHistogramName, timeDifference);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_PREFIX + speedHistogramName + rpSuffix, timeDifference);
         int credentialCountDifference =
                 Math.abs(
                         mFido2ResultState.credentialCount
                                 - mPasskeysCacheResultState.credentialCount);
         RecordHistogram.recordCount100Histogram(
-                HISTOGRAM_PREFIX + "CredentialCountDifference", credentialCountDifference);
+                HISTOGRAM_PREFIX + ".CredentialCountDifference", credentialCountDifference);
         RecordHistogram.recordCount100Histogram(
-                HISTOGRAM_PREFIX
-                        + "CredentialCountDifference."
-                        + (mIsGoogleRp ? "GoogleRp" : "NonGoogleRp"),
+                HISTOGRAM_PREFIX + ".CredentialCountDifference" + rpSuffix,
                 credentialCountDifference);
         if (mFido2ResultState.credentialCount != mPasskeysCacheResultState.credentialCount) {
             // The difference we see between the two APIs are significant. Also emit the
             // credential counts.
             RecordHistogram.recordCount1000Histogram(
-                    HISTOGRAM_PREFIX + "Fido2CredentialCountWhenDifferent",
+                    HISTOGRAM_PREFIX + ".Fido2CredentialCountWhenDifferent",
                     mFido2ResultState.credentialCount);
             RecordHistogram.recordCount1000Histogram(
-                    HISTOGRAM_PREFIX + "PasskeyCacheCredentialCountWhenDifferent",
+                    HISTOGRAM_PREFIX + ".PasskeyCacheCredentialCountWhenDifferent",
                     mPasskeysCacheResultState.credentialCount);
         }
     }
