@@ -8,6 +8,8 @@ source_set("indexed_db") {
   public = [ "indexed_db_control_wrapper.h" ]
 
   sources = [
+    "blob_reader.cc",
+    "blob_reader.h",
     "file_path_util.cc",
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",

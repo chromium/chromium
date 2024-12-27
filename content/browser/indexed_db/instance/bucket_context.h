@@ -33,6 +33,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/blob_reader.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -56,7 +57,6 @@ class BackingStore;
 class BackingStorePreCloseTaskQueue;
 class BucketContextHandle;
 class Database;
-class IndexedDBDataItemReader;
 struct PendingConnection;
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
@@ -363,10 +363,8 @@ class CONTENT_EXPORT BucketContext
   // since `bucket_space_remaining_timestamp_`.
   int64_t GetBucketSpaceToAllot();
 
-  // Bind `receiver` to read from the file at `path`.
   void BindFileReader(
-      const base::FilePath& path,
-      base::OnceClosure release_callback,
+      const IndexedDBExternalObject& blob_info,
       mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver);
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
@@ -444,7 +442,7 @@ class CONTENT_EXPORT BucketContext
       file_system_access_context_;
   // This map's value type contains a closure which will run on destruction.
   std::map<base::FilePath,
-           std::tuple<std::unique_ptr<IndexedDBDataItemReader>,
+           std::tuple<std::unique_ptr<BlobReader>,
                       base::ScopedClosureRunner /*release_callback*/>>
       file_reader_map_;
 
