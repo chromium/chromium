@@ -6169,11 +6169,17 @@ static_library("browser") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:enabling",
+      "//chrome/browser/glic:impl",
       "//chrome/browser/glic/launcher",
       "//chrome/browser/glic/launcher:impl",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/glic/launcher:impl" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/glic/launcher:impl",
+      "//chrome/browser/glic:impl",
+    ]
   }
 
   if (is_mac || is_win) {
@@ -8380,15 +8386,6 @@ static_library("browser") {
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
     ]
-  }
-
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:enabling",
-      "//chrome/browser/glic:impl",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
   }
 
   if (is_chromeos || is_win || is_linux || is_mac) {
