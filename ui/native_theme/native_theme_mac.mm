@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/native_theme_mac.h"
 
+#import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 #include <MediaAccessibility/MediaAccessibility.h>
 #include <stddef.h>
@@ -566,6 +567,16 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                     theme->set_inverted_colors(InvertedColors());
                     theme->NotifyOnNativeThemeUpdated();
                   }];
+  if (@available(macOS 15.0, *)) {
+    non_blinking_cursor_token_ = [[NSNotificationCenter defaultCenter]
+        addObserverForName:
+            AXPrefersNonBlinkingTextInsertionIndicatorDidChangeNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* notification) {
+                  theme->NotifyOnNativeThemeUpdated();
+                }];
+  }
 
   if (configure_web_instance) {
     ConfigureWebInstance();
@@ -575,10 +586,30 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
 NativeThemeMac::~NativeThemeMac() {
   [NSNotificationCenter.defaultCenter
       removeObserver:display_accessibility_notification_token_];
+  if (@available(macOS 15.0, *)) {
+    [NSNotificationCenter.defaultCenter
+        removeObserver:non_blinking_cursor_token_];
+  }
+}
+
+bool NativeThemeMac::PrefersNonBlinkingCursor() const {
+  if (prefers_non_blinking_cursor_for_testing_) {
+    return true;
+  }
+  if (@available(macOS 15.0, *)) {
+    return AXPrefersNonBlinkingTextInsertionIndicator();
+  }
+  return false;
 }
 
 std::optional<base::TimeDelta> NativeThemeMac::GetPlatformCaretBlinkInterval()
     const {
+  // MacOS 15 introduces a new setting that allows users to enable a
+  // non-blinking cursor. When this setting is enabled, we always show the
+  // cursor. In Blink/Views this is signaled by a blink period of 0.
+  if (PrefersNonBlinkingCursor()) {
+    return base::TimeDelta();
+  }
   // If there's insertion point flash rate info in NSUserDefaults, use the
   // blink period derived from that.
   return ui::TextInsertionCaretBlinkPeriodFromDefaults();
