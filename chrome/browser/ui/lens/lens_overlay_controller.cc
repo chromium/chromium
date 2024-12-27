@@ -2207,6 +2207,25 @@ void LensOverlayController::OnViewBoundsChanged(views::View* observed_view) {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+void LensOverlayController::OnWidgetActivationChanged(views::Widget* widget,
+                                                      bool active) {
+  if (active && preselection_widget_) {
+    // On Mac, traversing out of the preselection widget into the browser causes
+    // the browser to restore its focus to the wrong place. Thus, when entering
+    // the preselection widget, make sure to clear out the browser's native
+    // focus. This causes the preselection widget to lose activation, so
+    // reactivate it manually.
+    tab_->GetBrowserWindowInterface()
+        ->TopContainer()
+        ->GetWidget()
+        ->GetFocusManager()
+        ->ClearNativeFocus();
+    preselection_widget_->Activate();
+  }
+}
+#endif
+
 void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
   preselection_widget_ = nullptr;
   preselection_widget_observer_.Reset();
@@ -2712,11 +2731,11 @@ void LensOverlayController::ClosePreselectionBubble() {
 }
 
 void LensOverlayController::ShowPreselectionBubble() {
+  auto* anchor_view = tab_->GetBrowserWindowInterface()->TopContainer();
   if (!preselection_widget_) {
     preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
         std::make_unique<lens::LensPreselectionBubble>(
-            weak_factory_.GetWeakPtr(),
-            tab_->GetBrowserWindowInterface()->TopContainer(),
+            weak_factory_.GetWeakPtr(), anchor_view,
             net::NetworkChangeNotifier::IsOffline(),
             /*exit_clicked_callback=*/
             base::BindRepeating(
@@ -2732,12 +2751,30 @@ void LensOverlayController::ShowPreselectionBubble() {
         views::kWidgetIdentifierKey,
         const_cast<void*>(kLensOverlayPreselectionWidgetIdentifier));
     preselection_widget_observer_.Observe(preselection_widget_);
+    // Setting the parent allows focus traversal out of the preselection widget.
+    preselection_widget_->SetFocusTraversableParent(
+        anchor_view->GetWidget()->GetFocusTraversable());
+    preselection_widget_->SetFocusTraversableParentView(anchor_view);
   }
-  preselection_widget_->Show();
+  auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(
+      preselection_widget_->widget_delegate());
+  bubble_view->SetCanActivate(true);
+  // Show inactive so that the overlay remains active.
+  preselection_widget_->ShowInactive();
 }
 
 void LensOverlayController::HidePreselectionBubble() {
   if (preselection_widget_) {
+    // The preselection bubble remains in the browser's focus order even when it
+    // is hidden, for example, when another browser tab is active. This means it
+    // remains possible for the bubble to be activated by keyboard input i.e.
+    // tabbing into the bubble, which unhides the bubble even on a browser tab
+    // where the overlay is not being shown. Prevent this by setting the bubble
+    // to non-activatable while it is hidden.
+    auto* bubble_view = static_cast<lens::LensPreselectionBubble*>(
+        preselection_widget_->widget_delegate());
+    bubble_view->SetCanActivate(false);
+
     preselection_widget_->Hide();
   }
 }

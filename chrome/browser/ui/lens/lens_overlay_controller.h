@@ -808,6 +808,9 @@ class LensOverlayController : public LensSearchboxClient,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
   // views::WidgetObserver:
+#if BUILDFLAG(IS_MAC)
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+#endif
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // OmniboxTabHelper::Observer:
