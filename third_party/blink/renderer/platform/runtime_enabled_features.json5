@@ -2038,6 +2038,14 @@
       status: "stable",
     },
     {
+      // Feature flag to control removal, in case we run into unexpected
+      // breakage.
+      //
+      // TODO(crbug.com/384481095): Remove in a few milestones, along with the
+      // implementation code.
+      name: "FledgeDirectFromSellerSignalsWebBundles",
+    },
+    {
       name: "FledgeMultiBid",
       public: true,
       status: "stable",

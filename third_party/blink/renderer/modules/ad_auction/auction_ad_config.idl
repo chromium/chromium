@@ -55,6 +55,7 @@ dictionary AuctionAdConfig {
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;
 
+  [RuntimeEnabled=FledgeDirectFromSellerSignalsWebBundles]
   Promise<USVString?> directFromSellerSignals;
   [RuntimeEnabled=FledgeDirectFromSellerSignalsHeaderAdSlot]
   Promise<DOMString?> directFromSellerSignalsHeaderAdSlot;
