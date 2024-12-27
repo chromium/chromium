@@ -63,6 +63,7 @@ constexpr char kOpTypeConv2d[] = "Conv";
 
 // Pool2d
 // constexpr char kOpTypeAveragePool2d[] = "AveragePool";
+constexpr char kOpTypeMatmul[] = "Matmul";
 
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
@@ -595,6 +596,24 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {}
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
 
+void GraphBuilderOrt::AddMatmulOperation(const mojom::Matmul& matmul) {
+  const std::string node_name = GetNodeName(matmul.label);
+  const std::string input_a_name = GetOperandName(matmul.a_operand_id);
+  const std::string input_b_name = GetOperandName(matmul.b_operand_id);
+  const std::string output_name = GetOperandName(matmul.output_operand_id);
+
+  std::array<const char*, 2> input_names = {input_a_name.c_str(),
+                                            input_b_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeMatmul, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()))
+}
+
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GetNodeName(reshape.label);
   const std::string input_name = GetOperandName(reshape.input_operand_id);
@@ -722,6 +741,10 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kMatmul: {
+        AddMatmulOperation(*operation->get_matmul());
+        break;
+      }
       case mojom::Operation::Tag::kRelu: {
         AddUnaryOperation(*operation->get_relu(), kOpTypeRelu);
         break;
@@ -759,7 +782,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
-      case mojom::Operation::Tag::kMatmul:
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPool2d:
       case mojom::Operation::Tag::kPrelu:

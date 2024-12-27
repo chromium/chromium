@@ -116,7 +116,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*linear_input=*/{},
        /*lstm_input=*/{},
        /*lstm_cell_input=*/{},
-       /*matmul_input=*/{},
+       /*matmul_input=*/DataTypeConstraint::kFloat16To32Ints32To64,
        /*pad_input=*/{},
        /*average_pool2d_input=*/{},
        /*l2_pool2d_input=*/{},
