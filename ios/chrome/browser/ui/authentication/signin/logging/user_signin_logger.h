@@ -7,22 +7,16 @@
 
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/ui/authentication/signin/logging/signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
-// Logs metrics for user sign-in operations.
-@interface UserSigninLogger : NSObject
+// SigninLogger for user-initiated sign-in flows.
+@interface UserSigninLogger : NSObject <SigninLogger>
 
 - (instancetype)init NS_UNAVAILABLE;
 // The designated initializer.
 - (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                         promoAction:(signin_metrics::PromoAction)promoAction
-                    identityManager:(signin::IdentityManager*)identityManager
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 // View where the sign-in button was displayed.
@@ -30,23 +24,6 @@ class IdentityManager;
 
 // Promo button used to trigger the sign-in.
 @property(nonatomic, assign, readonly) signin_metrics::PromoAction promoAction;
-
-// Identity manager to retrieve Chrome identities.
-@property(nonatomic, assign) signin::IdentityManager* identityManager;
-
-// Account manager service to retrieve Chrome identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-// Disconnect this object.
-- (void)disconnect;
-
-// Logs sign-in started when the user consent screen is first displayed.
-- (void)logSigninStarted;
-
-// Logs sign-in completed when the user has attempted sign-in and obtained a
-// result.
-- (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                        addedAccount:(BOOL)addedAccount;
 
 @end
 

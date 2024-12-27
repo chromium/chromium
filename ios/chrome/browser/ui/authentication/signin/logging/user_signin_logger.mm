@@ -18,31 +18,16 @@ using signin_metrics::PromoAction;
 #pragma mark - Public
 
 - (instancetype)initWithAccessPoint:(AccessPoint)accessPoint
-                        promoAction:(PromoAction)promoAction
-                    identityManager:(signin::IdentityManager*)identityManager
-              accountManagerService:
-                  (ChromeAccountManagerService*)accountManagerService {
+                        promoAction:(PromoAction)promoAction {
   self = [super init];
   if (self) {
-    CHECK(identityManager);
-    CHECK(accountManagerService);
-    _identityManager = identityManager;
-    _accountManagerService = accountManagerService;
     _accessPoint = accessPoint;
     _promoAction = promoAction;
   }
   return self;
 }
 
-- (void)dealloc {
-  DCHECK(!self.accountManagerService);
-  DCHECK(!self.identityManager);
-}
-
-- (void)disconnect {
-  self.accountManagerService = nullptr;
-  self.identityManager = nullptr;
-}
+#pragma mark - SigninLogger
 
 - (void)logSigninStarted {
   LogSigninAccessPointStarted(self.accessPoint, self.promoAction);

@@ -106,17 +106,11 @@
     _firstRun =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
     if (_firstRun) {
-      _logger = [[FirstRunSigninLogger alloc]
-            initWithAccessPoint:accessPoint
-                    promoAction:promoAction
-                identityManager:identityManager
-          accountManagerService:accountManagerService];
+      _logger = [[FirstRunSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                      promoAction:promoAction];
     } else {
-      _logger =
-          [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
-                                            promoAction:promoAction
-                                        identityManager:identityManager
-                                  accountManagerService:accountManagerService];
+      _logger = [[UserSigninLogger alloc] initWithAccessPoint:accessPoint
+                                                  promoAction:promoAction];
     }
     _ignoreDismissGesture =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE ||
@@ -137,7 +131,6 @@
 }
 
 - (void)disconnect {
-  [self.logger disconnect];
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;

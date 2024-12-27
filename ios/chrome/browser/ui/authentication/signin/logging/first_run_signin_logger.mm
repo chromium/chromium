@@ -16,7 +16,7 @@
 
 @implementation FirstRunSigninLogger
 
-#pragma mark - Public
+#pragma mark - SigninLogger
 
 - (void)logSigninStarted {
   if (!self.hasRecordedSigninStarted) {

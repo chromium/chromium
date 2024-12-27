@@ -47,6 +47,9 @@ using base::UserMetricsAction;
 
   // The screen provider that specifies which screens to present.
   ScreenProvider* _screenProvider;
+
+  // The signin logger for the upgrade screen.
+  UpgradeSigninLogger* _upgradeSigninLogger;
 }
 
 - (instancetype)
@@ -62,6 +65,16 @@ using base::UserMetricsAction;
     // This coordinator should not be used in the FRE.
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
     _promoAction = promoAction;
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(
+            self.browser->GetProfile());
+    _upgradeSigninLogger =
+        [[UpgradeSigninLogger alloc] initWithAccessPoint:accessPoint
+                                             promoAction:promoAction
+                                         identityManager:identityManager
+                                   accountManagerService:accountManagerService];
   }
   return self;
 }
@@ -72,15 +85,8 @@ using base::UserMetricsAction;
   [super start];
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
-    ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(
-            self.browser->GetProfile());
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
-    [UpgradeSigninLogger logSigninStartedWithAccessPoint:self.accessPoint
-                                         identityManager:identityManager
-                                   accountManagerService:accountManagerService];
+    [_upgradeSigninLogger logSigninStarted];
   }
   _screenProvider = [[UnoSigninScreenProvider alloc] init];
   _navigationController =
@@ -106,6 +112,8 @@ using base::UserMetricsAction;
                    }];
     CHECK(completionBlockCalled);
   }
+  [_upgradeSigninLogger disconnect];
+  _upgradeSigninLogger = nil;
   DCHECK(!_navigationController);
   DCHECK(!_childCoordinator);
   DCHECK(!_screenProvider);
@@ -187,7 +195,7 @@ using base::UserMetricsAction;
       signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO) {
     // TODO(crbug.com/40074532): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
-    [UpgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];
+    [_upgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];
   }
   // When this coordinator is interrupted, `_childCoordinator` needs to be
   // stopped here.

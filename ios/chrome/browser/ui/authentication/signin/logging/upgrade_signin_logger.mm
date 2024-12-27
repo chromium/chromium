@@ -19,24 +19,61 @@ using signin_metrics::LogSigninAccessPointStarted;
 using signin_metrics::PromoAction;
 using signin_metrics::RecordSigninUserActionForAccessPoint;
 
-@implementation UpgradeSigninLogger
+@implementation UpgradeSigninLogger {
+  // Identity manager to retrieve Chrome identities.
+  raw_ptr<signin::IdentityManager> _identityManager;
+
+  // Account manager service to retrieve Chrome identities.
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+
+  // View where the sign-in button was displayed.
+  signin_metrics::AccessPoint _accessPoint;
+
+  // Promo button used to trigger the sign-in.
+  signin_metrics::PromoAction _promoAction;
+}
 
 #pragma mark - Public
 
-+ (void)logSigninStartedWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
-                        identityManager:
-                            (signin::IdentityManager*)identityManager
-                  accountManagerService:
-                      (ChromeAccountManagerService*)accountManagerService {
-  if (!identityManager || !accountManagerService) {
+- (instancetype)initWithAccessPoint:(AccessPoint)accessPoint
+                        promoAction:(PromoAction)promoAction
+                    identityManager:(signin::IdentityManager*)identityManager
+              accountManagerService:
+                  (ChromeAccountManagerService*)accountManagerService {
+  self = [super init];
+  if (self) {
+    CHECK(identityManager);
+    CHECK(accountManagerService);
+    _accessPoint = accessPoint;
+    _promoAction = promoAction;
+    _identityManager = identityManager;
+    _accountManagerService = accountManagerService;
+  }
+  return self;
+}
+
+- (void)dealloc {
+  DCHECK(!_accountManagerService);
+  DCHECK(!_identityManager);
+}
+
+- (void)disconnect {
+  _accountManagerService = nullptr;
+  _identityManager = nullptr;
+}
+
+#pragma mark - SigninLogger
+
+- (void)logSigninStarted {
+  if (!_identityManager || !_accountManagerService) {
     return;
   }
-  RecordSigninUserActionForAccessPoint(accessPoint);
+  RecordSigninUserActionForAccessPoint(_accessPoint);
 
   // Records in user defaults that the promo has been shown as well as the
   // number of times it's been displayed.
   signin::RecordUpgradePromoSigninStarted(
-      identityManager, accountManagerService, version_info::GetVersion());
+      _identityManager, _accountManagerService, version_info::GetVersion());
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
   int promoSeenCount =
       [standardDefaults integerForKey:kDisplayedSSORecallPromoCountKey];
@@ -45,13 +82,13 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
                         forKey:kDisplayedSSORecallPromoCountKey];
 
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
-      signin::GetIdentitiesOnDevice(identityManager, accountManagerService);
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallAccountsAvailable,
                            [identitiesOnDevice count]);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallPromoSeenCount, promoSeenCount);
 }
 
-+ (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
+- (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
                         addedAccount:(BOOL)addedAccount {
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
@@ -75,21 +112,6 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
       break;
     }
   }
-}
-
-- (void)logSigninStarted {
-  [super logSigninStarted];
-  [UpgradeSigninLogger
-      logSigninStartedWithAccessPoint:self.accessPoint
-                      identityManager:self.identityManager
-                accountManagerService:self.accountManagerService];
-}
-
-- (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                        addedAccount:(BOOL)addedAccount {
-  [super logSigninCompletedWithResult:signinResult addedAccount:addedAccount];
-  [UpgradeSigninLogger logSigninCompletedWithResult:signinResult
-                                       addedAccount:addedAccount];
 }
 
 @end
