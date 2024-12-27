@@ -57,7 +57,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
                     ChromeFeatureList.sSafetyHubMagicStack,
                     ChromeFeatureList.sTabGroupPaneAndroid,
-                    ChromeFeatureList.sTabResumptionModuleAndroid,
                     ChromeFeatureList.sTraceBinderIpc,
                     OmniboxFeatures.sAndroidHubSearch);
 

@@ -43,6 +43,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -167,6 +168,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID)
     public void testSingleTabCardGoneAfterTabClosed_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -226,6 +228,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
+    @DisableFeatures(ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID)
     public void testSingleTabModule() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -250,6 +253,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID)
     public void testSingleTabModule_MagicStack() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, TAB_URL_1}, 0);
@@ -333,6 +337,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID)
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
         HomeSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         HomeSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
