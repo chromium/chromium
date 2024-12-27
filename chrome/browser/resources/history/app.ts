@@ -395,10 +395,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return this.selectedPage_ === Page.HISTORY_CLUSTERS;
   }
 
-  private getShowHistoryList_() {
-    return this.selectedPage_ === Page.HISTORY;
-  }
-
   private onShowResultsByGroupChanged_(e: CustomEvent<{value: boolean}>) {
     const showResultsByGroup = e.detail.value;
     if (showResultsByGroup) {

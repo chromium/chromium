@@ -113,14 +113,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       scrollOffset: {type: Number},
       scrollTarget: {type: Object},
 
-      // Whether this element is active, i.e. visible to the user. Defaults to
-      // true. Clients should set to false when this element is inactive,
-      // e.g. in a tabbed UI when the active tab doesn't contain this element.
-      isActive: {
-        type: Boolean,
-        reflect: true,
-      },
-
       isEmpty: {
         type: Boolean,
         reflect: true,
@@ -131,7 +123,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   //============================================================================
   // Properties
   //============================================================================
-  isActive: boolean = true;
   isEmpty: boolean = true;
   query: string = '';
   scrollOffset: number = 0;
@@ -143,10 +134,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   protected resultQuery_: string = '';
   private callbackRouter_: PageCallbackRouter;
   private inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
-  private resizeObserver_: ResizeObserver =
-      new ResizeObserver(() => this.onScrollOrResize_());
-  private scrollDebounce_: number = 200;
-  private scrollListener_: EventListener = () => this.onScrollOrResize_();
+  private scrollListener_: EventListener = () => this.onScroll_();
   private onClustersQueryResultListenerId_: number|null = null;
   private onClusterImageUpdatedListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
@@ -236,42 +224,11 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
 
     if (changedProperties.has('scrollTarget')) {
       const oldTarget = changedProperties.get('scrollTarget');
-      // Remove old listeners. ResizeObserver always listens, scroll observer
-      // is only on when this element is active.
       if (oldTarget) {
-        this.resizeObserver_.disconnect();
-        // Also remove the scroll listener if the element is currently active
-        // or was active and changed to inactive this lifecycle.
-        if (this.isActive || changedProperties.has('isActive')) {
-          oldTarget.removeEventListener('scroll', this.scrollListener_);
-        }
+        oldTarget.removeEventListener('scroll', this.scrollListener_);
       }
       if (this.scrollTarget) {
-        this.resizeObserver_.observe(this.scrollTarget);
-        if (this.isActive) {
-          this.scrollTarget.addEventListener('scroll', this.scrollListener_);
-        }
-      }
-    } else if (changedProperties.has('isActive')) {
-      if (this.isActive) {
-        // Active changed from false to true. Add the scroll observer.
         this.scrollTarget.addEventListener('scroll', this.scrollListener_);
-      } else {
-        // Active changed from true to false. Remove scroll observer.
-        this.scrollTarget.removeEventListener('scroll', this.scrollListener_);
-      }
-    }
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('clusters_')) {
-      const previous =
-          changedPrivateProperties.get('clusters_') as (Cluster[] | undefined);
-      const clustersRemoved =
-          previous && (previous.length > this.clusters_.length);
-      if (clustersRemoved && this.canLoadMore_ &&
-          this.$.clusters.offsetHeight < this.scrollTarget.offsetHeight) {
-        this.onLoadMoreButtonClick_();
       }
     }
   }
@@ -352,10 +309,6 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       // Bypass the confirmation dialog if removing one visit only.
       this.onRemoveButtonClick_();
     }
-  }
-
-  setScrollDebounceForTest(debounce: number) {
-    this.scrollDebounce_ = debounce;
   }
 
   /**
@@ -452,8 +405,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     // Do this on browser idle to avoid jank and to give the DOM a chance to be
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
-      if ((this.$.clusters.offsetHeight < this.scrollTarget.offsetHeight ||
-           this.scrollTarget.scrollHeight <= this.scrollTarget.clientHeight) &&
+      if (this.scrollTarget.scrollHeight <= this.scrollTarget.clientHeight &&
           this.canLoadMore_) {
         this.onLoadMoreButtonClick_();
       }
@@ -527,19 +479,18 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     }));
   }
 
-  private onScrollOrResize_() {
+  private onScroll_() {
     // Debounce by 200ms.
     if (this.scrollTimeout_) {
       clearTimeout(this.scrollTimeout_);
     }
-    this.scrollTimeout_ =
-        setTimeout(() => this.onScrollTimeout_(), this.scrollDebounce_);
+    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
   }
 
   private onScrollTimeout_() {
     this.scrollTimeout_ = null;
-    const lowerScroll = this.scrollTarget.scrollHeight -
-        this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
+    const lowerScroll =
+        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
     if (lowerScroll < 500) {
       this.onScrolledToBottom_();
     }

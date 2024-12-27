@@ -108,13 +108,6 @@ export class HistoryListElement extends HistoryListElementBase {
       },
       scrollOffset: Number,
 
-      // Whether this element is active, i.e. visible to the user.
-      isActive: {
-        type: Boolean,
-        value: true,
-        observer: 'onIsActiveChanged_',
-      },
-
       isEmpty: {
         type: Boolean,
         reflectToAttribute: true,
@@ -127,13 +120,9 @@ export class HistoryListElement extends HistoryListElementBase {
   private canDeleteHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
-  private resizeObserver_: ResizeObserver =
-      new ResizeObserver(() => this.onScrollOrResize_());
   private resultLoadingDisabled_: boolean = false;
-  private scrollDebounce_: number = 200;
-  private scrollListener_: EventListener = () => this.onScrollOrResize_();
+  private scrollListener_: EventListener = () => this.onScroll_();
   private scrollTimeout_: number|null = null;
-  isActive: boolean;
   isEmpty: boolean;
   searchedTerm: string = '';
   selectedItems: Set<number> = new Set();
@@ -652,16 +641,6 @@ export class HistoryListElement extends HistoryListElementBase {
         !!this.searchedTerm && this.historyData_?.length > 0;
   }
 
-  private onIsActiveChanged_() {
-    if (this.isActive) {
-      // Active changed from false to true. Add the scroll observer.
-      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
-    } else {
-      // Active changed from true to false. Remove scroll observer.
-      this.scrollTarget.removeEventListener('scroll', this.scrollListener_);
-    }
-  }
-
   private onScrollTargetChanged_(
       _newTarget: HTMLElement, oldTarget?: HTMLElement) {
     // It is possible (eg, when middle clicking the reload button) for all other
@@ -670,37 +649,25 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$['infinite-list'].notifyResize();
 
     if (oldTarget) {
-      this.resizeObserver_.disconnect();
       oldTarget.removeEventListener('scroll', this.scrollListener_);
     }
     if (this.scrollTarget) {
-      this.resizeObserver_.observe(this.scrollTarget);
       this.scrollTarget.addEventListener('scroll', this.scrollListener_);
     }
   }
 
-  setScrollDebounceForTest(debounce: number) {
-    this.scrollDebounce_ = debounce;
-  }
-
-  private onScrollOrResize_() {
+  private onScroll_() {
     // Debounce by 200ms.
     if (this.scrollTimeout_) {
       clearTimeout(this.scrollTimeout_);
     }
-    // If this is not the active page/tab, scrolling doesn't indicate a user
-    // trying to access more items.
-    if (!this.isActive) {
-      return;
-    }
-    this.scrollTimeout_ =
-        setTimeout(() => this.onScrollTimeout_(), this.scrollDebounce_);
+    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
   }
 
   private onScrollTimeout_() {
     this.scrollTimeout_ = null;
-    const lowerScroll = this.scrollTarget.scrollHeight -
-        this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
+    const lowerScroll =
+        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
     if (lowerScroll < 500) {
       this.onScrollToBottom_();
     }
