@@ -147,7 +147,11 @@ void ShowSimpleInstallDialogForWebApps(
     }
     views::Widget* modal_widget = constrained_window::ShowWebModalDialogViews(
         dialog.release(), web_contents);
-    delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(modal_widget);
+    if (IsWidgetCurrentSizeSmallerThanPreferredSize(modal_widget)) {
+      delegate_weak_ptr->CloseDialogAsIgnored();
+      return;
+    }
+    delegate_weak_ptr->StartObservingWidgetForChanges(modal_widget);
   } else {
     auto* dialog_view = new PWAConfirmationBubbleView(
         anchor_view, web_contents->GetWeakPtr(), icon, std::move(web_app_info),

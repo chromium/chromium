@@ -463,12 +463,15 @@ void ShowWebAppDetailedInstallDialog(
   }
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kChild);
-
   views::Widget* detailed_dialog_widget =
       constrained_window::ShowWebModalDialogViews(dialog.release(),
                                                   web_contents);
-  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(
-      detailed_dialog_widget);
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(detailed_dialog_widget)) {
+    delegate_weak_ptr->CloseDialogAsIgnored();
+    return;
+  }
+  delegate_weak_ptr->StartObservingWidgetForChanges(detailed_dialog_widget);
+
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallShown"));
 
 #if BUILDFLAG(IS_CHROMEOS)

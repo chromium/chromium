@@ -39,6 +39,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace web_app {
 
 enum InstallDialogType { kSimple, kDetailed, kDiy, kMaxValue = kDiy };
@@ -61,9 +65,19 @@ inline constexpr int kIconSize = 32;
 // result in a weird filename), it only restricts what we suggest as titles.
 std::u16string NormalizeSuggestedAppTitle(const std::u16string& title);
 
+// For some browser windows that are smaller in size, the install dialog's
+// current size is smaller than the preferred size, leading to important
+// security information being occluded. This function performs the comparison
+// between the sizes and prevents that from happening.
+// This serves as a stop-gap fix for crbug.com/384962294.
+// TODO(crbug.com/346974105): Remove once tab modal dialogs can be sized
+// irrespective of the size of the browser window triggering it.
+bool IsWidgetCurrentSizeSmallerThanPreferredSize(views::Widget* widget);
+
 class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
                                     public content::WebContentsObserver,
-                                    public PictureInPictureOcclusionObserver {
+                                    public PictureInPictureOcclusionObserver,
+                                    public views::WidgetObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDiyAppsDialogOkButtonId);
 
@@ -80,9 +94,8 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   ~WebAppInstallDialogDelegate() override;
 
   // Starts observing the install dialog's widget for picture in picture
-  // occlusion if any.
-  void StartObservingForPictureInPictureOcclusion(
-      views::Widget* install_dialog_widget);
+  // occlusion or size changes if any.
+  void StartObservingWidgetForChanges(views::Widget* install_dialog_widget);
 
   void OnAccept();
   void OnCancel();
@@ -110,8 +123,14 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   // PictureInPictureOcclusionObserver overrides:
   void OnOcclusionStateChanged(bool occluded) override;
 
- private:
+  // views::WidgetObserver overrides:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
+
   void CloseDialogAsIgnored();
+
+ private:
   void MeasureIphOnDialogClose();
   void MeasureAcceptUserActionsForInstallDialog();
   void MeasureCancelUserActionsForInstallDialog();
@@ -127,6 +146,8 @@ class WebAppInstallDialogDelegate : public ui::DialogModelDelegate,
   std::u16string text_field_contents_;
   bool received_user_response_ = false;
   ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<WebAppInstallDialogDelegate> weak_ptr_factory_{this};
 };
