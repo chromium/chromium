@@ -193,7 +193,7 @@ public class PrivacySandboxSurveyController {
     }
 
     private SurveyClient constructSurveyClient(PrivacySandboxSurveyType survey) {
-        SurveyConfig surveyConfig = SurveyConfig.get(sSurveyTriggers.get(survey));
+        SurveyConfig surveyConfig = SurveyConfig.get(mProfile, sSurveyTriggers.get(survey));
         if (surveyConfig == null) {
             emitInvalidSurveyConfigHistogram(survey);
             return null;

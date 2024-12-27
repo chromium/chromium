@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
 
 import java.util.Calendar;
+import java.util.Optional;
 
 /** Unit tests for {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -166,6 +167,74 @@ public class SurveyThrottlerUnitTest {
                     "Survey can't show since other survey is shown recently.",
                     throttler2.canShowSurvey());
         }
+    }
+
+    @Test
+    public void testOtherPromptWithCooldownOverrideShownRecently() {
+        // Show a regular survey on January 1st.
+        String triggerId1 = "triggerId1";
+        RiggedSurveyThrottler throttler1 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 1,
+                        newSurveyConfig(triggerId1, false));
+        Assert.assertTrue("User is selected for survey.", throttler1.canShowSurvey());
+        Assert.assertEquals(
+                "Trigger Id should be attempted.",
+                throttler1.getEncodedDate(),
+                getSurveyLastRequestedDate(triggerId1));
+        throttler1.recordSurveyPromptDisplayed();
+
+        // Show a survey with cooldown override on January 5th. The previously shown survey should
+        // not affect this one.
+        String triggerId2 = "triggerId2";
+        RiggedSurveyThrottler throttler2 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 5,
+                        newSurveyConfig(triggerId2, false, Optional.of(10)));
+        Assert.assertTrue(
+                "User is selected for survey because the cooldown period is overridden to 10 days.",
+                throttler2.canShowSurvey());
+        throttler2.recordSurveyPromptDisplayed();
+
+        // Show another survey with cooldown override on January 7th. It should not be shown because
+        // of the survey shown on January 5th.
+        String triggerId3 = "triggerId3";
+        RiggedSurveyThrottler throttler3 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 0, // Calendar.JANUARY
+                        /* date= */ 7,
+                        newSurveyConfig(triggerId3, false, Optional.of(10)));
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY)) {
+            Assert.assertFalse(
+                    "Survey can't show since other survey with cooldown override is shown"
+                            + " recently.",
+                    throttler3.canShowSurvey());
+        }
+        throttler3.recordSurveyPromptDisplayed();
+
+        String triggerId4 = "triggerId4";
+        RiggedSurveyThrottler throttler4 =
+                new RiggedSurveyThrottler(
+                        /* randomlySelected= */ true,
+                        /* year= */ 2023,
+                        /* month= */ 7, // Calendar.JULY
+                        /* date= */ 1,
+                        newSurveyConfig(triggerId4, false));
+        Assert.assertTrue(
+                "User is selected for survey because the regular cooldown period is 180 days.",
+                throttler4.canShowSurvey());
+        throttler4.recordSurveyPromptDisplayed();
     }
 
     @Test
@@ -337,8 +406,19 @@ public class SurveyThrottlerUnitTest {
     }
 
     private static SurveyConfig newSurveyConfig(String triggerId, boolean userPrompted) {
+        return newSurveyConfig(triggerId, userPrompted, Optional.empty());
+    }
+
+    private static SurveyConfig newSurveyConfig(
+            String triggerId, boolean userPrompted, Optional<Integer> cooldownOverride) {
         return new SurveyConfig(
-                "trigger", triggerId, 0.5f, userPrompted, new String[0], new String[0]);
+                "trigger",
+                triggerId,
+                0.5f,
+                userPrompted,
+                new String[0],
+                new String[0],
+                cooldownOverride);
     }
 
     /** Test class used to test the rate limiting logic for {@link SurveyThrottler}. */

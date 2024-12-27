@@ -188,6 +188,9 @@ struct SurveyConfig {
   // because the cooldown period override should be effective only if the survey
   // feature is launched for a specific Google group, see
   // `IsCooldownOverrideEnabled()`.
+  // TODO: crbug.com/348137782 - Either make this a global constant or add a
+  // verification logic that no 2 different cooldown period overrides are
+  // configured.
   std::optional<base::TimeDelta> cooldown_period_override_;
 };
 
