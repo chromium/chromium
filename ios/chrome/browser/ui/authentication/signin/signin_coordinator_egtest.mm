@@ -1005,7 +1005,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // TODO(crbug.com/386196414): Test is flaky.
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-- (void)FLAKY_testSyncOnWhenPassphraseIntroducedAfterSignIn {
+- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -1023,8 +1023,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       GoogleServicesSettingsButton()];
 
-  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Checks the user is invited to enter the passphrase.
   [[EarlGrey
@@ -1052,8 +1051,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
   [ChromeEarlGreyUI openSettingsMenu];
 
-  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Check the user is not invited to enter the passphrase
   [[EarlGrey
