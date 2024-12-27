@@ -125,7 +125,6 @@
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "ui/views/test/dialog_test.h"
@@ -493,10 +492,6 @@ class DynamicColorSystemWebAppBrowserTest
   // Returns whether the web app under test wants to use a system sourced theme
   // color.
   bool UseSystemThemeColor() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      chromeos::features::kJelly};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

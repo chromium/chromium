@@ -279,13 +279,8 @@ class OSSettingsFilesTestCrosComponentsAndJellyEnabled
     : public OSSettingsMochaTest {
  protected:
   OSSettingsFilesTestCrosComponentsAndJellyEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            chromeos::features::kCrosComponents,
-            chromeos::features::kJelly,
-        },
-        /*disabled=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosComponents);
   }
 
  private:
