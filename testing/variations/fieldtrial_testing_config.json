@@ -14942,6 +14942,30 @@
             ]
         }
     ],
+    "OmniboxDriveEligibility": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPrimaryAccountStrictEligibilityAndNoSyncRequirement",
+                    "enable_features": [
+                        "OmniboxDocumentProvider",
+                        "OmniboxDocumentProviderEnterpriseEligibility",
+                        "OmniboxDocumentProviderNoSyncRequirement",
+                        "OmniboxDocumentProviderPrimaryAccountRequirement"
+                    ],
+                    "disable_features": [
+                        "OmniboxDocumentProviderEnterpriseEligibilityWhenUnknown"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxElegantTextHeight": [
         {
             "platforms": [
