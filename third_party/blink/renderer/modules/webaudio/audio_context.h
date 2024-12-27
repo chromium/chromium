@@ -215,8 +215,10 @@ class MODULES_EXPORT AudioContext final
   // by the given type.
   void MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType);
 
-  // Returns whether the AudioContext is allowed to start rendering.
-  bool IsAllowedToStart() const;
+  // Returns whether the AudioContext is allowed to start rendering. It takes in
+  // a boolean parameter to indicate whether it should be silent or send a
+  // warning message to the console about the requirement of user gesture.
+  bool IsAllowedToStart(bool silent) const;
 
   // Record the current autoplay metrics.
   void RecordAutoplayMetrics();
@@ -340,8 +342,8 @@ class MODULES_EXPORT AudioContext final
 
   // Initially, we assume that the microphone permission is denied. But this
   // will be corrected after the actual construction.
-  mojom::blink::PermissionStatus
-      microphone_permission_status_ = mojom::blink::PermissionStatus::DENIED;
+  mojom::blink::PermissionStatus microphone_permission_status_ =
+      mojom::blink::PermissionStatus::DENIED;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, AudioContext>
