@@ -120,6 +120,7 @@ android_library("unit_device_javatests") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreferenceTest.java",
   ]
   deps = [
     ":java",

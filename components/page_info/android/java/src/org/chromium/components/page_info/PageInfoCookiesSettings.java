@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -88,6 +89,15 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mRwsInUse.setVisible(false);
         mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
         mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
+        // Set accessibility properties on the region that will change with the toggle.
+        if (mThirdPartyCookiesTitle != null) {
+            mThirdPartyCookiesTitle.setAccessibilityLiveRegion(
+                    View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        }
+        if (mThirdPartyCookiesSummary != null) {
+            mThirdPartyCookiesSummary.setAccessibilityLiveRegion(
+                    View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        }
     }
 
     @Override
