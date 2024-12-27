@@ -208,7 +208,7 @@ class CC_EXPORT DroppedFrameCounter {
     double p95_window = 0;
   } last_reported_metrics_;
 
-  std::optional<SortedFrameCallback> sorted_frame_callback_;
+  SortedFrameCallback sorted_frame_callback_;
 
   bool report_for_ui_ = false;
   std::optional<double> sliding_window_current_percent_dropped_;

@@ -71,6 +71,10 @@ CompositorFrameReportingController::CompositorFrameReportingController(
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
+  if (global_trackers_.dropped_frame_counter) {
+    global_trackers_.dropped_frame_counter->SetSortedFrameCallback(
+        base::NullCallback());
+  }
   base::TimeTicks now = Now();
   for (int i = 0; i < PipelineStage::kNumPipelineStages; ++i) {
     if (reporters_[i]) {

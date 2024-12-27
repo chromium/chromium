@@ -129,7 +129,7 @@ DroppedFrameCounter::DroppedFrameCounter()
                                         base::Unretained(this))) {
 }
 DroppedFrameCounter::~DroppedFrameCounter() {
-  sorted_frame_callback_.reset();
+  sorted_frame_callback_.Reset();
   frame_sorter_.Reset();
 }
 
@@ -424,7 +424,7 @@ void DroppedFrameCounter::NotifyFrameResult(const viz::BeginFrameArgs& args,
   }
 
   if (sorted_frame_callback_)
-    sorted_frame_callback_->Run(args, frame_info);
+    sorted_frame_callback_.Run(args, frame_info);
 
   sliding_window_.push({args, frame_info});
   UpdateDroppedFrameCountInWindow(frame_info, 1);
