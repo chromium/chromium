@@ -266,6 +266,7 @@ UIImageView* BrandingImageView() {
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 // Handle click on URLs on the bottomsheet.
 // TODO(crbug.com/40276862) Add primaryActionForTextItem: when this method is
 // deprecated after ios 17 (detail on UITextItem.h).
@@ -282,6 +283,24 @@ UIImageView* BrandingImageView() {
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  CHECK(textView == _description);
+  PlusAddressURLType type;
+  if (textView == _noticeMessage) {
+    type = PlusAddressURLType::kLearnMore;
+  } else {
+    type = PlusAddressURLType::kManagement;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf onURLTapForType:type];
+  }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -538,6 +557,11 @@ UIImageView* BrandingImageView() {
 - (void)enablePrimaryActionButton:(BOOL)enabled {
   self.primaryActionButton.enabled = enabled;
   UpdateButtonColorOnEnableDisable(self.primaryActionButton);
+}
+
+- (void)onURLTapForType:(PlusAddressURLType)type {
+  [_delegate openNewTab:type];
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
 @end
