@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -223,12 +224,14 @@ URLBlocklist::~URLBlocklist() = default;
 
 void URLBlocklist::Block(const base::Value::List& filters) {
   url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/false,
-                                         &id_, filters, &filters_);
+                                         &id_, filters, &filters_,
+                                         kMaxUrlFiltersPerPolicy);
 }
 
 void URLBlocklist::Allow(const base::Value::List& filters) {
   url_matcher::util::AddFiltersWithLimit(url_matcher_.get(), /*allow=*/true,
-                                         &id_, filters, &filters_);
+                                         &id_, filters, &filters_,
+                                         kMaxUrlFiltersPerPolicy);
 }
 
 bool URLBlocklist::IsURLBlocked(const GURL& url) const {
