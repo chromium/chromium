@@ -31,6 +31,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 
 import java.io.File;
@@ -160,6 +161,7 @@ public class WebExposedTest extends AwParameterizedTest {
         "enable-experimental-web-platform-features",
         "enable-blink-test-features",
     })
+    @DisabledTest(message = "crbug.com/381090604 - requires new baseline")
     public void testGlobalInterfaceListingUnstable() throws Exception {
         doTestGlobalInterfaceListing("");
     }
@@ -167,6 +169,7 @@ public class WebExposedTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add({"disable-field-trial-config"})
+    @DisabledTest(message = "crbug.com/381090604 - requires new baseline")
     public void testGlobalInterfaceListingStable() throws Exception {
         doTestGlobalInterfaceListing("virtual/stable/");
     }
