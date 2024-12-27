@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -74,57 +75,12 @@ std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
 
 constexpr char kInstallDialogName[] = "WebAppSimpleInstallDialog";
 
-// Waits for a pop-up web contents to open.
-class PopupObserver : public content::WebContentsObserver {
- public:
-  explicit PopupObserver(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  void Wait() { run_loop_.Run(); }
-  content::WebContents* popup() { return popup_; }
-
- private:
-  // WebContentsObserver overrides:
-  void DidOpenRequestedURL(content::WebContents* new_contents,
-                           content::RenderFrameHost* source_render_frame_host,
-                           const GURL& url,
-                           const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
-                           ui::PageTransition transition,
-                           bool started_from_context_menu,
-                           bool renderer_initiated) override {
-    if (!popup_ && disposition == WindowOpenDisposition::NEW_POPUP) {
-      popup_ = new_contents;
-      run_loop_.Quit();
-    }
-  }
-
-  raw_ptr<content::WebContents> popup_ = nullptr;
-  base::RunLoop run_loop_;
-};
-
 class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
  public:
   SimpleInstallDialogBubbleViewBrowserTest()
       : prevent_close_on_deactivate_(
             web_app::SetDontCloseOnDeactivateForTesting()) {}
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
-
-  // Open a popup window with the given URL and return its WebContents.
-  base::expected<content::WebContents*, std::string>
-  OpenPopupOfSize(const GURL& url, int width = 200, int height = 100) {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    PopupObserver observer(web_contents);
-    if (!content::ExecJs(
-            web_contents,
-            content::JsReplace(
-                "window.open($1, '', 'popup=true, width=$2, height=$3')", url,
-                width, height))) {
-      return base::unexpected("window.open failed");
-    }
-    observer.Wait();
-    return observer.popup();
-  }
 
  private:
   base::AutoReset<bool> prevent_close_on_deactivate_;
@@ -335,8 +291,10 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        WindowSizeLoweringClosesDialog) {
-  auto popup_value = OpenPopupOfSize(GURL("https://www.example.com"),
-                                     /*width=*/500, /*height=*/500);
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"),
+                      /*width=*/500, /*height=*/500);
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
   Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
@@ -371,7 +329,9 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        SmallPopupClosesWindowAutomatically) {
-  auto popup_value = OpenPopupOfSize(GURL("https://www.example.com"));
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"));
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
   Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
