@@ -440,6 +440,16 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
+    public void safeAreaConstraintChanged(boolean hasConstraint) {
+        handleObserverCall();
+        for (WebContentsObserver mObserver : mObservers) {
+            mObserver.safeAreaConstraintChanged(hasConstraint);
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
     public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();

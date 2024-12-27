@@ -318,6 +318,12 @@ void WebContentsObserverProxy::ViewportFitChanged(
       env, java_observer_, as_jint(static_cast<int>(value)));
 }
 
+void WebContentsObserverProxy::SafeAreaConstraintChanged(bool has_constraint) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_safeAreaConstraintChanged(env, java_observer_,
+                                                          has_constraint);
+}
+
 void WebContentsObserverProxy::VirtualKeyboardModeChanged(
     ui::mojom::VirtualKeyboardMode mode) {
   JNIEnv* env = AttachCurrentThread();

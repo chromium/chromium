@@ -681,6 +681,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // This method is called when the viewport fit of a WebContents changes.
   virtual void ViewportFitChanged(blink::mojom::ViewportFit value) {}
 
+  // This method is called when the safe area constraint changed.
+  virtual void SafeAreaConstraintChanged(bool has_constraint) {}
+
   // This method is called when the virtual keyboard mode of a WebContents
   // changes. This can happen as a result of the
   // `navigator.virtualKeyboard.overlaysContent` API or the virtual-keyboard key

@@ -59,6 +59,8 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   // SafeAreaInsetsHost override.
   void ViewportFitChangedForFrame(RenderFrameHost* rfh,
                                   blink::mojom::ViewportFit value) override;
+  void ComplexSafeAreaConstraintChangedForFrame(RenderFrameHost* rfh,
+                                                bool has_constraint) override;
 
   // Get the stored viewport fit value for a frame or kAuto if there is no
   // stored value.

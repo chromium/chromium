@@ -103,6 +103,13 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
   }
 }
 
+void SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
+    RenderFrameHost* rfh,
+    bool has_constraint) {
+  DCHECK(rfh);
+  web_contents_impl_->NotifySafeAreaConstraintChanged(has_constraint);
+}
+
 void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
   base::WeakPtr<RenderFrameHostImpl> new_active_rfh =
       fullscreen_rfh_ ? fullscreen_rfh_ : current_rfh_;
