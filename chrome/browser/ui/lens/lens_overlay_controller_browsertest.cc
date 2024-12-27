@@ -230,34 +230,33 @@ constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
 // Opens the given URL in the given browser and waits for the first paint to
 // complete.
-  void WaitForPaintImpl(
-      Browser* browser,
-      const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
-      int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, disposition, browser_test_flags));
-    const bool first_paint_completed =
-        browser
-            ->tab_strip_model()
-            ->GetActiveTab()
-            ->GetContents()
-            ->CompletedFirstVisuallyNonEmptyPaint();
+void WaitForPaintImpl(
+    Browser* browser,
+    const GURL& url,
+    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+    int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser, url, disposition, browser_test_flags));
+  const bool first_paint_completed =
+      browser->tab_strip_model()
+          ->GetActiveTab()
+          ->GetContents()
+          ->CompletedFirstVisuallyNonEmptyPaint();
 
-    // Return early if first paint is already completed.
-    if (first_paint_completed) {
-      return;
-    }
-    // If the first paint was not mark as completed by the WebContents, use a
-    // workaround to request a frame on the WebContents. This function will only
-    // return when the promise is resolved and thus there is content painted on
-    // the WebContents to allow screenshotting. See crbug.com/334747109 for
-    // details on this possible race condition and the workaround used in
-    // interactive tests.
-    ASSERT_TRUE(content::ExecJs(
-        browser->tab_strip_model()->GetActiveTab()->GetContents(),
-        kPaintWorkaroundFunction));
+  // Return early if first paint is already completed.
+  if (first_paint_completed) {
+    return;
   }
+  // If the first paint was not mark as completed by the WebContents, use a
+  // workaround to request a frame on the WebContents. This function will only
+  // return when the promise is resolved and thus there is content painted on
+  // the WebContents to allow screenshotting. See crbug.com/334747109 for
+  // details on this possible race condition and the workaround used in
+  // interactive tests.
+  ASSERT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveTab()->GetContents(),
+                      kPaintWorkaroundFunction));
+}
 
 void ClickBubbleDialogButton(
     views::BubbleDialogDelegate* bubble_widget_delegate,
@@ -4766,9 +4765,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayControllerBrowserPDFContextualizationTest,
-    RecordSearchboxFocusedInSessionNavigationHistograms) {
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       RecordSearchboxFocusedInSessionNavigationHistograms) {
   base::HistogramTester histogram_tester;
 
   // Load a non PDF.
@@ -5192,9 +5190,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                         last_sent_underlying_content_bytes.end()));
 }
 
-// TODO(crbug.com/379747618): flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_InnerTextBytesInFollowUpRequest) {
+                       InnerTextBytesInFollowUpRequest) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
@@ -5239,6 +5236,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
   ASSERT_EQ(lens::MimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
+
+  // The size of the PlainText is retrieved when issuing the searchbox query.
+  // Getting the size of the HTML is retrieved afterwards, and therefore is
+  // async at this point. RunUntil the bytes are retrieved and the histogram is
+  // recorded to prevent flakiness. To check if the histogram is recorded, grab
+  // the bucket count for the HTML document size of 0, since the HTML we are
+  // testing on is so small it rounds to 0 KB.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Lens.Overlay.ByPageContentType.Html.DocumentSize", 0) == 2;
+  }));
 
   // Verify the size histograms recorded the new bytes.
   histogram_tester.ExpectTotalCount(
