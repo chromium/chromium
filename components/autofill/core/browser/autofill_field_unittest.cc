@@ -403,6 +403,16 @@ INSTANTIATE_TEST_SUITE_P(
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = NAME_LAST,
             .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_LAST_SECOND,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_LAST_CORE,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
             .expected_result = ALTERNATIVE_FAMILY_NAME}));
 
 // Tests that consecutive identical events are not added twice to the event log.

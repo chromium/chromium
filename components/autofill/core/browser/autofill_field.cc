@@ -100,7 +100,9 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE3},
          {ALTERNATIVE_FULL_NAME, NAME_FULL},
          {ALTERNATIVE_GIVEN_NAME, NAME_FIRST},
-         {ALTERNATIVE_FAMILY_NAME, NAME_LAST}});
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST},
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_SECOND},
+         {ALTERNATIVE_FAMILY_NAME, NAME_LAST_CORE}});
 
 // Returns true, if the prediction is non-experimental and should be used by
 // autofill or password manager.
