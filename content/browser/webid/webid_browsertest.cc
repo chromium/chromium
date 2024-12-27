@@ -68,6 +68,7 @@ using net::test_server::HttpResponse;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::NiceMock;
+using ::testing::Return;
 using ::testing::WithArg;
 using ::testing::WithArgs;
 
@@ -2057,6 +2058,78 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Success) {
   EXPECT_EQ("true", metrics_parameters_["did_show_ui"]);
 }
 
+IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, IdpLoginClosed) {
+  // This will be used for the login dialog.
+  Shell* modal = CreateBrowser();
+
+  // Mark us as signed out from this IdP.
+  GURL url{IdpRootUrl() + "/header/signout"};
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url));
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  // Keep a copy of the pointer before the std::move.
+  MockIdentityRequestDialogController* controller = mock.get();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+  base::RunLoop modal_dialog_loop;
+  content::IdentityRequestDialogController::DismissCallback saved_cb;
+  EXPECT_CALL(*controller, ShowModalDialog)
+      .WillOnce(WithArgs<0, 2>(
+          [&modal, &modal_dialog_loop, &saved_cb](
+              const GURL& url,
+              content::IdentityRequestDialogController::DismissCallback cb) {
+            modal->LoadURL(url);
+            saved_cb = std::move(cb);
+            modal_dialog_loop.Quit();
+            return modal->web_contents();
+          }));
+  EXPECT_CALL(*controller, ShowLoadingDialog).WillOnce(Return(true));
+
+  // Now run the actual test.
+  base::RunLoop run_loop;
+  SetMetricsConfigDetails(&run_loop, kLoginFailure);
+
+  std::string script = R"(
+      promise = navigator.credentials.get({
+        identity: {
+          providers: [{
+            configURL: ')" +
+                       BaseIdpUrl() + R"(',
+            clientId: 'client_id_1',
+            nonce: '12345'
+          }],
+          mode: 'active'
+        }
+      });
+    )";
+
+  // Initiate the FedCM call
+  EXPECT_TRUE(ExecJs(shell(), script, EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the popup window to open.
+  modal_dialog_loop.Run();
+  // Close the dialog and notify the callback.
+  modal->Close();
+  std::move(saved_cb).Run(
+      IdentityRequestDialogController::DismissReason::kOther);
+
+  std::string expected_error = "NetworkError: Error retrieving a token.";
+  EXPECT_EQ(expected_error,
+            ExtractJsError(EvalJs(shell(), "(async () => await promise)()")));
+
+  // Wait for the metrics endpoint result
+  run_loop.Run();
+
+  EXPECT_EQ("null", metrics_request_origin_);
+  // In the failure case we should not send timing data.
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_show_ui"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_continue"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("time_to_receive_token"));
+  EXPECT_EQ(0ul, metrics_parameters_.count("turnaround_time"));
+  EXPECT_EQ("1", metrics_parameters_["error_code"]);
+  EXPECT_EQ("true", metrics_parameters_["did_show_ui"]);
+}
+
 IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   base::RunLoop run_loop;
   SetMetricsConfigDetails(&run_loop, kAccountsFailure);
@@ -2081,6 +2154,7 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
   run_loop.Run();
   EXPECT_EQ("null", metrics_request_origin_);
+  // In the failure case we should not send timing data.
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_show_ui"));
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_continue"));
   EXPECT_EQ(0ul, metrics_parameters_.count("time_to_receive_token"));
