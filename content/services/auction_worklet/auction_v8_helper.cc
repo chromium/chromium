@@ -543,8 +543,12 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
   v8::ScriptCompiler::Source script_source(
       src_string.ToLocalChecked(),
       v8::ScriptOrigin(origin_string.ToLocalChecked()));
+  v8::ScriptCompiler::CompileOptions compile_options =
+      base::FeatureList::IsEnabled(blink::features::kFledgeEagerJSCompilation)
+          ? v8::ScriptCompiler::kEagerCompile
+          : v8::ScriptCompiler::kNoCompileOptions;
   auto result = v8::ScriptCompiler::CompileUnboundScript(
-      v8_isolate, &script_source, v8::ScriptCompiler::kNoCompileOptions,
+      v8_isolate, &script_source, compile_options,
       v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
   if (try_catch.HasCaught()) {
     error_out = FormatExceptionMessage(v8_isolate->GetCurrentContext(),

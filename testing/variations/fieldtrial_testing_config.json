@@ -17857,6 +17857,25 @@
             ]
         }
     ],
+    "ProtectedAudienceEagerJSCompilation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeEagerJSCompilation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceEarlyProcessCreationStudy": [
         {
             "platforms": [

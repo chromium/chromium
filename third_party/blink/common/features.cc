@@ -1033,6 +1033,10 @@ BASE_FEATURE(kFledgeNoWasmLazyCompilation,
              "FledgeNoWasmLazyCompilation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgeEagerJSCompilation,
+             "FledgeEagerJSCompilation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
