@@ -234,6 +234,7 @@ source_set("unit_tests") {
       "simple_cdm_allocator_unittest.cc",
       "simple_cdm_buffer.cc",
       "simple_cdm_buffer.h",
+      "supported_cdm_versions_unittest.cc",
     ]
 
     data_deps += [ "//media/cdm/library_cdm/clear_key_cdm" ]
