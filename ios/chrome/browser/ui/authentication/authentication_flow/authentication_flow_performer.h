@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class Browser;
@@ -104,4 +104,4 @@ using OnProfileSwitchCompletion = base::OnceCallback<
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_H_

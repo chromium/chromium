@@ -22,6 +22,7 @@ source_set("instant_signin") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/authentication_flow",
     "//ios/chrome/browser/ui/authentication/identity_chooser",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ui/base",

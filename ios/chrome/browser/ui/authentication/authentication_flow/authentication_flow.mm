@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -308,12 +308,13 @@ BOOL IsIdentityInCoreAccountInfos(
     case CHECK_SIGNIN_STEPS:
       return FETCH_MANAGED_STATUS;
     case FETCH_MANAGED_STATUS:
-      if (_shouldShowManagedConfirmation)
+      if (_shouldShowManagedConfirmation) {
         return SHOW_MANAGED_CONFIRMATION;
-      else if (_shouldSignOut)
+      } else if (_shouldSignOut) {
         return SIGN_OUT_IF_NEEDED;
-      else
+      } else {
         return SIGN_IN;
+      }
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldConvertPersonalProfileToManaged) {
         return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
@@ -588,8 +589,9 @@ BOOL IsIdentityInCoreAccountInfos(
   [_performer showAuthenticationError:error
                        withCompletion:^{
                          AuthenticationFlow* strongSelf = weakSelf;
-                         if (!strongSelf)
+                         if (!strongSelf) {
                            return;
+                         }
                          [strongSelf setHandlingError:NO];
                          [strongSelf continueSignin];
                        }

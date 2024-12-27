@@ -55,7 +55,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/change_profile/change_profile_continuation.h"
 #import "ios/chrome/browser/ui/authentication/change_profile/change_profile_observer.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"

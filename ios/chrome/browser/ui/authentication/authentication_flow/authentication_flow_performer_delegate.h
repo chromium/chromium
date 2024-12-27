@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -13,7 +13,7 @@
 @class UIViewController;
 
 // Handles completion of AuthenticationFlowPerformer steps.
-@protocol AuthenticationFlowPerformerDelegate<NSObject>
+@protocol AuthenticationFlowPerformerDelegate <NSObject>
 
 // Indicates that a profile was signed out.
 - (void)didSignOut;
@@ -49,4 +49,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_PERFORMER_DELEGATE_H_

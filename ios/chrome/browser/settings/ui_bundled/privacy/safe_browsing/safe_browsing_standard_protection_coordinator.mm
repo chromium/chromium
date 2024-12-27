@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
 
 @interface SafeBrowsingStandardProtectionCoordinator () <
     SafeBrowsingStandardProtectionViewControllerPresentationDelegate>

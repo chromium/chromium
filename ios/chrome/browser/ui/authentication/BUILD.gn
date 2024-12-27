@@ -6,11 +6,6 @@ import("//build/config/chrome_build.gni")
 
 source_set("authentication") {
   sources = [
-    "authentication_flow.h",
-    "authentication_flow.mm",
-    "authentication_flow_performer.h",
-    "authentication_flow_performer.mm",
-    "authentication_flow_performer_delegate.h",
     "authentication_ui_util.h",
     "authentication_ui_util.mm",
     "re_signin_infobar_delegate.h",
@@ -80,7 +75,6 @@ source_set("authentication") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//services/network/public/cpp",
     "//ui/base",
@@ -116,8 +110,6 @@ source_set("account_settings_presenter") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "authentication_flow_performer_unittest.mm",
-    "authentication_flow_unittest.mm",
     "authentication_ui_util_unittest.mm",
     "re_signin_infobar_delegate_unittest.mm",
     "signin_promo_view_mediator_unittest.mm",

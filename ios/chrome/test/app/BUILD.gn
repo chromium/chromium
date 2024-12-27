@@ -99,7 +99,7 @@ source_set("test_support") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/ui_bundled",
-    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/authentication_flow",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/url_loading/model",

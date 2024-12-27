@@ -1,0 +1,97 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("authentication_flow") {
+  sources = [
+    "authentication_flow.h",
+    "authentication_flow.mm",
+    "authentication_flow_performer.h",
+    "authentication_flow_performer.mm",
+    "authentication_flow_performer_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/common",
+    "//components/reading_list/features:flags",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:tribool",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/flags",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/authentication/enterprise/managed_profile_creation",
+    "//ios/chrome/browser/ui/authentication/history_sync:capabilities_fetcher",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin/model:constants" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "authentication_flow_performer_unittest.mm",
+    "authentication_flow_unittest.mm",
+  ]
+  deps = [
+    ":authentication_flow",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/pref_registry",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model:constants",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:protocol_fake",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_H_
-#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_H_
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_H_
 
 #import <Foundation/Foundation.h>
 
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/signin/model/constants.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @class AuthenticationFlowPerformer;
@@ -32,7 +32,7 @@ class Browser;
 //
 // A new instance of `AuthenticationFlow` should be used each time an identity
 // needs to be signed in.
-@interface AuthenticationFlow : NSObject<AuthenticationFlowPerformerDelegate>
+@interface AuthenticationFlow : NSObject <AuthenticationFlowPerformerDelegate>
 
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being
@@ -86,4 +86,4 @@ class Browser;
 - (void)setPerformerForTesting:(AuthenticationFlowPerformer*)performer;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_H_
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_H_

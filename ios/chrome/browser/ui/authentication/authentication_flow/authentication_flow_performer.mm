@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow_performer.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -470,8 +470,9 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak AuthenticationFlowPerformer* weakSelf = self;
   ProceduralBlock timeoutBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
+    if (!strongSelf) {
       return;
+    }
     [strongSelf stopWatchdogTimer];
     NSError* error = [NSError errorWithDomain:kAuthenticationErrorDomain
                                          code:TIMED_OUT_FETCH_POLICY
@@ -486,8 +487,9 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak AuthenticationFlowPerformer* weakSelf = self;
   ProceduralBlock timeoutBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
+    if (!strongSelf) {
       return;
+    }
     [strongSelf stopWatchdogTimer];
     [strongSelf.delegate didRegisterForUserPolicyWithDMToken:@""
                                                     clientID:@""
@@ -501,8 +503,9 @@ NSString* const kAuthenticationSnackbarCategory =
   __weak AuthenticationFlowPerformer* weakSelf = self;
   ProceduralBlock timeoutBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
-    if (!strongSelf)
+    if (!strongSelf) {
       return;
+    }
     [strongSelf stopWatchdogTimer];
     [strongSelf->_delegate didFetchUserPolicyWithSuccess:NO];
   };

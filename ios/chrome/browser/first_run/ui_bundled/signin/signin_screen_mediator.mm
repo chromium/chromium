@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"

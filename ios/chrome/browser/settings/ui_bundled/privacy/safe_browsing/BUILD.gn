@@ -53,7 +53,7 @@ source_set("safe_browsing") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/authentication_flow",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/common/ui/colors:colors",
     "//ui/base",
