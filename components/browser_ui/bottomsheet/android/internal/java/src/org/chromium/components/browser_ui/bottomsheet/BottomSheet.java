@@ -130,7 +130,7 @@ class BottomSheet extends FrameLayout
     @Nullable protected BottomSheetContent mSheetContent;
 
     /** A handle to the FrameLayout that holds the content of the bottom sheet. */
-    private FrameLayout mBottomSheetContentContainer;
+    private TouchRestrictingFrameLayout mBottomSheetContentContainer;
 
     /**
      * The last offset ratio sent to observers of onSheetOffsetChanged(). This is used to ensure the
@@ -139,7 +139,7 @@ class BottomSheet extends FrameLayout
     private float mLastOffsetRatioSent;
 
     /** The FrameLayout used to hold the bottom sheet toolbar. */
-    private FrameLayout mToolbarHolder;
+    private TouchRestrictingFrameLayout mToolbarHolder;
 
     /** Whether the {@link BottomSheet} and its children should react to touch events. */
     private boolean mIsTouchEnabled;
@@ -247,9 +247,7 @@ class BottomSheet extends FrameLayout
         mSettleAnimator = null;
     }
 
-    /**
-     * @return Whether the sheet is in the process of hiding.
-     */
+    /** @return Whether the sheet is in the process of hiding. */
     boolean isHiding() {
         return mSettleAnimator != null && mTargetState == SheetState.HIDDEN;
     }
@@ -266,9 +264,6 @@ class BottomSheet extends FrameLayout
 
         if (isHiding()) return false;
 
-        // No interaction when sheet is animating.
-        if (getSheetState() == SheetState.SCROLLING) return true;
-
         return mGestureDetector.onInterceptTouchEvent(e);
     }
 
@@ -281,9 +276,6 @@ class BottomSheet extends FrameLayout
         // If touch is disabled, act like a black hole and consume touch events without doing
         // anything with them.
         if (!mIsTouchEnabled) return true;
-
-        // No interaction when sheet is animating.
-        if (getSheetState() == SheetState.SCROLLING) return true;
 
         mGestureDetector.onTouchEvent(e);
 
@@ -322,9 +314,12 @@ class BottomSheet extends FrameLayout
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
-        mToolbarHolder = (FrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
+        mToolbarHolder =
+                (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
 
-        mBottomSheetContentContainer = (FrameLayout) findViewById(R.id.bottom_sheet_content);
+        mBottomSheetContentContainer =
+                (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
+        mBottomSheetContentContainer.setBottomSheet(this);
 
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();

@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerFactory.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImpl.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetector.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java",
   ]
 
   deps = [
