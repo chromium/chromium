@@ -421,11 +421,12 @@
       name: "AriaRowColIndexText",
       status: "stable",
     },
-    // See https://crbug.com/40150299, and
-    // https://github.com/whatwg/dom/issues/1255.
+    // See https://crbug.com/40150299,
+    // https://github.com/whatwg/dom/issues/1255, and
+    // https://github.com/whatwg/dom/pull/1307.
     {
       name: "AtomicMoveAPI",
-      status: "test",
+      status: "stable",
     },
     // This flag specifically guards live Range (and by extension, selection)
     // preservation for atomic move (`moveBefore()`). This is not part of the

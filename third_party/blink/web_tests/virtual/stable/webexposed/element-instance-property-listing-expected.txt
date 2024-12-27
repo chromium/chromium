@@ -151,6 +151,7 @@ namespace http://www.w3.org/1999/xhtml
     property lookupNamespaceURI
     property lookupPrefix
     property matches
+    property moveBefore
     property namespaceURI
     property nextElementSibling
     property nextSibling
@@ -1361,6 +1362,7 @@ namespace http://www.w3.org/2000/svg
     property lookupNamespaceURI
     property lookupPrefix
     property matches
+    property moveBefore
     property namespaceURI
     property nextElementSibling
     property nextSibling
