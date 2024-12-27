@@ -305,21 +305,26 @@ IwaInstallerFactory::GetIwaInstallerFactory() {
   static base::LazyInstance<IwaInstallerFactoryCallback>::Leaky
       iwa_installer_factory = LAZY_INSTANCE_INITIALIZER;
   if (!iwa_installer_factory.Get()) {
-    iwa_installer_factory.Get() = base::BindRepeating(
-        [](IsolatedWebAppExternalInstallOptions install_options,
-           IwaInstaller::InstallSourceType install_source_type,
-           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-           base::Value::List& log, WebAppProvider* provider,
-           IwaInstaller::ResultCallback callback) {
-          return std::make_unique<IwaInstaller>(
-              std::move(install_options), install_source_type,
-              std::move(url_loader_factory),
-              std::make_unique<IwaInstaller::IwaInstallCommandWrapperImpl>(
-                  provider),
-              log, std::move(callback));
-        });
+    iwa_installer_factory.Get() = GetDefaultIwaInstallerFactory();
   }
   return iwa_installer_factory.Get();
+}
+
+IwaInstallerFactory::IwaInstallerFactoryCallback
+IwaInstallerFactory::GetDefaultIwaInstallerFactory() {
+  return base::BindRepeating(
+      [](IsolatedWebAppExternalInstallOptions install_options,
+         IwaInstaller::InstallSourceType install_source_type,
+         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+         base::Value::List& log, WebAppProvider* provider,
+         IwaInstaller::ResultCallback callback) {
+        return std::make_unique<IwaInstaller>(
+            std::move(install_options), install_source_type,
+            std::move(url_loader_factory),
+            std::make_unique<IwaInstaller::IwaInstallCommandWrapperImpl>(
+                provider),
+            log, std::move(callback));
+      });
 }
 
 std::ostream& operator<<(std::ostream& os,

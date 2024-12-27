@@ -20,7 +20,10 @@ namespace web_app {
 
 TestIwaInstallerFactory::TestIwaInstallerFactory() = default;
 
-TestIwaInstallerFactory::~TestIwaInstallerFactory() = default;
+TestIwaInstallerFactory::~TestIwaInstallerFactory() {
+  IwaInstallerFactory::GetIwaInstallerFactory() =
+      IwaInstallerFactory::GetDefaultIwaInstallerFactory();
+}
 
 void TestIwaInstallerFactory::SetUp(Profile* profile) {
   IwaInstallerFactory::GetIwaInstallerFactory() =
