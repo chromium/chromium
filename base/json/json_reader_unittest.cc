@@ -17,6 +17,8 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/features.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -40,12 +42,11 @@ namespace {
 // MSan will do a better job detecting over-read errors if the input is not
 // nul-terminated on the heap. This will copy |input| to a new buffer owned by
 // |owner|, returning a std::string_view to |owner|.
-std::string_view MakeNotNullTerminatedInput(const char* input,
-                                            std::unique_ptr<char[]>* owner) {
-  size_t str_len = strlen(input);
-  owner->reset(new char[str_len]);
-  memcpy(owner->get(), input, str_len);
-  return std::string_view(owner->get(), str_len);
+base::HeapArray<char> MakeNotNullTerminatedInput(const char* input) {
+  // std::string_view is not nul terminated, so we won't be copying the nul
+  // char.
+  auto input_span = base::span(std::string_view(input));
+  return base::HeapArray<char>::CopiedFrom(input_span);
 }
 
 }  // namespace
@@ -1044,11 +1045,9 @@ TEST_P(JSONReaderTest, ParseNumberErrors) {
     auto test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
-    std::unique_ptr<char[]> input_owner;
-    std::string_view input =
-        MakeNotNullTerminatedInput(test_case.input, &input_owner);
+    HeapArray<char> input = MakeNotNullTerminatedInput(test_case.input);
 
-    std::optional<Value> result = JSONReader::Read(input);
+    std::optional<Value> result = JSONReader::Read(as_string_view(input));
     EXPECT_EQ(test_case.parse_success, result.has_value());
 
     if (!result) {
@@ -1086,11 +1085,9 @@ TEST_P(JSONReaderTest, UnterminatedInputs) {
     auto* test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case));
 
-    std::unique_ptr<char[]> input_owner;
-    std::string_view input =
-        MakeNotNullTerminatedInput(test_case, &input_owner);
+    HeapArray<char> input = MakeNotNullTerminatedInput(test_case);
 
-    EXPECT_FALSE(JSONReader::Read(input));
+    EXPECT_FALSE(JSONReader::Read(as_string_view(input)));
   }
 }
 
