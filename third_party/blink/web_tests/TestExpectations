@@ -8922,3 +8922,6 @@ crbug.com/379003901 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-ima
 
 # Gardener 2024-12-23
 crbug.com/385571958 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-none-video.html [ Failure Pass ]
+
+# Gardener 2024-12-27
+crbug.com/386349197 external/wpt/css/css-masking/clip-path/clip-path-inline-005.html [ Failure Pass ]
