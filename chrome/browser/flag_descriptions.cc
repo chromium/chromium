@@ -4697,12 +4697,6 @@ const char kMigrateSyncingUserToSignedInDescription[] =
     "Enables the migration of syncing users to the signed-in, non-syncing "
     "state.";
 
-const char kNavBarColorMatchesTabBackgroundName[] =
-    "Nav bar color matches tab background";
-const char kNavBarColorMatchesTabBackgroundDescription[] =
-    "Matches the OS navigation bar color to the background color of the "
-    "active tab.";
-
 const char kNotificationOneTapUnsubscribeName[] =
     "Notification one-tap unsubscribe";
 const char kNotificationOneTapUnsubscribeDescription[] =

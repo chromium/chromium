@@ -346,9 +346,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void onBackgroundColorChanged() {
-            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
-                mTab.changeWebContentBackgroundColor(mTab.getWebContents().getBackgroundColor());
-            }
+            mTab.changeWebContentBackgroundColor(mTab.getWebContents().getBackgroundColor());
         }
 
         @Override

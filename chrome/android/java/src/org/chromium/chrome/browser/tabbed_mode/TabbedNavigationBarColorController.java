@@ -29,7 +29,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
@@ -166,17 +165,15 @@ class TabbedNavigationBarColorController
                 layoutManagerSupplier,
                 fullscreenManager,
                 edgeToEdgeControllerSupplier,
-                ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                        ? new BottomAttachedUiObserver(
-                                bottomControlsStacker,
-                                browserControlsStateProvider,
-                                snackbarManagerSupplier.get(),
-                                contextualSearchManagerSupplier,
-                                bottomSheetController,
-                                omniboxSuggestionsVisualState,
-                                accessorySheetVisualStateSupplier,
-                                insetObserver)
-                        : null);
+                new BottomAttachedUiObserver(
+                        bottomControlsStacker,
+                        browserControlsStateProvider,
+                        snackbarManagerSupplier.get(),
+                        contextualSearchManagerSupplier,
+                        bottomSheetController,
+                        omniboxSuggestionsVisualState,
+                        accessorySheetVisualStateSupplier,
+                        insetObserver));
     }
 
     @VisibleForTesting
@@ -186,7 +183,7 @@ class TabbedNavigationBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            @Nullable BottomAttachedUiObserver bottomAttachedUiObserver) {
+            BottomAttachedUiObserver bottomAttachedUiObserver) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mWindow = window;
@@ -322,8 +319,7 @@ class TabbedNavigationBarColorController
 
                     @Override
                     public void onFinishedShowing(@LayoutType int layoutType) {
-                        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                                && layoutType == LayoutType.BROWSING) {
+                        if (layoutType == LayoutType.BROWSING) {
                             updateNavigationBarColor();
                         }
                     }
@@ -333,8 +329,6 @@ class TabbedNavigationBarColorController
     }
 
     private void updateActiveTab() {
-        if (!ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) return;
-
         @Nullable Tab activeTab = mTabModelSelector.getCurrentTab();
         if (activeTab == mActiveTab) return;
 
@@ -393,10 +387,13 @@ class TabbedNavigationBarColorController
         // 4. Perform updates to the system nav bar when needed.
         if (!updateWindowNavBarColor && !updateDivider) return;
 
-        boolean animateColorUpdate =
-                ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                        && !isNavBarColorAnimationDisabled()
-                        && !disableAnimation;
+        // TODO(https://crbug.com/385765031): Add back isNavBarColorAnimationDisabled() with a new
+        // feature flag.
+        if (!disableAnimation) {
+            disableAnimation = true;
+        }
+        // animateColorUpdate is currently always false.
+        boolean animateColorUpdate = !disableAnimation;
 
         endNavigationBarColorAnimationIfRunning();
         if (toEdge) {
@@ -544,13 +541,11 @@ class TabbedNavigationBarColorController
     }
 
     private boolean useBottomAttachedUiColor() {
-        return ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                && mBottomAttachedUiColor != null;
+        return mBottomAttachedUiColor != null;
     }
 
     private boolean useActiveTabColor() {
-        return ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
-                && mLayoutManager != null
+        return mLayoutManager != null
                 && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING
                 && mActiveTab != null;
     }
@@ -583,10 +578,6 @@ class TabbedNavigationBarColorController
 
     int getNavigationBarColorForTesting() {
         return mNavigationBarColor;
-    }
-
-    private static boolean isNavBarColorAnimationDisabled() {
-        return ChromeFeatureList.sNavBarColorMatchesTabBackgroundColorAnimationDisabled.getValue();
     }
 
     @Override
