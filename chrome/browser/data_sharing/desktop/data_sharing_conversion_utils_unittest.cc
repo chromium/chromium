@@ -19,7 +19,7 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   member->gaia_id = "456";
   member->role = data_sharing::mojom::MemberRole::kMember;
   member->display_name = "member display";
-  member->display_name = "member given";
+  member->given_name = "member given";
   member->email = "test@gmail.com";
   member->avatar_url = GURL("example.com");
   group->members.push_back(std::move(member));
