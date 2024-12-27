@@ -65,6 +65,7 @@ BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon);
+BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionUseIsKnownToSync);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleCategories);
 BASE_DECLARE_FEATURE(kNtpTabResumptionModuleTimeLimit);
 BASE_DECLARE_FEATURE(kNtpWallpaperSearchButton);

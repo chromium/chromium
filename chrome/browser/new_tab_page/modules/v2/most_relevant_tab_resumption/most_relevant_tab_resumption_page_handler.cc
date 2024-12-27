@@ -79,6 +79,8 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr TabToMojom(
                                     tab.visit.url);
   url_visit_mojom->title = *dictionary.FindString("title");
 
+  url_visit_mojom->is_known_to_sync = false;
+
   return url_visit_mojom;
 }
 
@@ -98,6 +100,8 @@ ntp::most_relevant_tab_resumption::mojom::URLVisitPtr HistoryEntryVisitToMojom(
   NewTabUI::SetUrlTitleAndDirection(&dictionary, visit.url_row.title(),
                                     visit.url_row.url());
   url_visit_mojom->title = *dictionary.FindString("title");
+
+  url_visit_mojom->is_known_to_sync = visit.visit_row.is_known_to_sync;
 
   return url_visit_mojom;
 }

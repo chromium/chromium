@@ -65,6 +65,10 @@ export class ModuleElement extends I18nMixinLit
       },
 
       showInfoDialog_: {type: Boolean},
+
+      useIsKnownToSync_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -73,6 +77,9 @@ export class ModuleElement extends I18nMixinLit
   protected shouldShowDeviceIcon_: boolean =
     loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
   protected showInfoDialog_: boolean = false;
+  protected useIsKnownToSync_:
+    boolean =
+        loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -156,7 +163,7 @@ export class ModuleElement extends I18nMixinLit
         this.urlVisits[index]);
 
     this.urlVisits =
-        [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
+      [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
     if (this.urlVisits.length > 0) {
       this.fire('dismiss-module-element', {
         message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),

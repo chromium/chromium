@@ -33,6 +33,7 @@ function createSampleURLVisit(
           displayString: 'You visited 0 seconds ago',
         },
         formFactor: FormFactor.kDesktop,
+        isKnownToSync: false,
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},
         urlKey: '',
