@@ -11,9 +11,10 @@ import {TestRunner} from './web_ui_test.mojom-webui.js';
 
 /**
  * Reports a test result using the TestRunner Mojo interface.
- * @param {string=} opt_result
  */
-window.reportMojoWebUITestResult = function(opt_result) {
+function reportMojoWebUITestResult(result?: string) {
   const runner = TestRunner.getRemote();
-  runner.testComplete(opt_result);
-};
+  runner.testComplete(result || null);
+}
+
+Object.assign(window, {reportMojoWebUITestResult});

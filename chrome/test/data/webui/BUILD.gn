@@ -596,7 +596,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     deps += [
       "chromeos:build_grdp",
-      "chromeos:build_web_ui_test_mojo_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/ash_common/cr_elements:build_grdp",
@@ -664,7 +663,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/os_feedback_ui/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
-      "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]
