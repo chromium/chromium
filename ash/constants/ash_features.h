@@ -1201,7 +1201,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIsolatedWebAppKioskEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForShortcutCustomization();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKerberosRememberPasswordByDefaultEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

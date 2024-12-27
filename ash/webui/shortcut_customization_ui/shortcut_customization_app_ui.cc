@@ -258,9 +258,7 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isCustomizationAllowed",
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
-  html_source->AddBoolean(
-      "isJellyEnabledForShortcutCustomization",
-      ash::features::IsJellyEnabledForShortcutCustomization());
+  html_source->AddBoolean("isJellyEnabledForShortcutCustomization", true);
   html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
                           features::IsInputDeviceSettingsSplitEnabled());
   html_source->AddBoolean(
@@ -349,9 +347,6 @@ void ShortcutCustomizationAppUI::BindInterface(
 
 void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  // BindInterface should not be called unless jelly-colors and
-  // scanning-app-jelly flags are enabled.
-  CHECK(features::IsJellyEnabledForShortcutCustomization());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }
