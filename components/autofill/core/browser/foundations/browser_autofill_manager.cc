@@ -1930,11 +1930,14 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (std::ranges::any_of(shown_suggestion_types, [](SuggestionType type) {
         return type == SuggestionType::kAddressEntryOnTyping;
       })) {
-    // Assert that only the expected suggestion types exist.
-    CHECK(shown_suggestion_types ==
-          DenseSet<SuggestionType>({SuggestionType::kAddressEntryOnTyping,
+    // Assert that only the expected suggestion types exist. Note that despite
+    // `SuggestionType::kDatalistEntry` is optionally added by
+    // `AutofillExternalDelegate`, therefore checking for it is also required.
+    CHECK(DenseSet<SuggestionType>({SuggestionType::kAddressEntryOnTyping,
+                                    SuggestionType::kDatalistEntry,
                                     SuggestionType::kSeparator,
-                                    SuggestionType::kManageAddress}));
+                                    SuggestionType::kManageAddress})
+              .contains_all(shown_suggestion_types));
     metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(field_id);
     return;
   }
