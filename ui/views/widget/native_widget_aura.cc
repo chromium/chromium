@@ -267,14 +267,15 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   if (params.type == Widget::InitParams::TYPE_BUBBLE) {
     wm::SetHideOnDeactivate(window_, true);
   }
-  window_->SetTransparent(params.opacity ==
-                          Widget::InitParams::WindowOpacity::kTranslucent);
 
   // Check for ShadowType::kNone before aura::Window::Init() to ensure observers
   // do not add useless shadow layers by deriving one from the window type.
   SetShadowElevationFromInitParams(window_, params);
 
   window_->Init(params.layer_type);
+  window_->SetTransparent(params.opacity ==
+                          Widget::InitParams::WindowOpacity::kTranslucent);
+
   // Set name after layer init so it propagates to layer.
   window_->SetName(params.name.empty() ? "NativeWidgetAura" : params.name);
   if (params.type == Widget::InitParams::TYPE_CONTROL) {
