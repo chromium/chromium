@@ -286,6 +286,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kMostVisitedTilesReselect,
     &kMultiInstanceApplicationStatusCleanup,
     &kNativePageTransitionHardwareCapture,
+    &kNavBarColorMatchesTabBackground,
     &kNewTabSearchEngineUrlAndroid,
     &kNewTabPageAndroidTriggerForPrerender2,
     &kNotificationPermissionVariant,
@@ -858,6 +859,10 @@ BASE_FEATURE(kMultiInstanceApplicationStatusCleanup,
 BASE_FEATURE(kNativePageTransitionHardwareCapture,
              "NativePageTransitionHardwareCapture",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNavBarColorMatchesTabBackground,
+             "NavBarColorMatchesTabBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabSearchEngineUrlAndroid,
              "NewTabSearchEngineUrlAndroid",

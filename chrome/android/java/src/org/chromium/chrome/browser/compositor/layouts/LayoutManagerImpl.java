@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Context
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -654,7 +655,11 @@ public class LayoutManagerImpl
                         // The NavBarColorMatchesTabBackground increases the frequency of these
                         // notifications, so Chrome should use a more targeted method to limit
                         // performance impact.
-                        updateLayoutTabBackgroundColor(tab.getId());
+                        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                            updateLayoutTabBackgroundColor(tab.getId());
+                        } else {
+                            initLayoutTabFromHost(tab.getId());
+                        }
                     }
 
                     @Override

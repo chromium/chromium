@@ -557,11 +557,13 @@ class TabImpl implements Tab {
 
     @Override
     public int getBackgroundColor() {
-        if (mCustomView != null && mCustomViewBackgroundColor != null) {
-            return mCustomViewBackgroundColor;
-        }
-        if (mNativePage != null) {
-            return mNativePage.getBackgroundColor();
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+            if (mCustomView != null && mCustomViewBackgroundColor != null) {
+                return mCustomViewBackgroundColor;
+            }
+            if (mNativePage != null) {
+                return mNativePage.getBackgroundColor();
+            }
         }
         return mWebContentBackgroundColor;
     }
@@ -1707,7 +1709,8 @@ class TabImpl implements Tab {
 
     /** Called to notify when the page had painted something non-empty. */
     void notifyDidFirstVisuallyNonEmptyPaint() {
-        if (mWaitingOnBgColorAfterHidingNativePage) {
+        if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
+                && mWaitingOnBgColorAfterHidingNativePage) {
             onBackgroundColorChanged(
                     BackgroundColorChangeOrigin.BG_COLOR_UPDATE_AFTER_HIDING_NATIVE_PAGE);
         }
@@ -1728,7 +1731,8 @@ class TabImpl implements Tab {
 
         int newBackgroundColor = getBackgroundColor();
         // Avoid notifying the observers if the background color hasn't actually changed.
-        if (mTabBackgroundColor == newBackgroundColor) return;
+        if (mTabBackgroundColor == newBackgroundColor
+                && ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) return;
 
         mTabBackgroundColor = newBackgroundColor;
 
@@ -1972,7 +1976,10 @@ class TabImpl implements Tab {
                         mNativePageSmoothTransitionDelegate.prepare();
                     }
                     pushNativePageStateToNavigationEntry();
-                    onBackgroundColorChanged(BackgroundColorChangeOrigin.NATIVE_PAGE_SHOWN);
+
+                    if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
+                        onBackgroundColorChanged(BackgroundColorChangeOrigin.NATIVE_PAGE_SHOWN);
+                    }
                     updateThemeColor(TabState.UNSPECIFIED_THEME_COLOR);
                 });
     }

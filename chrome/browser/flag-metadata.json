@@ -3510,6 +3510,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-nav-bar-matches-tab-android",
+    "owners": [ "clhager@google.com", "wenyufu@chromium.org", "twellington@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-network-and-issuer-icons-for-secure-payment-confirmation",
     "owners": [ "smcgruer@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 143
