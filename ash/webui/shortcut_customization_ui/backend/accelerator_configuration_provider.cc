@@ -1149,6 +1149,12 @@ void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
       completed_actions);
 }
 
+void AcceleratorConfigurationProvider::HasCustomAccelerators(
+    HasCustomAcceleratorsCallback callback) {
+  std::move(callback).Run(
+      ash_accelerator_configuration_->HasCustomAccelerators());
+}
+
 void AcceleratorConfigurationProvider::RecordAddOrEditSubactions(
     bool is_add,
     shortcut_customization::mojom::Subactions subactions) {

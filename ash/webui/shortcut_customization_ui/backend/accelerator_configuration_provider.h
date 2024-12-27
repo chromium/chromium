@@ -148,6 +148,8 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::EditDialogCompletedActions
           completed_actions) override;
 
+  void HasCustomAccelerators(HasCustomAcceleratorsCallback callback) override;
+
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 

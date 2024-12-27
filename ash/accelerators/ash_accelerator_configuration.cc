@@ -648,6 +648,10 @@ bool AshAcceleratorConfiguration::IsValid(uint32_t id) const {
          default_id_to_accelerators_cache_.contains(id);
 }
 
+bool AshAcceleratorConfiguration::HasCustomAccelerators() {
+  return GetTotalNumberOfModifications() > 0;
+}
+
 void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
   // Re-populate `accelerators_` which contains all currently available
   // accelerators and deprecated accelerators, if present.
