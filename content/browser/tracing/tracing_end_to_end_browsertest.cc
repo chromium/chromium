@@ -252,9 +252,8 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, ThreadAndProcessName) {
       "process.name AS process_name "
       "FROM slice "
       "JOIN thread_track ON thread_track.id = slice.track_id "
-      "JOIN thread ON thread.utid = thread_track.utid "
-      "JOIN process_track ON process_track.id = thread_track.parent_id "
-      "JOIN process ON process.upid = process_track.upid "
+      "JOIN thread USING (utid) "
+      "JOIN process USING (upid) "
       "WHERE slice.cat = 'foo'";
   auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
