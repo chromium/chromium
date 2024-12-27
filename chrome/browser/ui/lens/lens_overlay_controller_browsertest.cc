@@ -228,6 +228,37 @@ constexpr char kTextQueryParamKey[] = "q";
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
 
+// Opens the given URL in the given browser and waits for the first paint to
+// complete.
+  void WaitForPaintImpl(
+      Browser* browser,
+      const GURL& url,
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+      int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser, url, disposition, browser_test_flags));
+    const bool first_paint_completed =
+        browser
+            ->tab_strip_model()
+            ->GetActiveTab()
+            ->GetContents()
+            ->CompletedFirstVisuallyNonEmptyPaint();
+
+    // Return early if first paint is already completed.
+    if (first_paint_completed) {
+      return;
+    }
+    // If the first paint was not mark as completed by the WebContents, use a
+    // workaround to request a frame on the WebContents. This function will only
+    // return when the promise is resolved and thus there is content painted on
+    // the WebContents to allow screenshotting. See crbug.com/334747109 for
+    // details on this possible race condition and the workaround used in
+    // interactive tests.
+    ASSERT_TRUE(content::ExecJs(
+        browser->tab_strip_model()->GetActiveTab()->GetContents(),
+        kPaintWorkaroundFunction));
+  }
+
 void ClickBubbleDialogButton(
     views::BubbleDialogDelegate* bubble_widget_delegate,
     views::View* button) {
@@ -636,28 +667,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, disposition, browser_test_flags));
-    const bool first_paint_completed =
-        browser()
-            ->tab_strip_model()
-            ->GetActiveTab()
-            ->GetContents()
-            ->CompletedFirstVisuallyNonEmptyPaint();
-
-    // Return early if first paint is already completed.
-    if (first_paint_completed) {
-      return;
-    }
-    // If the first paint was not mark as completed by the WebContents, use a
-    // workaround to request a frame on the WebContents. This function will only
-    // return when the promise is resolved and thus there is content painted on
-    // the WebContents to allow screenshotting. See crbug.com/334747109 for
-    // details on this possible race condition and the workaround used in
-    // interactive tests.
-    ASSERT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveTab()->GetContents(),
-        kPaintWorkaroundFunction));
+    WaitForPaintImpl(browser(), url, disposition, browser_test_flags);
   }
 
   // Helper to remove the start time and viewport size query params from the
@@ -4756,11 +4766,14 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
-// TODO(crbug.com/378810677): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(
     LensOverlayControllerBrowserPDFContextualizationTest,
-    DISABLED_RecordSearchboxFocusedInSessionNavigationHistograms) {
+    RecordSearchboxFocusedInSessionNavigationHistograms) {
   base::HistogramTester histogram_tester;
+
+  // Load a non PDF.
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  WaitForPaintImpl(browser(), url);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -4790,8 +4803,8 @@ IN_PROC_BROWSER_TEST_P(
   fake_query_controller->ResetTestingState();
 
   // Change page to a PDF.
-  const GURL url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
-  LoadPdfGetExtensionHost(url);
+  const GURL pdf_url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
+  LoadPdfGetExtensionHost(pdf_url);
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
@@ -4816,11 +4829,11 @@ IN_PROC_BROWSER_TEST_P(
       "Lens.Overlay.ContextualSearchBox.FocusedInSession", true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
       "FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
       "FocusedInSession",
       true, /*expected_count=*/1);
 }
