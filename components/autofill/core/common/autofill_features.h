@@ -250,24 +250,45 @@ BASE_DECLARE_FEATURE(kAutofillVoteWhenInactive);
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressDeclinedFirstTimeCreateSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressFilledPlusAddressViaManualFallbackSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressUserCreatedMultiplePlusAddressesSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressUserCreatedPlusAddressViaManualFallbackSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressUserDidChooseEmailOverPlusAddressSurveyCooldownOverrideDays;
 // TODO: crbug.com/348139343 - Move back to components/plus_addresses.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey);
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<int>
+    kPlusAddressUserDidChoosePlusAddressOverEmailSurveyCooldownOverrideDays;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 

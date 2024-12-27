@@ -9,13 +9,17 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/lens/lens_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/variations/service/google_groups_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_warning_desktop_hats_utils.h"
@@ -626,6 +630,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressDeclinedFirstTimeCreateSurvey,
       kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate,
@@ -633,6 +641,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressDeclinedFirstTimeCreateSurveyCooldownOverrideDays.Get()));
+
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
       kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses,
@@ -640,6 +652,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserCreatedMultiplePlusAddressesSurveyCooldownOverrideDays
+              .Get()));
+
   survey_configs.emplace_back(
       &autofill::features::
           kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
@@ -648,6 +665,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserCreatedPlusAddressViaManualFallbackSurveyCooldownOverrideDays
+              .Get()));
+
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
       kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
@@ -655,6 +677,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserDidChoosePlusAddressOverEmailSurveyCooldownOverrideDays
+              .Get()));
+
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
       kHatsSurveyTriggerPlusAddressDidChooseEmailOverPlusAddressSurvey,
@@ -662,6 +689,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressUserDidChooseEmailOverPlusAddressSurveyCooldownOverrideDays
+              .Get()));
+
   survey_configs.emplace_back(
       &autofill::features::kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
       kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
@@ -669,6 +701,10 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,
           plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.back().SetCooldownPeriodOverride(base::Days(
+      autofill::features::
+          kPlusAddressFilledPlusAddressViaManualFallbackSurveyCooldownOverrideDays
+              .Get()));
 
   return survey_configs;
 }
@@ -691,7 +727,8 @@ SurveyConfig::SurveyConfig(
     bool log_responses_to_ukm)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
-      product_specific_string_data_fields(product_specific_string_data_fields) {
+      product_specific_string_data_fields(product_specific_string_data_fields),
+      survey_feature(feature) {
   enabled = base::FeatureList::IsEnabled(*feature);
   if (!enabled) {
     return;
@@ -744,6 +781,38 @@ std::optional<uint64_t> SurveyConfig::ValidateHatsSurveyUkmId(
   return hats_survey_ukm_id.has_value() && hats_survey_ukm_id.value() > 0
              ? hats_survey_ukm_id
              : std::nullopt;
+}
+
+void SurveyConfig::SetCooldownPeriodOverride(
+    const base::TimeDelta& cooldown_period_override) {
+  if (!cooldown_period_override.is_zero()) {
+    cooldown_period_override_ = cooldown_period_override;
+  }
+}
+
+std::optional<base::TimeDelta> SurveyConfig::GetCooldownPeriodOverride(
+    Profile* profile) const {
+  if (!cooldown_period_override_) {
+    return std::nullopt;
+  }
+
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile);
+
+  if (!groups_manager) {
+    return std::nullopt;
+  }
+
+  if (!groups_manager->IsFeatureEnabledForProfile(*survey_feature) ||
+      !groups_manager->IsFeatureGroupControlled(*survey_feature)) {
+    return std::nullopt;
+  }
+
+  return cooldown_period_override_;
+}
+
+bool SurveyConfig::IsCooldownOverrideEnabled(Profile* profile) const {
+  return GetCooldownPeriodOverride(profile).has_value();
 }
 
 void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {

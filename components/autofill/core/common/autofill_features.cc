@@ -710,6 +710,11 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
              "PlusAddressAcceptedFirstTimeCreateSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressAcceptedFirstTimeCreateSurveyCooldownOverrideDays{
+        &kPlusAddressAcceptedFirstTimeCreateSurvey,
+        "plus-address-accepted-first-time-create-survey-cooldown-override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the declined the first plus
 // address creation flow.
@@ -717,6 +722,11 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
              "PlusAddressDeclinedFirstTimeCreateSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressDeclinedFirstTimeCreateSurveyCooldownOverrideDays{
+        &kPlusAddressDeclinedFirstTimeCreateSurvey,
+        "plus-address-declined-first-time-create-survey-cooldown-override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the user fills a plus address
 // after triggering autofill manually.
@@ -724,6 +734,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
              "PlusAddressFilledPlusAddressViaManualFallbackSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressFilledPlusAddressViaManualFallbackSurveyCooldownOverrideDays{
+        &kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+        "plus-address-filled-plus-address-via-manual-fallback-survey-cooldown-"
+        "override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the user creates a 3rd+ plus
 // address.
@@ -731,6 +747,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
              "PlusAddressUserCreatedMultiplePlusAddressesSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressUserCreatedMultiplePlusAddressesSurveyCooldownOverrideDays{
+        &kPlusAddressUserCreatedMultiplePlusAddressesSurvey,
+        "plus-address-user-created-multiple-plus-addresses-survey-cooldown-"
+        "override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the user creates a plus address
 // triggering the popup via the Chrome context menu on Desktop or via the
@@ -739,6 +761,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
              "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressUserCreatedPlusAddressViaManualFallbackSurveyCooldownOverrideDays{
+        &kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
+        "plus-address-user-created-plus-address-via-manual-fallback-survey-"
+        "cooldown-override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the user chooses to fill an email
 // when a plus address suggestion is also offered in the Autofill popup.
@@ -746,6 +774,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
              "PlusAddressUserDidChooseEmailOverPlusAddressSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressUserDidChooseEmailOverPlusAddressSurveyCooldownOverrideDays{
+        &kPlusAddressUserDidChooseEmailOverPlusAddressSurvey,
+        "plus-address-user-did-choose-email-over-plus-address-survey-cooldown-"
+        "override-days",
+        0};
 
 // When enabled, a HaTS survey is shown after the user chooses to fill a plus
 // address when an email suggestion is also offered in the Autofill popup.
@@ -753,6 +787,12 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
              "PlusAddressUserDidChoosePlusAddressOverEmailSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int>
+    kPlusAddressUserDidChoosePlusAddressOverEmailSurveyCooldownOverrideDays{
+        &kPlusAddressUserDidChoosePlusAddressOverEmailSurvey,
+        "plus-address-user-did-choose-plus-address-over-email-survey-cooldown-"
+        "override-days",
+        0};
 
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against

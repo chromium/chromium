@@ -51,6 +51,8 @@ class HatsService : public KeyedService {
 
     // Metadata affecting all triggers.
     std::optional<base::Time> any_last_survey_started_time;
+    std::optional<base::Time>
+        any_last_survey_with_cooldown_override_started_time;
   };
 
   struct SurveyOptions {
