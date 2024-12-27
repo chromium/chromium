@@ -212,21 +212,19 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
   ShowAndVerifyUi();
 }
 
-// TODO(https://crbug.com/383361891): Failing on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowsAllTypes DISABLED_ShowsAllTypes
-#else
-#define MAYBE_ShowsAllTypes ShowsAllTypes
-#endif
-IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest,
-                       MAYBE_ShowsAllTypes) {
+IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest, ShowsAllTypes) {
   auto activity_log = CreateMockActivityLogWithAllTypes();
   ShowLog(activity_log);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
 
+#if BUILDFLAG(IS_MAC)
+  // Initial caps on Mac.
+  EXPECT_EQ(bubble->GetWindowTitle(), u"Recent Activity");
+#else
   EXPECT_EQ(bubble->GetWindowTitle(), u"Recent activity");
+#endif
 
   EXPECT_EQ(bubble->GetRowForTesting(0)->activity_text(), u"You changed a tab");
   EXPECT_EQ(bubble->GetRowForTesting(0)->metadata_text(),
