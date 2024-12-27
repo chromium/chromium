@@ -1360,8 +1360,8 @@
   <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_TITLE" desc="The title of the recommended apps screen">
     Top apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE" desc="The subtitle of the recommended apps screen">
-    Selected apps will be installed after setup. Find more recommendations later in the Explore app.
+  <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SUBTITLE" desc="The subtitle of the recommended apps screen.Apps and Games here refers to system apps provided by the App Mall team.">
+    Selected apps will be installed after setup. Find more recommendations later in the Apps &amp; Games app.
   </message>
   <message name="IDS_LOGIN_PERSONALIZED_RECOMMEND_APPS_SCREEN_SCREEN_SKIP" desc="The label on the button that skips the recommended apps screen">
     Skip
