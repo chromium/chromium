@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 
 class GURL;
 namespace supervised_user {
@@ -23,23 +24,6 @@ class SupervisedUserSettingsService;
 class WebContentHandler {
  public:
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
-
-  // The result of local web approval flow.
-  // Used for metrics. Those values are logged to UMA. Entries should not be
-  // renumbered and numeric values should never be reused.
-  // Matches the enum "FamilyLinkUserLocalWebApprovalResult" in
-  // src/tools/metrics/histograms/enums.xml.
-  // LINT.IfChange
-  enum class LocalApprovalResult {
-    kApproved = 0,
-    kDeclined = 1,
-    kCanceled = 2,
-    kError = 3,
-    kMaxValue = kError
-  };
-  // LINT.ThenChange(
-  //     //tools/metrics/histograms/enums.xml
-  // )
 
   virtual ~WebContentHandler();
 
