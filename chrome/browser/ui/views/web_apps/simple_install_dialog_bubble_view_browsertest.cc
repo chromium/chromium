@@ -111,15 +111,15 @@ class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
 
   // Open a popup window with the given URL and return its WebContents.
-  base::expected<content::WebContents*, std::string> OpenPopup(
-      const GURL& url) {
+  base::expected<content::WebContents*, std::string>
+  OpenPopupOfSize(const GURL& url, int width = 200, int height = 100) {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     PopupObserver observer(web_contents);
     if (!content::ExecJs(
             web_contents,
             content::JsReplace(
-                "window.open($1, '', 'popup=true, width=200, height=100')",
-                url))) {
+                "window.open($1, '', 'popup=true, width=$2, height=$3')", url,
+                width, height))) {
       return base::unexpected("window.open failed");
     }
     observer.Wait();
@@ -333,19 +333,22 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       views::Widget::ClosedReason::kCloseButtonClicked, 1);
 }
 
-// TODO(dibyapal): `ui_test_utils::SetAndWaitForBounds()` does not seem to be
-// resizing the browser window on Mac.
-#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        WindowSizeLoweringClosesDialog) {
+  auto popup_value = OpenPopupOfSize(GURL("https://www.example.com"),
+                                     /*width=*/500, /*height=*/500);
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
-      GetInstallTracker(browser());
+      GetInstallTracker(popup_browser);
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   ShowSimpleInstallDialogForWebApps(
-      browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      popup_browser->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
       std::move(install_tracker), test_future.GetCallback());
 
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
@@ -354,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
 
   base::HistogramTester histograms;
   views::test::WidgetDestroyedWaiter destroy_waiter(widget);
-  // Make the size of the browser window too small for the dialog.
-  ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(100, 100));
+  // Make the size of the popup window to be too small for the dialog.
+  ui_test_utils::SetAndWaitForBounds(*popup_browser, gfx::Rect(100, 100));
   destroy_waiter.Wait();
 
   ASSERT_TRUE(test_future.Wait());
@@ -365,11 +368,10 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       "WebApp.InstallConfirmation.CloseReason",
       views::Widget::ClosedReason::kCloseButtonClicked, 1);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        SmallPopupClosesWindowAutomatically) {
-  auto popup_value = OpenPopup(GURL("https://www.example.com"));
+  auto popup_value = OpenPopupOfSize(GURL("https://www.example.com"));
   EXPECT_TRUE(popup_value.has_value());
   content::WebContents* popup_contents = popup_value.value();
   Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
