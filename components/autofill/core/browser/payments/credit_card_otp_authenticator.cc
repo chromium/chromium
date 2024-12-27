@@ -202,13 +202,24 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   // this function is invoked.
   autofill_client_->GetPaymentsAutofillClient()->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
-  // Show the virtual card permanent error dialog if server explicitly returned
-  // vcn permanent error, show temporary error dialog for the rest failure cases
-  // since currently only virtual card is supported.
-  autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-      AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-          /*is_permanent_error=*/result ==
-          PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  // Show the virtual card vcn error dialogs if server explicitly returned vcn
+  // errors, show card info retrieval permanent error dialog for permanent error
+  // and temporary errors for the rest failure cases since the message there is
+  // generic for all errors.
+  if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  } else {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::
+            WithCardInfoRetrievalPermanentOrTemporaryError(
+                /*is_permanent_error=*/result ==
+                PaymentsRpcResult::kPermanentFailure));
+  }
+
   if (requester_) {
     OtpAuthenticationResponse response;
     if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
@@ -370,14 +381,23 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
   // If the server returned error dialog fields to be displayed, we prefer them
   // since they will be more detailed to the specific error that occurred.
+  // Otherwise we display virtual card errors for Vcn failure results and card
+  // info retrieval errors as default since the message is more generic there.
   if (response_details.autofill_error_dialog_context) {
     autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         *response_details.autofill_error_dialog_context);
-  } else {
+  } else if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+             result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
             PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  } else {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::
+            WithCardInfoRetrievalPermanentOrTemporaryError(
+                /*is_permanent_error=*/result ==
+                PaymentsRpcResult::kPermanentFailure));
   }
   Reset();
 }
