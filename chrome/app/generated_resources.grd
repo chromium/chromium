@@ -7782,6 +7782,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL" desc="The label for the option to customize toolbar icons in the customization menu on the New Tab Page. This is a button which opens a panel for customizing toolbar icons when clicked.">
         Toolbar
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL" desc="The label for the option to customize extensions in the customization menu in the customize chrome menu.">
+        Extensions
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
         Cards
       </message>

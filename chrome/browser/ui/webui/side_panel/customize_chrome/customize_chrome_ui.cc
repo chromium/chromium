@@ -101,6 +101,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
+      {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
