@@ -97,6 +97,8 @@ message ModelPrototypingRequest {
         MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL = 3;
 
         MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL_MPP = 4;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V3 = 5;
       }
     }
   }

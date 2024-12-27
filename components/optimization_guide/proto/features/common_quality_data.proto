@@ -268,10 +268,6 @@ message ContentAttributes {
   // This is the geometry of the common_ancestor_dom_node_id.
   Geometry geometry = 4;
 
-  repeated TextInfo text_info = 5; // deprecated
-
-  repeated ImageInfo image_info = 6; // deprecated
-
   // These can come from the aria role, the html tag, or are assumed from some
   // properties of the page.
   repeated AnnotatedRole annotated_roles = 15;
@@ -283,6 +279,8 @@ message ContentAttributes {
   string tag_name = 17; // HTML tag name.
 
   string type = 18; // HTML type attribute.
+
+  reserved 5, 6;
 }
 
 // The geometry of the content, in the page coordinate system.
@@ -326,9 +324,7 @@ message TextInfo {
 
   TextStyle text_style = 3;
 
-  BoundingRect text_bounding_box = 2; // deprecated
-
-  reserved 4;
+  reserved 2, 4;
 }
 
 // Next ID: 5
@@ -354,7 +350,7 @@ message ImageInfo {
   // inline images will be skipped.
   string source_url = 3;
 
-  BoundingRect image_bounding_box = 1; // deprecated
+  reserved 1;
 }
 
 message AnchorData {
@@ -431,15 +427,7 @@ message TableData {
   // The name of the table, coming from the caption.
   string table_name = 1;
 
-  repeated TableRow header_rows = 2; // deprecated
-
-  repeated TableRow body_rows = 3; // deprecated
-
-  repeated TableRow footer_rows = 4; // deprecated
-}
-
-message TableRow {
-  repeated ContentNode cells = 1;
+  reserved 2, 3, 4;
 }
 
 message IframeData {
@@ -453,6 +441,10 @@ message IframeData {
 
 message TableRowData {
   TableRowType type = 1;
+}
+
+message TableRow {
+  repeated ContentNode cells = 1;
 }
 
 message UserAnnotationsEntry {
@@ -1340,7 +1332,7 @@ enum AnnotatedPageContentVersion {
 // When adding new types, please also update AIPageContentAttributeType in
 // third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.
 // See crrev.com/c/6072788 for an example.
-// Next ID: 23;
+// Next ID: 24;
 enum ContentAttributeType {
   CONTENT_ATTRIBUTE_UNKNOWN = 0;
 
@@ -1351,9 +1343,9 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IFRAME = 3;
 
   // Text chunks.
-  CONTENT_ATTRIBUTE_PARAGRAPH = 4; // deprecated, use ANNOTATED_ROLE_PARAGRAPH.
+  CONTENT_ATTRIBUTE_PARAGRAPH = 4;
 
-  CONTENT_ATTRIBUTE_HEADING = 5; // deprecated, use ANNOTATED_ROLE_HEADING.
+  CONTENT_ATTRIBUTE_HEADING = 5;
 
   CONTENT_ATTRIBUTE_TEXT = 20;
 
@@ -1363,9 +1355,11 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   // Structured chunks.
-  CONTENT_ATTRIBUTE_ORDERED_LIST = 6; // deprecated, use ANNOTATED_ROLE_ORDERED_LIST.
+  CONTENT_ATTRIBUTE_ORDERED_LIST = 6;
 
-  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7; // deprecated, use ANNOTATED_ROLE_UNORDERED_LIST.
+  CONTENT_ATTRIBUTE_UNORDERED_LIST = 7;
+
+  CONTENT_ATTRIBUTE_LIST_ITEM = 23;
 
   CONTENT_ATTRIBUTE_FORM = 8;
 
@@ -1375,22 +1369,7 @@ enum ContentAttributeType {
 
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 
-  // Landmark/section chunks.
-  CONTENT_ATTRIBUTE_HEADER = 12; // deprecated, use ANNOTATED_ROLE_HEADER.
-
-  CONTENT_ATTRIBUTE_NAV = 13; // deprecated, use ANNOTATED_ROLE_NAV.
-
-  CONTENT_ATTRIBUTE_SEARCH = 14; // deprecated, use ANNOTATED_ROLE_SEARCH.
-
-  CONTENT_ATTRIBUTE_MAIN = 15; // deprecated, use ANNOTATED_ROLE_MAIN.
-
-  CONTENT_ATTRIBUTE_ARTICLE = 16; // deprecated, use ANNOTATED_ROLE_ARTICLE.
-
-  CONTENT_ATTRIBUTE_SECTION = 17; // deprecated, use ANNOTATED_ROLE_SECTION.
-
-  CONTENT_ATTRIBUTE_ASIDE = 18; // deprecated, use ANNOTATED_ROLE_ASIDE.
-
-  CONTENT_ATTRIBUTE_FOOTER = 19; // deprecated, use ANNOTATED_ROLE_FOOTER.
+  reserved 12, 13, 14, 15, 16, 17, 18, 19;
 }
 
 // Next ID: 5
@@ -1475,7 +1454,7 @@ enum TableRowType {
 enum AnnotatedRole {
   ANNOTATED_ROLE_UNKNOWN = 0;
 
-  // Text chunks.
+  // Text chunks (deprecated)
   ANNOTATED_ROLE_PARAGRAPH = 1;
 
   ANNOTATED_ROLE_HEADING = 2;
