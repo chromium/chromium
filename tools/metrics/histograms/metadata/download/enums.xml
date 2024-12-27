@@ -724,6 +724,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Timeout and failed"/>
 </enum>
 
+<enum name="NotificationAttachEvent">
+  <int value="0" label="Attached on job start"/>
+  <int value="1" label="Attached after job start"/>
+  <int value="2" label="Never attached before job complete"/>
+</enum>
+
 <enum name="PresentAddPassesDialogResult">
   <summary>
     Defines the result of Add Passes dialog presentation. The presentation can

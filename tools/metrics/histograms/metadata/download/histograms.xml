@@ -69,6 +69,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Transient"/>
 </variants>
 
+<histogram name="Download.Android.NotificationAttachEvent"
+    enum="NotificationAttachEvent" expires_after="2025-06-30">
+  <owner>qinmin@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records events related to attaching a notification to a download job to keep
+    the chrome running during a download. This is recorded either when the
+    notification is first attached, or when the job completes while no
+    notification is attached. This is only recorded on Android U and above.
+  </summary>
+</histogram>
+
 <histogram name="Download.Android.OpenDialog.Events"
     enum="OpenDownloadDialogEvent" expires_after="2025-05-04">
   <owner>qinmin@chromium.org</owner>
