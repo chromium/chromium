@@ -74,8 +74,16 @@ void GraphImplOrt::CreateAndBuild(
       std::move(wrapped_callback));
 }
 
+GraphImplOrt::Session::Session(OrtSession* session,
+                               std::vector<base::HeapArray<uint8_t>> weights)
+    : weights(std::move(weights)), session(session) {}
+
+GraphImplOrt::Session::~Session() {
+  GetOrtApi()->ReleaseSession(GetSession());
+}
+
 // static
-base::expected<OrtSession*, mojom::ErrorPtr>
+base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
 GraphImplOrt::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
     mojom::CreateContextOptionsPtr context_options,
@@ -83,12 +91,10 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     scoped_refptr<AllocatorOrt> allocator) {
-  auto result = GraphBuilderOrt::CreateAndBuild(
-      *graph_info, std::move(context_properties), std::move(constant_operands),
-      allocator);
-  if (!result.has_value()) {
-    return base::unexpected(std::move(result.error()));
-  }
+  ASSIGN_OR_RETURN(std::unique_ptr<GraphBuilderOrt::Result> result,
+                   GraphBuilderOrt::CreateAndBuild(
+                       *graph_info, std::move(context_properties),
+                       std::move(constant_operands), allocator));
 
   OrtSessionOptions* session_options;
   const OrtApi* ort_api = GetOrtApi();
@@ -118,7 +124,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   OrtSession* session;
   const OrtEnv* env = allocator->env();
   OrtStatus* status = GetOrtGraphApi()->CreateSessionFromModel(
-      env, result.value()->model.get_ptr(), session_options, &session);
+      env, result->model.get_ptr(), session_options, &session);
   ort_api->ReleaseSessionOptions(session_options);
 
   if (status != NULL) {
@@ -129,7 +135,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
         mojom::Error::Code::kUnknownError, "Failed to create ORT session."));
   }
 
-  return session;
+  return base::WrapUnique(new GraphImplOrt::Session(session, std::move(result->weights)));
 }
 
 // static
@@ -137,9 +143,10 @@ void GraphImplOrt::DidCreateAndBuild(
     base::WeakPtr<WebNNContextImpl> context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
-    base::expected<OrtSession*, mojom::ErrorPtr> result) {
+    base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
+        result) {
   if (!result.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(result).error()));
+    std::move(callback).Run(base::unexpected(std::move(result.error())));
     return;
   }
 
@@ -149,9 +156,9 @@ void GraphImplOrt::DidCreateAndBuild(
     return;
   }
 
-  std::move(callback).Run(base::WrapUnique(
-      new GraphImplOrt(std::move(compute_resource_info), result.value(),
-                       static_cast<ContextImplOrt*>(context.get()))));
+  std::move(callback).Run(base::WrapUnique(new GraphImplOrt(
+      std::move(compute_resource_info), std::move(result.value()),
+      static_cast<ContextImplOrt*>(context.get()))));
 }
 
 // Represents the collection of resources associated with a particular graph.
@@ -159,9 +166,9 @@ void GraphImplOrt::DidCreateAndBuild(
 // executing the graph.
 class GraphImplOrt::ComputeResources {
  public:
-  ComputeResources(OrtSession* session,
+  ComputeResources(std::unique_ptr<GraphImplOrt::Session> session,
                    const ComputeResourceInfo& compute_resource_info)
-      : session_(session) {
+      : session_(std::move(session)) {
     size_t input_count =
         compute_resource_info.input_names_to_descriptors.size();
     size_t output_count =
@@ -185,24 +192,21 @@ class GraphImplOrt::ComputeResources {
     }
   }
 
-  ~ComputeResources() {
-    const OrtApi* ort_api = GetOrtApi();
-    ort_api->ReleaseSession(session_);
-  }
+  ~ComputeResources() = default;
 
   void DoDispatch(std::vector<const OrtValue*> input_tensors,
                   std::vector<OrtValue*> output_tensors) {
     CHECK_EQ(input_tensors.size(), input_names_.size());
     CHECK_EQ(output_tensors.size(), output_names_.size());
     const OrtApi* ort_api = GetOrtApi();
-    CHECK_STATUS(ort_api->Run(session_, nullptr, input_names_.data(),
+    CHECK_STATUS(ort_api->Run(session_->GetSession(), nullptr, input_names_.data(),
                               input_tensors.data(), input_names_.size(),
                               output_names_.data(), output_names_.size(),
                               output_tensors.data()));
   }
 
  private:
-  raw_ptr<OrtSession> session_;
+  std::unique_ptr<GraphImplOrt::Session> session_;
   std::vector<std::string> input_names_storage_;
   std::vector<std::string> output_names_storage_;
   // Pointers to the strings in `input_names_storage_`
@@ -214,11 +218,11 @@ class GraphImplOrt::ComputeResources {
 GraphImplOrt::~GraphImplOrt() = default;
 
 GraphImplOrt::GraphImplOrt(ComputeResourceInfo compute_resource_info,
-                           OrtSession* session,
+                           std::unique_ptr<GraphImplOrt::Session> session,
                            ContextImplOrt* context)
     : WebNNGraphImpl(context, std::move(compute_resource_info)) {
   std::unique_ptr<ComputeResources> compute_resources = base::WrapUnique(
-      new ComputeResources(session, this->compute_resource_info()));
+      new ComputeResources(std::move(session), this->compute_resource_info()));
   compute_resources_state_ =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));

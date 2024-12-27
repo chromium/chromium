@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -21,7 +23,6 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
-#include "base/memory/scoped_refptr.h"
 
 namespace webnn {
 
@@ -50,12 +51,24 @@ class GraphImplOrt final : public WebNNGraphImpl {
   GraphImplOrt& operator=(const GraphImplOrt&) = delete;
   ~GraphImplOrt() override;
 
+  struct Session {
+    Session(OrtSession* session, std::vector<base::HeapArray<uint8_t>> weights);
+    Session(const Session&) = delete;
+    Session& operator=(const Session&) = delete;
+    ~Session();
+
+    OrtSession* GetSession() { return session.get(); }
+
+    std::vector<base::HeapArray<uint8_t>> weights;
+    raw_ptr<OrtSession> session;
+  };
+
  private:
   GraphImplOrt(ComputeResourceInfo compute_resource_info,
-               OrtSession* session,
+               std::unique_ptr<GraphImplOrt::Session> session,
                ContextImplOrt* context);
 
-  static base::expected<OrtSession*, mojom::ErrorPtr>
+  static base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
   CreateAndBuildOnBackgroundThread(
       mojom::GraphInfoPtr graph_info,
       mojom::CreateContextOptionsPtr context_options,
@@ -68,7 +81,8 @@ class GraphImplOrt final : public WebNNGraphImpl {
       base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback,
-      base::expected<OrtSession*, mojom::ErrorPtr> result);
+      base::expected<std::unique_ptr<GraphImplOrt::Session>, mojom::ErrorPtr>
+          result);
 
   class ComputeResources;
 
