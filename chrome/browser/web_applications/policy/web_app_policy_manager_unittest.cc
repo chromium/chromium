@@ -248,6 +248,7 @@ class MockAppRegistrarObserver : public WebAppRegistrarObserver {
   }
 
   void OnAppRegistrarDestroyed() override { NOTREACHED(); }
+  MOCK_METHOD(void, OnWebAppsDisabledModeChanged, (), (override));
 
  private:
   int on_policy_changed_call_count = 0;
@@ -1419,6 +1420,28 @@ TEST_F(WebAppPolicyManagerWithGraduationTest, GraduationDisabledWhenBlocked) {
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.contains(ash::SystemWebAppType::GRADUATION));
+}
+
+class WebAppPolicyManagerWithBocaTest : public WebAppPolicyManagerTestBase {
+ public:
+  WebAppPolicyManagerWithBocaTest() = default;
+  ~WebAppPolicyManagerWithBocaTest() override = default;
+};
+
+TEST_F(WebAppPolicyManagerWithBocaTest,
+       BocaAppStatusRefreshedWhenPolicyUpdate) {
+  MockAppRegistrarObserver mock_observer;
+  app_registrar().AddObserver(&mock_observer);
+  EXPECT_CALL(mock_observer, OnWebAppsDisabledModeChanged()).Times(1);
+  // Policy update only serve as a trigger, the real enablement checks user
+  // affiliation status, which is hard to emulate in unit test.
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "teacher");
+
+  EXPECT_CALL(mock_observer, OnWebAppsDisabledModeChanged()).Times(1);
+  profile()->GetPrefs()->SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "disabled");
+  app_registrar().RemoveObserver(&mock_observer);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

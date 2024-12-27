@@ -780,6 +780,10 @@ void WebAppPolicyManager::ObserveDisabledSystemFeaturesPolicy() {
         base::BindRepeating(&WebAppPolicyManager::OnDisableListPolicyChanged,
                             weak_ptr_factory_.GetWeakPtr()));
   }
+  pref_change_registrar_.Add(
+      ash::prefs::kClassManagementToolsAvailabilitySetting,
+      base::BindRepeating(&WebAppPolicyManager::OnDisableModePolicyChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   // Make sure we get the right disabled mode in case it was changed before
   // policy registration.
