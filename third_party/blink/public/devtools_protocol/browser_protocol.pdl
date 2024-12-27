@@ -11276,6 +11276,10 @@ domain Target
     parameters
       # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
+      # Frame left origin in DIP (headless chrome only).
+      experimental optional integer left
+      # Frame top origin in DIP (headless chrome only).
+      experimental optional integer top
       # Frame width in DIP (headless chrome only).
       optional integer width
       # Frame height in DIP (headless chrome only).

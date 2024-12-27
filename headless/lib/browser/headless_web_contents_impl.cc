@@ -146,12 +146,12 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     headless_web_contents_->browser_context()->RegisterWebContents(
         std::move(child_contents));
 
-    const gfx::Rect default_rect(
+    const gfx::Rect default_bounds(
         headless_web_contents_->browser()->options()->window_size);
-    const gfx::Rect rect = window_features.bounds.IsEmpty()
-                               ? default_rect
-                               : window_features.bounds;
-    raw_child_contents->SetBounds(rect);
+    const gfx::Rect bounds = window_features.bounds.IsEmpty()
+                                 ? default_bounds
+                                 : window_features.bounds;
+    raw_child_contents->SetBounds(bounds);
     return nullptr;
   }
 
@@ -174,7 +174,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         HeadlessWebContentsImpl* child_contents = HeadlessWebContentsImpl::From(
             headless_web_contents_->browser_context()
                 ->CreateWebContentsBuilder()
-                .SetWindowSize(source->GetContainerBounds().size())
+                .SetWindowBounds(source->GetContainerBounds())
                 .Build());
         target = child_contents->web_contents();
         break;
@@ -366,7 +366,7 @@ std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
   headless_web_contents->begin_frame_control_enabled_ =
       builder->enable_begin_frame_control_ ||
       headless_web_contents->browser()->options()->enable_begin_frame_control;
-  headless_web_contents->InitializeWindow(gfx::Rect(builder->window_size_));
+  headless_web_contents->InitializeWindow(builder->window_bounds_);
   if (!headless_web_contents->OpenURL(builder->initial_url_))
     return nullptr;
   return headless_web_contents;
@@ -511,7 +511,7 @@ void HeadlessWebContentsImpl::BeginFrame(
 HeadlessWebContents::Builder::Builder(
     HeadlessBrowserContextImpl* browser_context)
     : browser_context_(browser_context),
-      window_size_(browser_context->options()->window_size()) {}
+      window_bounds_(browser_context->options()->window_size()) {}
 
 HeadlessWebContents::Builder::~Builder() = default;
 
@@ -523,9 +523,9 @@ HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetInitialURL(
   return *this;
 }
 
-HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowSize(
-    const gfx::Size& size) {
-  window_size_ = size;
+HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetWindowBounds(
+    const gfx::Rect& bounds) {
+  window_bounds_ = bounds;
   return *this;
 }
 

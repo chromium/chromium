@@ -1187,6 +1187,8 @@ Response TargetHandler::ExposeDevToolsProtocol(
 
 Response TargetHandler::CreateTarget(
     const std::string& url,
+    std::optional<int> left,
+    std::optional<int> top,
     std::optional<int> width,
     std::optional<int> height,
     std::optional<std::string> context_id,

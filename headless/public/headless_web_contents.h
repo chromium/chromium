@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "headless/public/headless_export.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace headless {
@@ -47,8 +47,9 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
   // about:blank.
   Builder& SetInitialURL(const GURL& initial_url);
 
-  // Specify the initial window size (default is configured in browser options).
-  Builder& SetWindowSize(const gfx::Size& size);
+  // Specify the initial window bounds (default size is configured in browser
+  // options).
+  Builder& SetWindowBounds(const gfx::Rect& bounds);
 
   // Specify whether BeginFrames should be controlled via DevTools commands.
   Builder& SetEnableBeginFrameControl(bool enable_begin_frame_control);
@@ -68,7 +69,7 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
       browser_context_;
 
   GURL initial_url_ = GURL("about:blank");
-  gfx::Size window_size_;
+  gfx::Rect window_bounds_;
   bool enable_begin_frame_control_ = false;
 };
 

@@ -360,6 +360,15 @@ HEADLESS_PROTOCOL_TEST(ChangeWindowSize, "sanity/change-window-size.js")
 HEADLESS_PROTOCOL_TEST(ChangeWindowState, "sanity/change-window-state.js")
 HEADLESS_PROTOCOL_TEST(WindowOuterSize, "sanity/window-outer-size.js")
 
+// https://crbug.com/378531862
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateTargetPosition DISABLED_CreateTargetPosition
+#else
+#define MAYBE_CreateTargetPosition CreateTargetPosition
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_CreateTargetPosition,
+                       "sanity/create-target-position.js")
+
 HEADLESS_PROTOCOL_TEST(WindowSizeOnStart, "sanity/window-size-on-start.js")
 
 HEADLESS_PROTOCOL_TEST(LargeBrowserWindowSize,
