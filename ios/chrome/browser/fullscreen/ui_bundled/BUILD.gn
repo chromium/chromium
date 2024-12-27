@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "fullscreen_controller.h",
+    "fullscreen_controller_observer.h",
+    "scoped_fullscreen_disabler.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/ui/fullscreen" ]
+}
+
+source_set("internal") {
+  sources = [ "fullscreen_web_view_resizer.h" ]
+
+  public_deps = [ "//ios/chrome/browser/ui/fullscreen:internal" ]
+}
+
+source_set("ui") {
+  sources = [ "fullscreen_animator.h" ]
+
+  public_deps = [ "//ios/chrome/browser/ui/fullscreen:ui" ]
+}
