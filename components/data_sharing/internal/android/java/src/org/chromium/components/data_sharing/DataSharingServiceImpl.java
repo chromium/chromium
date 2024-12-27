@@ -64,6 +64,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
+    public void leaveGroup(String groupId, Callback<Integer> callback) {
+        DataSharingServiceImplJni.get().leaveGroup(mNativePtr, groupId, callback);
+    }
+
+    @Override
     public void inviteMember(String groupId, String inviteeEmail, Callback<Integer> callback) {
         DataSharingServiceImplJni.get().inviteMember(mNativePtr, groupId, inviteeEmail, callback);
     }
@@ -156,6 +161,9 @@ public class DataSharingServiceImpl implements DataSharingService {
                 long nativeDataSharingServiceAndroid,
                 String groupName,
                 Callback<GroupDataOrFailureOutcome> callback);
+
+        void leaveGroup(
+                long nativeDataSharingServiceAndroid, String groupId, Callback<Integer> callback);
 
         void deleteGroup(
                 long nativeDataSharingServiceAndroid, String groupId, Callback<Integer> callback);
