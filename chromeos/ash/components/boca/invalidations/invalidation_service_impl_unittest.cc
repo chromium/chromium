@@ -47,10 +47,11 @@ class MockSessionClientImpl : public SessionClientImpl {
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(session_client_impl,
-                           AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
-                           /*is_producer=*/false) {}
-  MOCK_METHOD(void, LoadCurrentSession, (), (override));
+      : BocaSessionManager(
+            session_client_impl,
+            AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
+            /*is_producer=*/false) {}
+  MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
   ~MockSessionManager() override = default;
 };
 
@@ -153,7 +154,9 @@ class InvalidationServiceImplTest : public testing::Test {
 };
 
 TEST_F(InvalidationServiceImplTest, HandleInvalidation) {
-  EXPECT_CALL(*boca_session_manager_, LoadCurrentSession()).Times(1);
+  EXPECT_CALL(*boca_session_manager_,
+              LoadCurrentSession(/*from_polling=*/false))
+      .Times(1);
   const std::string kPayloadValue = "payload_1";
   gcm::IncomingMessage gcm_message;
   gcm_message.raw_data = kPayloadValue;

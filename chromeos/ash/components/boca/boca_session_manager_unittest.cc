@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -214,11 +215,13 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
           boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
               base::unexpected<google_apis::ApiErrorCode>(
                   google_apis::ApiErrorCode::NOT_READY));
         }))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
-          boca_session_manager_->ParseSessionResponse(std::move(session_1));
+          boca_session_manager_->ParseSessionResponse(/*from_polling=*/false,
+                                                      std::move(session_1));
         }));
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
@@ -246,6 +249,7 @@ TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
+            /*from_polling=*/false,
             base::unexpected<google_apis::ApiErrorCode>(
                 google_apis::ApiErrorCode::PARSE_ERROR));
       }));
@@ -260,7 +264,8 @@ TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
 TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionEnded) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(base::ok(nullptr));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     base::ok(nullptr));
       }));
 
   EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
@@ -273,7 +278,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
-            std::move(current_session));
+            /*from_polling=*/false, std::move(current_session));
       }));
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
@@ -283,7 +288,7 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBothSessionIsEmpty) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
-            std::move(current_session));
+            /*from_polling=*/false, std::move(current_session));
       }));
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(0);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
@@ -297,14 +302,14 @@ TEST_F(BocaSessionManagerTest, DoNotPollIfActiveSessionLoad) {
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
         boca_session_manager()->ParseSessionResponse(
-            std::move(current_session));
+            /*from_polling=*/false, std::move(current_session));
       }));
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
 
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval -
                                     base::Seconds(1));
-  boca_session_manager()->LoadCurrentSession();
+  boca_session_manager()->LoadCurrentSession(/*from_polling=*/false);
   // Should have triggered an interval for session load, but skipped due to
   // there was an active load.
   task_environment()->FastForwardBy(base::Seconds(2));
@@ -316,7 +321,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionStateChanged) {
   session_2->set_session_id(kInitialSessionId);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
@@ -331,7 +337,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionStateIsTheSame) {
   session_1->set_session_id(kInitialSessionId);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(0);
@@ -366,10 +373,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenLockModeChanged) {
       std::move(session_config_2);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
@@ -403,10 +412,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleContentChanged) {
       std::move(session_config_2);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
@@ -441,10 +452,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenBundleOrderChanged) {
       std::move(session_config_2);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(2);
@@ -478,10 +491,12 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenBundledContentNoChange) {
       std::move(session_config_2);
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   // On emit once when flip from initial empty state.
@@ -499,7 +514,8 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenCurrentBundleEmpty) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(), OnBundleUpdated(_)).Times(0);
@@ -534,10 +550,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionCaptionUpdated) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(),
@@ -563,7 +581,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionCaptionSame) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(),
@@ -590,7 +609,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionConfigNameNotMatch) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(),
@@ -623,10 +643,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionRosterUpdated) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
@@ -659,10 +681,12 @@ TEST_F(BocaSessionManagerTest,
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(2);
@@ -679,7 +703,8 @@ TEST_F(BocaSessionManagerTest, DoNothingWhenSessionRosterSame) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(), OnSessionRosterUpdated(_)).Times(0);
@@ -825,10 +850,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionActivityUpdated) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
@@ -860,10 +887,12 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
@@ -896,10 +925,12 @@ TEST_F(BocaSessionManagerTest,
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   // Only notify once for the initial update
@@ -941,10 +972,12 @@ TEST_F(BocaSessionManagerTest,
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_2));
       }));
 
   // Only notify once for the initial session flip.
@@ -983,7 +1016,8 @@ TEST_F(BocaSessionManagerTest, DoNotDispatchCaptionEventWhenAppNotOpened) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(),
@@ -1033,7 +1067,8 @@ TEST_F(BocaSessionManagerTest, DispatchTwoEventsWhenSessionTakeOver) {
 
   EXPECT_CALL(*session_client_impl(), GetSession(_))
       .WillOnce(testing::InvokeWithoutArgs([&]() {
-        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
       }));
 
   EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
@@ -1043,6 +1078,85 @@ TEST_F(BocaSessionManagerTest, DispatchTwoEventsWhenSessionTakeOver) {
   // Have updated 1 sessions.
   task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest,
+       RecordMetricsIfPollingTriggerSessionStartAndEnd) {
+  base::HistogramTester histogram_tester;
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  session_1->set_session_id(kInitialSessionId);
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
+                                                     base::ok(nullptr));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
+                                                     std::move(session_1));
+      }));
+
+  EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionStarted(kInitialSessionId, _)).Times(1);
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 2 +
+                                    base::Seconds(1));
+  histogram_tester.ExpectTotalCount(BocaSessionManager::kPollingResultHistName,
+                                    2);
+  histogram_tester.ExpectBucketCount(
+      BocaSessionManager::kPollingResultHistName,
+      BocaSessionManager::BocaPollingResult::kSessionEnd, 1);
+  histogram_tester.ExpectBucketCount(
+      BocaSessionManager::kPollingResultHistName,
+      BocaSessionManager::BocaPollingResult::kSessionStart, 1);
+}
+
+TEST_F(BocaSessionManagerTest, RecordMetricsIfNoSessionUpdateFromPolling) {
+  base::HistogramTester histogram_tester;
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  session_1->set_session_id(kInitialSessionId);
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
+                                                     std::move(session_1));
+      }));
+
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
+                                    base::Seconds(1));
+  histogram_tester.ExpectTotalCount(BocaSessionManager::kPollingResultHistName,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      BocaSessionManager::kPollingResultHistName,
+      BocaSessionManager::BocaPollingResult::kNoUpdate, 1);
+}
+
+TEST_F(BocaSessionManagerTest, RecordMetricsIfInSessionUpdateFromPolling) {
+  base::HistogramTester histogram_tester;
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  session_1->set_session_id(kInitialSessionId);
+  ::boca::SessionConfig session_config;
+  auto* caption_config_1 = session_config.mutable_captions_config();
+
+  caption_config_1->set_captions_enabled(true);
+  caption_config_1->set_translations_enabled(true);
+  (*session_1->mutable_student_group_configs())[kMainStudentGroupName] =
+      std::move(session_config);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/true,
+                                                     std::move(session_1));
+      }));
+
+  EXPECT_CALL(*observer(), OnSessionCaptionConfigUpdated(_, _, _)).Times(1);
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 1 +
+                                    base::Seconds(1));
+  histogram_tester.ExpectTotalCount(BocaSessionManager::kPollingResultHistName,
+                                    1);
+  histogram_tester.ExpectBucketCount(
+      BocaSessionManager::kPollingResultHistName,
+      BocaSessionManager::BocaPollingResult::kInSessionUpdate, 1);
 }
 
 class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
@@ -1062,6 +1176,7 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
           // The first fetch at construction time will fail due to refresh token
           // not ready.
           boca_session_manager_->ParseSessionResponse(
+              /*from_polling=*/false,
               base::unexpected<google_apis::ApiErrorCode>(
                   google_apis::ApiErrorCode::NOT_READY));
         }));

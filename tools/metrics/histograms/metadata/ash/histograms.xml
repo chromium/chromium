@@ -1272,6 +1272,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.PollingResult" enum="BocaPollingResult"
+    expires_after="2025-09-04">
+  <owner>aprilzhou@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records scheduled boca session polling result from out of and in-session.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
     enum="Boolean" expires_after="2024-11-03">
   <owner>hidehiko@chromium.org</owner>
