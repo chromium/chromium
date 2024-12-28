@@ -66,7 +66,6 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -490,22 +489,7 @@ void BucketContext::CreateAllExternalObjects(
           continue;
         }
 
-        auto element = storage::mojom::BlobDataItem::New();
-        // TODO(enne): do we have to handle unknown size here??
-        element->size = blob_info.size();
-        element->side_data_size = 0;
-        element->content_type = base::UTF16ToUTF8(blob_info.type());
-        element->type = storage::mojom::BlobDataItemType::kIndexedDB;
-
-        BindFileReader(blob_info,
-                       element->reader.InitWithNewPipeAndPassReceiver());
-
-        // Write results to output_info.
-        blob_storage_context_->RegisterFromDataItem(
-            std::move(receiver),
-            base::Uuid::GenerateRandomV4().AsLowercaseString(),
-            std::move(element));
-
+        BindBlobReader(blob_info, std::move(receiver));
         break;
       }
       case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
@@ -930,11 +914,10 @@ void BucketContext::CloseNow() {
   QueueRunTasks();
 }
 
-void BucketContext::BindFileReader(
+void BucketContext::BindBlobReader(
     const IndexedDBExternalObject& blob_info,
-    mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver) {
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(receiver.is_valid());
 
   const base::FilePath& path = blob_info.indexed_db_file_path();
 
@@ -942,8 +925,9 @@ void BucketContext::BindFileReader(
   if (itr == file_reader_map_.end()) {
     // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<BlobReader>(
-        path, base::BindOnce(&BucketContext::RemoveBoundReaders,
-                             base::Unretained(this), path));
+        blob_info, *blob_storage_context_,
+        base::BindOnce(&BucketContext::RemoveBoundReaders,
+                       base::Unretained(this), path));
     itr =
         file_reader_map_
             .insert({path, std::make_tuple(std::move(reader),
@@ -952,7 +936,7 @@ void BucketContext::BindFileReader(
             .first;
   }
 
-  std::get<0>(itr->second)->AddReader(std::move(receiver));
+  std::get<0>(itr->second)->Clone(std::move(blob_receiver));
 }
 
 void BucketContext::RemoveBoundReaders(const base::FilePath& path) {
