@@ -101,5 +101,8 @@
 /* Version number of package */
 #undef VERSION
 
+/* System configuration directory (/etc) */
+#undef XML_SYSCONFDIR
+
 /* TLS specifier */
 #undef XML_THREAD_LOCAL

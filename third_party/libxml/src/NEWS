@@ -2,6 +2,11 @@ NEWS file for libxml2
 
 v2.14.0: not released yet
 
+### Major changes
+
+The HTML tokenizer now conforms fully to HTML5. Note that HTML5 tree
+construction isn't implemented yet.
+
 Input callbacks can now be set on a parser context and an improved API
 to create parser input is available.
 
@@ -13,12 +18,19 @@ The xmlSave API now has additional options to replace global settings.
 Parser options XML_PARSE_NO_UNZIP, XML_PARSE_NO_SYS_CATALOG and
 XML_PARSE_NO_CATALOG_PI were added.
 
-The serialization API will now take a user-provided or default encodings
+The serialization API will now take user-provided or default encodings
 into account when serializing attribute values, matching the
 serialization of text and avoiding unnecessary escaping.
 
+An API function to install a custom character encoding converter is
+now available. This makes it possible to use ICU for encoding conversion
+even if libxml2 was complied without ICU support, see example/icu.c.
+
 Access to many public struct members is now deprecated. Several accessor
 functions were added.
+
+Metadata about the HTML4 content model was removed from the htmlElemDesc
+struct and related functions were deprecated.
 
 The FTP module and related functions were removed.
 

@@ -245,10 +245,10 @@ xmlSAX2InternalSubset(void *ctx, const xmlChar *name,
 
     if (ctxt->myDoc == NULL)
 	return;
+    if ((ctxt->html) && (ctxt->instate != XML_PARSER_MISC))
+        return;
     dtd = xmlGetIntSubset(ctxt->myDoc);
     if (dtd != NULL) {
-	if (ctxt->html)
-	    return;
 	xmlUnlinkNode((xmlNodePtr) dtd);
 	xmlFreeDtd(dtd);
 	ctxt->myDoc->intSubset = NULL;
@@ -325,7 +325,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	ctxt->inputNr = 0;
 	ctxt->inputMax = 5;
 	ctxt->input = NULL;
-	if (xmlPushInput(ctxt, input) < 0)
+	if (xmlCtxtPushInput(ctxt, input) < 0)
             goto error;
 
 	if (input->filename == NULL)
@@ -346,7 +346,7 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	 */
 
 	while (ctxt->inputNr > 1)
-	    xmlPopInput(ctxt);
+	    xmlFreeInputStream(xmlCtxtPopInput(ctxt));
 
         consumed = ctxt->input->consumed;
         buffered = ctxt->input->cur - ctxt->input->base;
@@ -396,41 +396,47 @@ xmlSAX2ResolveEntity(void *ctx, const xmlChar *publicId,
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlParserInputPtr ret = NULL;
-    xmlChar *URI;
-    const xmlChar *base = NULL;
-    int res;
+    xmlChar *URI = NULL;
 
     if (ctx == NULL) return(NULL);
-    if (ctxt->input != NULL)
-	base = BAD_CAST ctxt->input->filename;
 
-    /*
-     * We don't really need the 'directory' struct member, but some
-     * users set it manually to a base URI for memory streams.
-     */
-    if (base == NULL)
-        base = BAD_CAST ctxt->directory;
+    if (systemId != NULL) {
+        const xmlChar *base = NULL;
+        int res;
 
-    if ((xmlStrlen(systemId) > XML_MAX_URI_LENGTH) ||
-        (xmlStrlen(base) > XML_MAX_URI_LENGTH)) {
-        xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT, "URI too long");
-        return(NULL);
+        if (ctxt->input != NULL)
+            base = BAD_CAST ctxt->input->filename;
+
+        /*
+         * We don't really need the 'directory' struct member, but some
+         * users set it manually to a base URI for memory streams.
+         */
+        if (base == NULL)
+            base = BAD_CAST ctxt->directory;
+
+        if ((xmlStrlen(systemId) > XML_MAX_URI_LENGTH) ||
+            (xmlStrlen(base) > XML_MAX_URI_LENGTH)) {
+            xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT, "URI too long");
+            return(NULL);
+        }
+        res = xmlBuildURISafe(systemId, base, &URI);
+        if (URI == NULL) {
+            if (res < 0)
+                xmlSAX2ErrMemory(ctxt);
+            else
+                xmlWarnMsg(ctxt, XML_ERR_INVALID_URI,
+                           "Can't resolve URI: %s\n", systemId);
+            return(NULL);
+        }
+        if (xmlStrlen(URI) > XML_MAX_URI_LENGTH) {
+            xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT, "URI too long");
+            xmlFree(URI);
+            return(NULL);
+        }
     }
-    res = xmlBuildURISafe(systemId, base, &URI);
-    if (URI == NULL) {
-        if (res < 0)
-            xmlSAX2ErrMemory(ctxt);
-        else
-            xmlWarnMsg(ctxt, XML_ERR_INVALID_URI,
-                       "Can't resolve URI: %s\n", systemId);
-        return(NULL);
-    }
-    if (xmlStrlen(URI) > XML_MAX_URI_LENGTH) {
-        xmlFatalErr(ctxt, XML_ERR_RESOURCE_LIMIT, "URI too long");
-    } else {
-        ret = xmlLoadResource(ctxt, (const char *) URI,
-                              (const char *) publicId, XML_RESOURCE_DTD);
-    }
+
+    ret = xmlLoadResource(ctxt, (const char *) URI,
+                          (const char *) publicId, XML_RESOURCE_DTD);
 
     xmlFree(URI);
     return(ret);
@@ -1773,7 +1779,7 @@ xmlSAX2TextNode(xmlParserCtxtPtr ctxt, const xmlChar *str, int len) {
      * intern the formatting blanks found between tags, or the
      * very short strings
      */
-    if (ctxt->dictNames) {
+    if ((!ctxt->html) && (ctxt->dictNames)) {
         xmlChar cur = str[len];
 
 	if ((len < (int) (2 * sizeof(void *))) &&
@@ -2129,12 +2135,14 @@ xmlSAX2StartElementNs(void *ctx,
     /*
      * First check on validity:
      */
-    if (ctxt->validate && (ctxt->myDoc->extSubset == NULL) &&
-        ((ctxt->myDoc->intSubset == NULL) ||
-	 ((ctxt->myDoc->intSubset->notations == NULL) &&
-	  (ctxt->myDoc->intSubset->elements == NULL) &&
-	  (ctxt->myDoc->intSubset->attributes == NULL) &&
-	  (ctxt->myDoc->intSubset->entities == NULL)))) {
+    if (ctxt->validate &&
+        ((ctxt->myDoc == NULL) ||
+         ((ctxt->myDoc->extSubset == NULL) &&
+          ((ctxt->myDoc->intSubset == NULL) ||
+	   ((ctxt->myDoc->intSubset->notations == NULL) &&
+	    (ctxt->myDoc->intSubset->elements == NULL) &&
+	    (ctxt->myDoc->intSubset->attributes == NULL) &&
+	    (ctxt->myDoc->intSubset->entities == NULL)))))) {
 	xmlErrValid(ctxt, XML_DTD_NO_DTD,
 	  "Validation failed: no DTD found !", NULL, NULL);
 	ctxt->validate = 0;
