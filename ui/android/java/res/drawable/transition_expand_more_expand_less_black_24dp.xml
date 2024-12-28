@@ -5,9 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    tools:targetApi="21">
+    xmlns:aapt="http://schemas.android.com/aapt">
 
     <aapt:attr name="android:drawable">
         <vector
