@@ -152,10 +152,12 @@ def _run_fuzzer_target(args):
     if ok:
       break
   valid_profiles = 0
-  for profraw in _matching_profraws(fullcorpus_profraw):
-    ok = _profdata_merge([profraw], target_profdata)
-    if ok:
-      valid_profiles = 1
+  matching_profraws = list(_matching_profraws(fullcorpus_profraw))
+  # There may be several if the fuzzer involved multiple processes,
+  # e.g. a fuzztest with a wrapper executable
+  ok = _profdata_merge(matching_profraws, target_profdata)
+  if ok:
+    valid_profiles = 1
   if valid_profiles == 0:
     # We failed to run the fuzzer with the whole corpus in one go. That probably
     # means one of the test cases caused a crash. Let's run each test
