@@ -7,13 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash, "Annotator is ChromeOS only")
 
-cur_dir = rebase_path(".", "//")
-
 mojom("annotator_mojo_bindings") {
   sources = [ "untrusted_annotator.mojom" ]
   deps = [ "//ash/webui/annotator/public/mojom:annotator_mojo_bindings" ]
-  webui_module_path = "/$cur_dir"
-
-  # Projector app is still using JS + Closure Compiler.
-  generate_webui_js_bindings = true
+  webui_module_path = "/"
 }

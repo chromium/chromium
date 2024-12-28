@@ -116,6 +116,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
   # TODO (rbpotter): If possible, standardize the build setup in some of these
   # folders such that they can be more accurately specified in the list below.
   ash_directories = [
+      'ash/webui/annotator/resources/untrusted/',
       'ash/webui/camera_app_ui/',
       'ash/webui/color_internals/',
       'ash/webui/common/resources/',
