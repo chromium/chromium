@@ -1884,8 +1884,6 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
             (xmlStrcasecmp(encoding, BAD_CAST "UTF8") != 0))
 	    encoder = xmlFindCharEncodingHandler((char *) encoding);
 	buf = xmlAllocOutputBuffer(encoder);
-        if (buf == NULL)
-            xmlCharEncCloseFunc(encoder);
     } else {
 	buf = xmlAllocOutputBuffer(NULL);
     }
