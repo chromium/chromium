@@ -251,6 +251,11 @@ void CheckDuplicateHandle(HANDLE handle) {
   CHECK(NT_SUCCESS(error));
   std::wstring_view type_name(type_info->TypeName.Buffer,
                               type_info->TypeName.Length / sizeof(wchar_t));
+  // Thread access is 0x1fffff within the owning process and the sandbox needs
+  // to duplicate thread handles to children with these accesses.
+  if (base::EqualsCaseInsensitiveASCII(type_name, L"Thread")) {
+    return;
+  }
 
   std::optional<ACCESS_MASK> granted_access =
       base::win::GetGrantedAccess(handle);
