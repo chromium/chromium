@@ -2744,7 +2744,7 @@ source_set("browser") {
       "renderer_host/text_input_host_impl.mm",
       "sandbox_parameters_mac.h",
       "sandbox_parameters_mac.mm",
-      "sandbox_support_mac_impl.h",
+      "sandbox_support_impl.h",
       "sandbox_support_mac_impl.mm",
       "scheduler/responsiveness/native_event_observer_mac.mm",
       "screenlock_monitor/screenlock_monitor_device_source_mac.mm",

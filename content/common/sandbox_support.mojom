@@ -5,11 +5,10 @@
 module content.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 
 // Interface for a sandboxed child process to request services of
 // the browser.
-interface SandboxSupportMac {
+interface SandboxSupport {
   // Returns the shared memory region containing system theme color
   // information.
   GetSystemColors() => (mojo_base.mojom.ReadOnlySharedMemoryRegion region);

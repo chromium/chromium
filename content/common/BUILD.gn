@@ -673,7 +673,7 @@ mojom("mojo_bindings") {
   if (is_mac) {
     sources += [
       "render_widget_host_ns_view.mojom",
-      "sandbox_support_mac.mojom",
+      "sandbox_support.mojom",
       "web_contents_ns_view_bridge.mojom",
     ]
     public_deps += [
