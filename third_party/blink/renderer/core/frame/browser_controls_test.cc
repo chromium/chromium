@@ -434,9 +434,9 @@ TEST_F(BrowserControlsTest, SafeAreaInsetAccountsForBrowserZoom) {
 
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(1.6));
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
-  web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(1.6));
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
                                       0, 50.f, true);
   CompositeForTest();
@@ -448,14 +448,14 @@ TEST_F(BrowserControlsTest, SafeAreaInsetAccountsForDSF) {
 
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  web_view->MainFrameViewWidget()->SetDeviceScaleFactorForTesting(2.5);
+  web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
-  web_view->MainFrameViewWidget()->SetDeviceScaleFactorForTesting(2.0);
-  web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
                                       0, 50.f, true);
   CompositeForTest();
-  EXPECT_EQ("7.5px", ResolveSafeAreaInsetsBottom());
+  EXPECT_EQ("15px", ResolveSafeAreaInsetsBottom());
 }
 
 // Scrolling up should show browser controls.
