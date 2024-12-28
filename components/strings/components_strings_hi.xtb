@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">पासवर्ड जांचें</translation>
 <translation id="1187430513518041110">ऑटो और वाहन</translation>
 <translation id="1190491977647722791">पेपर (हेवीवेट)</translation>
+<translation id="1194278116501666615">ArcVm को पहले से लोड करने की प्रोग्रेस के बारे में अपडेट</translation>
 <translation id="1195073053842921378">इस डिवाइस से यह पता मिटा दिया जाएगा</translation>
 <translation id="1195558154361252544">जिन साइट को आप फ़ॉलो करते हैं उन्हें छोड़कर सभी साइट के लिए सूचनाएं अपने आप बंद हो गई हैं</translation>
 <translation id="1197088940767939838">नारंगी</translation>
@@ -1147,6 +1148,7 @@
 <translation id="3061707000357573562">पैच सेवा</translation>
 <translation id="306198082577913404">सुझावों को बेहतर बनाने की सुविधा चालू करें</translation>
 <translation id="3062655045399308513">ब्राउज़िंग डेटा मिटाएं...</translation>
+<translation id="3063453392496098461">वीपीएन की बैकग्राउंड सेवाओं को इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3067505415088964188">कीमत कम है</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> पर फ़ाइल अपलोड करने की प्रोसेस एक मिनट में शुरू होगी</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">कार्डबोर्ड (सिंगल वॉल)</translation>
 <translation id="4104702906064390950">IBAN से जुड़ी जानकारी सेव की जा रही है</translation>
 <translation id="4106887816571530227">एम्बेड किया गया कॉन्टेंट ऐक्सेस करने की अनुमति नहीं है</translation>
+<translation id="4107047499377819067">वीपीएन की बैकग्राउंड सेवाएं इंस्टॉल होना शुरू हो गई हैं. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4110652170750985508">अपना भुगतान देखें</translation>
 <translation id="4111546256784973544">पेंटबॉल</translation>
 <translation id="4112140312785995938">पीछे जाएं</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">आइए, शुरू करें</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6002968396561884726">हाल ही में देखे गए</translation>
+<translation id="6005188329423473970">वीपीएन की बैकग्राउंड सेवाएं इंस्टॉल हो गई हैं. अगर आपको वीपीएन ऐप्लिकेशन नहीं दिखते, तो कृपया लॉग आउट करके फिर से लॉग इन करें.</translation>
 <translation id="6005659677094197001">कंटिन्यूअस</translation>
 <translation id="6005765687956866568">फ़ॉर्म में ऑटोमैटिक भरी गई जानकारी मिटा दी गई है</translation>
 <translation id="6006365096047131769">3 x 5 इंच</translation>

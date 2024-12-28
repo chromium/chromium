@@ -857,6 +857,7 @@
 <translation id="5121677070210013200">Ezin da deskargatu transkripzio-eredua. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
+<translation id="5139813694804168398">ez molestatzeko modua</translation>
 <translation id="5140788690559353412">Ikastetxeko kontua erabiltzeko baimena galdu ondoren, ezin izango dituzu erabili harekin lotutako helbide elektronikoa eta Google Drive-ko fitxategiak, hala nola Gmail, Dokumentuak, Aurkezpenak eta beste zerbitzu batzuetakoak.</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
 <translation id="5144311987923128508">Berretsi botoia desgaituta dago orain</translation>
@@ -977,7 +978,6 @@
 <translation id="5703716265115423771">jaitsi bolumena</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> editatzeko botoia.</translation>
-<translation id="5733298426544876109">Eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Berrezarri da datu-erabilera</translation>
 <translation id="574392208103952083">Ertaina</translation>
 <translation id="5744175046705638478">Itzuli "<ph name="QUERY" />"</translation>

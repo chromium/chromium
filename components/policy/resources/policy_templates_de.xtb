@@ -1540,6 +1540,17 @@ Ist die Richtlinie nicht konfiguriert, ist die Funktion „Live-Übersetzung“ 
 <translation id="2157842368188031417">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet. Für den Modus für gemeinsam genutzte Arbeitsstationen von Imprivata muss sie aktiviert werden, um Benutzerwechsel bei laufender Sitzung zu ermöglichen.
       Ist die Richtlinie auf „True“ gesetzt, wird die Überschreibung bestimmter Richtlinien für Funktionen erzwungen, die sensible Benutzerdaten beibehalten und nicht durch den Bereinigungsmechanismus abgedeckt sind, der im Modus für gemeinsam genutzte Arbeitsstationen von Imprivata den Benutzerwechsel bei laufender Sitzung ermöglicht.
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, werden keine Richtlinien überschrieben.</translation>
+<translation id="2158028663273824412">Über diese Richtlinie wird der Modus des DNS‑over‑HTTPS-Resolvers gesteuert. Bei dieser Richtlinie wird nur der Standardmodus auf Anfrageebene festgelegt. Für bestimmte Anfragetypen kann der Modus überschrieben werden, etwa bei Anfragen zum Auflösen des Hostnamens eines DNS‑over‑HTTPS-Servers.
+
+Durch den Modus „<ph name="SECURE_DNS_MODE_OFF" />“ wird DNS‑over‑HTTPS deaktiviert.
+
+Im Modus „<ph name="SECURE_DNS_MODE_AUTOMATIC" />“ werden DNS‑over‑HTTPS-Anfragen zuerst gesendet, wenn ein DNS‑over‑HTTPS-Server verfügbar ist. Eventuell wird bei Fehlern auf das Senden unsicherer Anfragen ausgewichen.
+
+Im Modus „<ph name="SECURE_DNS_MODE_SECURE" />“ werden nur DNS‑over‑HTTPS-Anfragen gesendet. Im Fehlerfall ist keine Auflösung möglich.
+
+Ab <ph name="ANDROID_VERSION" />: Ist DNS‑over‑TLS aktiviert, werden in <ph name="PRODUCT_NAME" /> keine unsicheren DNS-Anfragen gesendet.
+
+Wenn diese Richtlinie nicht konfiguriert ist, werden für verwaltete Geräte keine DNS‑over‑HTTPS-Anfragen gesendet. Andernfalls sendet der Browser eventuell DNS‑over‑HTTPS-Anfragen an einen Resolver, der dem vom Nutzer auf Systemebene konfigurierten Resolver zugewiesen ist.</translation>
 <translation id="2158741059065130266">Wenn die Richtlinie auf „True“ gesetzt ist, können Nutzer der <ph name="PRODUCT_OS_NAME" />-App „Dateien“ einen Papierkorb sehen und Dateien unter „Meine Dateien“ und „Downloads“ (einschließlich der vom Nutzer erstellten Nachfolgerelemente) beim Löschen dorthin verschieben.
 
       Wenn die Richtlinie auf „False“ gesetzt ist, sind die Dateien, die sich bereits im Papierkorb befanden, weiterhin verfügbar: Zuvor verborgene Dateien werden angezeigt und das Verzeichnis „Papierkorb“ ist unter „Meine Dateien“ oder „Downloads“ einsehbar.</translation>
@@ -1645,6 +1656,11 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="2202787915587511214">NTLMv2 aktivieren</translation>
 <translation id="2204379573346866896">Zahl der in der aktuellen Stunde verstrichenen Minuten.</translation>
 <translation id="2204753382813641270">Automatisches Ausblenden der Ablage verwalten</translation>
+<translation id="2208092773610663977">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
+
+Ist die Richtlinie deaktiviert, können Nutzer diese Funktion nicht verwenden.
+
+      Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern. Ist die Richtlinie nicht konfiguriert, ist die Datenleckprüfung für Anmeldedaten zulässig, kann jedoch vom Nutzer deaktiviert werden.</translation>
 <translation id="2208976000652006649">Parameter für URL der Suche, die POST verwendet</translation>
 <translation id="2212011154693551439">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist standardmäßig unter chrome://history/grouped sichtbar.</translation>
 <translation id="2212207215880394506">Fotobearbeitung basierend auf generativer KI nicht zulassen.</translation>
@@ -6039,6 +6055,13 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="545817252640069915">Anmeldungsabfangen aktivieren</translation>
 <translation id="5460797984317417682">Vollbild-Warnungen aktivieren</translation>
 <translation id="5462898272514237681">Zugriff von <ph name="PRODUCT_OS_NAME" /> auf Standortdienste von Google steuern</translation>
+<translation id="5464786290880338716">Durch diese Richtlinie wird festgelegt, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ aktiviert werden soll.
+
+Ist die Richtlinie deaktiviert, ist die Funktion „IP-Schutz“ deaktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche aktivieren.
+Ist die Richtlinie aktiviert, ist die Funktion „IP-Schutz“ aktiviert und Nutzer können sie nicht über die Einstellungen der Benutzeroberfläche deaktivieren.
+Ist die Richtlinie nicht konfiguriert, ist die Funktion „IP-Schutz“ für Nutzer, deren Browser oder Gerät verwaltet wird, deaktiviert und sie können die Funktion nicht über die Einstellungen der Benutzeroberfläche aktivieren. Nutzer von nicht verwalteten Browsern und Geräten können die Funktion „IP-Schutz“ auf ihrem Gerät über die Einstellungen der Benutzeroberfläche aktivieren oder deaktivieren.
+
+Hinweis: Das Verhalten der Funktion „IP-Schutz“ für Unternehmensnutzer kann sich im Laufe der Zeit ändern, wenn die Richtlinie aktiviert oder nicht konfiguriert ist und die Funktion über die Einstellungen der Benutzeroberfläche aktiviert wird.</translation>
 <translation id="5464816904705580310">Konfiguriert Einstellungen für verwaltete Nutzer</translation>
 <translation id="5466596281866046569">App-Informationen ausgeben</translation>
 <translation id="5467175549232776406">Es kann auf die Richtlinientestseite zugegriffen werden</translation>
@@ -8466,6 +8489,7 @@ Der Richtlinienwert ist eine Liste von base64-codierten X.509-Zertifikaten. Alle
 <translation id="7177293255621000064">Das Festlegen der Richtlinie auf "True" sorgt dafür, dass externe Speichermedien aller Art, wie etwa USB-Flashlaufwerke, externe Festplatten, SD- und sonstige Speicherkarten oder optische Speichergeräte, im Dateibrowser nicht verfügbar sind. Wenn die Richtlinie auf "False" festgelegt oder keine Einstellung gewählt ist, können Nutzer externen Speicher auf ihrem Gerät verwenden.
 
       Hinweis: Die Richtlinie wirkt sich nicht auf Google Drive und internen Speicher aus. Die Nutzer können weiterhin auf Dateien zugreifen, die im Ordner "Downloads" gespeichert sind.</translation>
+<translation id="7177645313697913767">Nutzern erlauben, die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung „IP-Schutz“ auf ihrem Gerät zu aktivieren oder zu deaktivieren, wenn ihr Browser und ihr Gerät nicht verwaltet werden.</translation>
 <translation id="7177857088692019405">Schnelles Entsperren</translation>
 <translation id="7179157174254421614">Wenn die automatische Zeitzonenerkennung nicht durch die Richtlinie <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> deaktiviert ist, wird durch das Konfigurieren der Richtlinie die Methode zur Zeitzonenerkennung festgelegt. Diese kann von Nutzern nicht geändert werden.
 
