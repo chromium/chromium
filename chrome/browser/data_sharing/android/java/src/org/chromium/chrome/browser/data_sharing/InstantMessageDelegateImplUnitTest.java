@@ -69,6 +69,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -88,6 +89,7 @@ public class InstantMessageDelegateImplUnitTest {
     private static final int TAB_ID = 1;
     private static final String TAB_TITLE = "Tab Title";
     private static final String TAB_GROUP_TITLE = "Group Title";
+    private static final int TAB_COUNT_IN_GROUP = 13;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -141,7 +143,9 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
-        mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+        SavedTabGroup group = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1, TAB_GROUP_ID);
+        group.savedTabs = SyncedGroupTestHelper.tabsFromCount(TAB_COUNT_IN_GROUP);
+        group.collaborationId = COLLABORATION_ID1;
 
         mDelegate =
                 new InstantMessageDelegateImpl(
@@ -301,7 +305,8 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationMemberAdded_FallbackTitle() {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
+                .thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
@@ -313,7 +318,7 @@ public class InstantMessageDelegateImplUnitTest {
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
         assertTrue(title.contains(GIVEN_NAME1));
-        assertTrue(title.contains(Integer.toString(13)));
+        assertTrue(title.contains(Integer.toString(TAB_COUNT_IN_GROUP)));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
@@ -339,7 +344,8 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationRemoved_FallbackTitle() {
         when(mTabGroupModelFilter.getRootIdFromStableId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(13);
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
+                .thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_REMOVED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
@@ -350,7 +356,7 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_REMOVED, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(Integer.toString(13)));
+        assertTrue(title.contains(Integer.toString(TAB_COUNT_IN_GROUP)));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);

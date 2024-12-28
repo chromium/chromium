@@ -45,11 +45,8 @@ public class MessageUtils {
 
     /** Returns the given name or the empty string. */
     public static String extractGivenName(@Nullable InstantMessage message) {
-        return message == null
-                        || message.attribution == null
-                        || message.attribution.triggeringUser == null
-                ? ""
-                : message.attribution.triggeringUser.givenName;
+        GroupMember member = extractMember(message);
+        return member == null ? "" : member.givenName;
     }
 
     /** Returns the tab title or the empty string. */

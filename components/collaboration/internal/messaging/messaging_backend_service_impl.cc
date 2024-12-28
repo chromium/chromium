@@ -22,6 +22,7 @@
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/url_formatter/elide_url.h"
 
@@ -732,6 +733,23 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
     const data_sharing::GroupData& group_data,
     const GaiaId& member_gaia_id,
     const base::Time& event_time) {
+  std::optional<tab_groups::SavedTabGroup> tab_group;
+  for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
+    if (group.collaboration_id() &&
+        data_sharing::GroupId(group.collaboration_id().value().value()) ==
+            group_data.group_token.group_id) {
+      tab_group = group;
+      break;
+    }
+  }
+  if (!tab_group) {
+    // The tab group may be deleted or not synced.
+    // TODO(386420717): Maybe persist the message to disk in case the tab group
+    // gets synced at a later time. If this is persisted, then it may never get
+    // cleared if the group was deleted.
+    return;
+  }
+
   collaboration_pb::Message message =
       CreateMessage(group_data.group_token.group_id,
                     collaboration_pb::COLLABORATION_MEMBER_ADDED,
@@ -750,6 +768,8 @@ void MessagingBackendServiceImpl::OnGroupMemberAdded(
     InstantMessage instant_message;
     instant_message.attribution.collaboration_id =
         group_data.group_token.group_id;
+    instant_message.attribution.tab_group_metadata =
+        CreateTabGroupMessageMetadataFromMessageOrTabGroup(message, *tab_group);
     instant_message.collaboration_event =
         CollaborationEvent::COLLABORATION_MEMBER_ADDED;
 

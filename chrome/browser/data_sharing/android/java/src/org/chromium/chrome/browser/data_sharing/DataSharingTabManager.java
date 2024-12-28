@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -389,6 +391,10 @@ public class DataSharingTabManager {
                         assert groupData.getGroupId().equals(groupToken.collaborationId);
                     }
                 };
+        String tabGroupName = preview.title;
+        if (TextUtils.isEmpty(tabGroupName)) {
+            tabGroupName = TabGroupTitleUtils.getDefaultTitle(activity, preview.tabs.size());
+        }
         joinFlowTracker.setSessionId(
                 mDataSharingService
                         .getUiDelegate()
@@ -396,7 +402,7 @@ public class DataSharingTabManager {
                                 new DataSharingJoinUiConfig.Builder()
                                         .setCommonConfig(
                                                 getCommonConfig(
-                                                        activity, preview.title, stringConfig))
+                                                        activity, tabGroupName, stringConfig))
                                         .setJoinCallback(joinCallback)
                                         .setGroupToken(groupToken)
                                         .setSharedDataPreview(previewData.sharedDataPreview)

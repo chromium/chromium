@@ -342,6 +342,12 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringCollaborationEvents) {
   member.given_name = "First";
   group_data.members.emplace_back(member);
 
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(group_data.group_token.group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+
   // Always refers to the latest message that has been added to storage.
   collaboration_pb::Message message;
   EXPECT_CALL(*unowned_messaging_backend_store_, AddMessage(_))
@@ -401,6 +407,12 @@ TEST_F(MessagingBackendServiceImplTest,
   member2.display_name = "Provided Display Name 2";
   member2.given_name = "";  // No given name available.
   group_data.members.emplace_back(member2);
+
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(group_data.group_token.group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
 
   // Always refers to the latest message that has been added to storage.
   collaboration_pb::Message message;
@@ -1470,11 +1482,20 @@ TEST_F(MessagingBackendServiceImplTest, TestMemberAddedCreatesInstantMessage) {
               DisplayInstantaneousMessage(_, _))
       .WillRepeatedly(SaveArg<0>(&message));
 
+  tab_groups::SavedTabGroup tab_group =
+      CreateSharedTabGroup(group_data.group_token.group_id);
+  std::vector<tab_groups::SavedTabGroup> all_groups = {tab_group};
+  EXPECT_CALL(*mock_tab_group_sync_service_, GetAllGroups())
+      .WillRepeatedly(Return(all_groups));
+
   ds_notifier_observer_->OnGroupMemberAdded(group_data, member2.gaia_id, now);
 
   EXPECT_EQ(CollaborationEvent::COLLABORATION_MEMBER_ADDED,
             message.collaboration_event);
   EXPECT_EQ(member2.gaia_id, message.attribution.affected_user->gaia_id);
+  ASSERT_TRUE(message.attribution.tab_group_metadata);
+  EXPECT_EQ(tab_group.saved_guid(),
+            message.attribution.tab_group_metadata->sync_tab_group_id);
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestTabSelectionClearsChipByDefault) {
