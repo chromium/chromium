@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -245,7 +245,7 @@ public class ContextMenuManager implements OnCloseContextMenuListener {
                 mAnchorView.getResources().getDimensionPixelSize(R.dimen.menu_width));
         mListContextMenu.tryToFitLargestItem(true);
         mListContextMenu.setDelegate(
-                new ListMenuButtonDelegate() {
+                new ListMenuDelegate() {
                     @Override
                     public ListMenu getListMenu() {
                         return menu;

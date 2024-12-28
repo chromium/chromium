@@ -11,21 +11,20 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A delegate used to populate the menu. */
-// TODO(crbug.com/339864862): Rename to ListMenuHostDelegate.
 @NullMarked
-public interface ListMenuButtonDelegate {
+public interface ListMenuDelegate {
     /**
-     * @param listMenuButton The anchor for the {@link ListMenu}.
+     * @param listMenuHostingView The anchor for the {@link ListMenu}.
      * @return A {@link RectProvider} representing a position in screen space.
      */
-    default RectProvider getRectProvider(View listMenuButton) {
-        ViewRectProvider provider = new ViewRectProvider(listMenuButton);
+    default RectProvider getRectProvider(View listMenuHostingView) {
+        ViewRectProvider provider = new ViewRectProvider(listMenuHostingView);
         provider.setIncludePadding(true);
         return provider;
     }
 
     /**
-     * @return The {@link ListMenu} displayed by {@link ListMenuButton}.
+     * @return The {@link ListMenu} displayed by the list menu hosting view.
      */
     ListMenu getListMenu();
 }

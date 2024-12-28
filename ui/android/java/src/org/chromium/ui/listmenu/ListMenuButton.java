@@ -21,14 +21,6 @@ import org.chromium.ui.widget.ChromeImageButton;
  */
 @NullMarked
 public class ListMenuButton extends ChromeImageButton {
-    /**
-     * A listener that is notified when the popup menu is shown or dismissed.
-     *
-     * @deprecated Use {@link ListMenuHost.PopupMenuShownListener}.
-     */
-    @FunctionalInterface
-    public interface PopupMenuShownListener extends ListMenuHost.PopupMenuShownListener {}
-
     private final ListMenuHost mListMenuHost;
     private boolean mIsAttachedToWindow;
 
@@ -63,10 +55,9 @@ public class ListMenuButton extends ChromeImageButton {
      * responses. The OnClickListener will be overridden by default to show menu. The menu will not
      * show or work without the delegate.
      *
-     * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
-     *     handling.
+     * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      */
-    public void setDelegate(ListMenuButtonDelegate delegate) {
+    public void setDelegate(ListMenuDelegate delegate) {
         setDelegate(delegate, true);
     }
 
@@ -74,12 +65,11 @@ public class ListMenuButton extends ChromeImageButton {
      * Sets the delegate this menu will rely on for populating the popup menu and handling selection
      * responses. The menu will not show or work without the delegate.
      *
-     * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
-     *     handling.
+     * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      * @param overrideOnClickListener Whether to override the click listener which can trigger the
      *     popup menu.
      */
-    public void setDelegate(ListMenuButtonDelegate delegate, boolean overrideOnClickListener) {
+    public void setDelegate(ListMenuDelegate delegate, boolean overrideOnClickListener) {
         mListMenuHost.setDelegate(delegate, overrideOnClickListener);
     }
 
@@ -108,7 +98,7 @@ public class ListMenuButton extends ChromeImageButton {
      *
      * @param l The listener of interest.
      */
-    public void addPopupListener(PopupMenuShownListener l) {
+    public void addPopupListener(ListMenuHost.PopupMenuShownListener l) {
         mListMenuHost.addPopupListener(l);
     }
 
@@ -117,7 +107,7 @@ public class ListMenuButton extends ChromeImageButton {
      *
      * @param l The listener of interest.
      */
-    public void removePopupListener(PopupMenuShownListener l) {
+    public void removePopupListener(ListMenuHost.PopupMenuShownListener l) {
         mListMenuHost.removePopupListener(l);
     }
 

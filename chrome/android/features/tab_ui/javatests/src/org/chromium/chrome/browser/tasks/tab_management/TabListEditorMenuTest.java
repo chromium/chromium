@@ -60,6 +60,7 @@ import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -637,7 +638,7 @@ public class TabListEditorMenuTest {
     }
 
     /** Helper for detecting menu shown popup events. */
-    static class PopupListener implements ListMenuButton.PopupMenuShownListener {
+    static class PopupListener implements ListMenuHost.PopupMenuShownListener {
         private CallbackHelper mShown = new CallbackHelper();
         private CallbackHelper mHidden = new CallbackHelper();
 

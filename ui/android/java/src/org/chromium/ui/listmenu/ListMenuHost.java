@@ -41,7 +41,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     @SuppressWarnings("NullAway.Init")
     private AnchoredPopupWindow mPopupMenu;
 
-    private @Nullable ListMenuButtonDelegate mDelegate;
+    private @Nullable ListMenuDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private boolean mPositionedAtEnd;
@@ -73,12 +73,11 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
      * Sets the delegate this menu will rely on for populating the popup menu and handling selection
      * responses. The menu will not show or work without the delegate.
      *
-     * @param delegate The {@link ListMenuButtonDelegate} to use for menu creation and selection
-     *     handling.
+     * @param delegate The {@link ListMenuDelegate} to use for menu creation and selection handling.
      * @param overrideOnClickListener Whether to override the click listener which can trigger the
      *     popup menu.
      */
-    public void setDelegate(ListMenuButtonDelegate delegate, boolean overrideOnClickListener) {
+    public void setDelegate(ListMenuDelegate delegate, boolean overrideOnClickListener) {
         dismiss();
         mDelegate = delegate;
         if (overrideOnClickListener) {

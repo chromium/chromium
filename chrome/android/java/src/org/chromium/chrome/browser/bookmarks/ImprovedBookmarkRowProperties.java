@@ -12,7 +12,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -61,8 +61,8 @@ public class ImprovedBookmarkRowProperties {
             START_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View> ACCESSORY_VIEW =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
-            LIST_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuDelegate> LIST_MENU_BUTTON_DELEGATE =
+            new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> POPUP_LISTENER =
             new WritableObjectPropertyKey<>();
     // Whether the row is currently selected.

@@ -25,8 +25,8 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.util.ValueUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -213,8 +213,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         mAccessoryViewGroup.addView(view);
     }
 
-    void setListMenuButtonDelegate(ListMenuButtonDelegate listMenuButtonDelegate) {
-        mMoreButton.setDelegate(listMenuButtonDelegate);
+    void setListMenuDelegate(ListMenuDelegate listMenuDelegate) {
+        mMoreButton.setDelegate(listMenuDelegate);
     }
 
     void setPopupListener(PopupMenuShownListener listener) {

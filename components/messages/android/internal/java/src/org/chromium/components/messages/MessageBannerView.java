@@ -37,8 +37,8 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -56,7 +56,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private View mDivider;
     private String mSecondaryButtonMenuText;
     private Runnable mSecondaryActionCallback;
-    private ListMenuButtonDelegate mSecondaryMenuButtonDelegate;
+    private ListMenuDelegate mSecondaryMenuButtonDelegate;
     private SwipeGestureListener mSwipeGestureDetector;
     private Runnable mOnTitleChanged;
     private int mCornerRadius = -1;
@@ -251,7 +251,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryButton.setMenuMaxWidth(getResources().getDimensionPixelSize(dimenId));
     }
 
-    void setSecondaryMenuButtonDelegate(ListMenuButtonDelegate delegate) {
+    void setSecondaryMenuButtonDelegate(ListMenuDelegate delegate) {
         mSecondaryButton.dismiss();
         mSecondaryMenuButtonDelegate = delegate;
     }
@@ -393,7 +393,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {
+    private ListMenuDelegate buildDelegateForSingleMenuItem() {
         MVCListAdapter.ListItem listItem =
                 BrowserUiListMenuUtils.buildMenuListItem(mSecondaryButtonMenuText, 0, 0, true);
         MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
@@ -410,7 +410,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         BasicListMenu listMenu =
                 BrowserUiListMenuUtils.getBasicListMenu(getContext(), menuItems, listMenuDelegate);
 
-        return new ListMenuButtonDelegate() {
+        return new ListMenuDelegate() {
             @Override
             public ListMenu getListMenu() {
                 return listMenu;
