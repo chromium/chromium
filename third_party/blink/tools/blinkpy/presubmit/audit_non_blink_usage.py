@@ -452,6 +452,7 @@ _CONFIG = [
             'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
+            'cc::DrawImage',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',

@@ -1594,7 +1594,7 @@ WebFrameWidgetImpl::GetAssociatedFrameWidgetHost() const {
 }
 
 void WebFrameWidgetImpl::RequestDecode(
-    const PaintImage& image,
+    const cc::DrawImage& image,
     base::OnceCallback<void(bool)> callback) {
   widget_base_->LayerTreeHost()->QueueImageDecode(image, std::move(callback));
 }

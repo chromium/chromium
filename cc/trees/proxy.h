@@ -92,7 +92,7 @@ class CC_EXPORT Proxy {
   // Must be called before deleting the proxy.
   virtual void Stop() = 0;
 
-  virtual void QueueImageDecode(int request_id, const PaintImage& image) = 0;
+  virtual void QueueImageDecode(int request_id, const DrawImage& image) = 0;
   virtual void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
   virtual void SetPaintWorkletLayerPainter(

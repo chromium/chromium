@@ -214,16 +214,27 @@ static void PriorityFromObserver(
 void ImageResourceContent::UpdateResourceInfoFromObservers() {
   ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
 
-  cached_info_.priority_ = cached_info_.priority_excluding_image_loader_ =
-      ResourcePriority();
+  cached_info_.priority_ = ResourcePriority();
+  cached_info_.priority_excluding_image_loader_ = ResourcePriority();
+  cached_info_.max_size_ = gfx::Size();
+  cached_info_.max_interpolation_quality_ = kInterpolationNone;
+
+  auto update = [this](const ImageResourceObserver* observer) -> void {
+    PriorityFromObserver(observer, cached_info_.priority_,
+                         cached_info_.priority_excluding_image_loader_);
+    gfx::Size resource_size;
+    InterpolationQuality resource_quality;
+    observer->GetSpeculativeDecodeParameters(resource_size, resource_quality);
+    cached_info_.max_size_.SetToMax(resource_size);
+    cached_info_.max_interpolation_quality_ =
+        std::max(cached_info_.max_interpolation_quality_, resource_quality);
+  };
 
   for (const auto& it : finished_observers_) {
-    PriorityFromObserver(it.key, cached_info_.priority_,
-                         cached_info_.priority_excluding_image_loader_);
+    update(it.key);
   }
   for (const auto& it : observers_) {
-    PriorityFromObserver(it.key, cached_info_.priority_,
-                         cached_info_.priority_excluding_image_loader_);
+    update(it.key);
   }
 }
 

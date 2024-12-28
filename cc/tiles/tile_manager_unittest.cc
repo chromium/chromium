@@ -67,6 +67,15 @@ using testing::StrictMock;
 namespace cc {
 namespace {
 
+DrawImage DrawImageForDecoding(const PaintImage& paint_image,
+                               const TargetColorParams& color_params) {
+  return DrawImage(paint_image,
+                   /*use_dark_mode=*/false,
+                   SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
+                   PaintImage::kDefaultFrameIndex, color_params);
+}
+
 // A version of simple task runner that lets the user control if all tasks
 // posted should run synchronously.
 class SynchronousSimpleTaskRunner : public base::TestSimpleTaskRunner {
@@ -3862,9 +3871,9 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add the images to our decoded_image_tracker.
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image1, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image1, TargetColorParams()), base::DoNothing());
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image2, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image2, TargetColorParams()), base::DoNothing());
   EXPECT_EQ(0u, host_impl()
                     ->tile_manager()
                     ->decoded_image_tracker()
@@ -3946,7 +3955,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     TargetColorParams target_color_params;
     target_color_params.color_space = output_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-        hdr_image, target_color_params, base::DoNothing());
+        DrawImageForDecoding(hdr_image, target_color_params),
+        base::DoNothing());
     FlushDecodeTasks();
 
     // Add images to a fake recording source.
