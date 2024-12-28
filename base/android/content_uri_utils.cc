@@ -126,8 +126,9 @@ std::string GetContentUriMimeType(const FilePath& content_uri) {
 
 bool MaybeGetFileDisplayName(const FilePath& content_uri,
                              std::u16string* file_display_name) {
-  if (!content_uri.IsContentUri())
+  if (!content_uri.IsContentUri()) {
     return false;
+  }
 
   DCHECK(file_display_name);
 
@@ -135,8 +136,9 @@ bool MaybeGetFileDisplayName(const FilePath& content_uri,
   ScopedJavaLocalRef<jstring> j_display_name =
       Java_ContentUriUtils_maybeGetDisplayName(env, content_uri.value());
 
-  if (j_display_name.is_null())
+  if (j_display_name.is_null()) {
     return false;
+  }
 
   *file_display_name = android::ConvertJavaStringToUTF16(j_display_name);
   return true;

@@ -138,8 +138,9 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   int latency_sensitive_urgent;
 
   // Scheduler boost defaults to true unless disabled.
-  if (!g_use_sched_util.load())
+  if (!g_use_sched_util.load()) {
     return;
+  }
 
   // FieldTrial API can be called only once features were parsed.
   if (g_scheduler_hints_adjusted.load()) {
@@ -157,20 +158,24 @@ void SetThreadLatencySensitivity(ProcessId process_id,
   // conversion from NS tid to global tid is done by the callers using
   // FindThreadID().
   FilePath thread_dir;
-  if (thread_id && thread_id != PlatformThread::CurrentId())
-    thread_dir = FilePath(StringPrintf("/proc/%d/task/%d/", process_id, thread_id));
-  else
+  if (thread_id && thread_id != PlatformThread::CurrentId()) {
+    thread_dir =
+        FilePath(StringPrintf("/proc/%d/task/%d/", process_id, thread_id));
+  } else {
     thread_dir = FilePath("/proc/thread-self/");
+  }
 
   FilePath latency_sensitive_file = thread_dir.Append("latency_sensitive");
 
-  if (!PathExists(latency_sensitive_file))
+  if (!PathExists(latency_sensitive_file)) {
     return;
+  }
 
   // Silently ignore if getattr fails due to sandboxing.
   if (sched_getattr(thread_id, &attr, sizeof(attr), 0) == -1 ||
-      attr.size != sizeof(attr))
+      attr.size != sizeof(attr)) {
     return;
+  }
 
   switch (thread_type) {
     case ThreadType::kBackground:
@@ -244,7 +249,7 @@ std::optional<int> GetNiceValueForThreadId(PlatformThreadId thread_id) {
   return nice_value;
 }
 
-} // namespace
+}  // namespace
 
 void SetThreadTypeOtherAttrs(ProcessId process_id,
                              PlatformThreadId thread_id,
@@ -279,8 +284,8 @@ void SetThreadRTPrioFromType(ProcessId process_id,
       if (proc_bg) {
         // Per manpage, must be 0. Otherwise could have passed nice value here.
         // Note that even though the prio.sched_priority passed to the
-        // sched_setscheduler() syscall is 0, the old nice value (which holds the
-        // ThreadType of the thread) is retained.
+        // sched_setscheduler() syscall is 0, the old nice value (which holds
+        // the ThreadType of the thread) is retained.
         prio.sched_priority = 0;
         policy = SCHED_OTHER;
       } else {
@@ -292,7 +297,8 @@ void SetThreadRTPrioFromType(ProcessId process_id,
       return;
   }
 
-  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
+  PlatformThreadId syscall_tid =
+      thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
   if (sched_setscheduler(syscall_tid, policy, &prio) != 0) {
     DVPLOG(1) << "Failed to set policy/priority for thread " << thread_id;
   }
@@ -301,7 +307,8 @@ void SetThreadRTPrioFromType(ProcessId process_id,
 void SetThreadNiceFromType(ProcessId process_id,
                            PlatformThreadId thread_id,
                            ThreadType thread_type) {
-  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
+  PlatformThreadId syscall_tid =
+      thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
   if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
     DVPLOG(1) << "Failed to set nice value of thread " << thread_id << " to "

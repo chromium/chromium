@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/madv_free_discardable_memory_allocator_posix.h"
+
 #include <fcntl.h>
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/memory/madv_free_discardable_memory_allocator_posix.h"
 #include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/page_size.h"
 #include "base/tracing_buildflags.h"

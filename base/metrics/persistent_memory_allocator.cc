@@ -111,8 +111,8 @@ namespace base {
 // The block-header is placed at the top of every allocation within the
 // segment to describe the data that follows it.
 struct PersistentMemoryAllocator::BlockHeader {
-  uint32_t size;       // Number of bytes in this block, including header.
-  uint32_t cookie;     // Constant value indicating completed allocation.
+  uint32_t size;    // Number of bytes in this block, including header.
+  uint32_t cookie;  // Constant value indicating completed allocation.
   std::atomic<uint32_t> type_id;  // Arbitrary number indicating data type.
   std::atomic<uint32_t> next;     // Pointer to the next block when iterating.
 };
@@ -148,7 +148,7 @@ struct PersistentMemoryAllocator::SharedMetadata {
   // https://www.research.ibm.com/people/m/michael/podc-1996.pdf
   // `queue` needs to be 64-bit aligned and is itself a multiple of 64 bits.
   volatile std::atomic<uint32_t> tailptr;  // Last block of iteration queue.
-  volatile BlockHeader queue;   // Empty block for linked-list head/tail.
+  volatile BlockHeader queue;  // Empty block for linked-list head/tail.
 };
 
 // The `queue` block header is used to detect the "last node" so that zero/null
@@ -160,7 +160,6 @@ const PersistentMemoryAllocator::Reference
 
 const base::FilePath::CharType PersistentMemoryAllocator::kFileExtension[] =
     FILE_PATH_LITERAL(".pma");
-
 
 PersistentMemoryAllocator::Iterator::Iterator(
     const PersistentMemoryAllocator* allocator)
@@ -201,8 +200,9 @@ void PersistentMemoryAllocator::Iterator::Reset(Reference starting_after) {
 PersistentMemoryAllocator::Reference
 PersistentMemoryAllocator::Iterator::GetLast() {
   Reference last = last_record_.load(std::memory_order_relaxed);
-  if (last == kReferenceQueue)
+  if (last == kReferenceQueue) {
     return kReferenceNull;
+  }
   return last;
 }
 
@@ -229,8 +229,9 @@ PersistentMemoryAllocator::Iterator::GetNext(uint32_t* type_return,
   while (true) {
     const volatile BlockHeader* block =
         allocator_->GetBlock(last, 0, 0, true, false);
-    if (!block)  // Invalid iterator state.
+    if (!block) {  // Invalid iterator state.
       return kReferenceNull;
+    }
 
     // The compiler and CPU can freely reorder all memory accesses on which
     // there are no dependencies. It could, for example, move the load of
@@ -244,8 +245,9 @@ PersistentMemoryAllocator::Iterator::GetNext(uint32_t* type_return,
     // of the node which in turn is synchronized to the allocation (which sets
     // freeptr). Thus, the scenario above cannot happen.
     next = block->next.load(std::memory_order_acquire);
-    if (next == kReferenceQueue)  // No next allocation in queue.
+    if (next == kReferenceQueue) {  // No next allocation in queue.
       return kReferenceNull;
+    }
     block = allocator_->GetBlock(next, 0, 0, false, false, &next_size);
     if (!block) {  // Memory is corrupt.
       allocator_->SetCorrupt();
@@ -389,18 +391,14 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
     volatile BlockHeader* const first_block =
         reinterpret_cast<volatile BlockHeader*>(mem_base_ +
                                                 sizeof(SharedMetadata));
-    if (shared_meta()->cookie != 0 ||
-        shared_meta()->size != 0 ||
+    if (shared_meta()->cookie != 0 || shared_meta()->size != 0 ||
         shared_meta()->version != 0 ||
         shared_meta()->freeptr.load(std::memory_order_relaxed) != 0 ||
         shared_meta()->flags.load(std::memory_order_relaxed) != 0 ||
-        shared_meta()->id != 0 ||
-        shared_meta()->name != 0 ||
-        shared_meta()->tailptr != 0 ||
-        shared_meta()->queue.cookie != 0 ||
+        shared_meta()->id != 0 || shared_meta()->name != 0 ||
+        shared_meta()->tailptr != 0 || shared_meta()->queue.cookie != 0 ||
         shared_meta()->queue.next.load(std::memory_order_relaxed) != 0 ||
-        first_block->size != 0 ||
-        first_block->cookie != 0 ||
+        first_block->size != 0 || first_block->cookie != 0 ||
         first_block->type_id.load(std::memory_order_relaxed) != 0 ||
         first_block->next != 0) {
       // ...or something malicious has been playing with the metadata.
@@ -434,8 +432,9 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
       const size_t name_length = name.length() + 1;
       shared_meta()->name = Allocate(name_length, 0);
       char* name_cstr = GetAsArray<char>(shared_meta()->name, 0, name_length);
-      if (name_cstr)
+      if (name_cstr) {
         memcpy(name_cstr, name.data(), name.length());
+      }
     }
 
     shared_meta()->memory_state.store(MEMORY_INITIALIZED,
@@ -458,10 +457,12 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
       // Because the fields are const to ensure that no code other than the
       // constructor makes changes to them as well as to give optimization hints
       // to the compiler, it's necessary to const-cast them for changes here.
-      if (shared_meta()->size < mem_size_)
+      if (shared_meta()->size < mem_size_) {
         *const_cast<uint32_t*>(&mem_size_) = shared_meta()->size;
-      if (shared_meta()->page_size < mem_page_)
+      }
+      if (shared_meta()->page_size < mem_page_) {
         *const_cast<uint32_t*>(&mem_page_) = shared_meta()->page_size;
+      }
 
       // Ensure that settings are still valid after the above adjustments.
       if (!IsMemoryAcceptable(memory.base, mem_size_, mem_page_, readonly)) {
@@ -487,8 +488,9 @@ const char* PersistentMemoryAllocator::Name() const {
   size_t name_length = 0;
   const char* name_cstr = GetAsArray<char>(
       name_ref, 0, PersistentMemoryAllocator::kSizeAny, &name_length);
-  if (!name_cstr)
+  if (!name_cstr) {
     return "";
+  }
 
   if (name_cstr[name_length - 1] != '\0') {
     NOTREACHED();
@@ -532,24 +534,28 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::GetAsReference(
     const void* memory,
     uint32_t type_id) const {
   uintptr_t address = reinterpret_cast<uintptr_t>(memory);
-  if (address < reinterpret_cast<uintptr_t>(mem_base_))
+  if (address < reinterpret_cast<uintptr_t>(mem_base_)) {
     return kReferenceNull;
+  }
 
   uintptr_t offset = address - reinterpret_cast<uintptr_t>(mem_base_);
-  if (offset >= mem_size_ || offset < sizeof(BlockHeader))
+  if (offset >= mem_size_ || offset < sizeof(BlockHeader)) {
     return kReferenceNull;
+  }
 
   Reference ref = static_cast<Reference>(offset) - sizeof(BlockHeader);
-  if (!GetBlockData(ref, type_id, kSizeAny))
+  if (!GetBlockData(ref, type_id, kSizeAny)) {
     return kReferenceNull;
+  }
 
   return ref;
 }
 
 uint32_t PersistentMemoryAllocator::GetType(Reference ref) const {
   const volatile BlockHeader* const block = GetBlock(ref, 0, 0, false, false);
-  if (!block)
+  if (!block) {
     return 0;
+  }
   return block->type_id.load(std::memory_order_relaxed);
 }
 
@@ -559,8 +565,9 @@ bool PersistentMemoryAllocator::ChangeType(Reference ref,
                                            bool clear) {
   DCHECK_NE(access_mode_, kReadOnly);
   volatile BlockHeader* const block = GetBlock(ref, 0, 0, false, false);
-  if (!block)
+  if (!block) {
     return false;
+  }
 
   // "Strong" exchanges are used below because there is no loop that can retry
   // in the wake of spurious failures possible with "weak" exchanges. It is,
@@ -594,8 +601,9 @@ bool PersistentMemoryAllocator::ChangeType(Reference ref,
     }
 
     // If the destination type is "transitioning" then skip the final exchange.
-    if (to_type_id == kTypeIdTransitioning)
+    if (to_type_id == kTypeIdTransitioning) {
       return true;
+    }
 
     // Finish the change to the desired type.
     from_type_id = kTypeIdTransitioning;  // Exchange needs modifiable original.
@@ -652,8 +660,9 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
   // indicates a change has occurred since we started, scrap everything and
   // start over.
   for (;;) {
-    if (IsCorrupt())
+    if (IsCorrupt()) {
       return kReferenceNull;
+    }
 
     if (freeptr + size > mem_size_) {
       SetFlag(&shared_meta()->flags, kFlagFull);
@@ -747,8 +756,7 @@ PersistentMemoryAllocator::Reference PersistentMemoryAllocator::AllocateImpl(
     // full of zeros. If we find anything in the block header that is NOT a
     // zero then something must have previously run amuck through memory,
     // writing beyond the allocated space and into unallocated space.
-    if (block->size != 0 ||
-        block->cookie != kBlockCookieFree ||
+    if (block->size != 0 || block->cookie != kBlockCookieFree ||
         block->type_id.load(std::memory_order_relaxed) != 0 ||
         block->next.load(std::memory_order_relaxed) != 0) {
       SetCorrupt();
@@ -804,11 +812,13 @@ void PersistentMemoryAllocator::GetMemoryInfo(MemoryInfo* meminfo) const {
 
 void PersistentMemoryAllocator::MakeIterable(Reference ref) {
   DCHECK_NE(access_mode_, kReadOnly);
-  if (IsCorrupt())
+  if (IsCorrupt()) {
     return;
+  }
   volatile BlockHeader* block = GetBlock(ref, 0, 0, false, false);
-  if (!block)  // invalid reference
+  if (!block) {  // invalid reference
     return;
+  }
 
   Reference empty_ref = 0;
   if (!block->next.compare_exchange_strong(
@@ -838,9 +848,8 @@ void PersistentMemoryAllocator::MakeIterable(Reference ref) {
     // exchange is necessary so the "else" block does not get executed when
     // that is not actually the case (which can happen with a "weak" exchange).
     uint32_t next = kReferenceQueue;  // Will get replaced with existing value.
-    if (block->next.compare_exchange_strong(next, ref,
-                                            std::memory_order_acq_rel,
-                                            std::memory_order_acquire)) {
+    if (block->next.compare_exchange_strong(
+            next, ref, std::memory_order_acq_rel, std::memory_order_acquire)) {
       // Update the tail pointer to the new offset. If the "else" clause did
       // not exist, then this could be a simple Release_Store to set the new
       // value but because it does, it's possible that other threads could add
@@ -848,9 +857,8 @@ void PersistentMemoryAllocator::MakeIterable(Reference ref) {
       // have to check the return value because it either operates correctly
       // or the exact same operation has already been done (by the "else"
       // clause) on some other thread.
-      shared_meta()->tailptr.compare_exchange_strong(tail, ref,
-                                                     std::memory_order_release,
-                                                     std::memory_order_relaxed);
+      shared_meta()->tailptr.compare_exchange_strong(
+          tail, ref, std::memory_order_release, std::memory_order_relaxed);
       return;
     }
     // In the unlikely case that a thread crashed or was killed between the
@@ -912,14 +920,17 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
   CHECK(!(alloc_size && (queue_ok || free_ok)));
 
   // Handle special cases.
-  if (ref == kReferenceQueue && queue_ok)
+  if (ref == kReferenceQueue && queue_ok) {
     return reinterpret_cast<const volatile BlockHeader*>(mem_base_ + ref);
+  }
 
   // Validation of parameters.
-  if (ref < sizeof(SharedMetadata))
+  if (ref < sizeof(SharedMetadata)) {
     return nullptr;
-  if (ref % kAllocAlignment != 0)
+  }
+  if (ref % kAllocAlignment != 0) {
     return nullptr;
+  }
   size += sizeof(BlockHeader);
   uint32_t total_size;
   if (!base::CheckAdd(ref, size).AssignIfValid(&total_size)) {
@@ -934,8 +945,9 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
 
   // Validation of referenced block-header.
   if (!free_ok) {
-    if (block->cookie != kBlockCookieAllocated)
+    if (block->cookie != kBlockCookieAllocated) {
       return nullptr;
+    }
     const uint32_t block_size = block->size;
     if (block_size < size) {
       return nullptr;
@@ -987,8 +999,9 @@ const volatile void* PersistentMemoryAllocator::GetBlockData(
   DCHECK(size > 0);
   const volatile BlockHeader* block =
       GetBlock(ref, type_id, size, false, false, alloc_size);
-  if (!block)
+  if (!block) {
     return nullptr;
+  }
   return reinterpret_cast<const volatile char*>(block) + sizeof(BlockHeader);
 }
 
@@ -1002,7 +1015,6 @@ void PersistentMemoryAllocator::UpdateTrackingHistograms() {
     used_histogram_->Add(used_percent);
   }
 }
-
 
 //----- LocalPersistentMemoryAllocator -----------------------------------------
 
@@ -1030,13 +1042,14 @@ LocalPersistentMemoryAllocator::AllocateLocalMemory(size_t size,
 #if BUILDFLAG(IS_WIN)
   address =
       ::VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-  if (address)
+  if (address) {
     return Memory(address, MEM_VIRTUAL);
+  }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // MAP_ANON is deprecated on Linux but MAP_ANONYMOUS is not universal on Mac.
   // MAP_SHARED is not available on Linux <2.4 but required on Mac.
-  address = ::mmap(nullptr, size, PROT_READ | PROT_WRITE,
-                   MAP_ANON | MAP_SHARED, -1, 0);
+  address = ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_SHARED,
+                   -1, 0);
   if (address != MAP_FAILED) {
 #if BUILDFLAG(IS_ANDROID)
     // Allow the anonymous memory region allocated by mmap(MAP_ANON) to be
@@ -1186,12 +1199,14 @@ void FilePersistentMemoryAllocator::Cache() {
 }
 
 void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
-  if (IsReadonly())
+  if (IsReadonly()) {
     return;
+  }
 
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
-  if (sync)
+  if (sync) {
     scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Windows doesn't support asynchronous flush.

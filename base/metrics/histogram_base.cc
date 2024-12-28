@@ -50,8 +50,9 @@ std::string HistogramTypeToString(HistogramType type) {
 
 HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
   int type;
-  if (!iter->ReadInt(&type))
+  if (!iter->ReadInt(&type)) {
     return nullptr;
+  }
 
   switch (type) {
     case HISTOGRAM:
@@ -117,10 +118,12 @@ void HistogramBase::AddScaled(Sample value, int count, int scale) {
   // count when there are a large number of records. RandInt is "inclusive",
   // hence the -1 for the max value.
   int count_scaled = count / scale;
-  if (count - (count_scaled * scale) > base::RandInt(0, scale - 1))
+  if (count - (count_scaled * scale) > base::RandInt(0, scale - 1)) {
     ++count_scaled;
-  if (count_scaled <= 0)
+  }
+  if (count_scaled <= 0) {
     return;
+  }
 
   AddCount(value, count_scaled);
 }
@@ -141,8 +144,9 @@ void HistogramBase::AddTimeMicrosecondsGranularity(const TimeDelta& time) {
   // Intentionally drop high-resolution reports on clients with low-resolution
   // clocks. High-resolution metrics cannot make use of low-resolution data and
   // reporting it merely adds noise to the metric. https://crbug.com/807615#c16
-  if (TimeTicks::IsHighResolution())
+  if (TimeTicks::IsHighResolution()) {
     Add(saturated_cast<Sample>(time.InMicroseconds()));
+  }
 }
 
 void HistogramBase::AddBoolean(bool value) {
@@ -171,8 +175,9 @@ void HistogramBase::WriteJSON(std::string* output,
   root.Set("sum", static_cast<double>(count_and_bucket_data.sum));
   root.Set("flags", flags());
   root.Set("params", std::move(parameters));
-  if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS)
+  if (verbosity_level != JSON_VERBOSITY_LEVEL_OMIT_BUCKETS) {
     root.Set("buckets", std::move(count_and_bucket_data.buckets));
+  }
   root.Set("pid", static_cast<int>(GetUniqueIdForProcess().GetUnsafeValue()));
   serializer.Serialize(root);
 }
@@ -180,8 +185,9 @@ void HistogramBase::WriteJSON(std::string* output,
 void HistogramBase::FindAndRunCallbacks(HistogramBase::Sample sample) const {
   StatisticsRecorder::GlobalSampleCallback global_sample_callback =
       StatisticsRecorder::global_sample_callback();
-  if (global_sample_callback)
+  if (global_sample_callback) {
     global_sample_callback(histogram_name(), name_hash(), sample);
+  }
 
   // We check the flag first since it is very cheap and we can avoid the
   // function call and lock overhead of FindAndRunHistogramCallbacks().
@@ -224,11 +230,13 @@ void HistogramBase::WriteAsciiBucketGraph(double x_count,
                                           std::string* output) const {
   int x_remainder = line_length - x_count;
 
-  while (0 < x_count--)
+  while (0 < x_count--) {
     output->append("-");
+  }
   output->append("O");
-  while (0 < x_remainder--)
+  while (0 < x_remainder--) {
     output->append(" ");
+  }
 }
 
 const std::string HistogramBase::GetSimpleAsciiBucketRange(

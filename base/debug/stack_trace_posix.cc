@@ -171,7 +171,7 @@ class BacktraceOutputHandler {
 void OutputPointer(const void* pointer, BacktraceOutputHandler* handler) {
   // This should be more than enough to store a 64-bit number in hex:
   // 16 hex digits + 1 for null-terminator.
-  char buf[17] = { '\0' };
+  char buf[17] = {'\0'};
   handler->HandleOutput("0x");
   internal::itoa_r(reinterpret_cast<intptr_t>(pointer), 16, 12, buf);
   handler->HandleOutput(buf);
@@ -182,7 +182,7 @@ void OutputValue(size_t value, BacktraceOutputHandler* handler) {
   // Max unsigned 64-bit number in decimal has 20 digits (18446744073709551615).
   // Hence, 30 digits should be more than enough to represent it in decimal
   // (including the null-terminator).
-  char buf[30] = { '\0' };
+  char buf[30] = {'\0'};
   internal::itoa_r(static_cast<intptr_t>(value), 10, 1, buf);
   handler->HandleOutput(buf);
 }
@@ -211,8 +211,9 @@ void ProcessBacktrace(span<const void* const> traces,
 #endif
 
   for (size_t i = 0; i < traces.size(); ++i) {
-    if (!prefix_string.empty())
+    if (!prefix_string.empty()) {
       handler->HandleOutput(prefix_string.c_str());
+    }
 
     OutputFrameId(i, handler);
     handler->HandleOutput(" ");
@@ -294,8 +295,9 @@ void ProcessBacktrace(span<const void* const> traces,
       for (char* s : trace_symbols) {
         auto trace_symbol = std::string(s);
         DemangleSymbols(&trace_symbol);
-        if (!prefix_string.empty())
+        if (!prefix_string.empty()) {
           handler->HandleOutput(prefix_string.c_str());
+        }
         handler->HandleOutput(trace_symbol.c_str());
         handler->HandleOutput("\n");
       }
@@ -382,73 +384,80 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   in_signal_handler = 1;
 #endif
 
-  if (BeingDebugged())
+  if (BeingDebugged()) {
     BreakDebugger();
+  }
 
   PrintToStderr("Received signal ");
-  char buf[1024] = { 0 };
+  char buf[1024] = {0};
   internal::itoa_r(signal, 10, 0, buf);
   PrintToStderr(buf);
   if (signal == SIGBUS) {
-    if (info->si_code == BUS_ADRALN)
+    if (info->si_code == BUS_ADRALN) {
       PrintToStderr(" BUS_ADRALN ");
-    else if (info->si_code == BUS_ADRERR)
+    } else if (info->si_code == BUS_ADRERR) {
       PrintToStderr(" BUS_ADRERR ");
-    else if (info->si_code == BUS_OBJERR)
+    } else if (info->si_code == BUS_OBJERR) {
       PrintToStderr(" BUS_OBJERR ");
-    else
+    } else {
       PrintToStderr(" <unknown> ");
+    }
   } else if (signal == SIGFPE) {
-    if (info->si_code == FPE_FLTDIV)
+    if (info->si_code == FPE_FLTDIV) {
       PrintToStderr(" FPE_FLTDIV ");
-    else if (info->si_code == FPE_FLTINV)
+    } else if (info->si_code == FPE_FLTINV) {
       PrintToStderr(" FPE_FLTINV ");
-    else if (info->si_code == FPE_FLTOVF)
+    } else if (info->si_code == FPE_FLTOVF) {
       PrintToStderr(" FPE_FLTOVF ");
-    else if (info->si_code == FPE_FLTRES)
+    } else if (info->si_code == FPE_FLTRES) {
       PrintToStderr(" FPE_FLTRES ");
-    else if (info->si_code == FPE_FLTSUB)
+    } else if (info->si_code == FPE_FLTSUB) {
       PrintToStderr(" FPE_FLTSUB ");
-    else if (info->si_code == FPE_FLTUND)
+    } else if (info->si_code == FPE_FLTUND) {
       PrintToStderr(" FPE_FLTUND ");
-    else if (info->si_code == FPE_INTDIV)
+    } else if (info->si_code == FPE_INTDIV) {
       PrintToStderr(" FPE_INTDIV ");
-    else if (info->si_code == FPE_INTOVF)
+    } else if (info->si_code == FPE_INTOVF) {
       PrintToStderr(" FPE_INTOVF ");
-    else
+    } else {
       PrintToStderr(" <unknown> ");
+    }
   } else if (signal == SIGILL) {
-    if (info->si_code == ILL_BADSTK)
+    if (info->si_code == ILL_BADSTK) {
       PrintToStderr(" ILL_BADSTK ");
-    else if (info->si_code == ILL_COPROC)
+    } else if (info->si_code == ILL_COPROC) {
       PrintToStderr(" ILL_COPROC ");
-    else if (info->si_code == ILL_ILLOPN)
+    } else if (info->si_code == ILL_ILLOPN) {
       PrintToStderr(" ILL_ILLOPN ");
-    else if (info->si_code == ILL_ILLADR)
+    } else if (info->si_code == ILL_ILLADR) {
       PrintToStderr(" ILL_ILLADR ");
-    else if (info->si_code == ILL_ILLTRP)
+    } else if (info->si_code == ILL_ILLTRP) {
       PrintToStderr(" ILL_ILLTRP ");
-    else if (info->si_code == ILL_PRVOPC)
+    } else if (info->si_code == ILL_PRVOPC) {
       PrintToStderr(" ILL_PRVOPC ");
-    else if (info->si_code == ILL_PRVREG)
+    } else if (info->si_code == ILL_PRVREG) {
       PrintToStderr(" ILL_PRVREG ");
-    else
+    } else {
       PrintToStderr(" <unknown> ");
+    }
   } else if (signal == SIGSEGV) {
-    if (info->si_code == SEGV_MAPERR)
+    if (info->si_code == SEGV_MAPERR) {
       PrintToStderr(" SEGV_MAPERR ");
-    else if (info->si_code == SEGV_ACCERR)
+    } else if (info->si_code == SEGV_ACCERR) {
       PrintToStderr(" SEGV_ACCERR ");
+    }
 #if defined(ARCH_CPU_X86_64) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
-    else if (info->si_code == SI_KERNEL)
+    else if (info->si_code == SI_KERNEL) {
       PrintToStderr(" SI_KERNEL");
+    }
 #endif
-    else
+    else {
       PrintToStderr(" <unknown> ");
+    }
   }
-  if (signal == SIGBUS || signal == SIGFPE ||
-      signal == SIGILL || signal == SIGSEGV) {
+  if (signal == SIGBUS || signal == SIGFPE || signal == SIGILL ||
+      signal == SIGSEGV) {
     internal::itoa_r(reinterpret_cast<intptr_t>(info->si_addr), 16, 12, buf);
     PrintToStderr(buf);
   }
@@ -524,8 +533,9 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
     internal::itoa_r(registers[i].value, 16, kRegisterPadding, buf);
     PrintToStderr(buf);
 
-    if ((i + 1) % 4 == 0)
+    if ((i + 1) % 4 == 0) {
       PrintToStderr("\n");
+    }
   }
   PrintToStderr("\n");
 #endif  // ARCH_CPU_X86_FAMILY
@@ -607,8 +617,7 @@ class PrintBacktraceOutputHandler : public BacktraceOutputHandler {
 
 class StreamBacktraceOutputHandler : public BacktraceOutputHandler {
  public:
-  explicit StreamBacktraceOutputHandler(std::ostream* os) : os_(os) {
-  }
+  explicit StreamBacktraceOutputHandler(std::ostream* os) : os_(os) {}
 
   StreamBacktraceOutputHandler(const StreamBacktraceOutputHandler&) = delete;
   StreamBacktraceOutputHandler& operator=(const StreamBacktraceOutputHandler&) =
@@ -678,10 +687,7 @@ class SandboxSymbolizeHelper {
  private:
   friend struct DefaultSingletonTraits<SandboxSymbolizeHelper>;
 
-  SandboxSymbolizeHelper()
-      : is_initialized_(false) {
-    Init();
-  }
+  SandboxSymbolizeHelper() : is_initialized_(false) { Init(); }
 
   ~SandboxSymbolizeHelper() {
     UnregisterCallback();
@@ -1124,8 +1130,9 @@ void itoa_r(intptr_t i, int base, size_t padding, base::span<char> buf) {
     }
     j /= static_cast<uintptr_t>(base);
 
-    if (padding > 0)
+    if (padding > 0) {
       padding--;
+    }
   } while (j > 0 || padding > 0);
 
   // Terminate the output with a NUL character.

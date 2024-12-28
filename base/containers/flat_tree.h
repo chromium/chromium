@@ -431,8 +431,9 @@ class flat_tree {
   std::pair<iterator, bool> insert_or_assign(V&& val) {
     auto position = lower_bound(GetKeyFromValue()(val));
 
-    if (position == end() || value_comp()(val, *position))
+    if (position == end() || value_comp()(val, *position)) {
       return {body_.emplace(position, std::forward<V>(val)), true};
+    }
 
     *position = std::forward<V>(val);
     return {position, false};
@@ -989,8 +990,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
   auto lower = lower_bound(key);
 
   KeyValueCompare comp(comp_);
-  if (lower == end() || comp(key, *lower))
+  if (lower == end() || comp(key, *lower)) {
     return {lower, lower};
+  }
 
   return {lower, std::next(lower)};
 }
@@ -1010,8 +1012,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
   auto lower = lower_bound(key);
 
   KeyValueCompare comp(comp_);
-  if (lower == end() || comp(key, *lower))
+  if (lower == end() || comp(key, *lower)) {
     return {lower, lower};
+  }
 
   return {lower, std::next(lower)};
 }
@@ -1107,8 +1110,9 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::emplace_key_args(
     const K& key,
     Args&&... args) -> std::pair<iterator, bool> {
   auto lower = lower_bound(key);
-  if (lower == end() || comp_(key, GetKeyFromValue()(*lower)))
+  if (lower == end() || comp_(key, GetKeyFromValue()(*lower))) {
     return {unsafe_emplace(lower, std::forward<Args>(args)...), true};
+  }
   return {lower, false};
 }
 

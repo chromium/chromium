@@ -240,8 +240,8 @@ TEST(JSONStringEscapeTest, EscapeBytes) {
     const char* to_escape;
     const char* escaped;
   } cases[] = {
-    {"b\x0f\x7f\xf0\xff!", "b\\u000F\\u007F\\u00F0\\u00FF!"},
-    {"\xe5\xc4\x4f\x05\xb6\xfd", "\\u00E5\\u00C4O\\u0005\\u00B6\\u00FD"},
+      {"b\x0f\x7f\xf0\xff!", "b\\u000F\\u007F\\u00F0\\u00FF!"},
+      {"\xe5\xc4\x4f\x05\xb6\xfd", "\\u00E5\\u00C4O\\u0005\\u00B6\\u00FD"},
   };
 
   for (const auto& i : cases) {
@@ -254,7 +254,7 @@ TEST(JSONStringEscapeTest, EscapeBytes) {
               EscapeBytesAsInvalidJSONString(in, true));
   }
 
-  const char kEmbedNull[] = { '\xab', '\x39', '\0', '\x9f', '\xab' };
+  const char kEmbedNull[] = {'\xab', '\x39', '\0', '\x9f', '\xab'};
   std::string in(kEmbedNull, std::size(kEmbedNull));
   EXPECT_FALSE(IsStringUTF8AllowingNoncharacters(in));
   EXPECT_EQ(std::string("\\u00AB9\\u0000\\u009F\\u00AB"),

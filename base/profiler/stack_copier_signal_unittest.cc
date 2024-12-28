@@ -7,14 +7,16 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/profiler/stack_copier_signal.h"
+
 #include <string.h>
+
 #include <algorithm>
 #include <utility>
 
 #include "base/debug/alias.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_buffer.h"
-#include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
@@ -46,8 +48,9 @@ class TargetThread : public SimpleThread {
     // Copy the sentinel values onto the stack. Volatile to defeat compiler
     // optimizations.
     volatile uint32_t sentinels[std::size(kStackSentinels)];
-    for (size_t i = 0; i < std::size(kStackSentinels); ++i)
+    for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
       sentinels[i] = kStackSentinels[i];
+    }
 
     started_.Signal();
     copy_finished_.Wait();
@@ -68,9 +71,7 @@ class TargetThread : public SimpleThread {
 
 class TestStackCopierDelegate : public StackCopier::Delegate {
  public:
-  void OnStackCopy() override {
-    on_stack_copy_was_invoked_ = true;
-  }
+  void OnStackCopy() override { on_stack_copy_was_invoked_ = true; }
 
   bool on_stack_copy_was_invoked() const { return on_stack_copy_was_invoked_; }
 
@@ -109,8 +110,9 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
 
   // Copy the sentinel values onto the stack.
   uint32_t sentinels[std::size(kStackSentinels)];
-  for (size_t i = 0; i < std::size(kStackSentinels); ++i)
+  for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
     sentinels[i] = kStackSentinels[i];
+  }
   base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
 
   bool result = copier.CopyStack(&stack_buffer, &stack_top, &timestamp,

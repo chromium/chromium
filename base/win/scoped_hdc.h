@@ -26,8 +26,9 @@ class ScopedGetDC {
       // If GetDC(NULL) returns NULL, something really bad has happened, like
       // GDI handle exhaustion.  In this case Chrome is going to behave badly no
       // matter what, so we may as well just force a crash now.
-      if (!hdc_)
+      if (!hdc_) {
         base::debug::CollectGDIUsageAndDie();
+      }
     }
   }
 
@@ -35,8 +36,9 @@ class ScopedGetDC {
   ScopedGetDC& operator=(const ScopedGetDC&) = delete;
 
   ~ScopedGetDC() {
-    if (hdc_)
+    if (hdc_) {
       ReleaseDC(hwnd_, hdc_);
+    }
   }
 
   operator HDC() { return hdc_; }

@@ -278,15 +278,14 @@ const base::FeatureParam<BucketDistributionMode>::Option
         {BucketDistributionMode::kDenser, "denser"},
 };
 const base::FeatureParam<BucketDistributionMode>
-    kPartitionAllocBucketDistributionParam {
-  &kPartitionAllocUseDenserDistribution, "mode",
+    kPartitionAllocBucketDistributionParam{
+        &kPartitionAllocUseDenserDistribution, "mode",
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-      BucketDistributionMode::kDefault,
+        BucketDistributionMode::kDefault,
 #else
-      BucketDistributionMode::kDenser,
+        BucketDistributionMode::kDenser,
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-      &kPartitionAllocBucketDistributionOption
-};
+        &kPartitionAllocBucketDistributionOption};
 
 BASE_FEATURE(kPartitionAllocMemoryReclaimer,
              "PartitionAllocMemoryReclaimer",
@@ -441,8 +440,7 @@ BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,

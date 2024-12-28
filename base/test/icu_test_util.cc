@@ -18,8 +18,9 @@ ScopedRestoreICUDefaultLocale::ScopedRestoreICUDefaultLocale()
 ScopedRestoreICUDefaultLocale::ScopedRestoreICUDefaultLocale(
     const std::string& locale)
     : default_locale_(uloc_getDefault()) {
-  if (!locale.empty())
+  if (!locale.empty()) {
     i18n::SetICUDefaultLocale(locale.data());
+  }
 }
 
 ScopedRestoreICUDefaultLocale::~ScopedRestoreICUDefaultLocale() {

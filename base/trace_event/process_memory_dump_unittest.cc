@@ -244,7 +244,7 @@ TEST(ProcessMemoryDumpTest, Suballocations) {
 
   // Same here, but this time create an allocation with an explicit guid.
   auto* pic2_dump = pmd->CreateAllocatorDump("picturemanager/picture2",
-                                            MemoryAllocatorDumpGuid(0x42));
+                                             MemoryAllocatorDumpGuid(0x42));
   pmd->AddSuballocation(pic2_dump->guid(), allocator_dump_name);
 
   // Now check that AddSuballocation() has created anonymous child dumps under

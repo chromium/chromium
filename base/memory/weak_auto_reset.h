@@ -57,8 +57,9 @@ class WeakAutoReset {
 
  private:
   void Reset() {
-    if (ptr_)
+    if (ptr_) {
       ptr_.get()->*field_ = std::move(old_value_);
+    }
   }
 
   base::WeakPtr<T> ptr_;

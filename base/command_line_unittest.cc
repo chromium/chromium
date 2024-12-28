@@ -105,8 +105,8 @@ TEST(CommandLineTest, CommandLineConstructor) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
 
   const CommandLine::StringVector& args = cl.GetArgs();
@@ -179,8 +179,8 @@ TEST(CommandLineTest, CommandLineFromString) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
   EXPECT_EQ(kTricky, cl.GetSwitchValueNative("quotes"));
 
@@ -529,10 +529,12 @@ TEST(CommandLineTest, Copy) {
   CommandLine assigned = *initial;
   CommandLine::SwitchMap switch_map = initial->GetSwitches();
   initial.reset();
-  for (const auto& pair : switch_map)
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(copy_constructed.HasSwitch(pair.first));
-  for (const auto& pair : switch_map)
+  }
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(assigned.HasSwitch(pair.first));
+  }
 }
 
 TEST(CommandLineTest, CopySwitches) {

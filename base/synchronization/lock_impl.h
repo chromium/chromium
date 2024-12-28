@@ -180,8 +180,8 @@ class SCOPED_LOCKABLE BasicMovableAutoLock {
 
   BasicMovableAutoLock(const BasicMovableAutoLock&) = delete;
   BasicMovableAutoLock& operator=(const BasicMovableAutoLock&) = delete;
-  BasicMovableAutoLock(BasicMovableAutoLock&& other) :
-      lock_(std::exchange(other.lock_, nullptr)) {}
+  BasicMovableAutoLock(BasicMovableAutoLock&& other)
+      : lock_(std::exchange(other.lock_, nullptr)) {}
   BasicMovableAutoLock& operator=(BasicMovableAutoLock&& other) = delete;
 
   ~BasicMovableAutoLock() UNLOCK_FUNCTION() {
@@ -266,8 +266,9 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
       subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
       EXCLUSIVE_LOCK_FUNCTION(lock)
       : lock_(lock) {
-    if (lock_)
+    if (lock_) {
       lock_->Acquire(tracking);
+    }
   }
 
   BasicAutoLockMaybe(const BasicAutoLockMaybe&) = delete;

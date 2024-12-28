@@ -87,8 +87,9 @@ UnwindResult FramePointerUnwinder::TryUnwind(
            ClampAdd(next_frame, sizeof(uintptr_t) * 2) <= stack_top &&
            (next_frame & align_mask) == 0;
   };
-  if (!is_fp_valid(next_frame))
+  if (!is_fp_valid(next_frame)) {
     return UnwindResult::kAborted;
+  }
 
   for (;;) {
     if (!stack->back().module) {
@@ -106,16 +107,18 @@ UnwindResult FramePointerUnwinder::TryUnwind(
     frame_lower_bound = frame + 1;
     // If `next_frame` is 0, we've hit the root and `retaddr` isn't useful.
     // Bail without recording the frame.
-    if (next_frame == 0)
+    if (next_frame == 0) {
       return UnwindResult::kCompleted;
+    }
     const ModuleCache::Module* module =
         module_cache()->GetModuleForAddress(retaddr);
     // V8 doesn't conform to the x86_64 ABI re: stack alignment. For V8 frames,
     // let the V8 unwinder determine whether the FP is valid or not.
     bool is_non_native_module = module && !module->IsNative();
     // If the FP doesn't look correct, don't record this frame.
-    if (!is_non_native_module && !is_fp_valid(next_frame))
+    if (!is_non_native_module && !is_fp_valid(next_frame)) {
       return UnwindResult::kAborted;
+    }
 
     RegisterContextFramePointer(thread_context) = next_frame;
     RegisterContextInstructionPointer(thread_context) = retaddr;

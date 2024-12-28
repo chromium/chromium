@@ -52,10 +52,9 @@ class OffThreadObjectCreator {
     DCHECK(result);  // We synchronized on thread destruction above.
     return result;
   }
+
  private:
-  static void CreateObject(T** result) {
-    *result = new T;
-  }
+  static void CreateObject(T** result) { *result = new T; }
 };
 
 struct Base {
@@ -220,9 +219,8 @@ class BackgroundThread : public Thread {
     completion->Signal();
   }
 
-  static void DoCopyAndAssignArrowBase(
-      Arrow* object,
-      WaitableEvent* completion) {
+  static void DoCopyAndAssignArrowBase(Arrow* object,
+                                       WaitableEvent* completion) {
     // Copy constructor.
     WeakPtr<TargetBase> b = object->target;
     // Assignment operator.
@@ -302,9 +300,7 @@ TEST(WeakPtrFactoryTest, MultipleStaged) {
     int data;
     WeakPtrFactory<int> factory(&data);
     a = factory.GetWeakPtr();
-    {
-      WeakPtr<int> b = factory.GetWeakPtr();
-    }
+    { WeakPtr<int> b = factory.GetWeakPtr(); }
     EXPECT_NE(nullptr, a.get());
   }
   EXPECT_EQ(nullptr, a.get());
@@ -502,8 +498,9 @@ TEST(WeakPtrTest, MaybeValidOnOtherSequence) {
             // Check that MaybeValid() _eventually_ returns false.
             const TimeDelta timeout = TestTimeouts::tiny_timeout();
             const TimeTicks begin = TimeTicks::Now();
-            while (ptr.MaybeValid() && (TimeTicks::Now() - begin) < timeout)
+            while (ptr.MaybeValid() && (TimeTicks::Now() - begin) < timeout) {
               PlatformThread::YieldCurrentThread();
+            }
             EXPECT_FALSE(ptr.MaybeValid());
           },
           ptr));
@@ -686,7 +683,7 @@ TEST(WeakPtrTest, NonOwnerThreadCanCopyAndAssignWeakPtr) {
   // Main thread creates a Target object.
   Target target;
   // Main thread creates an arrow referencing the Target.
-  Arrow *arrow = new Arrow();
+  Arrow* arrow = new Arrow();
   arrow->target = target.AsWeakPtr();
 
   // Background can copy and assign arrow (as well as the WeakPtr inside).
@@ -700,7 +697,7 @@ TEST(WeakPtrTest, NonOwnerThreadCanCopyAndAssignWeakPtrBase) {
   // Main thread creates a Target object.
   Target target;
   // Main thread creates an arrow referencing the Target.
-  Arrow *arrow = new Arrow();
+  Arrow* arrow = new Arrow();
   arrow->target = target.AsWeakPtr();
 
   // Background can copy and assign arrow's WeakPtr to a base class WeakPtr.

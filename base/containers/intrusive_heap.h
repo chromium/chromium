@@ -480,8 +480,9 @@ class IntrusiveHeap {
 
     // Repair the heap and ensure handles are pointing to the right index.
     ranges::make_heap(impl_.heap_, value_comp());
-    for (size_t i = 0; i < size(); ++i)
+    for (size_t i = 0; i < size(); ++i) {
       SetHeapHandle(i);
+    }
 
     // Explicitly delete elements last.
     elements_to_delete.clear();
@@ -683,16 +684,19 @@ class BASE_EXPORT InternalHeapHandleStorage {
   // as possible.
   void SetHeapHandle(HeapHandle handle) {
     DCHECK(handle.IsValid());
-    if (handle_)
+    if (handle_) {
       *handle_ = handle;
+    }
   }
   void ClearHeapHandle() {
-    if (handle_)
+    if (handle_) {
       handle_->reset();
+    }
   }
   HeapHandle GetHeapHandle() const {
-    if (handle_)
+    if (handle_) {
       return *handle_;
+    }
     return HeapHandle::Invalid();
   }
 
@@ -769,8 +773,9 @@ bool IsInvalid(const HandleType& handle) {
 }
 
 BASE_EXPORT inline void CheckInvalidOrEqualTo(HeapHandle handle, size_t index) {
-  if (handle.IsValid())
+  if (handle.IsValid()) {
     DCHECK_EQ(index, handle.index());
+  }
 }
 
 }  // namespace intrusive_heap
@@ -914,8 +919,9 @@ typename IntrusiveHeap<T, Compare, HeapHandleAccessor>::size_type
 IntrusiveHeap<T, Compare, HeapHandleAccessor>::ToIndex(const_iterator pos) {
   DCHECK(cbegin() <= pos);
   DCHECK(pos <= cend());
-  if (pos == cend())
+  if (pos == cend()) {
     return HeapHandle::kInvalidIndex;
+  }
   return pos - cbegin();
 }
 
@@ -925,8 +931,9 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::ToIndex(
     const_reverse_iterator pos) {
   DCHECK(crbegin() <= pos);
   DCHECK(pos <= crend());
-  if (pos == crend())
+  if (pos == crend()) {
     return HeapHandle::kInvalidIndex;
+  }
   return (pos.base() - cbegin()) - 1;
 }
 
@@ -1025,8 +1032,9 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::MoveHoleUpAndFill(
   while (hole_pos != 0) {
     // If our parent is >= to us, we can stop.
     size_type parent = intrusive_heap::ParentIndex(hole_pos);
-    if (!Less(parent, element))
+    if (!Less(parent, element)) {
       break;
+    }
 
     MoveHole(parent, hole_pos);
     hole_pos = parent;
@@ -1054,19 +1062,22 @@ IntrusiveHeap<T, Compare, HeapHandleAccessor>::MoveHoleDownAndFill(
   while (true) {
     // If this spot has no children, then we've gone down as far as we can go.
     size_type left = intrusive_heap::LeftIndex(hole_pos);
-    if (left >= n)
+    if (left >= n) {
       break;
+    }
     size_type right = left + 1;
 
     // Get the larger of the potentially two child nodes.
     size_type largest = left;
-    if (right < n && Less(left, right))
+    if (right < n && Less(left, right)) {
       largest = right;
+    }
 
     // If we're not deterministically moving the element all the way down to
     // become a leaf, then stop when it is >= the largest of the children.
-    if (!FillElementType::kIsLeafElement && !Less(element, largest))
+    if (!FillElementType::kIsLeafElement && !Less(element, largest)) {
       break;
+    }
 
     MoveHole(largest, hole_pos);
     hole_pos = largest;

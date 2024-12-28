@@ -112,8 +112,7 @@ bool AddProcessToCpuCgroup(const base::Process& process,
 
 namespace base {
 
-class ProcessTest : public MultiProcessTest {
-};
+class ProcessTest : public MultiProcessTest {};
 
 TEST_F(ProcessTest, Create) {
   Process process(SpawnChild("SimpleChildProcess"));
@@ -547,7 +546,8 @@ MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
   PlatformThreadChromeOS::InitializeFeatures();
   PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
 
-  // Register signal handler to be notified to create threads after backgrounding.
+  // Register signal handler to be notified to create threads after
+  // backgrounding.
   signal(SIGUSR1, sig_create_threads_after_bg);
 
   if (!PlatformThread::Create(0, &thread1, &handle1)) {
@@ -770,16 +770,16 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
 // on all platforms. But for the controllable scenario in the test cases, the
 // behavior should be guaranteed.
 TEST_F(ProcessTest, CurrentProcessIsRunning) {
-  EXPECT_FALSE(Process::Current().WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(
+      Process::Current().WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 
 #if BUILDFLAG(IS_APPLE)
 // On Mac OSX, we can detect whether a non-child process is running.
 TEST_F(ProcessTest, PredefinedProcessIsRunning) {
   // Process 1 is the /sbin/launchd, it should be always running.
-  EXPECT_FALSE(Process::Open(1).WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(
+      Process::Open(1).WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 #endif
 
@@ -813,11 +813,9 @@ TEST_F(ProcessTest, MAYBE_ControlFlowViolation) {
 
 TEST_F(ProcessTest, ChildProcessIsRunning) {
   Process process(SpawnChild("SleepyChildProcess"));
-  EXPECT_FALSE(process.WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(process.WaitForExitWithTimeout(base::TimeDelta(), nullptr));
   process.Terminate(0, true);
-  EXPECT_TRUE(process.WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -840,8 +838,9 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
   // TODO(b/172213843): base::Process is used by base::TestSuite::Initialize
   // before we can use ScopedFeatureList here. Update the test to allow the
   // use of ScopedFeatureList before base::TestSuite::Initialize runs.
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   Process process;
   process.InitializePriority();
@@ -850,8 +849,9 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -878,8 +878,9 @@ TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
 }
 
 TEST_F(ProcessTest, CleanUpBusyProcess) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -921,8 +922,9 @@ TEST_F(ProcessTest, CleanUpBusyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   Process process(SpawnChild("SimpleChildProcess"));
   const std::string unique_token = process.unique_token();
@@ -937,8 +939,9 @@ TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
 }
 
 TEST_F(ProcessTest, CleansUpStaleGroups) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -981,8 +984,9 @@ TEST_F(ProcessTest, CleansUpStaleGroups) {
 }
 
 TEST_F(ProcessTest, OneCgroupDoesNotCleanUpGroupsWithWrongPrefix) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 

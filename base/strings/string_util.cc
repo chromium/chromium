@@ -183,10 +183,11 @@ void TruncateUTF8ToByteSize(const std::string& input,
     }
   }
 
-  if (char_index >= 0 )
+  if (char_index >= 0) {
     *output = input.substr(0, static_cast<size_t>(char_index));
-  else
+  } else {
     output->clear();
+  }
 }
 
 TrimPositions TrimWhitespace(std::u16string_view input,
@@ -286,20 +287,15 @@ bool EndsWith(std::u16string_view str,
 
 char HexDigitToInt(char c) {
   DCHECK(IsHexDigit(c));
-  if (c >= '0' && c <= '9')
+  if (c >= '0' && c <= '9') {
     return static_cast<char>(c - '0');
+  }
   return (c >= 'A' && c <= 'F') ? static_cast<char>(c - 'A' + 10)
                                 : static_cast<char>(c - 'a' + 10);
 }
 
-static const char* const kByteStringsUnlocalized[] = {
-  " B",
-  " kB",
-  " MB",
-  " GB",
-  " TB",
-  " PB"
-};
+static const char* const kByteStringsUnlocalized[] = {" B",  " kB", " MB",
+                                                      " GB", " TB", " PB"};
 
 std::u16string FormatBytesUnlocalized(int64_t bytes) {
   double unit_amount = static_cast<double>(bytes);

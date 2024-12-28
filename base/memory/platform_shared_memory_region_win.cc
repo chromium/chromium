@@ -50,8 +50,9 @@ bool IsSectionSafeToMap(HANDLE handle) {
   ULONG status =
       nt_query_section_func(handle, SectionBasicInformation, &basic_information,
                             sizeof(basic_information), nullptr);
-  if (status)
+  if (status) {
     return false;
+  }
   return (basic_information.Attributes & SEC_IMAGE) != SEC_IMAGE;
 }
 
@@ -99,17 +100,21 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!handle.is_valid())
+  if (!handle.is_valid()) {
     return {};
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
+  }
 
-  if (!IsSectionSafeToMap(handle.get()))
+  if (!IsSectionSafeToMap(handle.get())) {
     return {};
+  }
 
   CHECK(
       CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
@@ -126,8 +131,9 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -137,16 +143,18 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
   BOOL success =
       ::DuplicateHandle(process, handle_.get(), process, &duped_handle, 0,
                         FALSE, DUPLICATE_SAME_ACCESS);
-  if (!success)
+  if (!success) {
     return {};
+  }
 
   return PlatformSharedMemoryRegion(win::ScopedHandle(duped_handle), mode_,
                                     size_, guid_);
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -158,8 +166,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   BOOL success =
       ::DuplicateHandle(process, handle_copy.get(), process, &duped_handle,
                         FILE_MAP_READ | SECTION_QUERY, FALSE, 0);
-  if (!success)
+  if (!success) {
     return false;
+  }
 
   handle_.Set(duped_handle);
   mode_ = Mode::kReadOnly;
@@ -167,8 +176,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";

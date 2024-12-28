@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/syscall.h>
+
 #include <atomic>
 #endif
 
@@ -74,8 +75,9 @@ void* ThreadFunc(void* params) {
         static_cast<ThreadParams*>(params));
 
     delegate = thread_params->delegate;
-    if (!thread_params->joinable)
+    if (!thread_params->joinable) {
       base::DisallowSingleton();
+    }
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated();
@@ -126,15 +128,18 @@ bool CreateThread(size_t stack_size,
 
   // Pthreads are joinable by default, so only specify the detached
   // attribute if the thread should be non-joinable.
-  if (!joinable)
+  if (!joinable) {
     pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
+  }
 
   // Get a better default if available.
-  if (stack_size == 0)
+  if (stack_size == 0) {
     stack_size = base::GetDefaultThreadStackSize(attributes);
+  }
 
-  if (stack_size > 0)
+  if (stack_size > 0) {
     pthread_attr_setstacksize(&attributes, stack_size);
+  }
 
   std::unique_ptr<ThreadParams> params(new ThreadParams);
   params->delegate = delegate;
@@ -298,8 +303,9 @@ void PlatformThreadBase::Sleep(TimeDelta duration) {
   duration -= Seconds(sleep_time.tv_sec);
   sleep_time.tv_nsec = static_cast<long>(duration.InMicroseconds() * 1000);
 
-  while (nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR)
+  while (nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR) {
     sleep_time = remaining;
+  }
 }
 
 // static
@@ -309,24 +315,26 @@ const char* PlatformThreadBase::GetName() {
 
 // static
 bool PlatformThreadBase::CreateWithType(size_t stack_size,
-                                    Delegate* delegate,
-                                    PlatformThreadHandle* thread_handle,
-                                    ThreadType thread_type,
-                                    MessagePumpType pump_type_hint) {
+                                        Delegate* delegate,
+                                        PlatformThreadHandle* thread_handle,
+                                        ThreadType thread_type,
+                                        MessagePumpType pump_type_hint) {
   return CreateThread(stack_size, true /* joinable thread */, delegate,
                       thread_handle, thread_type, pump_type_hint);
 }
 
 // static
-bool PlatformThreadBase::CreateNonJoinable(size_t stack_size, Delegate* delegate) {
+bool PlatformThreadBase::CreateNonJoinable(size_t stack_size,
+                                           Delegate* delegate) {
   return CreateNonJoinableWithType(stack_size, delegate, ThreadType::kDefault);
 }
 
 // static
-bool PlatformThreadBase::CreateNonJoinableWithType(size_t stack_size,
-                                               Delegate* delegate,
-                                               ThreadType thread_type,
-                                               MessagePumpType pump_type_hint) {
+bool PlatformThreadBase::CreateNonJoinableWithType(
+    size_t stack_size,
+    Delegate* delegate,
+    ThreadType thread_type,
+    MessagePumpType pump_type_hint) {
   PlatformThreadHandle unused;
 
   bool result = CreateThread(stack_size, false /* non-joinable thread */,
@@ -377,8 +385,9 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 #if BUILDFLAG(IS_NACL)
   NOTIMPLEMENTED();
 #else
-  if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint))
+  if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint)) {
     return;
+  }
 
   // setpriority(2) should change the whole thread group's (i.e. process)
   // priority. However, as stated in the bugs section of
@@ -405,8 +414,9 @@ ThreadPriorityForTest PlatformThreadBase::GetCurrentThreadPriorityForTest() {
   // Mirrors SetCurrentThreadPriority()'s implementation.
   auto platform_specific_priority =
       internal::GetCurrentThreadPriorityForPlatformForTest();  // IN-TEST
-  if (platform_specific_priority)
+  if (platform_specific_priority) {
     return platform_specific_priority.value();
+  }
 
   int nice_value = internal::GetCurrentThreadNiceValue();
 

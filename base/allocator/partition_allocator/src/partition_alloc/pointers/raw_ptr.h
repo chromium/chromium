@@ -72,7 +72,7 @@ class TextureLayerImpl;
 namespace base::internal {
 class DelayTimerBase;
 class JobTaskSource;
-}
+}  // namespace base::internal
 namespace base::test {
 struct RawPtrCountingImplForTest;
 }

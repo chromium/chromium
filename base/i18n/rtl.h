@@ -73,8 +73,8 @@ BASE_I18N_EXPORT TextDirection
 GetTextDirectionForLocaleInStartUp(const char* locale_name);
 
 // Returns the text direction for |locale_name|.
-BASE_I18N_EXPORT TextDirection GetTextDirectionForLocale(
-    const char* locale_name);
+BASE_I18N_EXPORT TextDirection
+GetTextDirectionForLocale(const char* locale_name);
 
 // Given the string in |text|, returns the directionality of the first or last
 // character with strong directionality in the string. If no character in the

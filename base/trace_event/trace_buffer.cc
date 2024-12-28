@@ -41,8 +41,9 @@ void TraceResultBuffer::Start() {
 }
 
 void TraceResultBuffer::AddFragment(const std::string& trace_fragment) {
-  if (append_comma_)
+  if (append_comma_) {
     output_callback_.Run(",");
+  }
   append_comma_ = true;
   output_callback_.Run(trace_fragment);
 }

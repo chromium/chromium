@@ -6,10 +6,9 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/test/mock_callback.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
-
-#include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

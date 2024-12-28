@@ -154,8 +154,9 @@ TEST(TimeTicks, MAYBE_WinRollover) {
 TEST(TimeTicks, SubMillisecondTimers) {
   // IsHighResolution() is false on some systems.  Since the product still works
   // even if it's false, it makes this entire test questionable.
-  if (!TimeTicks::IsHighResolution())
+  if (!TimeTicks::IsHighResolution()) {
     return;
+  }
 
   // Run kRetries attempts to see a sub-millisecond timer.
   constexpr int kRetries = 1000;
@@ -166,8 +167,9 @@ TEST(TimeTicks, SubMillisecondTimers) {
     do {
       delta = TimeTicks::Now() - start_time;
     } while (delta.is_zero());
-    if (!delta.InMilliseconds())
+    if (!delta.InMilliseconds()) {
       return;
+    }
   }
   ADD_FAILURE() << "Never saw a sub-millisecond timer.";
 }
@@ -235,14 +237,16 @@ TEST(TimeTicks, TimerPerformance) {
   const DWORD kWarmupMs = 50;
   for (;;) {
     DWORD elapsed = GetTickCount() - start_tick;
-    if (elapsed > kWarmupMs)
+    if (elapsed > kWarmupMs) {
       break;
+    }
   }
 
   for (const auto& test_case : cases) {
     TimeTicks start = TimeTicks::Now();
-    for (int index = 0; index < kLoops; index++)
+    for (int index = 0; index < kLoops; index++) {
       test_case.func();
+    }
     TimeTicks stop = TimeTicks::Now();
     // Turning off the check for acceptible delays.  Without this check,
     // the test really doesn't do much other than measure.  But the
@@ -284,8 +288,9 @@ TEST(TimeTicks, TSCTicksPerSecond) {
 #endif
 
 TEST(TimeTicks, FromQPCValue) {
-  if (!TimeTicks::IsHighResolution())
+  if (!TimeTicks::IsHighResolution()) {
     return;
+  }
 
   LARGE_INTEGER frequency;
   ASSERT_TRUE(QueryPerformanceFrequency(&frequency));

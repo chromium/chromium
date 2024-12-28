@@ -20,16 +20,16 @@ OffsetAdjuster::Adjustment::Adjustment(size_t original_offset,
                                        size_t output_length)
     : original_offset(original_offset),
       original_length(original_length),
-      output_length(output_length) {
-}
+      output_length(output_length) {}
 
 // static
 void OffsetAdjuster::AdjustOffsets(const Adjustments& adjustments,
                                    std::vector<size_t>* offsets_for_adjustment,
                                    size_t limit) {
   DCHECK(offsets_for_adjustment);
-  for (auto& i : *offsets_for_adjustment)
+  for (auto& i : *offsets_for_adjustment) {
     AdjustOffset(adjustments, &i, limit);
+  }
 }
 
 // static
@@ -37,13 +37,15 @@ void OffsetAdjuster::AdjustOffset(const Adjustments& adjustments,
                                   size_t* offset,
                                   size_t limit) {
   DCHECK(offset);
-  if (*offset == std::u16string::npos)
+  if (*offset == std::u16string::npos) {
     return;
+  }
   size_t original_lengths = 0;
   size_t output_lengths = 0;
   for (const auto& i : adjustments) {
-    if (*offset <= i.original_offset)
+    if (*offset <= i.original_offset) {
       break;
+    }
     if (*offset < (i.original_offset + i.original_length)) {
       *offset = std::u16string::npos;
       return;
@@ -53,30 +55,35 @@ void OffsetAdjuster::AdjustOffset(const Adjustments& adjustments,
   }
   *offset += output_lengths - original_lengths;
 
-  if (*offset > limit)
+  if (*offset > limit) {
     *offset = std::u16string::npos;
+  }
 }
 
 // static
 void OffsetAdjuster::UnadjustOffsets(
     const Adjustments& adjustments,
     std::vector<size_t>* offsets_for_unadjustment) {
-  if (!offsets_for_unadjustment || adjustments.empty())
+  if (!offsets_for_unadjustment || adjustments.empty()) {
     return;
-  for (auto& i : *offsets_for_unadjustment)
+  }
+  for (auto& i : *offsets_for_unadjustment) {
     UnadjustOffset(adjustments, &i);
+  }
 }
 
 // static
 void OffsetAdjuster::UnadjustOffset(const Adjustments& adjustments,
                                     size_t* offset) {
-  if (*offset == std::u16string::npos)
+  if (*offset == std::u16string::npos) {
     return;
+  }
   size_t original_lengths = 0;
   size_t output_lengths = 0;
   for (const auto& i : adjustments) {
-    if (*offset + original_lengths - output_lengths <= i.original_offset)
+    if (*offset + original_lengths - output_lengths <= i.original_offset) {
       break;
+    }
     original_lengths += i.original_length;
     output_lengths += i.output_length;
     if ((*offset + original_lengths - output_lengths) <
@@ -186,13 +193,14 @@ void OffsetAdjuster::MergeSequentialAdjustments(
 // the result.  If non-NULL, |adjustments| is set to reflect the all the
 // alterations to the string that are not one-character-to-one-character.
 // It will always be sorted by increasing offset.
-template<typename SrcChar, typename DestStdString>
+template <typename SrcChar, typename DestStdString>
 bool ConvertUnicode(const SrcChar* src,
                     size_t src_len,
                     DestStdString* output,
                     OffsetAdjuster::Adjustments* adjustments) {
-  if (adjustments)
+  if (adjustments) {
     adjustments->clear();
+  }
   bool success = true;
   for (size_t i = 0; i < src_len; i++) {
     base_icu::UChar32 code_point;
@@ -240,8 +248,9 @@ std::u16string UTF8ToUTF16AndAdjustOffsets(
     std::string_view utf8,
     std::vector<size_t>* offsets_for_adjustment) {
   for (size_t& offset : *offsets_for_adjustment) {
-    if (offset > utf8.length())
+    if (offset > utf8.length()) {
       offset = std::u16string::npos;
+    }
   }
   OffsetAdjuster::Adjustments adjustments;
   std::u16string result = UTF8ToUTF16WithAdjustments(utf8, &adjustments);
@@ -253,8 +262,9 @@ std::string UTF16ToUTF8AndAdjustOffsets(
     std::u16string_view utf16,
     std::vector<size_t>* offsets_for_adjustment) {
   for (size_t& offset : *offsets_for_adjustment) {
-    if (offset > utf16.length())
+    if (offset > utf16.length()) {
       offset = std::u16string::npos;
+    }
   }
   std::string result;
   PrepareForUTF8Output(utf16.data(), utf16.length(), &result);

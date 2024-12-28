@@ -136,7 +136,7 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     const int collection_id;
     const PlatformThreadId thread_id;  // Thread id of the sampled thread.
 
-    const SamplingParams params;    // Information about how to sample.
+    const SamplingParams params;  // Information about how to sample.
     const raw_ptr<WaitableEvent>
         finished;  // Signaled when all sampling complete.
 
@@ -311,8 +311,9 @@ void StackSamplingProfiler::SamplingThread::TestPeer::Reset() {
     state = EXITING;
   }
   // Make sure thread is cleaned up since state will be reset to NOT_STARTED.
-  if (state == EXITING)
+  if (state == EXITING) {
     sampler->Stop();
+  }
 
   // Reset internal variables to the just-initialized state.
   {
@@ -349,8 +350,9 @@ void StackSamplingProfiler::SamplingThread::TestPeer::ShutdownAssumingIdle(
   {
     AutoLock lock(sampler->thread_execution_state_lock_);
     add_events = sampler->thread_execution_state_add_events_;
-    if (simulate_intervening_add)
+    if (simulate_intervening_add) {
       ++sampler->thread_execution_state_add_events_;
+    }
   }
 
   WaitableEvent executed(WaitableEvent::ResetPolicy::MANUAL,
@@ -405,8 +407,9 @@ void StackSamplingProfiler::SamplingThread::AddAuxUnwinder(
     std::unique_ptr<Unwinder> unwinder) {
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
-  if (state != RUNNING)
+  if (state != RUNNING) {
     return;
+  }
   DCHECK(task_runner);
   task_runner->PostTask(
       FROM_HERE, BindOnce(&SamplingThread::AddAuxUnwinderTask, Unretained(this),
@@ -422,8 +425,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
     std::optional<PlatformThreadId> thread_id) {
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
-  if (state != RUNNING)
+  if (state != RUNNING) {
     return;
+  }
   DCHECK(task_runner);
   task_runner->PostTask(
       FROM_HERE, BindOnce(&SamplingThread::ApplyMetadataToPastSamplesTask,
@@ -452,8 +456,9 @@ void StackSamplingProfiler::SamplingThread::Remove(int collection_id) {
 
   ThreadExecutionState state;
   scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
-  if (state != RUNNING)
+  if (state != RUNNING) {
     return;
+  }
   DCHECK(task_runner);
 
   // This can fail if the thread were to exit between acquisition of the task
@@ -518,8 +523,9 @@ scoped_refptr<SingleThreadTaskRunner>
 StackSamplingProfiler::SamplingThread::GetTaskRunner(
     ThreadExecutionState* out_state) {
   AutoLock lock(thread_execution_state_lock_);
-  if (out_state)
+  if (out_state) {
     *out_state = thread_execution_state_;
+  }
   if (thread_execution_state_ == RUNNING) {
     // This shouldn't be called from the sampling thread as it's inefficient.
     // Use GetTaskRunnerOnSamplingThread() instead.
@@ -568,8 +574,9 @@ void StackSamplingProfiler::SamplingThread::FinishCollection(
 void StackSamplingProfiler::SamplingThread::ScheduleShutdownIfIdle() {
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
 
-  if (!active_collections_.empty())
+  if (!active_collections_.empty()) {
     return;
+  }
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
                "StackSamplingProfiler::SamplingThread::ScheduleShutdownIfIdle");
@@ -577,8 +584,9 @@ void StackSamplingProfiler::SamplingThread::ScheduleShutdownIfIdle() {
   int add_events;
   {
     AutoLock lock(thread_execution_state_lock_);
-    if (thread_execution_state_disable_idle_shutdown_for_testing_)
+    if (thread_execution_state_disable_idle_shutdown_for_testing_) {
       return;
+    }
     add_events = thread_execution_state_add_events_;
   }
 
@@ -594,8 +602,9 @@ void StackSamplingProfiler::SamplingThread::AddAuxUnwinderTask(
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
 
   auto loc = active_collections_.find(collection_id);
-  if (loc == active_collections_.end())
+  if (loc == active_collections_.end()) {
     return;
+  }
 
   loc->second->sampler->AddAuxUnwinder(std::move(unwinder));
 }
@@ -610,8 +619,9 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
   MetadataRecorder::Item item(name_hash, key, thread_id, value);
   for (auto& id_collection_pair : active_collections_) {
-    if (thread_id && id_collection_pair.second->thread_id != thread_id)
+    if (thread_id && id_collection_pair.second->thread_id != thread_id) {
       continue;
+    }
     id_collection_pair.second->sampler->GetStackUnwindData()
         ->profile_builder()
         ->ApplyMetadataRetrospectively(period_start, period_end, item);
@@ -667,8 +677,9 @@ void StackSamplingProfiler::SamplingThread::RemoveCollectionTask(
   DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
 
   auto found = active_collections_.find(collection_id);
-  if (found == active_collections_.end())
+  if (found == active_collections_.end()) {
     return;
+  }
 
   // Remove |collection| from |active_collections_|.
   std::unique_ptr<CollectionContext> collection = std::move(found->second);
@@ -752,8 +763,9 @@ void StackSamplingProfiler::SamplingThread::ShutdownTask(int add_events) {
 
   // If the current count of creation requests doesn't match the passed count
   // then other tasks have been created since this was posted. Abort shutdown.
-  if (thread_execution_state_add_events_ != add_events)
+  if (thread_execution_state_add_events_ != add_events) {
     return;
+  }
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
                "StackSamplingProfiler::SamplingThread::ShutdownTask");
@@ -835,13 +847,15 @@ bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
 #if BUILDFLAG(IS_WIN)
   // Do not start the profiler when Application Verifier is in use; running them
   // simultaneously can cause crashes and has no known use case.
-  if (GetModuleHandleA(base::win::kApplicationVerifierDllName))
+  if (GetModuleHandleA(base::win::kApplicationVerifierDllName)) {
     return false;
+  }
   // Checks if Trend Micro DLLs are loaded in process, so we can disable the
   // profiler to avoid hitting their performance bug. See
   // https://crbug.com/1018291 and https://crbug.com/1113832.
-  if (GetModuleHandleA("tmmon64.dll") || GetModuleHandleA("tmmonmgr64.dll"))
+  if (GetModuleHandleA("tmmon64.dll") || GetModuleHandleA("tmmonmgr64.dll")) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
 #else
@@ -913,8 +927,9 @@ void StackSamplingProfiler::Start() {
   // If a previous profiling phase is still winding down, wait for it to
   // complete. We can't use task posting for this coordination because the
   // thread owning the profiler may not have a message loop.
-  if (!profiling_inactive_.IsSignaled())
+  if (!profiling_inactive_.IsSignaled()) {
     profiling_inactive_.Wait();
+  }
   profiling_inactive_.Reset();
 
   DCHECK_EQ(kNullProfilerId, profiler_id_);
@@ -940,8 +955,9 @@ void StackSamplingProfiler::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
   if (profiler_id_ == kNullProfilerId) {
     // We haven't started sampling, and so we can add |unwinder| to the sampler
     // directly
-    if (sampler_)
+    if (sampler_) {
       sampler_->AddAuxUnwinder(std::move(unwinder));
+    }
     return;
   }
 

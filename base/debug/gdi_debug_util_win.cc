@@ -4,11 +4,11 @@
 #include "base/debug/gdi_debug_util_win.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <TlHelp32.h>
 #include <psapi.h>
 #include <stddef.h>
-#include <winternl.h>
 
 #include <algorithm>
 #include <cmath>
@@ -179,8 +179,9 @@ GetGdiTableEntries(const base::Process& process) {
   using GdiTableEntryVector =
       std::vector<GdiTableEntry<typename ProcessType::NativePointerType>>;
   HMODULE ntdll = GetModuleHandle(L"ntdll.dll");
-  if (!ntdll)
+  if (!ntdll) {
     return GdiTableEntryVector();
+  }
 
   static auto query_information_process_func =
       reinterpret_cast<typename ProcessType::QueryInformationProcessFunc*>(
@@ -227,7 +228,8 @@ GetGdiTableEntries(const base::Process& process) {
   // Entry Count
   // 32-bit: 65792
   // 64-bit: 65706ish
-  // So we'll take a look at 65536 entries since that's the maximum handle count.
+  // So we'll take a look at 65536 entries since that's the maximum handle
+  // count.
   constexpr int kGdiTableEntryCount = 65536;
   GdiTableEntryVector entries;
   entries.resize(kGdiTableEntryCount);
@@ -252,8 +254,9 @@ base::debug::GdiHandleCounts CountHandleTypesFromTable(
     const std::vector<GdiTableEntry<PointerType>>& gdi_table) {
   base::debug::GdiHandleCounts counts{};
   for (const auto& entry : gdi_table) {
-    if (entry.wProcessId != pid)
+    if (entry.wProcessId != pid) {
       continue;
+    }
 
     switch (entry.wType & 0x7F) {
       case GdiHandleType::kDC:
@@ -292,8 +295,9 @@ template <typename ProcessType>
 std::optional<base::debug::GdiHandleCounts> CollectGdiHandleCountsImpl(
     DWORD pid) {
   base::Process process = base::Process::OpenWithExtraPrivileges(pid);
-  if (!process.IsValid())
+  if (!process.IsValid()) {
     return std::nullopt;
+  }
 
   std::vector<GdiTableEntry<typename ProcessType::NativePointerType>>
       gdi_entries = GetGdiTableEntries<ProcessType>(process);
@@ -400,12 +404,11 @@ void CollectChildGDIUsageAndDie(DWORD parent_pid) {
   GetFirstProcess(snapshot, &proc_entry);
 
   do {
-    base::win::ScopedHandle process(
-        OpenProcess(PROCESS_QUERY_INFORMATION,
-                    FALSE,
-                    proc_entry.th32ProcessID));
-    if (!process.is_valid())
+    base::win::ScopedHandle process(OpenProcess(
+        PROCESS_QUERY_INFORMATION, FALSE, proc_entry.th32ProcessID));
+    if (!process.is_valid()) {
       continue;
+    }
 
     DWORD num_gdi_handles = GetGuiResources(process.get(), GR_GDIOBJECTS);
     DWORD num_user_handles = GetGuiResources(process.get(), GR_USEROBJECTS);
@@ -416,8 +419,9 @@ void CollectChildGDIUsageAndDie(DWORD parent_pid) {
     total_gdi_count += num_gdi_handles;
     total_peak_gdi_count = std::max(total_peak_gdi_count, num_gdi_handles);
 
-    if (parent_pid != proc_entry.th32ParentProcessID)
+    if (parent_pid != proc_entry.th32ParentProcessID) {
       continue;
+    }
 
     // Compute sum and peak counts for child processes.
     ++child_count;

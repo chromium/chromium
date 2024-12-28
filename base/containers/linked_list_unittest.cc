@@ -52,8 +52,7 @@ void ExpectListContentsForDirection(const LinkedList<Node>& list,
                                     bool forward) {
   size_t i = 0;
   for (const LinkNode<Node>* node = (forward ? list.head() : list.tail());
-       node != list.end();
-       node = (forward ? node->next() : node->previous())) {
+       node != list.end(); node = (forward ? node->next() : node->previous())) {
     ASSERT_LT(i, node_ids.size());
     EXPECT_EQ(node_ids[forward ? i : node_ids.size() - i - 1],
               node->value()->id());

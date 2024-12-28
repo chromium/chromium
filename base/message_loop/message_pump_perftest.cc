@@ -65,8 +65,9 @@ class ScheduleWorkTest : public testing::Test {
   ScheduleWorkTest() : counter_(0) {}
 
   void SetUp() override {
-    if (base::ThreadTicks::IsSupported())
+    if (base::ThreadTicks::IsSupported()) {
       base::ThreadTicks::WaitUntilInitialized();
+    }
   }
 
   void Increment(uint64_t amount) { counter_ += amount; }
@@ -74,8 +75,9 @@ class ScheduleWorkTest : public testing::Test {
   void Schedule(int index) {
     base::TimeTicks start = base::TimeTicks::Now();
     base::ThreadTicks thread_start;
-    if (ThreadTicks::IsSupported())
+    if (ThreadTicks::IsSupported()) {
       thread_start = base::ThreadTicks::Now();
+    }
     base::TimeDelta minimum = base::TimeDelta::Max();
     base::TimeDelta maximum = base::TimeDelta();
     base::TimeTicks now, lastnow = start;
@@ -93,9 +95,9 @@ class ScheduleWorkTest : public testing::Test {
     } while (now - start < base::Seconds(kTargetTimeSec));
 
     scheduling_times_[index] = now - start;
-    if (ThreadTicks::IsSupported())
-      scheduling_thread_times_[index] =
-          base::ThreadTicks::Now() - thread_start;
+    if (ThreadTicks::IsSupported()) {
+      scheduling_thread_times_[index] = base::ThreadTicks::Now() - thread_start;
+    }
     min_batch_times_[index] = minimum;
     max_batch_times_[index] = maximum;
     target_message_loop_base()->GetTaskRunner()->PostTask(

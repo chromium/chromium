@@ -4,15 +4,15 @@
 
 #include "base/android/thread_instruction_count.h"
 
+#include <linux/perf_event.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_local_storage.h"
-
-#include <linux/perf_event.h>
-#include <sys/syscall.h>
-#include <unistd.h>
 
 namespace base {
 namespace android {
@@ -24,8 +24,9 @@ constexpr int kPerfFdOpenFailed = -1;
 ThreadLocalStorage::Slot& InstructionCounterFdSlot() {
   static NoDestructor<ThreadLocalStorage::Slot> fd_slot([](void* fd_ptr) {
     int fd = checked_cast<int>(reinterpret_cast<intptr_t>(fd_ptr));
-    if (fd > 0)
+    if (fd > 0) {
       close(fd);
+    }
   });
   return *fd_slot;
 }
@@ -75,8 +76,9 @@ bool ThreadInstructionCount::IsSupported() {
 ThreadInstructionCount ThreadInstructionCount::Now() {
   DCHECK(IsSupported());
   int fd = InstructionCounterFdForCurrentThread();
-  if (fd <= 0)
+  if (fd <= 0) {
     return ThreadInstructionCount();
+  }
 
   uint64_t instructions = 0;
   ssize_t bytes_read = read(fd, &instructions, sizeof(instructions));

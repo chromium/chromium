@@ -377,7 +377,7 @@ class ScopedAllowBlockingForSettingGetter;
 namespace internal {
 class AddressTrackerLinux;
 class PemFileCertStore;
-}
+}  // namespace internal
 }  // namespace net
 namespace printing {
 class LocalPrinterHandlerDefault;
@@ -659,7 +659,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 #if BUILDFLAG(IS_WIN)
   friend class base::win::OSInfo;
   friend class content::SlowWebPreferenceCache;  // http://crbug.com/1262162
-  friend class media::GpuMojoMediaClientWin;  // https://crbug.com/360642944
+  friend class media::GpuMojoMediaClientWin;     // https://crbug.com/360642944
 #endif
 #if BUILDFLAG(IS_IOS)
   friend class ::BrowserStateDirectoryBuilder;
@@ -801,8 +801,8 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
   friend class chromeos::ChromeOsCdmFactory;       // http://crbug.com/368792274
   friend class viz::
-      DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
-  friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
+      DisplayCompositorMemoryAndTaskController;    // http://crbug.com/341151462
+  friend class viz::SkiaOutputSurfaceImpl;         // http://crbug.com/341151462
   friend class viz::SharedImageInterfaceProvider;  // http://crbug.com/341151462
 
   ScopedAllowBaseSyncPrimitives();
@@ -884,14 +884,14 @@ class BASE_EXPORT
   friend class base::Thread;                      // http://crbug.com/918039
   friend class cc::CompletionEvent;               // http://crbug.com/902653
   friend class content::
-      BrowserGpuChannelHostFactory;                 // http://crbug.com/125248
-  friend class content::TextInputClientMac;         // http://crbug.com/121917
-  friend class dbus::Bus;                           // http://crbug.com/125222
+      BrowserGpuChannelHostFactory;          // http://crbug.com/125248
+  friend class content::TextInputClientMac;  // http://crbug.com/121917
+  friend class dbus::Bus;                    // http://crbug.com/125222
   friend class discardable_memory::
-      ClientDiscardableSharedMemoryManager;         // http://crbug.com/1396355
-  friend class disk_cache::BackendImpl;             // http://crbug.com/74623
-  friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class midi::TaskService;                   // https://crbug.com/796830
+      ClientDiscardableSharedMemoryManager;  // http://crbug.com/1396355
+  friend class disk_cache::BackendImpl;      // http://crbug.com/74623
+  friend class disk_cache::InFlightIO;       // http://crbug.com/74623
+  friend class midi::TaskService;            // https://crbug.com/796830
   friend class net::
       MultiThreadedProxyResolverScopedAllowJoinOnIO;  // http://crbug.com/69710
   friend class net::NetworkChangeNotifierApple;       // http://crbug.com/125097

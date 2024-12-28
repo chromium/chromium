@@ -111,7 +111,7 @@ std::string BuildInfo::host_signing_cert_sha256() {
 
 // static
 BuildInfo* BuildInfo::GetInstance() {
-  return Singleton<BuildInfo, BuildInfoSingletonTraits >::get();
+  return Singleton<BuildInfo, BuildInfoSingletonTraits>::get();
 }
 
 }  // namespace android

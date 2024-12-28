@@ -17,12 +17,14 @@ MessagePumpIOSForIO::FdWatchController::~FdWatchController() {
 }
 
 bool MessagePumpIOSForIO::FdWatchController::StopWatchingFileDescriptor() {
-  if (fdref_ == NULL)
+  if (fdref_ == NULL) {
     return true;
+  }
 
   CFFileDescriptorDisableCallBacks(fdref_.get(), callback_types_);
-  if (pump_)
+  if (pump_) {
     pump_->RemoveRunLoopSource(fd_source_);
+  }
   fd_source_.reset();
   fdref_.reset();
   callback_types_ = 0;
@@ -162,8 +164,9 @@ void MessagePumpIOSForIO::HandleFdIOEvent(CFFileDescriptorRef fdref,
     scoped_do_work_item = pump->delegate()->BeginWorkItem();
   }
 
-  if (callback_types & kCFFileDescriptorWriteCallBack)
+  if (callback_types & kCFFileDescriptorWriteCallBack) {
     controller->OnFileCanWriteWithoutBlocking(fd, pump);
+  }
 
   // Perform the read callback only if the file descriptor has not been
   // invalidated in the write callback. As |FdWatchController| invalidates

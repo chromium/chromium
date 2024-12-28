@@ -42,8 +42,8 @@ namespace base {
 namespace {
 
 // The default output file for XML output.
-const FilePath::CharType kDefaultOutputFile[] = FILE_PATH_LITERAL(
-    "test_detail.xml");
+const FilePath::CharType kDefaultOutputFile[] =
+    FILE_PATH_LITERAL("test_detail.xml");
 
 // Converts the given epoch time in milliseconds to a date string in the ISO
 // 8601 format, without the timezone information.
@@ -96,18 +96,19 @@ TestResultsTracker::TestResultsTracker() : iteration_(-1), out_(nullptr) {}
 TestResultsTracker::~TestResultsTracker() {
   CHECK(thread_checker_.CalledOnValidThread());
 
-  if (!out_)
+  if (!out_) {
     return;
+  }
 
   CHECK_GE(iteration_, 0);
 
   // Maps test case names to test results.
-  typedef std::map<std::string, std::vector<TestResult> > TestCaseMap;
+  typedef std::map<std::string, std::vector<TestResult>> TestCaseMap;
   TestCaseMap test_case_map;
 
   TestSuiteResultsAggregator all_tests_aggregator;
-  for (const PerIterationData::ResultsMap::value_type& i
-           : per_iteration_data_[iteration_].results) {
+  for (const PerIterationData::ResultsMap::value_type& i :
+       per_iteration_data_[iteration_].results) {
     // Use the last test result as the final one.
     TestResult result = i.second.test_results.back();
     test_case_map[result.GetTestCaseName()].push_back(result);
@@ -176,15 +177,15 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   print_temp_leaks_ =
       command_line.HasSwitch(switches::kTestLauncherPrintTempLeaks);
 
-  if (!command_line.HasSwitch(kGTestOutputFlag))
+  if (!command_line.HasSwitch(kGTestOutputFlag)) {
     return true;
+  }
 
   std::string flag = command_line.GetSwitchValueASCII(kGTestOutputFlag);
   size_t colon_pos = flag.find(':');
   FilePath path;
   if (colon_pos != std::string::npos) {
-    FilePath flag_path =
-        command_line.GetSwitchValuePath(kGTestOutputFlag);
+    FilePath flag_path = command_line.GetSwitchValuePath(kGTestOutputFlag);
     FilePath::StringType path_string = flag_path.value();
     path = FilePath(path_string.substr(colon_pos + 1));
     // If the given path ends with '/', consider it is a directory.
@@ -193,11 +194,12 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
     if (path.EndsWithSeparator()) {
       FilePath executable = command_line.GetProgram().BaseName();
       path = path.Append(executable.ReplaceExtension(
-                             FilePath::StringType(FILE_PATH_LITERAL("xml"))));
+          FilePath::StringType(FILE_PATH_LITERAL("xml"))));
     }
   }
-  if (path.value().empty())
+  if (path.value().empty()) {
     path = FilePath(kDefaultOutputFile);
+  }
   FilePath dir_name = path.DirName();
   if (!DirectoryExists(dir_name)) {
     LOG(WARNING) << "The output directory does not exist. "
@@ -210,8 +212,7 @@ bool TestResultsTracker::Init(const CommandLine& command_line) {
   }
   out_ = OpenFile(path, "w");
   if (!out_) {
-    LOG(ERROR) << "Cannot open output file: "
-               << path.value() << ".";
+    LOG(ERROR) << "Cannot open output file: " << path.value() << ".";
     return false;
   }
 
@@ -344,8 +345,7 @@ void TestResultsTracker::PrintSummaryOfCurrentIteration() const {
   TestStatusMap tests_by_status(GetTestStatusMapForCurrentIteration());
 
   PrintTests(tests_by_status[TestResult::TEST_FAILURE].begin(),
-             tests_by_status[TestResult::TEST_FAILURE].end(),
-             "failed");
+             tests_by_status[TestResult::TEST_FAILURE].end(), "failed");
   PrintTests(tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].begin(),
              tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].end(),
              "failed on exit");
@@ -353,14 +353,11 @@ void TestResultsTracker::PrintSummaryOfCurrentIteration() const {
              tests_by_status[TestResult::TEST_EXCESSIVE_OUTPUT].end(),
              "produced excessive output");
   PrintTests(tests_by_status[TestResult::TEST_TIMEOUT].begin(),
-             tests_by_status[TestResult::TEST_TIMEOUT].end(),
-             "timed out");
+             tests_by_status[TestResult::TEST_TIMEOUT].end(), "timed out");
   PrintTests(tests_by_status[TestResult::TEST_CRASH].begin(),
-             tests_by_status[TestResult::TEST_CRASH].end(),
-             "crashed");
+             tests_by_status[TestResult::TEST_CRASH].end(), "crashed");
   PrintTests(tests_by_status[TestResult::TEST_SKIPPED].begin(),
-             tests_by_status[TestResult::TEST_SKIPPED].end(),
-             "skipped");
+             tests_by_status[TestResult::TEST_SKIPPED].end(), "skipped");
   PrintTests(tests_by_status[TestResult::TEST_UNKNOWN].begin(),
              tests_by_status[TestResult::TEST_UNKNOWN].end(),
              "had unknown result");
@@ -384,8 +381,7 @@ void TestResultsTracker::PrintSummaryOfAllIterations() const {
   fflush(stdout);
 
   PrintTests(tests_by_status[TestResult::TEST_FAILURE].begin(),
-             tests_by_status[TestResult::TEST_FAILURE].end(),
-             "failed");
+             tests_by_status[TestResult::TEST_FAILURE].end(), "failed");
   PrintTests(tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].begin(),
              tests_by_status[TestResult::TEST_FAILURE_ON_EXIT].end(),
              "failed on exit");
@@ -393,14 +389,11 @@ void TestResultsTracker::PrintSummaryOfAllIterations() const {
              tests_by_status[TestResult::TEST_EXCESSIVE_OUTPUT].end(),
              "produced excessive output");
   PrintTests(tests_by_status[TestResult::TEST_TIMEOUT].begin(),
-             tests_by_status[TestResult::TEST_TIMEOUT].end(),
-             "timed out");
+             tests_by_status[TestResult::TEST_TIMEOUT].end(), "timed out");
   PrintTests(tests_by_status[TestResult::TEST_CRASH].begin(),
-             tests_by_status[TestResult::TEST_CRASH].end(),
-             "crashed");
+             tests_by_status[TestResult::TEST_CRASH].end(), "crashed");
   PrintTests(tests_by_status[TestResult::TEST_SKIPPED].begin(),
-             tests_by_status[TestResult::TEST_SKIPPED].end(),
-             "skipped");
+             tests_by_status[TestResult::TEST_SKIPPED].end(), "skipped");
   PrintTests(tests_by_status[TestResult::TEST_UNKNOWN].begin(),
              tests_by_status[TestResult::TEST_UNKNOWN].end(),
              "had unknown result");
@@ -466,8 +459,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
           test_result_value.Set("thread_id",
                                 static_cast<int>(*test_result.thread_id));
         }
-        if (test_result.process_num)
+        if (test_result.process_num) {
           test_result_value.Set("process_num", *test_result.process_num);
+        }
         if (test_result.timestamp) {
           // The timestamp is formatted using TimeFormatAsIso8601 instead of
           // FormatTimeAsIso8601 here for a better accuracy, since the former
@@ -588,8 +582,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   summary_root.Set("test_locations", std::move(test_locations));
 
   std::string json;
-  if (!JSONWriter::Write(summary_root, &json))
+  if (!JSONWriter::Write(summary_root, &json)) {
     return false;
+  }
 
   File output(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   if (!output.IsValid()) {
@@ -611,8 +606,9 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   // TODO(sergeyu): Figure out a better solution.
   int flush_attempts_left = 4;
   while (flush_attempts_left-- > 0) {
-    if (output.Flush())
+    if (output.Flush()) {
       return true;
+    }
     LOG(ERROR) << "fsync() failed when saving test output summary. "
                << ((flush_attempts_left > 0) ? "Retrying." : " Giving up.");
   }
@@ -624,22 +620,23 @@ bool TestResultsTracker::SaveSummaryAsJSON(
 }
 
 TestResultsTracker::TestStatusMap
-    TestResultsTracker::GetTestStatusMapForCurrentIteration() const {
+TestResultsTracker::GetTestStatusMapForCurrentIteration() const {
   TestStatusMap tests_by_status;
   GetTestStatusForIteration(iteration_, &tests_by_status);
   return tests_by_status;
 }
 
 TestResultsTracker::TestStatusMap
-    TestResultsTracker::GetTestStatusMapForAllIterations() const {
+TestResultsTracker::GetTestStatusMapForAllIterations() const {
   TestStatusMap tests_by_status;
-  for (int i = 0; i <= iteration_; i++)
+  for (int i = 0; i <= iteration_; i++) {
     GetTestStatusForIteration(i, &tests_by_status);
+  }
   return tests_by_status;
 }
 
-void TestResultsTracker::GetTestStatusForIteration(
-    int iteration, TestStatusMap* map) const {
+void TestResultsTracker::GetTestStatusForIteration(int iteration,
+                                                   TestStatusMap* map) const {
   for (const auto& j : per_iteration_data_[iteration].results) {
     // Use the last test result as the final one.
     const TestResult& result = j.second.test_results.back();
@@ -649,18 +646,16 @@ void TestResultsTracker::GetTestStatusForIteration(
 
 // Utility function to print a list of test names. Uses iterator to be
 // compatible with different containers, like vector and set.
-template<typename InputIterator>
+template <typename InputIterator>
 void TestResultsTracker::PrintTests(InputIterator first,
                                     InputIterator last,
                                     const std::string& description) const {
   size_t count = std::distance(first, last);
-  if (count == 0)
+  if (count == 0) {
     return;
+  }
 
-  fprintf(stdout,
-          "%" PRIuS " test%s %s:\n",
-          count,
-          count != 1 ? "s" : "",
+  fprintf(stdout, "%" PRIuS " test%s %s:\n", count, count != 1 ? "s" : "",
           description.c_str());
   for (InputIterator it = first; it != last; ++it) {
     const std::string& test_name = *it;

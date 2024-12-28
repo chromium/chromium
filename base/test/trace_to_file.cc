@@ -18,8 +18,7 @@
 namespace base {
 namespace test {
 
-TraceToFile::TraceToFile() : started_(false) {
-}
+TraceToFile::TraceToFile() : started_(false) {}
 
 TraceToFile::~TraceToFile() {
   EndTracingIfNeeded();
@@ -29,8 +28,9 @@ void TraceToFile::BeginTracingFromCommandLineOptions() {
   DCHECK(CommandLine::InitializedForCurrentProcess());
   DCHECK(!started_);
 
-  if (!CommandLine::ForCurrentProcess()->HasSwitch(switches::kTraceToFile))
+  if (!CommandLine::ForCurrentProcess()->HasSwitch(switches::kTraceToFile)) {
     return;
+  }
 
   // Empty filter (i.e. just --trace-to-file) turns into default categories in
   // TraceEventImpl
@@ -39,8 +39,8 @@ void TraceToFile::BeginTracingFromCommandLineOptions() {
 
   FilePath path;
   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kTraceToFileName)) {
-    path = FilePath(CommandLine::ForCurrentProcess()
-                        ->GetSwitchValuePath(switches::kTraceToFileName));
+    path = FilePath(CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+        switches::kTraceToFileName));
   } else {
     path = FilePath(FILE_PATH_LITERAL("trace.json"));
   }
@@ -79,13 +79,15 @@ static void OnTraceDataCollected(
     const scoped_refptr<RefCountedString>& json_events_str,
     bool has_more_events) {
   buffer->AddFragment(json_events_str->as_string());
-  if (!has_more_events)
+  if (!has_more_events) {
     std::move(quit_closure).Run();
+  }
 }
 
 void TraceToFile::EndTracingIfNeeded() {
-  if (!started_)
+  if (!started_) {
     return;
+  }
   started_ = false;
 
   trace_event::TraceLog::GetInstance()->SetDisabled();
@@ -96,8 +98,9 @@ void TraceToFile::EndTracingIfNeeded() {
 
   // In tests we might not have a TaskEnvironment, create one if needed.
   std::unique_ptr<SingleThreadTaskEnvironment> task_environment;
-  if (!SingleThreadTaskRunner::HasCurrentDefault())
+  if (!SingleThreadTaskRunner::HasCurrentDefault()) {
     task_environment = std::make_unique<SingleThreadTaskEnvironment>();
+  }
 
   RunLoop run_loop;
   trace_event::TraceLog::GetInstance()->Flush(BindRepeating(

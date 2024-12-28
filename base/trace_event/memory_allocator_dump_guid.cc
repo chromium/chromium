@@ -24,12 +24,10 @@ uint64_t HashString(const std::string& str) {
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid(uint64_t guid) : guid_(guid) {}
 
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid()
-    : MemoryAllocatorDumpGuid(0u) {
-}
+    : MemoryAllocatorDumpGuid(0u) {}
 
 MemoryAllocatorDumpGuid::MemoryAllocatorDumpGuid(const std::string& guid_str)
-    : MemoryAllocatorDumpGuid(HashString(guid_str)) {
-}
+    : MemoryAllocatorDumpGuid(HashString(guid_str)) {}
 
 std::string MemoryAllocatorDumpGuid::ToString() const {
   return StringPrintf("%" PRIx64, guid_);

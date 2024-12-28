@@ -141,8 +141,9 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     failure = !QueryWorkingSetEx(GetCurrentProcess(), span.data(),
                                  static_cast<DWORD>(span.size_bytes()));
 
-    for (size_t i = 0; i < page_count; i++)
+    for (size_t i = 0; i < page_count; i++) {
       resident_page_count += vec[i].VirtualAttributes.Valid;
+    }
 #elif BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/42050620): Implement counting resident bytes.
     // For now, log and avoid unused variable warnings.
@@ -153,8 +154,9 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     // mincore in MAC does not fail with EAGAIN.
     failure =
         !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
-    for (size_t i = 0; i < page_count; i++)
+    for (size_t i = 0; i < page_count; i++) {
       resident_page_count += vec[i] & MINCORE_INCORE ? 1 : 0;
+    }
 #elif BUILDFLAG(IS_POSIX)
     int error_counter = 0;
     int result = 0;
@@ -170,12 +172,14 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     } while (result == -1 && errno == EAGAIN && error_counter++ < 100);
     failure = !!result;
 
-    for (size_t i = 0; i < page_count; i++)
+    for (size_t i = 0; i < page_count; i++) {
       resident_page_count += vec[i] & 1;
+    }
 #endif
 
-    if (failure)
+    if (failure) {
       break;
+    }
 
     total_resident_pages += resident_page_count * page_size;
     offset += kMaxChunkSize;
@@ -270,10 +274,8 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
 
 #endif  // defined(COUNT_RESIDENT_BYTES_SUPPORTED)
 
-ProcessMemoryDump::ProcessMemoryDump(
-    const MemoryDumpArgs& dump_args)
-    : process_token_(GetTokenForCurrentProcess()),
-      dump_args_(dump_args) {}
+ProcessMemoryDump::ProcessMemoryDump(const MemoryDumpArgs& dump_args)
+    : process_token_(GetTokenForCurrentProcess()), dump_args_(dump_args) {}
 
 ProcessMemoryDump::~ProcessMemoryDump() = default;
 ProcessMemoryDump::ProcessMemoryDump(ProcessMemoryDump&& other) = default;
@@ -305,16 +307,17 @@ MemoryAllocatorDump* ProcessMemoryDump::AddAllocatorDumpInternal(
   auto insertion_result = allocator_dumps_.insert(
       std::make_pair(mad->absolute_name(), std::move(mad)));
   MemoryAllocatorDump* inserted_mad = insertion_result.first->second.get();
-  DCHECK(insertion_result.second) << "Duplicate name: "
-                                  << inserted_mad->absolute_name();
+  DCHECK(insertion_result.second)
+      << "Duplicate name: " << inserted_mad->absolute_name();
   return inserted_mad;
 }
 
 MemoryAllocatorDump* ProcessMemoryDump::GetAllocatorDump(
     const std::string& absolute_name) const {
   auto it = allocator_dumps_.find(absolute_name);
-  if (it != allocator_dumps_.end())
+  if (it != allocator_dumps_.end()) {
     return it->second.get();
+  }
   return nullptr;
 }
 
@@ -341,8 +344,9 @@ MemoryAllocatorDump* ProcessMemoryDump::CreateSharedGlobalAllocatorDump(
 MemoryAllocatorDump* ProcessMemoryDump::CreateWeakSharedGlobalAllocatorDump(
     const MemoryAllocatorDumpGuid& guid) {
   MemoryAllocatorDump* mad = GetSharedGlobalAllocatorDump(guid);
-  if (mad && mad != black_hole_mad_.get())
+  if (mad && mad != black_hole_mad_.get()) {
     return mad;
+  }
   mad = CreateAllocatorDump(GetSharedGlobalAllocatorDumpName(guid), guid);
   mad->set_flags(MemoryAllocatorDump::Flags::kWeak);
   return mad;
@@ -356,16 +360,18 @@ MemoryAllocatorDump* ProcessMemoryDump::GetSharedGlobalAllocatorDump(
 void ProcessMemoryDump::SetAllocatorDumpsForSerialization(
     std::vector<std::unique_ptr<MemoryAllocatorDump>> dumps) {
   DCHECK(allocator_dumps_.empty());
-  for (std::unique_ptr<MemoryAllocatorDump>& dump : dumps)
+  for (std::unique_ptr<MemoryAllocatorDump>& dump : dumps) {
     AddAllocatorDumpInternal(std::move(dump));
+  }
 }
 
 std::vector<ProcessMemoryDump::MemoryAllocatorDumpEdge>
 ProcessMemoryDump::GetAllEdgesForSerialization() const {
   std::vector<MemoryAllocatorDumpEdge> edges;
   edges.reserve(allocator_dumps_edges_.size());
-  for (const auto& it : allocator_dumps_edges_)
+  for (const auto& it : allocator_dumps_edges_) {
     edges.push_back(it.second);
+  }
   return edges;
 }
 
@@ -386,8 +392,9 @@ void ProcessMemoryDump::Clear() {
 void ProcessMemoryDump::TakeAllDumpsFrom(ProcessMemoryDump* other) {
   // Moves the ownership of all MemoryAllocatorDump(s) contained in |other|
   // into this ProcessMemoryDump, checking for duplicates.
-  for (auto& it : other->allocator_dumps_)
+  for (auto& it : other->allocator_dumps_) {
     AddAllocatorDumpInternal(std::move(it.second));
+  }
   other->allocator_dumps_.clear();
 
   // Move all the edges.
@@ -399,8 +406,9 @@ void ProcessMemoryDump::TakeAllDumpsFrom(ProcessMemoryDump* other) {
 void ProcessMemoryDump::SerializeAllocatorDumpsInto(TracedValue* value) const {
   if (allocator_dumps_.size() > 0) {
     value->BeginDictionary("allocators");
-    for (const auto& allocator_dump_it : allocator_dumps_)
+    for (const auto& allocator_dump_it : allocator_dumps_) {
       allocator_dump_it.second->AsValueInto(value);
+    }
     value->EndDictionary();
   }
 

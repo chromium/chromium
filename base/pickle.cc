@@ -41,8 +41,9 @@ inline bool PickleIterator::ReadBuiltinType(Type* result) {
       std::is_integral_v<Type> && !std::is_same_v<Type, bool>,
       "This method is only safe with to use with types without padding bits.");
   const char* read_from = GetReadPointerAndAdvance<Type>();
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
   memcpy(result, read_from, sizeof(*result));
   return true;
 }
@@ -82,8 +83,9 @@ inline const char* PickleIterator::GetReadPointerAndAdvance(
     size_t size_element) {
   // Check for size_t overflow.
   size_t num_bytes;
-  if (!CheckMul(num_elements, size_element).AssignIfValid(&num_bytes))
+  if (!CheckMul(num_elements, size_element).AssignIfValid(&num_bytes)) {
     return nullptr;
+  }
   return GetReadPointerAndAdvance(num_bytes);
 }
 
@@ -106,10 +108,12 @@ bool PickleIterator::ReadLong(long* result) {
   // Always read long as a 64-bit value to ensure compatibility between 32-bit
   // and 64-bit processes.
   int64_t result_int64 = 0;
-  if (!ReadBuiltinType(&result_int64))
+  if (!ReadBuiltinType(&result_int64)) {
     return false;
-  if (!IsValueInRangeForNumericType<long>(result_int64))
+  }
+  if (!IsValueInRangeForNumericType<long>(result_int64)) {
     return false;
+  }
   *result = static_cast<long>(result_int64);
   return true;
 }
@@ -136,8 +140,9 @@ bool PickleIterator::ReadFloat(float* result) {
   // cause SIGBUS on some ARM platforms, so force using memcpy to copy the data
   // into the result.
   const char* read_from = GetReadPointerAndAdvance<float>();
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
   memcpy(result, read_from, sizeof(*result));
   return true;
 }
@@ -148,19 +153,22 @@ bool PickleIterator::ReadDouble(double* result) {
   // cause SIGBUS on some ARM platforms, so force using memcpy to copy the data
   // into the result.
   const char* read_from = GetReadPointerAndAdvance<double>();
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
   memcpy(result, read_from, sizeof(*result));
   return true;
 }
 
 bool PickleIterator::ReadString(std::string* result) {
   size_t len;
-  if (!ReadLength(&len))
+  if (!ReadLength(&len)) {
     return false;
+  }
   const char* read_from = GetReadPointerAndAdvance(len);
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
 
   result->assign(read_from, len);
   return true;
@@ -168,11 +176,13 @@ bool PickleIterator::ReadString(std::string* result) {
 
 bool PickleIterator::ReadStringPiece(std::string_view* result) {
   size_t len;
-  if (!ReadLength(&len))
+  if (!ReadLength(&len)) {
     return false;
+  }
   const char* read_from = GetReadPointerAndAdvance(len);
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
 
   *result = std::string_view(read_from, len);
   return true;
@@ -180,11 +190,13 @@ bool PickleIterator::ReadStringPiece(std::string_view* result) {
 
 bool PickleIterator::ReadString16(std::u16string* result) {
   size_t len;
-  if (!ReadLength(&len))
+  if (!ReadLength(&len)) {
     return false;
+  }
   const char* read_from = GetReadPointerAndAdvance(len, sizeof(char16_t));
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
 
   result->assign(reinterpret_cast<const char16_t*>(read_from), len);
   return true;
@@ -192,11 +204,13 @@ bool PickleIterator::ReadString16(std::u16string* result) {
 
 bool PickleIterator::ReadStringPiece16(std::u16string_view* result) {
   size_t len;
-  if (!ReadLength(&len))
+  if (!ReadLength(&len)) {
     return false;
+  }
   const char* read_from = GetReadPointerAndAdvance(len, sizeof(char16_t));
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
 
   *result =
       std::u16string_view(reinterpret_cast<const char16_t*>(read_from), len);
@@ -207,8 +221,9 @@ bool PickleIterator::ReadData(const char** data, size_t* length) {
   *length = 0;
   *data = nullptr;
 
-  if (!ReadLength(length))
+  if (!ReadLength(length)) {
     return false;
+  }
 
   return ReadBytes(data, *length);
 }
@@ -217,16 +232,18 @@ std::optional<span<const uint8_t>> PickleIterator::ReadData() {
   const char* ptr;
   size_t length;
 
-  if (!ReadData(&ptr, &length))
+  if (!ReadData(&ptr, &length)) {
     return std::nullopt;
+  }
 
   return as_bytes(span(ptr, length));
 }
 
 bool PickleIterator::ReadBytes(const char** data, size_t length) {
   const char* read_from = GetReadPointerAndAdvance(length);
-  if (!read_from)
+  if (!read_from) {
     return false;
+  }
   *data = read_from;
   return true;
 }
@@ -308,8 +325,9 @@ Pickle::Pickle(const Pickle& other)
 }
 
 Pickle::~Pickle() {
-  if (capacity_after_header_ != kCapacityReadOnly)
+  if (capacity_after_header_ != kCapacityReadOnly) {
     free(header_);
+  }
 }
 
 Pickle& Pickle::operator=(const Pickle& other) {
@@ -372,8 +390,9 @@ void Pickle::Reserve(size_t length) {
 #endif
   DCHECK_LE(write_offset_, std::numeric_limits<uint32_t>::max() - data_len);
   size_t new_size = write_offset_ + data_len;
-  if (new_size > capacity_after_header_)
+  if (new_size > capacity_after_header_) {
     Resize(capacity_after_header_ * 2 + new_size);
+  }
 }
 
 bool Pickle::WriteAttachment(scoped_refptr<Attachment> attachment) {
@@ -405,8 +424,9 @@ void* Pickle::ClaimBytes(size_t num_bytes) {
 }
 
 size_t Pickle::GetTotalAllocatedSize() const {
-  if (capacity_after_header_ == kCapacityReadOnly)
+  if (capacity_after_header_ == kCapacityReadOnly) {
     return 0;
+  }
   return header_size_ + capacity_after_header_;
 }
 
@@ -415,11 +435,13 @@ const char* Pickle::FindNext(size_t header_size,
                              const char* start,
                              const char* end) {
   size_t pickle_size = 0;
-  if (!PeekNext(header_size, start, end, &pickle_size))
+  if (!PeekNext(header_size, start, end, &pickle_size)) {
     return nullptr;
+  }
 
-  if (pickle_size > static_cast<size_t>(end - start))
+  if (pickle_size > static_cast<size_t>(end - start)) {
     return nullptr;
+  }
 
   return start + pickle_size;
 }
@@ -434,12 +456,14 @@ bool Pickle::PeekNext(size_t header_size,
   DCHECK_LE(header_size, static_cast<size_t>(kPayloadUnit));
 
   size_t length = static_cast<size_t>(end - start);
-  if (length < sizeof(Header))
+  if (length < sizeof(Header)) {
     return false;
+  }
 
   const Header* hdr = reinterpret_cast<const Header*>(start);
-  if (length < header_size)
+  if (length < header_size) {
     return false;
+  }
 
   // If payload_size causes an overflow, we return maximum possible
   // pickle size to indicate that.

@@ -153,8 +153,9 @@ ALWAYS_INLINE LockFreeAddressHashSet::Node* LockFreeAddressHashSet::FindNode(
   // here.
   for (Node* node = bucket.load(std::memory_order_acquire); node != nullptr;
        node = node->next) {
-    if (node->key.load(std::memory_order_relaxed) == key)
+    if (node->key.load(std::memory_order_relaxed) == key) {
       return node;
+    }
   }
   return nullptr;
 }

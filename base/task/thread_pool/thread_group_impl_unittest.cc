@@ -78,8 +78,9 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
     delayed_task_manager_.Shutdown();
     service_thread_.Stop();
     task_tracker_.FlushForTesting();
-    if (thread_group_)
+    if (thread_group_) {
       thread_group_->JoinForTesting();
+    }
     mock_pooled_task_runner_delegate_.SetThreadGroup(nullptr);
     thread_group_.reset();
   }
@@ -255,8 +256,9 @@ TEST_P(ThreadGroupImplImplTestParam, PostTasksWithOneAvailableWorker) {
       CreatePooledTaskRunnerWithExecutionMode(
           GetParam(), &mock_pooled_task_runner_delegate_),
       GetParam());
-  for (size_t i = 0; i < kNumTasksPostedPerThread; ++i)
+  for (size_t i = 0; i < kNumTasksPostedPerThread; ++i) {
     EXPECT_TRUE(short_task_factory.PostTask(PostNestedTask::NO, OnceClosure()));
+  }
   short_task_factory.WaitForAllTasksToRun();
 
   // Release tasks waiting on |event|.
@@ -503,8 +505,9 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, PostManyTasks) {
   }
   // Post the remaining |kNumTasksPosted - kMaxTasks| tasks, don't wait for them
   // as they'll be blocked behind the above kMaxtasks.
-  for (size_t i = kMaxTasks; i < kNumTasksPosted; ++i)
+  for (size_t i = kMaxTasks; i < kNumTasksPosted; ++i) {
     task_runner->PostTask(FROM_HERE, DoNothing());
+  }
 
   EXPECT_EQ(0U, thread_group_->NumberOfWorkersForTesting());
 
@@ -529,8 +532,9 @@ class BackgroundThreadGroupImplTest : public ThreadGroupImplImplTest {
       std::optional<int> max_best_effort_tasks = std::nullopt,
       WorkerThreadObserver* worker_observer = nullptr,
       std::optional<TimeDelta> may_block_threshold = std::nullopt) {
-    if (!CanUseBackgroundThreadTypeForWorkerThread())
+    if (!CanUseBackgroundThreadTypeForWorkerThread()) {
       return;
+    }
     CreateThreadGroup(ThreadType::kBackground);
     StartThreadGroup(suggested_reclaim_time, max_tasks, max_best_effort_tasks,
                      worker_observer, may_block_threshold);
@@ -544,8 +548,9 @@ class BackgroundThreadGroupImplTest : public ThreadGroupImplImplTest {
 // Verify that ScopedBlockingCall updates thread type when necessary per
 // shutdown state.
 TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
-  if (!CanUseBackgroundThreadTypeForWorkerThread())
+  if (!CanUseBackgroundThreadTypeForWorkerThread()) {
     return;
+  }
 
   const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
       {MayBlock(), WithBaseSyncPrimitives(), TaskPriority::BEST_EFFORT},
@@ -559,26 +564,27 @@ TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
   TestWaitableEvent blocking_threads_continue;
 
   for (size_t i = 0; i < kMaxTasks; ++i) {
-    task_runner->PostTask(
-        FROM_HERE, BindLambdaForTesting([&] {
-          EXPECT_EQ(ThreadType::kBackground,
-                    PlatformThread::GetCurrentThreadType());
-          {
-            // ScopedBlockingCall before shutdown doesn't affect priority.
-            ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                    BlockingType::MAY_BLOCK);
-            EXPECT_EQ(ThreadType::kBackground,
-                      PlatformThread::GetCurrentThreadType());
-          }
-          threads_running_barrier.Run();
-          blocking_threads_continue.Wait();
-          // This is reached after StartShutdown(), at which point we expect
-          // ScopedBlockingCall to update thread priority.
-          ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                  BlockingType::MAY_BLOCK);
-          EXPECT_EQ(ThreadType::kDefault,
-                    PlatformThread::GetCurrentThreadType());
-        }));
+    task_runner->PostTask(FROM_HERE, BindLambdaForTesting([&] {
+                            EXPECT_EQ(ThreadType::kBackground,
+                                      PlatformThread::GetCurrentThreadType());
+                            {
+                              // ScopedBlockingCall before shutdown doesn't
+                              // affect priority.
+                              ScopedBlockingCall scoped_blocking_call(
+                                  FROM_HERE, BlockingType::MAY_BLOCK);
+                              EXPECT_EQ(ThreadType::kBackground,
+                                        PlatformThread::GetCurrentThreadType());
+                            }
+                            threads_running_barrier.Run();
+                            blocking_threads_continue.Wait();
+                            // This is reached after StartShutdown(), at which
+                            // point we expect ScopedBlockingCall to update
+                            // thread priority.
+                            ScopedBlockingCall scoped_blocking_call(
+                                FROM_HERE, BlockingType::MAY_BLOCK);
+                            EXPECT_EQ(ThreadType::kDefault,
+                                      PlatformThread::GetCurrentThreadType());
+                          }));
   }
   threads_running.Wait();
 
@@ -669,10 +675,11 @@ class ThreadGroupImplBlockingTest
     std::string str = param_info.param.first == BlockingType::MAY_BLOCK
                           ? "MAY_BLOCK"
                           : "WILL_BLOCK";
-    if (param_info.param.second == OptionalBlockingType::MAY_BLOCK)
+    if (param_info.param.second == OptionalBlockingType::MAY_BLOCK) {
       str += "_MAY_BLOCK";
-    else if (param_info.param.second == OptionalBlockingType::WILL_BLOCK)
+    } else if (param_info.param.second == OptionalBlockingType::WILL_BLOCK) {
       str += "_WILL_BLOCK";
+    }
     return str;
   }
 
@@ -1263,8 +1270,9 @@ TEST_F(ThreadGroupImplOverCapacityTest, VerifyCleanup) {
       Unretained(&threads_running_barrier), Unretained(&threads_continue),
       Unretained(&blocked_call_continue));
 
-  for (size_t i = 0; i < kLocalMaxTasks; ++i)
+  for (size_t i = 0; i < kLocalMaxTasks; ++i) {
     task_runner_->PostTask(FROM_HERE, closure);
+  }
 
   threads_running.Wait();
 

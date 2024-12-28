@@ -350,8 +350,10 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // contents are valid, just that the paramaters won't cause the program to
   // abort. The IsCorrupt() method will report detection of data problems
   // found during construction and general operation.
-  static bool IsMemoryAcceptable(const void* data, size_t size,
-                                 size_t page_size, bool readonly);
+  static bool IsMemoryAcceptable(const void* data,
+                                 size_t size,
+                                 size_t page_size,
+                                 bool readonly);
 
   // Get the internal identifier for this persistent memory segment.
   uint64_t Id() const;
@@ -573,13 +575,15 @@ class BASE_EXPORT PersistentMemoryAllocator {
   template <typename T>
   T* New(size_t size) {
     static_assert(alignof(T) <= kAllocAlignment);
-    if (size < sizeof(T))
+    if (size < sizeof(T)) {
       size = sizeof(T);
+    }
     Reference ref = Allocate(size, T::kPersistentTypeId);
     void* mem =
         const_cast<void*>(GetBlockData(ref, T::kPersistentTypeId, size));
-    if (!mem)
+    if (!mem) {
       return nullptr;
+    }
     DCHECK_EQ(0U, reinterpret_cast<uintptr_t>(mem) & (alignof(T) - 1));
     return new (mem) T();
   }
@@ -604,8 +608,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // to change the type back.
     size_t alloc_size = 0;
     void* mem = const_cast<void*>(GetBlockData(ref, 0, sizeof(T), &alloc_size));
-    if (!mem)
+    if (!mem) {
       return nullptr;
+    }
 
     DCHECK_LE(sizeof(T), alloc_size) << "alloc not big enough for obj";
 
@@ -617,8 +622,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // of the object should another thread be simultaneously iterating over
     // data. This will "acquire" the memory so no changes get reordered before
     // it.
-    if (!ChangeType(ref, kTypeIdTransitioning, from_type_id, clear))
+    if (!ChangeType(ref, kTypeIdTransitioning, from_type_id, clear)) {
       return nullptr;
+    }
     // Construct an object of the desired type on this memory, just as if
     // New() had been called to create it.
     T* obj = new (mem) T();
@@ -640,8 +646,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // where another thread could find the object through iteration while it
     // is been destructed. This will "acquire" the memory so no changes get
     // reordered before it. It will fail if `ref` is invalid.
-    if (!ChangeType(ref, kTypeIdTransitioning, T::kPersistentTypeId, false))
+    if (!ChangeType(ref, kTypeIdTransitioning, T::kPersistentTypeId, false)) {
       return;
+    }
     // Destruct the object.
     obj->~T();
     // Finally change the type to the desired value. This will "release" all
@@ -698,11 +705,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always mmap'ed), so
   // there is no benefit to using a raw_ptr, only cost.
   RAW_PTR_EXCLUSION volatile char* const
-      mem_base_;                   // Memory base. (char so sizeof guaranteed 1)
-  const MemoryType mem_type_;      // Type of memory allocation.
-  const uint32_t mem_size_;        // Size of entire memory segment.
-  const uint32_t mem_page_;        // Page size allocations shouldn't cross.
-  const size_t vm_page_size_;      // The page size used by the OS.
+      mem_base_;               // Memory base. (char so sizeof guaranteed 1)
+  const MemoryType mem_type_;  // Type of memory allocation.
+  const uint32_t mem_size_;    // Size of entire memory segment.
+  const uint32_t mem_page_;    // Page size allocations shouldn't cross.
+  const size_t vm_page_size_;  // The page size used by the OS.
 
  private:
   struct SharedMetadata;
@@ -791,7 +798,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
 };
 
-
 // This allocator uses a local memory block it allocates from the general
 // heap. It is generally used when some kind of "death rattle" handler will
 // save the contents to persistent storage during process shutdown. It is
@@ -819,7 +825,6 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
   // Deallocates a block of local `memory` of the specified `size`.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);
 };
-
 
 // This allocator takes a writable shared memory mapping object and performs
 // allocation from it. The allocator takes ownership of the mapping object.

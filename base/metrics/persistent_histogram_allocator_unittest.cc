@@ -216,8 +216,9 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
   for (size_t pos = 0; pos < temp_size; pos += sizeof(buffer)) {
     ASSERT_EQ(static_cast<int>(sizeof(buffer)),
               file.ReadAtCurrentPos(buffer, sizeof(buffer)));
-    for (size_t i = 0; i < sizeof(buffer); ++i)
+    for (size_t i = 0; i < sizeof(buffer); ++i) {
       EXPECT_EQ(0, buffer[i]);
+    }
   }
 }
 
@@ -288,8 +289,9 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   std::unique_ptr<HistogramBase> recovered;
   while (true) {
     recovered = histogram_iter1.GetNext();
-    if (!recovered)
+    if (!recovered) {
       break;
+    }
 
     recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
     HistogramBase* found =
@@ -339,8 +341,9 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   PersistentHistogramAllocator::Iterator histogram_iter2(&recovery2);
   while (true) {
     recovered = histogram_iter2.GetNext();
-    if (!recovered)
+    if (!recovered) {
       break;
+    }
     recovery2.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
   }
   EXPECT_EQ(global_sr_initial_histogram_count + 2,

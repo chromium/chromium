@@ -84,8 +84,9 @@ void MemoryAllocatorDump::AsValueInto(TracedValue* value) const {
     value->EndDictionary();
   }
   value->EndDictionary();  // "attrs": { ... }
-  if (flags_)
+  if (flags_) {
     value->SetInteger("flags", flags_);
+  }
   value->EndDictionary();  // "allocator_name/heap_subheap": { ... }
 }
 
@@ -136,8 +137,9 @@ void MemoryAllocatorDump::AsProtoInto(
 }
 
 uint64_t MemoryAllocatorDump::GetSizeInternal() const {
-  if (cached_size_.has_value())
+  if (cached_size_.has_value()) {
     return *cached_size_;
+  }
   for (const auto& entry : entries_) {
     if (entry.entry_type == Entry::kUint64 && entry.units == kUnitsBytes &&
         strcmp(entry.name.c_str(), kNameSize) == 0) {
@@ -163,8 +165,10 @@ MemoryAllocatorDump::Entry::Entry(std::string name,
     : name(name), units(units), entry_type(kString), value_string(value) {}
 
 bool MemoryAllocatorDump::Entry::operator==(const Entry& rhs) const {
-  if (!(name == rhs.name && units == rhs.units && entry_type == rhs.entry_type))
+  if (!(name == rhs.name && units == rhs.units &&
+        entry_type == rhs.entry_type)) {
     return false;
+  }
   switch (entry_type) {
     case EntryType::kUint64:
       return value_uint64 == rhs.value_uint64;

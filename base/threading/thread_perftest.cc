@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/threading/thread.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -18,7 +20,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_observer.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,8 +68,9 @@ class ThreadPerfTest : public testing::Test {
   // their cpu-time can be measured. Test must return from PingPong() _and_
   // call FinishMeasurement from any thread to complete the test.
   virtual void Init() {
-    if (ThreadTicks::IsSupported())
+    if (ThreadTicks::IsSupported()) {
       ThreadTicks::WaitUntilInitialized();
+    }
   }
   virtual void PingPong(int hops) = 0;
   virtual void Reset() {}
@@ -95,8 +97,9 @@ class ThreadPerfTest : public testing::Test {
     while (threads_.size() < num_threads) {
       threads_.push_back(std::make_unique<base::Thread>("PingPonger"));
       threads_.back()->Start();
-      if (base::ThreadTicks::IsSupported())
+      if (base::ThreadTicks::IsSupported()) {
         thread_starts.push_back(ThreadNow(*threads_.back()));
+      }
     }
 
     Init();
@@ -167,7 +170,6 @@ TEST_F(TaskPerfTest, TaskPingPong) {
   RunPingPongTest(std::string(kStoryBaseTask) + kStorySuffixFourThreads, 4);
 }
 
-
 // Same as above, but add observers to test their perf impact.
 class MessageLoopObserver : public base::TaskObserver {
  public:
@@ -224,8 +226,9 @@ class EventPerfTest : public ThreadPerfTest {
     } while (my_hops > 0);
     // Once we are done, all threads will signal as hops passes zero.
     // We only signal completion once, on the thread that reaches zero.
-    if (!my_hops)
+    if (!my_hops) {
       FinishMeasurement();
+    }
   }
 
   void PingPong(int hops) override {
@@ -274,8 +277,9 @@ class ConditionVariableEvent {
 
   void Wait() {
     base::AutoLock scoped_lock(lock_);
-    while (!signaled_)
+    while (!signaled_) {
       cond_.Wait();
+    }
     signaled_ = false;
   }
 
@@ -320,8 +324,9 @@ class PthreadEvent {
 
   void Wait() {
     pthread_mutex_lock(&mutex_);
-    while (!signaled_)
+    while (!signaled_) {
       pthread_cond_wait(&cond_, &mutex_);
+    }
     signaled_ = false;
     pthread_mutex_unlock(&mutex_);
   }

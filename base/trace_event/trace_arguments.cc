@@ -147,8 +147,9 @@ class PerfettoProtoAppender : public ConvertableToTraceFormat::ProtoAppender {
 
 void StringStorage::Reset(size_t alloc_size) {
   if (!alloc_size) {
-    if (data_)
+    if (data_) {
       ::free(data_);
+    }
     data_ = nullptr;
   } else if (!data_ || alloc_size != data_->size) {
     data_ = static_cast<Data*>(::realloc(data_, sizeof(size_t) + alloc_size));
@@ -206,10 +207,11 @@ void TraceValue::Append(unsigned char type,
     } break;
     case TRACE_VALUE_TYPE_STRING:
     case TRACE_VALUE_TYPE_COPY_STRING:
-      if (as_json)
+      if (as_json) {
         EscapeJSONString(this->as_string ? this->as_string : "NULL", true, out);
-      else
+      } else {
         *out += this->as_string ? this->as_string : "NULL";
+      }
       break;
     case TRACE_VALUE_TYPE_CONVERTABLE:
       this->as_convertable->AppendAsTraceFormat(out);
@@ -236,8 +238,9 @@ TraceArguments::TraceArguments(int num_args,
                                const char* const* arg_names,
                                const unsigned char* arg_types,
                                const unsigned long long* arg_values) {
-  if (num_args > static_cast<int>(kMaxSize))
+  if (num_args > static_cast<int>(kMaxSize)) {
     num_args = static_cast<int>(kMaxSize);
+  }
 
   size_ = static_cast<unsigned char>(num_args);
   for (size_t n = 0; n < size_; ++n) {
@@ -249,8 +252,9 @@ TraceArguments::TraceArguments(int num_args,
 
 void TraceArguments::Reset() {
   for (size_t n = 0; n < size_; ++n) {
-    if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE)
+    if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE) {
       delete values_[n].as_convertable;
+    }
   }
   size_ = 0;
 }
@@ -265,14 +269,17 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
   if (copy_all_strings) {
     alloc_size +=
         GetAllocLength(*extra_string1) + GetAllocLength(*extra_string2);
-    for (size_t n = 0; n < size_; ++n)
+    for (size_t n = 0; n < size_; ++n) {
       alloc_size += GetAllocLength(names_[n]);
+    }
   }
   for (size_t n = 0; n < size_; ++n) {
-    if (copy_all_strings && types_[n] == TRACE_VALUE_TYPE_STRING)
+    if (copy_all_strings && types_[n] == TRACE_VALUE_TYPE_STRING) {
       types_[n] = TRACE_VALUE_TYPE_COPY_STRING;
-    if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING)
+    }
+    if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
       alloc_size += GetAllocLength(values_[n].as_string);
+    }
   }
 
   if (alloc_size) {
@@ -282,26 +289,32 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
     if (copy_all_strings) {
       CopyTraceEventParameter(&ptr, extra_string1, end);
       CopyTraceEventParameter(&ptr, extra_string2, end);
-      for (size_t n = 0; n < size_; ++n)
+      for (size_t n = 0; n < size_; ++n) {
         CopyTraceEventParameter(&ptr, &names_[n], end);
+      }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING)
+      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
         CopyTraceEventParameter(&ptr, &values_[n].as_string, end);
+      }
     }
 #if DCHECK_IS_ON()
     DCHECK_EQ(end, ptr) << "Overrun by " << ptr - end;
     if (copy_all_strings) {
-      if (extra_string1 && *extra_string1)
+      if (extra_string1 && *extra_string1) {
         DCHECK(storage->Contains(*extra_string1));
-      if (extra_string2 && *extra_string2)
+      }
+      if (extra_string2 && *extra_string2) {
         DCHECK(storage->Contains(*extra_string2));
-      for (size_t n = 0; n < size_; ++n)
+      }
+      for (size_t n = 0; n < size_; ++n) {
         DCHECK(storage->Contains(names_[n]));
+      }
     }
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING)
+      if (types_[n] == TRACE_VALUE_TYPE_COPY_STRING) {
         DCHECK(storage->Contains(values_[n].as_string));
+      }
     }
 #endif  // DCHECK_IS_ON()
   } else {
@@ -312,8 +325,9 @@ void TraceArguments::CopyStringsTo(StringStorage* storage,
 void TraceArguments::AppendDebugString(std::string* out) {
   *out += "TraceArguments(";
   for (size_t n = 0; n < size_; ++n) {
-    if (n > 0)
+    if (n > 0) {
       *out += ", ";
+    }
     AppendValueDebugString(*this, n, out);
   }
   *out += ")";

@@ -95,9 +95,7 @@ class PersistentMemoryAllocatorTest : public testing::Test {
         TEST_NAME, PersistentMemoryAllocator::kReadWrite);
   }
 
-  void TearDown() override {
-    allocator_.reset();
-  }
+  void TearDown() override { allocator_.reset(); }
 
   unsigned CountIterables() {
     PersistentMemoryAllocator::Iterator iter(allocator_.get());
@@ -332,8 +330,9 @@ class AllocatorThread : public SimpleThread {
       uint32_t size = RandInt(1, 99);
       uint32_t type = RandInt(100, 999);
       Reference block = allocator_.Allocate(size, type);
-      if (!block)
+      if (!block) {
         break;
+      }
 
       count_++;
       if (RandInt(0, 1)) {
@@ -382,9 +381,8 @@ TEST_F(PersistentMemoryAllocatorTest, ParallelismTest) {
 
   EXPECT_FALSE(allocator_->IsCorrupt());
   EXPECT_TRUE(allocator_->IsFull());
-  EXPECT_EQ(CountIterables(),
-            t1.iterable() + t2.iterable() + t3.iterable() + t4.iterable() +
-            t5.iterable());
+  EXPECT_EQ(CountIterables(), t1.iterable() + t2.iterable() + t3.iterable() +
+                                  t4.iterable() + t5.iterable());
 }
 
 // A simple thread that makes all objects passed iterable.
@@ -494,8 +492,9 @@ TEST_F(PersistentMemoryAllocatorTest, IteratorParallelismTest) {
     uint32_t size = RandInt(1, 99);
     uint32_t type = RandInt(100, 999);
     Reference block = allocator_->Allocate(size, type);
-    if (!block)
+    if (!block) {
       break;
+    }
     allocator_->MakeIterable(block);
     ++iterable_count;
   }
@@ -682,7 +681,6 @@ TEST_F(PersistentMemoryAllocatorTest, MaliciousTest) {
   header4[3] = block1;
   CountIterables();  // loop: 1-2-3-4-1
 }
-
 
 //----- LocalPersistentMemoryAllocator -----------------------------------------
 

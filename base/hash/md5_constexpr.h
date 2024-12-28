@@ -5,9 +5,9 @@
 #ifndef BASE_HASH_MD5_CONSTEXPR_H_
 #define BASE_HASH_MD5_CONSTEXPR_H_
 
-#include "base/hash/md5_constexpr_internal.h" // IWYU pragma: export
-
 #include <string_view>
+
+#include "base/hash/md5_constexpr_internal.h"  // IWYU pragma: export
 
 namespace base {
 

@@ -81,8 +81,9 @@ bool ReadProcMaps(std::string* proc_maps) {
     // ... and don't forget to trim off excess bytes.
     proc_maps->resize(pos + static_cast<size_t>(bytes_read));
 
-    if (bytes_read == 0)
+    if (bytes_read == 0) {
       break;
+    }
 
     // The gate VMA is handled as a special case after seq_file has finished
     // iterating through all entries in the virtual memory table.
@@ -92,8 +93,9 @@ bool ReadProcMaps(std::string* proc_maps) {
     // entries including the gate VMA again.
     //
     // Avoid this by searching for the gate VMA and breaking early.
-    if (ContainsGateVMA(proc_maps, pos))
+    if (ContainsGateVMA(proc_maps, pos)) {
       break;
+    }
   }
 
   return true;
@@ -106,8 +108,8 @@ bool ParseProcMaps(const std::string& input,
 
   // This isn't async safe nor terribly efficient, but it doesn't need to be at
   // this point in time.
-  std::vector<std::string> lines = SplitString(
-      input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> lines =
+      SplitString(input, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   for (size_t i = 0; i < lines.size(); ++i) {
     // Due to splitting on '\n' the last line should be empty.
@@ -148,25 +150,30 @@ bool ParseProcMaps(const std::string& input,
 
     region.permissions = 0;
 
-    if (permissions[0] == 'r')
+    if (permissions[0] == 'r') {
       region.permissions |= MappedMemoryRegion::READ;
-    else if (permissions[0] != '-')
+    } else if (permissions[0] != '-') {
       return false;
+    }
 
-    if (permissions[1] == 'w')
+    if (permissions[1] == 'w') {
       region.permissions |= MappedMemoryRegion::WRITE;
-    else if (permissions[1] != '-')
+    } else if (permissions[1] != '-') {
       return false;
+    }
 
-    if (permissions[2] == 'x')
+    if (permissions[2] == 'x') {
       region.permissions |= MappedMemoryRegion::EXECUTE;
-    else if (permissions[2] != '-')
+    } else if (permissions[2] != '-') {
       return false;
+    }
 
-    if (permissions[3] == 'p')
+    if (permissions[3] == 'p') {
       region.permissions |= MappedMemoryRegion::PRIVATE;
-    else if (permissions[3] != 's' && permissions[3] != 'S')  // Shared memory.
+    } else if (permissions[3] != 's' &&
+               permissions[3] != 'S') {  // Shared memory.
       return false;
+    }
 
     // Pushing then assigning saves us a string copy.
     regions.push_back(region);

@@ -83,8 +83,9 @@ template <typename S>
 bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
   bool did_replacement = false;
 
-  if (put_in_quotes)
+  if (put_in_quotes) {
     dest->push_back('"');
+  }
 
   const size_t length = str.length();
   for (size_t i = 0; i < length; ++i) {
@@ -95,18 +96,21 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
       did_replacement = true;
     }
 
-    if (EscapeSpecialCodePoint(code_point, dest))
+    if (EscapeSpecialCodePoint(code_point, dest)) {
       continue;
+    }
 
     // Escape non-printing characters.
-    if (code_point < 32)
+    if (code_point < 32) {
       base::StringAppendF(dest, kU16EscapeFormat, code_point);
-    else
+    } else {
       WriteUnicodeCharacter(code_point, dest);
+    }
   }
 
-  if (put_in_quotes)
+  if (put_in_quotes) {
     dest->push_back('"');
+  }
 
   return !did_replacement;
 }
@@ -141,12 +145,14 @@ std::string EscapeBytesAsInvalidJSONString(std::string_view str,
                                            bool put_in_quotes) {
   std::string dest;
 
-  if (put_in_quotes)
+  if (put_in_quotes) {
     dest.push_back('"');
+  }
 
   for (char c : str) {
-    if (EscapeSpecialCodePoint(c, &dest))
+    if (EscapeSpecialCodePoint(c, &dest)) {
       continue;
+    }
 
     if (c < 32 || c > 126) {
       base::StringAppendF(&dest, kU16EscapeFormat,
@@ -156,8 +162,9 @@ std::string EscapeBytesAsInvalidJSONString(std::string_view str,
     }
   }
 
-  if (put_in_quotes)
+  if (put_in_quotes) {
     dest.push_back('"');
+  }
 
   return dest;
 }

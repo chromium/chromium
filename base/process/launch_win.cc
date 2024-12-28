@@ -110,8 +110,9 @@ bool GetAppOutputInternal(CommandLine::StringViewType cl,
     DWORD bytes_read = 0;
     BOOL success =
         ::ReadFile(out_read, buffer, kBufferSize, &bytes_read, nullptr);
-    if (!success || bytes_read == 0)
+    if (!success || bytes_read == 0) {
       break;
+    }
     output->append(buffer, bytes_read);
   }
 
@@ -187,19 +188,22 @@ void RouteStdioToConsole(bool create_console_if_not_found) {
 
     intptr_t stdout_handle = _get_osfhandle(_fileno(stdout));
     intptr_t stderr_handle = _get_osfhandle(_fileno(stderr));
-    if (stdout_handle >= 0 || stderr_handle >= 0)
+    if (stdout_handle >= 0 || stderr_handle >= 0) {
       return;
+    }
   }
 
   if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
     unsigned int result = GetLastError();
     // Was probably already attached.
-    if (result == ERROR_ACCESS_DENIED)
+    if (result == ERROR_ACCESS_DENIED) {
       return;
+    }
     // Don't bother creating a new console for each child process if the
     // parent process is invalid (eg: crashed).
-    if (result == ERROR_GEN_FAILURE)
+    if (result == ERROR_GEN_FAILURE) {
       return;
+    }
     if (create_console_if_not_found) {
       // Make a new console if attaching to parent fails with any other error.
       // It should be ERROR_INVALID_HANDLE at this point, which means the
@@ -235,8 +239,9 @@ void RouteStdioToConsole(bool create_console_if_not_found) {
 
 Process LaunchProcess(const CommandLine& cmdline,
                       const LaunchOptions& options) {
-  if (options.elevated)
+  if (options.elevated) {
     return LaunchElevatedProcess(cmdline, options.start_hidden, options.wait);
+  }
   return LaunchProcess(cmdline.GetCommandLineString(), options);
 }
 
@@ -270,8 +275,9 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
   }
 
   // Count PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
-  if (!options.handles_to_inherit.empty())
+  if (!options.handles_to_inherit.empty()) {
     ++attribute_count;
+  }
 
   // Reserve space for attributes.
   if (attribute_count > 0) {
@@ -327,10 +333,12 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     inherit_handles = true;
   }
 
-  if (options.feedback_cursor_off)
+  if (options.feedback_cursor_off) {
     startup_info->dwFlags |= STARTF_FORCEOFFFEEDBACK;
-  if (options.empty_desktop_name)
+  }
+  if (options.empty_desktop_name) {
     startup_info->lpDesktop = const_cast<wchar_t*>(L"");
+  }
   startup_info->dwFlags |= STARTF_USESHOWWINDOW;
   startup_info->wShowWindow = options.start_hidden ? SW_HIDE : SW_SHOWNORMAL;
 
@@ -349,8 +357,9 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     startup_info->hStdError = options.stderr_handle;
   }
 
-  if (options.force_breakaway_from_job_)
+  if (options.force_breakaway_from_job_) {
     flags |= CREATE_BREAKAWAY_FROM_JOB;
+  }
 
   PROCESS_INFORMATION temp_process_info = {};
 
@@ -442,11 +451,9 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
 bool SetJobObjectLimitFlags(HANDLE job_object, DWORD limit_flags) {
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION limit_info = {};
   limit_info.BasicLimitInformation.LimitFlags = limit_flags;
-  return 0 != SetInformationJobObject(
-      job_object,
-      JobObjectExtendedLimitInformation,
-      &limit_info,
-      sizeof(limit_info));
+  return 0 != SetInformationJobObject(job_object,
+                                      JobObjectExtendedLimitInformation,
+                                      &limit_info, sizeof(limit_info));
 }
 
 bool GetAppOutput(const CommandLine& cl, std::string* output) {
@@ -455,15 +462,15 @@ bool GetAppOutput(const CommandLine& cl, std::string* output) {
 
 bool GetAppOutputAndError(const CommandLine& cl, std::string* output) {
   int exit_code;
-  return GetAppOutputInternal(
-      cl.GetCommandLineString(), true, output, &exit_code);
+  return GetAppOutputInternal(cl.GetCommandLineString(), true, output,
+                              &exit_code);
 }
 
 bool GetAppOutputWithExitCode(const CommandLine& cl,
                               std::string* output,
                               int* exit_code) {
-  return GetAppOutputInternal(
-      cl.GetCommandLineString(), false, output, exit_code);
+  return GetAppOutputInternal(cl.GetCommandLineString(), false, output,
+                              exit_code);
 }
 
 bool GetAppOutput(CommandLine::StringViewType cl, std::string* output) {

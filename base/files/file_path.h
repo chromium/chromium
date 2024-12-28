@@ -214,9 +214,7 @@ class BASE_EXPORT FilePath {
   bool operator!=(const FilePath& that) const;
 
   // Required for some STL containers and operations
-  bool operator<(const FilePath& that) const {
-    return path_ < that.path_;
-  }
+  bool operator<(const FilePath& that) const { return path_ < that.path_; }
 
   const StringType& value() const LIFETIME_BOUND { return path_; }
 

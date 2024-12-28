@@ -19,6 +19,5 @@ void TracingAgent::RecordClockSyncMarker(
   DCHECK(SupportsExplicitClockSync());
 }
 
-
 }  // namespace trace_event
 }  // namespace base

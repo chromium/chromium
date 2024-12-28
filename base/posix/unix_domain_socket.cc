@@ -37,8 +37,9 @@ bool CreateSocketPair(ScopedFD* one, ScopedFD* two) {
 #else
   const int flags = SOCK_SEQPACKET;
 #endif
-  if (socketpair(AF_UNIX, flags, 0, raw_socks) == -1)
+  if (socketpair(AF_UNIX, flags, 0, raw_socks) == -1) {
     return false;
+  }
   one->reset(raw_socks[0]);
   two->reset(raw_socks[1]);
   return true;
@@ -143,8 +144,9 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
   msg.msg_controllen = sizeof(control_buffer);
 
   const ssize_t r = HANDLE_EINTR(recvmsg(fd, &msg, flags));
-  if (r == -1)
+  if (r == -1) {
     return -1;
+  }
 
   int* wire_fds = nullptr;
   size_t wire_fds_len = 0;
@@ -178,29 +180,33 @@ ssize_t UnixDomainSocket::RecvMsgWithFlags(int fd,
       LOG(ERROR) << "recvmsg returned MSG_CTRUNC flag, buffer len is "
                  << msg.msg_controllen;
     }
-    for (size_t i = 0; i < wire_fds_len; ++i)
+    for (size_t i = 0; i < wire_fds_len; ++i) {
       close(wire_fds[i]);
+    }
     errno = EMSGSIZE;
     return -1;
   }
 
   if (wire_fds) {
-    for (size_t i = 0; i < wire_fds_len; ++i)
+    for (size_t i = 0; i < wire_fds_len; ++i) {
       fds->push_back(ScopedFD(wire_fds[i]));  // TODO(mdempsky): emplace_back
+    }
   }
 
   if (out_pid) {
 #if BUILDFLAG(IS_APPLE)
     socklen_t pid_size = sizeof(pid);
-    if (getsockopt(fd, SOL_LOCAL, LOCAL_PEERPID, &pid, &pid_size) != 0)
+    if (getsockopt(fd, SOL_LOCAL, LOCAL_PEERPID, &pid, &pid_size) != 0) {
       pid = -1;
+    }
 #else
     // |pid| will legitimately be -1 if we read EOF, so only DCHECK if we
     // actually received a message.  Unfortunately, Linux allows sending zero
     // length messages, which are indistinguishable from EOF, so this check
     // has false negatives.
-    if (r > 0 || msg.msg_controllen > 0)
+    if (r > 0 || msg.msg_controllen > 0) {
       DCHECK_GE(pid, 0);
+    }
 #endif
 
     *out_pid = pid;
@@ -230,14 +236,16 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   // This socketpair is only used for the IPC and is cleaned up before
   // returning.
   ScopedFD recv_sock, send_sock;
-  if (!CreateSocketPair(&recv_sock, &send_sock))
+  if (!CreateSocketPair(&recv_sock, &send_sock)) {
     return -1;
+  }
 
   {
     std::vector<int> send_fds;
     send_fds.push_back(send_sock.get());
-    if (!SendMsg(fd, request.data(), request.size(), send_fds))
+    if (!SendMsg(fd, request.data(), request.size(), send_fds)) {
       return -1;
+    }
   }
 
   // Close the sending end of the socket right away so that if our peer closes
@@ -249,8 +257,9 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
   const ssize_t reply_len = RecvMsgWithFlags(
       recv_sock.get(), reply, max_reply_len, recvmsg_flags, &recv_fds, nullptr);
   recv_sock.reset();
-  if (reply_len == -1)
+  if (reply_len == -1) {
     return -1;
+  }
 
   // If we received more file descriptors than caller expected, then we treat
   // that as an error.
@@ -258,8 +267,9 @@ ssize_t UnixDomainSocket::SendRecvMsgWithFlags(int fd,
     NOTREACHED();
   }
 
-  if (result_fd)
+  if (result_fd) {
     *result_fd = recv_fds.empty() ? -1 : recv_fds[0].release();
+  }
 
   return reply_len;
 }

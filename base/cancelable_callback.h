@@ -81,9 +81,7 @@ class CancelableCallbackImpl {
   }
 
   // Returns true if the wrapped callback has been cancelled.
-  bool IsCancelled() const {
-    return callback_.is_null();
-  }
+  bool IsCancelled() const { return callback_.is_null(); }
 
   // Sets |callback| as the closure that may be cancelled. |callback| may not
   // be null. Outstanding and any previously wrapped callbacks are cancelled.
@@ -101,8 +99,9 @@ class CancelableCallbackImpl {
   // e.g. via PostTaskAndReply[WithResult](), to post tasks back on the original
   // bound sequence.
   CallbackType callback() const {
-    if (!callback_)
+    if (!callback_) {
       return CallbackType();
+    }
     CallbackType forwarder;
     MakeForwarder(&forwarder);
     return forwarder;

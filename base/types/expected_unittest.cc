@@ -217,7 +217,8 @@ TEST(Expected, CopyConstructor) {
     // implementation details of absl::get [1].
     // TODO: Make this a static_assert once this is fixed in Abseil, or we use
     // std::variant. Similarly in the tests below.
-    // [1] https://github.com/abseil/abseil-cpp/blob/50739/absl/types/internal/variant.h#L548
+    // [1]
+    // https://github.com/abseil/abseil-cpp/blob/50739/absl/types/internal/variant.h#L548
     EXPECT_EQ(ex2.value(), 42);
   }
 

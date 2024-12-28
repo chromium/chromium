@@ -30,8 +30,9 @@ namespace base::win {
 namespace {
 
 bool EqualSid(const std::optional<Sid>& sid, const ATL::CSid& compare_sid) {
-  if (!sid)
+  if (!sid) {
     return false;
+  }
   return sid->Equal(const_cast<SID*>(compare_sid.GetPSID()));
 }
 
@@ -45,12 +46,14 @@ bool EqualSid(const Sid& sid, const std::wstring& sddl_sid) {
 }
 
 bool EqualSid(const std::optional<Sid>& sid, WELL_KNOWN_SID_TYPE known_sid) {
-  if (!sid)
+  if (!sid) {
     return false;
+  }
   char known_sid_buffer[SECURITY_MAX_SID_SIZE] = {};
   DWORD size = SECURITY_MAX_SID_SIZE;
-  if (!::CreateWellKnownSid(known_sid, nullptr, known_sid_buffer, &size))
+  if (!::CreateWellKnownSid(known_sid, nullptr, known_sid_buffer, &size)) {
     return false;
+  }
 
   return sid->Equal(known_sid_buffer);
 }

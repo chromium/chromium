@@ -257,10 +257,11 @@ class CheckProcessPriority : public testing::EmptyTestEventListener {
 const std::string& GetProfileName() {
   static const NoDestructor<std::string> profile_name([] {
     const CommandLine& command_line = *CommandLine::ForCurrentProcess();
-    if (command_line.HasSwitch(switches::kProfilingFile))
+    if (command_line.HasSwitch(switches::kProfilingFile)) {
       return command_line.GetSwitchValueASCII(switches::kProfilingFile);
-    else
+    } else {
       return std::string("test-profile-{pid}");
+    }
   }());
   return *profile_name;
 }
@@ -369,8 +370,9 @@ TestSuite::TestSuite(int argc, wchar_t** argv) : argc_(argc) {
 #endif  // BUILDFLAG(IS_WIN)
 
 TestSuite::~TestSuite() {
-  if (initialized_command_line_)
+  if (initialized_command_line_) {
     CommandLine::Reset();
+  }
 }
 
 // Don't add additional code to this method.  Instead add it to
@@ -390,15 +392,17 @@ int TestSuite::Run() {
   // services, so skip this if that switch was present.
   // This must be called before Initialize() because, for example,
   // content::ContentTestSuite::Initialize() may use the cached values.
-  if (client_func.empty())
+  if (client_func.empty()) {
     CHECK(FetchAndCacheSystemInfo());
+  }
 #endif
 
   Initialize();
 
   // Check to see if we are being run as a client process.
-  if (!client_func.empty())
+  if (!client_func.empty()) {
     return multi_process_function_list::InvokeChildProcessTest(client_func);
+  }
 
 #if BUILDFLAG(IS_IOS)
   test_listener_ios::RegisterTestEndListener();
@@ -411,10 +415,10 @@ int TestSuite::Run() {
   ::partition_alloc::ChangeMemoryTaggingModeForCurrentThread(
       ::partition_alloc::TagViolationReportingMode::kSynchronous);
 #elif BUILDFLAG(IS_ANDROID)
-    // On Android, the tests are opted into synchronous MTE mode by the
-    // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
-    // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
-    // is not needed.
+  // On Android, the tests are opted into synchronous MTE mode by the
+  // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
+  // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
+  // is not needed.
 #endif
 
   int result = RunAllTests();
@@ -554,8 +558,9 @@ void TestSuite::Initialize() {
   // TODO(crbug.com/40120934): Remove this in favor of the codepath in
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
-  if (command_line->HasSwitch("gtest_internal_run_death_test"))
+  if (command_line->HasSwitch("gtest_internal_run_death_test")) {
     logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
+  }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if BUILDFLAG(IS_IOS)
@@ -604,8 +609,9 @@ void TestSuite::Initialize() {
   listeners.Append(new DisableMaybeTests);
   listeners.Append(new ResetCommandLineBetweenTests);
   listeners.Append(new FeatureListScopedToEachTest);
-  if (check_for_leaked_globals_)
+  if (check_for_leaked_globals_) {
     listeners.Append(new CheckForLeakedGlobals);
+  }
   if (check_for_thread_and_process_priority_) {
 #if !BUILDFLAG(IS_APPLE)
     listeners.Append(new CheckProcessPriority);

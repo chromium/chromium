@@ -239,11 +239,12 @@ TEST_F(FileProxyTest, CreateTemporary) {
   // Try a few times because files may be locked by anti-virus or other.
   bool deleted_temp_file = false;
   for (int i = 0; !deleted_temp_file && i < 3; ++i) {
-    if (base::DeleteFile(path_))
+    if (base::DeleteFile(path_)) {
       deleted_temp_file = true;
-    else
+    } else {
       // Wait one second and then try again
       PlatformThread::Sleep(Seconds(1));
+    }
   }
   EXPECT_TRUE(deleted_temp_file);
 }
@@ -419,8 +420,9 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
   std::array<char, 7> buffer;
   EXPECT_EQ(7, base::ReadFile(TestPath(), buffer));
   int i = 0;
-  for (; i < 7; ++i)
+  for (; i < 7; ++i) {
     EXPECT_EQ(kTestData[i], buffer[i]);
+  }
 }
 
 TEST_F(FileProxyTest, SetLength_Expand) {
@@ -447,10 +449,12 @@ TEST_F(FileProxyTest, SetLength_Expand) {
   std::array<char, 53> buffer;
   EXPECT_EQ(53, base::ReadFile(TestPath(), buffer));
   int i = 0;
-  for (; i < 10; ++i)
+  for (; i < 10; ++i) {
     EXPECT_EQ(kTestData[i], buffer[i]);
-  for (; i < 53; ++i)
+  }
+  for (; i < 53; ++i) {
     EXPECT_EQ(0, buffer[i]);
+  }
 }
 
 }  // namespace base

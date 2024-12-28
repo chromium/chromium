@@ -366,8 +366,9 @@ class TaskQueueSelectorStarvationTest : public TaskQueueSelectorTest {
 TEST_F(TaskQueueSelectorStarvationTest,
        HigherPriorityWorkStarvesLowerPriorityWork) {
   size_t queue_order[kTaskQueueCount];
-  for (size_t i = 0; i < kTaskQueueCount; i++)
+  for (size_t i = 0; i < kTaskQueueCount; i++) {
     queue_order[i] = i;
+  }
   TestPriorityOrder(queue_order, kTaskQueueCount);
 }
 
@@ -376,8 +377,9 @@ TEST_F(TaskQueueSelectorStarvationTest,
   // Enqueue tasks in order from lowest to highest priority, and check that they
   // still run in order from highest to lowest priority.
   size_t queue_order[kTaskQueueCount];
-  for (size_t i = 0; i < kTaskQueueCount; i++)
+  for (size_t i = 0; i < kTaskQueueCount; i++) {
     queue_order[i] = (kTaskQueueCount - i) - 1;
+  }
   TestPriorityOrder(queue_order, kTaskQueueCount);
 }
 

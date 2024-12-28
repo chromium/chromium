@@ -24,8 +24,7 @@ namespace i18n {
 
 // file_util winds up using autoreleased objects on the Mac, so this needs
 // to be a PlatformTest
-class FileUtilICUTest : public PlatformTest {
-};
+class FileUtilICUTest : public PlatformTest {};
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
@@ -34,13 +33,13 @@ static const struct GoodBadPairLinux {
   const char* bad_name;
   const char* good_name;
 } kLinuxIllegalCharacterCases[] = {
-  {"bad*\\/file:name?.jpg", "bad---file-name-.jpg"},
-  {"**********::::.txt", "--------------.txt"},
-  {"\xe9\xf0zzzz.\xff", "\xe9\xf0zzzz.\xff"},
-  {" _ ", "-_-"},
-  {".", "-"},
-  {" .( ). ", "-.( ).-"},
-  {"     ", "-   -"},
+    {"bad*\\/file:name?.jpg", "bad---file-name-.jpg"},
+    {"**********::::.txt", "--------------.txt"},
+    {"\xe9\xf0zzzz.\xff", "\xe9\xf0zzzz.\xff"},
+    {" _ ", "-_-"},
+    {".", "-"},
+    {" .( ). ", "-.( ).-"},
+    {"     ", "-   -"},
 };
 
 TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathLinuxTest) {
@@ -162,8 +161,9 @@ TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
     std::u16string good_name = test_case.good_name_with_dash;
 
     EXPECT_TRUE(IsFilenameLegal(good_name)) << good_name;
-    if (good_name != bad_name)
+    if (good_name != bad_name) {
       EXPECT_FALSE(IsFilenameLegal(bad_name)) << bad_name;
+    }
   }
 }
 
@@ -172,12 +172,11 @@ static const struct normalize_name_encoding_test_cases {
   const char* original_path;
   const char* normalized_path;
 } kNormalizeFileNameEncodingTestCases[] = {
-  { "foo_na\xcc\x88me.foo", "foo_n\xc3\xa4me.foo"},
-  { "foo_dir_na\xcc\x88me/foo_na\xcc\x88me.foo",
-    "foo_dir_na\xcc\x88me/foo_n\xc3\xa4me.foo"},
-  { "", ""},
-  { "foo_dir_na\xcc\x88me/", "foo_dir_n\xc3\xa4me"}
-};
+    {"foo_na\xcc\x88me.foo", "foo_n\xc3\xa4me.foo"},
+    {"foo_dir_na\xcc\x88me/foo_na\xcc\x88me.foo",
+     "foo_dir_na\xcc\x88me/foo_n\xc3\xa4me.foo"},
+    {"", ""},
+    {"foo_dir_na\xcc\x88me/", "foo_dir_n\xc3\xa4me"}};
 
 TEST_F(FileUtilICUTest, NormalizeFileNameEncoding) {
   for (size_t i = 0; i < std::size(kNormalizeFileNameEncodingTestCases); i++) {

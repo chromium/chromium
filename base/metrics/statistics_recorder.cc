@@ -178,10 +178,11 @@ const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
 // static
 void StatisticsRecorder::WriteGraph(const std::string& query,
                                     std::string* output) {
-  if (query.length())
+  if (query.length()) {
     StringAppendF(output, "Collections of histograms for %s\n", query.c_str());
-  else
+  } else {
     output->append("Collections of all histograms\n");
+  }
 
   for (const HistogramBase* const histogram :
        Sort(WithName(GetHistograms(), query))) {
@@ -556,8 +557,9 @@ void StatisticsRecorder::ImportGlobalPersistentHistograms() {
   // added by other processes and they must be fetched and recognized locally.
   // If the persistent memory segment is not shared between processes, this call
   // does nothing.
-  if (GlobalHistogramAllocator* allocator = GlobalHistogramAllocator::Get())
+  if (GlobalHistogramAllocator* allocator = GlobalHistogramAllocator::Get()) {
     allocator->ImportHistogramsToStatisticsRecorder();
+  }
 }
 
 StatisticsRecorder::StatisticsRecorder() {

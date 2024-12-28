@@ -45,12 +45,14 @@ bool InternalRunThreadTest() {
 
   // bManualReset is set to true to allow signalling multiple threads.
   HANDLE start_event = ::CreateEvent(nullptr, true, false, nullptr);
-  if (!start_event)
+  if (!start_event) {
     return false;
+  }
 
   HANDLE ready_event = CreateEvent(nullptr, false, false, nullptr);
-  if (!ready_event)
+  if (!ready_event) {
     return false;
+  }
 
   ThreadParams thread_params = {ready_event, start_event};
 
@@ -58,8 +60,9 @@ bool InternalRunThreadTest() {
     HANDLE thread_handle =
         ::CreateThread(nullptr, 0, ThreadFunc,
                        reinterpret_cast<void*>(&thread_params), 0, nullptr);
-    if (!thread_handle)
+    if (!thread_handle) {
       break;
+    }
     ::WaitForSingleObject(ready_event, INFINITE);
     threads_.push_back(thread_handle);
   }
@@ -67,8 +70,9 @@ bool InternalRunThreadTest() {
   ::CloseHandle(ready_event);
 
   if (threads_.size() != kNumThreads) {
-    for (auto* thread : threads_)
+    for (auto* thread : threads_) {
       ::CloseHandle(thread);
+    }
     ::CloseHandle(start_event);
     return false;
   }
@@ -86,32 +90,37 @@ bool InternalRunThreadTest() {
 bool InternalRunLocationTest() {
   // Create a new handle and then set LastError again.
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
-  if (!handle)
+  if (!handle) {
     return false;
+  }
   CheckedScopedHandle handle_holder(handle);
 
   HMODULE verifier_module =
       base::win::internal::GetHandleVerifierModuleForTesting();
-  if (!verifier_module)
+  if (!verifier_module) {
     return false;
+  }
 
   // Get my module
   HMODULE my_module = CURRENT_MODULE();
-  if (!my_module)
+  if (!my_module) {
     return false;
+  }
 
   HMODULE main_module = ::GetModuleHandle(nullptr);
 
 #if BUILDFLAG(SINGLE_MODULE_MODE_HANDLE_VERIFIER)
   // In a component build HandleVerifier will always be created inside base.dll
   // as the code always lives there.
-  if (verifier_module == my_module || verifier_module == main_module)
+  if (verifier_module == my_module || verifier_module == main_module) {
     return false;
+  }
 #else
   // In a non-component build, HandleVerifier should always be created in the
   // version of base linked with the main executable.
-  if (verifier_module == my_module || verifier_module != main_module)
+  if (verifier_module == my_module || verifier_module != main_module) {
     return false;
+  }
 #endif
   return true;
 }

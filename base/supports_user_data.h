@@ -77,7 +77,7 @@ class UserDataAdapter : public SupportsUserData::Data {
  public:
   static T* Get(const SupportsUserData* supports_user_data, const void* key) {
     UserDataAdapter* data =
-      static_cast<UserDataAdapter*>(supports_user_data->GetUserData(key));
+        static_cast<UserDataAdapter*>(supports_user_data->GetUserData(key));
     return data ? static_cast<T*>(data->object_.get()) : nullptr;
   }
 

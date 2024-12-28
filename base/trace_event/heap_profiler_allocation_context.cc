@@ -18,22 +18,24 @@
 namespace base {
 namespace trace_event {
 
-bool operator < (const StackFrame& lhs, const StackFrame& rhs) {
+bool operator<(const StackFrame& lhs, const StackFrame& rhs) {
   return lhs.value < rhs.value;
 }
 
-bool operator == (const StackFrame& lhs, const StackFrame& rhs) {
+bool operator==(const StackFrame& lhs, const StackFrame& rhs) {
   return lhs.value == rhs.value;
 }
 
-bool operator != (const StackFrame& lhs, const StackFrame& rhs) {
+bool operator!=(const StackFrame& lhs, const StackFrame& rhs) {
   return !(lhs.value == rhs.value);
 }
 
 Backtrace::Backtrace() = default;
 
 bool operator==(const Backtrace& lhs, const Backtrace& rhs) {
-  if (lhs.frame_count != rhs.frame_count) return false;
+  if (lhs.frame_count != rhs.frame_count) {
+    return false;
+  }
   return std::equal(lhs.frames, lhs.frames + lhs.frame_count, rhs.frames);
 }
 
@@ -41,11 +43,11 @@ bool operator!=(const Backtrace& lhs, const Backtrace& rhs) {
   return !(lhs == rhs);
 }
 
-AllocationContext::AllocationContext(): type_name(nullptr) {}
+AllocationContext::AllocationContext() : type_name(nullptr) {}
 
 AllocationContext::AllocationContext(const Backtrace& backtrace,
                                      const char* type_name)
-  : backtrace(backtrace), type_name(type_name) {}
+    : backtrace(backtrace), type_name(type_name) {}
 
 bool operator==(const AllocationContext& lhs, const AllocationContext& rhs) {
   return (lhs.backtrace == rhs.backtrace) && (lhs.type_name == rhs.type_name);

@@ -41,7 +41,7 @@ NOINLINE void CorruptMemoryBlock(bool induce_crash) {
   // This way the underflow won't be detected but the corruption will (as the
   // allocator will still be hooked).
   auto InterlockedIncrementFn =
-      reinterpret_cast<LONG (*)(LONG volatile * addend)>(
+      reinterpret_cast<LONG (*)(LONG volatile* addend)>(
           GetProcAddress(GetModuleHandle(L"kernel32"), "InterlockedIncrement"));
   CHECK(InterlockedIncrementFn);
 

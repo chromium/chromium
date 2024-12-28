@@ -102,7 +102,6 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   base::Lock lock_;
 };
 
-
 // This class manages sample-records used by a PersistentSampleMap container
 // that underlies a persistent SparseHistogram object. It is broken out into a
 // top-level class so that it can be forward-declared in other header files
@@ -171,7 +170,6 @@ class BASE_EXPORT PersistentSampleMapRecords {
   raw_ptr<std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>>
       records_;
 };
-
 
 // This class manages histograms created within a PersistentMemoryAllocator.
 class BASE_EXPORT PersistentHistogramAllocator {
@@ -357,7 +355,6 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // trying to import what was just created.
   std::atomic<Reference> last_created_ = 0;
 };
-
 
 // A special case of the PersistentHistogramAllocator that operates on a
 // global scale, collecting histograms created through standard macros and

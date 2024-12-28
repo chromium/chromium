@@ -49,16 +49,19 @@ std::ostream& DefaultOutputStream() {
 
 TaskTrace::TaskTrace() {
   const PendingTask* current_task = TaskAnnotator::CurrentTaskForThread();
-  if (!current_task)
+  if (!current_task) {
     return;
+  }
   std::array<const void*, PendingTask::kTaskBacktraceLength + 1> task_trace;
   task_trace[0] = current_task->posted_from.program_counter();
   ranges::copy(current_task->task_backtrace, task_trace.begin() + 1);
   size_t length = 0;
-  while (length < task_trace.size() && task_trace[length])
+  while (length < task_trace.size() && task_trace[length]) {
     ++length;
-  if (length == 0)
+  }
+  if (length == 0) {
     return;
+  }
   stack_trace_.emplace(span(task_trace).first(length));
   trace_overflow_ = current_task->task_backtrace_overflow;
 }

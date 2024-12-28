@@ -53,7 +53,7 @@ const base::subtle::Atomic32 kMagicValue = 42;
 #define HARMFUL_ACCESS_IS_NOOP
 #endif
 
-void DoReadUninitializedValue(volatile char *ptr) {
+void DoReadUninitializedValue(volatile char* ptr) {
   // Comparison with 64 is to prevent clang from optimizing away the
   // jump -- valgrind only catches jumps and conditional moves, but clang uses
   // the borrow flag if the condition is just `*ptr == '\0'`.  We no longer
@@ -65,36 +65,35 @@ void DoReadUninitializedValue(volatile char *ptr) {
   }
 }
 
-void ReadUninitializedValue(volatile char *ptr) {
+void ReadUninitializedValue(volatile char* ptr) {
 #if defined(MEMORY_SANITIZER)
-  EXPECT_DEATH(DoReadUninitializedValue(ptr),
-               "use-of-uninitialized-value");
+  EXPECT_DEATH(DoReadUninitializedValue(ptr), "use-of-uninitialized-value");
 #else
   DoReadUninitializedValue(ptr);
 #endif
 }
 
 #ifndef HARMFUL_ACCESS_IS_NOOP
-void ReadValueOutOfArrayBoundsLeft(char *ptr) {
+void ReadValueOutOfArrayBoundsLeft(char* ptr) {
   char c = ptr[-2];
   VLOG(1) << "Reading a byte out of bounds: " << c;
 }
 
-void ReadValueOutOfArrayBoundsRight(char *ptr, size_t size) {
+void ReadValueOutOfArrayBoundsRight(char* ptr, size_t size) {
   char c = ptr[size + 1];
   VLOG(1) << "Reading a byte out of bounds: " << c;
 }
 
-void WriteValueOutOfArrayBoundsLeft(char *ptr) {
+void WriteValueOutOfArrayBoundsLeft(char* ptr) {
   ptr[-1] = kMagicValue;
 }
 
-void WriteValueOutOfArrayBoundsRight(char *ptr, size_t size) {
+void WriteValueOutOfArrayBoundsRight(char* ptr, size_t size) {
   ptr[size] = kMagicValue;
 }
 #endif  // HARMFUL_ACCESS_IS_NOOP
 
-void MakeSomeErrors(char *ptr, size_t size) {
+void MakeSomeErrors(char* ptr, size_t size) {
   ReadUninitializedValue(ptr);
 
   HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr), "2 bytes before");
@@ -143,13 +142,13 @@ TEST(ToolsSanityTest, MAYBE_LinksSanitizerOptions) {
 TEST(ToolsSanityTest, MemoryLeak) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile leak = new int[256];  // Leak some memory intentionally.
-  leak[4] = 1;  // Make sure the allocated memory is used.
+  leak[4] = 1;                        // Make sure the allocated memory is used.
 }
 
 TEST(ToolsSanityTest, AccessesToNewMemory) {
   char* foo = new char[16];
   MakeSomeErrors(foo, 16);
-  delete [] foo;
+  delete[] foo;
   // Use after delete.
   HARMFUL_ACCESS(foo[5] = 0, "heap-use-after-free");
 }
@@ -184,7 +183,7 @@ TEST(ToolsSanityTest, AccessesToStack) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SingleElementDeletedWithBraces \
-    DISABLED_SingleElementDeletedWithBraces
+  DISABLED_SingleElementDeletedWithBraces
 #define MAYBE_ArrayDeletedWithoutBraces DISABLED_ArrayDeletedWithoutBraces
 #else
 #define MAYBE_ArrayDeletedWithoutBraces ArrayDeletedWithoutBraces
@@ -204,7 +203,7 @@ TEST(ToolsSanityTest, MAYBE_ArrayDeletedWithoutBraces) {
   HARMFUL_ACCESS(delete foo, "alloc-dealloc-mismatch");
   // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
   // need to free the memory in the parent.
-  delete [] foo;
+  delete[] foo;
 }
 
 static int* allocateScalar() {
@@ -217,8 +216,8 @@ static int* allocateScalar() {
 TEST(ToolsSanityTest, MAYBE_SingleElementDeletedWithBraces) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile foo = allocateScalar();
-  (void) foo;
-  HARMFUL_ACCESS(delete [] foo, "alloc-dealloc-mismatch");
+  (void)foo;
+  HARMFUL_ACCESS(delete[] foo, "alloc-dealloc-mismatch");
   // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
   // need to free the memory in the parent.
   delete foo;
@@ -290,7 +289,7 @@ namespace {
 // the wildcarded suppressions.
 class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
  public:
-  explicit TOOLS_SANITY_TEST_CONCURRENT_THREAD(bool *value) : value_(value) {}
+  explicit TOOLS_SANITY_TEST_CONCURRENT_THREAD(bool* value) : value_(value) {}
   ~TOOLS_SANITY_TEST_CONCURRENT_THREAD() override = default;
   void ThreadMain() override {
     *value_ = true;
@@ -300,13 +299,14 @@ class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
     // lock/unlock's inside thread creation code in pure-happens-before mode...
     PlatformThread::Sleep(Milliseconds(100));
   }
+
  private:
   raw_ptr<bool> value_;
 };
 
 class ReleaseStoreThread : public PlatformThread::Delegate {
  public:
-  explicit ReleaseStoreThread(base::subtle::Atomic32 *value) : value_(value) {}
+  explicit ReleaseStoreThread(base::subtle::Atomic32* value) : value_(value) {}
   ~ReleaseStoreThread() override = default;
   void ThreadMain() override {
     base::subtle::Release_Store(value_, kMagicValue);
@@ -316,24 +316,26 @@ class ReleaseStoreThread : public PlatformThread::Delegate {
     // lock/unlock's inside thread creation code in pure-happens-before mode...
     PlatformThread::Sleep(Milliseconds(100));
   }
+
  private:
   raw_ptr<base::subtle::Atomic32> value_;
 };
 
 class AcquireLoadThread : public PlatformThread::Delegate {
  public:
-  explicit AcquireLoadThread(base::subtle::Atomic32 *value) : value_(value) {}
+  explicit AcquireLoadThread(base::subtle::Atomic32* value) : value_(value) {}
   ~AcquireLoadThread() override = default;
   void ThreadMain() override {
     // Wait for the other thread to make Release_Store
     PlatformThread::Sleep(Milliseconds(100));
     base::subtle::Acquire_Load(value_);
   }
+
  private:
   raw_ptr<base::subtle::Atomic32> value_;
 };
 
-void RunInParallel(PlatformThread::Delegate *d1, PlatformThread::Delegate *d2) {
+void RunInParallel(PlatformThread::Delegate* d1, PlatformThread::Delegate* d2) {
   PlatformThreadHandle a;
   PlatformThreadHandle b;
   PlatformThread::Create(0, d1, &a);
@@ -344,7 +346,7 @@ void RunInParallel(PlatformThread::Delegate *d1, PlatformThread::Delegate *d2) {
 
 #if defined(THREAD_SANITIZER)
 void DataRace() {
-  bool *shared = new bool(false);
+  bool* shared = new bool(false);
   TOOLS_SANITY_TEST_CONCURRENT_THREAD thread1(shared), thread2(shared);
   RunInParallel(&thread1, &thread2);
   EXPECT_TRUE(*shared);
@@ -366,8 +368,8 @@ TEST(ToolsSanityTest, DataRace) {
 
 TEST(ToolsSanityTest, AnnotateBenignRace) {
   bool shared = false;
-  ABSL_ANNOTATE_BENIGN_RACE(
-      &shared, "Intentional race - make sure doesn't show up");
+  ABSL_ANNOTATE_BENIGN_RACE(&shared,
+                            "Intentional race - make sure doesn't show up");
   TOOLS_SANITY_TEST_CONCURRENT_THREAD thread1(&shared), thread2(&shared);
   RunInParallel(&thread1, &thread2);
   EXPECT_TRUE(shared);
@@ -398,35 +400,41 @@ TEST(ToolsSanityTest, AtomicsAreIgnored) {
 #if defined(CFI_ERROR_MSG)
 class A {
  public:
-  A(): n_(0) {}
+  A() : n_(0) {}
   virtual void f() { n_++; }
+
  protected:
   int n_;
 };
 
-class B: public A {
+class B : public A {
  public:
   void f() override { n_--; }
 };
 
-class C: public B {
+class C : public B {
  public:
   void f() override { n_ += 2; }
 };
 
-NOINLINE void KillVptrAndCall(A *obj) {
-  *reinterpret_cast<void **>(obj) = 0;
+NOINLINE void KillVptrAndCall(A* obj) {
+  *reinterpret_cast<void**>(obj) = 0;
   obj->f();
 }
 
 TEST(ToolsSanityTest, BadVirtualCallNull) {
   A a;
   B b;
-  EXPECT_DEATH({ KillVptrAndCall(&a); KillVptrAndCall(&b); }, CFI_ERROR_MSG);
+  EXPECT_DEATH(
+      {
+        KillVptrAndCall(&a);
+        KillVptrAndCall(&b);
+      },
+      CFI_ERROR_MSG);
 }
 
-NOINLINE void OverwriteVptrAndCall(B *obj, A *vptr) {
-  *reinterpret_cast<void **>(obj) = *reinterpret_cast<void **>(vptr);
+NOINLINE void OverwriteVptrAndCall(B* obj, A* vptr) {
+  *reinterpret_cast<void**>(obj) = *reinterpret_cast<void**>(vptr);
   obj->f();
 }
 
@@ -434,8 +442,12 @@ TEST(ToolsSanityTest, BadVirtualCallWrongType) {
   A a;
   B b;
   C c;
-  EXPECT_DEATH({ OverwriteVptrAndCall(&b, &a); OverwriteVptrAndCall(&b, &c); },
-               CFI_ERROR_MSG);
+  EXPECT_DEATH(
+      {
+        OverwriteVptrAndCall(&b, &a);
+        OverwriteVptrAndCall(&b, &c);
+      },
+      CFI_ERROR_MSG);
 }
 
 // TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.

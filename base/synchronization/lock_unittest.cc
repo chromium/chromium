@@ -119,8 +119,9 @@ class TryLockTestThread : public PlatformThread::Delegate {
     // lock is properly released.
     bool got_lock = lock_->Try();
     got_lock_ = got_lock;
-    if (got_lock)
+    if (got_lock) {
       lock_->Release();
+    }
   }
 
   bool got_lock() const { return got_lock_; }

@@ -93,13 +93,15 @@ void Sequence::Transaction::PushImmediateTask(Task task) {
 
   sequence()->queue_.push(std::move(task));
 
-  if (queue_was_empty)
+  if (queue_was_empty) {
     sequence()->UpdateReadyTimes();
+  }
 
   // AddRef() matched by manual Release() when the sequence has no more tasks
   // to run (in DidProcessTask() or Clear()).
-  if (was_unretained && sequence()->task_runner())
+  if (was_unretained && sequence()->task_runner()) {
     sequence()->task_runner()->AddRef();
+  }
 }
 
 bool Sequence::Transaction::PushDelayedTask(Task task) {
@@ -119,13 +121,15 @@ bool Sequence::Transaction::PushDelayedTask(Task task) {
 
   sequence()->delayed_queue_.insert(std::move(task));
 
-  if (sequence()->queue_.empty())
+  if (sequence()->queue_.empty()) {
     sequence()->UpdateReadyTimes();
+  }
 
   // AddRef() matched by manual Release() when the sequence has no more tasks
   // to run (in DidProcessTask() or Clear()).
-  if (was_empty && !sequence()->has_worker_ && sequence()->task_runner())
+  if (was_empty && !sequence()->has_worker_ && sequence()->task_runner()) {
     sequence()->task_runner()->AddRef();
+  }
 
   return top_will_change;
 }
@@ -172,17 +176,20 @@ Task Sequence::TakeNextImmediateTask() {
 }
 
 Task Sequence::TakeEarliestTask() {
-  if (queue_.empty())
+  if (queue_.empty()) {
     return delayed_queue_.take_top();
+  }
 
-  if (delayed_queue_.empty())
+  if (delayed_queue_.empty()) {
     return TakeNextImmediateTask();
+  }
 
   // Both queues contain at least a task. Decide from which one the task should
   // be taken.
   if (queue_.front().queue_time <=
-      delayed_queue_.top().latest_delayed_run_time())
+      delayed_queue_.top().latest_delayed_run_time()) {
     return TakeNextImmediateTask();
+  }
 
   return delayed_queue_.take_top();
 }
@@ -219,8 +226,9 @@ Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
 
   auto next_task = TakeEarliestTask();
 
-  if (!IsEmpty())
+  if (!IsEmpty()) {
     UpdateReadyTimes();
+  }
 
   return next_task;
 }
@@ -257,8 +265,9 @@ bool Sequence::WillReEnqueue(TimeTicks now,
   DCHECK(is_immediate_.load(std::memory_order_relaxed));
 
   bool has_ready_tasks = HasReadyTasks(now);
-  if (!has_ready_tasks)
+  if (!has_ready_tasks) {
     is_immediate_.store(false, std::memory_order_relaxed);
+  }
 
   return has_ready_tasks;
 }
@@ -311,11 +320,13 @@ std::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
       base::BindOnce(
           [](base::queue<Task> queue,
              base::IntrusiveHeap<Task, DelayedTaskGreater> delayed_queue) {
-            while (!queue.empty())
+            while (!queue.empty()) {
               queue.pop();
+            }
 
-            while (!delayed_queue.empty())
+            while (!delayed_queue.empty()) {
               delayed_queue.pop();
+            }
           },
           std::move(queue_), std::move(delayed_queue_)),
       TimeTicks(), TimeDelta(), TimeDelta(),
@@ -323,8 +334,9 @@ std::optional<Task> Sequence::Clear(TaskSource::Transaction* transaction) {
 }
 
 void Sequence::ReleaseTaskRunner() {
-  if (!task_runner())
+  if (!task_runner()) {
     return;
+  }
   // No member access after this point, releasing |task_runner()| might delete
   // |this|.
   task_runner()->Release();

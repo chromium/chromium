@@ -77,8 +77,9 @@ HistogramBase* BooleanHistogram(JNIEnv* env,
                                 std::string& histogram_name,
                                 jlong j_histogram_hint) {
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
-  if (histogram)
+  if (histogram) {
     return histogram;
+  }
 
   histogram = BooleanHistogram::FactoryGet(
       histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
@@ -133,8 +134,9 @@ HistogramBase* SparseHistogram(JNIEnv* env,
                                std::string& histogram_name,
                                jlong j_histogram_hint) {
   HistogramBase* histogram = HistogramFromHint(j_histogram_hint);
-  if (histogram)
+  if (histogram) {
     return histogram;
+  }
 
   histogram = SparseHistogram::FactoryGet(
       histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
@@ -232,8 +234,9 @@ jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
   if (snapshot_ptr) {
     auto* snapshot = reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
     auto snapshot_data = snapshot->find(name);
-    if (snapshot_data != snapshot->end())
+    if (snapshot_data != snapshot->end()) {
       actual_count -= snapshot_data->second->GetCount(sample);
+    }
   }
 
   return actual_count;
@@ -253,8 +256,9 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
   if (snapshot_ptr) {
     auto* snapshot = reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
     auto snapshot_data = snapshot->find(name);
-    if (snapshot_data != snapshot->end())
+    if (snapshot_data != snapshot->end()) {
       actual_count -= snapshot_data->second->TotalCount();
+    }
   }
   return actual_count;
 }

@@ -27,8 +27,9 @@ std::string TimeoutMessage(const RepeatingCallback<std::string()>& get_log,
                            const Location& timeout_enabled_from_here) {
   std::string message = "RunLoop::Run() timed out. Timeout set at ";
   message += timeout_enabled_from_here.ToString() + ".";
-  if (get_log)
+  if (get_log) {
     StrAppend(&message, {"\n", get_log.Run()});
+  }
   return message;
 }
 

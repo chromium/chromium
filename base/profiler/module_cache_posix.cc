@@ -39,8 +39,9 @@ namespace {
 std::string GetUniqueBuildId(const void* module_addr) {
   debug::ElfBuildIdBuffer build_id;
   size_t build_id_length = debug::ReadElfBuildId(module_addr, true, build_id);
-  if (!build_id_length)
+  if (!build_id_length) {
     return std::string();
+  }
 
   // Append 0 for the age value.
   return std::string(build_id, build_id_length) + "0";
@@ -55,8 +56,9 @@ size_t GetLastExecutableOffset(const void* module_addr) {
   const size_t relocation_offset = debug::GetRelocationOffset(module_addr);
   size_t max_offset = 0;
   for (const Phdr& header : debug::GetElfProgramHeaders(module_addr)) {
-    if (header.p_type != PT_LOAD || !(header.p_flags & PF_X))
+    if (header.p_type != PT_LOAD || !(header.p_flags & PF_X)) {
       continue;
+    }
 
     max_offset = std::max(
         max_offset, static_cast<size_t>(
@@ -75,8 +77,9 @@ FilePath GetDebugBasenameForModule(const void* base_address,
   // this doesn't distinguish the particular library.
   std::optional<std::string_view> library_name =
       debug::ReadElfLibraryName(base_address);
-  if (library_name)
+  if (library_name) {
     return FilePath(*library_name);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

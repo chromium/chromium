@@ -55,8 +55,9 @@ template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> ToLowerASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
-  for (size_t i = 0; i < str.size(); i++)
+  for (size_t i = 0; i < str.size(); i++) {
     ret.push_back(ToLowerASCII(str[i]));
+  }
   return ret;
 }
 
@@ -64,8 +65,9 @@ template <typename T, typename CharT = typename T::value_type>
 std::basic_string<CharT> ToUpperASCIIImpl(T str) {
   std::basic_string<CharT> ret;
   ret.reserve(str.size());
-  for (size_t i = 0; i < str.size(); i++)
+  for (size_t i = 0; i < str.size(); i++) {
     ret.push_back(ToUpperASCII(str[i]));
+  }
   return ret;
 }
 
@@ -167,18 +169,21 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
       0, MachineWord(0xFFFFFF80FFFFFF80ULL),
   };
 
-  if (!length)
+  if (!length) {
     return true;
+  }
   constexpr MachineWord non_ascii_bit_mask = NonASCIIMasks[sizeof(Char)];
   static_assert(non_ascii_bit_mask, "Error: Invalid Mask");
   MachineWord all_char_bits = 0;
   const Char* end = characters + length;
 
   // Prologue: align the input.
-  while (!IsMachineWordAligned(characters) && characters < end)
+  while (!IsMachineWordAligned(characters) && characters < end) {
     all_char_bits |= static_cast<MachineWord>(*characters++);
-  if (all_char_bits & non_ascii_bit_mask)
+  }
+  if (all_char_bits & non_ascii_bit_mask) {
     return false;
+  }
 
   // Compare the values of CPU word size.
   constexpr size_t chars_per_word = sizeof(MachineWord) / sizeof(Char);
@@ -189,8 +194,9 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
       all_char_bits |= *(reinterpret_cast<const MachineWord*>(characters));
       characters += chars_per_word;
     }
-    if (all_char_bits & non_ascii_bit_mask)
+    if (all_char_bits & non_ascii_bit_mask) {
       return false;
+    }
   }
 
   // Process the remaining words.
@@ -201,8 +207,9 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
   }
 
   // Process the remaining bytes.
-  while (characters < end)
+  while (characters < end) {
     all_char_bits |= static_cast<MachineWord>(*characters++);
+  }
 
   return !(all_char_bits & non_ascii_bit_mask);
 }
@@ -216,8 +223,9 @@ inline bool DoIsStringUTF8(std::string_view str) {
   while (char_index < src_len) {
     base_icu::UChar32 code_point;
     CBU8_NEXT(src, char_index, src_len, code_point);
-    if (!Validator(code_point))
+    if (!Validator(code_point)) {
       return false;
+    }
   }
   return true;
 }
@@ -302,13 +310,15 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
   using CharTraits = std::char_traits<CharT>;
 
   const size_t find_length = matcher.MatchSize();
-  if (!find_length)
+  if (!find_length) {
     return false;
+  }
 
   // If the find string doesn't appear, there's nothing to do.
   size_t first_match = matcher.Find(*str, initial_offset);
-  if (first_match == std::basic_string<CharT>::npos)
+  if (first_match == std::basic_string<CharT>::npos) {
     return false;
+  }
 
   // If we're only replacing one instance, there's no need to do anything
   // complicated.
@@ -374,8 +384,9 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
 
         // A mid-loop test/break enables skipping the final Find() call; the
         // number of matches is known, so don't search past the last one.
-        if (!--num_matches)
+        if (!--num_matches) {
           break;
+        }
       }
 
       // Handle substring after the final match.
@@ -391,8 +402,9 @@ bool DoReplaceMatchesAfterOffset(std::basic_string<CharT>* str,
 
     // Big |expansion| factors (relative to |str_length|) require padding up to
     // |shift_dst|.
-    if (shift_dst > str_length)
+    if (shift_dst > str_length) {
       str->resize(shift_dst);
+    }
 
     str->replace(shift_dst, str_length - shift_src, *str, shift_src,
                  str_length - shift_src);
@@ -444,8 +456,9 @@ bool ReplaceCharsT(T input,
                    std::basic_string<CharT>* output) {
   // Commonly, this is called with output and input being the same string; in
   // that case, skip the copy.
-  if (input.data() != output->data() || input.size() != output->size())
+  if (input.data() != output->data() || input.size() != output->size()) {
     output->assign(input.data(), input.size());
+  }
 
   return DoReplaceMatchesAfterOffset(output, 0,
                                      MakeCharacterMatcher(find_any_of_these),
@@ -469,14 +482,16 @@ template <typename list_type,
           typename T,
           typename CharT = typename T::value_type>
 static std::basic_string<CharT> JoinStringT(list_type parts, T sep) {
-  if (std::empty(parts))
+  if (std::empty(parts)) {
     return std::basic_string<CharT>();
+  }
 
   // Pre-allocate the eventual size of the string. Start with the size of all of
   // the separators (note that this *assumes* parts.size() > 0).
   size_t total_size = (parts.size() - 1) * sep.size();
-  for (const auto& part : parts)
+  for (const auto& part : parts) {
     total_size += part.size();
+  }
   std::basic_string<CharT> result;
   result.reserve(total_size);
 

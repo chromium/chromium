@@ -159,8 +159,7 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
-  TaskSource(const TaskTraits& traits,
-             TaskSourceExecutionMode execution_mode);
+  TaskSource(const TaskTraits& traits, TaskSourceExecutionMode execution_mode);
   TaskSource(const TaskSource&) = delete;
   TaskSource& operator=(const TaskSource&) = delete;
 
@@ -337,8 +336,8 @@ class BASE_EXPORT RegisteredTaskSource {
 #if DCHECK_IS_ON()
   // Indicates the step of a task execution chain.
   enum class State {
-    kInitial,       // WillRunTask() may be called.
-    kReady,         // After WillRunTask() returned a valid RunStatus.
+    kInitial,  // WillRunTask() may be called.
+    kReady,    // After WillRunTask() returned a valid RunStatus.
   };
 
   State run_step_ = State::kInitial;

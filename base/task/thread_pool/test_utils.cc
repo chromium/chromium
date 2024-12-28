@@ -92,16 +92,18 @@ void MockWorkerThreadObserver::AllowCallsOnMainExit(int num_calls) {
 
 void MockWorkerThreadObserver::WaitCallsOnMainExit() {
   CheckedAutoLock auto_lock(lock_);
-  while (allowed_calls_on_main_exit_ != 0)
+  while (allowed_calls_on_main_exit_ != 0) {
     on_main_exit_cv_.Wait();
+  }
 }
 
 void MockWorkerThreadObserver::OnWorkerThreadMainExit() {
   CheckedAutoLock auto_lock(lock_);
   EXPECT_GE(allowed_calls_on_main_exit_, 0);
   --allowed_calls_on_main_exit_;
-  if (allowed_calls_on_main_exit_ == 0)
+  if (allowed_calls_on_main_exit_ == 0) {
     on_main_exit_cv_.Signal();
+  }
 }
 
 scoped_refptr<Sequence> CreateSequenceWithTask(
@@ -207,8 +209,9 @@ void MockPooledTaskRunnerDelegate::PostTaskWithSequenceNow(
   if (sequence_should_be_queued) {
     task_source = task_tracker_->RegisterTaskSource(std::move(sequence));
     // We shouldn't push |task| if we're not allowed to queue |task_source|.
-    if (!task_source)
+    if (!task_source) {
       return;
+    }
   }
   transaction.PushImmediateTask(std::move(task));
   if (task_source) {
@@ -230,8 +233,9 @@ bool MockPooledTaskRunnerDelegate::EnqueueJobTaskSource(
 
   auto registered_task_source =
       task_tracker_->RegisterTaskSource(std::move(task_source));
-  if (!registered_task_source)
+  if (!registered_task_source) {
     return false;
+  }
   auto transaction = registered_task_source->BeginTransaction();
   thread_group_->PushTaskSourceAndWakeUpWorkers(
       {std::move(registered_task_source), std::move(transaction)});

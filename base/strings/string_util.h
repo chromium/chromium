@@ -238,7 +238,7 @@ BASE_EXPORT const std::u16string& EmptyString16();
 // Contains the set of characters representing whitespace in the corresponding
 // encoding. Null-terminated. The ASCII versions are the whitespaces as defined
 // by HTML5, and don't include control characters.
-BASE_EXPORT extern const wchar_t kWhitespaceWide[];  // Includes Unicode.
+BASE_EXPORT extern const wchar_t kWhitespaceWide[];    // Includes Unicode.
 BASE_EXPORT extern const char16_t kWhitespaceUTF16[];  // Includes Unicode.
 BASE_EXPORT extern const char16_t
     kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
@@ -276,10 +276,10 @@ BASE_EXPORT bool ReplaceChars(std::string_view input,
                               std::string* output);
 
 enum TrimPositions {
-  TRIM_NONE     = 0,
-  TRIM_LEADING  = 1 << 0,
+  TRIM_NONE = 0,
+  TRIM_LEADING = 1 << 0,
   TRIM_TRAILING = 1 << 1,
-  TRIM_ALL      = TRIM_LEADING | TRIM_TRAILING,
+  TRIM_ALL = TRIM_LEADING | TRIM_TRAILING,
 };
 
 // Removes characters in |trim_chars| from the beginning and end of |input|.
@@ -416,8 +416,9 @@ template <typename Char>
 constexpr bool IsAsciiWhitespace(Char c) {
   // kWhitespaceASCII is a null-terminated string.
   for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
-    if (*cur == c)
+    if (*cur == c) {
       return true;
+    }
   }
   return false;
 }
@@ -480,8 +481,7 @@ constexpr bool IsAsciiPunctuation(Char c) {
 template <typename Char>
   requires(std::integral<Char>)
 constexpr bool IsHexDigit(Char c) {
-  return (c >= '0' && c <= '9') ||
-         (c >= 'A' && c <= 'F') ||
+  return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') ||
          (c >= 'a' && c <= 'f');
 }
 
@@ -507,8 +507,9 @@ constexpr bool IsUnicodeWhitespace(Char c) {
   // kWhitespaceWide is a null-terminated string.
   for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
     if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
-        static_cast<typename std::make_unsigned_t<Char>>(c))
+        static_cast<typename std::make_unsigned_t<Char>>(c)) {
       return true;
+    }
   }
   return false;
 }

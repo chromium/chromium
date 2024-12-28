@@ -32,15 +32,11 @@ base::AtomicSequenceNumber destructed_seq_;
 
 class ConstructAndDestructLogger {
  public:
-  ConstructAndDestructLogger() {
-    constructed_seq_.GetNext();
-  }
+  ConstructAndDestructLogger() { constructed_seq_.GetNext(); }
   ConstructAndDestructLogger(const ConstructAndDestructLogger&) = delete;
   ConstructAndDestructLogger& operator=(const ConstructAndDestructLogger&) =
       delete;
-  ~ConstructAndDestructLogger() {
-    destructed_seq_.GetNext();
-  }
+  ~ConstructAndDestructLogger() { destructed_seq_.GetNext(); }
 };
 
 class SlowConstructor {
@@ -56,6 +52,7 @@ class SlowConstructor {
   int some_int() const { return some_int_; }
 
   static int constructed;
+
  private:
   int some_int_;
 };
@@ -137,9 +134,7 @@ class DeleteLogger {
   DeleteLogger() : deleted_(nullptr) {}
   ~DeleteLogger() { *deleted_ = true; }
 
-  void SetDeletedPtr(bool* deleted) {
-    deleted_ = deleted;
-  }
+  void SetDeletedPtr(bool* deleted) { deleted_ = deleted; }
 
  private:
   raw_ptr<bool> deleted_;
@@ -164,8 +159,8 @@ TEST(LazyInstanceTest, LeakyLazyInstance) {
   bool deleted2 = false;
   {
     base::ShadowingAtExitManager shadow;
-    static base::LazyInstance<DeleteLogger>::Leaky
-        test = LAZY_INSTANCE_INITIALIZER;
+    static base::LazyInstance<DeleteLogger>::Leaky test =
+        LAZY_INSTANCE_INITIALIZER;
     test.Get().SetDeletedPtr(&deleted2);
   }
   EXPECT_FALSE(deleted2);
@@ -260,8 +255,9 @@ class BlockingConstructorThread : public base::SimpleThread {
       delete;
 
   void Run() override {
-    if (before_get_)
+    if (before_get_) {
       std::move(before_get_).Run();
+    }
     EXPECT_TRUE(lazy_->Get().done_construction());
   }
 
@@ -292,8 +288,9 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
       base::ThreadType::kBackground, &lazy_blocking, base::OnceClosure());
   background_getter.Start();
 
-  while (!BlockingConstructor::WasConstructorCalled())
+  while (!BlockingConstructor::WasConstructorCalled()) {
     base::PlatformThread::Sleep(base::Milliseconds(1));
+  }
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction LazyInstance. When they are all running and poking at it :
@@ -314,8 +311,9 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
   // This test will hang if the foreground threads become stuck in
   // LazyInstance::Get() per the background thread never being scheduled to
   // complete construction.
-  for (auto& foreground_thread : foreground_threads)
+  for (auto& foreground_thread : foreground_threads) {
     foreground_thread->Join();
+  }
   background_getter.Join();
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a

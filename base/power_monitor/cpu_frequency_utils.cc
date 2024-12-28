@@ -13,10 +13,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#include <winternl.h>
 
 #include <powerbase.h>
 #include <processthreadsapi.h>
-#include <winternl.h>
 #endif
 
 namespace base {

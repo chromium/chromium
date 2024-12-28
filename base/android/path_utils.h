@@ -6,6 +6,7 @@
 #define BASE_ANDROID_PATH_UTILS_H_
 
 #include <jni.h>
+
 #include <vector>
 
 #include "base/base_export.h"

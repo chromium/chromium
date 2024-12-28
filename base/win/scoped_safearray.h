@@ -105,8 +105,9 @@ class BASE_EXPORT ScopedSafearray {
           array_size_(array_size) {}
 
     void Reset() {
-      if (safearray_)
+      if (safearray_) {
         SafeArrayUnaccessData(safearray_);
+      }
       safearray_ = nullptr;
       vartype_ = VT_EMPTY;
       array_ = nullptr;
@@ -147,8 +148,9 @@ class BASE_EXPORT ScopedSafearray {
   // single-dimensional SAFEARRAYs.
   template <VARTYPE ElementVartype>
   std::optional<LockScope<ElementVartype>> CreateLockScope() const {
-    if (!safearray_ || SafeArrayGetDim(safearray_) != 1)
+    if (!safearray_ || SafeArrayGetDim(safearray_) != 1) {
       return std::nullopt;
+    }
 
     VARTYPE vartype;
     HRESULT hr = SafeArrayGetVartype(safearray_, &vartype);
@@ -159,8 +161,9 @@ class BASE_EXPORT ScopedSafearray {
 
     typename LockScope<ElementVartype>::pointer array = nullptr;
     hr = SafeArrayAccessData(safearray_, reinterpret_cast<void**>(&array));
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return std::nullopt;
+    }
 
     const size_t array_size = GetCount();
     return LockScope<ElementVartype>(safearray_, vartype, array, array_size);

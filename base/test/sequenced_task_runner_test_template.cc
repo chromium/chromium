@@ -12,15 +12,10 @@ namespace base {
 
 namespace internal {
 
-TaskEvent::TaskEvent(int i, Type type)
-  : i(i), type(type) {
-}
+TaskEvent::TaskEvent(int i, Type type) : i(i), type(type) {}
 
 SequencedTaskTracker::SequencedTaskTracker()
-    : next_post_i_(0),
-      task_end_count_(0),
-      task_end_cv_(&lock_) {
-}
+    : next_post_i_(0), task_end_count_(0), task_end_cv_(&lock_) {}
 
 void SequencedTaskTracker::PostWrappedNonNestableTask(
     SequencedTaskRunner* task_runner,
@@ -67,8 +62,9 @@ void SequencedTaskTracker::PostNonNestableTasks(
 
 void SequencedTaskTracker::RunTask(OnceClosure task, int task_i) {
   TaskStarted(task_i);
-  if (!task.is_null())
+  if (!task.is_null()) {
     std::move(task).Run();
+  }
   TaskEnded(task_i);
 }
 
@@ -89,15 +85,15 @@ void SequencedTaskTracker::TaskEnded(int i) {
   task_end_cv_.Signal();
 }
 
-const std::vector<TaskEvent>&
-SequencedTaskTracker::GetTaskEvents() const {
+const std::vector<TaskEvent>& SequencedTaskTracker::GetTaskEvents() const {
   return events_;
 }
 
 void SequencedTaskTracker::WaitForCompletedTasks(int count) {
   AutoLock lock(lock_);
-  while (task_end_count_ < count)
+  while (task_end_count_ < count) {
     task_end_cv_.Wait();
+  }
 }
 
 SequencedTaskTracker::~SequencedTaskTracker() = default;
@@ -105,9 +101,15 @@ SequencedTaskTracker::~SequencedTaskTracker() = default;
 void PrintTo(const TaskEvent& event, std::ostream* os) {
   *os << "(i=" << event.i << ", type=";
   switch (event.type) {
-    case TaskEvent::POST: *os << "POST"; break;
-    case TaskEvent::START: *os << "START"; break;
-    case TaskEvent::END: *os << "END"; break;
+    case TaskEvent::POST:
+      *os << "POST";
+      break;
+    case TaskEvent::START:
+      *os << "START";
+      break;
+    case TaskEvent::END:
+      *os << "END";
+      break;
   }
   *os << ")";
 }
@@ -121,8 +123,9 @@ std::vector<int> GetEventTypeOrder(const std::vector<TaskEvent>& events,
   std::vector<int> tasks;
   std::vector<TaskEvent>::const_iterator event;
   for (event = events.begin(); event != events.end(); ++event) {
-    if (event->type == type)
+    if (event->type == type) {
       tasks.push_back(event->i);
+    }
   }
   return tasks;
 }
@@ -134,8 +137,9 @@ std::vector<TaskEvent::Type> GetEventsForTask(
   std::vector<TaskEvent::Type> task_event_orders;
   std::vector<TaskEvent>::const_iterator event;
   for (event = events.begin(); event != events.end(); ++event) {
-    if (event->i == task_i)
+    if (event->i == task_i) {
       task_event_orders.push_back(event->type);
+    }
   }
   return task_event_orders;
 }
@@ -158,9 +162,9 @@ std::vector<TaskEvent::Type> GetEventsForTask(
         GetEventsForTask(events, i);
     if (task_events != expected_order) {
       return ::testing::AssertionFailure()
-          << "Events for task " << i << " are out of order; expected: "
-          << ::testing::PrintToString(expected_order) << "; actual: "
-          << ::testing::PrintToString(task_events);
+             << "Events for task " << i << " are out of order; expected: "
+             << ::testing::PrintToString(expected_order)
+             << "; actual: " << ::testing::PrintToString(task_events);
     }
   }
   return ::testing::AssertionSuccess();
@@ -195,34 +199,36 @@ std::vector<TaskEvent::Type> GetEventsForTask(
 
       switch (event->type) {
         case TaskEvent::POST:
-          if (event->i == current_task_i)
+          if (event->i == current_task_i) {
             spurious_event_found = true;
+          }
           break;
         case TaskEvent::START:
           interleaved_task_detected = true;
           break;
         case TaskEvent::END:
-          if (event->i != current_task_i)
+          if (event->i != current_task_i) {
             interleaved_task_detected = true;
-          else
+          } else {
             current_task_i = -1;
+          }
           break;
       }
 
       if (interleaved_task_detected) {
         return ::testing::AssertionFailure()
-            << "Found event " << ::testing::PrintToString(*event)
-            << " between START and END events for task " << current_task_i
-            << "; event dump: " << ::testing::PrintToString(events);
+               << "Found event " << ::testing::PrintToString(*event)
+               << " between START and END events for task " << current_task_i
+               << "; event dump: " << ::testing::PrintToString(events);
       }
     }
 
     if (spurious_event_found) {
       const int event_i = event - events.begin();
       return ::testing::AssertionFailure()
-          << "Spurious event " << ::testing::PrintToString(*event)
-          << " at position " << event_i << "; event dump: "
-          << ::testing::PrintToString(events);
+             << "Spurious event " << ::testing::PrintToString(*event)
+             << " at position " << event_i
+             << "; event dump: " << ::testing::PrintToString(events);
     }
   }
 
@@ -238,29 +244,27 @@ std::vector<TaskEvent::Type> GetEventsForTask(
       GetEventTypeOrder(events, TaskEvent::POST);
   const std::vector<int> start_order =
       GetEventTypeOrder(events, TaskEvent::START);
-  const std::vector<int> end_order =
-      GetEventTypeOrder(events, TaskEvent::END);
+  const std::vector<int> end_order = GetEventTypeOrder(events, TaskEvent::END);
 
   if (start_order != post_order) {
     return ::testing::AssertionFailure()
-        << "Expected START order (which equals actual POST order): \n"
-        << ::testing::PrintToString(post_order)
-        << "\n Actual START order:\n"
-        << ::testing::PrintToString(start_order);
+           << "Expected START order (which equals actual POST order): \n"
+           << ::testing::PrintToString(post_order) << "\n Actual START order:\n"
+           << ::testing::PrintToString(start_order);
   }
 
   if (end_order != post_order) {
     return ::testing::AssertionFailure()
-        << "Expected END order (which equals actual POST order): \n"
-        << ::testing::PrintToString(post_order)
-        << "\n Actual END order:\n"
-        << ::testing::PrintToString(end_order);
+           << "Expected END order (which equals actual POST order): \n"
+           << ::testing::PrintToString(post_order) << "\n Actual END order:\n"
+           << ::testing::PrintToString(end_order);
   }
 
   const ::testing::AssertionResult result =
       CheckEventOrdersForEachTask(events, task_count);
-  if (!result)
+  if (!result) {
     return result;
+  }
 
   return CheckNoTaskRunsOverlap(events);
 }

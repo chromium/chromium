@@ -108,11 +108,11 @@ struct EnumSizeTraits {
   } while (0)
 
 // This is a helper macro used by other macros and shouldn't be used directly.
-#define INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(name, sample, min, max,     \
-                                                   bucket_count, flag)         \
-    STATIC_HISTOGRAM_POINTER_BLOCK(                                            \
-        name, Add(sample),                                                     \
-        base::Histogram::FactoryGet(name, min, max, bucket_count, flag))
+#define INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(name, sample, min, max, \
+                                                   bucket_count, flag)     \
+  STATIC_HISTOGRAM_POINTER_BLOCK(                                          \
+      name, Add(sample),                                                   \
+      base::Histogram::FactoryGet(name, min, max, bucket_count, flag))
 
 // This is a helper macro used by other macros and shouldn't be used directly.
 // The bucketing scheme is linear with a bucket size of 1. For N items,

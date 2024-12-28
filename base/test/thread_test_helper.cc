@@ -29,7 +29,9 @@ bool ThreadTestHelper::Run() {
   return test_result_;
 }
 
-void ThreadTestHelper::RunTest() { set_test_result(true); }
+void ThreadTestHelper::RunTest() {
+  set_test_result(true);
+}
 
 ThreadTestHelper::~ThreadTestHelper() = default;
 

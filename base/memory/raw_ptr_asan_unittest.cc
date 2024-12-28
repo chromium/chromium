@@ -7,6 +7,7 @@
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #include <sanitizer/asan_interface.h>
+
 #include <thread>
 
 #include "base/debug/asan_service.h"
@@ -177,10 +178,10 @@ TEST_F(AsanBackupRefPtrTest, EarlyAllocationDetection) {
   EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
       late_allocation_ptr.get()));
 
-  EXPECT_DEATH_IF_SUPPORTED({ early_allocation_ptr_->func(); },
-                            kAsanBrpNotProtected_EarlyAllocation);
-  EXPECT_DEATH_IF_SUPPORTED({ late_allocation_ptr->func(); },
-                            kAsanBrpProtected_Dereference);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { early_allocation_ptr_->func(); }, kAsanBrpNotProtected_EarlyAllocation);
+  EXPECT_DEATH_IF_SUPPORTED(
+      { late_allocation_ptr->func(); }, kAsanBrpProtected_Dereference);
 
   early_allocation_ptr_ = nullptr;
 }

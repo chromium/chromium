@@ -144,9 +144,7 @@ namespace trace_event {
 // class must implement this interface. Note that unlike other values,
 // these objects will be owned by the TraceArguments instance that points
 // to them.
-class BASE_EXPORT ConvertableToTraceFormat
-    : public perfetto::DebugAnnotation
-{
+class BASE_EXPORT ConvertableToTraceFormat : public perfetto::DebugAnnotation {
  public:
   ConvertableToTraceFormat() = default;
   ConvertableToTraceFormat(const ConvertableToTraceFormat&) = delete;
@@ -501,8 +499,9 @@ class BASE_EXPORT StringStorage {
   explicit StringStorage(size_t alloc_size) { Reset(alloc_size); }
 
   ~StringStorage() {
-    if (data_)
+    if (data_) {
       ::free(data_);
+    }
   }
 
   StringStorage(StringStorage&& other) noexcept : data_(other.data_) {
@@ -511,8 +510,9 @@ class BASE_EXPORT StringStorage {
 
   StringStorage& operator=(StringStorage&& other) noexcept {
     if (this != &other) {
-      if (data_)
+      if (data_) {
         ::free(data_);
+      }
       data_ = other.data_;
       other.data_ = nullptr;
     }
@@ -635,8 +635,9 @@ class BASE_EXPORT TraceArguments {
                  const unsigned long long* arg_values,
                  CONVERTABLE_TYPE* arg_convertables) {
     static int max_args = static_cast<int>(kMaxSize);
-    if (num_args > max_args)
+    if (num_args > max_args) {
       num_args = max_args;
+    }
     size_ = static_cast<unsigned char>(num_args);
     for (size_t n = 0; n < size_; ++n) {
       types_[n] = arg_types[n];
@@ -653,10 +654,12 @@ class BASE_EXPORT TraceArguments {
   // Destructor. NOTE: Intentionally inlined (see note above).
   ~TraceArguments() {
     for (size_t n = 0; n < size_; ++n) {
-      if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE)
+      if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE) {
         delete values_[n].as_convertable;
-      if (types_[n] == TRACE_VALUE_TYPE_PROTO)
+      }
+      if (types_[n] == TRACE_VALUE_TYPE_PROTO) {
         delete values_[n].as_proto;
+      }
     }
   }
 

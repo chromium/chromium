@@ -163,8 +163,9 @@ class BlockingConstructorThread : public SimpleThread {
       delete;
 
   void Run() override {
-    if (before_get_)
+    if (before_get_) {
       std::move(before_get_).Run();
+    }
 
     static NoDestructor<BlockingConstructor> instance;
     EXPECT_TRUE(instance->done_construction());
@@ -194,8 +195,9 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
                                               OnceClosure());
   background_getter.Start();
 
-  while (!BlockingConstructor::WasConstructorCalled())
+  while (!BlockingConstructor::WasConstructorCalled()) {
     PlatformThread::Sleep(Milliseconds(1));
+  }
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction NoDestructor. When they are all running and poking at it :
@@ -216,8 +218,9 @@ TEST(NoDestructorTest, PriorityInversionAtStaticInitializationResolves) {
   // This test will hang if the foreground threads become stuck in
   // NoDestructor's construction per the background thread never being scheduled
   // to complete construction.
-  for (auto& foreground_thread : foreground_threads)
+  for (auto& foreground_thread : foreground_threads) {
     foreground_thread->Join();
+  }
   background_getter.Join();
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a

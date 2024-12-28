@@ -94,13 +94,16 @@ bool SetPropVariantValueForPropertyStore(
   DCHECK(property_store);
 
   HRESULT result = property_store->SetValue(property_key, property_value.get());
-  if (result == S_OK)
+  if (result == S_OK) {
     result = property_store->Commit();
-  if (SUCCEEDED(result))
+  }
+  if (SUCCEEDED(result)) {
     return true;
+  }
 #if DCHECK_IS_ON()
-  if (HRESULT_FACILITY(result) == FACILITY_WIN32)
+  if (HRESULT_FACILITY(result) == FACILITY_WIN32) {
     ::SetLastError(HRESULT_CODE(result));
+  }
   // See third_party/perl/c/i686-w64-mingw32/include/propkey.h for GUID and
   // PID definitions.
   DPLOG(ERROR) << "Failed to set property with GUID "
@@ -126,8 +129,9 @@ POWER_PLATFORM_ROLE GetPlatformRole() {
 // available (i.e., prior to Windows 10 1703) or fails, returns false.
 // https://docs.microsoft.com/en-us/windows/desktop/hidpi/dpi-awareness-context
 bool EnablePerMonitorV2() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return false;
+  }
 
   static const auto set_process_dpi_awareness_context_func =
       reinterpret_cast<decltype(&::SetProcessDpiAwarenessContext)>(
@@ -157,8 +161,9 @@ bool* GetRegisteredWithManagementStateStorage() {
 
     ScopedNativeLibrary library(
         FilePath(FILE_PATH_LITERAL("MDMRegistration.dll")));
-    if (!library.is_valid())
+    if (!library.is_valid()) {
       return false;
+    }
 
     using IsDeviceRegisteredWithManagementFunction =
         decltype(&::IsDeviceRegisteredWithManagement);
@@ -166,8 +171,9 @@ bool* GetRegisteredWithManagementStateStorage() {
         is_device_registered_with_management_function =
             reinterpret_cast<IsDeviceRegisteredWithManagementFunction>(
                 library.GetFunctionPointer("IsDeviceRegisteredWithManagement"));
-    if (!is_device_registered_with_management_function)
+    if (!is_device_registered_with_management_function) {
       return false;
+    }
 
     BOOL is_managed = FALSE;
     HRESULT hr =
@@ -189,14 +195,16 @@ bool* GetAzureADJoinStateStorage() {
 
     ScopedNativeLibrary netapi32(
         base::LoadSystemLibrary(FILE_PATH_LITERAL("netapi32.dll")));
-    if (!netapi32.is_valid())
+    if (!netapi32.is_valid()) {
       return false;
+    }
 
     const auto net_get_aad_join_information_function =
         reinterpret_cast<decltype(&::NetGetAadJoinInformation)>(
             netapi32.GetFunctionPointer("NetGetAadJoinInformation"));
-    if (!net_get_aad_join_information_function)
+    if (!net_get_aad_join_information_function) {
       return false;
+    }
 
     const auto net_free_aad_join_information_function =
         reinterpret_cast<decltype(&::NetFreeAadJoinInformation)>(
@@ -222,8 +230,9 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
   static NativeLibraryLoadError load_error;
   static const NativeLibrary user32_module =
       PinSystemLibrary(FILE_PATH_LITERAL("user32.dll"), &load_error);
-  if (!user32_module && error)
+  if (!user32_module && error) {
     error->code = load_error.code;
+  }
   return user32_module;
 }
 
@@ -608,11 +617,13 @@ static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
   std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
-  if (!token)
+  if (!token) {
     return false;
+  }
   std::optional<std::wstring> sid_string = token->User().ToSddlString();
-  if (!sid_string)
+  if (!sid_string) {
     return false;
+  }
   *user_sid = *sid_string;
   return true;
 }
@@ -797,8 +808,9 @@ bool IsDeviceRegisteredWithManagement() {
   // GetRegisteredWithManagementStateStorage() can be true for devices running
   // the Home sku, however the Home sku does not allow for management of the web
   // browser. As such, we automatically exclude devices running the Home sku.
-  if (OSInfo::GetInstance()->version_type() == SUITE_HOME)
+  if (OSInfo::GetInstance()->version_type() == SUITE_HOME) {
     return false;
+  }
   return *GetRegisteredWithManagementStateStorage();
 }
 
@@ -879,12 +891,14 @@ void DisableFlicks(HWND hwnd) {
 }
 
 void EnableHighDPISupport() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return;
+  }
 
   // Enable per-monitor V2 if it is available (Win10 1703 or later).
-  if (EnablePerMonitorV2())
+  if (EnablePerMonitorV2()) {
     return;
+  }
 
   // Fall back to per-monitor DPI for older versions of Win10.
   PROCESS_DPI_AWARENESS process_dpi_awareness = PROCESS_PER_MONITOR_DPI_AWARE;
@@ -918,8 +932,9 @@ bool PinUser32(NativeLibraryLoadError* error) {
 void* GetUser32FunctionPointer(const char* function_name,
                                NativeLibraryLoadError* error) {
   NativeLibrary user32_module = PinUser32Internal(error);
-  if (user32_module)
+  if (user32_module) {
     return GetFunctionPointerFromNativeLibrary(user32_module, function_name);
+  }
   return nullptr;
 }
 
@@ -970,8 +985,9 @@ bool RegisterPointerDeviceNotifications(HWND hwnd,
 
 bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   HDESK thread_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
-  if (!thread_desktop)
+  if (!thread_desktop) {
     return false;
+  }
 
   std::wstring current_desktop_name = GetWindowObjectName(thread_desktop);
   return EqualsCaseInsensitiveASCII(AsStringPiece16(current_desktop_name),
@@ -982,19 +998,22 @@ bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
 // See:
 // https://docs.microsoft.com/en-us/windows/desktop/TermServ/detecting-the-terminal-services-environment
 bool IsCurrentSessionRemote() {
-  if (::GetSystemMetrics(SM_REMOTESESSION))
+  if (::GetSystemMetrics(SM_REMOTESESSION)) {
     return true;
+  }
 
   DWORD current_session_id = 0;
 
-  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id))
+  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id)) {
     return false;
+  }
 
   static constexpr wchar_t kRdpSettingsKeyName[] =
       L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server";
   RegKey key(HKEY_LOCAL_MACHINE, kRdpSettingsKeyName, KEY_READ);
-  if (!key.Valid())
+  if (!key.Valid()) {
     return false;
+  }
 
   static constexpr wchar_t kGlassSessionIdValueName[] = L"GlassSessionId";
   DWORD glass_session_id = 0;

@@ -99,9 +99,7 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
     DWORD remaining_wait = static_cast<DWORD>(
         std::max(static_cast<int64_t>(0),
                  wait.InMilliseconds() - (GetTickCount() - start_time)));
-    HANDLE process = OpenProcess(SYNCHRONIZE,
-                                 FALSE,
-                                 entry->th32ProcessID);
+    HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, entry->th32ProcessID);
     DWORD wait_result = WaitForSingleObject(process, remaining_wait);
     CloseHandle(process);
     result &= (wait_result == WAIT_OBJECT_0);
@@ -114,8 +112,9 @@ bool CleanupProcesses(const FilePath::StringType& executable_name,
                       TimeDelta wait,
                       int exit_code,
                       const ProcessFilter* filter) {
-  if (WaitForProcessesToExit(executable_name, wait, filter))
+  if (WaitForProcessesToExit(executable_name, wait, filter)) {
     return true;
+  }
   KillProcesses(executable_name, exit_code, filter);
   return false;
 }

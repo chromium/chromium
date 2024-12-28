@@ -84,8 +84,9 @@ const char* const MemoryDumpManager::kSystemAllocatorPoolName =
 
 // static
 MemoryDumpManager* MemoryDumpManager::GetInstance() {
-  if (g_memory_dump_manager_for_testing)
+  if (g_memory_dump_manager_for_testing) {
     return g_memory_dump_manager_for_testing;
+  }
 
   return Singleton<MemoryDumpManager,
                    LeakySingletonTraits<MemoryDumpManager>>::get();
@@ -180,8 +181,9 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
     const char* name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options) {
-  if (dumper_registrations_ignored_for_testing_)
+  if (dumper_registrations_ignored_for_testing_) {
     return;
+  }
 
   // Only a handful of MDPs are required to compute the memory metrics. These
   // have small enough performance overhead that it is reasonable to run them
@@ -197,8 +199,9 @@ void MemoryDumpManager::RegisterDumpProviderInternal(
     bool already_registered = !dump_providers_.insert(mdpinfo).second;
     // This actually happens in some tests which don't have a clean tear-down
     // path for RenderThreadImpl::Init().
-    if (already_registered)
+    if (already_registered) {
       return;
+    }
   }
 }
 
@@ -215,19 +218,22 @@ void MemoryDumpManager::UnregisterDumpProviderInternal(
     MemoryDumpProvider* mdp,
     bool take_mdp_ownership_and_delete_async) {
   std::unique_ptr<MemoryDumpProvider> owned_mdp;
-  if (take_mdp_ownership_and_delete_async)
+  if (take_mdp_ownership_and_delete_async) {
     owned_mdp.reset(mdp);
+  }
 
   AutoLock lock(lock_);
 
   auto mdp_iter = dump_providers_.begin();
   for (; mdp_iter != dump_providers_.end(); ++mdp_iter) {
-    if ((*mdp_iter)->dump_provider == mdp)
+    if ((*mdp_iter)->dump_provider == mdp) {
       break;
+    }
   }
 
-  if (mdp_iter == dump_providers_.end())
+  if (mdp_iter == dump_providers_.end()) {
     return;  // Not registered / already unregistered.
+  }
 
   if (take_mdp_ownership_and_delete_async) {
     // The MDP will be deleted whenever the MDPInfo struct will, that is either:
@@ -266,8 +272,9 @@ bool MemoryDumpManager::IsDumpProviderRegisteredForTesting(
   AutoLock lock(lock_);
 
   for (const auto& info : dump_providers_) {
-    if (info->dump_provider == provider)
+    if (info->dump_provider == provider) {
       return true;
+    }
   }
   return false;
 }
@@ -286,8 +293,9 @@ MemoryDumpManager::GetDumpThreadTaskRunner() {
 
 scoped_refptr<base::SequencedTaskRunner>
 MemoryDumpManager::GetOrCreateBgTaskRunnerLocked() {
-  if (dump_thread_)
+  if (dump_thread_) {
     return dump_thread_->task_runner();
+  }
 
   dump_thread_ = std::make_unique<Thread>("MemoryInfra");
   bool started = dump_thread_->Start();
@@ -439,8 +447,9 @@ void MemoryDumpManager::InvokeOnMemoryDump(MemoryDumpProviderInfo* mdpinfo,
       DLOG(ERROR) << "Disabling MemoryDumpProvider \"" << mdpinfo->name
                   << "\". Dump failed multiple times consecutively.";
     }
-    if (mdpinfo->disabled)
+    if (mdpinfo->disabled) {
       return;
+    }
 
     is_thread_bound = mdpinfo->task_runner != nullptr;
   }  // AutoLock lock(lock_);

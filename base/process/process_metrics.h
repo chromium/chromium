@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
+
 #include "base/process/port_provider_mac.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -488,8 +489,7 @@ struct BASE_EXPORT SwapInfo {
         num_writes(0),
         compr_data_size(0),
         orig_data_size(0),
-        mem_used_total(0) {
-  }
+        mem_used_total(0) {}
 
   // Serializes the platform specific fields to value.
   Value::Dict ToDict() const;

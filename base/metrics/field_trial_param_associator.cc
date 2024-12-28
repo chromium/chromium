@@ -42,8 +42,9 @@ bool FieldTrialParamAssociator::AssociateFieldTrialParams(
 
 bool FieldTrialParamAssociator::GetFieldTrialParams(FieldTrial* field_trial,
                                                     FieldTrialParams* params) {
-  if (!field_trial)
+  if (!field_trial) {
     return false;
+  }
   // First try the local map, falling back to getting it from shared memory.
   if (GetFieldTrialParamsWithoutFallback(field_trial->trial_name(),
                                          field_trial->group_name(), params)) {
@@ -62,8 +63,9 @@ bool FieldTrialParamAssociator::GetFieldTrialParamsWithoutFallback(
 
   const FieldTrialRefKey key(trial_name, group_name);
   auto it = field_trial_params_.find(key);
-  if (it == field_trial_params_.end())
+  if (it == field_trial_params_.end()) {
     return false;
+  }
 
   *params = it->second;
   return true;

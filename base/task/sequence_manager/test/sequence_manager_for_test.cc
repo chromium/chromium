@@ -22,14 +22,16 @@ class ThreadControllerForTest : public internal::ThreadControllerImpl {
                              time_source) {}
 
   void AddNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!funneled_sequence_manager_)
+    if (!funneled_sequence_manager_) {
       return;
+    }
     ThreadControllerImpl::AddNestingObserver(observer);
   }
 
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!funneled_sequence_manager_)
+    if (!funneled_sequence_manager_) {
       return;
+    }
     ThreadControllerImpl::RemoveNestingObserver(observer);
   }
 

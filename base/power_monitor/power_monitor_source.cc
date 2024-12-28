@@ -44,12 +44,12 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
       power_monitor->NotifyPowerStateChange(
           power_monitor->Source()->GetBatteryPowerStatus());
       break;
-      case RESUME_EVENT:
-        power_monitor->NotifyResume();
-        break;
-      case SUSPEND_EVENT:
-        power_monitor->NotifySuspend();
-        break;
+    case RESUME_EVENT:
+      power_monitor->NotifyResume();
+      break;
+    case SUSPEND_EVENT:
+      power_monitor->NotifySuspend();
+      break;
   }
 }
 

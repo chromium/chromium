@@ -120,8 +120,9 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
 }
 
 FileEnumerator::~FileEnumerator() {
-  if (find_handle_ != INVALID_HANDLE_VALUE)
+  if (find_handle_ != INVALID_HANDLE_VALUE) {
     FindClose(find_handle_);
+  }
 }
 
 FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
@@ -183,8 +184,9 @@ FilePath FileEnumerator::Next() {
     }
 
     const FilePath filename(find_data().cFileName);
-    if (ShouldSkip(filename))
+    if (ShouldSkip(filename)) {
       continue;
+    }
 
     const bool is_dir =
         (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -197,12 +199,14 @@ FilePath FileEnumerator::Next() {
       // directory. However, don't do recursion through reparse points or we
       // may end up with an infinite cycle.
       DWORD attributes = GetFileAttributes(abs_path.value().c_str());
-      if (!(attributes & FILE_ATTRIBUTE_REPARSE_POINT))
+      if (!(attributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
         pending_paths_.push(abs_path);
+      }
     }
 
-    if (IsTypeMatched(is_dir) && IsPatternMatched(filename))
+    if (IsTypeMatched(is_dir) && IsPatternMatched(filename)) {
       return abs_path;
+    }
   }
   return FilePath();
 }

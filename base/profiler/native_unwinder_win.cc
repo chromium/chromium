@@ -59,8 +59,9 @@ UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
       return UnwindResult::kAborted;
     }
 
-    if (RegisterContextInstructionPointer(thread_context) == 0)
+    if (RegisterContextInstructionPointer(thread_context) == 0) {
       return UnwindResult::kCompleted;
+    }
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {

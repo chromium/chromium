@@ -114,8 +114,9 @@ bool MadvFreeDiscardableMemoryPosix::Lock() {
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
   DCHECK(!is_locked_);
   // Locking fails if the memory has been deallocated.
-  if (!data_)
+  if (!data_) {
     return false;
+  }
 
   // We need to unpoison here since locking pages writes to them.
   // Note that even if locking fails, we want to unpoison anyways after
@@ -124,8 +125,9 @@ bool MadvFreeDiscardableMemoryPosix::Lock() {
 
   size_t page_index;
   for (page_index = 0; page_index < allocated_pages_; ++page_index) {
-    if (!LockPage(page_index))
+    if (!LockPage(page_index)) {
       break;
+    }
   }
 
   if (page_index < allocated_pages_) {
@@ -314,8 +316,9 @@ bool MadvFreeDiscardableMemoryPosix::IsResident() const {
   DPCHECK(retval == 0 || errno == EAGAIN);
 
   for (size_t i = 0; i < allocated_pages_; ++i) {
-    if (!(vec[i] & 1))
+    if (!(vec[i] & 1)) {
       return false;
+    }
   }
   return true;
 }

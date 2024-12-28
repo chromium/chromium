@@ -42,8 +42,9 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
   using CountAndBucketData = base::SparseHistogram::CountAndBucketData;
 
   void SetUp() override {
-    if (use_persistent_histogram_allocator_)
+    if (use_persistent_histogram_allocator_) {
       CreatePersistentMemoryAllocator();
+    }
 
     // Each test will have a clean state (no Histogram / BucketRanges
     // registered).
@@ -383,8 +384,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 
   // Calculate cost of creating histograms.
   TimeTicks create_start = TimeTicks::Now();
-  for (int i = 0; i < kTestCreateCount; ++i)
+  for (int i = 0; i < kTestCreateCount; ++i) {
     SparseHistogram::FactoryGet(histogram_names[i], HistogramBase::kNoFlags);
+  }
   TimeDelta create_ticks = TimeTicks::Now() - create_start;
   int64_t create_ms = create_ticks.InMilliseconds();
 
@@ -416,8 +418,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
       SparseHistogram::FactoryGet(histogram_names[0], HistogramBase::kNoFlags);
   ASSERT_TRUE(histogram);
   TimeTicks add_start = TimeTicks::Now();
-  for (int i = 0; i < kTestAddCount; ++i)
+  for (int i = 0; i < kTestAddCount; ++i) {
     histogram->Add(i & 127);
+  }
   TimeDelta add_ticks = TimeTicks::Now() - add_start;
   int64_t add_ms = add_ticks.InMilliseconds();
 

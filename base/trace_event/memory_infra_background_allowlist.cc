@@ -350,16 +350,20 @@ bool IsMemoryDumpProviderInAllowlist(const char* mdp_name) {
 bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
   // Global dumps that are of hex digits are all allowed for background use.
   if (base::StartsWith(name, "global/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("global/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("global/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 
   if (base::StartsWith(name, "shared_memory/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("shared_memory/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("shared_memory/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 

@@ -39,8 +39,9 @@ bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
     return false;
   }
 
-  if (!UncheckedMalloc(alloc_size, result))
+  if (!UncheckedMalloc(alloc_size, result)) {
     return false;
+  }
 
   memset(*result, 0, alloc_size);
   return true;

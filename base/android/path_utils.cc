@@ -55,8 +55,9 @@ std::vector<FilePath> GetAllPrivateDownloadsDirectories() {
   base::android::AppendJavaStringArrayToStringVector(env, jarray, &dirs);
 
   std::vector<base::FilePath> file_paths;
-  for (const auto& dir : dirs)
+  for (const auto& dir : dirs) {
     file_paths.emplace_back(dir);
+  }
   return file_paths;
 }
 
@@ -67,8 +68,9 @@ std::vector<FilePath> GetSecondaryStorageDownloadDirectories() {
   base::android::AppendJavaStringArrayToStringVector(env, jarray, &dirs);
 
   std::vector<base::FilePath> file_paths;
-  for (const auto& dir : dirs)
+  for (const auto& dir : dirs) {
     file_paths.emplace_back(dir);
+  }
   return file_paths;
 }
 

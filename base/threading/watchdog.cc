@@ -60,24 +60,28 @@ Watchdog::Watchdog(const TimeDelta& duration,
 
 // Notify watchdog thread, and wait for it to finish up.
 Watchdog::~Watchdog() {
-  if (!enabled_)
+  if (!enabled_) {
     return;
-  if (!IsJoinable())
+  }
+  if (!IsJoinable()) {
     Cleanup();
+  }
   PlatformThread::Join(handle_);
 }
 
 void Watchdog::Cleanup() {
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
   AutoLock lock(lock_);
   state_ = SHUTDOWN;
   condition_variable_.Signal();
 }
 
 bool Watchdog::IsJoinable() {
-  if (!enabled_)
+  if (!enabled_) {
     return true;
+  }
   AutoLock lock(lock_);
   return (state_ == JOINABLE);
 }
@@ -129,15 +133,16 @@ void Watchdog::ThreadDelegate::ThreadMain() {
   StaticData* static_data = GetStaticData();
   while (true) {
     AutoLock lock(watchdog_->lock_);
-    while (DISARMED == watchdog_->state_)
+    while (DISARMED == watchdog_->state_) {
       watchdog_->condition_variable_.Wait();
+    }
     if (SHUTDOWN == watchdog_->state_) {
       watchdog_->state_ = JOINABLE;
       return;
     }
     DCHECK(ARMED == watchdog_->state_);
-    remaining_duration = watchdog_->duration_ -
-        (TimeTicks::Now() - watchdog_->start_time_);
+    remaining_duration =
+        watchdog_->duration_ - (TimeTicks::Now() - watchdog_->start_time_);
     if (remaining_duration.InMilliseconds() > 0) {
       // Spurios wake?  Timer drifts?  Go back to sleep for remaining time.
       watchdog_->condition_variable_.TimedWait(remaining_duration);
@@ -151,9 +156,10 @@ void Watchdog::ThreadDelegate::ThreadMain() {
         // False alarm: we started our clock before the debugger break (last
         // alarm time).
         watchdog_->start_time_ += static_data->last_debugged_alarm_delay;
-        if (static_data->last_debugged_alarm_time > watchdog_->start_time_)
+        if (static_data->last_debugged_alarm_time > watchdog_->start_time_) {
           // Too many alarms must have taken place.
           watchdog_->state_ = DISARMED;
+        }
         continue;
       }
     }
@@ -164,8 +170,9 @@ void Watchdog::ThreadDelegate::ThreadMain() {
       watchdog_->Alarm();  // Set a break point here to debug on alarms.
     }
     TimeDelta last_alarm_delay = TimeTicks::Now() - last_alarm_time;
-    if (last_alarm_delay <= Milliseconds(2))
+    if (last_alarm_delay <= Milliseconds(2)) {
       continue;
+    }
     // Ignore race of two alarms/breaks going off at roughly the same time.
     AutoLock static_lock(static_data->lock);
     // This was a real debugger break.

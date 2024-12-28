@@ -135,8 +135,9 @@ void ThreadControllerWithMessagePumpImpl::BindToCurrentThread(
       &sequence_local_storage_map_);
   {
     base::internal::CheckedAutoLock task_runner_lock(task_runner_lock_);
-    if (task_runner_)
+    if (task_runner_) {
       InitializeSingleThreadTaskRunnerCurrentDefaultHandle();
+    }
   }
   if (work_deduplicator_.BindToCurrentThread() ==
       ShouldScheduleWork::kScheduleImmediate) {
@@ -316,7 +317,6 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
 
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
-
 #if BUILDFLAG(IS_WIN)
   // We've been already in a wakeup here. Deactivate the high res timer of OS
   // immediately instead of waiting for next DoIdleWork().
@@ -397,8 +397,9 @@ std::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // Broadcast in a trace event that application tasks were disallowed. This
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
-    if (main_thread_only().quit_runloop_after == TimeTicks::Max())
+    if (main_thread_only().quit_runloop_after == TimeTicks::Max()) {
       return std::nullopt;
+    }
     return WakeUp{main_thread_only().quit_runloop_after};
   }
 
@@ -500,12 +501,14 @@ std::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
     // When Quit() is called we must stop running the batch because the
     // caller expects per-task granularity.
-    if (main_thread_only().quit_pending)
+    if (main_thread_only().quit_pending) {
       break;
+    }
   }
 
-  if (main_thread_only().quit_pending)
+  if (main_thread_only().quit_pending) {
     return std::nullopt;
+  }
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -595,8 +598,9 @@ void ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   }
 
   // RunLoop::Delegate knows whether we called Run() or RunUntilIdle().
-  if (ShouldQuitWhenIdle())
+  if (ShouldQuitWhenIdle()) {
     Quit();
+  }
 }
 
 int ThreadControllerWithMessagePumpImpl::RunDepth() {
@@ -665,13 +669,15 @@ void ThreadControllerWithMessagePumpImpl::OnBeginNestedRunLoop() {
   // We don't need to ScheduleWork here! That's because the call to pump_->Run()
   // above, which is always called for RunLoop().Run(), guarantees a call to
   // DoWork on all platforms.
-  if (main_thread_only().nesting_observer)
+  if (main_thread_only().nesting_observer) {
     main_thread_only().nesting_observer->OnBeginNestedRunLoop();
+  }
 }
 
 void ThreadControllerWithMessagePumpImpl::OnExitNestedRunLoop() {
-  if (main_thread_only().nesting_observer)
+  if (main_thread_only().nesting_observer) {
     main_thread_only().nesting_observer->OnExitNestedRunLoop();
+  }
 }
 
 void ThreadControllerWithMessagePumpImpl::Quit() {
@@ -745,8 +751,9 @@ void ThreadControllerWithMessagePumpImpl::AttachToMessagePump() {
 #endif
 
 bool ThreadControllerWithMessagePumpImpl::ShouldQuitRunLoopWhenIdle() {
-  if (run_level_tracker_.num_run_levels() == 0)
+  if (run_level_tracker_.num_run_levels() == 0) {
     return false;
+  }
   // It's only safe to call ShouldQuitWhenIdle() when in a RunLoop.
   return ShouldQuitWhenIdle();
 }

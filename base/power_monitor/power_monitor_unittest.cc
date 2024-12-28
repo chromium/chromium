@@ -56,8 +56,9 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   // Pretend we suspended.
   source().GenerateSuspendEvent();
   // Ensure all observers were notified of the event
-  for (const auto& index : observers)
+  for (const auto& index : observers) {
     EXPECT_EQ(index.suspends(), 1);
+  }
 
   // Send a second suspend notification.  This should be suppressed.
   source().GenerateSuspendEvent();

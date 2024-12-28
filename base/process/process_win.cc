@@ -21,9 +21,9 @@
 namespace {
 
 DWORD kBasicProcessAccess =
-  PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
+    PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
 
-} // namespace
+}  // namespace
 
 namespace base {
 
@@ -96,25 +96,23 @@ ProcessHandle Process::Handle() const {
 }
 
 Process Process::Duplicate() const {
-  if (is_current())
+  if (is_current()) {
     return Current();
+  }
 
   ProcessHandle out_handle;
-  if (!IsValid() || !::DuplicateHandle(GetCurrentProcess(),
-                                       Handle(),
-                                       GetCurrentProcess(),
-                                       &out_handle,
-                                       0,
-                                       FALSE,
-                                       DUPLICATE_SAME_ACCESS)) {
+  if (!IsValid() ||
+      !::DuplicateHandle(GetCurrentProcess(), Handle(), GetCurrentProcess(),
+                         &out_handle, 0, FALSE, DUPLICATE_SAME_ACCESS)) {
     return Process();
   }
   return Process(out_handle);
 }
 
 ProcessHandle Process::Release() {
-  if (is_current())
+  if (is_current()) {
     return ::GetCurrentProcess();
+  }
   return process_.release();
 }
 
@@ -141,8 +139,9 @@ bool Process::is_current() const {
 
 void Process::Close() {
   is_current_process_ = false;
-  if (!process_.is_valid())
+  if (!process_.is_valid()) {
     return;
+  }
 
   process_.Close();
 }
@@ -155,8 +154,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
       ::TerminateProcess(Handle(), static_cast<UINT>(exit_code)) != FALSE;
   if (result) {
     // The process may not end immediately due to pending I/O
-    if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0)
+    if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0) {
       DPLOG(ERROR) << "Error waiting for process exit";
+    }
     Exited(exit_code);
   } else {
     // The process can't be terminated, perhaps because it has already exited or
@@ -164,8 +164,9 @@ bool Process::Terminate(int exit_code, bool wait) const {
     // undocumented-but-expected result if the process has already exited or
     // started exiting when TerminateProcess is called, so don't print an error
     // message in that case.
-    if (GetLastError() != ERROR_ACCESS_DENIED)
+    if (GetLastError() != ERROR_ACCESS_DENIED) {
       DPLOG(ERROR) << "Unable to terminate process";
+    }
     // A non-zero timeout is necessary here for the same reasons as above.
     if (::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
       DWORD actual_exit;
@@ -187,11 +188,13 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
 
   if (wait_result == WAIT_OBJECT_0) {
     DWORD temp_code;  // Don't clobber out-parameters in case of failure.
-    if (!::GetExitCodeProcess(Handle(), &temp_code))
+    if (!::GetExitCodeProcess(Handle(), &temp_code)) {
       return Process::WaitExitStatus::FAILED;
+    }
 
-    if (exit_code)
+    if (exit_code) {
       *exit_code = static_cast<int>(temp_code);
+    }
 
     Exited(static_cast<int>(temp_code));
     return Process::WaitExitStatus::PROCESS_EXITED;
@@ -221,15 +224,18 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
 
   // Limit timeout to INFINITE.
   DWORD timeout_ms = saturated_cast<DWORD>(timeout.InMilliseconds());
-  if (::WaitForSingleObject(Handle(), timeout_ms) != WAIT_OBJECT_0)
+  if (::WaitForSingleObject(Handle(), timeout_ms) != WAIT_OBJECT_0) {
     return false;
+  }
 
   DWORD temp_code;  // Don't clobber out-parameters in case of failure.
-  if (!::GetExitCodeProcess(Handle(), &temp_code))
+  if (!::GetExitCodeProcess(Handle(), &temp_code)) {
     return false;
+  }
 
-  if (exit_code)
+  if (exit_code) {
     *exit_code = static_cast<int>(temp_code);
+  }
 
   Exited(static_cast<int>(temp_code));
   return true;
@@ -240,8 +246,9 @@ void Process::Exited(int exit_code) const {}
 Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());
   int priority = GetOSPriority();
-  if (priority == 0)
+  if (priority == 0) {
     return Priority::kUserBlocking;  // Failure case. Use default value.
+  }
   if ((priority == BELOW_NORMAL_PRIORITY_CLASS) ||
       (priority == IDLE_PRIORITY_CLASS)) {
     return Priority::kBestEffort;

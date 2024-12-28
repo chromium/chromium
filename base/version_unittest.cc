@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,32 +47,32 @@ TEST(VersionTest, GetVersionFromString) {
     uint32_t firstpart;
     bool success;
   } cases[] = {
-    {"", 0, 0, false},
-    {" ", 0, 0, false},
-    {"\t", 0, 0, false},
-    {"\n", 0, 0, false},
-    {"  ", 0, 0, false},
-    {".", 0, 0, false},
-    {" . ", 0, 0, false},
-    {"0", 1, 0, true},
-    {"0.", 0, 0, false},
-    {"0.0", 2, 0, true},
-    {"4294967295.0", 2, 4294967295, true},
-    {"4294967296.0", 0, 0, false},
-    {"-1.0", 0, 0, false},
-    {"1.-1.0", 0, 0, false},
-    {"1,--1.0", 0, 0, false},
-    {"+1.0", 0, 0, false},
-    {"1.+1.0", 0, 0, false},
-    {"1+1.0", 0, 0, false},
-    {"++1.0", 0, 0, false},
-    {"1.0a", 0, 0, false},
-    {"1.2.3.4.5.6.7.8.9.0", 10, 1, true},
-    {"02.1", 0, 0, false},
-    {"0.01", 2, 0, true},
-    {"f.1", 0, 0, false},
-    {"15.007.20011", 3, 15, true},
-    {"15.5.28.130162", 4, 15, true},
+      {"", 0, 0, false},
+      {" ", 0, 0, false},
+      {"\t", 0, 0, false},
+      {"\n", 0, 0, false},
+      {"  ", 0, 0, false},
+      {".", 0, 0, false},
+      {" . ", 0, 0, false},
+      {"0", 1, 0, true},
+      {"0.", 0, 0, false},
+      {"0.0", 2, 0, true},
+      {"4294967295.0", 2, 4294967295, true},
+      {"4294967296.0", 0, 0, false},
+      {"-1.0", 0, 0, false},
+      {"1.-1.0", 0, 0, false},
+      {"1,--1.0", 0, 0, false},
+      {"+1.0", 0, 0, false},
+      {"1.+1.0", 0, 0, false},
+      {"1+1.0", 0, 0, false},
+      {"++1.0", 0, 0, false},
+      {"1.0a", 0, 0, false},
+      {"1.2.3.4.5.6.7.8.9.0", 10, 1, true},
+      {"02.1", 0, 0, false},
+      {"0.01", 2, 0, true},
+      {"f.1", 0, 0, false},
+      {"15.007.20011", 3, 15, true},
+      {"15.5.28.130162", 4, 15, true},
   };
 
   for (const auto& i : cases) {
@@ -151,19 +152,11 @@ TEST(VersionTest, CompareToWildcardString) {
     const char* rhs;
     int expected;
   } cases[] = {
-    {"1.0", "1.*", 0},
-    {"1.0", "0.*", 1},
-    {"1.0", "2.*", -1},
-    {"1.2.3", "1.2.3.*", 0},
-    {"10.0", "1.0.*", 1},
-    {"1.0", "3.0.*", -1},
-    {"1.4", "1.3.0.*", 1},
-    {"1.3.9", "1.3.*", 0},
-    {"1.4.1", "1.3.*", 1},
-    {"1.3", "1.4.5.*", -1},
-    {"1.5", "1.4.5.*", 1},
-    {"1.3.9", "1.3.*", 0},
-    {"1.2.0.0.0.0", "1.2.*", 0},
+      {"1.0", "1.*", 0},           {"1.0", "0.*", 1},     {"1.0", "2.*", -1},
+      {"1.2.3", "1.2.3.*", 0},     {"10.0", "1.0.*", 1},  {"1.0", "3.0.*", -1},
+      {"1.4", "1.3.0.*", 1},       {"1.3.9", "1.3.*", 0}, {"1.4.1", "1.3.*", 1},
+      {"1.3", "1.4.5.*", -1},      {"1.5", "1.4.5.*", 1}, {"1.3.9", "1.3.*", 0},
+      {"1.2.0.0.0.0", "1.2.*", 0},
   };
   for (const auto& i : cases) {
     const base::Version version(i.lhs);
@@ -177,17 +170,10 @@ TEST(VersionTest, IsValidWildcardString) {
     const char* version;
     bool expected;
   } cases[] = {
-    {"1.0", true},
-    {"", false},
-    {"1.2.3.4.5.6", true},
-    {"1.2.3.*", true},
-    {"1.2.3.5*", false},
-    {"1.2.3.56*", false},
-    {"1.*.3", false},
-    {"20.*", true},
-    {"+2.*", false},
-    {"*", false},
-    {"*.2", false},
+      {"1.0", true},     {"", false},         {"1.2.3.4.5.6", true},
+      {"1.2.3.*", true}, {"1.2.3.5*", false}, {"1.2.3.56*", false},
+      {"1.*.3", false},  {"20.*", true},      {"+2.*", false},
+      {"*", false},      {"*.2", false},
   };
   for (const auto& i : cases) {
     EXPECT_EQ(base::Version::IsValidWildcardString(i.version), i.expected)

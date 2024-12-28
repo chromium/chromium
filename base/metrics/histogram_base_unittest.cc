@@ -42,10 +42,10 @@ class HistogramBaseTest : public testing::Test {
 };
 
 TEST_F(HistogramBaseTest, DeserializeHistogram) {
-  HistogramBase* histogram = Histogram::FactoryGet(
-      "TestHistogram", 1, 1000, 10,
-      (HistogramBase::kUmaTargetedHistogramFlag |
-      HistogramBase::kIPCSerializationSourceFlag));
+  HistogramBase* histogram =
+      Histogram::FactoryGet("TestHistogram", 1, 1000, 10,
+                            (HistogramBase::kUmaTargetedHistogramFlag |
+                             HistogramBase::kIPCSerializationSourceFlag));
 
   Pickle pickle;
   histogram->SerializeInfo(&pickle);
@@ -69,8 +69,7 @@ TEST_F(HistogramBaseTest, DeserializeHistogram) {
 
 TEST_F(HistogramBaseTest, DeserializeLinearHistogram) {
   HistogramBase* histogram = LinearHistogram::FactoryGet(
-      "TestHistogram", 1, 1000, 10,
-      HistogramBase::kIPCSerializationSourceFlag);
+      "TestHistogram", 1, 1000, 10, HistogramBase::kIPCSerializationSourceFlag);
 
   Pickle pickle;
   histogram->SerializeInfo(&pickle);
@@ -231,8 +230,9 @@ TEST_F(HistogramBaseTest, AddTimeMillisecondsGranularityOverflow) {
 
 TEST_F(HistogramBaseTest, AddTimeMicrosecondsGranularityOverflow) {
   // Nothing to test if we don't have a high resolution clock.
-  if (!TimeTicks::IsHighResolution())
+  if (!TimeTicks::IsHighResolution()) {
     return;
+  }
 
   const HistogramBase::Sample sample_max =
       std::numeric_limits<HistogramBase::Sample>::max() / 2;

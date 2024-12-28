@@ -204,8 +204,9 @@ class ScopedSigaction {
   bool succeeded() const { return succeeded_; }
 
   ~ScopedSigaction() {
-    if (!succeeded_)
+    if (!succeeded_) {
       return;
+    }
 
     bool reset_succeeded = sigaction(signal_, original_action_, action_) == 0;
     DCHECK(reset_succeeded);
@@ -254,8 +255,9 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // SIGURG is chosen here because we observe no crashes with this signal and
     // neither Chrome or the AOSP sets up a special handler for this signal.
     ScopedSigaction scoped_sigaction(SIGURG, &action, &original_action);
-    if (!scoped_sigaction.succeeded())
+    if (!scoped_sigaction.succeeded()) {
       return false;
+    }
 
     if (syscall(SYS_tgkill, getpid(), thread_delegate_->GetThreadId(),
                 SIGURG) != 0) {
@@ -268,9 +270,9 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     // Ideally, an accurate timestamp is captured while the sampled thread is
     // paused. In rare cases, this may fail, in which case we resort to
     // capturing an delayed timestamp here instead.
-    if (maybe_timestamp.has_value())
+    if (maybe_timestamp.has_value()) {
       *timestamp = maybe_timestamp.value();
-    else {
+    } else {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                    "Fallback on TimeTicks::Now()");
       *timestamp = TimeTicks::Now();

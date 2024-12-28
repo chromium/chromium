@@ -108,16 +108,18 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
   const uint8_t* scheduler_category_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
 
-  if (!*scheduler_category_enabled)
+  if (!*scheduler_category_enabled) {
     return;
+  }
   auto* task = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                    ->set_thread_pool_task();
   task->set_task_priority(TaskPriorityToProto(traits.priority()));
   task->set_execution_mode(ExecutionModeToProto(task_source->execution_mode()));
   task->set_shutdown_behavior(
       ShutdownBehaviorToProto(traits.shutdown_behavior()));
-  if (token.IsValid())
+  if (token.IsValid()) {
     task->set_sequence_token(token.ToInternalValue());
+  }
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
@@ -351,8 +353,9 @@ bool TaskTracker::WillPostTaskNow(const Task& task,
   // SKIP_ON_SHUTDOWN. i.e. it cannot BLOCK_SHUTDOWN, TaskTracker will not wait
   // for a delayed task in a BLOCK_SHUTDOWN TaskSource and will also skip
   // delayed tasks that happen to become ripe during shutdown.
-  if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted())
+  if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted()) {
     return false;
+  }
 
   if (has_log_best_effort_tasks_switch_ &&
       priority == TaskPriority::BEST_EFFORT) {
@@ -367,8 +370,9 @@ RegisteredTaskSource TaskTracker::RegisterTaskSource(
   DCHECK(task_source);
 
   TaskShutdownBehavior shutdown_behavior = task_source->shutdown_behavior();
-  if (!BeforeQueueTaskSource(shutdown_behavior))
+  if (!BeforeQueueTaskSource(shutdown_behavior)) {
     return nullptr;
+  }
 
   num_incomplete_task_sources_.fetch_add(1, std::memory_order_relaxed);
   return RegisteredTaskSource(std::move(task_source), this);
@@ -377,8 +381,9 @@ RegisteredTaskSource TaskTracker::RegisterTaskSource(
 bool TaskTracker::CanRunPriority(TaskPriority priority) const {
   auto can_run_policy = can_run_policy_.load();
 
-  if (can_run_policy == CanRunPolicy::kAll)
+  if (can_run_policy == CanRunPolicy::kAll) {
     return true;
+  }
 
   if (can_run_policy == CanRunPolicy::kForegroundOnly &&
       priority >= TaskPriority::USER_VISIBLE) {
@@ -406,19 +411,22 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
 
   if (task) {
     // Skip delayed tasks if shutdown started.
-    if (!task->delayed_run_time.is_null() && state_->HasShutdownStarted())
+    if (!task->delayed_run_time.is_null() && state_->HasShutdownStarted()) {
       task->task = base::DoNothingWithBoundArgs(std::move(task->task));
+    }
 
     // Run the |task| (whether it's a worker task or the Clear() closure).
     RunTask(std::move(task.value()), task_source.get(), traits);
   }
-  if (should_run_tasks)
+  if (should_run_tasks) {
     AfterRunTask(task_source->shutdown_behavior());
+  }
 
   const bool task_source_must_be_queued = task_source.DidProcessTask();
   // |task_source| should be reenqueued iff requested by DidProcessTask().
-  if (task_source_must_be_queued)
+  if (task_source_must_be_queued) {
     return task_source;
+  }
   return nullptr;
 }
 
@@ -468,10 +476,12 @@ void TaskTracker::RunTask(Task task,
     disallow_singleton.emplace();
     fizzle_block_shutdown_tasks.emplace();
   }
-  if (!traits.may_block())
+  if (!traits.may_block()) {
     disallow_blocking.emplace();
-  if (!traits.with_base_sync_primitives())
+  }
+  if (!traits.with_base_sync_primitives()) {
     disallow_sync_primitives.emplace();
+  }
 
   {
     DCHECK(environment.token.IsValid());
@@ -483,8 +493,9 @@ void TaskTracker::RunTask(Task task,
 
     // Local storage map used if none is provided by |environment|.
     std::optional<SequenceLocalStorageMap> local_storage_map;
-    if (!environment.sequence_local_storage)
+    if (!environment.sequence_local_storage) {
       local_storage_map.emplace();
+    }
 
     ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_set_sequence_local_storage_map_for_current_thread(
@@ -613,8 +624,9 @@ scoped_refptr<TaskSource> TaskTracker::UnregisterTaskSource(
 void TaskTracker::DecrementNumItemsBlockingShutdown() {
   const bool shutdown_started_and_no_items_block_shutdown =
       state_->DecrementNumItemsBlockingShutdown();
-  if (!shutdown_started_and_no_items_block_shutdown)
+  if (!shutdown_started_and_no_items_block_shutdown) {
     return;
+  }
 
   CheckedAutoLock auto_lock(shutdown_lock_);
   DCHECK(shutdown_event_);
@@ -640,8 +652,9 @@ void TaskTracker::InvokeFlushCallbacksForTesting() {
     CheckedAutoLock auto_lock(flush_lock_);
     flush_callbacks = std::move(flush_callbacks_for_testing_);
   }
-  for (auto& flush_callback : flush_callbacks)
+  for (auto& flush_callback : flush_callbacks) {
     std::move(flush_callback).Run();
+  }
 }
 
 NOINLINE void TaskTracker::RunContinueOnShutdown(Task& task,

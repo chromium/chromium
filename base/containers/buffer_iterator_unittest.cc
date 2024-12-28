@@ -238,8 +238,9 @@ TEST(BufferIteratorTest, SeekWithSizeConfines) {
   EXPECT_TRUE(iterator.Span<char>(4).empty());
 
   std::string result;
-  while (const char* c = iterator.Object<char>())
+  while (const char* c = iterator.Object<char>()) {
     result += *c;
+  }
   EXPECT_EQ(result, "cat");
 }
 

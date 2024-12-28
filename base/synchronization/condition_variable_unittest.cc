@@ -76,17 +76,16 @@ class WorkQueue : public PlatformThread::Delegate {
   //----------------------------------------------------------------------------
   // Worker threads only call the following methods.
   // They should use the lock to get exclusive access.
-  int GetThreadId();  // Get an ID assigned to a thread..
+  int GetThreadId();                 // Get an ID assigned to a thread..
   bool EveryIdWasAllocated() const;  // Indicates that all IDs were handed out.
   TimeDelta GetAnAssignment(int thread_id);  // Get a work task duration.
   void WorkIsCompleted(int thread_id);
 
   int task_count() const;
   bool allow_help_requests() const;  // Workers can signal more workers.
-  bool shutdown() const;  // Check if shutdown has been requested.
+  bool shutdown() const;             // Check if shutdown has been requested.
 
   void thread_shutting_down();
-
 
   //----------------------------------------------------------------------------
   // Worker threads can call them but not needed to acquire a lock.
@@ -130,19 +129,19 @@ class WorkQueue : public PlatformThread::Delegate {
 
   // Conditions to notify the controlling process (if it is interested).
   ConditionVariable all_threads_have_ids_;  // All threads are running.
-  ConditionVariable no_more_tasks_;  // Task count is zero.
+  ConditionVariable no_more_tasks_;         // Task count is zero.
 
   const int thread_count_;
   int waiting_thread_count_;
   std::unique_ptr<PlatformThreadHandle[]> thread_handles_;
   std::vector<int> assignment_history_;  // Number of assignment per worker.
   std::vector<int> completion_history_;  // Number of completions per worker.
-  int thread_started_counter_;  // Used to issue unique id to workers.
-  int shutdown_task_count_;  // Number of tasks told to shutdown
+  int thread_started_counter_;           // Used to issue unique id to workers.
+  int shutdown_task_count_;              // Number of tasks told to shutdown
   int task_count_;  // Number of assignment tasks waiting to be processed.
-  TimeDelta worker_delay_;  // Time each task takes to complete.
+  TimeDelta worker_delay_;    // Time each task takes to complete.
   bool allow_help_requests_;  // Workers can signal more workers.
-  bool shutdown_;  // Set when threads need to terminate.
+  bool shutdown_;             // Set when threads need to terminate.
 
   DFAKE_MUTEX(locked_methods_);
 };
@@ -155,9 +154,7 @@ TEST_F(ConditionVariableTest, StartupShutdownTest) {
   Lock lock;
 
   // First try trivial startup/shutdown.
-  {
-    ConditionVariable cv1(&lock);
-  }  // Call for cv1 destruction.
+  { ConditionVariable cv1(&lock); }  // Call for cv1 destruction.
 
   // Exercise with at least a few waits.
   ConditionVariable cv(&lock);
@@ -255,8 +252,9 @@ TEST_F(ConditionVariableTest, MultiThreadConsumerTest) {
 
   {
     base::AutoLock auto_lock(*queue.lock());
-    while (!queue.EveryIdWasAllocated())
+    while (!queue.EveryIdWasAllocated()) {
       queue.all_threads_have_ids()->Wait();
+    }
   }
 
   // If threads aren't in a wait state, they may start to gobble up tasks in
@@ -292,8 +290,9 @@ TEST_F(ConditionVariableTest, MultiThreadConsumerTest) {
   {
     // Wait until all work tasks have at least been assigned.
     base::AutoLock auto_lock(*queue.lock());
-    while (queue.task_count())
+    while (queue.task_count()) {
       queue.no_more_tasks()->Wait();
+    }
 
     // To avoid racy assumptions, we'll just assert that at least 2 threads
     // did work.  We know that the first worker should have gone to sleep, and
@@ -399,8 +398,9 @@ TEST_F(ConditionVariableTest, LargeFastTaskTest) {
 
   {
     base::AutoLock auto_lock(*queue.lock());
-    while (!queue.EveryIdWasAllocated())
+    while (!queue.EveryIdWasAllocated()) {
       queue.all_threads_have_ids()->Wait();
+    }
   }
 
   // Wait a bit more to allow threads to reach their wait state.
@@ -426,8 +426,9 @@ TEST_F(ConditionVariableTest, LargeFastTaskTest) {
   // Wait until we've handed out all tasks.
   {
     base::AutoLock auto_lock(*queue.lock());
-    while (queue.task_count() != 0)
+    while (queue.task_count() != 0) {
       queue.no_more_tasks()->Wait();
+    }
   }
 
   // Wait till the last of the tasks complete.
@@ -454,8 +455,9 @@ TEST_F(ConditionVariableTest, LargeFastTaskTest) {
   // Wait until we've handed out all tasks
   {
     base::AutoLock auto_lock(*queue.lock());
-    while (queue.task_count() != 0)
+    while (queue.task_count() != 0) {
       queue.no_more_tasks()->Wait();
+    }
   }
 
   // Wait till the last of the tasks complete.
@@ -485,20 +487,20 @@ TEST_F(ConditionVariableTest, LargeFastTaskTest) {
 //------------------------------------------------------------------------------
 
 WorkQueue::WorkQueue(int thread_count)
-  : lock_(),
-    work_is_available_(&lock_),
-    all_threads_have_ids_(&lock_),
-    no_more_tasks_(&lock_),
-    thread_count_(thread_count),
-    waiting_thread_count_(0),
-    thread_handles_(new PlatformThreadHandle[thread_count]),
-    assignment_history_(thread_count),
-    completion_history_(thread_count),
-    thread_started_counter_(0),
-    shutdown_task_count_(0),
-    task_count_(0),
-    allow_help_requests_(false),
-    shutdown_(false) {
+    : lock_(),
+      work_is_available_(&lock_),
+      all_threads_have_ids_(&lock_),
+      no_more_tasks_(&lock_),
+      thread_count_(thread_count),
+      waiting_thread_count_(0),
+      thread_handles_(new PlatformThreadHandle[thread_count]),
+      assignment_history_(thread_count),
+      completion_history_(thread_count),
+      thread_started_counter_(0),
+      shutdown_task_count_(0),
+      task_count_(0),
+      allow_help_requests_(false),
+      shutdown_(false) {
   EXPECT_GE(thread_count_, 1);
   ResetHistory();
   SetTaskCount(0);
@@ -611,38 +613,45 @@ void WorkQueue::ResetHistory() {
 
 int WorkQueue::GetMinCompletionsByWorkerThread() const {
   int minumum = completion_history_[0];
-  for (int i = 0; i < thread_count_; ++i)
+  for (int i = 0; i < thread_count_; ++i) {
     minumum = std::min(minumum, completion_history_[i]);
+  }
   return minumum;
 }
 
 int WorkQueue::GetMaxCompletionsByWorkerThread() const {
   int maximum = completion_history_[0];
-  for (int i = 0; i < thread_count_; ++i)
+  for (int i = 0; i < thread_count_; ++i) {
     maximum = std::max(maximum, completion_history_[i]);
+  }
   return maximum;
 }
 
 int WorkQueue::GetNumThreadsTakingAssignments() const {
   int count = 0;
-  for (int i = 0; i < thread_count_; ++i)
-    if (assignment_history_[i])
+  for (int i = 0; i < thread_count_; ++i) {
+    if (assignment_history_[i]) {
       count++;
+    }
+  }
   return count;
 }
 
 int WorkQueue::GetNumThreadsCompletingTasks() const {
   int count = 0;
-  for (int i = 0; i < thread_count_; ++i)
-    if (completion_history_[i])
+  for (int i = 0; i < thread_count_; ++i) {
+    if (completion_history_[i]) {
       count++;
+    }
+  }
   return count;
 }
 
 int WorkQueue::GetNumberOfCompletedTasks() const {
   int total = 0;
-  for (int i = 0; i < thread_count_; ++i)
+  for (int i = 0; i < thread_count_; ++i) {
     total += completion_history_[i];
+  }
   return total;
 }
 
@@ -667,8 +676,9 @@ void WorkQueue::SpinUntilAllThreadsAreWaiting() {
   while (true) {
     {
       base::AutoLock auto_lock(lock_);
-      if (waiting_thread_count_ == thread_count_)
+      if (waiting_thread_count_ == thread_count_) {
         break;
+      }
     }
     PlatformThread::Sleep(Milliseconds(30));
   }
@@ -678,13 +688,13 @@ void WorkQueue::SpinUntilTaskCountLessThan(int task_count) {
   while (true) {
     {
       base::AutoLock auto_lock(lock_);
-      if (task_count_ < task_count)
+      if (task_count_ < task_count) {
         break;
+      }
     }
     PlatformThread::Sleep(Milliseconds(30));
   }
 }
-
 
 //------------------------------------------------------------------------------
 // Define the standard worker task. Several tests will spin out many of these
@@ -709,8 +719,9 @@ void WorkQueue::ThreadMain() {
   {
     base::AutoLock auto_lock(lock_);
     thread_id = GetThreadId();
-    if (EveryIdWasAllocated())
+    if (EveryIdWasAllocated()) {
       all_threads_have_ids()->Signal();  // Tell creator we're ready.
+    }
   }
 
   Lock private_lock;  // Used to waste time on "our work".
@@ -735,8 +746,9 @@ void WorkQueue::ThreadMain() {
     }  // Release lock
 
     // Do work (outside of locked region.
-    if (could_use_help)
+    if (could_use_help) {
       work_is_available()->Signal();  // Get help from other threads.
+    }
 
     if (work_time > Milliseconds(0)) {
       // We could just sleep(), but we'll instead further exercise the

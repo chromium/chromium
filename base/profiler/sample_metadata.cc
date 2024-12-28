@@ -18,8 +18,9 @@ namespace {
 
 std::optional<PlatformThreadId> GetPlatformThreadIdForScope(
     SampleMetadataScope scope) {
-  if (scope == SampleMetadataScope::kProcess)
+  if (scope == SampleMetadataScope::kProcess) {
     return std::nullopt;
+  }
   return PlatformThread::CurrentId();
 }
 

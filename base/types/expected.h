@@ -199,7 +199,7 @@ constexpr bool operator!=(const ok<T>& lhs, const ok<U>& rhs) noexcept {
 template <typename T>
 ok(T) -> ok<T>;
 
-ok()->ok<void>;
+ok() -> ok<void>;
 
 // [expected.un.object], class template unexpected
 // https://eel.is/c++draft/expected#un.object

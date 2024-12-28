@@ -46,9 +46,10 @@ bool ValidateKeyValue(const Value::Dict& dict,
                       const std::string& expected_value) {
   std::string actual_value = FindStringKeyOrEmpty(dict, key);
   bool result = !actual_value.compare(expected_value);
-  if (!result)
+  if (!result) {
     ADD_FAILURE() << key << " expected value: " << expected_value
                   << ", actual: " << actual_value;
+  }
   return result;
 }
 
@@ -57,9 +58,10 @@ bool ValidateKeyValue(const Value::Dict& dict,
                       int64_t expected_value) {
   int actual_value = dict.FindInt(key).value_or(0);
   bool result = (actual_value == expected_value);
-  if (!result)
+  if (!result) {
     ADD_FAILURE() << key << " expected value: " << expected_value
                   << ", actual: " << actual_value;
+  }
   return result;
 }
 
@@ -84,8 +86,9 @@ bool ValidateTestResult(const Value::Dict& iteration_data,
     return false;
   }
 
-  if (!ValidateKeyValue(*dict, "status", status))
+  if (!ValidateKeyValue(*dict, "status", status)) {
     return false;
+  }
 
   // Verify the keys that only exists when have_running_info, if the test didn't
   // run, it wouldn't have these information.
@@ -156,8 +159,9 @@ std::optional<Value::Dict> ReadSummary(const FilePath& path) {
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
   std::optional<Value> value = JSONReader::Read(json);
-  if (value && value->is_dict())
+  if (value && value->is_dict()) {
     result = std::move(*value).TakeDict();
+  }
 
   return result;
 }

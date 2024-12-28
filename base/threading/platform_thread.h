@@ -70,13 +70,9 @@ class PlatformThreadHandle {
     return handle_ == other.handle_;
   }
 
-  bool is_null() const {
-    return !handle_;
-  }
+  bool is_null() const { return !handle_; }
 
-  Handle platform_handle() const {
-    return handle_;
-  }
+  Handle platform_handle() const { return handle_; }
 
  private:
   Handle handle_;
@@ -274,7 +270,7 @@ class BASE_EXPORT PlatformThreadBase {
 
   static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
 
-  protected:
+ protected:
   static void SetNameCommon(const std::string& name);
 };
 

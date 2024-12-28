@@ -26,7 +26,6 @@
 
 namespace base::test {
 
-
 using perfetto::protos::gen::TraceConfig;
 
 TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
@@ -76,7 +75,6 @@ class TestTraceProcessor {
   TestTraceProcessorImpl test_trace_processor_;
   std::unique_ptr<perfetto::TracingSession> session_;
 };
-
 
 }  // namespace base::test
 

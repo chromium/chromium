@@ -31,7 +31,6 @@ BASE_FEATURE(kDiscardableMemoryBackingTrial,
              "DiscardableMemoryBackingTrial",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -64,11 +63,13 @@ DiscardableMemoryBacking GetBackingForFieldTrial() {
 // in the discardable memory backing trial.
 bool DiscardableMemoryBackingFieldTrialIsEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  if (!ashmem_device_is_supported())
+  if (!ashmem_device_is_supported()) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
-  if (base::GetMadvFreeSupport() != base::MadvFreeSupport::kSupported)
+  if (base::GetMadvFreeSupport() != base::MadvFreeSupport::kSupported) {
     return false;
+  }
 
   // IMPORTANT: Only query the feature after we determine the device has the
   // capabilities required, which will have the side-effect of assigning a
@@ -96,8 +97,9 @@ DiscardableMemoryBacking GetDiscardableMemoryBacking() {
         // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-  if (ashmem_device_is_supported())
+  if (ashmem_device_is_supported()) {
     return DiscardableMemoryBacking::kSharedMemory;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_POSIX)

@@ -258,8 +258,9 @@ NOINLINE FunctionAddressRange
 CallWithPlainFunction(OnceClosure wait_for_sample) {
   const void* start_program_counter = GetProgramCounter();
 
-  if (!wait_for_sample.is_null())
+  if (!wait_for_sample.is_null()) {
     std::move(wait_for_sample).Run();
+  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -276,11 +277,13 @@ NOINLINE FunctionAddressRange CallWithAlloca(OnceClosure wait_for_sample) {
   // optimized out.
   volatile char* const allocation =
       const_cast<volatile char*>(static_cast<char*>(alloca(alloca_size)));
-  for (volatile char* p = allocation; p < allocation + alloca_size; ++p)
+  for (volatile char* p = allocation; p < allocation + alloca_size; ++p) {
     *p = '\0';
+  }
 
-  if (!wait_for_sample.is_null())
+  if (!wait_for_sample.is_null()) {
     std::move(wait_for_sample).Run();
+  }
 
   // Volatile to prevent a tail call to GetProgramCounter().
   const void* volatile end_program_counter = GetProgramCounter();
@@ -347,8 +350,9 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                       sampling_thread_completed.Signal();
                     })),
                 CreateCoreUnwindersFactoryForTesting(module_cache));
-            if (aux_unwinder_factory)
+            if (aux_unwinder_factory) {
               profiler.AddAuxUnwinder(std::move(aux_unwinder_factory).Run());
+            }
             profiler.Start();
             sampling_thread_completed.Wait();
           }));

@@ -340,7 +340,7 @@ TEST(BreakIteratorTest, BreakLineEmpty) {
   ASSERT_TRUE(iter.Init());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
 
@@ -363,7 +363,7 @@ TEST(BreakIteratorTest, BreakLine) {
   EXPECT_EQ(u"pouet boom", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
 
@@ -435,7 +435,7 @@ TEST(BreakIteratorTest, BreakLineNL) {
   EXPECT_EQ(u"pouet boom\n", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
 
@@ -456,7 +456,7 @@ TEST(BreakIteratorTest, BreakLineWide16) {
   EXPECT_EQ(line2, iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
 
@@ -473,7 +473,7 @@ TEST(BreakIteratorTest, BreakLineWide32) {
   EXPECT_EQ(u"a", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
 

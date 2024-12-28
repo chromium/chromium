@@ -36,13 +36,15 @@ size_t ParseEnvLine(const NativeEnvironmentString::value_type* input,
                     NativeEnvironmentString* key) {
   // Skip to the equals or end of the string, this is the key.
   size_t cur = 0;
-  while (input[cur] && input[cur] != '=')
+  while (input[cur] && input[cur] != '=') {
     cur++;
+  }
   *key = NativeEnvironmentString(&input[0], cur);
 
   // Now just skip to the end of the string.
-  while (input[cur])
+  while (input[cur]) {
     cur++;
+  }
   return cur + 1;
 }
 #endif

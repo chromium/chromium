@@ -6,6 +6,7 @@
 #define BASE_PROFILER_SUSPENDABLE_THREAD_DELEGATE_MAC_H_
 
 #include <mach/mach.h>
+
 #include <memory>
 #include <vector>
 

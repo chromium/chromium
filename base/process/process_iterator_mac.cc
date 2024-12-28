@@ -22,8 +22,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter)
   // but trying to find where we were in a constantly changing list is basically
   // impossible.
 
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID,
-                static_cast<int>(geteuid()) };
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_UID, static_cast<int>(geteuid())};
 
   // Since more processes could start between when we get the size and when
   // we get the list, we do a loop to keep trying until we get it.
@@ -75,10 +74,11 @@ bool ProcessIterator::CheckForNextProcess() {
     kinfo_proc& kinfo = kinfo_procs_[index_of_kinfo_proc_];
 
     // Skip processes just awaiting collection
-    if ((kinfo.kp_proc.p_pid > 0) && (kinfo.kp_proc.p_stat == SZOMB))
+    if ((kinfo.kp_proc.p_pid > 0) && (kinfo.kp_proc.p_stat == SZOMB)) {
       continue;
+    }
 
-    int mib[] = { CTL_KERN, KERN_PROCARGS, kinfo.kp_proc.p_pid };
+    int mib[] = {CTL_KERN, KERN_PROCARGS, kinfo.kp_proc.p_pid};
 
     // Find out what size buffer we need.
     size_t data_len = 0;
@@ -99,8 +99,8 @@ bool ProcessIterator::CheckForNextProcess() {
     // |entry_.cmd_line_args_|.
     std::string delimiters;
     delimiters.push_back('\0');
-    entry_.cmd_line_args_ = SplitString(data, delimiters,
-                                        KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    entry_.cmd_line_args_ =
+        SplitString(data, delimiters, KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     // |data| starts with the full executable path followed by a null character.
     // We search for the first instance of '\0' and extract everything before it
@@ -115,11 +115,12 @@ bool ProcessIterator::CheckForNextProcess() {
     entry_.ppid_ = kinfo.kp_eproc.e_ppid;
     entry_.gid_ = kinfo.kp_eproc.e_pgid;
     size_t last_slash = data.rfind('/', exec_name_end);
-    if (last_slash == std::string::npos)
+    if (last_slash == std::string::npos) {
       entry_.exe_file_.assign(data, 0, exec_name_end);
-    else
+    } else {
       entry_.exe_file_.assign(data, last_slash + 1,
                               exec_name_end - last_slash - 1);
+    }
     // Start w/ the next entry next time through
     ++index_of_kinfo_proc_;
     // Done

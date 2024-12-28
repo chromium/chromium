@@ -13,9 +13,8 @@ namespace {
 
 TEST(VlogTest, NoVmodule) {
   int min_log_level = 0;
-  EXPECT_EQ(0,
-            VlogInfo(std::string(), std::string(), &min_log_level)
-                .GetVlogLevel("test1"));
+  EXPECT_EQ(0, VlogInfo(std::string(), std::string(), &min_log_level)
+                   .GetVlogLevel("test1"));
   EXPECT_EQ(0,
             VlogInfo("0", std::string(), &min_log_level).GetVlogLevel("test2"));
   EXPECT_EQ(

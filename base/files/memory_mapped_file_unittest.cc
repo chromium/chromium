@@ -32,8 +32,9 @@ namespace {
 // Create a temporary buffer and fill it with a watermark sequence.
 base::HeapArray<uint8_t> CreateTestBuffer(size_t size, size_t offset) {
   auto buf = base::HeapArray<uint8_t>::Uninit(size);
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i) {
     buf[i] = static_cast<uint8_t>((offset + i) % 253);
+  }
   return buf;
 }
 

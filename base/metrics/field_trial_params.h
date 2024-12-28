@@ -34,9 +34,7 @@ template <typename T>
 struct FeatureParamTraits {
   using DefaultValueType = T;
   using CacheStorageType = T;
-  static CacheStorageType ToCacheStorageType(const T& value) {
-    return value;
-  }
+  static CacheStorageType ToCacheStorageType(const T& value) { return value; }
   static constexpr T FromCacheStorageType(const CacheStorageType& storage) {
     return storage;
   }
@@ -46,8 +44,7 @@ template <>
 struct FeatureParamTraits<std::string> {
   using DefaultValueType = const char*;
   using CacheStorageType = NoDestructor<std::string>;
-  static CacheStorageType ToCacheStorageType(
-      const std::string& value) {
+  static CacheStorageType ToCacheStorageType(const std::string& value) {
     return CacheStorageType(value);
   }
   static constexpr std::string FromCacheStorageType(

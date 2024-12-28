@@ -26,26 +26,17 @@ namespace {
 // Test class with predictable memory usage.
 class Data {
  public:
-  explicit Data(size_t size = 17): size_(size) {
-  }
+  explicit Data(size_t size = 17) : size_(size) {}
 
   size_t size() const { return size_; }
 
-  size_t EstimateMemoryUsage() const {
-    return size_;
-  }
+  size_t EstimateMemoryUsage() const { return size_; }
 
-  bool operator < (const Data& other) const {
-    return size_ < other.size_;
-  }
-  bool operator == (const Data& other) const {
-    return size_ == other.size_;
-  }
+  bool operator<(const Data& other) const { return size_ < other.size_; }
+  bool operator==(const Data& other) const { return size_ == other.size_; }
 
   struct Hasher {
-    size_t operator () (const Data& data) const {
-      return data.size();
-    }
+    size_t operator()(const Data& data) const { return data.size(); }
   };
 
  private:

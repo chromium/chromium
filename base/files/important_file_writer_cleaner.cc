@@ -53,8 +53,9 @@ void ImportantFileWriterCleaner::AddDirectory(const FilePath& directory) {
     AutoLock scoped_lock(instance.task_runner_lock_);
     task_runner = instance.task_runner_;
   }
-  if (!task_runner)
+  if (!task_runner) {
     return;
+  }
   if (task_runner->RunsTasksInCurrentSequence()) {
     instance.AddDirectoryImpl(directory);
   } else {
@@ -82,25 +83,29 @@ void ImportantFileWriterCleaner::Start() {
 #endif
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_started())
+  if (is_started()) {
     return;
+  }
 
   started_ = true;
 
-  if (!pending_directories_.empty())
+  if (!pending_directories_.empty()) {
     ScheduleTask();
+  }
 }
 
 void ImportantFileWriterCleaner::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_started())
+  if (!is_started()) {
     return;
+  }
 
-  if (is_running())
+  if (is_running()) {
     stop_flag_.store(true, std::memory_order_relaxed);
-  else
+  } else {
     DoStop();
+  }
 }
 
 void ImportantFileWriterCleaner::UninitializeForTesting() {
@@ -129,20 +134,23 @@ ImportantFileWriterCleaner::ImportantFileWriterCleaner()
 void ImportantFileWriterCleaner::AddDirectoryImpl(const FilePath& directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!important_directories_.insert(directory).second)
+  if (!important_directories_.insert(directory).second) {
     return;  // This directory has already been seen.
+  }
 
   pending_directories_.push_back(directory);
 
-  if (!is_started())
+  if (!is_started()) {
     return;  // Nothing more to do if Start() has not been called.
+  }
 
   // Start the background task if it's not already running. If it is running, a
   // new task will be posted on completion of the current one by
   // OnBackgroundTaskFinished to handle all directories added while it was
   // running.
-  if (!is_running())
+  if (!is_running()) {
     ScheduleTask();
+  }
 }
 
 void ImportantFileWriterCleaner::ScheduleTask() {
@@ -180,15 +188,17 @@ bool ImportantFileWriterCleaner::CleanInBackground(
     for (FilePath path = file_enum.Next(); !path.empty();
          path = file_enum.Next()) {
       const FileEnumerator::FileInfo info = file_enum.GetInfo();
-      if (info.GetLastModifiedTime() >= upper_bound_time)
+      if (info.GetLastModifiedTime() >= upper_bound_time) {
         continue;
+      }
       // Cleanup is a best-effort process, so ignore any failures here and
       // continue to clean as much as possible. Metrics tell us that ~98.4% of
       // directories are cleaned with no failures.
       DeleteFile(path);
       // Break out without checking for the next file if a stop is requested.
-      if (stop_flag.load(std::memory_order_relaxed))
+      if (stop_flag.load(std::memory_order_relaxed)) {
         return false;
+      }
     }
   }
   return true;

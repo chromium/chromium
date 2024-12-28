@@ -25,8 +25,9 @@
 // We will use the last byte of data as parsing options.
 // The rest will be used as text input to the parser.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2)
+  if (size < 2) {
     return 0;
+  }
 
   // SAFETY: required from fuzzer.
   auto all_input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
@@ -41,8 +42,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const int options = all_input[size - 1];
   auto result =
       base::JSONReader::ReadAndReturnValueWithError(input_string, options);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return 0;
+  }
 
   std::string parsed_output;
   bool b = base::JSONWriter::Write(*result, &parsed_output);

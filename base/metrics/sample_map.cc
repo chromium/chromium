@@ -119,8 +119,9 @@ void SampleMap::Accumulate(Sample value, Count count) {
 
 Count SampleMap::GetCount(Sample value) const {
   auto it = sample_counts_.find(value);
-  if (it == sample_counts_.end())
+  if (it == sample_counts_.end()) {
     return 0;
+  }
   return it->second;
 }
 

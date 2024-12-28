@@ -67,8 +67,9 @@ class HistogramTest : public testing::TestWithParam<bool> {
   HistogramTest() : use_persistent_histogram_allocator_(GetParam()) {}
 
   void SetUp() override {
-    if (use_persistent_histogram_allocator_)
+    if (use_persistent_histogram_allocator_) {
       CreatePersistentHistogramAllocator();
+    }
 
     // Each test will have a clean state (no Histogram / BucketRanges
     // registered).
@@ -144,8 +145,9 @@ TEST_P(HistogramTest, BasicTest) {
   // continue to point to those from the very first run of this method even
   // during subsequent runs.
   static bool already_run = false;
-  if (already_run)
+  if (already_run) {
     return;
+  }
   already_run = true;
 
   // Use standard macros (but with fixed samples)
@@ -162,8 +164,9 @@ TEST_P(HistogramTest, NameMatchTest) {
   // continue to point to those from the very first run of this method even
   // during subsequent runs.
   static bool already_run = false;
-  if (already_run)
+  if (already_run) {
     return;
+  }
   already_run = true;
 
   LOCAL_HISTOGRAM_PERCENTAGE("DuplicatedHistogram", 10);
@@ -379,8 +382,9 @@ TEST_P(HistogramTest, LinearRangesTest) {
   BucketRanges ranges(9);
   LinearHistogram::InitializeBucketRanges(1, 7, &ranges);
   // Gets a nice linear set of bucket ranges.
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++) {
     EXPECT_EQ(i, ranges.range(i));
+  }
   EXPECT_EQ(HistogramBase::kSampleType_MAX, ranges.range(8));
 
   // The correspoding LinearHistogram should use the correct ranges.
@@ -618,15 +622,17 @@ TEST_P(HistogramTest, BucketPlacementTest) {
   histogram->Add(0);
   int power_of_2 = 1;
   for (int i = 1; i < 8; i++) {
-    for (int j = 0; j <= i; j++)
+    for (int j = 0; j <= i; j++) {
       histogram->Add(power_of_2);
+    }
     power_of_2 *= 2;
   }
 
   // Check to see that the bucket counts reflect our additions.
   std::unique_ptr<SampleVector> samples = histogram->SnapshotAllSamples();
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++) {
     EXPECT_EQ(i + 1, samples->GetCountAtIndex(i));
+  }
 }
 
 TEST_P(HistogramTest, CorruptSampleCounts) {
@@ -634,8 +640,9 @@ TEST_P(HistogramTest, CorruptSampleCounts) {
   // pointers to them. If those pointers are to persistent memory which will
   // be free'd then any following calls to that code will crash with a
   // segmentation violation.
-  if (use_persistent_histogram_allocator_)
+  if (use_persistent_histogram_allocator_) {
     return;
+  }
 
   Histogram* histogram = static_cast<Histogram*>(
       Histogram::FactoryGet("Histogram", 1, 64, 8, HistogramBase::kNoFlags));
@@ -848,8 +855,9 @@ TEST_P(HistogramTest, FactoryTime) {
                                                    10, HistogramBase::kNoFlags);
   ASSERT_TRUE(histogram);
   TimeTicks add_start = TimeTicks::Now();
-  for (int i = 0; i < kTestAddCount; ++i)
+  for (int i = 0; i < kTestAddCount; ++i) {
     histogram->Add(i & 127);
+  }
   TimeDelta add_ticks = TimeTicks::Now() - add_start;
   int64_t add_ms = add_ticks.InMilliseconds();
 

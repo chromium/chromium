@@ -54,4 +54,4 @@ TEST(MetricsHashesTest, HashMetricNameAs32Bits) {
   }
 }
 
-}  // namespace metrics
+}  // namespace base

@@ -78,8 +78,9 @@ TEST_F(SharedMemoryMappingTest, SpanWithAutoDeducedElementCount) {
   EXPECT_EQ(0u, read_span[0]);
   EXPECT_EQ(0u, read_span[1]);
 
-  for (size_t i = 0; i < write_span.size(); ++i)
+  for (size_t i = 0; i < write_span.size(); ++i) {
     write_span[i] = i + 1;
+  }
   EXPECT_EQ(0x04030201u, read_span[0]);
   EXPECT_EQ(0x08070605u, read_span[1]);
 }
@@ -104,8 +105,9 @@ TEST_F(SharedMemoryMappingTest, SpanWithExplicitElementCount) {
   EXPECT_EQ(0u, read_span[1]);
   EXPECT_EQ(0u, read_span_2[0]);
 
-  for (size_t i = 0; i < write_span.size(); ++i)
+  for (size_t i = 0; i < write_span.size(); ++i) {
     write_span[i] = i + 1;
+  }
   EXPECT_EQ(0x04030201u, read_span[0]);
   EXPECT_EQ(0x08070605u, read_span[1]);
   EXPECT_EQ(0x04030201u, read_span_2[0]);

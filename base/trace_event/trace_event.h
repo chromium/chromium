@@ -79,6 +79,26 @@
 #define TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION \
   trace_event_internal::UpdateTraceEventDuration
 
+// Adds a metadata event to the trace log. The |AppendValueAsTraceFormat| method
+// on the convertable value will be called at flush time.
+// TRACE_EVENT_API_ADD_METADATA_EVENT(
+//     const unsigned char* category_group_enabled,
+//     const char* event_name,
+//     const char* arg_name,
+//     std::unique_ptr<ConvertableToTraceFormat> arg_value)
+#define TRACE_EVENT_API_ADD_METADATA_EVENT \
+    trace_event_internal::AddMetadataEvent
+
+// Defines atomic operations used internally by the tracing system.
+// Acquire/release barriers are important here: crbug.com/1330114#c8.
+#define TRACE_EVENT_API_ATOMIC_WORD std::atomic<intptr_t>
+#define TRACE_EVENT_API_ATOMIC_LOAD(var) (var).load(std::memory_order_acquire)
+#define TRACE_EVENT_API_ATOMIC_STORE(var, value) \
+  (var).store((value), std::memory_order_release)
+
+// Defines visibility for classes in trace_event.h
+#define TRACE_EVENT_API_CLASS_EXPORT BASE_EXPORT
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace trace_event_internal {
@@ -159,7 +179,8 @@ class TraceScopedTrackableObject {
   TraceScopedTrackableObject& operator=(const TraceScopedTrackableObject&) =
       delete;
 
-  template <typename ArgType> void snapshot(ArgType snapshot) {
+  template <typename ArgType>
+  void snapshot(ArgType snapshot) {
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(category, name_, id_, snapshot);
   }
 

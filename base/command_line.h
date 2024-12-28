@@ -26,8 +26,8 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/containers/span.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 

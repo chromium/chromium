@@ -553,9 +553,8 @@ TEST_F(FeatureListTest, GetFeatureOverrides) {
   feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial", "Group");
-  feature_list->RegisterFieldTrialOverride(kFeatureOffByDefaultName,
-                                           FeatureList::OVERRIDE_ENABLE_FEATURE,
-                                           trial);
+  feature_list->RegisterFieldTrialOverride(
+      kFeatureOffByDefaultName, FeatureList::OVERRIDE_ENABLE_FEATURE, trial);
 
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -665,8 +664,9 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
   EXPECT_EQ(nullptr, FeatureList::GetInstance());
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
 
-  if (original_feature_list)
+  if (original_feature_list) {
     FeatureList::RestoreInstanceForTesting(std::move(original_feature_list));
+  }
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {

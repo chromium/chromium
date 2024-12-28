@@ -170,21 +170,21 @@ static const auto kConvertCodepageCases = std::to_array<ConvertCodepageCases>({
 
 TEST(ICUStringConversionsTest, ConvertBetweenCodepageAndUTF16) {
   for (size_t i = 0; i < std::size(kConvertCodepageCases); ++i) {
-    SCOPED_TRACE(base::StringPrintf(
-                     "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
-                     kConvertCodepageCases[i].encoded,
-                     kConvertCodepageCases[i].codepage_name));
+    SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS
+                                    "]: <encoded: %s> <codepage: %s>",
+                                    i, kConvertCodepageCases[i].encoded,
+                                    kConvertCodepageCases[i].codepage_name));
 
     std::u16string utf16;
     bool success = CodepageToUTF16(kConvertCodepageCases[i].encoded,
                                    kConvertCodepageCases[i].codepage_name,
-                                   kConvertCodepageCases[i].on_error,
-                                   &utf16);
+                                   kConvertCodepageCases[i].on_error, &utf16);
     std::u16string utf16_expected;
-    if (kConvertCodepageCases[i].u16_wide == nullptr)
+    if (kConvertCodepageCases[i].u16_wide == nullptr) {
       utf16_expected = BuildString16(kConvertCodepageCases[i].wide);
-    else
+    } else {
       utf16_expected = BuildString16(kConvertCodepageCases[i].u16_wide);
+    }
     EXPECT_EQ(kConvertCodepageCases[i].success, success);
     EXPECT_EQ(utf16_expected, utf16);
 
@@ -227,10 +227,10 @@ const auto kConvertAndNormalizeCases = std::to_array<ConvertAndNormalizeCases>({
 TEST(ICUStringConversionsTest, ConvertToUtf8AndNormalize) {
   std::string result;
   for (size_t i = 0; i < std::size(kConvertAndNormalizeCases); ++i) {
-    SCOPED_TRACE(base::StringPrintf(
-                     "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
-                     kConvertAndNormalizeCases[i].encoded,
-                     kConvertAndNormalizeCases[i].codepage_name));
+    SCOPED_TRACE(
+        base::StringPrintf("Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
+                           kConvertAndNormalizeCases[i].encoded,
+                           kConvertAndNormalizeCases[i].codepage_name));
 
     bool success = ConvertToUtf8AndNormalize(
         kConvertAndNormalizeCases[i].encoded,

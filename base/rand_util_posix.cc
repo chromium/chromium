@@ -79,12 +79,15 @@ void KernelVersionNumbers(int32_t* major_version,
   }
   int num_read = sscanf(info.release, "%d.%d.%d", major_version, minor_version,
                         bugfix_version);
-  if (num_read < 1)
+  if (num_read < 1) {
     *major_version = 0;
-  if (num_read < 2)
+  }
+  if (num_read < 2) {
     *minor_version = 0;
-  if (num_read < 3)
+  }
+  if (num_read < 3) {
     *bugfix_version = 0;
+  }
 }
 
 bool KernelSupportsGetRandom() {
@@ -92,8 +95,9 @@ bool KernelSupportsGetRandom() {
   int32_t minor = 0;
   int32_t bugfix = 0;
   KernelVersionNumbers(&major, &minor, &bugfix);
-  if (major > 3 || (major == 3 && minor >= 17))
+  if (major > 3 || (major == 3 && minor >= 17)) {
     return true;
+  }
   return false;
 }
 

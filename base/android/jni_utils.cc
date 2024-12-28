@@ -42,4 +42,3 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
 
 }  // namespace android
 }  // namespace base
-

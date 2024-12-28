@@ -28,9 +28,9 @@
 // In component builds on Windows, weak function exported by ASan have the
 // `__dll` suffix. ASan itself uses the `alternatename` directive to account for
 // that.
-#pragma comment(linker,                                                \
-                    "/alternatename:__sanitizer_report_error_summary=" \
-                    "__sanitizer_report_error_summary__dll")
+#pragma comment(linker,                                            \
+                "/alternatename:__sanitizer_report_error_summary=" \
+                "__sanitizer_report_error_summary__dll")
 #pragma comment(linker,                                     \
                 "/alternatename:__sanitizer_set_report_fd=" \
                 "__sanitizer_set_report_fd__dll")

@@ -61,8 +61,9 @@ SuspendableThreadDelegateMac::ScopedSuspendThread::ScopedSuspendThread(
 // NO HEAP ALLOCATIONS. The MACH_CHECK is OK because it provides a more noisy
 // failure mode than deadlocking.
 SuspendableThreadDelegateMac::ScopedSuspendThread::~ScopedSuspendThread() {
-  if (!WasSuccessful())
+  if (!WasSuccessful()) {
     return;
+  }
 
   kern_return_t kr = thread_resume(thread_port_);
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "thread_resume";

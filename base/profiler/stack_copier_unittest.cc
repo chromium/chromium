@@ -146,12 +146,14 @@ TEST(StackCopierTest, StackCopy_NonAlignedStackPointerCopy) {
   // The next values up to the extra space should have been copied.
   const size_t max_index =
       std::size(stack_copy_buffer.as_uint16) - extra_space / sizeof(uint16_t);
-  for (size_t i = 1; i < max_index; ++i)
+  for (size_t i = 1; i < max_index; ++i) {
     EXPECT_EQ(i + 100, stack_copy_buffer.as_uint16[i]);
+  }
 
   // None of the values in the empty space should have been copied.
-  for (size_t i = max_index; i < std::size(stack_copy_buffer.as_uint16); ++i)
+  for (size_t i = max_index; i < std::size(stack_copy_buffer.as_uint16); ++i) {
     EXPECT_EQ(0u, stack_copy_buffer.as_uint16[i]);
+  }
 }
 
 // Checks that an unaligned within-stack pointer value at the start of the stack

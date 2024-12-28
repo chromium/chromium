@@ -319,8 +319,9 @@ TEST_P(StatisticsRecorderTest, RegisterHistogramWithMacros) {
   // Macros cache pointers and so tests that use them can only be run once.
   // Stop immediately if this test has run previously.
   static bool already_run = false;
-  if (already_run)
+  if (already_run) {
     return;
+  }
   already_run = true;
 
   StatisticsRecorder::Histograms registered_histograms;
@@ -796,8 +797,9 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
     PersistentHistogramAllocator::Iterator hist_iter(allocator_.get());
     while (true) {
       std::unique_ptr<base::HistogramBase> histogram = hist_iter.GetNext();
-      if (!histogram)
+      if (!histogram) {
         break;
+      }
       allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
     }
     std::move(done_callback).Run();

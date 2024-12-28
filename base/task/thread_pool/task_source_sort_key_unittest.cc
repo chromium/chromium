@@ -33,13 +33,15 @@ const auto kTestKeys = std::to_array<TaskSourceSortKey>({
 TEST(TaskSourceSortKeyTest, OperatorLessThan) {
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     // All the entries before the index of the current key are smaller.
-    for (size_t j = 0; j < i; j++)
+    for (size_t j = 0; j < i; j++) {
       EXPECT_LT(kTestKeys[j], kTestKeys[i]);
+    }
 
     // All the other entries (including itself) are not smaller than the current
     // key.
-    for (size_t j = i; j < std::size(kTestKeys); j++)
+    for (size_t j = i; j < std::size(kTestKeys); j++) {
       EXPECT_FALSE(kTestKeys[j] < kTestKeys[i]);
+    }
   }
 }
 
@@ -48,10 +50,11 @@ TEST(TaskSourceSortKeyTest, OperatorEqual) {
   // their index is the same.
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     for (size_t j = 0; j < std::size(kTestKeys); j++) {
-      if (i == j)
+      if (i == j) {
         EXPECT_EQ(kTestKeys[i], kTestKeys[j]);
-      else
+      } else {
         EXPECT_FALSE(kTestKeys[i] == kTestKeys[j]);
+      }
     }
   }
 }
@@ -61,10 +64,11 @@ TEST(TaskSourceSortKeyTest, OperatorNotEqual) {
   // their index is different.
   for (size_t i = 0; i < std::size(kTestKeys); i++) {
     for (size_t j = 0; j < std::size(kTestKeys); j++) {
-      if (i != j)
+      if (i != j) {
         EXPECT_NE(kTestKeys[i], kTestKeys[j]);
-      else
+      } else {
         EXPECT_FALSE(kTestKeys[i] != kTestKeys[j]);
+      }
     }
   }
 }

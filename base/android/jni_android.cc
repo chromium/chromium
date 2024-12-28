@@ -112,7 +112,6 @@ void InitVM(JavaVM* vm) {
   DCHECK(g_out_of_memory_error_class);
 }
 
-
 void CheckException(JNIEnv* env) {
   if (!jni_zero::HasException(env)) {
     return;

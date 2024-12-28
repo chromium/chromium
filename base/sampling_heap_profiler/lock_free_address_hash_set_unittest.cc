@@ -30,8 +30,9 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
                bucket.load(std::memory_order_acquire);
            node; node = node->next) {
         void* key = node->key.load(std::memory_order_relaxed);
-        if (key && !superset.Contains(key))
+        if (key && !superset.Contains(key)) {
           return false;
+        }
       }
     }
     return true;
@@ -46,8 +47,9 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
     size_t count = 0;
     LockFreeAddressHashSet::Node* node =
         set.buckets_[bucket].load(std::memory_order_acquire);
-    for (; node; node = node->next)
+    for (; node; node = node->next) {
       ++count;
+    }
     return count;
   }
 };
@@ -200,8 +202,9 @@ TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
   Lock lock;
   LockFreeAddressHashSet set(16, lock);
   AutoLock auto_lock(lock);
-  for (size_t i = 0; i < count; ++i)
+  for (size_t i = 0; i < count; ++i) {
     set.Insert(reinterpret_cast<void*>(0x10000 + 0x10 * i));
+  }
   size_t average_per_bucket = count / set.buckets_count();
   for (size_t i = 0; i < set.buckets_count(); ++i) {
     size_t usage = BucketSize(set, i);

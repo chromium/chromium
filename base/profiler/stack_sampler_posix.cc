@@ -43,8 +43,9 @@ size_t StackSampler::GetStackBufferSize() {
 
   pthread_attr_t attr;
   if (stack_size == 0 && pthread_attr_init(&attr) == 0) {
-    if (pthread_attr_getstacksize(&attr, &stack_size) != 0)
+    if (pthread_attr_getstacksize(&attr, &stack_size) != 0) {
       stack_size = 0;
+    }
     pthread_attr_destroy(&attr);
   }
 

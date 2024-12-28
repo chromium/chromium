@@ -80,23 +80,22 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
   // race with perfetto setting up the connection on this task and the IO thread
   // setting up epoll on the |fd|. Using a CancelableOnceClosure ensures that
   // the |fd| won't be added for watch if RemoveFileDescriptorWatch is called.
-  fd_controllers_[fd].callback.Reset(
-      base::BindOnce(
-          [](PerfettoTaskRunner* perfetto_runner, int fd,
-             std::function<void()> callback) {
-            DCHECK(perfetto_runner->task_runner_->RunsTasksInCurrentSequence());
-            // When this callback runs, we must not have removed |fd|'s watch.
-            CHECK(base::Contains(perfetto_runner->fd_controllers_, fd));
-            auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
-            // We should never overwrite an existing watch.
-            CHECK(!controller_and_cb.controller);
-            controller_and_cb.controller =
-                base::FileDescriptorWatcher::WatchReadable(
-                    fd, base::BindRepeating(
-                            [](std::function<void()> callback) { callback(); },
-                            std::move(callback)));
-          },
-          base::Unretained(this), fd, std::move(callback)));
+  fd_controllers_[fd].callback.Reset(base::BindOnce(
+      [](PerfettoTaskRunner* perfetto_runner, int fd,
+         std::function<void()> callback) {
+        DCHECK(perfetto_runner->task_runner_->RunsTasksInCurrentSequence());
+        // When this callback runs, we must not have removed |fd|'s watch.
+        CHECK(base::Contains(perfetto_runner->fd_controllers_, fd));
+        auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
+        // We should never overwrite an existing watch.
+        CHECK(!controller_and_cb.controller);
+        controller_and_cb.controller =
+            base::FileDescriptorWatcher::WatchReadable(
+                fd, base::BindRepeating(
+                        [](std::function<void()> callback) { callback(); },
+                        std::move(callback)));
+      },
+      base::Unretained(this), fd, std::move(callback)));
   task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
 #else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();

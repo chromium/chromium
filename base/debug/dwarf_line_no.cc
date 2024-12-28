@@ -219,8 +219,9 @@ void EvaluateLineNumberProgram(const int fd,
 
       // If module_relative_pc is out of range, skip.
       if (module_relative_pc < registers->last_address ||
-          module_relative_pc >= registers->address)
+          module_relative_pc >= registers->address) {
         return;
+      }
 
       if (registers->last_file < program_info->num_filenames) {
         info->line = registers->last_line;
@@ -257,8 +258,9 @@ void EvaluateLineNumberProgram(const int fd,
   // advance) + opcode_base.
   uint8_t opcode;
   while (reader.position() < program_info.end_offset && info->line == 0) {
-    if (!reader.ReadInt8(opcode))
+    if (!reader.ReadInt8(opcode)) {
       return;
+    }
 
     // It's SPECIAL OPCODE TIME!. They're so special that they make up the
     // vast majority of the opcodes and are the first thing described in the
@@ -272,8 +274,9 @@ void EvaluateLineNumberProgram(const int fd,
       const int line_adjust =
           program_info.line_base + (adjusted_opcode % program_info.line_range);
       if (line_adjust < 0) {
-        if (static_cast<uint64_t>(-line_adjust) > registers.line)
+        if (static_cast<uint64_t>(-line_adjust) > registers.line) {
           return;
+        }
         registers.line -= static_cast<uint64_t>(-line_adjust);
       } else {
         registers.line += static_cast<uint64_t>(line_adjust);
@@ -290,11 +293,13 @@ void EvaluateLineNumberProgram(const int fd,
           // Extended opcode.
           uint64_t extended_opcode;
           uint64_t extended_opcode_length;
-          if (!reader.ReadLeb128(extended_opcode_length))
+          if (!reader.ReadLeb128(extended_opcode_length)) {
             return;
+          }
           uint64_t next_opcode = reader.position() + extended_opcode_length;
-          if (!reader.ReadLeb128(extended_opcode))
+          if (!reader.ReadLeb128(extended_opcode)) {
             return;
+          }
           switch (extended_opcode) {
             case 1: {
               // DW_LNE_end_sequence
@@ -307,8 +312,9 @@ void EvaluateLineNumberProgram(const int fd,
             case 2: {
               // DW_LNE_set_address
               uint32_t value;
-              if (!reader.ReadInt32(value))
+              if (!reader.ReadInt32(value)) {
                 return;
+              }
               registers.address = value;
               registers.op_index = 0;
               break;
@@ -324,8 +330,9 @@ void EvaluateLineNumberProgram(const int fd,
 
               // dir index
               uint64_t value;
-              if (!reader.ReadLeb128(value))
+              if (!reader.ReadLeb128(value)) {
                 return;
+              }
               size_t cur_filename = program_info.num_filenames;
               if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
                 ++program_info.num_filenames;
@@ -337,20 +344,23 @@ void EvaluateLineNumberProgram(const int fd,
               }
 
               // modification time
-              if (!reader.ReadLeb128(value))
+              if (!reader.ReadLeb128(value)) {
                 return;
+              }
 
               // source file length
-              if (!reader.ReadLeb128(value))
+              if (!reader.ReadLeb128(value)) {
                 return;
+              }
               break;
             }
 
             case 4: {
               // DW_LNE_set_discriminator
               uint64_t value;
-              if (!reader.ReadLeb128(value))
+              if (!reader.ReadLeb128(value)) {
                 return;
+              }
               registers.discriminator = value;
               break;
             }
@@ -377,8 +387,9 @@ void EvaluateLineNumberProgram(const int fd,
         case 2: {
           // DW_LNS_advance_pc
           uint64_t op_advance;
-          if (!reader.ReadLeb128(op_advance))
+          if (!reader.ReadLeb128(op_advance)) {
             return;
+          }
           registers.OpAdvance(&program_info, op_advance);
           break;
         }
@@ -386,11 +397,13 @@ void EvaluateLineNumberProgram(const int fd,
         case 3: {
           // DW_LNS_advance_line
           int64_t line_advance;
-          if (!reader.ReadLeb128(line_advance))
+          if (!reader.ReadLeb128(line_advance)) {
             return;
+          }
           if (line_advance < 0) {
-            if (static_cast<uint64_t>(-line_advance) > registers.line)
+            if (static_cast<uint64_t>(-line_advance) > registers.line) {
               return;
+            }
             registers.line -= static_cast<uint64_t>(-line_advance);
           } else {
             registers.line += static_cast<uint64_t>(line_advance);
@@ -401,8 +414,9 @@ void EvaluateLineNumberProgram(const int fd,
         case 4: {
           // DW_LNS_set_file
           uint64_t value;
-          if (!reader.ReadLeb128(value))
+          if (!reader.ReadLeb128(value)) {
             return;
+          }
           registers.file = value;
           break;
         }
@@ -410,8 +424,9 @@ void EvaluateLineNumberProgram(const int fd,
         case 5: {
           // DW_LNS_set_column
           uint64_t value;
-          if (!reader.ReadLeb128(value))
+          if (!reader.ReadLeb128(value)) {
             return;
+          }
           registers.column = value;
           break;
         }
@@ -436,8 +451,9 @@ void EvaluateLineNumberProgram(const int fd,
         case 9: {
           // DW_LNS_fixed_advance_pc
           uint16_t value;
-          if (!reader.ReadInt16(value))
+          if (!reader.ReadInt16(value)) {
             return;
+          }
           registers.address += value;
           registers.op_index = 0;
           break;
@@ -456,8 +472,9 @@ void EvaluateLineNumberProgram(const int fd,
         case 12: {
           // DW_LNS_set_isa
           uint64_t value;
-          if (!reader.ReadLeb128(value))
+          if (!reader.ReadLeb128(value)) {
             return;
+          }
           registers.isa = value;
           break;
         }
@@ -475,8 +492,9 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
                             bool is_64bit,
                             uint64_t cu_name_offset,
                             ProgramInfo* program_info) {
-  if (!reader->ReadOffset(is_64bit, program_info->header_length))
+  if (!reader->ReadOffset(is_64bit, program_info->header_length)) {
     return false;
+  }
   program_info->start_offset = reader->position() + program_info->header_length;
 
   if (!reader->ReadInt8(program_info->minimum_instruction_length) ||
@@ -489,8 +507,9 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
   }
 
   for (int i = 0; i < (program_info->opcode_base - 1); i++) {
-    if (!reader->ReadInt8(program_info->standard_opcode_lengths[i]))
+    if (!reader->ReadInt8(program_info->standard_opcode_lengths[i])) {
       return false;
+    }
   }
 
   // Table ends with a single null line. This basically means search for 2
@@ -499,8 +518,9 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
   for (;;) {
     // Read a byte.
     last = cur;
-    if (!reader->ReadInt8(cur))
+    if (!reader->ReadInt8(cur)) {
       return false;
+    }
 
     if (last == 0 && cur == 0) {
       // We're at the last entry where it's a double null.
@@ -516,10 +536,12 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
       program_info->directory_sizes[cur_dir] = 1;
     }
     do {
-      if (!reader->ReadInt8(cur))
+      if (!reader->ReadInt8(cur)) {
         return false;
-      if (cur_dir < kMaxDirectories)
+      }
+      if (cur_dir < kMaxDirectories) {
         ++program_info->directory_sizes[cur_dir];
+      }
     } while (cur != '\0');
   }
 
@@ -529,8 +551,9 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
   for (;;) {
     // Read a byte.
     last = cur;
-    if (!reader->ReadInt8(cur))
+    if (!reader->ReadInt8(cur)) {
       return false;
+    }
 
     if (last == 0 && cur == 0) {
       // We're at the last entry where it's a double null.
@@ -541,15 +564,17 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     // first byte of the filename above.
     uint64_t filename_offset = reader->position() - 1;
     do {
-      if (!reader->ReadInt8(cur))
+      if (!reader->ReadInt8(cur)) {
         return false;
+      }
     } while (cur != '\0');
 
     uint64_t value;
 
     // Dir index
-    if (!reader->ReadLeb128(value))
+    if (!reader->ReadLeb128(value)) {
       return false;
+    }
     size_t cur_filename = program_info->num_filenames;
     if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
       ++program_info->num_filenames;
@@ -558,12 +583,14 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     }
 
     // Modification time
-    if (!reader->ReadLeb128(value))
+    if (!reader->ReadLeb128(value)) {
       return false;
+    }
 
     // Bytes in file.
-    if (!reader->ReadLeb128(value))
+    if (!reader->ReadLeb128(value)) {
       return false;
+    }
   }
 
   // Set up the 0th filename.

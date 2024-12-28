@@ -29,8 +29,9 @@ void OnTraceDataCollected(base::OnceClosure quit_closure,
                           const scoped_refptr<base::RefCountedString>& json,
                           bool has_more_events) {
   buffer->AddFragment(json->as_string());
-  if (!has_more_events)
+  if (!has_more_events) {
     std::move(quit_closure).Run();
+  }
 }
 }  // namespace
 
@@ -98,8 +99,9 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
   }
   if (may_have_duration) {
     std::optional<double> maybe_duration = event_dict.FindDouble("dur");
-    if (maybe_duration)
+    if (maybe_duration) {
       duration = *maybe_duration;
+    }
   }
   const std::string* maybe_category = event_dict.FindString("cat");
   if (!maybe_category) {
@@ -132,8 +134,9 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
           << "id/id2 is missing from ASYNC_BEGIN/ASYNC_END TraceEvent JSON";
       return false;
     }
-    if (maybe_id)
+    if (maybe_id) {
       id = *maybe_id;
+    }
   }
 
   std::optional<double> maybe_thread_duration = event_dict.FindDouble("tdur");
@@ -290,8 +293,7 @@ base::Value::Dict TraceEvent::GetKnownArgAsDict(
 
 // QueryNode
 
-QueryNode::QueryNode(const Query& query) : query_(query) {
-}
+QueryNode::QueryNode(const Query& query) : query_(query) {}
 
 QueryNode::~QueryNode() = default;
 
@@ -302,8 +304,7 @@ Query::Query(TraceEventMember member)
       operator_(OP_INVALID),
       member_(member),
       number_(0),
-      is_pattern_(false) {
-}
+      is_pattern_(false) {}
 
 Query::Query(TraceEventMember member, const std::string& arg_name)
     : type_(QUERY_EVENT_MEMBER),
@@ -311,8 +312,7 @@ Query::Query(TraceEventMember member, const std::string& arg_name)
       member_(member),
       number_(0),
       string_(arg_name),
-      is_pattern_(false) {
-}
+      is_pattern_(false) {}
 
 Query::Query(const Query& query) = default;
 
@@ -354,14 +354,16 @@ bool Query::Evaluate(const TraceEvent& event) const {
   // double is true if != 0:
   double bool_value = 0.0;
   bool is_bool = GetAsDouble(event, &bool_value);
-  if (is_bool)
+  if (is_bool) {
     return (bool_value != 0.0);
+  }
 
   // string is true if it is non-empty:
   std::string str_value;
   bool is_str = GetAsString(event, &str_value);
-  if (is_str)
+  if (is_str) {
     return !str_value.empty();
+  }
 
   DCHECK_EQ(QUERY_BOOLEAN_OPERATOR, type_)
       << "Invalid query: missing boolean expression";
@@ -373,10 +375,12 @@ bool Query::Evaluate(const TraceEvent& event) const {
         << "Invalid query: comparison operator used between event member and "
            "value.";
     bool compare_result = false;
-    if (CompareAsDouble(event, &compare_result))
+    if (CompareAsDouble(event, &compare_result)) {
       return compare_result;
-    if (CompareAsString(event, &compare_result))
+    }
+    if (CompareAsString(event, &compare_result)) {
       return compare_result;
+    }
     return false;
   }
   // It's a logical operator.
@@ -394,8 +398,9 @@ bool Query::Evaluate(const TraceEvent& event) const {
 
 bool Query::CompareAsDouble(const TraceEvent& event, bool* result) const {
   double lhs, rhs;
-  if (!left().GetAsDouble(event, &lhs) || !right().GetAsDouble(event, &rhs))
+  if (!left().GetAsDouble(event, &lhs) || !right().GetAsDouble(event, &rhs)) {
     return false;
+  }
   switch (operator_) {
     case OP_EQ:
       *result = (lhs == rhs);
@@ -422,24 +427,27 @@ bool Query::CompareAsDouble(const TraceEvent& event, bool* result) const {
 
 bool Query::CompareAsString(const TraceEvent& event, bool* result) const {
   std::string lhs, rhs;
-  if (!left().GetAsString(event, &lhs) || !right().GetAsString(event, &rhs))
+  if (!left().GetAsString(event, &lhs) || !right().GetAsString(event, &rhs)) {
     return false;
+  }
   switch (operator_) {
     case OP_EQ:
-      if (right().is_pattern_)
+      if (right().is_pattern_) {
         *result = base::MatchPattern(lhs, rhs);
-      else if (left().is_pattern_)
+      } else if (left().is_pattern_) {
         *result = base::MatchPattern(rhs, lhs);
-      else
+      } else {
         *result = (lhs == rhs);
+      }
       return true;
     case OP_NE:
-      if (right().is_pattern_)
+      if (right().is_pattern_) {
         *result = !base::MatchPattern(lhs, rhs);
-      else if (left().is_pattern_)
+      } else if (left().is_pattern_) {
         *result = !base::MatchPattern(rhs, lhs);
-      else
+      } else {
         *result = (lhs != rhs);
+      }
       return true;
     case OP_LT:
       *result = (lhs < rhs);
@@ -465,10 +473,12 @@ bool Query::EvaluateArithmeticOperator(const TraceEvent& event,
   DCHECK(right_.get() || is_unary_operator());
 
   double lhs = 0, rhs = 0;
-  if (!left().GetAsDouble(event, &lhs))
+  if (!left().GetAsDouble(event, &lhs)) {
     return false;
-  if (!is_unary_operator() && !right().GetAsDouble(event, &rhs))
+  }
+  if (!is_unary_operator() && !right().GetAsDouble(event, &rhs)) {
     return false;
+  }
 
   switch (operator_) {
     case OP_ADD:
@@ -523,15 +533,16 @@ bool Query::GetAsString(const TraceEvent& event, std::string* str) const {
 
 const TraceEvent* Query::SelectTargetEvent(const TraceEvent* event,
                                            TraceEventMember member) {
-  if (member >= OTHER_FIRST_MEMBER && member <= OTHER_LAST_MEMBER)
+  if (member >= OTHER_FIRST_MEMBER && member <= OTHER_LAST_MEMBER) {
     return event->other_event;
-  if (member >= PREV_FIRST_MEMBER && member <= PREV_LAST_MEMBER)
+  }
+  if (member >= PREV_FIRST_MEMBER && member <= PREV_LAST_MEMBER) {
     return event->prev_event;
+  }
   return event;
 }
 
-bool Query::GetMemberValueAsDouble(const TraceEvent& event,
-                                   double* num) const {
+bool Query::GetMemberValueAsDouble(const TraceEvent& event, double* num) const {
   DCHECK_EQ(QUERY_EVENT_MEMBER, type_);
 
   // This could be a request for a member of |event| or a member of |event|'s
@@ -539,8 +550,9 @@ bool Query::GetMemberValueAsDouble(const TraceEvent& event,
   const TraceEvent* the_event = SelectTargetEvent(&event, member_);
 
   // Request for member of associated event, but there is no associated event.
-  if (!the_event)
+  if (!the_event) {
     return false;
+  }
 
   switch (member_) {
     case EVENT_PID:
@@ -559,13 +571,15 @@ bool Query::GetMemberValueAsDouble(const TraceEvent& event,
       *num = the_event->timestamp;
       return true;
     case EVENT_DURATION:
-      if (!the_event->has_other_event())
+      if (!the_event->has_other_event()) {
         return false;
+      }
       *num = the_event->GetAbsTimeToOtherEvent();
       return true;
     case EVENT_COMPLETE_DURATION:
-      if (the_event->phase != TRACE_EVENT_PHASE_COMPLETE)
+      if (the_event->phase != TRACE_EVENT_PHASE_COMPLETE) {
         return false;
+      }
       *num = the_event->duration;
       return true;
     case EVENT_PHASE:
@@ -588,8 +602,9 @@ bool Query::GetMemberValueAsDouble(const TraceEvent& event,
     case PREV_ARG: {
       // Search for the argument name and return its value if found.
       auto num_i = the_event->arg_numbers.find(string_);
-      if (num_i == the_event->arg_numbers.end())
+      if (num_i == the_event->arg_numbers.end()) {
         return false;
+      }
       *num = num_i->second;
       return true;
     }
@@ -614,8 +629,9 @@ bool Query::GetMemberValueAsString(const TraceEvent& event,
   const TraceEvent* the_event = SelectTargetEvent(&event, member_);
 
   // Request for member of associated event, but there is no associated event.
-  if (!the_event)
+  if (!the_event) {
     return false;
+  }
 
   switch (member_) {
     case EVENT_CATEGORY:
@@ -638,8 +654,9 @@ bool Query::GetMemberValueAsString(const TraceEvent& event,
     case PREV_ARG: {
       // Search for the argument name and return its value if found.
       auto str_i = the_event->arg_strings.find(string_);
-      if (str_i == the_event->arg_strings.end())
+      if (str_i == the_event->arg_strings.end()) {
         return false;
+      }
       *str = str_i->second;
       return true;
     }
@@ -654,16 +671,14 @@ Query::Query(const std::string& str)
       member_(EVENT_INVALID),
       number_(0),
       string_(str),
-      is_pattern_(false) {
-}
+      is_pattern_(false) {}
 
 Query::Query(double num)
     : type_(QUERY_NUMBER),
       operator_(OP_INVALID),
       member_(EVENT_INVALID),
       number_(num),
-      is_pattern_(false) {
-}
+      is_pattern_(false) {}
 const Query& Query::left() const {
   return left_->query();
 }
@@ -732,15 +747,14 @@ Query Query::operator-() const {
   return Query(*this, OP_NEGATE);
 }
 
-
 Query::Query(const Query& left, const Query& right, Operator binary_op)
     : operator_(binary_op),
       left_(new QueryNode(left)),
       right_(new QueryNode(right)),
       member_(EVENT_INVALID),
       number_(0) {
-  type_ = (binary_op < OP_ADD ?
-           QUERY_BOOLEAN_OPERATOR : QUERY_ARITHMETIC_OPERATOR);
+  type_ =
+      (binary_op < OP_ADD ? QUERY_BOOLEAN_OPERATOR : QUERY_ARITHMETIC_OPERATOR);
 }
 
 Query::Query(const Query& left, Operator unary_op)
@@ -748,8 +762,8 @@ Query::Query(const Query& left, Operator unary_op)
       left_(new QueryNode(left)),
       member_(EVENT_INVALID),
       number_(0) {
-  type_ = (unary_op < OP_ADD ?
-           QUERY_BOOLEAN_OPERATOR : QUERY_ARITHMETIC_OPERATOR);
+  type_ =
+      (unary_op < OP_ADD ? QUERY_BOOLEAN_OPERATOR : QUERY_ARITHMETIC_OPERATOR);
 }
 
 namespace {
@@ -760,10 +774,12 @@ size_t FindMatchingEvents(const std::vector<TraceEvent>& events,
                           TraceEventVector* output,
                           bool ignore_metadata_events) {
   for (const auto& i : events) {
-    if (ignore_metadata_events && i.phase == TRACE_EVENT_PHASE_METADATA)
+    if (ignore_metadata_events && i.phase == TRACE_EVENT_PHASE_METADATA) {
       continue;
-    if (query.Evaluate(i))
+    }
+    if (query.Evaluate(i)) {
       output->push_back(&i);
+    }
   }
   return output->size();
 }
@@ -772,8 +788,9 @@ bool ParseEventsFromJson(const std::string& json,
                          std::vector<TraceEvent>* output) {
   std::optional<base::Value> root = base::JSONReader::Read(json);
 
-  if (!root)
+  if (!root) {
     return false;
+  }
 
   base::Value::List* list = nullptr;
   if (root->is_list()) {
@@ -781,13 +798,15 @@ bool ParseEventsFromJson(const std::string& json,
   } else if (root->is_dict()) {
     list = root->GetDict().FindList("traceEvents");
   }
-  if (!list)
+  if (!list) {
     return false;
+  }
 
   for (const auto& item : *list) {
     TraceEvent event;
-    if (!event.SetFromJSON(&item))
+    if (!event.SetFromJSON(&item)) {
       return false;
+    }
     output->push_back(std::move(event));
   }
 
@@ -807,15 +826,17 @@ TraceAnalyzer::~TraceAnalyzer() = default;
 std::unique_ptr<TraceAnalyzer> TraceAnalyzer::Create(
     const std::string& json_events) {
   std::unique_ptr<TraceAnalyzer> analyzer(new TraceAnalyzer());
-  if (analyzer->SetEvents(json_events))
+  if (analyzer->SetEvents(json_events)) {
     return analyzer;
+  }
   return nullptr;
 }
 
 bool TraceAnalyzer::SetEvents(const std::string& json_events) {
   raw_events_.clear();
-  if (!ParseEventsFromJson(json_events, &raw_events_))
+  if (!ParseEventsFromJson(json_events, &raw_events_)) {
     return false;
+  }
   base::ranges::stable_sort(raw_events_);
   ParseMetadata();
   return true;
@@ -917,21 +938,23 @@ void TraceAnalyzer::MergeAssociatedEventArgs() {
 size_t TraceAnalyzer::FindEvents(const Query& query, TraceEventVector* output) {
   allow_association_changes_ = false;
   output->clear();
-  return FindMatchingEvents(
-      raw_events_, query, output, ignore_metadata_events_);
+  return FindMatchingEvents(raw_events_, query, output,
+                            ignore_metadata_events_);
 }
 
 const TraceEvent* TraceAnalyzer::FindFirstOf(const Query& query) {
   TraceEventVector output;
-  if (FindEvents(query, &output) > 0)
+  if (FindEvents(query, &output) > 0) {
     return output.front();
+  }
   return nullptr;
 }
 
 const TraceEvent* TraceAnalyzer::FindLastOf(const Query& query) {
   TraceEventVector output;
-  if (FindEvents(query, &output) > 0)
+  if (FindEvents(query, &output) > 0) {
     return output.back();
+  }
   return nullptr;
 }
 
@@ -945,12 +968,14 @@ void TraceAnalyzer::ParseMetadata() {
   for (const auto& this_event : raw_events_) {
     // Check for thread name metadata.
     if (this_event.phase != TRACE_EVENT_PHASE_METADATA ||
-        this_event.name != "thread_name")
+        this_event.name != "thread_name") {
       continue;
+    }
     std::map<std::string, std::string>::const_iterator string_it =
         this_event.arg_strings.find("name");
-    if (string_it != this_event.arg_strings.end())
+    if (string_it != this_event.arg_strings.end()) {
       thread_names_[this_event.thread] = string_it->second;
+    }
   }
 }
 
@@ -1018,8 +1043,9 @@ bool GetRateStats(const TraceEventVector& events,
 
   num_deltas = deltas.size();
   double delta_sum = 0.0;
-  for (size_t i = 0; i < num_deltas; ++i)
+  for (size_t i = 0; i < num_deltas; ++i) {
     delta_sum += deltas[i];
+  }
 
   stats->min_us = *base::ranges::min_element(deltas);
   stats->max_us = *base::ranges::max_element(deltas);
@@ -1070,13 +1096,15 @@ bool FindClosest(const TraceEventVector& events,
                  size_t* return_closest,
                  size_t* return_second_closest) {
   DCHECK(return_closest);
-  if (events.empty() || position >= events.size())
+  if (events.empty() || position >= events.size()) {
     return false;
+  }
   size_t closest = events.size();
   size_t second_closest = events.size();
   for (size_t i = 0; i < events.size(); ++i) {
-    if (!query.Evaluate(*events.at(i)))
+    if (!query.Evaluate(*events.at(i))) {
       continue;
+    }
     if (closest == events.size()) {
       closest = i;
       continue;
@@ -1093,8 +1121,9 @@ bool FindClosest(const TraceEventVector& events,
   if (closest < events.size() &&
       (!return_second_closest || second_closest < events.size())) {
     *return_closest = closest;
-    if (return_second_closest)
+    if (return_second_closest) {
       *return_second_closest = second_closest;
+    }
     return true;
   }
 
@@ -1105,13 +1134,15 @@ size_t CountMatches(const TraceEventVector& events,
                     const Query& query,
                     size_t begin_position,
                     size_t end_position) {
-  if (begin_position >= events.size())
+  if (begin_position >= events.size()) {
     return 0u;
+  }
   end_position = (end_position < events.size()) ? end_position : events.size();
   size_t count = 0u;
   for (size_t i = begin_position; i < end_position; ++i) {
-    if (query.Evaluate(*events.at(i)))
+    if (query.Evaluate(*events.at(i))) {
       ++count;
+    }
   }
   return count;
 }

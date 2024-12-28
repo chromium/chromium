@@ -39,12 +39,14 @@ constexpr bool SearchForChars(const CHAR** pattern,
     if (*pattern == pattern_end) {
       // If this is the end of the pattern, only accept the end of the string;
       // anything else falls through to the mismatch case.
-      if (*string == string_end)
+      if (*string == string_end) {
         return true;
+      }
     } else {
       // If we have found a wildcard, we're done.
-      if (!escape && IsWildcard(**pattern))
+      if (!escape && IsWildcard(**pattern)) {
         return true;
+      }
 
       // Check if the escape character is found. If so, skip it and move to the
       // next character.
@@ -56,8 +58,9 @@ constexpr bool SearchForChars(const CHAR** pattern,
 
       escape = false;
 
-      if (*string == string_end)
+      if (*string == string_end) {
         return false;
+      }
 
       // Check if the chars match, if so, increment the ptrs.
       const CHAR* pattern_next = *pattern;
@@ -77,8 +80,9 @@ constexpr bool SearchForChars(const CHAR** pattern,
     // TODO(bauerb): This is a naive implementation of substring search, which
     // could be implemented with a more efficient algorithm, e.g.
     // Knuth-Morris-Pratt (at the expense of requiring preprocessing).
-    if (maximum_distance == 0)
+    if (maximum_distance == 0) {
       return false;
+    }
 
     // Because unlimited distance is represented as -1, this will never reach 0
     // and therefore fail the match above.

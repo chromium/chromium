@@ -27,8 +27,9 @@ namespace {
 // Adapted from absl::ConsumePrefix():
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/strings/strip.h?l=45&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
 bool ConsumePrefix(std::string_view& str, std::string_view expected) {
-  if (!StartsWith(str, expected))
+  if (!StartsWith(str, expected)) {
     return false;
+  }
   str.remove_prefix(expected.size());
   return true;
 }
@@ -61,26 +62,31 @@ constexpr std::optional<ParsedDecimal> ConsumeDurationNumber(
   // Parse contiguous digits.
   for (; !number_string.empty(); number_string.remove_prefix(1)) {
     const int d = number_string.front() - '0';
-    if (d < 0 || d >= 10)
+    if (d < 0 || d >= 10) {
       break;
+    }
 
-    if (res.int_part > std::numeric_limits<int64_t>::max() / 10)
+    if (res.int_part > std::numeric_limits<int64_t>::max() / 10) {
       return std::nullopt;
+    }
     res.int_part *= 10;
-    if (res.int_part > std::numeric_limits<int64_t>::max() - d)
+    if (res.int_part > std::numeric_limits<int64_t>::max() - d) {
       return std::nullopt;
+    }
     res.int_part += d;
   }
   const bool int_part_empty = number_string.begin() == orig_start;
-  if (number_string.empty() || number_string.front() != '.')
+  if (number_string.empty() || number_string.front() != '.') {
     return int_part_empty ? std::nullopt : std::make_optional(res);
+  }
 
   number_string.remove_prefix(1);  // consume '.'
   // Parse contiguous digits.
   for (; !number_string.empty(); number_string.remove_prefix(1)) {
     const int d = number_string.front() - '0';
-    if (d < 0 || d >= 10)
+    if (d < 0 || d >= 10) {
       break;
+    }
     DCHECK_LT(res.frac_part, res.frac_scale);
     if (res.frac_scale <= std::numeric_limits<int64_t>::max() / 10) {
       // |frac_part| will not overflow because it is always < |frac_scale|.
@@ -112,8 +118,9 @@ std::optional<TimeDelta> ConsumeDurationUnit(std::string_view& unit_string) {
            std::make_pair("h", Hours(1)),
            std::make_pair("d", Days(1)),
        }) {
-    if (ConsumePrefix(unit_string, str_delta.first))
+    if (ConsumePrefix(unit_string, str_delta.first)) {
       return str_delta.second;
+    }
   }
 
   return std::nullopt;
@@ -123,37 +130,45 @@ std::optional<TimeDelta> ConsumeDurationUnit(std::string_view& unit_string) {
 
 std::optional<TimeDelta> TimeDeltaFromString(std::string_view duration_string) {
   int sign = 1;
-  if (ConsumePrefix(duration_string, "-"))
+  if (ConsumePrefix(duration_string, "-")) {
     sign = -1;
-  else
+  } else {
     ConsumePrefix(duration_string, "+");
-  if (duration_string.empty())
+  }
+  if (duration_string.empty()) {
     return std::nullopt;
+  }
 
   // Handle special-case values that don't require units.
-  if (duration_string == "0")
+  if (duration_string == "0") {
     return TimeDelta();
-  if (duration_string == "inf")
+  }
+  if (duration_string == "inf") {
     return sign == 1 ? TimeDelta::Max() : TimeDelta::Min();
+  }
 
   TimeDelta delta;
   while (!duration_string.empty()) {
     std::optional<ParsedDecimal> number_opt =
         ConsumeDurationNumber(duration_string);
-    if (!number_opt.has_value())
+    if (!number_opt.has_value()) {
       return std::nullopt;
+    }
     std::optional<TimeDelta> unit_opt = ConsumeDurationUnit(duration_string);
-    if (!unit_opt.has_value())
+    if (!unit_opt.has_value()) {
       return std::nullopt;
+    }
 
     ParsedDecimal number = number_opt.value();
     TimeDelta unit = unit_opt.value();
-    if (number.int_part != 0)
+    if (number.int_part != 0) {
       delta += sign * number.int_part * unit;
-    if (number.frac_part != 0)
+    }
+    if (number.frac_part != 0) {
       delta +=
           (static_cast<double>(sign) * number.frac_part / number.frac_scale) *
           unit;
+    }
   }
   return delta;
 }

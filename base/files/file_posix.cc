@@ -96,9 +96,9 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
   // http://pubs.opengroup.org/onlinepubs/9699919799/
 
   timespec ts_times[2];
-  ts_times[0].tv_sec  = times[0].tv_sec;
+  ts_times[0].tv_sec = times[0].tv_sec;
   ts_times[0].tv_nsec = times[0].tv_usec * 1000;
-  ts_times[1].tv_sec  = times[1].tv_sec;
+  ts_times[1].tv_sec = times[1].tv_sec;
   ts_times[1].tv_nsec = times[1].tv_usec * 1000;
 
   return futimens(file, ts_times);
@@ -109,8 +109,9 @@ int CallFutimes(PlatformFile file, const struct timeval times[2]) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 short FcntlFlockType(std::optional<File::LockMode> mode) {
-  if (!mode.has_value())
+  if (!mode.has_value()) {
     return F_UNLCK;
+  }
   switch (mode.value()) {
     case File::LockMode::kShared:
       return F_RDLCK;
@@ -127,8 +128,9 @@ File::Error CallFcntlFlock(PlatformFile file,
   lock.l_whence = SEEK_SET;
   lock.l_start = 0;
   lock.l_len = 0;  // Lock entire file.
-  if (HANDLE_EINTR(fcntl(file, F_SETLK, &lock)) == -1)
+  if (HANDLE_EINTR(fcntl(file, F_SETLK, &lock)) == -1) {
     return File::GetLastFileError();
+  }
   return File::FILE_OK;
 }
 #endif
@@ -247,8 +249,9 @@ PlatformFile File::TakePlatformFile() {
 }
 
 void File::Close() {
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
   SCOPED_FILE_TRACE("Close");
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -275,8 +278,9 @@ int64_t File::Seek(Whence whence, int64_t offset) {
 int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset + size - 1))
+  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset + size - 1)) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Read", size);
 
@@ -286,8 +290,9 @@ int File::Read(int64_t offset, char* data, int size) {
     rv = HANDLE_EINTR(pread(file_.get(), data + bytes_read,
                             static_cast<size_t>(size - bytes_read),
                             static_cast<off_t>(offset + bytes_read)));
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_read += rv;
   } while (bytes_read < size);
@@ -298,8 +303,9 @@ int File::Read(int64_t offset, char* data, int size) {
 int File::ReadAtCurrentPos(char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPos", size);
 
@@ -308,8 +314,9 @@ int File::ReadAtCurrentPos(char* data, int size) {
   do {
     rv = HANDLE_EINTR(read(file_.get(), data + bytes_read,
                            static_cast<size_t>(size - bytes_read)));
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_read += rv;
   } while (bytes_read < size);
@@ -320,8 +327,9 @@ int File::ReadAtCurrentPos(char* data, int size) {
 int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset))
+  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset)) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadNoBestEffort", size);
   return checked_cast<int>(
@@ -332,8 +340,9 @@ int File::ReadNoBestEffort(int64_t offset, char* data, int size) {
 int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("ReadAtCurrentPosNoBestEffort", size);
   return checked_cast<int>(
@@ -343,12 +352,14 @@ int File::ReadAtCurrentPosNoBestEffort(char* data, int size) {
 int File::Write(int64_t offset, const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (IsOpenAppend(file_.get()))
+  if (IsOpenAppend(file_.get())) {
     return WriteAtCurrentPos(data, size);
+  }
 
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("Write", size);
 
@@ -368,8 +379,9 @@ int File::Write(int64_t offset, const char* data, int size) {
                              static_cast<size_t>(size - bytes_written),
                              offset + bytes_written));
 #endif
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_written += rv;
   } while (bytes_written < size);
@@ -380,8 +392,9 @@ int File::Write(int64_t offset, const char* data, int size) {
 int File::WriteAtCurrentPos(const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPos", size);
 
@@ -390,8 +403,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   do {
     rv = HANDLE_EINTR(write(file_.get(), data + bytes_written,
                             static_cast<size_t>(size - bytes_written)));
-    if (rv <= 0)
+    if (rv <= 0) {
       break;
+    }
 
     bytes_written += rv;
   } while (bytes_written < size);
@@ -402,8 +416,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
 int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0)
+  if (size < 0) {
     return -1;
+  }
 
   SCOPED_FILE_TRACE_WITH_SIZE("WriteAtCurrentPosNoBestEffort", size);
   return checked_cast<int>(
@@ -489,14 +504,16 @@ File::Error File::Unlock() {
 #endif
 
 File File::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return File();
+  }
 
   SCOPED_FILE_TRACE("Duplicate");
 
   ScopedPlatformFile other_fd(HANDLE_EINTR(dup(GetPlatformFile())));
-  if (!other_fd.is_valid())
+  if (!other_fd.is_valid()) {
     return File(File::GetLastFileError());
+  }
 
   return File(std::move(other_fd), async());
 }
@@ -560,8 +577,9 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   DCHECK(!IsValid());
 
   int open_flags = 0;
-  if (flags & FLAG_CREATE)
+  if (flags & FLAG_CREATE) {
     open_flags = O_CREAT | O_EXCL;
+  }
 
   created_ = false;
 
@@ -593,13 +611,15 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     NOTREACHED();
   }
 
-  if (flags & FLAG_TERMINAL_DEVICE)
+  if (flags & FLAG_TERMINAL_DEVICE) {
     open_flags |= O_NOCTTY | O_NDELAY;
+  }
 
-  if (flags & FLAG_APPEND && flags & FLAG_READ)
+  if (flags & FLAG_APPEND && flags & FLAG_READ) {
     open_flags |= O_APPEND | O_RDWR;
-  else if (flags & FLAG_APPEND)
+  } else if (flags & FLAG_APPEND) {
     open_flags |= O_APPEND | O_WRONLY;
+  }
 
   static_assert(O_RDONLY == 0, "O_RDONLY must equal zero");
 
@@ -632,8 +652,9 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     if (descriptor < 0) {
       open_flags |= O_CREAT;
       descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
-      if (descriptor >= 0)
+      if (descriptor >= 0) {
         created_ = true;
+      }
     }
   }
 
@@ -642,11 +663,13 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     return;
   }
 
-  if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE))
+  if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE)) {
     created_ = true;
+  }
 
-  if (flags & FLAG_DELETE_ON_CLOSE)
+  if (flags & FLAG_DELETE_ON_CLOSE) {
     unlink(path.value().c_str());
+  }
 
   async_ = ((flags & FLAG_ASYNC) == FLAG_ASYNC);
   error_details_ = FILE_OK;

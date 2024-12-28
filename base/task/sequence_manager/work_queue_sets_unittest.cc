@@ -53,8 +53,9 @@ class WorkQueueSetsTest : public testing::Test {
 
   void TearDown() override {
     for (std::unique_ptr<WorkQueue>& work_queue : work_queues_) {
-      if (work_queue->work_queue_sets())
+      if (work_queue->work_queue_sets()) {
         work_queue_sets_->RemoveQueue(work_queue.get());
+      }
     }
   }
 

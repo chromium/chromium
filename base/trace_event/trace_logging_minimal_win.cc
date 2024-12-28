@@ -52,8 +52,9 @@ uint16_t TlmProvider::AppendNameToMetadata(
 }
 
 void TlmProvider::Unregister() noexcept {
-  if (reg_handle_ == 0)
+  if (reg_handle_ == 0) {
     return;
+  }
 
   ULONG status = EventUnregister(reg_handle_);
   LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider unregistration failure";
@@ -76,8 +77,9 @@ ULONG TlmProvider::Register(const char* provider_name,
   // Append the provider name starting at offset 2 (skip MetadataSize).
   provider_metadata_size_ = AppendNameToMetadata(
       provider_metadata_, kMaxProviderMetadataSize, 2, provider_name);
-  if (provider_metadata_size_ > kMaxProviderMetadataSize)
+  if (provider_metadata_size_ > kMaxProviderMetadataSize) {
     return ERROR_BUFFER_OVERFLOW;
+  }
 
   // Fill in MetadataSize field at offset 0.
   *reinterpret_cast<uint16_t*>(provider_metadata_) = provider_metadata_size_;
@@ -85,8 +87,9 @@ ULONG TlmProvider::Register(const char* provider_name,
   on_updated_callback_ = std::move(on_updated_callback);
   ULONG status =
       EventRegister(&provider_guid, StaticEnableCallback, this, &reg_handle_);
-  if (status != ERROR_SUCCESS)
+  if (status != ERROR_SUCCESS) {
     return status;
+  }
 
   // Best-effort, ignore failure.
   return ::EventSetInformation(reg_handle_, EventProviderSetTraits,
@@ -118,8 +121,9 @@ void TlmProvider::StaticEnableCallback(const GUID* source_id,
                                        ULONGLONG match_all_keyword,
                                        PEVENT_FILTER_DESCRIPTOR filter_data,
                                        PVOID callback_context) {
-  if (!callback_context)
+  if (!callback_context) {
     return;
+  }
 
   TlmProvider* provider = static_cast<TlmProvider*>(callback_context);
   switch (is_enabled) {
@@ -173,13 +177,15 @@ char TlmProvider::EventAddField(char* metadata,
   //     BYTE OutType; // Only present if high bit set in InType.
   //     ( + optional extension data not used here)
 
-  if (*metadata_index >= kMaxEventMetadataSize)
+  if (*metadata_index >= kMaxEventMetadataSize) {
     return 0;
+  }
 
   *metadata_index = AppendNameToMetadata(metadata, kMaxEventMetadataSize,
                                          *metadata_index, field_name);
-  if (*metadata_index >= kMaxEventMetadataSize)
+  if (*metadata_index >= kMaxEventMetadataSize) {
     return 0;
+  }
 
   if (out_type == 0) {
     // 1-byte encoding: inType + TlgOutNULL.

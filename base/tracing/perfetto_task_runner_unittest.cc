@@ -22,6 +22,7 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include <sys/socket.h>
 #include <sys/types.h>
+
 #include "base/posix/eintr_wrapper.h"
 #endif
 
@@ -170,24 +171,23 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
 
   base::RunLoop run_loop;
 
-  task_runner()->PostTask(
-      [&] {
-        // The 1st add operation posts a task.
-        task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
-          run_callback_1 = true;
-          ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
-          run_loop.Quit();
-        });
-        // Remove so the 2nd add operation can succeed.
-        task_runner()->RemoveFileDescriptorWatch(fd.get());
+  task_runner()->PostTask([&] {
+    // The 1st add operation posts a task.
+    task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
+      run_callback_1 = true;
+      ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
+      run_loop.Quit();
+    });
+    // Remove so the 2nd add operation can succeed.
+    task_runner()->RemoveFileDescriptorWatch(fd.get());
 
-        // Simulate FD reuse. The 2nd add operation also posts a task.
-        task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
-          run_callback_2 = true;
-          ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
-          run_loop.Quit();
-        });
-      });
+    // Simulate FD reuse. The 2nd add operation also posts a task.
+    task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
+      run_callback_2 = true;
+      ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
+      run_loop.Quit();
+    });
+  });
 
   // Make all posted tasks run.
   run_loop.Run();

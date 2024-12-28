@@ -104,8 +104,7 @@
 
 // Defines a class member that acts like a mutex. It is used only as a
 // verification tool.
-#define DFAKE_MUTEX(obj) \
-     mutable base::ThreadCollisionWarner obj
+#define DFAKE_MUTEX(obj) mutable base::ThreadCollisionWarner obj
 // Asserts the call is never called simultaneously in two threads. Used at
 // member function scope.
 #define DFAKE_SCOPED_LOCK(obj) \
@@ -148,9 +147,7 @@ class BASE_EXPORT ThreadCollisionWarner {
  public:
   // The parameter asserter is there only for test purpose
   explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
-      : valid_thread_id_(0),
-        counter_(0),
-        asserter_(asserter) {}
+      : valid_thread_id_(0), counter_(0), asserter_(asserter) {}
 
   ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
   ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;
@@ -164,8 +161,7 @@ class BASE_EXPORT ThreadCollisionWarner {
   // from one thread
   class BASE_EXPORT Check {
    public:
-    explicit Check(ThreadCollisionWarner* warner)
-        : warner_(warner) {
+    explicit Check(ThreadCollisionWarner* warner) : warner_(warner) {
       warner_->EnterSelf();
     }
 
@@ -182,17 +178,14 @@ class BASE_EXPORT ThreadCollisionWarner {
   // DFAKE_SCOPED_LOCK
   class BASE_EXPORT ScopedCheck {
    public:
-    explicit ScopedCheck(ThreadCollisionWarner* warner)
-        : warner_(warner) {
+    explicit ScopedCheck(ThreadCollisionWarner* warner) : warner_(warner) {
       warner_->Enter();
     }
 
     ScopedCheck(const ScopedCheck&) = delete;
     ScopedCheck& operator=(const ScopedCheck&) = delete;
 
-    ~ScopedCheck() {
-      warner_->Leave();
-    }
+    ~ScopedCheck() { warner_->Leave(); }
 
    private:
     raw_ptr<ThreadCollisionWarner> warner_;
@@ -210,9 +203,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     ScopedRecursiveCheck(const ScopedRecursiveCheck&) = delete;
     ScopedRecursiveCheck& operator=(const ScopedRecursiveCheck&) = delete;
 
-    ~ScopedRecursiveCheck() {
-      warner_->Leave();
-    }
+    ~ScopedRecursiveCheck() { warner_->Leave(); }
 
    private:
     raw_ptr<ThreadCollisionWarner> warner_;

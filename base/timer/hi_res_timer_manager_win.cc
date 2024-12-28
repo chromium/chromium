@@ -85,8 +85,9 @@ void HighResolutionTimerManager::OnResume() {
 
 void HighResolutionTimerManager::UseHiResClock(bool use) {
   DCHECK(HighResolutionTimerAllowed());
-  if (use == hi_res_clock_available_)
+  if (use == hi_res_clock_available_) {
     return;
+  }
   hi_res_clock_available_ = use;
   Time::EnableHighResolutionTimer(use);
 }

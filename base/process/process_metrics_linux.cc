@@ -56,12 +56,14 @@ namespace {
 // Read a file with a single number string and return the number as a uint64_t.
 uint64_t ReadFileToUint64(const FilePath& file) {
   std::string file_contents;
-  if (!ReadFileToString(file, &file_contents))
+  if (!ReadFileToString(file, &file_contents)) {
     return 0;
+  }
   TrimWhitespaceASCII(file_contents, TRIM_ALL, &file_contents);
   uint64_t file_contents_uint64 = 0;
-  if (!StringToUint64(file_contents, &file_contents_uint64))
+  if (!StringToUint64(file_contents, &file_contents_uint64)) {
     return 0;
+  }
   return file_contents_uint64;
 }
 #endif
@@ -193,11 +195,13 @@ bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {
   // We are not using internal::ReadStatsFileAndGetFieldAsInt64(), since it
   // would read the file twice, and return inconsistent numbers.
   std::string stats_data;
-  if (!internal::ReadProcStats(process_, &stats_data))
+  if (!internal::ReadProcStats(process_, &stats_data)) {
     return false;
+  }
   std::vector<std::string> proc_stats;
-  if (!internal::ParseProcStats(stats_data, &proc_stats))
+  if (!internal::ParseProcStats(stats_data, &proc_stats)) {
     return false;
+  }
 
   counts->minor =
       internal::GetProcStatsFieldAsInt64(proc_stats, internal::VM_MINFLT);
@@ -213,14 +217,16 @@ int ProcessMetrics::GetOpenFdCount() const {
   FilePath fd_path = internal::GetProcPidDir(process_).Append("fd");
 
   DirReaderPosix dir_reader(fd_path.value().c_str());
-  if (!dir_reader.IsValid())
+  if (!dir_reader.IsValid()) {
     return -1;
+  }
 
   int total_count = 0;
-  for (; dir_reader.Next(); ) {
+  for (; dir_reader.Next();) {
     const char* name = dir_reader.name();
-    if (strcmp(name, ".") != 0 && strcmp(name, "..") != 0)
+    if (strcmp(name, ".") != 0 && strcmp(name, "..") != 0) {
       ++total_count;
+    }
   }
 
   return total_count;
@@ -231,20 +237,23 @@ int ProcessMetrics::GetOpenFdSoftLimit() const {
   FilePath fd_path = internal::GetProcPidDir(process_).Append("limits");
 
   std::string limits_contents;
-  if (!ReadFileToStringNonBlocking(fd_path, &limits_contents))
+  if (!ReadFileToStringNonBlocking(fd_path, &limits_contents)) {
     return -1;
+  }
 
   for (const auto& line : SplitStringPiece(
            limits_contents, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
-    if (!StartsWith(line, "Max open files"))
+    if (!StartsWith(line, "Max open files")) {
       continue;
+    }
 
     auto tokens =
         SplitStringPiece(line, " ", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
     if (tokens.size() > 3) {
       int limit = -1;
-      if (!StringToInt(tokens[3], &limit))
+      if (!StringToInt(tokens[3], &limit)) {
         return -1;
+      }
       return limit;
     }
   }
@@ -260,8 +269,9 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) : process_(process) {}
 
 size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
-  if (!GetSystemMemoryInfo(&meminfo))
+  if (!GetSystemMemoryInfo(&meminfo)) {
     return 0;
+  }
   return GetSystemCommitChargeFromMeminfo(meminfo);
 }
 
@@ -277,12 +287,14 @@ size_t GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo) {
 int ParseProcStatCPU(std::string_view input) {
   // |input| may be empty if the process disappeared somehow.
   // e.g. http://crbug.com/145811.
-  if (input.empty())
+  if (input.empty()) {
     return -1;
+  }
 
   size_t start = input.find_last_of(')');
-  if (start == input.npos)
+  if (start == input.npos) {
     return -1;
+  }
 
   // Number of spaces remaining until reaching utime's index starting after the
   // last ')'.
@@ -296,8 +308,9 @@ int ParseProcStatCPU(std::string_view input) {
     if (--num_spaces_remaining == 0) {
       int utime = 0;
       int stime = 0;
-      if (sscanf(&input.data()[i], "%d %d", &utime, &stime) != 2)
+      if (sscanf(&input.data()[i], "%d %d", &utime, &stime) != 2) {
         return -1;
+      }
 
       return utime + stime;
     }
@@ -421,42 +434,45 @@ bool ParseProcMeminfo(std::string_view meminfo_data,
     }
 
     int* target = nullptr;
-    if (tokens[0] == "MemTotal:")
+    if (tokens[0] == "MemTotal:") {
       target = &meminfo->total;
-    else if (tokens[0] == "MemFree:")
+    } else if (tokens[0] == "MemFree:") {
       target = &meminfo->free;
-    else if (tokens[0] == "MemAvailable:")
+    } else if (tokens[0] == "MemAvailable:") {
       target = &meminfo->available;
-    else if (tokens[0] == "Buffers:")
+    } else if (tokens[0] == "Buffers:") {
       target = &meminfo->buffers;
-    else if (tokens[0] == "Cached:")
+    } else if (tokens[0] == "Cached:") {
       target = &meminfo->cached;
-    else if (tokens[0] == "Active(anon):")
+    } else if (tokens[0] == "Active(anon):") {
       target = &meminfo->active_anon;
-    else if (tokens[0] == "Inactive(anon):")
+    } else if (tokens[0] == "Inactive(anon):") {
       target = &meminfo->inactive_anon;
-    else if (tokens[0] == "Active(file):")
+    } else if (tokens[0] == "Active(file):") {
       target = &meminfo->active_file;
-    else if (tokens[0] == "Inactive(file):")
+    } else if (tokens[0] == "Inactive(file):") {
       target = &meminfo->inactive_file;
-    else if (tokens[0] == "SwapTotal:")
+    } else if (tokens[0] == "SwapTotal:") {
       target = &meminfo->swap_total;
-    else if (tokens[0] == "SwapFree:")
+    } else if (tokens[0] == "SwapFree:") {
       target = &meminfo->swap_free;
-    else if (tokens[0] == "Dirty:")
+    } else if (tokens[0] == "Dirty:") {
       target = &meminfo->dirty;
-    else if (tokens[0] == "SReclaimable:")
+    } else if (tokens[0] == "SReclaimable:") {
       target = &meminfo->reclaimable;
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     // Chrome OS has a tweaked kernel that allows querying Shmem, which is
     // usually video memory otherwise invisible to the OS.
-    else if (tokens[0] == "Shmem:")
+    else if (tokens[0] == "Shmem:") {
       target = &meminfo->shmem;
-    else if (tokens[0] == "Slab:")
+    } else if (tokens[0] == "Slab:") {
       target = &meminfo->slab;
+    }
 #endif
-    if (target)
+    if (target) {
       StringToInt(tokens[1], target);
+    }
   }
 
   // Make sure the MemTotal is valid.
@@ -489,12 +505,14 @@ bool ParseProcVmstat(std::string_view vmstat_data, VmStatInfo* vmstat) {
            vmstat_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
     std::vector<std::string_view> tokens =
         SplitStringPiece(line, " ", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
-    if (tokens.size() != 2)
+    if (tokens.size() != 2) {
       continue;
+    }
 
     uint64_t val;
-    if (!StringToUint64(tokens[1], &val))
+    if (!StringToUint64(tokens[1], &val)) {
       continue;
+    }
 
     if (tokens[0] == "pswpin") {
       vmstat->pswpin = val;
@@ -603,8 +621,9 @@ Value::Dict SystemDiskInfo::ToDict() const {
 }
 
 bool IsValidDiskName(std::string_view candidate) {
-  if (candidate.length() < 3)
+  if (candidate.length() < 3) {
     return false;
+  }
 
   if (candidate[1] == 'd' &&
       (candidate[0] == 'h' || candidate[0] == 's' || candidate[0] == 'v')) {
@@ -618,8 +637,9 @@ bool IsValidDiskName(std::string_view candidate) {
   }
 
   const char kMMCName[] = "mmcblk";
-  if (!StartsWith(candidate, kMMCName))
+  if (!StartsWith(candidate, kMMCName)) {
     return false;
+  }
 
   // mmcblk[0-9]+ case
   for (size_t i = strlen(kMMCName); i < candidate.length(); ++i) {
@@ -677,8 +697,9 @@ bool GetSystemDiskInfo(SystemDiskInfo* diskinfo) {
         line, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     // Fields may have overflowed and reset to zero.
-    if (!IsValidDiskName(disk_fields[kDiskDriveName]))
+    if (!IsValidDiskName(disk_fields[kDiskDriveName])) {
       continue;
+    }
 
     StringToUint64(disk_fields[kDiskReads], &reads);
     StringToUint64(disk_fields[kDiskReadsMerged], &reads_merged);
@@ -758,12 +779,15 @@ bool ParseZramMmStat(std::string_view mm_stat_data, SwapInfo* swap_info) {
     return false;
   }
 
-  if (!StringToUint64(tokens[0], &swap_info->orig_data_size))
+  if (!StringToUint64(tokens[0], &swap_info->orig_data_size)) {
     return false;
-  if (!StringToUint64(tokens[1], &swap_info->compr_data_size))
+  }
+  if (!StringToUint64(tokens[1], &swap_info->compr_data_size)) {
     return false;
-  if (!StringToUint64(tokens[2], &swap_info->mem_used_total))
+  }
+  if (!StringToUint64(tokens[2], &swap_info->mem_used_total)) {
     return false;
+  }
 
   return true;
 }
@@ -786,10 +810,12 @@ bool ParseZramStat(std::string_view stat_data, SwapInfo* swap_info) {
     return false;
   }
 
-  if (!StringToUint64(tokens[0], &swap_info->num_reads))
+  if (!StringToUint64(tokens[0], &swap_info->num_reads)) {
     return false;
-  if (!StringToUint64(tokens[4], &swap_info->num_writes))
+  }
+  if (!StringToUint64(tokens[4], &swap_info->num_writes)) {
     return false;
+  }
 
   return true;
 }
@@ -814,8 +840,9 @@ void ParseZramPath(SwapInfo* swap_info) {
   FilePath zram_path("/sys/block/zram0");
   uint64_t orig_data_size =
       ReadFileToUint64(zram_path.Append("orig_data_size"));
-  if (IgnoreZramFirstPage(orig_data_size, swap_info))
+  if (IgnoreZramFirstPage(orig_data_size, swap_info)) {
     return;
+  }
 
   swap_info->orig_data_size = orig_data_size;
   swap_info->num_reads = ReadFileToUint64(zram_path.Append("num_reads"));
@@ -853,8 +880,9 @@ bool GetSwapInfoImpl(SwapInfo* swap_info) {
     DLOG(WARNING) << "Failed to parse " << zram_mm_stat_file.value();
     return false;
   }
-  if (IgnoreZramFirstPage(swap_info->orig_data_size, swap_info))
+  if (IgnoreZramFirstPage(swap_info->orig_data_size, swap_info)) {
     return true;
+  }
 
   FilePath zram_stat_file("/sys/block/zram0/stat");
   std::string stat_data;
@@ -1036,8 +1064,9 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   static bool is_newer_kernel =
       base::StartsWith(base::SysInfo::KernelVersion(), "5.");
   static bool is_intel_cpu = base::CPU().vendor_name() == "GenuineIntel";
-  if (is_newer_kernel && is_intel_cpu)
+  if (is_newer_kernel && is_intel_cpu) {
     return false;
+  }
 #endif
 
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -1067,8 +1096,9 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
     int64_t mali_size = -1;
     int num_res =
         sscanf(mali_memory_data.c_str(), "%" SCNd64 " bytes", &mali_size);
-    if (num_res == 1)
+    if (num_res == 1) {
       gpu_meminfo->gpu_memory_size += mali_size;
+    }
   }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 

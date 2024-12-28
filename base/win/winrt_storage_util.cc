@@ -25,12 +25,14 @@ HRESULT GetPointerToBufferData(IBuffer* buffer, uint8_t** out, UINT32* length) {
   Microsoft::WRL::ComPtr<Windows::Storage::Streams::IBufferByteAccess>
       buffer_byte_access;
   HRESULT hr = buffer->QueryInterface(IID_PPV_ARGS(&buffer_byte_access));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = buffer->get_Length(length);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   // Lifetime of the pointing buffer is controlled by the buffer object.
   return buffer_byte_access->Buffer(out);
@@ -46,22 +48,26 @@ HRESULT CreateIBufferFromData(const uint8_t* data,
   HRESULT hr = base::win::GetActivationFactory<
       ABI::Windows::Storage::Streams::IBufferFactory,
       RuntimeClass_Windows_Storage_Streams_Buffer>(&buffer_factory);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   Microsoft::WRL::ComPtr<IBuffer> internal_buffer;
   hr = buffer_factory->Create(length, &internal_buffer);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   hr = internal_buffer->put_Length(length);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   uint8_t* p_buffer_data;
   hr = GetPointerToBufferData(internal_buffer.Get(), &p_buffer_data, &length);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   memcpy(p_buffer_data, data, length);
 

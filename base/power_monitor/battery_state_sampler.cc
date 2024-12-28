@@ -67,8 +67,9 @@ void BatteryStateSampler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 
   // Send the last sample available.
-  if (has_last_battery_state_)
+  if (has_last_battery_state_) {
     observer->OnBatteryStateSampled(last_battery_state_);
+  }
 }
 
 void BatteryStateSampler::RemoveObserver(Observer* observer) {
@@ -115,8 +116,9 @@ void BatteryStateSampler::OnInitialBatteryStateSampled(
   has_last_battery_state_ = true;
   last_battery_state_ = battery_state;
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnBatteryStateSampled(battery_state);
+  }
 }
 
 void BatteryStateSampler::OnSamplingEvent() {
@@ -134,8 +136,9 @@ void BatteryStateSampler::OnBatteryStateSampled(
   DCHECK(has_last_battery_state_);
   last_battery_state_ = battery_state;
 
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnBatteryStateSampled(battery_state);
+  }
 }
 
 }  // namespace base

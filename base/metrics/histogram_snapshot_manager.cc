@@ -83,8 +83,9 @@ void HistogramSnapshotManager::PrepareSamples(const HistogramBase* histogram,
     return;
   }
 
-  if (samples.TotalCount() > 0)
+  if (samples.TotalCount() > 0) {
     histogram_flattener_->RecordDelta(*histogram, samples);
+  }
 }
 
 }  // namespace base

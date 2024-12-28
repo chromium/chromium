@@ -459,8 +459,9 @@ namespace trace_event {
 // C-style strings known at compile-time.
 constexpr bool StrEqConstexpr(const char* a, const char* b) {
   for (; *a != '\0' && *b != '\0'; ++a, ++b) {
-    if (*a != *b)
+    if (*a != *b) {
       return false;
+    }
   }
   return *a == *b;
 }

@@ -49,9 +49,7 @@ TEST(MockMessagePumpTest, KeepsRunningIfNotAllowedToAdvanceTime) {
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(TimeTicks())))
       .WillOnce(Return(NextWorkInfo(kFutureTime)));
-  EXPECT_CALL(delegate, DoIdleWork).WillOnce(Invoke([&] {
-    pump.Quit();
-  }));
+  EXPECT_CALL(delegate, DoIdleWork).WillOnce(Invoke([&] { pump.Quit(); }));
 
   pump.Run(&delegate);
 

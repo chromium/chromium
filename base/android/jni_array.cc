@@ -299,8 +299,9 @@ void AppendJavaStringArrayToStringVector(JNIEnv* env,
                                          const JavaRef<jobjectArray>& array,
                                          std::vector<std::u16string>* out) {
   DCHECK(out);
-  if (!array)
+  if (!array) {
     return;
+  }
   size_t len = SafeGetArrayLength(env, array);
   if (!len) {
     return;
@@ -319,8 +320,9 @@ void AppendJavaStringArrayToStringVector(JNIEnv* env,
                                          const JavaRef<jobjectArray>& array,
                                          std::vector<std::string>* out) {
   DCHECK(out);
-  if (!array)
+  if (!array) {
     return;
+  }
   size_t len = SafeGetArrayLength(env, array);
   if (!len) {
     return;
@@ -339,8 +341,9 @@ void AppendJavaByteArrayToByteVector(JNIEnv* env,
                                      const JavaRef<jbyteArray>& byte_array,
                                      std::vector<uint8_t>* out) {
   DCHECK(out);
-  if (!byte_array)
+  if (!byte_array) {
     return;
+  }
   size_t len = SafeGetArrayLength(env, byte_array);
   if (!len) {
     return;
@@ -394,8 +397,9 @@ void JavaBooleanArrayToBoolVector(JNIEnv* env,
                                   const JavaRef<jbooleanArray>& boolean_array,
                                   std::vector<bool>* out) {
   DCHECK(out);
-  if (!boolean_array)
+  if (!boolean_array) {
     return;
+  }
   size_t len = SafeGetArrayLength(env, boolean_array);
   out->resize(len);
   if (!len) {
@@ -421,8 +425,9 @@ void JavaIntArrayToIntVector(JNIEnv* env,
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, int_array);
   out->resize(len);
-  if (!len)
+  if (!len) {
     return;
+  }
   env->GetIntArrayRegion(int_array.obj(), jsize{0}, checked_cast<jsize>(len),
                          out->data());
 }
@@ -443,8 +448,9 @@ void JavaLongArrayToLongVector(JNIEnv* env,
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, long_array);
   out->resize(len);
-  if (!len)
+  if (!len) {
     return;
+  }
   env->GetLongArrayRegion(long_array.obj(), jsize{0}, checked_cast<jsize>(len),
                           out->data());
 }
@@ -455,8 +461,9 @@ void JavaFloatArrayToFloatVector(JNIEnv* env,
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, float_array);
   out->resize(len);
-  if (!len)
+  if (!len) {
     return;
+  }
   env->GetFloatArrayRegion(float_array.obj(), jsize{0},
                            checked_cast<jsize>(len), out->data());
 }
@@ -467,8 +474,9 @@ void JavaDoubleArrayToDoubleVector(JNIEnv* env,
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, double_array);
   out->resize(len);
-  if (!len)
+  if (!len) {
     return;
+  }
   env->GetDoubleArrayRegion(double_array.obj(), jsize{0},
                             checked_cast<jsize>(len), out->data());
 }

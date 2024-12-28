@@ -126,8 +126,9 @@ class LRUCacheBase {
   // recency list.
   iterator Get(const key_type& key) {
     typename KeyIndex::iterator index_iter = index_.find(key);
-    if (index_iter == index_.end())
+    if (index_iter == index_.end()) {
       return end();
+    }
     typename ValueList::iterator iter = index_iter->second;
 
     // Move the touched item to the front of the recency ordering.
@@ -139,15 +140,17 @@ class LRUCacheBase {
   // result without affecting the ordering (unlike Get()).
   iterator Peek(const key_type& key) {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
-    if (index_iter == index_.end())
+    if (index_iter == index_.end()) {
       return end();
+    }
     return index_iter->second;
   }
 
   const_iterator Peek(const key_type& key) const {
     typename KeyIndex::const_iterator index_iter = index_.find(key);
-    if (index_iter == index_.end())
+    if (index_iter == index_.end()) {
       return end();
+    }
     return index_iter->second;
   }
 
@@ -177,8 +180,9 @@ class LRUCacheBase {
   // Shrinks the cache so it only holds |new_size| items. If |new_size| is
   // bigger or equal to the current number of items, this will do nothing.
   void ShrinkToSize(size_type new_size) {
-    for (size_type i = size(); i > new_size; i--)
+    for (size_type i = size(); i > new_size; i--) {
       Erase(rbegin());
+    }
   }
 
   // Deletes everything from the cache.

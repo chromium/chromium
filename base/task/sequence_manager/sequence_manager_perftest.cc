@@ -152,9 +152,7 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
       MessagePumpType type,
       bool randomised_sampling_enabled = false)
       : name_(name) {
-    auto settings =
-        SequenceManager::Settings::Builder()
-            .Build();
+    auto settings = SequenceManager::Settings::Builder().Build();
     SetSequenceManager(SequenceManagerForTest::Create(
         std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(
             MessagePump::Create(type), settings),
@@ -507,8 +505,9 @@ class TwoThreadTestCase : public TestCase {
   };
 
   void SignalDone() {
-    if (++done_count_ == 2)
+    if (++done_count_ == 2) {
       delegate_->SignalDone();
+    }
   }
 
  private:

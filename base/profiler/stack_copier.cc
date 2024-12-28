@@ -66,8 +66,9 @@ uintptr_t StackCopier::RewritePointerIfInOriginalStack(
   auto stack_copy_bottom_uint = reinterpret_cast<uintptr_t>(stack_copy_bottom);
 
   if (pointer < original_stack_bottom_uint ||
-      pointer >= original_stack_top_uint)
+      pointer >= original_stack_top_uint) {
     return pointer;
+  }
 
   return stack_copy_bottom_uint + (pointer - original_stack_bottom_uint);
 }
@@ -106,8 +107,9 @@ const uint8_t* StackCopier::CopyStackContentsAndRewritePointers(
   uint8_t* byte_dst = stack_copy_bottom;
 
   // Copy bytes verbatim up to the first aligned address.
-  for (; byte_src < first_aligned_address; ++byte_src, ++byte_dst)
+  for (; byte_src < first_aligned_address; ++byte_src, ++byte_dst) {
     *byte_dst = *byte_src;
+  }
 
   // Copy the remaining stack by pointer-sized values, rewriting anything that
   // looks like a pointer into the stack.

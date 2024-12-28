@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <jni.h>
-
 #include "base/android/apk_assets.h"
+
+#include <jni.h>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -47,8 +47,9 @@ bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,
   base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
   int asset_fd = OpenApkAsset(file_path.value(), &region);
-  if (asset_fd == -1)
+  if (asset_fd == -1) {
     return false;
+  }
   base::FileDescriptorStore::GetInstance().Set(key, base::ScopedFD(asset_fd),
                                                region);
   return true;

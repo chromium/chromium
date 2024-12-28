@@ -57,8 +57,9 @@ const size_t kTestLengths[] = {1, 32, 256, 32768, 1 << 20};
 // top-bit-set bytes.
 bool IsString7Bit(const std::string& s) {
   for (auto it : s) {
-    if (it & 0x80)
+    if (it & 0x80) {
       return false;
+    }
   }
   return true;
 }
@@ -148,7 +149,8 @@ bool IsStringUTF8(const std::string& str) {
 // IsString7Bit is intentionally placed last so it can be excluded easily.
 const TestFunctionDescription kTestFunctions[] = {
     {&StreamingUtf8Validator::Validate, "StreamingUtf8Validator"},
-    {&IsStringUTF8, "IsStringUTF8"}, {&IsString7Bit, "IsString7Bit"}};
+    {&IsStringUTF8, "IsStringUTF8"},
+    {&IsString7Bit, "IsString7Bit"}};
 
 // Construct a test string from |construct_test_string| for each of the lengths
 // in |kTestLengths| in turn. For each string, run each test in |test_functions|

@@ -79,8 +79,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
 std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (Java_ThreadUtils_isThreadPriorityAudio(
-      env, PlatformThread::CurrentId())) {
+  if (Java_ThreadUtils_isThreadPriorityAudio(env,
+                                             PlatformThread::CurrentId())) {
     return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
   return std::nullopt;
@@ -95,18 +95,18 @@ void PlatformThread::SetName(const std::string& name) {
   // debugger by setting the process name for the LWP.
   // We don't want to do this for the main thread because that would rename
   // the process, causing tools like killall to stop working.
-  if (PlatformThread::CurrentId() == getpid())
+  if (PlatformThread::CurrentId() == getpid()) {
     return;
+  }
 
   // Set the name for the LWP (which gets truncated to 15 characters).
   int err = prctl(PR_SET_NAME, name.c_str());
-  if (err < 0 && errno != EPERM)
+  if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 
-
-void InitThreading() {
-}
+void InitThreading() {}
 
 void TerminateOnThread() {
   base::android::DetachFromVM();

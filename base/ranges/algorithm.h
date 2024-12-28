@@ -330,8 +330,9 @@ constexpr auto for_each(InputIterator first,
                         InputIterator last,
                         Fun f,
                         Proj proj = {}) {
-  for (; first != last; ++first)
+  for (; first != last; ++first) {
     std::invoke(f, std::invoke(proj, *first));
+  }
   return for_each_result<InputIterator, Fun>{first, std::move(f)};
 }
 
@@ -694,8 +695,9 @@ constexpr auto adjacent_find(ForwardIterator first,
   // A reimplementation is required, because std::adjacent_find is not constexpr
   // prior to C++20. Once we have C++20, we should switch to standard library
   // implementation.
-  if (first == last)
+  if (first == last) {
     return last;
+  }
 
   for (ForwardIterator next = first; ++next != last; ++first) {
     if (std::invoke(pred, std::invoke(proj, *first),
@@ -2968,8 +2970,9 @@ constexpr auto is_sorted_until(ForwardIterator first,
   // A reimplementation is required, because std::is_sorted_until is not
   // constexpr prior to C++20. Once we have C++20, we should switch to standard
   // library implementation.
-  if (first == last)
+  if (first == last) {
     return last;
+  }
 
   for (ForwardIterator next = first; ++next != last; ++first) {
     if (std::invoke(comp, std::invoke(proj, *next),

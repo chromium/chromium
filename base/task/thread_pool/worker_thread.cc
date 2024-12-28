@@ -315,15 +315,17 @@ bool WorkerThread::ShouldExit() const {
 
 ThreadType WorkerThread::GetDesiredThreadType() const {
   // To avoid shutdown hangs, disallow a type below kNormal during shutdown
-  if (task_tracker_->HasShutdownStarted())
+  if (task_tracker_->HasShutdownStarted()) {
     return ThreadType::kDefault;
+  }
 
   return thread_type_hint_;
 }
 
 void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
-  if (desired_thread_type == current_thread_type_)
+  if (desired_thread_type == current_thread_type_) {
     return;
+  }
 
   PlatformThread::SetCurrentThreadType(desired_thread_type);
   current_thread_type_ = desired_thread_type;

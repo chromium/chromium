@@ -45,10 +45,12 @@ void InitializeShortcutInterfaces(const wchar_t* shortcut,
     return;
   }
   ComPtr<IPersistFile> persist_file;
-  if (FAILED(shell_link.As(&persist_file)))
+  if (FAILED(shell_link.As(&persist_file))) {
     return;
-  if (shortcut && FAILED(persist_file->Load(shortcut, STGM_READWRITE)))
+  }
+  if (shortcut && FAILED(persist_file->Load(shortcut, STGM_READWRITE))) {
     return;
+  }
   i_shell_link->Swap(shell_link);
   i_persist_file->Swap(persist_file);
 }
@@ -113,16 +115,18 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
       // |old_i_persist_file| was successfully initialized in the call above. If
       // so, initialize the interfaces to begin writing a new shortcut (to
       // overwrite the current one if successful).
-      if (old_i_persist_file.Get())
+      if (old_i_persist_file.Get()) {
         InitializeShortcutInterfaces(nullptr, &i_shell_link, &i_persist_file);
+      }
       break;
     default:
       NOTREACHED();
   }
 
   // Return false immediately upon failure to initialize shortcut interfaces.
-  if (!i_persist_file.Get())
+  if (!i_persist_file.Get()) {
     return false;
+  }
 
   if ((properties.options & ShortcutProperties::PROPERTIES_TARGET) &&
       FAILED(i_shell_link->SetPath(properties.target.value().c_str()))) {
@@ -136,8 +140,9 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
   }
 
   if (properties.options & ShortcutProperties::PROPERTIES_ARGUMENTS) {
-    if (FAILED(i_shell_link->SetArguments(properties.arguments.c_str())))
+    if (FAILED(i_shell_link->SetArguments(properties.arguments.c_str()))) {
       return false;
+    }
   } else if (old_i_persist_file.Get()) {
     wchar_t current_arguments[MAX_PATH] = {};
     if (SUCCEEDED(
@@ -166,8 +171,9 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
        ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID) != 0;
   if (has_app_id || has_dual_mode || has_toast_activator_clsid) {
     ComPtr<IPropertyStore> property_store;
-    if (FAILED(i_shell_link.As(&property_store)) || !property_store.Get())
+    if (FAILED(i_shell_link.As(&property_store)) || !property_store.Get()) {
       return false;
+    }
 
     if (has_app_id && !SetAppIdForPropertyStore(property_store.Get(),
                                                 properties.app_id.c_str())) {
@@ -200,8 +206,9 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
 
   // If we successfully created/updated the icon, notify the shell that we have
   // done so.
-  if (!SUCCEEDED(result))
+  if (!SUCCEEDED(result)) {
     return false;
+  }
 
   SHChangeNotify(shortcut_existed ? SHCNE_UPDATEITEM : SHCNE_CREATE,
                  SHCNF_PATH | SHCNF_FLUSH, shortcut_path.value().c_str(),
@@ -216,8 +223,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
   DCHECK(options && properties);
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  if (options & ~ShortcutProperties::PROPERTIES_ALL)
+  if (options & ~ShortcutProperties::PROPERTIES_ALL) {
     NOTREACHED() << "Unhandled property is used.";
+  }
 
   ComPtr<IShellLink> i_shell_link;
 
@@ -229,12 +237,14 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
 
   ComPtr<IPersistFile> persist;
   // Query IShellLink for the IPersistFile interface.
-  if (FAILED(i_shell_link.As(&persist)))
+  if (FAILED(i_shell_link.As(&persist))) {
     return false;
+  }
 
   // Load the shell link.
-  if (FAILED(persist->Load(shortcut_path.value().c_str(), STGM_READ)))
+  if (FAILED(persist->Load(shortcut_path.value().c_str(), STGM_READ))) {
     return false;
+  }
 
   // Reset |properties|.
   properties->options = 0;
@@ -249,21 +259,24 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
   }
 
   if (options & ShortcutProperties::PROPERTIES_WORKING_DIR) {
-    if (FAILED(i_shell_link->GetWorkingDirectory(temp, MAX_PATH)))
+    if (FAILED(i_shell_link->GetWorkingDirectory(temp, MAX_PATH))) {
       return false;
+    }
     properties->set_working_dir(FilePath(temp));
   }
 
   if (options & ShortcutProperties::PROPERTIES_ARGUMENTS) {
-    if (FAILED(i_shell_link->GetArguments(temp, MAX_PATH)))
+    if (FAILED(i_shell_link->GetArguments(temp, MAX_PATH))) {
       return false;
+    }
     properties->set_arguments(temp);
   }
 
   if (options & ShortcutProperties::PROPERTIES_DESCRIPTION) {
     // Note: description length constrained by MAX_PATH.
-    if (FAILED(i_shell_link->GetDescription(temp, MAX_PATH)))
+    if (FAILED(i_shell_link->GetDescription(temp, MAX_PATH))) {
       return false;
+    }
     properties->set_description(temp);
   }
 
@@ -279,8 +292,9 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
                  ShortcutProperties::PROPERTIES_DUAL_MODE |
                  ShortcutProperties::PROPERTIES_TOAST_ACTIVATOR_CLSID)) {
     ComPtr<IPropertyStore> property_store;
-    if (FAILED(i_shell_link.As(&property_store)))
+    if (FAILED(i_shell_link.As(&property_store))) {
       return false;
+    }
 
     if (options & ShortcutProperties::PROPERTIES_APP_ID) {
       ScopedPropVariant pv_app_id;
@@ -355,20 +369,25 @@ bool ResolveShortcut(const FilePath& shortcut_path,
                      FilePath* target_path,
                      std::wstring* args) {
   uint32_t options = 0;
-  if (target_path)
+  if (target_path) {
     options |= ShortcutProperties::PROPERTIES_TARGET;
-  if (args)
+  }
+  if (args) {
     options |= ShortcutProperties::PROPERTIES_ARGUMENTS;
+  }
   DCHECK(options);
 
   ShortcutProperties properties;
-  if (!ResolveShortcutProperties(shortcut_path, options, &properties))
+  if (!ResolveShortcutProperties(shortcut_path, options, &properties)) {
     return false;
+  }
 
-  if (target_path)
+  if (target_path) {
     *target_path = properties.target;
-  if (args)
+  }
+  if (args) {
     *args = properties.arguments;
+  }
   return true;
 }
 

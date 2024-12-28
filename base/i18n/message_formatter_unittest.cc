@@ -27,9 +27,7 @@ class MessageFormatterTest : public testing::Test {
     original_locale_ = GetConfiguredLocale();
     SetICUDefaultLocale("en-US");
   }
-  ~MessageFormatterTest() override {
-    SetICUDefaultLocale(original_locale_);
-  }
+  ~MessageFormatterTest() override { SetICUDefaultLocale(original_locale_); }
 
  private:
   std::string original_locale_;

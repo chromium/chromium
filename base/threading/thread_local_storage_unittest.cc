@@ -89,13 +89,13 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   raw_ptr<int> tls_value_ptr_;
 };
 
-
-void ThreadLocalStorageCleanup(void *value) {
-  int *ptr = static_cast<int*>(value);
+void ThreadLocalStorageCleanup(void* value) {
+  int* ptr = static_cast<int*>(value);
   // Destructors should never be called with a NULL.
   ASSERT_NE(nullptr, ptr);
-  if (*ptr == kFinalTlsValue)
+  if (*ptr == kFinalTlsValue) {
     return;  // We've been called enough times.
+  }
   ASSERT_LT(kFinalTlsValue, *ptr);
   ASSERT_GE(kFinalTlsValue + kNumberDestructorCallRepetitions, *ptr);
   --*ptr;  // Move closer to our target.
@@ -299,8 +299,8 @@ TEST(ThreadLocalStorageTest, MAYBE_TLSDestructors) {
   for (int index = 0; index < kNumThreads; index++) {
     values[index] = kInitialTlsValue;
     thread_delegates[index] = new ThreadLocalStorageRunner(&values[index]);
-    threads[index] = new DelegateSimpleThread(thread_delegates[index],
-                                              "tls thread");
+    threads[index] =
+        new DelegateSimpleThread(thread_delegates[index], "tls thread");
     threads[index]->Start();
   }
 

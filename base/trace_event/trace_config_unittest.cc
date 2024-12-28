@@ -151,18 +151,16 @@ TEST(TraceConfigTest, TraceConfigFromValidLegacyFormat) {
                config.ToTraceOptionsString().c_str());
 
   config = TraceConfig(
-    "",
-    "enable-systrace,trace-to-console,enable-argument-filter");
+      "", "enable-systrace,trace-to-console,enable-argument-filter");
   EXPECT_EQ(ECHO_TO_CONSOLE, config.GetTraceRecordMode());
   EXPECT_TRUE(config.IsSystraceEnabled());
   EXPECT_TRUE(config.IsArgumentFilterEnabled());
   EXPECT_FALSE(config.IsEventPackageNameFilterEnabled());
-  EXPECT_STREQ(
-    "trace-to-console,enable-systrace,enable-argument-filter",
-    config.ToTraceOptionsString().c_str());
+  EXPECT_STREQ("trace-to-console,enable-systrace,enable-argument-filter",
+               config.ToTraceOptionsString().c_str());
 
   config = TraceConfig(
-    "", "record-continuously, record-until-full, trace-to-console");
+      "", "record-continuously, record-until-full, trace-to-console");
   EXPECT_EQ(ECHO_TO_CONSOLE, config.GetTraceRecordMode());
   EXPECT_FALSE(config.IsSystraceEnabled());
   EXPECT_FALSE(config.IsArgumentFilterEnabled());
@@ -561,10 +559,10 @@ TEST(TraceConfigTest, TraceConfigFromInvalidString) {
   EXPECT_FALSE(tc.IsEventPackageNameFilterEnabled());
 
   const char invalid_config_string_2[] =
-    "{"
+      "{"
       "\"included_categories\":[\"category\",\"disabled-by-default-pattern\"],"
       "\"excluded_categories\":[\"category\",\"disabled-by-default-pattern\"]"
-    "}";
+      "}";
   tc = TraceConfig(invalid_config_string_2);
   EXPECT_TRUE(tc.category_filter().IsCategoryEnabled("category"));
   EXPECT_TRUE(

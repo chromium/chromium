@@ -5,7 +5,6 @@
 #include "base/test/test_shared_memory_util.h"
 
 #include <gtest/gtest.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -152,8 +151,9 @@ WritableSharedMemoryMapping MapAtForTesting(
     size_t size) {
   SharedMemoryMapper* mapper = SharedMemoryMapper::GetDefaultInstance();
   auto result = region->MapAt(offset, size, mapper);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return {};
+  }
 
   return WritableSharedMemoryMapping(result.value(), size, region->GetGUID(),
                                      mapper);

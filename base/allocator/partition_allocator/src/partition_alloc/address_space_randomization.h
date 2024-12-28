@@ -292,7 +292,7 @@ AslrMask(uintptr_t bits) {
 
 #endif  // PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
 
-    // clang-format on
+// clang-format on
 
 }  // namespace internal
 

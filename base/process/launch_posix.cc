@@ -166,7 +166,7 @@ long sys_rt_sigaction(int sig,
 // from parents and help defeat ASLR on buggy kernels.  We reset it to null.
 // See crbug.com/177956.
 void ResetChildSignalHandlersToDefaults(void) {
-  for (int signum = 1; ; ++signum) {
+  for (int signum = 1;; ++signum) {
     struct kernel_sigaction act = {nullptr};
     long sigaction_get_ret = sys_rt_sigaction(signum, nullptr, &act);
     if (sigaction_get_ret && errno == EINVAL) {
@@ -207,8 +207,9 @@ void ResetChildSignalHandlersToDefaults(void) {
 // Functor for |ScopedDIR| (below).
 struct ScopedDIRClose {
   inline void operator()(DIR* x) const {
-    if (x)
+    if (x) {
       closedir(x);
+    }
   }
 };
 
@@ -239,16 +240,19 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
     // Fallback case: Try every possible fd.
     for (size_t i = 0; i < max_fds; ++i) {
       const int fd = static_cast<int>(i);
-      if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO)
+      if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO) {
         continue;
+      }
       // Cannot use STL iterators here, since debug iterators use locks.
       size_t j;
       for (j = 0; j < saved_mapping.size(); j++) {
-        if (fd == saved_mapping[j].dest)
+        if (fd == saved_mapping[j].dest) {
           break;
+        }
       }
-      if (j < saved_mapping.size())
+      if (j < saved_mapping.size()) {
         continue;
+      }
 
       // Since we're just trying to close anything we can find,
       // ignore any error return values of close().
@@ -259,30 +263,35 @@ void CloseSuperfluousFds(const base::InjectiveMultimap& saved_mapping) {
 
   const int dir_fd = fd_dir.fd();
 
-  for ( ; fd_dir.Next(); ) {
+  for (; fd_dir.Next();) {
     // Skip . and .. entries.
-    if (fd_dir.name()[0] == '.')
+    if (fd_dir.name()[0] == '.') {
       continue;
+    }
 
-    char *endptr;
+    char* endptr;
     errno = 0;
     const long int fd = strtol(fd_dir.name(), &endptr, 10);
     if (fd_dir.name()[0] == 0 || *endptr || fd < 0 || errno ||
         !IsValueInRangeForNumericType<int>(fd)) {
       continue;
     }
-    if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO)
+    if (fd == STDIN_FILENO || fd == STDOUT_FILENO || fd == STDERR_FILENO) {
       continue;
+    }
     // Cannot use STL iterators here, since debug iterators use locks.
     size_t i;
     for (i = 0; i < saved_mapping.size(); i++) {
-      if (fd == saved_mapping[i].dest)
+      if (fd == saved_mapping[i].dest) {
         break;
+      }
     }
-    if (i < saved_mapping.size())
+    if (i < saved_mapping.size()) {
       continue;
-    if (fd == dir_fd)
+    }
+    if (fd == dir_fd) {
       continue;
+    }
 
     int ret = IGNORE_EINTR(close(static_cast<int>(fd)));
     DPCHECK(ret == 0);
@@ -305,17 +314,20 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   std::vector<char*> argv_cstr;
   argv_cstr.reserve(argv.size() + 1);
-  for (const auto& arg : argv)
+  for (const auto& arg : argv) {
     argv_cstr.push_back(const_cast<char*>(arg.c_str()));
+  }
   argv_cstr.push_back(nullptr);
 
   base::HeapArray<char*> new_environ;
   char* const empty_environ = nullptr;
   char* const* old_environ = GetEnvironment();
-  if (options.clear_environment)
+  if (options.clear_environment) {
     old_environ = &empty_environ;
-  if (!options.environment.empty())
+  }
+  if (!options.environment.empty()) {
     new_environ = internal::AlterEnvironment(old_environ, options.environment);
+  }
 
   sigset_t full_sigset;
   sigfillset(&full_sigset);
@@ -448,8 +460,8 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     if (options.ctrl_terminal_fd >= 0) {
       // Set process' controlling terminal.
       if (HANDLE_EINTR(setsid()) != -1) {
-        if (HANDLE_EINTR(
-                ioctl(options.ctrl_terminal_fd, TIOCSCTTY, nullptr)) == -1) {
+        if (HANDLE_EINTR(ioctl(options.ctrl_terminal_fd, TIOCSCTTY, nullptr)) ==
+            -1) {
           RAW_LOG(WARNING, "ioctl(TIOCSCTTY), ctrl terminal not set");
         }
       } else {
@@ -467,12 +479,14 @@ Process LaunchProcess(const std::vector<std::string>& argv,
       fd_shuffle2.push_back(InjectionArc(value.first, value.second, false));
     }
 
-    if (!options.environment.empty() || options.clear_environment)
+    if (!options.environment.empty() || options.clear_environment) {
       SetEnvironment(new_environ.data());
+    }
 
     // fd_shuffle1 is mutated by this call because it cannot malloc.
-    if (!ShuffleFileDescriptors(&fd_shuffle1))
+    if (!ShuffleFileDescriptors(&fd_shuffle1)) {
       _exit(127);
+    }
 
     CloseSuperfluousFds(fd_shuffle2);
 
@@ -507,8 +521,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
       options.pre_exec_delegate->RunAsyncSafe();
     }
 
-    const char* executable_path = !options.real_path.empty() ?
-        options.real_path.value().c_str() : argv_cstr[0];
+    const char* executable_path = !options.real_path.empty()
+                                      ? options.real_path.value().c_str()
+                                      : argv_cstr[0];
 
     execvp(executable_path, argv_cstr.data());
 
@@ -545,13 +560,12 @@ void RaiseProcessToHighPriority() {
 // The return value of the function indicates success or failure. In the case of
 // success, the application exit code will be returned in |*exit_code|, which
 // should be checked to determine if the application ran successfully.
-static bool GetAppOutputInternal(
-    const std::vector<std::string>& argv,
-    char* const envp[],
-    bool include_stderr,
-    std::string* output,
-    bool do_search_path,
-    int* exit_code) {
+static bool GetAppOutputInternal(const std::vector<std::string>& argv,
+                                 char* const envp[],
+                                 bool include_stderr,
+                                 std::string* output,
+                                 bool do_search_path,
+                                 int* exit_code) {
   // exit_code must be supplied so calling function can determine success.
   DCHECK(exit_code);
   *exit_code = EXIT_FAILURE;
@@ -570,8 +584,9 @@ static bool GetAppOutputInternal(
   DCHECK(!do_search_path ^ !envp);
 
   int pipe_fd[2];
-  if (pipe(pipe_fd) < 0)
+  if (pipe(pipe_fd) < 0) {
     return false;
+  }
 
   pid_t pid = fork();
   switch (pid) {
@@ -599,8 +614,9 @@ static bool GetAppOutputInternal(
       // might do things like block waiting for threads that don't even exist
       // in the child.
       int dev_null = open("/dev/null", O_WRONLY);
-      if (dev_null < 0)
+      if (dev_null < 0) {
         _exit(127);
+      }
 
       fd_shuffle1.push_back(InjectionArc(pipe_fd[1], STDOUT_FILENO, true));
       fd_shuffle1.push_back(InjectionArc(include_stderr ? pipe_fd[1] : dev_null,
@@ -611,24 +627,28 @@ static bool GetAppOutputInternal(
 
       // Cannot use STL iterators here, since debug iterators use locks.
       // NOLINTNEXTLINE(modernize-loop-convert)
-      for (size_t i = 0; i < fd_shuffle1.size(); ++i)
+      for (size_t i = 0; i < fd_shuffle1.size(); ++i) {
         fd_shuffle2.push_back(fd_shuffle1[i]);
+      }
 
-      if (!ShuffleFileDescriptors(&fd_shuffle1))
+      if (!ShuffleFileDescriptors(&fd_shuffle1)) {
         _exit(127);
+      }
 
       CloseSuperfluousFds(fd_shuffle2);
 
       // Cannot use STL iterators here, since debug iterators use locks.
       // NOLINTNEXTLINE(modernize-loop-convert)
-      for (size_t i = 0; i < argv.size(); ++i)
+      for (size_t i = 0; i < argv.size(); ++i) {
         argv_cstr.push_back(const_cast<char*>(argv[i].c_str()));
+      }
       argv_cstr.push_back(nullptr);
 
-      if (do_search_path)
+      if (do_search_path) {
         execvp(argv_cstr[0], argv_cstr.data());
-      else
+      } else {
         execve(argv_cstr[0], argv_cstr.data(), envp);
+      }
       _exit(127);
     }
     default: {
@@ -647,8 +667,9 @@ static bool GetAppOutputInternal(
         char buffer[256];
         ssize_t bytes_read =
             HANDLE_EINTR(read(pipe_fd[0], buffer, sizeof(buffer)));
-        if (bytes_read <= 0)
+        if (bytes_read <= 0) {
           break;
+        }
         output->append(buffer, static_cast<size_t>(bytes_read));
       }
       close(pipe_fd[0]);

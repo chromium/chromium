@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "build/build_config.h"
 #include "base/base_export.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

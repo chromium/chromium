@@ -79,8 +79,9 @@ void setproctitle(const char* fmt, ...) {
 
   // Sanity check before we try and set the process title.
   // The BSD version allows a null fmt to restore the original title.
-  if (!g_orig_argv0 || !fmt)
+  if (!g_orig_argv0 || !fmt) {
     return;
+  }
 
   // The title can be up to the end of envp.
   const size_t avail_size =
@@ -115,9 +116,10 @@ void setproctitle(const char* fmt, ...) {
   } else {
     size = base::checked_cast<size_t>(
         snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0));
-    if (size < avail_size)
+    if (size < avail_size) {
       size += base::checked_cast<size_t>(
           vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap));
+    }
   }
   va_end(ap);
 
@@ -134,35 +136,40 @@ void setproctitle(const char* fmt, ...) {
   // null characters.
   const size_t argv_size =
       base::checked_cast<size_t>(g_argv_end - g_argv_start - 1);
-  if (!buggy_kernel && size < argv_size)
+  if (!buggy_kernel && size < argv_size) {
     g_argv_end[-1] = '.';
+  }
 }
 
 // A version of this built into glibc would not need this function, since
 // it could stash the argv pointer in __libc_start_main(). But we need it.
 void setproctitle_init(const char** main_argv) {
   static bool init_called = false;
-  if (init_called)
+  if (init_called) {
     return;
+  }
   init_called = true;
 
-  if (!main_argv)
+  if (!main_argv) {
     return;
+  }
 
   // Verify that the memory layout matches expectation.
   char** argv = const_cast<char**>(main_argv);
   char* argv_start = argv[0];
   char* p = argv_start;
   for (size_t i = 0; argv[i]; ++i) {
-    if (p != argv[i])
+    if (p != argv[i]) {
       return;
+    }
     p += strlen(p) + 1;
   }
   char* argv_end = p;
   size_t environ_size = 0;
   for (size_t i = 0; environ[i]; ++i, ++environ_size) {
-    if (p != environ[i])
+    if (p != environ[i]) {
       return;
+    }
     p += strlen(p) + 1;
   }
   char* envp_end = p;
@@ -179,8 +186,9 @@ void setproctitle_init(const char** main_argv) {
     environ[i] = &(*environ_copy)[i][0];
   }
 
-  if (!argv[0])
+  if (!argv[0]) {
     return;
+  }
 
   static base::NoDestructor<std::string> argv0_storage(argv[0]);
   g_orig_argv0 = argv0_storage->data();

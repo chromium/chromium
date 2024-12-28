@@ -62,14 +62,16 @@ class PriorityQueue::TaskSourceAndSortKey {
   void ClearHeapHandle() {
     // Ensure |task_source_| is not nullptr, which may be the case if
     // take_task_source() was called before this.
-    if (task_source_)
+    if (task_source_) {
       task_source_->ClearImmediateHeapHandle();
+    }
   }
 
   // Required by IntrusiveHeap.
   HeapHandle GetHeapHandle() const {
-    if (task_source_)
+    if (task_source_) {
       return task_source_->GetImmediateHeapHandle();
+    }
     return HeapHandle::Invalid();
   }
 
@@ -88,8 +90,9 @@ class PriorityQueue::TaskSourceAndSortKey {
 PriorityQueue::PriorityQueue() = default;
 
 PriorityQueue::~PriorityQueue() {
-  if (!is_flush_task_sources_on_destroy_enabled_)
+  if (!is_flush_task_sources_on_destroy_enabled_) {
     return;
+  }
 
   while (!container_.empty()) {
     auto task_source = PopTaskSource();
@@ -142,12 +145,14 @@ RegisteredTaskSource PriorityQueue::PopTaskSource() {
 
 RegisteredTaskSource PriorityQueue::RemoveTaskSource(
     const TaskSource& task_source) {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return nullptr;
+  }
 
   const HeapHandle heap_handle = task_source.immediate_heap_handle();
-  if (!heap_handle.IsValid())
+  if (!heap_handle.IsValid()) {
     return nullptr;
+  }
 
   TaskSourceAndSortKey& task_source_and_sort_key =
       const_cast<PriorityQueue::TaskSourceAndSortKey&>(
@@ -164,12 +169,14 @@ RegisteredTaskSource PriorityQueue::RemoveTaskSource(
 
 void PriorityQueue::UpdateSortKey(const TaskSource& task_source,
                                   TaskSourceSortKey sort_key) {
-  if (IsEmpty())
+  if (IsEmpty()) {
     return;
+  }
 
   const HeapHandle heap_handle = task_source.immediate_heap_handle();
-  if (!heap_handle.IsValid())
+  if (!heap_handle.IsValid()) {
     return;
+  }
 
   auto old_sort_key = container_.at(heap_handle).sort_key();
   auto registered_task_source =

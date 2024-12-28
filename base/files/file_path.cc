@@ -75,13 +75,15 @@ bool EqualDriveLetterCaseInsensitive(StringPieceType a, StringPieceType b) {
   size_t a_letter_pos = FindDriveLetter(a);
   size_t b_letter_pos = FindDriveLetter(b);
 
-  if (a_letter_pos == StringType::npos || b_letter_pos == StringType::npos)
+  if (a_letter_pos == StringType::npos || b_letter_pos == StringType::npos) {
     return a == b;
+  }
 
   StringPieceType a_letter(a.substr(0, a_letter_pos + 1));
   StringPieceType b_letter(b.substr(0, b_letter_pos + 1));
-  if (!StartsWith(a_letter, b_letter, CompareCase::INSENSITIVE_ASCII))
+  if (!StartsWith(a_letter, b_letter, CompareCase::INSENSITIVE_ASCII)) {
     return false;
+  }
 
   StringPieceType a_rest(a.substr(a_letter_pos + 1));
   StringPieceType b_rest(b.substr(b_letter_pos + 1));
@@ -95,12 +97,12 @@ bool IsPathAbsolute(StringPieceType path) {
   if (letter != StringType::npos) {
     // Look for a separator right after the drive specification.
     return path.length() > letter + 1 &&
-        FilePath::IsSeparator(path[letter + 1]);
+           FilePath::IsSeparator(path[letter + 1]);
   }
   // Look for a pair of leading separators.
-  return path.length() > 1 &&
-      FilePath::IsSeparator(path[0]) && FilePath::IsSeparator(path[1]);
-#else  // FILE_PATH_USES_DRIVE_LETTERS
+  return path.length() > 1 && FilePath::IsSeparator(path[0]) &&
+         FilePath::IsSeparator(path[1]);
+#else   // FILE_PATH_USES_DRIVE_LETTERS
   // Look for a separator in the first position.
   return path.length() > 0 && FilePath::IsSeparator(path[0]);
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
@@ -108,8 +110,9 @@ bool IsPathAbsolute(StringPieceType path) {
 
 bool AreAllSeparators(const StringType& input) {
   for (auto it : input) {
-    if (!FilePath::IsSeparator(it))
+    if (!FilePath::IsSeparator(it)) {
       return false;
+    }
   }
 
   return true;
@@ -120,8 +123,10 @@ bool AreAllSeparators(const StringType& input) {
 // Returns npos if it can't find an extension.
 StringType::size_type FinalExtensionSeparatorPosition(const StringType& path) {
   // Special case "." and ".."
-  if (path == FilePath::kCurrentDirectory || path == FilePath::kParentDirectory)
+  if (path == FilePath::kCurrentDirectory ||
+      path == FilePath::kParentDirectory) {
     return StringType::npos;
+  }
 
   return path.rfind(FilePath::kExtensionSeparator);
 }
@@ -134,14 +139,14 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
   const StringType::size_type last_dot = FinalExtensionSeparatorPosition(path);
 
   // No extension, or the extension is the whole filename.
-  if (last_dot == StringType::npos || last_dot == 0U)
+  if (last_dot == StringType::npos || last_dot == 0U) {
     return last_dot;
+  }
 
   const StringType::size_type penultimate_dot =
       path.rfind(FilePath::kExtensionSeparator, last_dot - 1);
-  const StringType::size_type last_separator =
-      path.find_last_of(FilePath::kSeparators, last_dot - 1,
-                        FilePath::kSeparatorsLength - 1);
+  const StringType::size_type last_separator = path.find_last_of(
+      FilePath::kSeparators, last_dot - 1, FilePath::kSeparatorsLength - 1);
 
   if (penultimate_dot == StringType::npos ||
       (last_separator != StringType::npos &&
@@ -151,8 +156,9 @@ StringType::size_type ExtensionSeparatorPosition(const StringType& path) {
 
   for (auto* i : kCommonDoubleExtensions) {
     StringType extension(path, penultimate_dot + 1);
-    if (EqualsCaseInsensitiveASCII(extension, i))
+    if (EqualsCaseInsensitiveASCII(extension, i)) {
       return penultimate_dot;
+    }
   }
 
   StringType extension(path, last_dot + 1);
@@ -188,8 +194,9 @@ FilePath::FilePath(FilePath&& that) noexcept = default;
 
 FilePath::FilePath(StringPieceType path) : path_(path) {
   StringType::size_type nul_pos = path_.find(kStringTerminator);
-  if (nul_pos != StringType::npos)
+  if (nul_pos != StringType::npos) {
     path_.erase(nul_pos, StringType::npos);
+  }
 }
 
 FilePath::~FilePath() = default;
@@ -201,7 +208,7 @@ FilePath& FilePath::operator=(FilePath&& that) noexcept = default;
 bool FilePath::operator==(const FilePath& that) const {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   return EqualDriveLetterCaseInsensitive(this->path_, that.path_);
-#else  // defined(FILE_PATH_USES_DRIVE_LETTERS)
+#else   // defined(FILE_PATH_USES_DRIVE_LETTERS)
   return path_ == that.path_;
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 }
@@ -209,7 +216,7 @@ bool FilePath::operator==(const FilePath& that) const {
 bool FilePath::operator!=(const FilePath& that) const {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   return !EqualDriveLetterCaseInsensitive(this->path_, that.path_);
-#else  // defined(FILE_PATH_USES_DRIVE_LETTERS)
+#else   // defined(FILE_PATH_USES_DRIVE_LETTERS)
   return path_ != that.path_;
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 }
@@ -231,8 +238,9 @@ bool FilePath::IsSeparator(CharType character) {
 
 std::vector<FilePath::StringType> FilePath::GetComponents() const {
   std::vector<StringType> ret_val;
-  if (value().empty())
+  if (value().empty()) {
     return ret_val;
+  }
 
   FilePath current = *this;
   FilePath base;
@@ -240,21 +248,24 @@ std::vector<FilePath::StringType> FilePath::GetComponents() const {
   // Capture path components.
   while (current != current.DirName()) {
     base = current.BaseName();
-    if (!AreAllSeparators(base.value()))
+    if (!AreAllSeparators(base.value())) {
       ret_val.push_back(base.value());
+    }
     current = current.DirName();
   }
 
   // Capture root, if any.
   base = current.BaseName();
-  if (!base.value().empty() && base.value() != kCurrentDirectory)
+  if (!base.value().empty() && base.value() != kCurrentDirectory) {
     ret_val.push_back(current.BaseName().value());
+  }
 
   // Capture drive letter, if any.
   FilePath dir = current.DirName();
   StringType::size_type letter = FindDriveLetter(dir.value());
-  if (letter != StringType::npos)
+  if (letter != StringType::npos) {
     ret_val.emplace_back(dir.value(), 0, letter + 1);
+  }
 
   ranges::reverse(ret_val);
   return ret_val;
@@ -264,19 +275,18 @@ bool FilePath::IsParent(const FilePath& child) const {
   return AppendRelativePath(child, nullptr);
 }
 
-bool FilePath::AppendRelativePath(const FilePath& child,
-                                  FilePath* path) const {
+bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
   std::vector<StringType> parent_components = GetComponents();
   std::vector<StringType> child_components = child.GetComponents();
 
   if (parent_components.empty() ||
-      parent_components.size() >= child_components.size())
+      parent_components.size() >= child_components.size()) {
     return false;
+  }
 
   std::vector<StringType>::const_iterator parent_comp =
       parent_components.begin();
-  std::vector<StringType>::const_iterator child_comp =
-      child_components.begin();
+  std::vector<StringType>::const_iterator child_comp = child_components.begin();
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // Windows can access case sensitive filesystems, so component
@@ -284,8 +294,10 @@ bool FilePath::AppendRelativePath(const FilePath& child,
   // never case sensitive.
   if ((FindDriveLetter(*parent_comp) != StringType::npos) &&
       (FindDriveLetter(*child_comp) != StringType::npos)) {
-    if (!StartsWith(*parent_comp, *child_comp, CompareCase::INSENSITIVE_ASCII))
+    if (!StartsWith(*parent_comp, *child_comp,
+                    CompareCase::INSENSITIVE_ASCII)) {
       return false;
+    }
     ++parent_comp;
     ++child_comp;
   }
@@ -302,8 +314,9 @@ bool FilePath::AppendRelativePath(const FilePath& child,
   }
 
   while (parent_comp != parent_components.end()) {
-    if (*parent_comp != *child_comp)
+    if (*parent_comp != *child_comp) {
       return false;
+    }
     ++parent_comp;
     ++child_comp;
   }
@@ -330,9 +343,8 @@ FilePath FilePath::DirName() const {
   // resizes below using letter will still be valid.
   StringType::size_type letter = FindDriveLetter(new_path.path_);
 
-  StringType::size_type last_separator =
-      new_path.path_.find_last_of(kSeparators, StringType::npos,
-                                  kSeparatorsLength - 1);
+  StringType::size_type last_separator = new_path.path_.find_last_of(
+      kSeparators, StringType::npos, kSeparatorsLength - 1);
   if (last_separator == StringType::npos) {
     // path_ is in the current directory.
     new_path.path_.resize(letter + 1);
@@ -364,8 +376,9 @@ FilePath FilePath::DirName() const {
   }
 
   new_path.StripTrailingSeparatorsInternal();
-  if (!new_path.path_.length())
+  if (!new_path.path_.length()) {
     new_path.path_ = kCurrentDirectory;
+  }
 
   return new_path;
 }
@@ -382,9 +395,8 @@ FilePath FilePath::BaseName() const {
 
   // Keep everything after the final separator, but if the pathname is only
   // one character and it's a separator, leave it alone.
-  StringType::size_type last_separator =
-      new_path.path_.find_last_of(kSeparators, StringType::npos,
-                                  kSeparatorsLength - 1);
+  StringType::size_type last_separator = new_path.path_.find_last_of(
+      kSeparators, StringType::npos, kSeparatorsLength - 1);
   if (last_separator != StringType::npos &&
       last_separator < new_path.path_.length() - 1) {
     new_path.path_.erase(0, last_separator + 1);
@@ -396,8 +408,9 @@ FilePath FilePath::BaseName() const {
 StringType FilePath::Extension() const {
   FilePath base(BaseName());
   const StringType::size_type dot = ExtensionSeparatorPosition(base.path_);
-  if (dot == StringType::npos)
+  if (dot == StringType::npos) {
     return StringType();
+  }
 
   return base.path_.substr(dot, StringType::npos);
 }
@@ -405,40 +418,47 @@ StringType FilePath::Extension() const {
 StringType FilePath::FinalExtension() const {
   FilePath base(BaseName());
   const StringType::size_type dot = FinalExtensionSeparatorPosition(base.path_);
-  if (dot == StringType::npos)
+  if (dot == StringType::npos) {
     return StringType();
+  }
 
   return base.path_.substr(dot, StringType::npos);
 }
 
 FilePath FilePath::RemoveExtension() const {
-  if (Extension().empty())
+  if (Extension().empty()) {
     return *this;
+  }
 
   const StringType::size_type dot = ExtensionSeparatorPosition(path_);
-  if (dot == StringType::npos)
+  if (dot == StringType::npos) {
     return *this;
+  }
 
   return FilePath(path_.substr(0, dot));
 }
 
 FilePath FilePath::RemoveFinalExtension() const {
-  if (FinalExtension().empty())
+  if (FinalExtension().empty()) {
     return *this;
+  }
 
   const StringType::size_type dot = FinalExtensionSeparatorPosition(path_);
-  if (dot == StringType::npos)
+  if (dot == StringType::npos) {
     return *this;
+  }
 
   return FilePath(path_.substr(0, dot));
 }
 
 FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
-  if (suffix.empty())
+  if (suffix.empty()) {
     return FilePath(path_);
+  }
 
-  if (IsEmptyOrSpecialCase(BaseName().value()))
+  if (IsEmptyOrSpecialCase(BaseName().value())) {
     return FilePath();
+  }
 
   return FilePath(
       base::StrCat({RemoveExtension().value(), suffix, Extension()}));
@@ -454,13 +474,15 @@ FilePath FilePath::InsertBeforeExtensionASCII(std::string_view suffix) const {
 }
 
 FilePath FilePath::AddExtension(StringPieceType extension) const {
-  if (IsEmptyOrSpecialCase(BaseName().value()))
+  if (IsEmptyOrSpecialCase(BaseName().value())) {
     return FilePath();
+  }
 
   // If the new extension is "" or ".", then just return the current FilePath.
   if (extension.empty() ||
-      (extension.size() == 1 && extension[0] == kExtensionSeparator))
+      (extension.size() == 1 && extension[0] == kExtensionSeparator)) {
     return *this;
+  }
 
   StringType str = path_;
   if (extension[0] != kExtensionSeparator &&
@@ -481,18 +503,21 @@ FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
 }
 
 FilePath FilePath::ReplaceExtension(StringPieceType extension) const {
-  if (IsEmptyOrSpecialCase(BaseName().value()))
+  if (IsEmptyOrSpecialCase(BaseName().value())) {
     return FilePath();
+  }
 
   FilePath no_ext = RemoveExtension();
   // If the new extension is "" or ".", then just remove the current extension.
   if (extension.empty() ||
-      (extension.size() == 1 && extension[0] == kExtensionSeparator))
+      (extension.size() == 1 && extension[0] == kExtensionSeparator)) {
     return no_ext;
+  }
 
   StringType str = no_ext.value();
-  if (extension[0] != kExtensionSeparator)
+  if (extension[0] != kExtensionSeparator) {
     str.append(1, kExtensionSeparator);
+  }
   str.append(extension);
   return FilePath(str);
 }
@@ -502,8 +527,9 @@ bool FilePath::MatchesExtension(StringPieceType extension) const {
 
   StringType current_extension = Extension();
 
-  if (current_extension.length() != extension.length())
+  if (current_extension.length() != extension.length()) {
     return false;
+  }
 
   return FilePath::CompareEqualIgnoreCase(extension, current_extension);
 }
@@ -513,8 +539,9 @@ bool FilePath::MatchesFinalExtension(StringPieceType extension) const {
 
   StringType current_final_extension = FinalExtension();
 
-  if (current_final_extension.length() != extension.length())
+  if (current_final_extension.length() != extension.length()) {
     return false;
+  }
 
   return FilePath::CompareEqualIgnoreCase(extension, current_final_extension);
 }
@@ -590,14 +617,16 @@ bool FilePath::IsNetwork() const {
 }
 
 bool FilePath::EndsWithSeparator() const {
-  if (empty())
+  if (empty()) {
     return false;
+  }
   return IsSeparator(path_.back());
 }
 
 FilePath FilePath::AsEndingWithSeparator() const {
-  if (EndsWithSeparator() || path_.empty())
+  if (EndsWithSeparator() || path_.empty()) {
     return *this;
+  }
 
   StringType path_str;
   path_str.reserve(path_.length() + 1);  // Only allocate string once.
@@ -681,8 +710,9 @@ std::u16string FilePath::LossyDisplayName() const {
 }
 
 std::string FilePath::MaybeAsASCII() const {
-  if (base::IsStringASCII(path_))
+  if (base::IsStringASCII(path_)) {
     return path_;
+  }
   return std::string();
 }
 
@@ -741,18 +771,21 @@ void FilePath::WriteToPickle(Pickle* pickle) const {
 bool FilePath::ReadFromPickle(PickleIterator* iter) {
 #if BUILDFLAG(IS_WIN)
   std::u16string path;
-  if (!iter->ReadString16(&path))
+  if (!iter->ReadString16(&path)) {
     return false;
+  }
   path_ = UTF16ToWide(path);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  if (!iter->ReadString(&path_))
+  if (!iter->ReadString(&path_)) {
     return false;
+  }
 #else
 #error Unsupported platform
 #endif
 
-  if (path_.find(kStringTerminator) != StringType::npos)
+  if (path_.find(kStringTerminator) != StringType::npos) {
     return false;
+  }
 
   return true;
 }
@@ -774,27 +807,32 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   StringPieceType::const_iterator i2 = string2.begin();
   StringPieceType::const_iterator string1end = string1.end();
   StringPieceType::const_iterator string2end = string2.end();
-  for ( ; i1 != string1end && i2 != string2end; ++i1, ++i2) {
+  for (; i1 != string1end && i2 != string2end; ++i1, ++i2) {
     wchar_t c1 =
         (wchar_t)LOWORD(::CharUpperW((LPWSTR)(DWORD_PTR)MAKELONG(*i1, 0)));
     wchar_t c2 =
         (wchar_t)LOWORD(::CharUpperW((LPWSTR)(DWORD_PTR)MAKELONG(*i2, 0)));
-    if (c1 < c2)
+    if (c1 < c2) {
       return -1;
-    if (c1 > c2)
+    }
+    if (c1 > c2) {
       return 1;
+    }
   }
-  if (i1 != string1end)
+  if (i1 != string1end) {
     return 1;
-  if (i2 != string2end)
+  }
+  if (i2 != string2end) {
     return -1;
+  }
   return 0;
 }
 
 #elif BUILDFLAG(IS_APPLE)
 // Mac OS X specific implementation of file string comparisons.
 
-// cf. https://developer.apple.com/library/archive/technotes/tn/tn1150.html#UnicodeSubtleties
+// cf.
+// https://developer.apple.com/library/archive/technotes/tn/tn1150.html#UnicodeSubtleties
 //
 // "When using CreateTextEncoding to create a text encoding, you should set
 // the TextEncodingBase to kTextEncodingUnicodeV2_0, set the
@@ -805,7 +843,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 //
 // Another technical article for X 10.4 updates this: one should use
 // the new (unambiguous) kUnicodeHFSPlusDecompVariant.
-// cf. http://developer.apple.com/mac/library/releasenotes/TextFonts/RN-TEC/index.html
+// cf.
+// http://developer.apple.com/mac/library/releasenotes/TextFonts/RN-TEC/index.html
 //
 // This implementation uses CFStringGetFileSystemRepresentation() to get the
 // decomposed form, and an adapted version of the FastUnicodeCompare as
@@ -1234,8 +1273,9 @@ inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
     if (codepoint > 0 && codepoint <= 0xFFFF) {
       // Check if there is a subtable for this upper byte.
       int lookup_offset = lower_case_table[codepoint >> 8];
-      if (lookup_offset != 0)
+      if (lookup_offset != 0) {
         codepoint = lower_case_table[lookup_offset + (codepoint & 0x00FF)];
+      }
       // Note: `codepoint` may be again 0 at this point if the character was
       // an ignorable.
     }
@@ -1260,8 +1300,9 @@ int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
         HFSReadNextNonIgnorableCodepoint(string1.data(), length1, &index1);
     base_icu::UChar32 codepoint2 =
         HFSReadNextNonIgnorableCodepoint(string2.data(), length2, &index2);
-    if (codepoint1 != codepoint2)
+    if (codepoint1 != codepoint2) {
       return (codepoint1 < codepoint2) ? -1 : 1;
+    }
     if (codepoint1 == 0) {
       DCHECK_EQ(index1, length1);
       DCHECK_EQ(index2, length2);
@@ -1310,10 +1351,12 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
   // Quick checks for empty strings - these speed things up a bit and make the
   // following code cleaner.
-  if (string1.empty())
+  if (string1.empty()) {
     return string2.empty() ? 0 : -1;
-  if (string2.empty())
+  }
+  if (string2.empty()) {
     return 1;
+  }
 
   StringType hfs1 = GetHFSDecomposedForm(string1);
   StringType hfs2 = GetHFSDecomposedForm(string2);
@@ -1334,10 +1377,12 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
     if (!cfstring1 || !cfstring2) {
       int comparison = memcmp(string1.data(), string2.data(),
                               std::min(string1.length(), string2.length()));
-      if (comparison < 0)
+      if (comparison < 0) {
         return -1;
-      if (comparison > 0)
+      }
+      if (comparison > 0) {
         return 1;
+      }
       return 0;
     }
 
@@ -1355,15 +1400,16 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
                                 StringPieceType string2) {
   size_t rlen = std::min(string1.size(), string2.size());
   int comparison = strncasecmp(string1.data(), string2.data(), rlen);
-  if (comparison < 0 || (comparison == 0 && string1.size() < string2.size()))
+  if (comparison < 0 || (comparison == 0 && string1.size() < string2.size())) {
     return -1;
-  if (comparison > 0 || (comparison == 0 && string1.size() > string2.size()))
+  }
+  if (comparison > 0 || (comparison == 0 && string1.size() > string2.size())) {
     return 1;
+  }
   return 0;
 }
 
 #endif  // OS versions of CompareIgnoreCase()
-
 
 void FilePath::StripTrailingSeparatorsInternal() {
   // If there is no drive letter, start will be 1, which will prevent stripping
@@ -1375,8 +1421,7 @@ void FilePath::StripTrailingSeparatorsInternal() {
 
   StringType::size_type last_stripped = StringType::npos;
   for (StringType::size_type pos = path_.length();
-       pos > start && IsSeparator(path_[pos - 1]);
-       --pos) {
+       pos > start && IsSeparator(path_[pos - 1]); --pos) {
     // If the string only has two separators and they're at the beginning,
     // don't strip them, unless the string began with more than two separators.
     if (pos != start + 1 || last_stripped == start + 2 ||
