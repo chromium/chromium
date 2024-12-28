@@ -10,6 +10,11 @@ or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
 
+* 30 December 2024: Announcing the top 20 Chrome VRP reporters of 2024:
+  https://crbug.com/386306231 -- congratulations to all who made the list and
+  thank you to all Chrome VRP reporters for your contributions this year and
+  helping make Chrome Browser and Chromium more secure for all users!
+
 * 13 November 2024: Updates to the [V8 Sandbox
   Bypass](#v8-sandbox-bypass-rewards) scope and reward amounts.[Past
   submissions of V8 sandbox bypasses](https://issues.chromium.org/hotlists/4802478)
