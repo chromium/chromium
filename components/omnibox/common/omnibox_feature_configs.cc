@@ -47,6 +47,14 @@ DocumentProvider::DocumentProvider() {
       base::FeatureParam<bool>(&omnibox::kDocumentProvider,
                                "DocumentProviderIgnoreWhenDebouncing", false)
           .Get();
+  scope_backoff_to_profile =
+      base::FeatureParam<bool>(&omnibox::kDocumentProvider,
+                               "DocumentProviderScopeBackoffToProfile", false)
+          .Get();
+  backoff_duration = base::FeatureParam<base::TimeDelta>(
+                         &omnibox::kDocumentProvider,
+                         "DocumentProviderBackoffDuration", base::TimeDelta())
+                         .Get();
 }
 
 // static

@@ -67,6 +67,11 @@ class DocumentSuggestionsService : public KeyedService,
     return account_is_subject_to_enterprise_policies_;
   }
 
+  bool should_backoff() { return should_backoff_; }
+  void set_should_backoff(bool should_backoff) {
+    should_backoff_ = should_backoff;
+  }
+
  private:
   // Returns whether Enterprise policies are applied to the primary account -
   // aka Dasher account, obtained from the user account capability.
@@ -112,6 +117,9 @@ class DocumentSuggestionsService : public KeyedService,
   // Helper for fetching OAuth2 access tokens. Non-null when we have a token
   // available, or while a token fetch is in progress.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
+
+  // Whether the document provider should stop issuing requests.
+  bool should_backoff_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_DOCUMENT_SUGGESTIONS_SERVICE_H_

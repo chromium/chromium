@@ -404,7 +404,11 @@ bool DocumentProvider::IsDocumentProviderAllowed(
   }
 
   // We haven't received a server backoff signal.
-  if (backoff_for_session_) {
+  bool should_backoff =
+      omnibox_feature_configs::DocumentProvider::Get().scope_backoff_to_profile
+          ? client_->GetDocumentSuggestionsService()->should_backoff()
+          : backoff_for_this_instance_only_;
+  if (should_backoff) {
     base::UmaHistogramEnumeration("Omnibox.DocumentSuggest.ProviderAllowed",
                                   DocumentProviderAllowedReason::kBackoff);
     return false;
@@ -562,9 +566,9 @@ void DocumentProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
-      backoff_for_session_(false),
       client_(client),
-      matches_cache_(20) {
+      matches_cache_(20),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   AddListener(listener);
 
   debouncer_ = std::make_unique<AutocompleteProviderDebouncer>(true, 300);
@@ -601,7 +605,23 @@ void DocumentProvider::OnURLLoadComplete(
   // requests during the current session after receiving one.
   if (response_code == 400 || response_code == 401 || response_code == 403 ||
       response_code == 499) {
-    backoff_for_session_ = true;
+    bool scope_backoff_to_profile =
+        omnibox_feature_configs::DocumentProvider::Get()
+            .scope_backoff_to_profile;
+    if (scope_backoff_to_profile) {
+      client_->GetDocumentSuggestionsService()->set_should_backoff(true);
+      base::TimeDelta backoff_duration =
+          omnibox_feature_configs::DocumentProvider::Get().backoff_duration;
+      if (backoff_duration > base::TimeDelta()) {
+        task_runner_->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&DocumentProvider::ResetBackoffState,
+                           weak_ptr_factory_.GetWeakPtr()),
+            backoff_duration);
+      }
+    } else {
+      backoff_for_this_instance_only_ = true;
+    }
   }
 
   const bool results_updated =
@@ -612,6 +632,10 @@ void DocumentProvider::OnURLLoadComplete(
   loader_.reset();
   done_ = true;
   NotifyListeners(results_updated);
+}
+
+void DocumentProvider::ResetBackoffState() {
+  client_->GetDocumentSuggestionsService()->set_should_backoff(false);
 }
 
 bool DocumentProvider::UpdateResults(const std::string& json_data) {
