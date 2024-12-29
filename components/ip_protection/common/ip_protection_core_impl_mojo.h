@@ -17,8 +17,8 @@
 namespace ip_protection {
 
 class IpProtectionCoreHostRemote;
-class IpProtectionProxyConfigManaager;
-class IpProtectionTokenManaager;
+class IpProtectionProxyConfigManager;
+class IpProtectionTokenManager;
 
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
 // to call on the core, and supporting initialization.
