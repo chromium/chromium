@@ -204,6 +204,11 @@ void ScrollBar::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
+void ScrollBar::OnThemeChanged() {
+  View::OnThemeChanged();
+  SchedulePaint();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ScrollBar, ScrollDelegate implementation:
 

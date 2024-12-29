@@ -140,6 +140,7 @@ class VIEWS_EXPORT ScrollBar : public View,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // ScrollDelegate:
   bool OnScroll(float dx, float dy) override;
