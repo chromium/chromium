@@ -61,7 +61,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/scalable_iph:unit_tests",
     "//chromeos/ash/components/settings:unit_tests",
     "//chromeos/ash/components/smbfs:unit_tests",
-    "//chromeos/ash/components/sparky:unit_tests",
     "//chromeos/ash/components/specialized_features:unit_tests",
     "//chromeos/ash/components/string_matching:unit_tests",
     "//chromeos/ash/components/sync_wifi:unit_tests",
