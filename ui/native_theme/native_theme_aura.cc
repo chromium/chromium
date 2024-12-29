@@ -119,7 +119,7 @@ NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
   }
 }
 
-NativeThemeAura::~NativeThemeAura() {}
+NativeThemeAura::~NativeThemeAura() = default;
 
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
