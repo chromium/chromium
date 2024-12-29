@@ -174,6 +174,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_filled_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_shown_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_selected_ = false;
+  bool has_logged_suggestion_for_card_info_retrieval_enrolled_filled_ = false;
   bool has_logged_suggestion_for_card_with_cvc_shown_ = false;
   bool has_logged_suggestion_for_card_with_cvc_selected_ = false;
   bool has_logged_suggestion_for_card_with_cvc_filled_ = false;
@@ -183,6 +186,11 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the most recent card to be selected as an Autofill suggestion was
   // a virtual card. False for all other card types.
   bool latest_selected_card_was_virtual_card_ = false;
+  // If true, the most recent card that was filled as an Autofill suggestion was
+  // a card enrolled in runtime retrieval, i.e. a card that had information such
+  // as CVC or card number retrieved from the server. (False for all other card
+  // types.)
+  bool latest_filled_card_was_card_info_retrieval_enrolled_ = false;
   // If true, the most recent card that was filled as an Autofill suggestion
   // was a masked server card. False for all other card types.
   bool latest_filled_card_was_masked_server_card_ = false;

@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/metrics/payments/card_info_retrieval_enrolled_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -126,6 +127,17 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
     Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN, form);
   }
+
+  // Log if any of the suggestions contains card info retrieval enrolled card.
+  if (suggestion_contains_card_info_retrieval_enrolled_card_) {
+    LogCardInfoRetrievalEnrolledFormEventMetric(
+        CardInfoRetrievalEnrolledLoggingEvent::kSuggestionShown);
+    if (!has_logged_suggestion_for_card_info_retrieval_enrolled_shown_) {
+      LogCardInfoRetrievalEnrolledFormEventMetric(
+          CardInfoRetrievalEnrolledLoggingEvent::kSuggestionShownOnce);
+    }
+    has_logged_suggestion_for_card_info_retrieval_enrolled_shown_ = true;
+  }
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
@@ -183,6 +195,18 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       if (metadata_logging_context_.SelectedCardHasBenefitAvailable()) {
         Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED,
             form);
+      }
+
+      // Log card info retrieval enrolled card is selected.
+      if (credit_card.card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+        LogCardInfoRetrievalEnrolledFormEventMetric(
+            CardInfoRetrievalEnrolledLoggingEvent::kSuggestionSelected);
+        if (!has_logged_suggestion_for_card_info_retrieval_enrolled_selected_) {
+          LogCardInfoRetrievalEnrolledFormEventMetric(
+              CardInfoRetrievalEnrolledLoggingEvent::kSuggestionSelectedOnce);
+        }
+        has_logged_suggestion_for_card_info_retrieval_enrolled_selected_ = true;
       }
 
       break;
@@ -303,6 +327,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
        .safe_fields = safe_filled_fields});
 
   latest_filled_card_was_masked_server_card_ = false;
+  latest_filled_card_was_card_info_retrieval_enrolled_ = false;
   switch (record_type) {
     case CreditCard::RecordType::kLocalCard:
       Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
@@ -310,6 +335,18 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     case CreditCard::RecordType::kMaskedServerCard:
       Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, form);
       latest_filled_card_was_masked_server_card_ = true;
+      // Log card info retrieval enrolled card is selected.
+      if (credit_card.card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
+        LogCardInfoRetrievalEnrolledFormEventMetric(
+            CardInfoRetrievalEnrolledLoggingEvent::kSuggestionFilled);
+        if (!has_logged_suggestion_for_card_info_retrieval_enrolled_filled_) {
+          LogCardInfoRetrievalEnrolledFormEventMetric(
+              CardInfoRetrievalEnrolledLoggingEvent::kSuggestionFilledOnce);
+        }
+        has_logged_suggestion_for_card_info_retrieval_enrolled_filled_ = true;
+        latest_filled_card_was_card_info_retrieval_enrolled_ = true;
+      }
       break;
     case CreditCard::RecordType::kVirtualCard:
       Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, form);
@@ -547,6 +584,13 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_WILL_SUBMIT_ONCE,
         form);
   }
+
+  // Log if a card info retrieval enrolled card was filled before form
+  // submission.
+  if (latest_filled_card_was_card_info_retrieval_enrolled_) {
+    LogCardInfoRetrievalEnrolledFormEventMetric(
+        CardInfoRetrievalEnrolledLoggingEvent::kSuggestionWillSubmitOnce);
+  }
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
@@ -623,6 +667,13 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
       LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kSubmitted,
                                         metadata_logging_context_);
     }
+  }
+
+  // Log if a card info retrieval enrolled card was filled before form
+  // submission.
+  if (latest_filled_card_was_card_info_retrieval_enrolled_) {
+    LogCardInfoRetrievalEnrolledFormEventMetric(
+        CardInfoRetrievalEnrolledLoggingEvent::kSuggestionSubmittedOnce);
   }
 }
 

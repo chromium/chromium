@@ -2779,6 +2779,19 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.CreditCard.CardInfoRetrievalEnrolled"
+    enum="CardInfoRetrievalEnrolledLoggingEvent" expires_after="2025-07-01">
+  <owner>jialihuang@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    These metrics log the autofill form events for card info retrieval enrolled
+    card, such as when card info retrieval enrolled card suggestion(s) is/are
+    shown, selected, or filled for a card info retrieval enrolled card, or the
+    form is about to be submitted or submitted after a card info retrieval
+    enrolled card is autofilled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.CreditCard.WithBenefits.{CardIssuerId}"
     enum="AutofillFormEvent" expires_after="2025-07-01">
   <owner>alexandertekle@google.com</owner>
