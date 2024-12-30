@@ -738,7 +738,8 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
         features::kHappinessTrackingSurveysForDesktopSettingsTime.Get()
             .InMilliseconds();
     hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), timeout_ms);
+        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), timeout_ms, {},
+        {}, HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
   }
 }
 
