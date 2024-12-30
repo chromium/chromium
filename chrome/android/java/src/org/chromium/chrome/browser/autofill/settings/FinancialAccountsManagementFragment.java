@@ -194,7 +194,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                     mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
                             bankAccount.getDisplayIconUrl(),
                             AutofillUiUtils.CardIconSpecs.create(
-                                    getStyledContext(), ImageSize.LARGE));
+                                    getStyledContext(), ImageSize.SQUARE));
         }
         Drawable displayIconBitmapDrawable =
                 displayIconOptional.isPresent()

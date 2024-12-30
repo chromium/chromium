@@ -139,6 +139,14 @@ public class FinancialAccountsManagementFragmentTest {
                                     FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
                                     CardIconSpecs.create(
                                             ContextUtils.getApplicationContext(), ImageSize.LARGE));
+                    personalDataManager
+                            .getImageFetcherForTesting()
+                            .addImageToCacheForTesting(
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
+                                    CardIconSpecs.create(
+                                            ContextUtils.getApplicationContext(),
+                                            ImageSize.SQUARE));
                     // Set the eWallet and Pix pref to true.
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);

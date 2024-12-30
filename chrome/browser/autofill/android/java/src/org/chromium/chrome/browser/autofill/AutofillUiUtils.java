@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -696,6 +697,48 @@ public class AutofillUiUtils {
             return bitmap;
         }
 
+        Context context = ContextUtils.getApplicationContext();
+
+        // Square logos have their corners rounded off, and then placed in a rectangular white
+        // background of size `ImageSize.LARGE`. The rectangular composite asset further has its
+        // corners rounded, and outlined with a grey border similar to other rectangular assets.
+        if (cardIconSpecs.getWidth() == cardIconSpecs.getHeight()) {
+            Bitmap squareBitmap =
+                    Bitmap.createBitmap(
+                            bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas squareCanvas = new Canvas(squareBitmap);
+            Paint squarePaint = new Paint();
+            squarePaint.setAntiAlias(true);
+            RectF squareRectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            squareCanvas.drawRoundRect(
+                    squareRectF,
+                    cardIconSpecs.getCornerRadius(),
+                    cardIconSpecs.getCornerRadius(),
+                    squarePaint);
+            squarePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            squareCanvas.drawBitmap(bitmap, 0, 0, squarePaint);
+
+            CardIconSpecs backgroundSpecs = CardIconSpecs.create(context, ImageSize.LARGE);
+            Bitmap backgroundBitmap =
+                    Bitmap.createBitmap(
+                            backgroundSpecs.getWidth(),
+                            backgroundSpecs.getHeight(),
+                            Bitmap.Config.ARGB_8888);
+            Canvas backgroundCanvas = new Canvas(backgroundBitmap);
+            Paint backgroundPaint = new Paint();
+            backgroundPaint.setColor(Color.WHITE);
+            backgroundPaint.setAntiAlias(true);
+            backgroundCanvas.drawRect(
+                    0, 0, backgroundSpecs.getWidth(), backgroundSpecs.getHeight(), backgroundPaint);
+            int left = (backgroundSpecs.getWidth() - bitmap.getWidth()) / 2;
+            int top = (backgroundSpecs.getHeight() - bitmap.getHeight()) / 2;
+            backgroundCanvas.drawBitmap(squareBitmap, left, top, null);
+
+            // It can now be treated as a rectangular image asset, and enhancements can be applied.
+            bitmap = backgroundBitmap;
+            cardIconSpecs = backgroundSpecs;
+        }
+
         // Round the corners.
         float cornerRadius = cardIconSpecs.getCornerRadius();
         Bitmap bitmapWithEnhancements =
@@ -710,7 +753,6 @@ public class AutofillUiUtils {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         // Add the grey border.
-        Context context = ContextUtils.getApplicationContext();
         int greyColor = ContextCompat.getColor(context, R.color.baseline_neutral_90);
         paint.setColor(greyColor);
         paint.setStyle(Paint.Style.STROKE);
