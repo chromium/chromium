@@ -21,11 +21,19 @@ class WebcodecsInProcessFuzzer
  public:
   using FuzzCase = domatolpm::generated::webcodecs_fuzzer_grammar::fuzzcase;
   WebcodecsInProcessFuzzer() = default;
-
+  void SetUpOnMainThread() override;
   int Fuzz(const FuzzCase& fuzz_case) override;
 };
 
 REGISTER_BINARY_PROTO_IN_PROCESS_FUZZER(WebcodecsInProcessFuzzer)
+
+void WebcodecsInProcessFuzzer::SetUpOnMainThread() {
+  InProcessFuzzer::SetUpOnMainThread();
+  // Some of the functionality tested only runs in a secure context. about:blank
+  // is not considered a secure context, whereas chrome://chrome-urls/ (for
+  // example) is. Navigate to this page and execute the JS in this context.
+  CHECK(ui_test_utils::NavigateToURL(browser(), GURL("chrome://chrome-urls/")));
+}
 
 int WebcodecsInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   domatolpm::Context ctx;
@@ -34,6 +42,6 @@ int WebcodecsInProcessFuzzer::Fuzz(const FuzzCase& fuzz_case) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
-  CHECK(content::ExecJs(rfh, js_str));
+  auto res = content::ExecJs(rfh, js_str);
   return 0;
 }
