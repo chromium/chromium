@@ -46921,6 +46921,7 @@ should be able to be added at any place in this file.
       label="Lens Overlay Translate Button"/>
   <suffix name="PdfSearchify" label="PDF Searchify"/>
   <suffix name="PerformanceInterventionUI" label="Performance Intervention"/>
+  <suffix name="ReadAnythingReadAloud" label="Read Anything Read Aloud"/>
   <suffix name="SafetyEnhancedprotection" label="SafetyEnhancedprotection"/>
   <suffix name="SafetyPasskeys" label="SafetyPasskeys"/>
   <suffix name="SafetySafetycheck" label="Safety Check"/>

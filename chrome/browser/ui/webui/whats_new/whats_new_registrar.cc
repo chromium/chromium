@@ -11,6 +11,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "pdf/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -51,6 +52,9 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule(performance_manager::features::kPerformanceInterventionUI,
                      "agale@google.com"));
+
+  registry->RegisterModule(
+      WhatsNewModule(::features::kReadAnythingReadAloud, "trewin@google.com"));
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {

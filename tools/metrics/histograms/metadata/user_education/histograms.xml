@@ -83,6 +83,7 @@ chromium-metrics-reviews@google.com.
       summary="the module for making PDFs interactable"/>
   <variant name="PerformanceInterventionUI"
       summary="the module for Performance Intervention"/>
+  <variant name="ReadAnythingReadAloud" summary="Read Anything Read Aloud"/>
   <variant name="SafetyEnhancedprotection"
       summary="the module for Enhanced Protection"/>
   <variant name="SafetyPasskeys" summary="the module for SafetyPasskeys"/>
