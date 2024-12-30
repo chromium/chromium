@@ -303,7 +303,7 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
-    &kGlic, "open-status-icon-menu-with-secondary-click", false};
+    &kGlic, "open-status-icon-menu-with-secondary-click", true};
 
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/launcher/glic_status_icon.h"
 
+#include <optional>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -17,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "glic_status_icon.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -87,4 +90,14 @@ void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
     default:
       NOTREACHED();
   }
+}
+
+void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
+  context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW,
+                                            &hotkey);
+  std::optional<size_t> show_menu_item_index =
+      context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_SHOW);
+  CHECK(show_menu_item_index);
+  context_menu_->SetForceShowAcceleratorForItemAt(show_menu_item_index.value(),
+                                                  !hotkey.IsEmpty());
 }

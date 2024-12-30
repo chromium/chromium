@@ -106,6 +106,10 @@ void GlicBackgroundModeManager::UpdateState() {
   } else {
     ExitBackgroundMode();
   }
+
+  if (status_icon_) {
+    status_icon_->UpdateHotkey(actual_registered_hotkey_);
+  }
 }
 
 }  // namespace glic

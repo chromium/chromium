@@ -30,6 +30,8 @@ class GlicStatusIcon : public StatusIconObserver,
   // StatusIconMenuModel::Delegate
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  void UpdateHotkey(const ui::Accelerator& hotkey);
+
  private:
   std::unique_ptr<StatusIconMenuModel> CreateStatusIconMenu();
 
