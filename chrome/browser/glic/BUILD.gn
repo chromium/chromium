@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui",
   ]
   deps = [
+    ":enabling",
     ":glic",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
@@ -65,6 +66,7 @@ source_set("enabling") {
     "glic_enabling.cc",
     "glic_enabling.h",
   ]
+  deps = [ "//chrome/browser/profiles:profile" ]
   public_deps = [
     "//base",
     "//chrome/common:chrome_features",

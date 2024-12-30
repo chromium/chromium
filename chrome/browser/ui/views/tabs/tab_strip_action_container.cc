@@ -217,9 +217,7 @@ TabStripActionContainer::TabStripActionContainer(
   browser_ = tab_strip_controller->GetBrowser();
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags() &&
-      glic::GlicProfileManager::IsProfileSupported(
-          tab_strip_controller->GetProfile())) {
+  if (GlicEnabling::IsEnabledForProfile(tab_strip_controller->GetProfile())) {
     std::unique_ptr<glic::GlicButton> glic_button =
         std::make_unique<glic::GlicButton>(tab_strip_controller);
     glic_button->SetProperty(views::kCrossAxisAlignmentKey,

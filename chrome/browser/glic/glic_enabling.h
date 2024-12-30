@@ -7,6 +7,8 @@
 
 #include "base/types/expected.h"
 
+class Profile;
+
 namespace glic {
 // Enum for signalling the reason why glic was not enabled.
 enum class GlicEnabledStatus {
@@ -25,6 +27,8 @@ class GlicEnabling {
   // Returns whether the Glic feature is enabled for Chrome. This status will
   // not change at runtime.
   static bool IsEnabledByFlags();
+
+  static bool IsEnabledForProfile(const Profile* profile);
 
  private:
   // Private helper function that returns enabled status for fine grain logging

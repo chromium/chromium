@@ -31,11 +31,6 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
   return g_browser_process->GetFeatures()->glic_profile_manager();
 }
 
-bool GlicProfileManager::IsProfileSupported(Profile* profile) {
-  // Unsupported if user is browsing in incognito or guest mode.
-  return !profile->IsOffTheRecord();
-}
-
 void GlicProfileManager::CloseGlicWindow() {
   if (active_glic_) {
     active_glic_->ClosePanel();

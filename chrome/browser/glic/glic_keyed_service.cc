@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -35,8 +36,10 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
-  // Do not open glic window if the user is browsing in incognito or guest mode.
-  DCHECK(GlicProfileManager::IsProfileSupported(
+  // Glic may be disabled for certain user profiles (the user is browsing in
+  // incognito or guest mode, policy, etc). In those cases, the entry points to
+  // this method should already have been removed.
+  DCHECK(GlicEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context_)));
 
   profile_manager_->OnUILaunching(this);
