@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/http_server/error_page_response_provider.h"
@@ -430,6 +431,26 @@ void WaitforPDFExtensionView() {
 
   // Cancel the rotation.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+}
+
+// Tests that the toolbar reappears after backgrounding and foregrounding the
+// app during or after a fast scroll.
+- (void)testShowFullToolbarAfterBackgroundDuringFastScroll {
+  std::map<GURL, std::string> responses;
+  const GURL URL = web::test::HttpServer::MakeUrl("http://tallpage");
+  responses[URL] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+  web::test::SetUpSimpleHttpServer(responses);
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
 }
 
 @end
