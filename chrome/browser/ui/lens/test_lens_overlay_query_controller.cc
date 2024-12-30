@@ -62,6 +62,13 @@ void TestLensOverlayQueryController::StartQueryFlow(
   last_sent_underlying_content_type_ = underlying_content_type;
   last_sent_page_url_ = page_url;
 
+  // Deep copy significant_region_boxes to avoid lifetime issues after the
+  // std::move call below.
+  last_sent_significant_region_boxes_.clear();
+  for (const auto& box : significant_region_boxes) {
+    last_sent_significant_region_boxes_.push_back(box.Clone());
+  }
+
   LensOverlayQueryController::StartQueryFlow(
       screenshot, page_url, page_title, std::move(significant_region_boxes),
       underlying_content_bytes, underlying_content_type, ui_scale_factor,

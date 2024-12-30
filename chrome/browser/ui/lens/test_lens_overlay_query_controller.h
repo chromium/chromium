@@ -134,6 +134,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   const GURL& last_sent_page_url() const { return last_sent_page_url_; }
 
+  const std::vector<lens::mojom::CenterRotatedBoxPtr>&
+  last_sent_significant_region_boxes() const {
+    return last_sent_significant_region_boxes_;
+  }
+
   const std::optional<lens::mojom::UserAction>& last_user_action() const {
     return last_user_action_;
   }
@@ -291,6 +296,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;
+
+  // The last significant region boxes sent to the query controller.
+  std::vector<lens::mojom::CenterRotatedBoxPtr>
+      last_sent_significant_region_boxes_;
 
   // The last user action sent by the query controller.
   std::optional<lens::mojom::UserAction> last_user_action_;
