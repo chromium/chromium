@@ -56,50 +56,6 @@ static constexpr char kVarianceParam[] = "variance";
 static constexpr char kWeightParam[] = "weight";
 static constexpr char kZeroPointParam[] = "zeroPoint";
 
-// Calculate the output size for conv2d based on WebNN spec:
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
-// Return the calculated output size if no error.
-base::expected<double, std::string> CalculateConv2dOutputSize(
-    const uint32_t input_size,
-    const uint32_t filter_size,
-    const uint32_t beginning_padding,
-    const uint32_t ending_padding,
-    const uint32_t stride,
-    const uint32_t dilation,
-    std::string_view label) {
-  // Calculate the dilated filter sizes.
-  auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  if (!checked_effective_filter_size.IsValid()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The effective filter size is too large."));
-  }
-
-  // Calculate the output size in double precision floating point number that
-  // ensures all dimension values of type uint32_t can be exactly represented.
-  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
-  // which is smaller than the max safe integer value for double type.
-  auto checked_output_size =
-      (base::MakeCheckedNum<double>(input_size) -
-       checked_effective_filter_size + beginning_padding + ending_padding) /
-          stride +
-      1;
-
-  if (checked_output_size.ValueOrDie() <= 0) {
-    return base::unexpected(ErrorWithLabel(
-        label, "The input size is too small to fill the window."));
-  }
-
-  // Check if the value is valid for rounding to uint32_t type.
-  if (!checked_output_size.IsValid<uint32_t>()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The output size is too large."));
-  }
-
-  return checked_output_size.ValueOrDie();
-}
-
 // Validate and calculate the output spatial dimensions of conv2d given
 // input sizes, filter sizes, padding, strides and dilations.
 // Return the calculated output sizes in double precision floating point number
@@ -324,6 +280,47 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
 }
 
 }  // namespace
+
+base::expected<double, std::string> CalculateConv2dOutputSize(
+    const uint32_t input_size,
+    const uint32_t filter_size,
+    const uint32_t beginning_padding,
+    const uint32_t ending_padding,
+    const uint32_t stride,
+    const uint32_t dilation,
+    std::string_view label) {
+  // Calculate the dilated filter sizes.
+  auto checked_effective_filter_size =
+      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+  if (!checked_effective_filter_size.IsValid()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The effective filter size is too large."));
+  }
+
+  // Calculate the output size in double precision floating point number that
+  // ensures all dimension values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
+  // which is smaller than the max safe integer value for double type.
+  auto checked_output_size =
+      (base::MakeCheckedNum<double>(input_size) -
+       checked_effective_filter_size + beginning_padding + ending_padding) /
+          stride +
+      1;
+
+  if (checked_output_size.ValueOrDie() <= 0) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The input size is too small to fill the window."));
+  }
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The output size is too large."));
+  }
+
+  return checked_output_size.ValueOrDie();
+}
 
 base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
     const ContextProperties& context_properties,

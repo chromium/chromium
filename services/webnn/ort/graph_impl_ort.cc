@@ -105,30 +105,29 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   // TODO: Investigate how to apply layout optimizations (ORT_ENABLE_ALL):
   // https://onnxruntime.ai/docs/performance/model-optimizations/graph-optimizations.html#layout-optimizations
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
-      session_options, GraphOptimizationLevel::ORT_ENABLE_EXTENDED));
+      session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
 
-  // if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
-  //     context_options->device == mojom::CreateContextOptions::Device::kNpu) {
-  //   const OrtDmlApi* ort_dml_api;
-  //   CHECK_STATUS(ort_api->GetExecutionProviderApi(
-  //       "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
+  if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
+      context_options->device == mojom::CreateContextOptions::Device::kNpu) {
+    const OrtDmlApi* ort_dml_api;
+    CHECK_STATUS(ort_api->GetExecutionProviderApi(
+        "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
 
-  //   OrtDmlDeviceOptions options;
-  //   if (context_options->device == mojom::CreateContextOptions::Device::kGpu)
-  //   {
-  //     options = {OrtDmlPerformancePreference::MinimumPower,
-  //     OrtDmlDeviceFilter::Gpu};
-  //   } else {
-  //     options = {OrtDmlPerformancePreference::MinimumPower,
-  //     OrtDmlDeviceFilter::Gpu};
-  //     // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
-  //     // options = {OrtDmlPerformancePreference::MinimumPower,
-  //     OrtDmlDeviceFilter::Npu};
-  //   }
+    OrtDmlDeviceOptions options;
+    if (context_options->device == mojom::CreateContextOptions::Device::kGpu) {
+      options = {OrtDmlPerformancePreference::HighPerformance,
+                 OrtDmlDeviceFilter::Gpu};
+    } else {
+      options = {OrtDmlPerformancePreference::MinimumPower,
+                 OrtDmlDeviceFilter::Gpu};
+      // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
+      // options = {OrtDmlPerformancePreference::MinimumPower,
+      // OrtDmlDeviceFilter::Npu};
+    }
 
-  //   ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options,
-  //   &options);
-  // }
+    ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options,
+                                                            &options);
+  }
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();
@@ -143,6 +142,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
                                               "Failed to create ORT session."));
   }
+
+  LOG(ERROR) << "Running on ORT=============";
 
   return base::WrapUnique(
       new GraphImplOrt::Session(session, std::move(result->weights)));

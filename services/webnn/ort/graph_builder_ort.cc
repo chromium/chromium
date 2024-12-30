@@ -64,6 +64,8 @@ constexpr char kOpTypeGemm[] = "Gemm";
 
 constexpr char kOpTypeMatmul[] = "Matmul";
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
+constexpr char kOpTypeMaxPool2d[] = "MaxPool";
+constexpr char kOpTypeLpPool2d[] = "LpPool";
 
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
@@ -762,13 +764,6 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
-  const std::string node_name = GetNodeName(pool2d.label);
-  const std::string input_name = GetOperandName(pool2d.input_operand_id);
-  const std::string output_name = GetOperandName(pool2d.output_operand_id);
-
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
       base::checked_cast<int64_t>(pool2d.dilations->width)};
@@ -805,17 +800,79 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       /*name=*/"pads", pads.data(), /*len=*/4, OrtOpAttrType::ORT_OP_ATTR_INTS,
       attr_pads.get_pptr()));
 
-  // TODO: Handle ceil_mode.
+  // Calculate the ceil_mode.
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(pool2d.input_operand_id).descriptor.shape();
+  const std::vector<uint32_t>& output_shape =
+      GetOperand(pool2d.output_operand_id).descriptor.shape();
+  uint32_t input_height, output_height;
+  switch (context_properties_.input_operand_layout) {
+    case InputOperandLayout::kNhwc:
+      input_height = input_shape[1];
+      output_height = output_shape[1];
+      break;
+    case InputOperandLayout::kNchw:
+      input_height = input_shape[2];
+      output_height = output_shape[2];
+      break;
+  }
+  const auto float_output_height = CalculateConv2dOutputSize(
+      input_height, pool2d.window_dimensions->height,
+      pool2d.padding->beginning->height, pool2d.padding->ending->height,
+      pool2d.strides->height, pool2d.dilations->height, pool2d.label);
+  CHECK(float_output_height.has_value());
+
+  int64_t ceil_mode = float_output_height.value() < output_height ? 1 : 0;
+  ScopedOrtOpAttr attr_ceil_mode;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"ceil_mode", &ceil_mode, /*len=*/1,
+      OrtOpAttrType::ORT_OP_ATTR_INT, attr_ceil_mode.get_pptr()));
+
+  // P value of the Lp norm used to pool over the input data.
+  std::optional<ScopedOrtOpAttr> attr_p;
+  std::optional<int64_t> p;
+  std::string op_type;
+  switch (pool2d.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d: {
+      op_type = kOpTypeAveragePool2d;
+      break;
+    }
+    case mojom::Pool2d::Kind::kMaxPool2d: {
+      op_type = kOpTypeMaxPool2d;
+      break;
+    }
+    case mojom::Pool2d::Kind::kL2Pool2d: {
+      op_type = kOpTypeLpPool2d;
+      p = 2;
+      attr_p.emplace();
+      CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+          /*name=*/"p", &p.value(), /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+          attr_p.value().get_pptr()));
+      break;
+    }
+  }
 
   ScopedOrtNode node;
-  std::array<OrtOpAttr**, 4> attributes = {
+  std::vector<OrtOpAttr**> attributes = {
       attr_dilations.get_pptr(), attr_strides.get_pptr(),
-      attr_kernel_shape.get_pptr(), attr_pads.get_pptr()};
+      attr_kernel_shape.get_pptr(), attr_pads.get_pptr(),
+      attr_ceil_mode.get_pptr()};
+  if (op_type == kOpTypeLpPool2d) {
+    CHECK(attr_p.has_value());
+    CHECK(p.has_value());
+    attributes.push_back(attr_p.value().get_pptr());
+  }
+
+  const std::string node_name = GetNodeName(pool2d.label);
+  const std::string input_name = GetOperandName(pool2d.input_operand_id);
+  const std::string output_name = GetOperandName(pool2d.output_operand_id);
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
   CHECK_STATUS(GetOrtGraphApi()->CreateNode(
-      kOpTypeAveragePool2d, kOrtDomainName, node_name.c_str(),
-      input_names.data(), input_names.size(), output_names.data(),
-      output_names.size(), attributes.data(), attributes.size(),
-      node.get_pptr()));
+      op_type.data(), kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
@@ -885,6 +942,10 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
+      case mojom::Operation::Tag::kPool2d: {
+        AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
       case mojom::Operation::Tag::kArgMinMax:
       case mojom::Operation::Tag::kBatchNormalization:
       case mojom::Operation::Tag::kConcat:
@@ -907,10 +968,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPad:
-      case mojom::Operation::Tag::kPool2d: {
-        AddPool2dOperation(*operation->get_pool2d());
-        break;
-      }
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:
