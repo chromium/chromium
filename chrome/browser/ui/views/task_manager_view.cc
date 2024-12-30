@@ -104,6 +104,8 @@ const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
+  tabs_ = nullptr;             // Destroyed by `container` below.
+  search_bar_ = nullptr;       // Destroyed by `right_aligned_container` below.
   end_process_btn_ = nullptr;  // Destroyed by `right_aligned_container` below.
   RemoveAllChildViews();
 
