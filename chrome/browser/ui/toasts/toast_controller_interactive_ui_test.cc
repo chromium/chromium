@@ -47,6 +47,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"
@@ -358,25 +359,27 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                   EnsurePresent(toasts::ToastView::kToastViewId),
                   FireToastCloseTimer(),
                   EnsurePresent(toasts::ToastView::kToastViewId),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(toasts::ToastView::kToastViewId));
+                  MoveMouseTo(toasts::ToastView::kToastMenuButton),
+                  ClickMouse(), WaitForHide(toasts::ToastView::kToastViewId));
 }
 
 // Tests that clicking the menu button twice closes the menu, but not the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, TwoClicksOnMenuButton) {
-  ToastParams params(ToastId::kPlusAddressOverride);
-  int counter = 0;
-  params.menu_model = std::make_unique<TestMenuModel>(
-      base::BindLambdaForTesting([&counter]() { ++counter; }));
-  RunTestSequence(ShowToast(std::move(params)),
-                  WaitForShow(toasts::ToastView::kToastViewId),
-                  EnsurePresent(toasts::ToastView::kToastMenuButton),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForShow(kSampleMenuItem),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(kSampleMenuItem),
-                  EnsurePresent(toasts::ToastView::kToastMenuButton),
-                  Check([&]() { return counter == 0; }));
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      EnsurePresent(toasts::ToastView::kToastMenuButton),
+      PressButton(toasts::ToastView::kToastMenuButton),
+      WaitForShow(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        views::Button::ButtonState::STATE_PRESSED),
+      MoveMouseTo(toasts::ToastView::kToastMenuButton), ClickMouse(),
+      WaitForHide(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        testing::Ne(views::Button::ButtonState::STATE_PRESSED)),
+      EnsurePresent(toasts::ToastView::kToastMenuButton));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
