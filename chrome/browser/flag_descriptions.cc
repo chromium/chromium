@@ -306,10 +306,6 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
-const char kDataSharingAndroidV2Name[] = "Data Sharing Android APIs V2.";
-const char kDataSharingAndroidV2Description[] =
-    "Enabled all Data Sharing Android V2 related UI and features.";
-
 const char kHistorySyncAlternativeIllustrationName[] =
     "History Sync Alternative Illustration";
 const char kHistorySyncAlternativeIllustrationDescription[] =

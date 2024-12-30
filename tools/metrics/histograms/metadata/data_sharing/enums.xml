@@ -36,6 +36,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Local tab group switched"/>
   <int value="7" label="Add member failed"/>
   <int value="8" label="Add member success"/>
+  <int value="9" label="Preview permission denied"/>
+  <int value="10" label="Preview info fetched"/>
+  <int value="11" label="Preview favicons fetched"/>
+  <int value="12" label="All favicons fetched"/>
 </enum>
 
 <enum name="ShareActionStateAndroid">
