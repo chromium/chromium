@@ -12,6 +12,7 @@
 
 #include "base/memory/free_deleter.h"
 #include "base/win/scoped_handle.h"
+#include "build/build_config.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
@@ -21,6 +22,30 @@
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
+namespace {
+BOOL CallDuplicateHandle(HANDLE hSourceProcessHandle,
+                         HANDLE hSourceHandle,
+                         HANDLE hTargetProcessHandle,
+                         LPHANDLE lpTargetHandle,
+                         DWORD dwDesiredAccess,
+                         BOOL bInheritHandle,
+                         DWORD dwOptions) {
+#if !defined(OFFICIAL_BUILD) && !defined(COMPONENT_BUILD)
+  // In tests this bypasses the //sandbox/policy hooks for ::DuplicateHandle.
+  using DuplicateHandleFunctionPtr = decltype(::DuplicateHandle)*;
+  static DuplicateHandleFunctionPtr duplicatehandle_fn =
+      reinterpret_cast<DuplicateHandleFunctionPtr>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "DuplicateHandle"));
+  return duplicatehandle_fn(hSourceProcessHandle, hSourceHandle,
+                            hTargetProcessHandle, lpTargetHandle,
+                            dwDesiredAccess, bInheritHandle, dwOptions);
+#else
+  return ::DuplicateHandle(hSourceProcessHandle, hSourceHandle,
+                           hTargetProcessHandle, lpTargetHandle,
+                           dwDesiredAccess, bInheritHandle, dwOptions);
+#endif
+}
+}  // namespace
 
 NTSTATUS ProcessPolicy::OpenThreadAction(const ClientInfo& client_info,
                                          uint32_t desired_access,
@@ -39,9 +64,9 @@ NTSTATUS ProcessPolicy::OpenThreadAction(const ClientInfo& client_info,
   NTSTATUS status = GetNtExports()->OpenThread(&local_handle, desired_access,
                                                &attributes, &client_id);
   if (NT_SUCCESS(status)) {
-    if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
-                           client_info.process, handle, 0, false,
-                           DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
+    if (!CallDuplicateHandle(::GetCurrentProcess(), local_handle,
+                             client_info.process, handle, 0, false,
+                             DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
       return STATUS_ACCESS_DENIED;
     }
   }
@@ -55,16 +80,17 @@ NTSTATUS ProcessPolicy::OpenProcessTokenExAction(const ClientInfo& client_info,
                                                  uint32_t attributes,
                                                  HANDLE* handle) {
   *handle = nullptr;
-  if (CURRENT_PROCESS != process)
+  if (CURRENT_PROCESS != process) {
     return STATUS_ACCESS_DENIED;
+  }
 
   HANDLE local_handle = nullptr;
   NTSTATUS status = GetNtExports()->OpenProcessTokenEx(
       client_info.process, desired_access, attributes, &local_handle);
   if (NT_SUCCESS(status)) {
-    if (!::DuplicateHandle(::GetCurrentProcess(), local_handle,
-                           client_info.process, handle, 0, false,
-                           DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
+    if (!CallDuplicateHandle(::GetCurrentProcess(), local_handle,
+                             client_info.process, handle, 0, false,
+                             DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
       return STATUS_ACCESS_DENIED;
     }
   }
@@ -85,9 +111,9 @@ DWORD ProcessPolicy::CreateThreadAction(
   if (!local_handle.is_valid()) {
     return ::GetLastError();
   }
-  if (!::DuplicateHandle(::GetCurrentProcess(), local_handle.get(),
-                         client_info.process, handle, 0, FALSE,
-                         DUPLICATE_SAME_ACCESS)) {
+  if (!CallDuplicateHandle(::GetCurrentProcess(), local_handle.get(),
+                           client_info.process, handle, 0, FALSE,
+                           DUPLICATE_SAME_ACCESS)) {
     return ERROR_ACCESS_DENIED;
   }
   return ERROR_SUCCESS;
