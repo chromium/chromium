@@ -255,10 +255,15 @@ public class ReorderDelegate {
             float deltaX) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to update reorder without an active Strategy.";
-        // Update reorder scroll state / reorderX, return if accumulated delta is too small.
-        boolean success = updateReorderState(endX, deltaX);
-        if (!success) return;
-        mActiveStrategy.updateReorderPosition(stripViews, groupTitles, stripTabs, endX, deltaX);
+        // Return if accumulated delta is too small. This isn't the accumulated delta since the
+        // beginning of the drag. It accumulates the delta X until a threshold is crossed and then
+        // the event gets processed.
+        float accumulatedDeltaX = endX - getLastReorderX();
+        if (Math.abs(accumulatedDeltaX) < 1.f) return;
+        // Update reorder scroll state / reorderX.
+        updateReorderState(endX, deltaX);
+        mActiveStrategy.updateReorderPosition(
+                stripViews, groupTitles, stripTabs, endX, accumulatedDeltaX);
     }
 
     /**
@@ -633,15 +638,7 @@ public class ReorderDelegate {
         mLastReorderX = startX;
     }
 
-    /**
-     * @return Whether reorder update can be processed further.
-     */
-    private boolean updateReorderState(float endX, float deltaX) {
-        // This isn't the accumulated delta since the beginning of the drag. It accumulates
-        // the delta X until a threshold is crossed and then the event gets processed.
-        float accumulatedDeltaX = endX - getLastReorderX();
-        if (Math.abs(accumulatedDeltaX) < 1.f) return false;
-
+    private void updateReorderState(float endX, float deltaX) {
         if (!LocalizationUtils.isLayoutRtl()) {
             if (deltaX >= 1.f) {
                 mReorderScrollState |= REORDER_SCROLL_RIGHT;
@@ -657,7 +654,6 @@ public class ReorderDelegate {
         }
 
         mLastReorderX = endX;
-        return true;
     }
 
     /**
