@@ -46,8 +46,7 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
     case blink::mojom::AIPageContentAttributeType::kTableCell:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL;
     case blink::mojom::AIPageContentAttributeType::kListItem:
-      // TODO(khushalsagar): Add this to the proto format.
-      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_LIST_ITEM;
   }
   NOTREACHED();
 }
