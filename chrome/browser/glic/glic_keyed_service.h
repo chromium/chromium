@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/glic_profile_configuration.h"
 #include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/ui/webui/glic/glic.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -77,6 +78,7 @@ class GlicKeyedService : public KeyedService {
 
   raw_ptr<content::BrowserContext> browser_context_;
 
+  GlicProfileConfiguration configuration_;
   GlicWindowController window_controller_;
   GlicFocusedTabManager focused_tab_manager_;
   // Unowned

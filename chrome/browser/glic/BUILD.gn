@@ -9,6 +9,7 @@ source_set("glic") {
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
     "glic_pref_names.h",
+    "glic_profile_configuration.h",
     "glic_profile_manager.h",
     "glic_tab_indicator_helper.h",
     "glic_window_controller.h",
@@ -21,6 +22,7 @@ source_set("glic") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
+    "//components/prefs",
     "//content/public/browser",
     "//ui/views:views",
   ]
@@ -32,6 +34,7 @@ source_set("impl") {
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
+    "glic_profile_configuration.cc",
     "glic_profile_manager.cc",
     "glic_tab_indicator_helper.cc",
     "glic_window_controller.cc",

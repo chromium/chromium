@@ -312,7 +312,10 @@ source_set("impl") {
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic/launcher" ]
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/launcher",
+    ]
   }
 }
 

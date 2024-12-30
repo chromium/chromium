@@ -44,14 +44,6 @@ void GlicLauncherConfiguration::RegisterLocalStatePrefs(
           .Set(kHotkeyModifiers, ui::EF_NONE));
 }
 
-// static
-void GlicLauncherConfiguration::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
-  registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
-  registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
-}
-
 bool GlicLauncherConfiguration::IsEnabled() {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kGlicLauncherEnabled);

@@ -31,7 +31,6 @@ class GlicLauncherConfiguration {
   ~GlicLauncherConfiguration();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   bool IsEnabled();
 
