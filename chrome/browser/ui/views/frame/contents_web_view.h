@@ -19,7 +19,7 @@ class StatusBubbleViews;
 
 namespace ui {
 class LayerTreeOwner;
-}  // namespace ui
+}
 
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
@@ -48,7 +48,9 @@ class ContentsWebView : public views::WebView,
   // Toggles whether the background is visible.
   void SetBackgroundVisible(bool background_visible);
 
-  const gfx::RoundedCornersF& GetBackgroundRadii() const;
+  const gfx::RoundedCornersF& background_radii() const {
+    return background_radii_;
+  }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // WebView overrides:
@@ -74,6 +76,8 @@ class ContentsWebView : public views::WebView,
   raw_ptr<StatusBubbleViews> status_bubble_;
 
   bool background_visible_ = true;
+
+  gfx::RoundedCornersF background_radii_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 
