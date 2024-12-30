@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
 
   // Uses the set config and dependencies to check. Returns a list of errors.
   // For details of errors, please refer the comments of FeatureAccessConfig.
-  FeatureAccessFailureSet Check();
+  FeatureAccessFailureSet Check() const;
 
  private:
   FeatureAccessConfig config_;

@@ -29,7 +29,7 @@ FeatureAccessChecker::FeatureAccessChecker(
       identity_manager_(identity_manager),
       variations_service_(variations_service) {}
 
-FeatureAccessFailureSet FeatureAccessChecker::Check() {
+FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   FeatureAccessFailureSet failures;
 
   if (config_.settings_toggle_pref.has_value()) {
