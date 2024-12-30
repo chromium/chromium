@@ -1144,7 +1144,7 @@
       // Enables the :open pseudo-selector.
       // https://chromestatus.com/feature/5085419215781888
       name: "CSSPseudoOpen",
-      status: "experimental",
+      status: "stable",
     },
     {
       // When an audio, video, or similar resource is "playing"
