@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#pragma clang optimize off
+
 #include "chrome/browser/glic/glic_window_controller.h"
 
 #include "chrome/browser/profiles/profile_manager.h"
@@ -333,6 +335,10 @@ void GlicWindowController::MoveToBrowserPinTarget(Browser* browser,
   int tab_strip_padding = GetLayoutConstant(TAB_STRIP_PADDING);
   glic_rect.set_x(top_right.x() - glic_rect.width() - tab_strip_padding);
   glic_rect.set_y(top_right.y() + tab_strip_padding);
+  // Avoid conversions between pixels and DIP on non 1.0 scale factor displays
+  // changing widget width and height.
+  glic_rect.set_width(kWidgetWidth);
+  glic_rect.set_height(kWidgetHeight);
   if (animate) {
     GetGlicView()->AnimateFrameBounds(glic_rect);
   } else {
