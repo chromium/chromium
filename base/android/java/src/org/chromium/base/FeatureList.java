@@ -247,6 +247,20 @@ public class FeatureList {
         setTestValues(newTestValues);
     }
 
+    /** Override a feature flag with a test value. */
+    public static void setTestFeature(String featureName, boolean testValue) {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(featureName, testValue);
+        mergeTestValues(testValues, /* replace= */ true);
+    }
+
+    /** Override a feature param with a test value. */
+    public static void setTestFeatureParam(String featureName, String paramName, String testValue) {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(featureName, paramName, testValue);
+        mergeTestValues(testValues, /* replace= */ true);
+    }
+
     /**
      * @param featureName The name of the feature to query.
      * @return Whether the feature has a test value configured.

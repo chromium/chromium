@@ -59,7 +59,6 @@ public class MiniPlayerMediatorUnitTest {
 
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
-    private FeatureList.TestValues mTestFeatures;
 
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -73,8 +72,6 @@ public class MiniPlayerMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTestFeatures = new TestValues();
-        FeatureList.setTestValues(mTestFeatures);
         // By default, test behavior of using yOffset from bottom stacker.
         setBottomControlsStackerYOffset(mTestBottomControlsStacker);
 
@@ -599,10 +596,12 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     private void setBottomControlsStackerYOffset(boolean doTestYOffset) {
-        mTestFeatures.addFeatureFlagOverride(
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(
                 ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset);
-        mTestFeatures.addFieldTrialParamOverride(
+        testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching,
                 Boolean.toString(!mTestBottomControlsStacker));
+        FeatureList.setTestValues(testValues);
     }
 }

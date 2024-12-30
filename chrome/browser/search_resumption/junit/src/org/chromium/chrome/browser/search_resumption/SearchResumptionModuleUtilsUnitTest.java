@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -45,6 +46,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
+@Features.EnableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleUtilsUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -56,15 +58,9 @@ public class SearchResumptionModuleUtilsUnitTest {
     @Mock private GURL mGurl1;
     @Mock private GURL mGurl2;
 
-    private FeatureList.TestValues mFeatureListValues;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFeatureListValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mFeatureListValues);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -158,7 +154,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         long lastVisitedTimestampMs = 0;
         doReturn(lastVisitedTimestampMs).when(mTab).getTimestampMillis();
         int expirationTimeSeconds = 1;
-        mFeatureListValues.addFieldTrialParamOverride(
+        FeatureList.setTestFeatureParam(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
                 String.valueOf(expirationTimeSeconds));
@@ -174,7 +170,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mGurl1).isEmpty();
         doReturn(true).when(mGurl1).isValid();
         expirationTimeSeconds = (int) (System.currentTimeMillis() / 1000) + 60; // one more minute
-        mFeatureListValues.addFieldTrialParamOverride(
+        FeatureList.setTestFeatureParam(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
                 String.valueOf(expirationTimeSeconds));

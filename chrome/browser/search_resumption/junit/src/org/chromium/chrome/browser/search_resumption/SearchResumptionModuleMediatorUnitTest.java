@@ -33,6 +33,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -62,6 +63,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
+@Features.DisableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleMediatorUnitTest {
 
     @Mock private Tab mTabToTrack;
@@ -90,16 +92,10 @@ public class SearchResumptionModuleMediatorUnitTest {
     private UserActionTester mActionTester;
     private UserDataHost mUserDataHost;
     private SearchResumptionModuleMediator mMediator;
-    private FeatureList.TestValues mFeatureListValues;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFeatureListValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mFeatureListValues);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, false);
-
         mUserDataHost = new UserDataHost();
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
@@ -301,12 +297,13 @@ public class SearchResumptionModuleMediatorUnitTest {
                     .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
         }
 
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        mFeatureListValues.addFieldTrialParamOverride(
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
+        testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
                 String.valueOf(useNewServiceEnabled));
+        FeatureList.setTestValues(testValues);
     }
 
     private void initSuggestions() {
