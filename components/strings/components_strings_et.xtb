@@ -109,6 +109,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1186201132766001848">Kontrolli paroole</translation>
 <translation id="1187430513518041110">Autod ja sõidukid</translation>
 <translation id="1190491977647722791">Paber (raske)</translation>
+<translation id="1194278116501666615">ArcVmi eellaadimise edenemise värskendamine</translation>
 <translation id="1195073053842921378">See aadress kustutatakse sellest seadmest</translation>
 <translation id="1195558154361252544">Märguanded blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul.</translation>
 <translation id="1197088940767939838">Oranž</translation>
@@ -1146,6 +1147,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3061707000357573562">Teenuse paikamine</translation>
 <translation id="306198082577913404">Ennustuse täiustuste sisselülitamine</translation>
 <translation id="3062655045399308513">Sirvimisandmete kustutamine …</translation>
+<translation id="3063453392496098461">VPN-i taustateenuste installimine ebaõnnestus.</translation>
 <translation id="306573536155379004">Mäng algas.</translation>
 <translation id="3067505415088964188">Hind on soodne</translation>
 <translation id="3068118691172921711">Failide üleslaadimine teenusesse <ph name="CLOUD_PROVIDER" /> algab 1 minuti pärast</translation>
@@ -1755,6 +1757,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4103592298805904008">Papp (ühekihiline)</translation>
 <translation id="4104702906064390950">IBAN-i teabe salvestamine</translation>
 <translation id="4106887816571530227">Manustatud sisu pole lubatud</translation>
+<translation id="4107047499377819067">VPN-i taustateenuste installimine on alanud, selleks võib kuluda mõni minut.</translation>
 <translation id="4110652170750985508">Vaadake makse üle</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Keri tagasi</translation>
@@ -2784,6 +2787,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6001839398155993679">Alustagem</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6002968396561884726">Viimati vaadatud</translation>
+<translation id="6005188329423473970">VPN-i taustateenuste installimine on lõpule viidud. Kui te VPN-rakendusi ei näe, logige välja ja uuesti sisse.</translation>
 <translation id="6005659677094197001">Pidev</translation>
 <translation id="6005765687956866568">Automaatselt sisestatud teave kustutati vormist</translation>
 <translation id="6006365096047131769">3 × 5 tolli</translation>

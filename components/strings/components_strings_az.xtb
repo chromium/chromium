@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">Parolları yoxlayın</translation>
 <translation id="1187430513518041110">Avtomobillər və Nəqliyyat vasitələri</translation>
 <translation id="1190491977647722791">Kağız (ağır)</translation>
+<translation id="1194278116501666615">ArcVm əvvəlcədən yükləmə üzrə gedişat güncəllənməsi</translation>
 <translation id="1195073053842921378">Bu ünvan bu cihazdan silinəcək</translation>
 <translation id="1195558154361252544">İcazə verdiklərinizdən başqa bütün saytlarda bildirişlər blok edilib</translation>
 <translation id="1197088940767939838">Narıncı</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">Təmir Xidməti</translation>
 <translation id="306198082577913404">Proqnoz təkmilləşdirmələrini aktiv edin</translation>
 <translation id="3062655045399308513">Baxış datasını silin...</translation>
+<translation id="3063453392496098461">VPN fon xidmətlərinin quraşdırılması alınmadı.</translation>
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Qiymət aşağıdır</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> üzrə fayl yüklənməsi 1 dəqiqə sonra başlayacaq</translation>
@@ -1751,6 +1753,7 @@
 <translation id="4103592298805904008">Karton (birqat)</translation>
 <translation id="4104702906064390950">IBAN məlumatı yadda saxlanılır</translation>
 <translation id="4106887816571530227">Daxil edilmiş kontentə icazə verilmir</translation>
+<translation id="4107047499377819067">VPN fon xidmətlərinin quraşdırılması başladı və bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="4110652170750985508">Ödənişi nəzərdən keçirin</translation>
 <translation id="4111546256784973544">Peyntbol</translation>
 <translation id="4112140312785995938">Geri çəkin</translation>
@@ -2780,6 +2783,7 @@
 <translation id="6001839398155993679">Başlayaq</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6002968396561884726">Son baxılmış</translation>
+<translation id="6005188329423473970">VPN fon xidmətlərinin quraşdırılması tamamlandı. VPN tətbiqlərini görmürsünüzsə, sistemdən çıxın və yenidən daxil olun.</translation>
 <translation id="6005659677094197001">Davamlı</translation>
 <translation id="6005765687956866568">Avtomatik doldurulmuş məlumat formadan silinib</translation>
 <translation id="6006365096047131769">3 x 5 düym</translation>

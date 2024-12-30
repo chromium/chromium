@@ -2875,7 +2875,7 @@
 <translation id="2981113813906970160">Прикажи голем курсор на глушец</translation>
 <translation id="2983102365694924129">Според вашата активност на сајт. Оваа поставка е исклучена.</translation>
 <translation id="2983373101216420412">Ниво на батерија на кутијата <ph name="PERCENTAGE" /> %.</translation>
-<translation id="2984384421572259426">Затворете ги некористените картички</translation>
+<translation id="2984384421572259426">Отстранете ги некористените картички</translation>
 <translation id="2984727013951557074">Датотеката сѐ уште се синхронизира на Drive.</translation>
 <translation id="2985348301114641460">Да се испрати барање до администраторот за инсталирање на „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> деинсталира апликација}one{<ph name="APP_NAME" /> деинсталира # апликација}other{<ph name="APP_NAME" /> деинсталира # апликации}}</translation>

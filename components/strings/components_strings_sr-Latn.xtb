@@ -109,6 +109,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1186201132766001848">Proveri lozinke</translation>
 <translation id="1187430513518041110">Automobili i vozila</translation>
 <translation id="1190491977647722791">Papir (teški)</translation>
+<translation id="1194278116501666615">Ažuriranje napretka predučitavanja ArcVm-a</translation>
 <translation id="1195073053842921378">Ova adresa će biti izbrisana sa ovog uređaja</translation>
 <translation id="1195558154361252544">Obaveštenja su automatski blokirana za sve sajtove osim za one koje omogućite</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
@@ -1146,6 +1147,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3061707000357573562">Usluga krpljenja</translation>
 <translation id="306198082577913404">Uključite poboljšanja predviđanja</translation>
 <translation id="3062655045399308513">Izbriši podatke pregledanja…</translation>
+<translation id="3063453392496098461">Instaliranje VPN usluga u pozadini nije uspelo.</translation>
 <translation id="306573536155379004">Igra je pokrenuta.</translation>
 <translation id="3067505415088964188">Cena je niska</translation>
 <translation id="3068118691172921711">Otpremanje fajlova u <ph name="CLOUD_PROVIDER" /> počinje za 1 minut</translation>
@@ -1755,6 +1757,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4103592298805904008">Karton (jedan sloj)</translation>
 <translation id="4104702906064390950">IBAN informacije se čuvaju</translation>
 <translation id="4106887816571530227">Ugrađen sadržaj nije dozvoljen</translation>
+<translation id="4107047499377819067">Instaliranje VPN usluga u pozadini je počelo. Ovo može da potraje nekoliko minuta.</translation>
 <translation id="4110652170750985508">Pregledajte uplatu</translation>
 <translation id="4111546256784973544">Pejntbol</translation>
 <translation id="4112140312785995938">Premotaj unazad</translation>
@@ -2784,6 +2787,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6001839398155993679">Idemo</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6002968396561884726">Nedavno pregledano</translation>
+<translation id="6005188329423473970">Instaliranje VPN usluga u pozadini je dovršeno. Ako ne vidite VPN aplikacije, odjavite se i ponovo se prijavite.</translation>
 <translation id="6005659677094197001">Neprekidno</translation>
 <translation id="6005765687956866568">Automatski popunjene informacije su obrisane iz obrasca</translation>
 <translation id="6006365096047131769">3×5 in</translation>

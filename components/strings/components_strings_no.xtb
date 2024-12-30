@@ -109,6 +109,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1186201132766001848">Kontroller passordene</translation>
 <translation id="1187430513518041110">Biler og kjøretøy</translation>
 <translation id="1190491977647722791">Papir (tungt)</translation>
+<translation id="1194278116501666615">Oppdatering av fremdrift for forhåndsinnlasting av ArcVm</translation>
 <translation id="1195073053842921378">Adressen blir slettet fra denne enheten</translation>
 <translation id="1195558154361252544">Varsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="1197088940767939838">Oransje</translation>
@@ -1146,6 +1147,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
 <translation id="306198082577913404">Slå på forslagsforbedringer</translation>
 <translation id="3062655045399308513">Slett nettlesingsdata…</translation>
+<translation id="3063453392496098461">Installasjonen av VPN-bakgrunnstjenester mislyktes.</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Opplastingen av filen din til <ph name="CLOUD_PROVIDER" /> starter om 1 minutt</translation>
@@ -1755,6 +1757,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4103592298805904008">Kartong (enkeltvegg)</translation>
 <translation id="4104702906064390950">Lagrer IBAN-informasjonen</translation>
 <translation id="4106887816571530227">Innebygd innhold er ikke tillatt</translation>
+<translation id="4107047499377819067">Installasjonen av VPN-bakgrunnstjenester er påbegynt. Dette kan ta noen minutter.</translation>
 <translation id="4110652170750985508">Gjennomgå betalingen</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
@@ -2784,6 +2787,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6001839398155993679">Sett i gang</translation>
 <translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6002968396561884726">Nylig sett på</translation>
+<translation id="6005188329423473970">Installasjonen av VPN-bakgrunnstjenester er fullført. Hvis du ikke ser VPN-apper, logger du av og deretter på igjen.</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
 <translation id="6005765687956866568">Den autoutfylte informasjonen ble fjernet fra skjemaet</translation>
 <translation id="6006365096047131769">3 x 5 tommer</translation>

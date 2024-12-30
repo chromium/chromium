@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
 <translation id="1187430513518041110">অট’ আৰু বাহন</translation>
 <translation id="1190491977647722791">কাগজ (হেভিৱেইট)</translation>
+<translation id="1194278116501666615">ArcVm আগতীয়াকৈ ল’ড হোৱাৰ অগ্ৰগতি সম্পৰ্কীয় আপডে’ট</translation>
 <translation id="1195073053842921378">এই ঠিকনাটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="1195558154361252544">আপুনি অনুমতি দিয়াটোৰ বাদে আন সকলো ছাইটৰ বাবে জাননীসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="1197088940767939838">কমলা</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">পেচ্চ্‌ সেৱা</translation>
 <translation id="306198082577913404">পূৰ্বানুমানৰ উন্নতি অন কৰিবনে?</translation>
 <translation id="3062655045399308513">ব্ৰাউজিঙৰ ডেটা মচক...</translation>
+<translation id="3063453392496098461">VPNৰ পৃষ্ঠভূমিৰ সেৱা ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="306573536155379004">গে’ম আৰম্ভ হৈছে।</translation>
 <translation id="3067505415088964188">কম মূল্যৰ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড ১ মিনিটত আৰম্ভ হ’ব</translation>
@@ -1752,6 +1754,7 @@
 <translation id="4103592298805904008">কাৰ্ডব’ৰ্ড (ছিংগল ৱাল)</translation>
 <translation id="4104702906064390950">IBANৰ তথ্য ছেভ কৰি থকা হৈছে</translation>
 <translation id="4106887816571530227">এম্বেড কৰা সমলৰ অনুমতি নাই</translation>
+<translation id="4107047499377819067">VPNৰ পৃষ্ঠভূমিৰ সেৱা ইনষ্টল কৰাটো আৰম্ভ হৈছে, ইয়াৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="4110652170750985508">আপোনাৰ পৰিশোধ চালি জাৰি চাওক</translation>
 <translation id="4111546256784973544">পেইণ্টবল</translation>
 <translation id="4112140312785995938">পিছলৈ যাওক</translation>
@@ -2780,6 +2783,7 @@
 <translation id="6001839398155993679">আৰম্ভ কৰক</translation>
 <translation id="6002122790816966947">আপোনাৰ ডিভাইচ</translation>
 <translation id="6002968396561884726">শেহতীয়াকৈ চোৱা</translation>
+<translation id="6005188329423473970">VPNৰ পৃষ্ঠভূমিৰ সেৱা ইনষ্টল কৰাটো সম্পূৰ্ণ হৈছে। আপুনি যদি VPN এপ্‌সমূহ দেখা পোৱা নাই, অনুগ্ৰহ কৰি লগ আউট কৰক আৰু পুনৰ লগ ইন কৰক।</translation>
 <translation id="6005659677094197001">অবিৰত</translation>
 <translation id="6005765687956866568">ফ’ৰ্মখনৰ পৰা স্বয়ংক্ৰিভাৱে পূৰ হোৱা তথ্যখিনি মচা হৈছে</translation>
 <translation id="6006365096047131769">৩ x ৫ ইঞ্চি</translation>

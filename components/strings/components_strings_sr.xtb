@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">Провери лозинке</translation>
 <translation id="1187430513518041110">Аутомобили и возила</translation>
 <translation id="1190491977647722791">Папир (тешки)</translation>
+<translation id="1194278116501666615">Ажурирање напретка предучитавања ArcVm-а</translation>
 <translation id="1195073053842921378">Ова адреса ће бити избрисана са овог уређаја</translation>
 <translation id="1195558154361252544">Обавештења су аутоматски блокирана за све сајтове осим за оне које омогућите</translation>
 <translation id="1197088940767939838">Наранџаста</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">Услуга крпљења</translation>
 <translation id="306198082577913404">Укључите побољшања предвиђања</translation>
 <translation id="3062655045399308513">Избриши податке прегледања…</translation>
+<translation id="3063453392496098461">Инсталирање VPN услуга у позадини није успело.</translation>
 <translation id="306573536155379004">Игра је покренута.</translation>
 <translation id="3067505415088964188">Цена је ниска</translation>
 <translation id="3068118691172921711">Отпремање фајлова у <ph name="CLOUD_PROVIDER" /> почиње за 1 минут</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">Картон (један слој)</translation>
 <translation id="4104702906064390950">IBAN информације се чувају</translation>
 <translation id="4106887816571530227">Уграђен садржај није дозвољен</translation>
+<translation id="4107047499377819067">Инсталирање VPN услуга у позадини је почело. Ово може да потраје неколико минута.</translation>
 <translation id="4110652170750985508">Прегледајте уплату</translation>
 <translation id="4111546256784973544">Пејнтбол</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">Идемо</translation>
 <translation id="6002122790816966947">Уређаји</translation>
 <translation id="6002968396561884726">Недавно прегледано</translation>
+<translation id="6005188329423473970">Инсталирање VPN услуга у позадини је довршено. Ако не видите VPN апликације, одјавите се и поново се пријавите.</translation>
 <translation id="6005659677094197001">Непрекидно</translation>
 <translation id="6005765687956866568">Аутоматски попуњене информације су обрисане из обрасца</translation>
 <translation id="6006365096047131769">3×5 in</translation>

@@ -109,6 +109,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1186201132766001848">Comprova les contrasenyes</translation>
 <translation id="1187430513518041110">Automòbils i vehicles</translation>
 <translation id="1190491977647722791">Paper (alt gramatge)</translation>
+<translation id="1194278116501666615">Actualització del progrés de precàrrega de la VM d'ARC</translation>
 <translation id="1195073053842921378">L'adreça se suprimirà d'aquest dispositiu</translation>
 <translation id="1195558154361252544">Les notificacions de tots els llocs web estan bloquejades automàticament excepte les que permetis</translation>
 <translation id="1197088940767939838">Taronja</translation>
@@ -1146,6 +1147,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3061707000357573562">Servei de pedaç</translation>
 <translation id="306198082577913404">Activa les millores de predicció</translation>
 <translation id="3062655045399308513">Suprimeix les dades de navegació...</translation>
+<translation id="3063453392496098461">No s'han pogut instal·lar els serveis en segon pla de la VPN.</translation>
 <translation id="306573536155379004">S'ha iniciat el joc.</translation>
 <translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3068118691172921711">La pujada de fitxers a <ph name="CLOUD_PROVIDER" /> començarà d'aquí a 1 minut</translation>
@@ -1755,6 +1757,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4103592298805904008">Cartró (doble capa)</translation>
 <translation id="4104702906064390950">S'està desant la informació de l'IBAN</translation>
 <translation id="4106887816571530227">El contingut inserit no està permès</translation>
+<translation id="4107047499377819067">S'han començat a instal·lar els serveis en segon pla de la VPN. Aquest procés pot tardar uns quants minuts.</translation>
 <translation id="4110652170750985508">Revisa el pagament</translation>
 <translation id="4111546256784973544">Guerra de pintura</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
@@ -2784,6 +2787,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6001839398155993679">Som-hi</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6002968396561884726">Vistos recentment</translation>
+<translation id="6005188329423473970">S'ha completat la instal·lació dels serveis en segon pla de la VPN. Si no veus les aplicacions de la VPN, tanca la sessió i torna-la a iniciar.</translation>
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">La informació emplenada automàticament s'ha esborrat del formulari</translation>
 <translation id="6006365096047131769">3 x 5 polzades</translation>

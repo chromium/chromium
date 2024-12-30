@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">पासवर्डहरूको जाँच गर्नुहोस्</translation>
 <translation id="1187430513518041110">सवारी साधनहरू</translation>
 <translation id="1190491977647722791">पेपर (हेभीवेट)</translation>
+<translation id="1194278116501666615">ArcVm प्रिलोड गर्ने कार्यमा भएको प्रगतिसम्बन्धी अद्यावधिक जानकारी</translation>
 <translation id="1195073053842921378">यो डिभाइसबाट यो ठेगाना मेटाइने छ</translation>
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
 <translation id="306198082577913404">सुझावहरूको गुणस्तर सुधार गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3062655045399308513">ब्राउजिङ डेटा मेटाउनुहोस्...</translation>
+<translation id="3063453392496098461">VPN का ब्याकग्राउन्डमा चल्ने सेवाहरू इन्स्टल गर्न सकिएन।</translation>
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3068118691172921711">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया १ मिनेटमा सुरु हुने छ</translation>
@@ -1753,6 +1755,7 @@
 <translation id="4103592298805904008">कार्डबोर्ड (सिङ्गल वाल)</translation>
 <translation id="4104702906064390950">IBAN सम्बन्धी जानकारी सेभ गरिँदै छ</translation>
 <translation id="4106887816571530227">इम्बेड गरिएको सामग्री प्रयोग गर्न पाइँदैन</translation>
+<translation id="4107047499377819067">VPN का ब्याकग्राउन्डमा चल्ने सेवाहरू इन्स्टल गर्न थालिएको छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="4110652170750985508">आफ्नो भुक्तानीको समीक्षा गर्नुहोस्</translation>
 <translation id="4111546256784973544">पेन्टबल</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
@@ -2782,6 +2785,7 @@
 <translation id="6001839398155993679">जाऔँ</translation>
 <translation id="6002122790816966947">तपाईंका डिभाइसहरू</translation>
 <translation id="6002968396561884726">हालसालै हेरिएको</translation>
+<translation id="6005188329423473970">VPN का ब्याकग्राउन्डमा चल्ने सेवाहरू इन्स्टल गरिएका छन्। तपाईंले VPN एपहरू देख्नुभएन भने कृपया लग आउट गर्नुहोस् र फेरि लग इन गर्नुहोस्।</translation>
 <translation id="6005659677094197001">निरन्तर</translation>
 <translation id="6005765687956866568">फाराममा अटोफिल गरिएको जानकारी हटाइएको छ</translation>
 <translation id="6006365096047131769">३ x ५ इन्च</translation>

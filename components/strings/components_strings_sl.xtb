@@ -109,6 +109,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1186201132766001848">Preveri gesla</translation>
 <translation id="1187430513518041110">Avtomobili in vozila</translation>
 <translation id="1190491977647722791">Paper (Heavyweight)</translation>
+<translation id="1194278116501666615">Obvestilo glede napredka vnaprejšnjega nalaganja ArcVm-ja</translation>
 <translation id="1195073053842921378">Ta naslov bo izbrisan iz te naprave.</translation>
 <translation id="1195558154361252544">Obvestila so samodejno blokirana za vsa spletna mesta, razen za tista z vašim dovoljenjem</translation>
 <translation id="1197088940767939838">Oranžna</translation>
@@ -1146,6 +1147,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3061707000357573562">Storitev za popravke</translation>
 <translation id="306198082577913404">Vklop izboljšav predvidevanj</translation>
 <translation id="3062655045399308513">Izbriši podatke brskanja …</translation>
+<translation id="3063453392496098461">Namestitev storitev v ozadju za omrežje VPN ni uspela.</translation>
 <translation id="306573536155379004">Igra se je začela.</translation>
 <translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3068118691172921711">Nalaganje datotek v storitev <ph name="CLOUD_PROVIDER" /> se bo začelo čez 1 minuto</translation>
@@ -1755,6 +1757,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4103592298805904008">Cardboard (Single Wall)</translation>
 <translation id="4104702906064390950">Shranjevanje podatkov o številki IBAN</translation>
 <translation id="4106887816571530227">Vdelana vsebina ni dovoljena</translation>
+<translation id="4107047499377819067">Nameščanje storitev v ozadju za omrežje se je začelo in lahko traja nekaj minut.</translation>
 <translation id="4110652170750985508">Pregled plačila</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Išči nazaj</translation>
@@ -2784,6 +2787,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6001839398155993679">Pa začnimo</translation>
 <translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6002968396561884726">Nedavno ogledano</translation>
+<translation id="6005188329423473970">Namestitev storitev v ozadju za omrežje VPN je končana. Če ne vidite aplikacij za omrežje VPN, se odjavite in znova prijavite.</translation>
 <translation id="6005659677094197001">Continuous</translation>
 <translation id="6005765687956866568">Samodejno izpolnjeni podatki so bili izbrisani iz obrazca</translation>
 <translation id="6006365096047131769">3 x 5 palcev</translation>

@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">პაროლების შემოწმება</translation>
 <translation id="1187430513518041110">ავტომობილები და ტრანსპორტი</translation>
 <translation id="1190491977647722791">ქაღალდი (მძიმე)</translation>
+<translation id="1194278116501666615">ArcVm-ის წინასწარ ჩატვირთვის პროგრესი</translation>
 <translation id="1195073053842921378">ეს მისამართი წაიშლება ამ მოწყობილობიდან</translation>
 <translation id="1195558154361252544">შეტყობინებები ავტომატურად დაბლოკილია ყველა საიტისთვის, გარდა თქვენ მიერ დაშვებულისა</translation>
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">ჩასწორების სერვისი</translation>
 <translation id="306198082577913404">ჩართეთ პროგნოზირების გაუმჯობესებები</translation>
 <translation id="3062655045399308513">დათვალიერების მონაცემების წაშლა...</translation>
+<translation id="3063453392496098461">VPN-ის ფონური სერვისების ინსტალაცია წარუმატებელია.</translation>
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-ზე ფაილის ატვირთვის პროცესი 1 წუთში დაიწყება</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">მუყაო (ერთშრიანი)</translation>
 <translation id="4104702906064390950">მიმდინარეობს IBAN-ის ინფორმაციის შენახვა</translation>
 <translation id="4106887816571530227">ჩაშენებული კონტენტი არ არის დაშვებული</translation>
+<translation id="4107047499377819067">VPN-ის ფონური სერვისების ინსტალაცია დაიწყო და დასრულებას რამდენიმე წუთი დასჭირდება.</translation>
 <translation id="4110652170750985508">გადახედეთ თქვენს გადახდას</translation>
 <translation id="4111546256784973544">პეინტბოლი</translation>
 <translation id="4112140312785995938">უკან გადახვევა</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">დავიწყოთ</translation>
 <translation id="6002122790816966947">თქვენი მოწყობილობები</translation>
 <translation id="6002968396561884726">ბოლო დროს ნანახი</translation>
+<translation id="6005188329423473970">VPN-ის ფონური სერვისების ინსტალაცია დასრულდა. თუ VPN აპებს ვერ ხედავთ, გადით სისტემიდან და თავიდან შედით.</translation>
 <translation id="6005659677094197001">უწყვეტი</translation>
 <translation id="6005765687956866568">ავტომატურად შევსებული ინფორმაცია გასუფთავდა ფორმაში</translation>
 <translation id="6006365096047131769">3 x 5 დუიმი</translation>

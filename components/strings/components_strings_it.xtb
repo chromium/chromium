@@ -109,6 +109,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1186201132766001848">Controlla password</translation>
 <translation id="1187430513518041110">Auto e veicoli</translation>
 <translation id="1190491977647722791">Carta (pesante)</translation>
+<translation id="1194278116501666615">Aggiornamento avanzamento precaricamento ArcVm</translation>
 <translation id="1195073053842921378">Questo indirizzo verrà eliminato da questo dispositivo</translation>
 <translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
 <translation id="1197088940767939838">Arancione</translation>
@@ -1146,6 +1147,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3061707000357573562">Servizio di applicazione patch</translation>
 <translation id="306198082577913404">Attiva i miglioramenti delle previsioni</translation>
 <translation id="3062655045399308513">Elimina dati di navigazione…</translation>
+<translation id="3063453392496098461">Installazione dei servizi in background della VPN non riuscita.</translation>
 <translation id="306573536155379004">Gioco iniziato.</translation>
 <translation id="3067505415088964188">Prezzo basso</translation>
 <translation id="3068118691172921711">Il caricamento del file su <ph name="CLOUD_PROVIDER" /> inizierà tra 1 minuto</translation>
@@ -1752,6 +1754,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4103592298805904008">Cartone (a parete singola)</translation>
 <translation id="4104702906064390950">Salvataggio delle informazioni sull'IBAN in corso…</translation>
 <translation id="4106887816571530227">Contenuti incorporati non consentiti</translation>
+<translation id="4107047499377819067">È iniziata l'installazione dei servizi in background della VPN. L'operazione potrebbe richiedere alcuni minuti.</translation>
 <translation id="4110652170750985508">Verifica il pagamento</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Vai indietro</translation>
@@ -2781,6 +2784,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6001839398155993679">Inizia</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6002968396561884726">Visualizzato di recente</translation>
+<translation id="6005188329423473970">Installazione dei servizi in background della VPN completata. Se non vedi le app VPN, esci e accedi di nuovo.</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Le informazioni compilate automaticamente sono state cancellate dal modulo</translation>
 <translation id="6006365096047131769">3 x 5 in</translation>

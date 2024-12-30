@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">檢查密碼</translation>
 <translation id="1187430513518041110">汽車與交通工具</translation>
 <translation id="1190491977647722791">紙 (重磅)</translation>
+<translation id="1194278116501666615">ArcVm 預先載入進度更新</translation>
 <translation id="1195073053842921378">此地址將會從此裝置上刪除</translation>
 <translation id="1195558154361252544">系統已自動封鎖所有網站的通知，但您允許的網站除外</translation>
 <translation id="1197088940767939838">橙色</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="306198082577913404">啟用預測結果改善功能</translation>
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
+<translation id="3063453392496098461">無法安裝 VPN 背景服務。</translation>
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3067505415088964188">價格偏低</translation>
 <translation id="3068118691172921711">檔案將於 1 分鐘後開始上載至 <ph name="CLOUD_PROVIDER" /></translation>
@@ -1754,6 +1756,7 @@
 <translation id="4103592298805904008">紙板 (單層瓦楞紙)</translation>
 <translation id="4104702906064390950">儲存緊 IBAN 資料</translation>
 <translation id="4106887816571530227">唔批准嵌入嘅內容</translation>
+<translation id="4107047499377819067">VPN 背景服務已開始安裝，可能需要幾分鐘才能完成。</translation>
 <translation id="4110652170750985508">檢查您的付款</translation>
 <translation id="4111546256784973544">漆彈</translation>
 <translation id="4112140312785995938">向後回轉</translation>
@@ -2783,6 +2786,7 @@
 <translation id="6001839398155993679">立即使用</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6002968396561884726">最近查看過</translation>
+<translation id="6005188329423473970">VPN 背景服務安裝完成。如果沒看到 VPN 應用程式，請登出再重新登入。</translation>
 <translation id="6005659677094197001">連續</translation>
 <translation id="6005765687956866568">已經由表格清除咗自動填入嘅資料</translation>
 <translation id="6006365096047131769">3 x 5 吋</translation>

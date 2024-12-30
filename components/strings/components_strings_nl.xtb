@@ -109,6 +109,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1186201132766001848">Wachtwoorden controleren</translation>
 <translation id="1187430513518041110">Auto's en voertuigen</translation>
 <translation id="1190491977647722791">Papier (zwaargewicht)</translation>
+<translation id="1194278116501666615">Voortgangsupdate voor ArcVm vooraf laden</translation>
 <translation id="1195073053842921378">Dit adres wordt verwijderd van dit apparaat</translation>
 <translation id="1195558154361252544">Meldingen zijn automatisch geblokkeerd voor alle sites, behalve de meldingen die je toestaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
@@ -1146,6 +1147,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3061707000357573562">Patchservice</translation>
 <translation id="306198082577913404">Voorspellingsverbeteringen aanzetten</translation>
 <translation id="3062655045399308513">Browsegegevens verwijderen…</translation>
+<translation id="3063453392496098461">De installatie van VPN-achtergrondservices is mislukt.</translation>
 <translation id="306573536155379004">Game gestart.</translation>
 <translation id="3067505415088964188">Prijs is laag</translation>
 <translation id="3068118691172921711">Je bestandsupload naar <ph name="CLOUD_PROVIDER" /> begint over 1 minuut</translation>
@@ -1749,6 +1751,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4103592298805904008">Karton (enkelwandig)</translation>
 <translation id="4104702906064390950">IBAN-gegevens opslaan</translation>
 <translation id="4106887816571530227">Ingesloten content niet toegestaan</translation>
+<translation id="4107047499377819067">De installatie van VPN-achtergrondservices is gestart. Dit kan een paar minuten duren.</translation>
 <translation id="4110652170750985508">Je betaling controleren</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
@@ -2778,6 +2781,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6001839398155993679">Aan de slag</translation>
 <translation id="6002122790816966947">Je apparaten</translation>
 <translation id="6002968396561884726">Recent bekeken</translation>
+<translation id="6005188329423473970">De installatie van VPN-achtergrondservices is afgerond. Als je geen VPN-apps ziet, log je uit en weer in.</translation>
 <translation id="6005659677094197001">Doorlopend</translation>
 <translation id="6005765687956866568">De automatisch ingevulde informatie is verwijderd uit het formulier</translation>
 <translation id="6006365096047131769">3 x 5 inch</translation>

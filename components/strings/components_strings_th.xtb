@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">ตรวจสอบรหัสผ่าน</translation>
 <translation id="1187430513518041110">รถยนต์และยานพาหนะ</translation>
 <translation id="1190491977647722791">กระดาษ (น้ำหนักมาก)</translation>
+<translation id="1194278116501666615">การอัปเดตความคืบหน้าการโหลดล่วงหน้าของ ArcVm</translation>
 <translation id="1195073053842921378">ระบบจะลบที่อยู่นี้ออกจากอุปกรณ์นี้</translation>
 <translation id="1195558154361252544">ระบบจะบล็อกการแจ้งเตือนของทุกเว็บไซต์โดยอัตโนมัติ ยกเว้นเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="1197088940767939838">สีส้ม</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">แพตช์บริการ</translation>
 <translation id="306198082577913404">เปิดการปรับปรุงการคาดการณ์</translation>
 <translation id="3062655045399308513">ลบข้อมูลการท่องเว็บ...</translation>
+<translation id="3063453392496098461">ติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังไม่สำเร็จ</translation>
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3067505415088964188">ราคาต่ำ</translation>
 <translation id="3068118691172921711">การอัปโหลดไฟล์ไปยัง <ph name="CLOUD_PROVIDER" /> จะเริ่มในอีก 1 นาที</translation>
@@ -1754,6 +1756,7 @@
 <translation id="4103592298805904008">กระดาษแข็ง (3 ชั้น)</translation>
 <translation id="4104702906064390950">กำลังบันทึกข้อมูล IBAN</translation>
 <translation id="4106887816571530227">ไม่อนุญาตให้มีเนื้อหาที่ฝัง</translation>
+<translation id="4107047499377819067">การติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังได้เริ่มขึ้นแล้ว ซึ่งอาจใช้เวลาสักครู่</translation>
 <translation id="4110652170750985508">ตรวจสอบการชำระเงิน</translation>
 <translation id="4111546256784973544">เพนต์บอล</translation>
 <translation id="4112140312785995938">ย้อนกลับ</translation>
@@ -2783,6 +2786,7 @@
 <translation id="6001839398155993679">เริ่มเลย</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6002968396561884726">ดูล่าสุด</translation>
+<translation id="6005188329423473970">ติดตั้งบริการ VPN ที่ทำงานอยู่เบื้องหลังเสร็จสมบูรณ์แล้ว หากไม่เห็นแอป VPN โปรดออกจากระบบแล้วกลับเข้ามาใหม่</translation>
 <translation id="6005659677094197001">ต่อเนื่อง</translation>
 <translation id="6005765687956866568">ล้างข้อมูลที่ป้อนอัตโนมัติออกจากแบบฟอร์มแล้ว</translation>
 <translation id="6006365096047131769">3 x 5 นิ้ว</translation>

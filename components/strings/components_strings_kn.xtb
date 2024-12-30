@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="1187430513518041110">ಆಟೋಗಳು ಮತ್ತು ವಾಹನಗಳು</translation>
 <translation id="1190491977647722791">ಕಾಗದ (ಭಾರೀ ತೂಕದ)</translation>
+<translation id="1194278116501666615">ArcVm ಪ್ರಿಲೋಡ್ ಪ್ರಗತಿಯ ಅಪ್‌ಡೇಟ್</translation>
 <translation id="1195073053842921378">ಈ ಸಾಧನದಿಂದ ಈ ವಿಳಾಸವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="1195558154361252544">ನೀವು ಅನುಮತಿಸಿರುವ ಸೈಟ್‌ಗಳನ್ನು ಹೊರತುಪಡಿಸಿ, ಉಳಿದ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಂದ ಬರುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">ಪ್ಯಾಚ್ ಸೇವೆ</translation>
 <translation id="306198082577913404">ಮುನ್ನೋಟದ ಸುಧಾರಣೆಗಳನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="3062655045399308513">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ...</translation>
+<translation id="3063453392496098461">VPN ಹಿನ್ನೆಲೆ ಸೇವೆಗಳ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="306573536155379004">ಗೇಮ್ ಪ್ರಾರಂಭವಾಗಿದೆ.</translation>
 <translation id="3067505415088964188">ಕಡಿಮೆ ದರ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> ಗೆ ನಿಮ್ಮ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ 1 ನಿಮಿಷದಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
@@ -1752,6 +1754,7 @@
 <translation id="4103592298805904008">ಕಾರ್ಡ್‌ಬೋರ್ಡ್ (ಸಿಂಗಲ್‌ ವಾಲ್‌)</translation>
 <translation id="4104702906064390950">IBAN ಮಾಹಿತಿಯನ್ನು ಸೇವ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4106887816571530227">ಎಂಬೆಡ್ ಮಾಡಿದ ಕಂಟೆಂಟ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="4107047499377819067">VPN ಹಿನ್ನೆಲೆ ಸೇವೆಗಳ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಾರಂಭವಾಗಿದೆ, ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಸಮಯ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="4110652170750985508">ನಿಮ್ಮ ಪಾವತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4111546256784973544">ಪೇಂಟ್‌ಬಾಲ್</translation>
 <translation id="4112140312785995938">ಹಿಂದಕ್ಕೆ ಸೀಕ್ ಮಾಡಿ</translation>
@@ -2781,6 +2784,7 @@
 <translation id="6001839398155993679">ಪ್ರಾರಂಭಿಸೋಣ</translation>
 <translation id="6002122790816966947">ನಿಮ್ಮ ಸಾಧನಗಳು</translation>
 <translation id="6002968396561884726">ಇತ್ತೀಚಿಗೆ ವೀಕ್ಷಿಸಿರುವುದು</translation>
+<translation id="6005188329423473970">VPN ಹಿನ್ನೆಲೆ ಸೇವೆಗಳ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ. ನಿಮಗೆ VPN ಆ್ಯಪ್‌ಗಳು ಕಾಣಿಸದಿದ್ದರೆ, ಲಾಗ್ ಔಟ್ ಮಾಡಿ, ಮರಳಿ ಲಾಗಿನ್ ಮಾಡಿ.</translation>
 <translation id="6005659677094197001">ನಿರಂತರ</translation>
 <translation id="6005765687956866568">ಆಟೋಫಿಲ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಫಾರ್ಮ್‌ನಿಂದ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6006365096047131769">3 x 5 ಇಂಚು</translation>

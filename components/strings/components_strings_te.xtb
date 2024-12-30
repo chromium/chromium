@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="1187430513518041110">ఆటోమేటిక్ వాహనాలు &amp; వాహనాలు</translation>
 <translation id="1190491977647722791">పేపర్ (హెవీవెయిట్)</translation>
+<translation id="1194278116501666615">ArcVm ప్రీ - లోడ్ ప్రోగ్రెస్ అప్‌డేట్</translation>
 <translation id="1195073053842921378">ఈ పరికరం నుండి ఈ అడ్రస్ తొలగించబడుతుంది</translation>
 <translation id="1195558154361252544">మీరు అనుమతించినవి మినహా, ఇతర అన్ని సైట్‌లకు నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1197088940767939838">నారింజ రంగు</translation>
@@ -1141,6 +1142,7 @@
 <translation id="3061707000357573562">ప్యాచ్ సేవ</translation>
 <translation id="306198082577913404">సూచన మెరుగుదలలను ఆన్ చేయండి</translation>
 <translation id="3062655045399308513">బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
+<translation id="3063453392496098461">VPN బ్యాక్‌గ్రౌండ్ సర్వీస్‌ల ఇన్‌స్టలేషన్ విఫలమైంది.</translation>
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3068118691172921711">మీ ఫైల్ అప్‌లోడ్ <ph name="CLOUD_PROVIDER" /> 1 నిమిషంలో ప్రారంభమవుతుంది</translation>
@@ -1750,6 +1752,7 @@
 <translation id="4103592298805904008">కార్డ్‌బోర్డ్ (సింగిల్ వాల్)</translation>
 <translation id="4104702906064390950">IBAN సమాచారం సేవ్ అవుతోంది</translation>
 <translation id="4106887816571530227">పొందుపరిచిన కంటెంట్‌కు అనుమతి లేదు</translation>
+<translation id="4107047499377819067">VPN బ్యాక్‌గ్రౌండ్ సర్వీస్‌ల ఇన్‌స్టలేషన్ ప్రారంభమయ్యింది, దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="4110652170750985508">మీ పేమెంట్‌ను రివ్యూ చేయండి</translation>
 <translation id="4111546256784973544">పెయింట్‌బాల్</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
@@ -2779,6 +2782,7 @@
 <translation id="6001839398155993679">ప్రారంభిద్దాం</translation>
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6002968396561884726">ఇటీవల చూసినవి</translation>
+<translation id="6005188329423473970">VPN బ్యాక్‌గ్రౌండ్ సర్వీస్‌ల ఇన్‌స్టలేషన్ పూర్తయింది. మీకు VPN యాప్‌లు కనిపించకుంటే, దయచేసి లాగ్ అవుట్ చేసి తిరిగి లాగిన్ చేయండి.</translation>
 <translation id="6005659677094197001">కంటిన్యువస్</translation>
 <translation id="6005765687956866568">ఫారమ్ నుండి ఆటోఫిల్ చేసిన సమాచారం క్లియర్ చేయబడింది</translation>
 <translation id="6006365096047131769">3 x 5 అంగుళాలు</translation>
