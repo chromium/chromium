@@ -703,6 +703,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime"
+    enum="BooleanSuccess" expires_after="2025-12-30">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on device model is available at the time of inquiry.
+    This is logged in the service class at the start of the inquiry function
+    call.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing{RequestType}"
     enum="BooleanIsPhishing" expires_after="2025-05-11">
   <owner>andysjlim@chromium.org</owner>
@@ -808,6 +819,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration it took to fetch the on-device model after
     subscription. This is only logged if the update is successful.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse"
+    enum="BooleanSuccess" expires_after="2025-12-30">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on device model inquiry has a successful response. This
+    is logged in the callback after the inquiry call in the host class.
   </summary>
 </histogram>
 

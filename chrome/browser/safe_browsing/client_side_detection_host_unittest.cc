@@ -2254,6 +2254,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", false, 1);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -2321,6 +2324,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       verdict_sent->intelligent_scan_info();
   EXPECT_EQ(intelligent_scan_info.brand(), "Example Brand");
   EXPECT_EQ(intelligent_scan_info.intent(), "Example Intent");
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", true, 1);
 }
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -2428,6 +2434,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", true, 1);
+
   // Now we run the callback to receive a server response. We do not expect the
   // blocking page to pop up on a non-phishy response with the scam experiment
   // verdict.
@@ -2508,6 +2517,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", true, 1);
 
   // Now we run the callback to receive a server response. We do expect the
   // blocking page to pop up on a non-phishy response with the scam experiment

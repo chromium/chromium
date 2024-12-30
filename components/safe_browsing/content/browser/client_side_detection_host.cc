@@ -1106,6 +1106,10 @@ void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     std::optional<optimization_guide::proto::ScamDetectionResponse> response) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
+      response.has_value());
+
   if (response.has_value()) {
     IntelligentScanInfo intelligent_scan_info;
     intelligent_scan_info.set_brand(response->brand());

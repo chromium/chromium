@@ -813,6 +813,10 @@ void ClientSideDetectionService::InquireOnDeviceModel(
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
         callback) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+      IsOnDeviceModelAvailable());
+
   if (!IsOnDeviceModelAvailable()) {
     std::move(callback).Run(std::nullopt);
     return;

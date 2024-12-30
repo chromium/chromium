@@ -941,6 +941,11 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationFailure) {
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
+  // The on device model is "available" but the session creation will fail,
+  // hence the true value for the histogram
+  // SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime.
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", false, 1);
   histogram_tester.ExpectTotalCount(
@@ -1020,6 +1025,8 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionCreationSuccess) {
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -1113,6 +1120,8 @@ TEST_P(ClientSideDetectionServiceTest, TestSessionExecutionFailure) {
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -1208,6 +1217,8 @@ TEST_P(ClientSideDetectionServiceTest,
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
@@ -1314,6 +1325,8 @@ TEST_P(ClientSideDetectionServiceTest,
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
   histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
+  histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
@@ -1411,6 +1424,8 @@ TEST_P(ClientSideDetectionServiceTest,
   base::test::TestFuture<std::optional<ScamDetectionResponse>> future;
   csd_service_->InquireOnDeviceModel(&verdict, "", future.GetCallback());
 
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", true, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelSessionCreationSuccess", true, 1);
   histogram_tester.ExpectTotalCount(
