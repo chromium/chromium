@@ -60,7 +60,7 @@ constexpr char kOpTypeCast[] = "Cast";
 
 constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConv2d[] = "Conv";
-// constexpr char kOpTypeGemm[] = "Gemm";
+constexpr char kOpTypeGemm[] = "Gemm";
 
 constexpr char kOpTypeMatmul[] = "Matmul";
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
@@ -608,7 +608,56 @@ void GraphBuilderOrt::AddConv2dOperation(const mojom::Conv2d& conv2d) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
-void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {}
+void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
+  const std::string node_name = GetNodeName(gemm.label);
+  const std::string input_a_name = GetOperandName(gemm.a_operand_id);
+  const std::string input_b_name = GetOperandName(gemm.b_operand_id);
+  const std::string output_name = GetOperandName(gemm.output_operand_id);
+
+  std::vector<const char*> input_names;
+  std::string input_c_name;
+  if (gemm.c_operand_id.has_value()) {
+    input_c_name = GetOperandName(gemm.c_operand_id.value());
+    input_names = {input_a_name.c_str(), input_b_name.c_str(),
+                   input_c_name.c_str()};
+  } else {
+    input_names = {input_a_name.c_str(), input_b_name.c_str()};
+  }
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_alpha;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"alpha", &gemm.alpha, /*len=*/1,
+      OrtOpAttrType::ORT_OP_ATTR_FLOAT, attr_alpha.get_pptr()));
+
+  ScopedOrtOpAttr attr_beta;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"beta", &gemm.beta, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_FLOAT,
+      attr_beta.get_pptr()));
+
+  ScopedOrtOpAttr attr_transA;
+  int64_t trans_a = static_cast<int64_t>(gemm.a_transpose);
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"transA", &trans_a, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_transA.get_pptr()));
+
+  ScopedOrtOpAttr attr_transB;
+  int64_t trans_b = static_cast<int64_t>(gemm.b_transpose);
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"transB", &trans_b, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_transB.get_pptr()));
+
+  std::array<OrtOpAttr**, 4> attributes = {
+      attr_alpha.get_pptr(), attr_beta.get_pptr(), attr_transA.get_pptr(),
+      attr_transB.get_pptr()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeGemm, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()))
+}
 
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
