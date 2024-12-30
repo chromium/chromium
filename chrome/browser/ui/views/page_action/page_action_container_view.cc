@@ -32,7 +32,7 @@ PageActionContainerView::PageActionContainerView(
   for (actions::ActionItem* action_item : action_items) {
     PageActionView* view = AddChildView(
         std::make_unique<PageActionView>(action_item, icon_view_delegate));
-    page_action_views_.emplace_back(view);
+    page_action_views_[action_item->GetActionId().value()] = view;
     action_view_controller_->CreateActionViewRelationship(
         view, action_item->GetAsWeakPtr());
   }
@@ -41,9 +41,15 @@ PageActionContainerView::PageActionContainerView(
 PageActionContainerView::~PageActionContainerView() = default;
 
 void PageActionContainerView::SetController(PageActionController* controller) {
-  for (PageActionView* view : page_action_views_) {
-    view->OnNewActiveController(controller);
+  for (auto& id_to_view : page_action_views_) {
+    id_to_view.second->OnNewActiveController(controller);
   }
+}
+
+PageActionView* PageActionContainerView::GetPageActionView(
+    actions::ActionId page_action_id) {
+  auto id_to_view = page_action_views_.find(page_action_id);
+  return id_to_view != page_action_views_.end() ? id_to_view->second : nullptr;
 }
 
 BEGIN_METADATA(PageActionContainerView)

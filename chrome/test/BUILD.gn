@@ -9812,6 +9812,7 @@ test("unit_tests") {
       "../browser/ui/views/omnibox/omnibox_result_view_unittest.cc",
       "../browser/ui/views/omnibox/omnibox_view_views_unittest.cc",
       "../browser/ui/views/overlay/video_overlay_window_views_unittest.cc",
+      "../browser/ui/views/page_action/page_action_container_view_unittest.cc",
       "../browser/ui/views/page_action/page_action_controller_unittest.cc",
       "../browser/ui/views/page_action/page_action_icon_view_unittest.cc",
       "../browser/ui/views/page_action/page_action_view_unittest.cc",
