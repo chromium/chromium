@@ -204,7 +204,15 @@ public class FeatureList {
         return sDisableNativeForTesting;
     }
 
-    /** Sets the feature flags to use in JUnit tests, since native calls are not available there. */
+    /**
+     * Override feature flags for testing. Convenience method for #setTestValues() without params.
+     *
+     * <p>If |testFeatures| is null, resets all feature flag and param test overrides (including
+     * ones added by @EnableFeatures, @DisableFeatures and @CommandLineFlags).
+     *
+     * <p>TODO(crbug.com/386813115): Migrate usages to #setTestFeature or #setTestValues to delete
+     * this method.
+     */
     @VisibleForTesting
     public static void setTestFeatures(@Nullable Map<String, Boolean> testFeatures) {
         if (testFeatures == null) {
@@ -217,11 +225,26 @@ public class FeatureList {
     }
 
     /**
-     * Sets the feature flags and field trial parameters to use in JUnit tests, since native calls
-     * are not available there.
+     * Adds overrides to feature flags and field trial parameters in addition to existing ones.
+     *
+     * <p>If |testFeatures| is null, resets all feature flag and param test overrides (including
+     * ones added by @EnableFeatures, @DisableFeatures and @CommandLineFlags).
+     *
+     * <p>Otherwise, it's an alias for #mergeTestValues(testValues, replace=true).
+     *
+     * <p>TODO(crbug.com/386813115): Create resetTestValues() to remove all test values and make
+     * this param @NotNull.
      */
     @VisibleForTesting
     public static void setTestValues(@Nullable TestValues testValues) {
+        if (testValues == null) {
+            overwriteTestValues(null);
+        } else {
+            mergeTestValues(testValues, /* replace= */ true);
+        }
+    }
+
+    private static void overwriteTestValues(@Nullable TestValues testValues) {
         TestValues prevValues = sTestFeatures;
         sTestFeatures = testValues;
         ResettersForTesting.register(() -> sTestFeatures = prevValues);
@@ -235,6 +258,9 @@ public class FeatureList {
     /**
      * Adds overrides to feature flags and field trial parameters in addition to existing ones.
      *
+     * <p>TODO(crbug.com/386813115): Migrate test class usages to #setTestValues to make this
+     * private.
+     *
      * @param testValuesToMerge the TestValues to merge into existing ones
      * @param replace if true, replaces existing values (e.g. from @EnableFeatures annotations)
      */
@@ -244,7 +270,7 @@ public class FeatureList {
             newTestValues.merge(sTestFeatures, /* replace= */ true);
         }
         newTestValues.merge(testValuesToMerge, replace);
-        setTestValues(newTestValues);
+        overwriteTestValues(newTestValues);
     }
 
     /** Override a feature flag with a test value. */
