@@ -60,6 +60,11 @@ void RedirectHeuristicTabHelper::OnNavigationCommitted(
 void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
     const ukm::SourceId& first_party_source_id,
     const content::CookieAccessDetails& details) {
+  if (!dips_service_) {
+    // If there's no DIPS service, we can't check for past interactions.
+    return;
+  }
+
   const std::string first_party_site = GetSiteForDIPS(details.first_party_url);
   const std::string third_party_site = GetSiteForDIPS(details.url);
   if (first_party_site == third_party_site) {
