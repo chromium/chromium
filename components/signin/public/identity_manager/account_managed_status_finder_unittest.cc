@@ -513,4 +513,50 @@ TEST_F(AccountManagedStatusFinderTest,
   task_env_.FastForwardBy(timeout);
 }
 
+TEST_F(AccountManagedStatusFinderTest,
+       ImmediateOutcomeDoesNotRequireFullAccountInfo) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+
+  // The info about hosted_domain is already available before the
+  // AccountManagedStatusFinder gets created. Other parts of the info should not
+  // be required for determining the outcome.
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", /*full_name=*/"", /*given_name=*/"",
+      /*locale=*/"", /*picture_url=*/"");
+
+  // The AccountManagedStatusFinder should be able to immediately identify the
+  // enterprise account based on the hosted_domain in the account info.
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    base::DoNothing());
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kEnterprise);
+}
+
+TEST_F(AccountManagedStatusFinderTest,
+       DelayedOutcomeDoesNotRequireFullAccountInfo) {
+  AccountInfo account =
+      identity_env_.MakeAccountAvailable("account@enterprise.com");
+
+  // Since the extended account info is not available yet, the enterprise
+  // account can not be identified immediately - it's only a potential
+  // enterprise account for now, so the outcome is still pending.
+  base::MockCallback<base::OnceClosure> outcome_determined;
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+                                    outcome_determined.Get());
+  EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
+
+  // Once the non-empty hosted_domain in the account info becomes available, the
+  // AccountManagedStatusFinder should determine that it's an enterprise
+  // account.
+  EXPECT_CALL(outcome_determined, Run);
+  identity_env_.SimulateSuccessfulFetchOfAccountInfo(
+      account.account_id, account.email, account.gaia,
+      /*hosted_domain=*/"enterprise.com", /*full_name=*/"", /*given_name=*/"",
+      /*locale=*/"", /*picture_url=*/"");
+  EXPECT_EQ(finder.GetOutcome(),
+            AccountManagedStatusFinder::Outcome::kEnterprise);
+}
+
 }  // namespace signin
