@@ -52,9 +52,9 @@ SyncReader::SyncReader(
       latency_tag_(params.latency_tag()),
       mute_audio_for_testing_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMuteAudio)),
-      output_bus_buffer_size_(
+      output_bus_buffer_size_(base::checked_cast<uint32_t>(
           media::AudioBus::CalculateMemorySize(params.channels(),
-                                               params.frames_per_buffer())),
+                                               params.frames_per_buffer()))),
       maximum_wait_time_(params.GetBufferDuration() * kBufferDurationPercent),
       read_timeout_glitch_{.duration = params.GetBufferDuration(), .count = 1},
       glitch_counter_(std::move(glitch_counter)) {

@@ -77,8 +77,8 @@ class MEDIA_SHMEM_EXPORT AudioBus {
   // required size in bytes of a contiguous block of memory to be passed to
   // AudioBus for storage of the audio data.
   // Uses channels() and frames_per_buffer() from AudioParameters if given.
-  static int CalculateMemorySize(int channels, int frames);
-  static int CalculateMemorySize(const AudioParameters& params);
+  static size_t CalculateMemorySize(int channels, int frames);
+  static size_t CalculateMemorySize(const AudioParameters& params);
 
   // Checks if buffer is properly aligned to be used in `SetChannelData()`
   static bool IsAligned(void* ptr);

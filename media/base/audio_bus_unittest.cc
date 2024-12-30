@@ -265,7 +265,7 @@ TEST_F(AudioBusTest, WrapMemory) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kSampleRate, kFrameCount);
-  int data_size = AudioBus::CalculateMemorySize(params);
+  size_t data_size = AudioBus::CalculateMemorySize(params);
   std::unique_ptr<float, base::AlignedFreeDeleter> data(static_cast<float*>(
       base::AlignedAlloc(data_size, AudioBus::kChannelAlignment)));
 

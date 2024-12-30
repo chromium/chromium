@@ -286,16 +286,16 @@ bool AudioBus::AreFramesZero() const {
 }
 
 // static
-int AudioBus::CalculateMemorySize(const AudioParameters& params) {
-  return base::checked_cast<int>(CalculateMemorySizeInternal(
+size_t AudioBus::CalculateMemorySize(const AudioParameters& params) {
+  return CalculateMemorySizeInternal(
       params.channels(),
-      base::checked_cast<size_t>(params.frames_per_buffer())));
+      base::checked_cast<size_t>(params.frames_per_buffer()));
 }
 
 // static
-int AudioBus::CalculateMemorySize(int channels, int frames) {
-  return base::checked_cast<int>(CalculateMemorySizeInternal(
-      channels, base::checked_cast<size_t>(frames)));
+size_t AudioBus::CalculateMemorySize(int channels, int frames) {
+  return CalculateMemorySizeInternal(channels,
+                                     base::checked_cast<size_t>(frames));
 }
 
 // static
