@@ -214,6 +214,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (observed_form.accepts_webauthn_credentials) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
+  } else if (observed_form.IsSingleUsername()) {
+    wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant

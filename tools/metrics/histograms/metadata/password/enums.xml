@@ -1149,6 +1149,9 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Cross origin iframe">
     The form is in a cross origin iframe.
   </int>
+  <int value="13" label="Single username form">
+    The form is a single username form.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">

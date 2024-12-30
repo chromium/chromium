@@ -535,6 +535,25 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
       PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,
       1);
 }
+
+TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
+  base::HistogramTester histogram_tester;
+  // Remove the password element from the observed form.
+  observed_form_.password_element_renderer_id = FieldRendererId();
+
+  std::vector<PasswordForm> best_matches = {saved_match_};
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      &saved_match_, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::kSingleUsernameForm,
+      1);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that the when there is a single preferred match, and no extra
