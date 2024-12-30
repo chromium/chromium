@@ -125,7 +125,7 @@ class RecentActivityListMediator {
             Callback<ImageView> avatarCallback =
                     avatarView -> {
                         mAvatarProvider.getAvatarBitmap(
-                                getTriggeringUser(logItem), avatarView::setImageDrawable);
+                                getUserToDisplay(logItem), avatarView::setImageDrawable);
                     };
             propertyModel.set(RecentActivityListProperties.AVATAR_PROVIDER, avatarCallback);
 
@@ -168,10 +168,14 @@ class RecentActivityListMediator {
         return getTabMetadata(logItem).lastKnownUrl;
     }
 
-    private @NonNull GroupMember getTriggeringUser(ActivityLogItem logItem) {
+    private @NonNull GroupMember getUserToDisplay(ActivityLogItem logItem) {
         assert logItem.activityMetadata != null : "ActivityMetadata is null";
-        assert logItem.activityMetadata.triggeringUser != null : "Triggering user is null";
-        return logItem.activityMetadata.triggeringUser;
+        GroupMember member = logItem.activityMetadata.triggeringUser;
+        if (member == null) {
+            member = logItem.activityMetadata.affectedUser;
+        }
+        assert member != null : "The user is null";
+        return member;
     }
 
     private @NonNull String getTitleText(ActivityLogItem logItem) {

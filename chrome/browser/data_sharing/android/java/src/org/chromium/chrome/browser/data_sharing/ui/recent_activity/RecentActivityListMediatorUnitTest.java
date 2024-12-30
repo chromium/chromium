@@ -119,9 +119,9 @@ public class RecentActivityListMediatorUnitTest {
         logItem.userDisplayName = USER_DISPLAY_NAME2;
         logItem.description = TEST_DESCRIPTION_2;
         logItem.timeDeltaMs = TimeUtils.MILLISECONDS_PER_DAY;
-        GroupMember triggeringUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
+        GroupMember affectedUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
-        logItem.activityMetadata.triggeringUser = triggeringUser;
+        logItem.activityMetadata.affectedUser = affectedUser;
         logItem.activityMetadata.tabMetadata = new TabMessageMetadata();
         logItem.activityMetadata.tabMetadata.lastKnownUrl = TAB_URL1;
         logItem.activityMetadata.tabMetadata.localTabId = TAB_ID1;
