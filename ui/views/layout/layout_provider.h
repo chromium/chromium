@@ -231,7 +231,10 @@ class VIEWS_EXPORT LayoutProvider {
 
   // Returns the corner radius specific to the given emphasis.
   virtual int GetCornerRadiusMetric(Emphasis emphasis,
-                                    const gfx::Size& size = gfx::Size()) const;
+                                    const gfx::Size& size) const;
+  int GetCornerRadiusMetric(Emphasis emphasis) const {
+    return GetCornerRadiusMetric(emphasis, gfx::Size());
+  }
 
   // Returns the shadow elevation metric for the given emphasis.
   virtual int GetShadowElevationMetric(Emphasis emphasis) const;

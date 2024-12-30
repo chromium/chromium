@@ -89,7 +89,7 @@ class AXVirtualViewTest : public ViewsTestBase {
                const ui::AXPlatformNodeDelegate* delegate,
                const ax::mojom::Event event_type) {
               DCHECK(accessibility_events);
-              accessibility_events->push_back({delegate, event_type});
+              accessibility_events->emplace_back(delegate, event_type);
             },
             &accessibility_events_);
     button_->GetViewAccessibility().set_accessibility_events_callback(

@@ -88,7 +88,7 @@ namespace views {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(DesktopNativeWidgetAura*,
                              kDesktopNativeWidgetAuraKey,
-                             NULL)
+                             nullptr)
 
 namespace {
 
