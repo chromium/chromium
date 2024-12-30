@@ -13,7 +13,6 @@ js_type_check("closure_compile_module") {
   deps = [
     ":apn_detail_dialog",
     ":apn_list_item",
-    ":apn_selection_dialog",
     ":apn_selection_dialog_list_item",
     ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
@@ -85,20 +84,6 @@ js_library("apn_detail_dialog") {
     "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("apn_selection_dialog") {
-  deps = [
-    ":apn_selection_dialog_list_item",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
 }
 

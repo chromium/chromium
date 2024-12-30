@@ -210,7 +210,7 @@ build_webui_tests("build") {
     "network/apn_list_item_test.js",
     "network/apn_list_test.ts",
     "network/apn_selection_dialog_list_item_test.js",
-    "network/apn_selection_dialog_test.js",
+    "network/apn_selection_dialog_test.ts",
     "network/cr_policy_network_behavior_mojo_tests.js",
     "network/cr_policy_network_indicator_mojo_tests.js",
     "network/cr_policy_strings.js",

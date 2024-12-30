@@ -11,30 +11,25 @@ import '//resources/ash/common/cr_elements/localized_link/localized_link.js';
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
-import '//resources/ash/common/network/apn_selection_dialog_list_item.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './apn_selection_dialog_list_item.js';
 
-import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {ApnProperties, CrosNetworkConfigInterface} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
 import {getTemplate} from './apn_selection_dialog.html.js';
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ApnSelectionDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ApnSelectionDialogElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
   static get is() {
-    return 'apn-selection-dialog';
+    return 'apn-selection-dialog' as const;
   }
 
   static get template() {
@@ -43,7 +38,6 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
 
   static get properties() {
     return {
-      /** @type {Array<ApnProperties>} */
       apnList: {
         type: Array,
         value: [],
@@ -57,7 +51,6 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
         value: false,
       },
 
-      /** @type {ApnProperties} */
       selectedApn_: {
         type: Object,
       },
@@ -68,14 +61,12 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
        * enable state of the action button changes as a result of user changes
        * in the dialog, and subsequent action button state changes (i.e the
        * initial enabled state of the button will not be announced).
-       * @private {boolean|undefined}
        */
       shouldAnnounceA11yActionButtonState_: {
         type: Object,
         value: undefined,
       },
 
-      /** @private */
       actionButtonEnabledA11yText_: {
         type: String,
         value: '',
@@ -86,22 +77,30 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
     };
   }
 
-  /** @override */
+  apnList: ApnProperties[];
+  guid: string;
+  shouldOmitLinks: boolean;
+  private selectedApn_: ApnProperties;
+  private shouldAnnounceA11yActionButtonState_: boolean|undefined;
+  private actionButtonEnabledA11yText_: string;
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     // Set the default focus when the dialog opens.
-    afterNextRender(this, function() {
-      focusWithoutInk(this.shadowRoot.querySelector('.cancel-button'));
+    afterNextRender(this, () => {
+      const cancelButton =
+          this.shadowRoot!.querySelector<CrButtonElement>('.cancel-button');
+      assert(cancelButton);
+      focusWithoutInk(cancelButton);
 
       // Only after dialog is connected and the intended element is focused can
       // action enabled state changes be a11y announced.
@@ -110,22 +109,17 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
     });
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onCancelClicked_(event) {
+  private onCancelClicked_(event: Event): void {
     event.stopPropagation();
-    if (this.$.apnSelectionDialog.open) {
-      this.$.apnSelectionDialog.close();
+    const apnSelectionDialog =
+        this.shadowRoot!.querySelector<CrDialogElement>('#apnSelectionDialog');
+    assert(apnSelectionDialog);
+    if (apnSelectionDialog.open) {
+      apnSelectionDialog.close();
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onActionButtonClicked_(event) {
+  private onActionButtonClicked_(_event: Event): void {
     assert(this.guid);
 
     if (!this.selectedApn_) {
@@ -134,34 +128,24 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
 
     this.networkConfig_.createExclusivelyEnabledCustomApn(
         this.guid, this.selectedApn_);
-    this.$.apnSelectionDialog.close();
+    const apnSelectionDialog =
+        this.shadowRoot!.querySelector<CrDialogElement>('#apnSelectionDialog');
+    assert(apnSelectionDialog);
+    apnSelectionDialog.close();
   }
 
-  /**
-   * @param {!ApnProperties} apn
-   * @return {boolean}
-   * @private
-   */
-  isApnSelected_(apn) {
+  private isApnSelected_(apn: ApnProperties): boolean {
     return apn === this.selectedApn_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeActionButtonEnabledStateA11yText_() {
+  private computeActionButtonEnabledStateA11yText_(): string {
     return this.selectedApn_ ?
         this.i18n('apnSelectionDialogA11yUseApnEnabled') :
         this.i18n('apnSelectionDialogA11yUseApnDisabled');
   }
 
-  /**
-   * @param {string} newVal
-   * @param {string} oldVal
-   * @private
-   */
-  onActionButtonEnabledStateA11yTextChanged_(newVal, oldVal) {
+  private onActionButtonEnabledStateA11yTextChanged_(
+      newVal: string, oldVal: string): void {
     if (this.shouldAnnounceA11yActionButtonState_ === undefined) {
       return;
     }
@@ -170,6 +154,12 @@ export class ApnSelectionDialog extends ApnSelectionDialogElementBase {
       return;
     }
     this.shouldAnnounceA11yActionButtonState_ = oldVal !== newVal;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ApnSelectionDialog.is]: ApnSelectionDialog;
   }
 }
 
