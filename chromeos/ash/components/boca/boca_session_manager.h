@@ -46,6 +46,7 @@ class BocaSessionManager
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
   inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
+  inline static constexpr int kSkipPollingBufferInSeconds = 2;
   inline static constexpr char kPollingResultHistName[] =
       "Ash.Boca.PollingResult";
 

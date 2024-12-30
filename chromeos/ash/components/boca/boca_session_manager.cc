@@ -156,7 +156,8 @@ void BocaSessionManager::MaybeLoadCurrentSession() {
   // Only skip session load for scheduled polling if there is any load since
   // last schedule, we should never skip it for invalidation.
   if (base::TimeTicks::Now() - last_session_load_ <
-      in_session_polling_interval_) {
+      (in_session_polling_interval_ -
+       base::Seconds(kSkipPollingBufferInSeconds))) {
     return;
   }
   LoadCurrentSession(/*from_polling=*/true);
