@@ -1454,15 +1454,6 @@ enum TableRowType {
 enum AnnotatedRole {
   ANNOTATED_ROLE_UNKNOWN = 0;
 
-  // Text chunks (deprecated)
-  ANNOTATED_ROLE_PARAGRAPH = 1;
-
-  ANNOTATED_ROLE_HEADING = 2;
-
-  ANNOTATED_ROLE_ORDERED_LIST = 3;
-
-  ANNOTATED_ROLE_UNORDERED_LIST = 4;
-
   // Landmark/section chunks.
   ANNOTATED_ROLE_HEADER = 5;
 
@@ -1479,6 +1470,8 @@ enum AnnotatedRole {
   ANNOTATED_ROLE_ASIDE = 11;
 
   ANNOTATED_ROLE_FOOTER = 12;
+
+  reserved 1 to 4;
 }
 
 // Whether or not status of the model's output is a success (i.e "is good") or
