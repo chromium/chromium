@@ -5645,6 +5645,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFloatingSnackbarDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kFloatingSnackbar)},
 
+    // Android nav bar color animation
+    {"nav-bar-color-animation", flag_descriptions::kNavBarColorAnimationName,
+     flag_descriptions::kNavBarColorAnimationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNavBarColorAnimation)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

@@ -391,6 +391,7 @@ public abstract class ChromeFeatureList {
             "MultiInstanceApplicationStatusCleanup";
     public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
             "NativePageTransitionHardwareCapture";
+    public static final String NAV_BAR_COLOR_ANIMATION = "NavBarColorAnimation";
     public static final String NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND =
             "NavBarColorMatchesTabBackground";
     public static final String NEW_TAB_SEARCH_ENGINE_URL_ANDROID = "NewTabSearchEngineUrlAndroid";
@@ -717,6 +718,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
+    public static final CachedFlag sNavBarColorAnimation =
+            newCachedFlag(NAV_BAR_COLOR_ANIMATION, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
             newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, true);
     public static final CachedFlag sNewTabPageAndroidTriggerForPrerender2 =
@@ -870,6 +873,7 @@ public abstract class ChromeFeatureList {
                     sMagicStackAndroid,
                     sMostVisitedTilesReselect,
                     sMultiInstanceApplicationStatusCleanup,
+                    sNavBarColorAnimation,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
                     sPowerSavingModeBroadcastReceiverInBackground,

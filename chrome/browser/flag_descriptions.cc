@@ -4697,6 +4697,10 @@ const char kMigrateSyncingUserToSignedInDescription[] =
     "Enables the migration of syncing users to the signed-in, non-syncing "
     "state.";
 
+const char kNavBarColorAnimationName[] = "NavBarColorAnimation";
+const char kNavBarColorAnimationDescription[] =
+    "Enables animations for color changes to the OS navigation bar.";
+
 const char kNavBarColorMatchesTabBackgroundName[] =
     "Nav bar color matches tab background";
 const char kNavBarColorMatchesTabBackgroundDescription[] =

@@ -5968,6 +5968,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "nav-bar-color-animation",
+    "owners": [ "clhager@google.com", "wenyufu@chromium.org","twellington@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "nearby-ble-v2",
     "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
     "expiry_milestone": 130

@@ -2731,6 +2731,9 @@ extern const char kMediaPickerAdoptionStudyDescription[];
 extern const char kMigrateSyncingUserToSignedInName[];
 extern const char kMigrateSyncingUserToSignedInDescription[];
 
+extern const char kNavBarColorAnimationName[];
+extern const char kNavBarColorAnimationDescription[];
+
 extern const char kNavBarColorMatchesTabBackgroundName[];
 extern const char kNavBarColorMatchesTabBackgroundDescription[];
 
