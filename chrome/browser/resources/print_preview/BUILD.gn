@@ -71,7 +71,6 @@ build_webui("build") {
     "dark_mode_mixin.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",
-    "data/destination.ts",
     "data/destination_match.ts",
     "data/destination_store.ts",
     "data/document_info.ts",
@@ -96,11 +95,14 @@ build_webui("build") {
 
   if (is_chromeos) {
     non_web_component_files += [
+      "data/destination_cros.ts",
       "data/managed_print_options_cros.ts",
       "data/print_server_store.ts",
       "data/printer_status_cros.ts",
       "native_layer_cros.ts",
     ]
+  } else {
+    non_web_component_files += [ "data/destination.ts" ]
   }
 
   # Files that are passed as input to css_to_wrapper().

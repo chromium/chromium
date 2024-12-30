@@ -6,7 +6,12 @@ import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 import type {Cdd, ColorCapability, ColorOption, CopiesCapability, DpiOption, DuplexType, MediaSizeOption, MediaTypeOption} from './cdd.js';
+import type {ManagedPrintOptions} from './managed_print_options_cros.ts';
+import type {PrinterStatus} from './printer_status_cros.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
+
 /**
  * Enumeration of the origin types for destinations.
  */
@@ -16,6 +21,7 @@ export enum DestinationOrigin {
   // legacy entries in the recent destinations, since we can't guarantee all
   // such recent printers have been overridden.
   COOKIES = 'cookies',
+  DEVICE = 'device',
   PRIVET = 'privet',
   EXTENSION = 'extension',
   CROS = 'chrome_os',
@@ -31,6 +37,18 @@ export enum PrinterType {
   PDF_PRINTER = 2,
   LOCAL_PRINTER = 3,
   CLOUD_PRINTER_DEPRECATED = 4
+}
+
+/**
+ * Enumeration specifying whether a destination is provisional and the reason
+ * the destination is provisional.
+ */
+export enum DestinationProvisionalType {
+  // Destination is not provisional.
+  NONE = 'NONE',
+  // User has to grant USB access for the destination to its provider.
+  // Used for destinations with extension origin.
+  NEEDS_USB_PERMISSION = 'NEEDS_USB_PERMISSION',
 }
 
 /**
@@ -52,6 +70,10 @@ export interface RecentDestination {
 }
 
 export function isPdfPrinter(id: string): boolean {
+  if (id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+    return true;
+  }
+
   return id === GooglePromotedDestinationId.SAVE_AS_PDF;
 }
 
@@ -91,6 +113,8 @@ export function createRecentDestinationKey(
 
 export interface DestinationOptionalParams {
   isEnterprisePrinter?: boolean;
+  provisionalType?: DestinationProvisionalType;
+  managedPrintOptions?: ManagedPrintOptions;
   extensionId?: string;
   extensionName?: string;
   description?: string;
@@ -157,6 +181,54 @@ export class Destination {
    */
   private extensionName_: string;
 
+  /**
+   * Different from  DestinationProvisionalType.NONE if
+   * the destination is provisional. Provisional destinations cannot be
+   * selected as they are, but have to be resolved first (i.e. extra steps
+   * have to be taken to get actual destination properties, which should
+   * replace the provisional ones). Provisional destination resolvment flow
+   * will be started when the user attempts to select the destination in
+   * search UI.
+   */
+  private provisionalType_: DestinationProvisionalType;
+
+  /**
+   * EULA url for printer's PPD. Empty string indicates no provided EULA.
+   */
+  private eulaUrl_: string = '';
+
+  /**
+   * True if the user opened the print preview dropdown and selected a different
+   * printer than the original destination.
+   */
+  private printerManuallySelected_: boolean = false;
+
+  /**
+   * Stores the printer status reason for a local Chrome OS printer.
+   */
+  private printerStatusReason_: PrinterStatusReason|null = null;
+
+  /**
+   * Promise returns |key_| when the printer status request is completed.
+   */
+  private printerStatusRequestedPromise_: Promise<string>|null = null;
+
+  /**
+   * True if the failed printer status request has already been retried once.
+   */
+  private printerStatusRetrySent_: boolean = false;
+
+  /**
+   * The length of time to wait before retrying a printer status request.
+   */
+  private printerStatusRetryTimerMs_: number = 3000;
+
+  /**
+   * Default/allowed values of print options for the given printer set by
+   * policy.
+   */
+  private managedPrintOptions_: ManagedPrintOptions|null = null;
+
   private type_: PrinterType;
 
   constructor(
@@ -171,6 +243,16 @@ export class Destination {
     this.extensionName_ = (params && params.extensionName) || '';
     this.location_ = (params && params.location) || '';
     this.type_ = this.computeType_(id, origin);
+    this.provisionalType_ =
+        (params && params.provisionalType) || DestinationProvisionalType.NONE;
+
+    assert(
+        this.provisionalType_ !==
+                DestinationProvisionalType.NEEDS_USB_PERMISSION ||
+            this.isExtension,
+        'Provisional USB destination only supported with extension origin.');
+
+    this.managedPrintOptions_ = (params && params.managedPrintOptions) || null;
   }
 
   private computeType_(id: string, origin: DestinationOrigin): PrinterType {
@@ -241,8 +323,131 @@ export class Destination {
     }
   }
 
+  get eulaUrl(): string {
+    return this.eulaUrl_;
+  }
+
+  set eulaUrl(eulaUrl: string) {
+    this.eulaUrl_ = eulaUrl;
+  }
+
+  get printerManuallySelected(): boolean {
+    return this.printerManuallySelected_;
+  }
+
+  set printerManuallySelected(printerManuallySelected: boolean) {
+    this.printerManuallySelected_ = printerManuallySelected;
+  }
+
+  /**
+   * @return The printer status reason for a local Chrome OS printer.
+   */
+  get printerStatusReason(): PrinterStatusReason|null {
+    return this.printerStatusReason_;
+  }
+
+  set printerStatusReason(printerStatusReason: PrinterStatusReason) {
+    this.printerStatusReason_ = printerStatusReason;
+  }
+
+  setPrinterStatusRetryTimeoutForTesting(timeoutMs: number) {
+    this.printerStatusRetryTimerMs_ = timeoutMs;
+  }
+
+  /**
+   * Requests a printer status for the destination.
+   * @return Promise with destination key.
+   */
+  requestPrinterStatus(): Promise<string> {
+    // Requesting printer status only allowed for local CrOS printers.
+    if (this.origin_ !== DestinationOrigin.CROS) {
+      return Promise.reject();
+    }
+
+    // Immediately resolve promise if |printerStatusReason_| is already
+    // available.
+    if (this.printerStatusReason_) {
+      return Promise.resolve(this.key);
+    }
+
+    // Return existing promise if the printer status has already been requested.
+    if (this.printerStatusRequestedPromise_) {
+      return this.printerStatusRequestedPromise_;
+    }
+
+    // Request printer status then set and return the promise.
+    this.printerStatusRequestedPromise_ = this.requestPrinterStatusPromise_();
+    return this.printerStatusRequestedPromise_;
+  }
+
+  /**
+   * Requests a printer status for the destination. If the printer status comes
+   * back as |PRINTER_UNREACHABLE|, this function will retry and call itself
+   * again once before resolving the original call.
+   * @return Promise with destination key.
+   */
+  private requestPrinterStatusPromise_(): Promise<string> {
+    return NativeLayerCrosImpl.getInstance()
+        .requestPrinterStatusUpdate(this.id_)
+        .then(status => {
+          if (status) {
+            const statusReason =
+                getStatusReasonFromPrinterStatus(status as PrinterStatus);
+            const isPrinterUnreachable =
+                statusReason === PrinterStatusReason.PRINTER_UNREACHABLE;
+            if (isPrinterUnreachable && !this.printerStatusRetrySent_) {
+              this.printerStatusRetrySent_ = true;
+              return this.printerStatusWaitForTimerPromise_();
+            }
+
+            this.printerStatusReason_ = statusReason;
+          }
+          return Promise.resolve(this.key);
+        });
+  }
+
+  /**
+   * Pause for a set timeout then retry the printer status request.
+   * @return Promise with destination key.
+   */
+  private printerStatusWaitForTimerPromise_(): Promise<string> {
+    return new Promise<void>((resolve, _reject) => {
+             setTimeout(() => {
+               resolve();
+             }, this.printerStatusRetryTimerMs_);
+           })
+        .then(() => {
+          return this.requestPrinterStatusPromise_();
+        });
+  }
+
+  /** @return Whether the destination is ready to be selected. */
+  get readyForSelection(): boolean {
+    return (this.origin_ !== DestinationOrigin.CROS ||
+            this.capabilities_ !== null) &&
+        !this.isProvisional;
+  }
+
+  get provisionalType(): DestinationProvisionalType {
+    return this.provisionalType_;
+  }
+
+  get isProvisional(): boolean {
+    return this.provisionalType_ !== DestinationProvisionalType.NONE;
+  }
+
+  /**
+   * @return Printer specific print job options set via policy.
+   */
+  get managedPrintOptions(): ManagedPrintOptions|null {
+    return this.managedPrintOptions_;
+  }
+
   /** @return Path to the SVG for the destination's icon. */
   get icon(): string {
+    if (this.id_ === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+      return 'print-preview:save-to-drive';
+    }
     if (this.id_ === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }
@@ -431,8 +636,14 @@ export class Destination {
  */
 export enum GooglePromotedDestinationId {
   SAVE_AS_PDF = 'Save as PDF',
+  SAVE_TO_DRIVE_CROS = 'Save to Drive CrOS',
 }
 
 /* Unique identifier for the Save as PDF destination */
 export const PDF_DESTINATION_KEY: string =
     `${GooglePromotedDestinationId.SAVE_AS_PDF}/${DestinationOrigin.LOCAL}/`;
+
+/* Unique identifier for the Save to Drive CrOS destination */
+export const SAVE_TO_DRIVE_CROS_DESTINATION_KEY: string =
+    `${GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS}/${
+        DestinationOrigin.LOCAL}/`;

@@ -16,8 +16,14 @@ import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from '.
 
 import type {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, MediaTypeOption} from './cdd.js';
 import {DuplexType} from './cdd.js';
+// <if expr="not is_chromeos">
 import type {Destination, RecentDestination} from './destination.js';
 import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination.js';
+// </if>
+// <if expr="is_chromeos">
+import type {Destination, RecentDestination} from './destination_cros.js';
+import {DestinationOrigin, GooglePromotedDestinationId, PrinterType} from './destination_cros.js';
+// </if>
 import type {DocumentSettings} from './document_info.js';
 import type {Margins, MarginsSetting} from './margins.js';
 import {CustomMarginsOrientation, MarginsType} from './margins.js';
