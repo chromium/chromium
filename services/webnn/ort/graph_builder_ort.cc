@@ -11,6 +11,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/ort/error_ort.h"
 #include "services/webnn/ort/utils_ort.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "third_party/fp16/src/include/fp16.h"
@@ -20,7 +21,7 @@ namespace webnn {
 namespace {
 
 constexpr char kOrtDomainName[] = "";
-constexpr int32_t kOrtOpsetVersion = 18;
+constexpr int32_t kOrtOpsetVersion = 21;
 
 // Element-wise binary
 constexpr char kOpTypeAdd[] = "Add";
@@ -61,9 +62,8 @@ constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConv2d[] = "Conv";
 // constexpr char kOpTypeGemm[] = "Gemm";
 
-// Pool2d
-// constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 constexpr char kOpTypeMatmul[] = "Matmul";
+constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
@@ -222,7 +222,8 @@ uint64_t GraphBuilderOrt::NewInitializerAsRawData(
   CHECK_STATUS(GetOrtGraphApi()->AddInitializer(graph_.get_ptr(), name.c_str(),
                                                 initializer.get_pptr()));
 
-  CHECK(result_->operand_infos.try_emplace(next_operand_id_, std::move(operand_info))
+  CHECK(result_->operand_infos
+            .try_emplace(next_operand_id_, std::move(operand_info))
             .second);
   return next_operand_id_++;
 }
@@ -278,15 +279,31 @@ void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
   OperandInfo operand_info{name, operand.descriptor().data_type(),
                            operand.descriptor().shape()};
 
-  auto weight = base::HeapArray<uint8_t>::CopiedFrom(operand.ByteSpan());
-  result_->weights.push_back(std::move(weight));
+  // auto weight = base::HeapArray<uint8_t>::CopiedFrom(operand.ByteSpan());
+  // result_->weights.push_back(std::move(weight));
 
+  // ScopedOrtValue initializer;
+  // CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
+  //     allocator_->memory_info(), result_->weights.back().data(),
+  //     result_->weights.back().size(), operand_info.int64_shape.data(),
+  //     operand_info.int64_shape.size(), operand_info.onnx_data_type,
+  //     initializer.get_pptr()));
+  // CHECK_STATUS(GetOrtGraphApi()->AddInitializer(graph_.get_ptr(),
+  // name.c_str(),
+  //                                               initializer.get_pptr()));
   ScopedOrtValue initializer;
-  CHECK_STATUS(GetOrtApi()->CreateTensorWithDataAsOrtValue(
-      allocator_->memory_info(), result_->weights.back().data(),
-      result_->weights.back().size(), operand_info.int64_shape.data(),
+  CHECK_STATUS(GetOrtApi()->CreateTensorAsOrtValue(
+      allocator_->allocator(), operand_info.int64_shape.data(),
       operand_info.int64_shape.size(), operand_info.onnx_data_type,
       initializer.get_pptr()));
+
+  void* ort_tensor_raw_data = nullptr;
+  CHECK_STATUS(GetOrtApi()->GetTensorMutableData(initializer.get_ptr(),
+                                                 &ort_tensor_raw_data));
+  CHECK(ort_tensor_raw_data);
+  UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(ort_tensor_raw_data),
+                            operand.ByteSpan().size()))
+      .copy_from(operand.ByteSpan());
   CHECK_STATUS(GetOrtGraphApi()->AddInitializer(graph_.get_ptr(), name.c_str(),
                                                 initializer.get_pptr()));
 }
@@ -487,7 +504,7 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
 
   base::HeapArray<uint8_t> min_value;
   base::HeapArray<uint8_t> max_value;
-  switch(input_data_type) {
+  switch (input_data_type) {
     case OperandDataType::kFloat32: {
       min_value = base::HeapArray<uint8_t>::CopiedFrom(base::span(
           reinterpret_cast<const uint8_t*>(&clamp.min_value), sizeof(float)));
@@ -695,6 +712,64 @@ void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
+void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
+  const std::string node_name = GetNodeName(pool2d.label);
+  const std::string input_name = GetOperandName(pool2d.input_operand_id);
+  const std::string output_name = GetOperandName(pool2d.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  std::array<int64_t, 2> dilations = {
+      base::checked_cast<int64_t>(pool2d.dilations->height),
+      base::checked_cast<int64_t>(pool2d.dilations->width)};
+  ScopedOrtOpAttr attr_dilations;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"dilations", dilations.data(), /*len=*/2,
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_dilations.get_pptr()));
+
+  std::array<int64_t, 2> strides = {
+      base::checked_cast<int64_t>(pool2d.strides->height),
+      base::checked_cast<int64_t>(pool2d.strides->width)};
+  ScopedOrtOpAttr attr_strides;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"strides", strides.data(), /*len=*/2,
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_strides.get_pptr()));
+
+  std::array<int64_t, 2> window_dimensions = {
+      base::checked_cast<int64_t>(pool2d.window_dimensions->height),
+      base::checked_cast<int64_t>(pool2d.window_dimensions->width)};
+  ScopedOrtOpAttr attr_kernel_shape;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"kernel_shape", window_dimensions.data(), /*len=*/2,
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_kernel_shape.get_pptr()));
+
+  // ONNX's pads are [beginning_height, beginning_width, ending_height,
+  // ending_width]
+  std::array<int64_t, 4> pads = {
+      base::checked_cast<int64_t>(pool2d.padding->beginning->height),
+      base::checked_cast<int64_t>(pool2d.padding->beginning->width),
+      base::checked_cast<int64_t>(pool2d.padding->ending->height),
+      base::checked_cast<int64_t>(pool2d.padding->ending->width)};
+  ScopedOrtOpAttr attr_pads;
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"pads", pads.data(), /*len=*/4, OrtOpAttrType::ORT_OP_ATTR_INTS,
+      attr_pads.get_pptr()));
+
+  // TODO: Handle ceil_mode.
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 4> attributes = {
+      attr_dilations.get_pptr(), attr_strides.get_pptr(),
+      attr_kernel_shape.get_pptr(), attr_pads.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeAveragePool2d, kOrtDomainName, node_name.c_str(),
+      input_names.data(), input_names.size(), output_names.data(),
+      output_names.size(), attributes.data(), attributes.size(),
+      node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   ScopedOrtModel& model = result_->model;
@@ -783,7 +858,10 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPad:
-      case mojom::Operation::Tag::kPool2d:
+      case mojom::Operation::Tag::kPool2d: {
+        AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
       case mojom::Operation::Tag::kReduce:

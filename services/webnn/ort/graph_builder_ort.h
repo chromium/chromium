@@ -143,6 +143,7 @@ class GraphBuilderOrt {
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddTransposeOperation(const mojom::Transpose& transpose);
+  void AddPool2dOperation(const mojom::Pool2d& pool2d);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 

@@ -5,9 +5,9 @@
 #ifndef SERVICES_WEBNN_ORT_UTILS_ORT_H_
 #define SERVICES_WEBNN_ORT_UTILS_ORT_H_
 
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
-#include "services/webnn/public/cpp/operand_descriptor.h"
 
 namespace webnn::ort {
 

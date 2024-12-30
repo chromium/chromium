@@ -14,7 +14,7 @@ BufferContentOrt::BufferContentOrt(OrtAllocator* allocator,
     : shape_(std::move(shape)) {
   const OrtApi* ort_api = GetOrtApi();
   OrtValue* tensor = nullptr;
-  ORT_ABORT_ON_ERROR(ort_api->CreateTensorAsOrtValue(
+  CHECK_STATUS(ort_api->CreateTensorAsOrtValue(
       allocator, shape_.data(), shape_.size(), ort_data_type, &tensor));
   tensor_ = tensor;
   CHECK(tensor_);

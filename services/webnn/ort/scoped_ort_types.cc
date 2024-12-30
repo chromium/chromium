@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "services/webnn/ort/scoped_ort_types.h"
+
+#include <memory>
 
 #include "services/webnn/ort/utils_ort.h"
 

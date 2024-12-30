@@ -8,6 +8,7 @@
 #include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/error.h"
 #include "services/webnn/ort/context_impl_ort.h"
@@ -60,8 +61,7 @@ void GraphImplOrt::CreateAndBuild(
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, context->AsWeakPtr(),
-                     std::move(compute_resource_info),
-                     std::move(callback)));
+                     std::move(compute_resource_info), std::move(callback)));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -79,6 +79,8 @@ GraphImplOrt::Session::Session(OrtSession* session,
     : weights(std::move(weights)), session(session) {}
 
 GraphImplOrt::Session::~Session() {
+  // TODO: Can we call `ReleaseSession` from Dllmain (because session owns a
+  // thread pool) ?
   GetOrtApi()->ReleaseSession(GetSession());
 }
 
@@ -105,23 +107,28 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_EXTENDED));
 
-  if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
-      context_options->device == mojom::CreateContextOptions::Device::kNpu) {
-    const OrtDmlApi* ort_dml_api;
-    CHECK_STATUS(ort_api->GetExecutionProviderApi(
-        "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
+  // if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
+  //     context_options->device == mojom::CreateContextOptions::Device::kNpu) {
+  //   const OrtDmlApi* ort_dml_api;
+  //   CHECK_STATUS(ort_api->GetExecutionProviderApi(
+  //       "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
 
-    OrtDmlDeviceOptions options;
-    if (context_options->device == mojom::CreateContextOptions::Device::kGpu) {
-      options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
-    } else {
-      options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Gpu};
-      // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
-      // options = {OrtDmlPerformancePreference::MinimumPower, OrtDmlDeviceFilter::Npu};
-    }
+  //   OrtDmlDeviceOptions options;
+  //   if (context_options->device == mojom::CreateContextOptions::Device::kGpu)
+  //   {
+  //     options = {OrtDmlPerformancePreference::MinimumPower,
+  //     OrtDmlDeviceFilter::Gpu};
+  //   } else {
+  //     options = {OrtDmlPerformancePreference::MinimumPower,
+  //     OrtDmlDeviceFilter::Gpu};
+  //     // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
+  //     // options = {OrtDmlPerformancePreference::MinimumPower,
+  //     OrtDmlDeviceFilter::Npu};
+  //   }
 
-    ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options, &options);
-  }
+  //   ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options,
+  //   &options);
+  // }
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();
@@ -133,11 +140,12 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     std::string msg = ort_api->GetErrorMessage(status);
     ort_api->ReleaseStatus(status);
     LOG(ERROR) << "[WebNN] Ort Status " << msg;
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create ORT session."));
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to create ORT session."));
   }
 
-  return base::WrapUnique(new GraphImplOrt::Session(session, std::move(result->weights)));
+  return base::WrapUnique(
+      new GraphImplOrt::Session(session, std::move(result->weights)));
 }
 
 // static
@@ -196,15 +204,47 @@ class GraphImplOrt::ComputeResources {
 
   ~ComputeResources() = default;
 
-  void DoDispatch(std::vector<const OrtValue*> input_tensors,
+  // Run the model asynchronously in `base::ThreadPool`.
+  void OrtRunSync(std::vector<const OrtValue*> input_tensors,
                   std::vector<OrtValue*> output_tensors) {
+    TRACE_EVENT0("gpu", "ort::GraphImplOrt::ComputeResources::OrtRunSync");
+
     CHECK_EQ(input_tensors.size(), input_names_.size());
     CHECK_EQ(output_tensors.size(), output_names_.size());
     const OrtApi* ort_api = GetOrtApi();
-    CHECK_STATUS(ort_api->Run(session_->GetSession(), nullptr, input_names_.data(),
-                              input_tensors.data(), input_names_.size(),
-                              output_names_.data(), output_names_.size(),
-                              output_tensors.data()));
+    CHECK_STATUS(ort_api->Run(session_->GetSession(), nullptr,
+                              input_names_.data(), input_tensors.data(),
+                              input_names_.size(), output_names_.data(),
+                              output_names_.size(), output_tensors.data()));
+  }
+
+  // Run the model asynchronously in a thread owned by ort intra op thread pool.
+  void OrtRunAsync(std::vector<const OrtValue*> input_tensors,
+                   std::vector<OrtValue*> output_tensors,
+                   base::OnceClosure completion_closure) {
+    CHECK_EQ(input_tensors.size(), input_names_.size());
+    CHECK_EQ(output_tensors.size(), output_names_.size());
+    const OrtApi* ort_api = GetOrtApi();
+
+    CHECK_STATUS(ort_api->RunAsync(
+        session_->GetSession(), nullptr, input_names_.data(),
+        input_tensors.data(), input_names_.size(), output_names_.data(),
+        output_names_.size(), output_tensors.data(),
+        &ComputeResources::OnOrtRunAsyncCompleted,
+        new base::OnceClosure(std::move(completion_closure))));
+  }
+
+  // This method is not run on the main thread, it's called by the ort.
+  static void OnOrtRunAsyncCompleted(void* user_data,
+                                     OrtValue** outputs,
+                                     size_t num_outputs,
+                                     OrtStatus* status) {
+    auto* completion_closure = static_cast<base::OnceClosure*>(user_data);
+    CHECK(!status);
+    CHECK(outputs);
+    std::move(*completion_closure).Run();
+    delete completion_closure;
+    completion_closure = nullptr;
   }
 
  private:
@@ -230,12 +270,13 @@ GraphImplOrt::GraphImplOrt(ComputeResourceInfo compute_resource_info,
           std::move(compute_resources));
 }
 
-// TODO: Consider using OrtApi::RunAsync
 void GraphImplOrt::DispatchImpl(
     const base::flat_map<std::string_view, WebNNTensorImpl*>&
         named_input_tensors,
     const base::flat_map<std::string_view, WebNNTensorImpl*>&
         named_output_tensors) {
+  TRACE_EVENT0("gpu", "ort::GraphImplOrt::DispatchImpl");
+
   // Since the flat_map is ordered, the order of the tensors is guaranteed to be
   // the same as the order of the input/output names.
   std::vector<scoped_refptr<QueueableResourceState<BufferContentOrt>>>
@@ -280,21 +321,36 @@ void GraphImplOrt::DispatchImpl(
                  scoped_refptr<QueueableResourceState<BufferContentOrt>>>
                  output_buffer_states,
              base::OnceClosure completion_closure) {
+            ComputeResources* raw_compute_resources =
+                compute_resources_state->GetExclusivelyLockedResource();
+            std::vector<const OrtValue*> input_tensors =
+                GetSharedLockedInputTensors(input_buffer_states);
+            std::vector<OrtValue*> output_tensors =
+                GetExclusivelyLockedOutputTensors(output_buffer_states);
+            // TODO: We should decide whether to use `OrtApi::RunAsync` or
+            // `OrtApi::Run` here.
+            // There are flacky issues when using `OrtApi::RunAsync`, suspecting
+            // it is due to the conflict with the thread pool.
+
             // Compute tasks can take a significant amount of time, use the
             // thread pool to avoid blocking the main thread.
             base::ThreadPool::PostTaskAndReply(
                 FROM_HERE,
-                base::BindOnce(
-                    &ComputeResources::DoDispatch,
-                    // Unretained is safe here because a reference to
-                    // a `QueueableResourceState` corresponding to
-                    // `raw_compute_resources` is held by the
-                    // `ResourceTask` until `completion_closure` is run below.
-                    base::Unretained(compute_resources_state
-                                         ->GetExclusivelyLockedResource()),
-                    GetSharedLockedInputTensors(input_buffer_states),
-                    GetExclusivelyLockedOutputTensors(output_buffer_states)),
+                base::BindOnce(&ComputeResources::OrtRunSync,
+                               base::Unretained(raw_compute_resources),
+                               std::move(input_tensors),
+                               std::move(output_tensors)),
                 std::move(completion_closure));
+
+            // // The completion handler may run on another thread, so post a
+            // task
+            // // back to this sequence to run the closure.
+            // auto wrapped_completion_closure =
+            //     base::BindPostTaskToCurrentDefault(
+            //         std::move(completion_closure));
+            // raw_compute_resources->OrtRunAsync(
+            //     std::move(input_tensors), std::move(output_tensors),
+            //     std::move(wrapped_completion_closure));
           },
           compute_resources_state_, std::move(input_buffer_states),
           std::move(output_buffer_states)));

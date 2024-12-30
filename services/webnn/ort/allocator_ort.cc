@@ -36,11 +36,7 @@ scoped_refptr<AllocatorOrt> AllocatorOrt::Create() {
   // The default allocator is a CPU based, non-arena. Always returns the same
   // pointer to the same default allocator. Returned value should NOT be freed.
   CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
-
-  // const OrtDmlApi* ort_dml_api;
-  // CHECK_STATUS(ort_api->GetExecutionProviderApi(
-  //     "DML", ORT_API_VERSION, reinterpret_cast<const void**>(&ort_dml_api)));
-
+  CHECK(allocator);
   return WrapRefCounted(new AllocatorOrt(env, memory_info, allocator));
 }
 

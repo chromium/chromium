@@ -60,7 +60,7 @@ void TensorImplOrt::ReadTensorImpl(ReadTensorCallback callback) {
              ReadTensorCallback read_tensor_result_callback,
              base::OnceClosure completion_closure) {
             void* ort_tensor_raw_data = nullptr;
-            ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(
+            CHECK_STATUS(GetOrtApi()->GetTensorMutableData(
                 buffer_state->GetSharedLockedResource().tensor(),
                 &ort_tensor_raw_data));
             CHECK(ort_tensor_raw_data);
@@ -97,7 +97,7 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
              mojo_base::BigBuffer src_buffer,
              base::OnceClosure completion_closure) {
             void* ort_tensor_raw_data = nullptr;
-            ORT_ABORT_ON_ERROR(GetOrtApi()->GetTensorMutableData(
+            CHECK_STATUS(GetOrtApi()->GetTensorMutableData(
                 buffer_state->GetExclusivelyLockedResource()->tensor(),
                 &ort_tensor_raw_data));
             CHECK(ort_tensor_raw_data);
