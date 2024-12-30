@@ -5,8 +5,8 @@
 source_set("launcher") {
   sources = [
     "glic_background_mode_manager.h",
-    "glic_configuration.h",
     "glic_controller.h",
+    "glic_launcher_configuration.h",
   ]
 
   deps = [
@@ -20,8 +20,8 @@ source_set("launcher") {
 source_set("impl") {
   sources = [
     "glic_background_mode_manager.cc",
-    "glic_configuration.cc",
     "glic_controller.cc",
+    "glic_launcher_configuration.cc",
     "glic_status_icon.cc",
     "glic_status_icon.h",
   ]

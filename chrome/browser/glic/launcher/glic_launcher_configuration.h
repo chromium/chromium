@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONFIGURATION_H_
-#define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONFIGURATION_H_
+#ifndef CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_
+#define CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -16,7 +16,7 @@ namespace glic {
 // This class observes and reports changes to glic prefs such as the
 // enabled/disabled state, and the hotkey for launching the UI. Owned by
 // GlicBackgroundModeManager.
-class GlicConfiguration {
+class GlicLauncherConfiguration {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -27,8 +27,8 @@ class GlicConfiguration {
   static constexpr char kHotkeyKeyCode[] = "keycode";
   static constexpr char kHotkeyModifiers[] = "modifiers";
 
-  explicit GlicConfiguration(Observer* manager);
-  ~GlicConfiguration();
+  explicit GlicLauncherConfiguration(Observer* manager);
+  ~GlicLauncherConfiguration();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -47,4 +47,4 @@ class GlicConfiguration {
 };
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_CONFIGURATION_H_
+#endif  // CHROME_BROWSER_GLIC_LAUNCHER_GLIC_LAUNCHER_CONFIGURATION_H_

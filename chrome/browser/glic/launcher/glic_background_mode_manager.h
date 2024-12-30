@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/launcher/glic_configuration.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 class GlicController;
@@ -27,7 +27,7 @@ namespace glic {
 // chrome is set to keep alive the browser process, so that this class can
 // listen to a global hotkey, and provide a status icon for triggering the UI.
 class GlicBackgroundModeManager
-    : public GlicConfiguration::Observer,
+    : public GlicLauncherConfiguration::Observer,
       public ui::GlobalAcceleratorListener::Observer {
  public:
   explicit GlicBackgroundModeManager(StatusTray* status_tray);
@@ -53,7 +53,7 @@ class GlicBackgroundModeManager
   void UpdateState();
 
   // A helper class for observing pref changes.
-  std::unique_ptr<GlicConfiguration> configuration_;
+  std::unique_ptr<GlicLauncherConfiguration> configuration_;
 
   // An abstraction used to show/hide the UI.
   std::unique_ptr<GlicController> controller_;

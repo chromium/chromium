@@ -9,7 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/launcher/glic_configuration.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_features.h"
@@ -49,8 +49,9 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
   void RegisterHotkey(ui::Accelerator updated_hotkey) {
     auto hotkey_dictionary =
         base::Value::Dict()
-            .Set(GlicConfiguration::kHotkeyKeyCode, updated_hotkey.key_code())
-            .Set(GlicConfiguration::kHotkeyModifiers,
+            .Set(GlicLauncherConfiguration::kHotkeyKeyCode,
+                 updated_hotkey.key_code())
+            .Set(GlicLauncherConfiguration::kHotkeyModifiers,
                  updated_hotkey.modifiers());
     g_browser_process->local_state()->SetDict(prefs::kGlicLauncherGlobalHotkey,
                                               std::move(hotkey_dictionary));

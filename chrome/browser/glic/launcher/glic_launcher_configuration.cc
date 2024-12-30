@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/launcher/glic_configuration.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -15,24 +15,27 @@
 
 namespace glic {
 
-GlicConfiguration::GlicConfiguration(Observer* manager) : manager_(manager) {
+GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
+    : manager_(manager) {
   if (PrefService* local_state = g_browser_process->local_state()) {
     pref_registrar_.Init(local_state);
     pref_registrar_.Add(
         prefs::kGlicLauncherEnabled,
-        base::BindRepeating(&GlicConfiguration::OnEnabledPrefChanged,
+        base::BindRepeating(&GlicLauncherConfiguration::OnEnabledPrefChanged,
                             base::Unretained(this)));
     pref_registrar_.Add(
         prefs::kGlicLauncherGlobalHotkey,
-        base::BindRepeating(&GlicConfiguration::OnGlobalHotkeyPrefChanged,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged,
+            base::Unretained(this)));
   }
 }
 
-GlicConfiguration::~GlicConfiguration() = default;
+GlicLauncherConfiguration::~GlicLauncherConfiguration() = default;
 
 // static
-void GlicConfiguration::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+void GlicLauncherConfiguration::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
   registry->RegisterDictionaryPref(
       prefs::kGlicLauncherGlobalHotkey,
@@ -42,18 +45,19 @@ void GlicConfiguration::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void GlicConfiguration::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void GlicLauncherConfiguration::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicMicrophoneEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(prefs::kGlicTabContextEnabled, false);
 }
 
-bool GlicConfiguration::IsEnabled() {
+bool GlicLauncherConfiguration::IsEnabled() {
   return g_browser_process->local_state()->GetBoolean(
       prefs::kGlicLauncherEnabled);
 }
 
-ui::Accelerator GlicConfiguration::GetGlobalHotkey() {
+ui::Accelerator GlicLauncherConfiguration::GetGlobalHotkey() {
   const base::Value::Dict& hotkey_dictionary =
       g_browser_process->local_state()->GetDict(
           prefs::kGlicLauncherGlobalHotkey);
@@ -71,11 +75,11 @@ ui::Accelerator GlicConfiguration::GetGlobalHotkey() {
   return hotkey;
 }
 
-void GlicConfiguration::OnEnabledPrefChanged() {
+void GlicLauncherConfiguration::OnEnabledPrefChanged() {
   manager_->OnEnabledChanged(IsEnabled());
 }
 
-void GlicConfiguration::OnGlobalHotkeyPrefChanged() {
+void GlicLauncherConfiguration::OnGlobalHotkeyPrefChanged() {
   manager_->OnGlobalHotkeyChanged(GetGlobalHotkey());
 }
 

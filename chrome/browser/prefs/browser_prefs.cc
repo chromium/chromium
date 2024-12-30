@@ -547,7 +547,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/launcher/glic_configuration.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #endif
 
 namespace {
@@ -2001,7 +2001,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicConfiguration::RegisterLocalStatePrefs(registry);
+  glic::GlicLauncherConfiguration::RegisterLocalStatePrefs(registry);
 #endif
 
   registry->RegisterIntegerPref(prefs::kToastAlertLevel, 0);
@@ -2038,7 +2038,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   DownloadPrefs::RegisterProfilePrefs(registry);
   fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicConfiguration::RegisterProfilePrefs(registry);
+  glic::GlicLauncherConfiguration::RegisterProfilePrefs(registry);
 #endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);
