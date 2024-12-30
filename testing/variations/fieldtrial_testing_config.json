@@ -12011,25 +12011,6 @@
             ]
         }
     ],
-    "IOSStartTimeBrowserBackgroundRemediations": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithAvoidNTPCleanup",
-                    "params": {
-                        "ios-startup-remediations-avoid-ntp-cleanup": "true",
-                        "ios-startup-remediations-update-feed-refresh": "false"
-                    },
-                    "enable_features": [
-                        "IOSStartTimeBrowserBackgroundRemediations"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSStartTimeStartupRemediations": [
         {
             "platforms": [
