@@ -32,9 +32,7 @@ CollaborationFlowConfigurationShareOrManage::type() const {
 
 #pragma mark - CollaborationFlowConfigurationJoin
 
-CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin(
-    const GURL& url)
-    : url_(url) {}
+CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin() {}
 
 CollaborationFlowConfigurationJoin::~CollaborationFlowConfigurationJoin() {}
 

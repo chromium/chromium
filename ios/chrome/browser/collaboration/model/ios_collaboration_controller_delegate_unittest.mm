@@ -88,9 +88,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   void InitJoinFlowDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
         browser_.get(), base_view_controller_,
-        std::make_unique<CollaborationFlowConfigurationJoin>(
-
-            GURL()));
+        std::make_unique<CollaborationFlowConfigurationJoin>());
   }
 
   // Sign in in the authentication service with a fake identity.

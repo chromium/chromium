@@ -10,7 +10,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/types.h"
-#import "url/gurl.h"
 
 class TabGroup;
 
@@ -79,18 +78,11 @@ class CollaborationFlowConfigurationJoin final
   static constexpr Type kType = Type::kJoin;
 
   // Constructs a new CollaborationFlowConfigurationJoin object.
-  explicit CollaborationFlowConfigurationJoin(
-      const GURL& url);
+  explicit CollaborationFlowConfigurationJoin();
   ~CollaborationFlowConfigurationJoin() override;
 
   // CollaborationFlowConfiguration.
   Type type() const final;
-
-  // Returns URL containing the collab ID and the token.
-  const GURL& url() const { return url_; }
-
- private:
-  const GURL url_;
 };
 
 }  // namespace collaboration

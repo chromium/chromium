@@ -109,11 +109,8 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
   CHECK_EQ(flow_config_->type(), CollaborationFlowConfiguration::Type::kJoin);
-  const CollaborationFlowConfigurationJoin& join_flow =
-      flow_config_->As<CollaborationFlowConfigurationJoin>();
 
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
-  config.URL = join_flow.url();
   config.token = token;
   config.baseViewController = base_view_controller_;
   auto completion_block = base::CallbackToBlock(std::move(result));
