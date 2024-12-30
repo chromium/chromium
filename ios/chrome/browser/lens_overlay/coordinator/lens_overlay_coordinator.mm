@@ -121,6 +121,9 @@ const int kExpectedExitAnimationCount = 2;
   /// Indicates the Lens Overlay is in the exit flow.
   BOOL _isExiting;
 
+  /// Indicates this coordinator has received the `stop` call.
+  BOOL _isStopped;
+
   /// Command handler for loadQueryCommands.
   id<LoadQueryCommands> _loadQueryHandler;
 
@@ -258,6 +261,8 @@ const int kExpectedExitAnimationCount = 2;
 }
 
 - (void)stop {
+  _isStopped = YES;
+
   if (Browser* browser = self.browser) {
     [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   }
@@ -347,6 +352,15 @@ const int kExpectedExitAnimationCount = 2;
 }
 
 - (void)onContainerViewControllerPresented {
+  // In some situations this coordinator shouldn't do anything because it's
+  // already being torn down. Just do minimal clean up and return.
+  if (_isStopped || _isExiting) {
+    if (_associatedTabHelper) {
+      _associatedTabHelper->ReleaseSnapshotAuxiliaryWindows();
+    }
+    return;
+  }
+
   // Start the selection UI only when the container is presented. This avoids
   // results being reported before the container is fully shown.
   if ([self termsOfServiceAccepted]) {
@@ -704,6 +718,11 @@ const int kExpectedExitAnimationCount = 2;
 }
 
 - (BOOL)termsOfServiceAccepted {
+  if (!self.browser || !self.browser->GetProfile() ||
+      !!self.browser->GetProfile()->GetPrefs()) {
+    return NO;
+  }
+
   return self.browser->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kLensOverlayConditionsAccepted);
 }
