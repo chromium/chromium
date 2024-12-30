@@ -59,7 +59,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
 
   // FrameWidget overrides.
-  void RequestDecode(const cc::DrawImage&,
+  void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
 
  private:

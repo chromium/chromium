@@ -27,7 +27,7 @@
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
-#include "cc/paint/draw_image.h"
+#include "cc/paint/paint_image.h"
 #include "cc/resources/ui_resource_request.h"
 #include "cc/trees/begin_main_frame_trace_id.h"
 #include "cc/trees/browser_controls_params.h"
@@ -143,7 +143,7 @@ struct CC_EXPORT CommitState {
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 
   std::unique_ptr<PendingPageScaleAnimation> pending_page_scale_animation;
-  std::vector<std::pair<int, std::unique_ptr<DrawImage>>> queued_image_decodes;
+  std::vector<std::pair<int, std::unique_ptr<PaintImage>>> queued_image_decodes;
 
   // Presentation time callbacks requested for the next frame are initially
   // added here.

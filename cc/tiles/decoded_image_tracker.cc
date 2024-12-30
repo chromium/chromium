@@ -38,18 +38,24 @@ DecodedImageTracker::~DecodedImageTracker() {
 }
 
 void DecodedImageTracker::QueueImageDecode(
-    const DrawImage& image,
+    const PaintImage& image,
+    const TargetColorParams& target_color_params,
     base::OnceCallback<void(bool)> callback) {
+  size_t frame_index = PaintImage::kDefaultFrameIndex;
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "DecodedImageTracker::QueueImageDecode", "frame_key",
-               image.frame_key().ToString());
+               image.GetKeyForFrame(frame_index).ToString());
   DCHECK(image_controller_);
   // Queue the decode in the image controller, but switch out the callback for
   // our own.
+  auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
+  DrawImage draw_image(image, false, image_bounds,
+                       PaintFlags::FilterQuality::kNone, SkM44(), frame_index,
+                       target_color_params);
   image_controller_->QueueImageDecode(
-      image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
-                            base::Unretained(this), std::move(callback),
-                            image.paint_image().stable_id()));
+      draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
+                                 base::Unretained(this), std::move(callback),
+                                 image.stable_id()));
 }
 
 void DecodedImageTracker::UnlockAllImages() {

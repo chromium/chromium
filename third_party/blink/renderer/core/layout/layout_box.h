@@ -848,9 +848,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const final;
-  void GetSpeculativeDecodeParameters(
-      gfx::Size& size,
-      InterpolationQuality& quality) const override;
 
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
 

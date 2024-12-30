@@ -4145,23 +4145,19 @@ void LayerTreeHostImpl::SetPaintWorkletLayerPainter(
 }
 
 void LayerTreeHostImpl::QueueImageDecode(int request_id,
-                                         const DrawImage& image) {
+                                         const PaintImage& image) {
   DCHECK(!settings_.is_display_tree);
-  const PaintImage& paint_image = image.paint_image();
-  TRACE_EVENT1(
-      TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-      "LayerTreeHostImpl::QueueImageDecode", "frame_key",
-      paint_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+               "LayerTreeHostImpl::QueueImageDecode", "frame_key",
+               image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
   // Optimistically specify the current raster color space, since we assume that
   // it won't change.
-  DrawImage image_copy(
-      image, /*scale_adjustment=*/1.0,
-      /*frame_index=*/PaintImage::kDefaultFrameIndex,
-      GetTargetColorParams(paint_image.GetContentColorUsage()));
+  auto content_color_usage = image.GetContentColorUsage();
   tile_manager_.decoded_image_tracker().QueueImageDecode(
-      image_copy, base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
-                                 weak_factory_.GetWeakPtr(), request_id));
-  tile_manager_.checker_image_tracker().DisallowCheckeringForImage(paint_image);
+      image, GetTargetColorParams(content_color_usage),
+      base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
+                     weak_factory_.GetWeakPtr(), request_id));
+  tile_manager_.checker_image_tracker().DisallowCheckeringForImage(image);
 }
 
 void LayerTreeHostImpl::ImageDecodeFinished(int request_id,

@@ -81,7 +81,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                  bool scroll_and_viewport_changes_synced,
                                  CommitTimestamps* commit_timestamps,
                                  bool commit_timeout = false);
-  void QueueImageDecodeOnImpl(int request_id, std::unique_ptr<DrawImage> image);
+  void QueueImageDecodeOnImpl(int request_id,
+                              std::unique_ptr<PaintImage> image);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);

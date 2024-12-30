@@ -787,12 +787,12 @@ void ProxyMain::Stop() {
   started_ = false;
 }
 
-void ProxyMain::QueueImageDecode(int request_id, const DrawImage& image) {
+void ProxyMain::QueueImageDecode(int request_id, const PaintImage& image) {
   TRACE_EVENT1("cc", "ProxyMain::QueueImageDecode", "request_id", request_id);
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyImpl::QueueImageDecodeOnImpl,
                                 base::Unretained(proxy_impl_.get()), request_id,
-                                std::make_unique<DrawImage>(image)));
+                                std::make_unique<PaintImage>(image)));
 }
 
 void ProxyMain::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {
