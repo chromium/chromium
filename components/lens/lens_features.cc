@@ -292,6 +292,10 @@ constexpr base::FeatureParam<bool>
         &kLensOverlayContextualSearchbox,
         "send-lens-visual-interaction-data-for-lens-suggest", false};
 
+constexpr base::FeatureParam<bool> kLensOverlaySendImageSignalsForLensSuggest{
+    &kLensOverlayContextualSearchbox, "send-image-signals-for-lens-suggest",
+    true};
+
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 200000000};
 
@@ -513,6 +517,10 @@ bool GetLensOverlaySendLensInputsForLensSuggest() {
 
 bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest() {
   return kLensOverlaySendLensVisualInteractionDataForLensSuggest.Get();
+}
+
+bool GetLensOverlaySendImageSignalsForLensSuggest() {
+  return kLensOverlaySendImageSignalsForLensSuggest.Get();
 }
 
 uint32_t GetLensOverlayFileUploadLimitBytes() {

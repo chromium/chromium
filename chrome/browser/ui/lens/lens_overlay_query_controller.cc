@@ -1451,8 +1451,13 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
       /*cluster_info_latency=*/std::nullopt,
       std::make_optional(encoded_analytics_id));
 
-  suggest_inputs_.set_encoded_image_signals(
-      server_response.interaction_response().encoded_response());
+  if (!(lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+      !lens::features::GetLensOverlaySendImageSignalsForLensSuggest())) {
+    // Always include the image signals unless the contextual searchbox is
+    // enabled and the image signals feature flag is disabled.
+    suggest_inputs_.set_encoded_image_signals(
+          server_response.interaction_response().encoded_response());
+  }
   RunSuggestInputsCallback();
 }
 

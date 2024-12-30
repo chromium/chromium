@@ -298,6 +298,11 @@ extern bool GetLensOverlaySendLensInputsForLensSuggest();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest();
 
+// Returns whether or not to send the image signals in suggest requests from
+// the Lens search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendImageSignalsForLensSuggest();
+
 // Returns the max number of bytes to allow for content uploads.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern uint32_t GetLensOverlayFileUploadLimitBytes();

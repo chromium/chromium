@@ -459,13 +459,22 @@ TEST_F(RemoteSuggestionsServiceTest,
       metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
   search_terms_args.lens_overlay_suggest_inputs =
       std::make_optional<lens::proto::LensOverlaySuggestInputs>();
-  search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
-      "iil");
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
 
-  // Just iil query param appended.
+  // Just just the client param is appended.
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal");
+
+  search_terms_args.lens_overlay_suggest_inputs->set_encoded_image_signals(
+      "iil");
+
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+
+  // The iil query param is appended.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
             "suggest?q=query&client=chrome-multimodal&iil=iil");
@@ -492,10 +501,10 @@ TEST_F(RemoteSuggestionsServiceTest,
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
 
-  // Appended gsessionid and vsrids. iil is removed.
+  // Appended gsessionid and vsrids.
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vsrid=vsrid&"
+            "suggest?q=query&client=chrome-multimodal&iil=iil&vsrid=vsrid&"
             "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
@@ -504,10 +513,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       &google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vit.
-  ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vit=vit&vsrid=vsrid&"
-            "gsessionid=gsessionid");
+  ASSERT_EQ(
+      endpoint_url.spec(),
+      "https://www.google.com/"
+      "suggest?q=query&client=chrome-multimodal&iil=iil&vit=vit&vsrid=vsrid&"
+      "gsessionid=gsessionid");
 
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
@@ -515,10 +525,11 @@ TEST_F(RemoteSuggestionsServiceTest,
       &google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vsint.
-  ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/"
-            "suggest?q=query&client=chrome-multimodal&vsint=vsint&vit=vit&"
-            "vsrid=vsrid&gsessionid=gsessionid");
+  ASSERT_EQ(
+      endpoint_url.spec(),
+      "https://www.google.com/"
+      "suggest?q=query&client=chrome-multimodal&iil=iil&vsint=vsint&vit=vit&"
+      "vsrid=vsrid&gsessionid=gsessionid");
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
