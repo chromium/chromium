@@ -94,7 +94,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "guest_util_browsertest.cc" ]
+  sources = [
+    "glic_browsertest.cc",
+    "guest_util_browsertest.cc",
+  ]
   deps = [
     ":glic",
     "//chrome/browser",

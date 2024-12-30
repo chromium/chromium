@@ -124,7 +124,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (GlicEnabling::IsEnabledByFlags()) {
+    if (GlicEnabling::IsEnabledForProfile(browser->GetProfile())) {
       glic_tab_indicator_helper_ =
           std::make_unique<glic::GlicTabIndicatorHelper>(browser);
     }

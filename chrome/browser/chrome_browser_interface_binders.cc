@@ -969,7 +969,8 @@ void PopulateChromeWebUIFrameBinders(
       DataSharingInternalsUI>(map);
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (GlicEnabling::IsEnabledByFlags()) {
+  if (GlicEnabling::IsEnabledForProfile(Profile::FromBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext()))) {
     RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
                                            glic::GlicUI>(map);
   }

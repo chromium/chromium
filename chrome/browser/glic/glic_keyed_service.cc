@@ -39,7 +39,7 @@ void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
-  DCHECK(GlicEnabling::IsEnabledForProfile(
+  CHECK(GlicEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context_)));
 
   profile_manager_->OnUILaunching(this);
