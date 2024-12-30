@@ -140,10 +140,11 @@ class GraphBuilderOrt {
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddMatmulOperation(const mojom::Matmul& matmul);
+  void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);
   void AddTransposeOperation(const mojom::Transpose& transpose);
-  void AddPool2dOperation(const mojom::Pool2d& pool2d);
+  void AddWhereOperation(const mojom::Where& where);
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 

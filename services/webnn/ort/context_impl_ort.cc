@@ -152,8 +152,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*tile_input=*/{},
        /*transpose_input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
        /*triangular_input=*/{},
-       /*where_condition=*/{},
-       /*where_value=*/{}});
+       /*where_condition=*/DataTypeConstraint::kUint8,
+       /*where_value=*/DataTypeConstraint::kAllDataTypesAtLeast8bits});
 }
 
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {

@@ -71,6 +71,7 @@ constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
 constexpr char kOpTypeSoftmax[] = "Softmax";
 constexpr char kOpTypeTranspose[] = "Transpose";
+constexpr char kOpTypeWhere[] = "Where";
 
 // constexpr char kBuildGraphError[] = "Failed to build graph.";
 
@@ -682,87 +683,6 @@ void GraphBuilderOrt::AddMatmulOperation(const mojom::Matmul& matmul) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()))
 }
 
-void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
-  const std::string node_name = GetNodeName(reshape.label);
-  const std::string input_name = GetOperandName(reshape.input_operand_id);
-  const std::string output_name = GetOperandName(reshape.output_operand_id);
-
-  const OperandDescriptor& output_descriptor =
-      GetOperand(reshape.output_operand_id).descriptor;
-  const std::vector<uint32_t>& output_shape = output_descriptor.shape();
-  // Shape is an operand with data type int64, not an attribute.
-  std::vector<uint32_t> shape_dims = {
-      base::checked_cast<uint32_t>(output_shape.size())};
-  std::vector<int64_t> shape_values;
-  base::ranges::transform(
-      output_shape, std::back_inserter(shape_values),
-      [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  uint64_t shape_id = NewInitializerAsRawData(
-      shape_dims,
-      base::span(reinterpret_cast<const uint8_t*>(shape_values.data()),
-                 sizeof(int64_t) * shape_values.size()),
-      OperandDataType::kInt64);
-  const std::string shape_name = GetInsertedOperandName(shape_id);
-
-  std::array<const char*, 2> input_names = {input_name.c_str(),
-                                            shape_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-
-  ScopedOrtNode node;
-  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
-      kOpTypeReshape, kOrtDomainName, node_name.c_str(), input_names.data(),
-      input_names.size(), output_names.data(), output_names.size(),
-      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
-  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
-}
-
-void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
-  const std::string node_name = GetNodeName(softmax.label);
-  const std::string input_name = GetOperandName(softmax.input_operand_id);
-  const std::string output_name = GetOperandName(softmax.output_operand_id);
-
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-
-  ScopedOrtOpAttr attr_axis;
-  int64_t axis = static_cast<int64_t>(softmax.axis);
-  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
-      /*name=*/"axis", &axis, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
-      attr_axis.get_pptr()));
-
-  ScopedOrtNode node;
-  std::array<OrtOpAttr**, 1> attributes = {attr_axis.get_pptr()};
-  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
-      kOpTypeSoftmax, kOrtDomainName, node_name.c_str(), input_names.data(),
-      input_names.size(), output_names.data(), output_names.size(),
-      attributes.data(), attributes.size(), node.get_pptr()));
-  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
-}
-
-void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
-  const std::string node_name = GetNodeName(transpose.label);
-  const std::string input_name = GetOperandName(transpose.input_operand_id);
-  const std::string output_name = GetOperandName(transpose.output_operand_id);
-
-  std::array<const char*, 1> input_names = {input_name.c_str()};
-  std::array<const char*, 1> output_names = {output_name.c_str()};
-
-  ScopedOrtOpAttr attr_perm;
-  std::vector<int64_t> permutation(transpose.permutation.begin(),
-                                   transpose.permutation.end());
-  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
-      /*name=*/"perm", permutation.data(), permutation.size(),
-      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_perm.get_pptr()));
-
-  ScopedOrtNode node;
-  std::array<OrtOpAttr**, 1> attributes = {attr_perm.get_pptr()};
-  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
-      kOpTypeTranspose, kOrtDomainName, node_name.c_str(), input_names.data(),
-      input_names.size(), output_names.data(), output_names.size(),
-      attributes.data(), attributes.size(), node.get_pptr()));
-  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
-}
-
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   std::array<int64_t, 2> dilations = {
       base::checked_cast<int64_t>(pool2d.dilations->height),
@@ -876,6 +796,138 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
   CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
 }
 
+void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
+  const std::string node_name = GetNodeName(reshape.label);
+  const std::string input_name = GetOperandName(reshape.input_operand_id);
+  const std::string output_name = GetOperandName(reshape.output_operand_id);
+
+  const OperandDescriptor& output_descriptor =
+      GetOperand(reshape.output_operand_id).descriptor;
+  const std::vector<uint32_t>& output_shape = output_descriptor.shape();
+  // Shape is an operand with data type int64, not an attribute.
+  std::vector<uint32_t> shape_dims = {
+      base::checked_cast<uint32_t>(output_shape.size())};
+  std::vector<int64_t> shape_values;
+  base::ranges::transform(
+      output_shape, std::back_inserter(shape_values),
+      [](uint32_t dim) { return static_cast<int64_t>(dim); });
+  uint64_t shape_id = NewInitializerAsRawData(
+      shape_dims,
+      base::span(reinterpret_cast<const uint8_t*>(shape_values.data()),
+                 sizeof(int64_t) * shape_values.size()),
+      OperandDataType::kInt64);
+  const std::string shape_name = GetInsertedOperandName(shape_id);
+
+  std::array<const char*, 2> input_names = {input_name.c_str(),
+                                            shape_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeReshape, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
+void GraphBuilderOrt::AddSoftmaxOperation(const mojom::Softmax& softmax) {
+  const std::string node_name = GetNodeName(softmax.label);
+  const std::string input_name = GetOperandName(softmax.input_operand_id);
+  const std::string output_name = GetOperandName(softmax.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_axis;
+  int64_t axis = static_cast<int64_t>(softmax.axis);
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"axis", &axis, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+      attr_axis.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 1> attributes = {attr_axis.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeSoftmax, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
+void GraphBuilderOrt::AddTransposeOperation(const mojom::Transpose& transpose) {
+  const std::string node_name = GetNodeName(transpose.label);
+  const std::string input_name = GetOperandName(transpose.input_operand_id);
+  const std::string output_name = GetOperandName(transpose.output_operand_id);
+
+  std::array<const char*, 1> input_names = {input_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtOpAttr attr_perm;
+  std::vector<int64_t> permutation(transpose.permutation.begin(),
+                                   transpose.permutation.end());
+  CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+      /*name=*/"perm", permutation.data(), permutation.size(),
+      OrtOpAttrType::ORT_OP_ATTR_INTS, attr_perm.get_pptr()));
+
+  ScopedOrtNode node;
+  std::array<OrtOpAttr**, 1> attributes = {attr_perm.get_pptr()};
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeTranspose, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      attributes.data(), attributes.size(), node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
+void GraphBuilderOrt::AddWhereOperation(const mojom::Where& where) {
+  const std::string node_name = GetNodeName(where.label);
+  // ONNX only supports bool data type for the condition input of Where, insert
+  // a Cast node to convert the condition input to bool.
+  std::string cast_node_output_name =
+      "inserted_cast_node_output_" + GetInsertedOperandName(next_operand_id_);
+  {
+    std::string cast_node_name = "inserted_cast_node_before_" + node_name;
+    const std::string condition_name =
+        GetOperandName(where.condition_operand_id);
+    std::array<const char*, 1> cast_input_names = {condition_name.c_str()};
+    std::array<const char*, 1> cast_output_names = {
+        cast_node_output_name.c_str()};
+
+    ScopedOrtOpAttr attr_to;
+    int64_t to_data_type =
+        static_cast<int64_t>(ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+    CHECK_STATUS(GetOrtApi()->CreateOpAttr(
+        /*name=*/"to", &to_data_type, /*len=*/1, OrtOpAttrType::ORT_OP_ATTR_INT,
+        attr_to.get_pptr()));
+
+    ScopedOrtNode cast_node;
+    std::array<OrtOpAttr**, 1> cast_attributes = {attr_to.get_pptr()};
+    CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+        kOpTypeCast, kOrtDomainName, cast_node_name.c_str(),
+        cast_input_names.data(), cast_input_names.size(),
+        cast_output_names.data(), cast_output_names.size(),
+        cast_attributes.data(), cast_attributes.size(), cast_node.get_pptr()));
+    CHECK_STATUS(
+        GetOrtGraphApi()->AddNode(graph_.get_ptr(), cast_node.get_pptr()));
+    next_operand_id_++;
+  }
+
+  const std::string true_value_name =
+      GetOperandName(where.true_value_operand_id);
+  const std::string false_value_name =
+      GetOperandName(where.false_value_operand_id);
+  const std::string output_name = GetOperandName(where.output_operand_id);
+  std::array<const char*, 3> input_names = {cast_node_output_name.c_str(),
+                                            true_value_name.c_str(),
+                                            false_value_name.c_str()};
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+
+  ScopedOrtNode node;
+  CHECK_STATUS(GetOrtGraphApi()->CreateNode(
+      kOpTypeWhere, kOrtDomainName, node_name.c_str(), input_names.data(),
+      input_names.size(), output_names.data(), output_names.size(),
+      /*attributes=*/nullptr, /*attribs_len=*/0, node.get_pptr()));
+  CHECK_STATUS(GetOrtGraphApi()->AddNode(graph_.get_ptr(), node.get_pptr()));
+}
+
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::BuildModel() {
   ScopedOrtModel& model = result_->model;
@@ -926,6 +978,10 @@ GraphBuilderOrt::BuildModel() {
         AddMatmulOperation(*operation->get_matmul());
         break;
       }
+      case mojom::Operation::Tag::kPool2d: {
+        AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
       case mojom::Operation::Tag::kRelu: {
         AddUnaryOperation(*operation->get_relu(), kOpTypeRelu);
         break;
@@ -942,8 +998,8 @@ GraphBuilderOrt::BuildModel() {
         AddTransposeOperation(*operation->get_transpose());
         break;
       }
-      case mojom::Operation::Tag::kPool2d: {
-        AddPool2dOperation(*operation->get_pool2d());
+      case mojom::Operation::Tag::kWhere: {
+        AddWhereOperation(*operation->get_where());
         break;
       }
       case mojom::Operation::Tag::kArgMinMax:
@@ -983,7 +1039,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kTanh:
       case mojom::Operation::Tag::kTile:
       case mojom::Operation::Tag::kTriangular:
-      case mojom::Operation::Tag::kWhere:
         return NewNotSupportedError("op is not supported.");
     }
   }
