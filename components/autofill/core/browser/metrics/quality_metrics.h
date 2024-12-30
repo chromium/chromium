@@ -13,6 +13,17 @@ namespace autofill::autofill_metrics {
 
 class FormInteractionsUkmLogger;
 
+// Denotes the character set of the submitted alternative name field.
+// These values are persisted to UMA logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this enum up to date with the one
+// in tools/metrics/histograms/metadata/autofill/enums.xml.
+enum class AutofillAlternativeNameFieldValueCharacterSet {
+  kKatakana = 0,
+  kHiragana = 1,
+  kOther = 2,
+  kMaxValue = kOther
+};
+
 // Logs quality metrics for the `form_structure`.
 // This method should only be called after the possible field types have been
 // set for each field.

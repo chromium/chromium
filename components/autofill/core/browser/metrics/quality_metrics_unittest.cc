@@ -160,6 +160,54 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
                 "Autofill.FieldPredictionQuality.ByFieldType.Overall"));
 }
 
+struct AlternativeNameFieldValueCharacterSetTestRecord {
+  std::u16string name;
+  AutofillAlternativeNameFieldValueCharacterSet expected_character_set;
+};
+
+class AlternativeNameFieldValueCharacterSetTest
+    : public QualityMetricsTest,
+      public testing::WithParamInterface<
+          AlternativeNameFieldValueCharacterSetTestRecord> {};
+
+// Test that the metric for the alternative name field value character set is
+// recorded correctly.
+TEST_P(AlternativeNameFieldValueCharacterSetTest, LoggedCorrectly) {
+  base::test::ScopedFeatureList features{
+      autofill::features::kAutofillSupportPhoneticNameForJP};
+
+  test::FormDescription form_description = {
+      .fields = {{.role = ALTERNATIVE_FULL_NAME,
+                  .value = GetParam().name,
+                  .is_autofilled = true}},
+      .renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
+
+  FormData form = GetAndAddSeenForm(form_description);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+
+  // Check for the expected enum value in the histogram
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+      GetParam().expected_character_set, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LoggedCorrectly,
+    AlternativeNameFieldValueCharacterSetTest,
+    testing::Values(
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"ヤマモト アオイ",
+            AutofillAlternativeNameFieldValueCharacterSet::kKatakana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"やまもと あおい",
+            AutofillAlternativeNameFieldValueCharacterSet::kHiragana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"Elvis Aaron Presley",
+            AutofillAlternativeNameFieldValueCharacterSet::kOther}));
+
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
 TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {

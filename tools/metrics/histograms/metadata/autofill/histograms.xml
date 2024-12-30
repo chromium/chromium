@@ -5922,6 +5922,19 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
+<histogram name="Autofill.SubmittedAlternativeNameFieldValueCharacterSet"
+    enum="AutofillAlternativeNameFieldValueCharacterSet"
+    expires_after="2025-12-24">
+  <owner>aayazhan@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the character set of the alternative name field value that was
+    submitted. The character set includes Hiragana, Katakana and other values.
+    Recorded after the form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.SubmittedCardState" enum="AutofillSubmittedCardState"
     expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

@@ -143,6 +143,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAlternativeNameFieldValueCharacterSet">
+  <int value="0" label="Katakana"/>
+  <int value="1" label="Hiragana"/>
+  <int value="2" label="Other"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>
