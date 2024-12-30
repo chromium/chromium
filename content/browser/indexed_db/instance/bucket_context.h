@@ -363,10 +363,9 @@ class CONTENT_EXPORT BucketContext
   // since `bucket_space_remaining_timestamp_`.
   int64_t GetBucketSpaceToAllot();
 
-  // Hooks up a `BlobReader` to `receiver` for the blob described by
-  // `blob_info`.
-  void BindBlobReader(const IndexedDBExternalObject& blob_info,
-                      mojo::PendingReceiver<blink::mojom::Blob> receiver);
+  void BindFileReader(
+      const IndexedDBExternalObject& blob_info,
+      mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver);
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 

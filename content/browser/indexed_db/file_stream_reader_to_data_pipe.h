@@ -8,19 +8,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace content::indexed_db {
-
-CONTENT_EXPORT void OpenFileAndReadIntoPipe(
-    const base::FilePath& file_path,
-    uint64_t expected_file_size,
-    uint64_t offset,
-    uint64_t read_length,
-    mojo::ScopedDataPipeProducerHandle dest,
-    mojo::PendingRemote<blink::mojom::BlobReaderClient> client);
 
 CONTENT_EXPORT void OpenFileAndReadIntoPipe(
     const base::FilePath& file_path,
