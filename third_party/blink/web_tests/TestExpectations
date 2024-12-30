@@ -2715,6 +2715,8 @@ crbug.com/385918134 [ Linux ] external/wpt/wasm/core/imports.wast.js.html [ Cras
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_grow.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_trap.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_address.wast.js.html [ Crash ]
+crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.htm [ Crash Pass ]
+crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Crash Pass ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_extend.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_splat.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_zero.wast.js.html [ Crash ]
