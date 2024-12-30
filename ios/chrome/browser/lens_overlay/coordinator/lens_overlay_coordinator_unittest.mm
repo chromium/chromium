@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -102,6 +103,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     [dispatcher_ startDispatchingToTarget:coordinator_
                               forProtocol:@protocol(LensOverlayCommands)];
+
+    lens_commands_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:lens_commands_handler_
+                     forProtocol:@protocol(LensCommands)];
 
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -196,6 +202,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   raw_ptr<LensOverlayTabHelper> tab_helper_;
   id<ApplicationCommands> application_handler_;
   id<LoadQueryCommands> load_query_handler_;
+  id<LensCommands> lens_commands_handler_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
