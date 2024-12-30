@@ -196,9 +196,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled()) {
     id<LensOverlayCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
-    [handler searchImageWithLens:command.image
-                      entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
-                      completion:nil];
+    [handler
+        searchImageWithLens:command.image
+                 entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu];
     return;
   }
 
@@ -219,10 +219,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (IsSegmentationTipsManagerEnabled()) {
     [self recordLensUsage];
   }
-}
-
-- (void)lensOverlayDismissed {
-  // NO-OP
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {

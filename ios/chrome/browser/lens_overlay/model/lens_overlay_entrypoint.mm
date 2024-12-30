@@ -14,9 +14,6 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
     case LensOverlayEntrypoint::kOverflowMenu:
     case LensOverlayEntrypoint::kSearchImageContextMenu:
       return LensOverlayInvocationSource::kAppMenu;
-    case LensOverlayEntrypoint::kLVFImagePicker:
-    case LensOverlayEntrypoint::kLVFCameraCapture:
-      return LensOverlayInvocationSource::kAppMenu;
   }
 }
 

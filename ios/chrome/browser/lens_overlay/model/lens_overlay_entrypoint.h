@@ -15,10 +15,6 @@ enum class LensOverlayEntrypoint {
   kOverflowMenu,
   // Search image button from context menu.
   kSearchImageContextMenu,
-  // Image captured by LVF camera.
-  kLVFCameraCapture,
-  // Image retrieved from gallery.
-  kLVFImagePicker,
 };
 
 namespace lens {

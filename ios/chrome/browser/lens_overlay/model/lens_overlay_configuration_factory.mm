@@ -25,10 +25,6 @@ LensEntrypoint LensEntrypointFromOverlayEntrypoint(
       return LensEntrypoint::LensOverlayOverflowMenu;
     case LensOverlayEntrypoint::kSearchImageContextMenu:
       return LensEntrypoint::ContextMenu;
-    case LensOverlayEntrypoint::kLVFCameraCapture:
-    case LensOverlayEntrypoint::kLVFImagePicker:
-      // TODO: Add the correct entrypoint once validated.
-      return LensEntrypoint::ContextMenu;
   }
 }
 

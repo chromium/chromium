@@ -29,22 +29,18 @@ LensViewFinderTransition TransitionFromPresentationStyle(
   }
 }
 
-// The corner radius to be applied on the bottom of the image passed to post
-// capture
-const CGFloat kBottomCornerRadius = 108.0;
-
 }  // namespace
 
-@interface LensViewFinderCoordinator () <
-    LensCommands,
-    ChromeLensViewFinderDelegate,
-    UIViewControllerTransitioningDelegate,
-    UIAdaptivePresentationControllerDelegate>
+@interface LensViewFinderCoordinator () <LensCommands,
+                                         ChromeLensControllerDelegate>
 @end
 
 @implementation LensViewFinderCoordinator {
+  // Controls the lens view finder experience.
+  id<ChromeLensController> _lensController;
+
   // The user interface to be presented.
-  UIViewController<ChromeLensViewFinderController>* _lensViewController;
+  __weak UIViewController* _lensViewController;
 
   // Manages the presenting & dismissal of the LVF user interface.
   LensViewFinderTransitionManager* _transitionManager;
@@ -77,8 +73,7 @@ const CGFloat kBottomCornerRadius = 108.0;
       self.browser->GetCommandDispatcher(), LensOverlayCommands);
   [_lensOverlayCommands
       searchImageWithLens:command.image
-               entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
-               completion:nil];
+               entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu];
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
@@ -92,108 +87,40 @@ const CGFloat kBottomCornerRadius = 108.0;
       initWithLVFTransitionType:TransitionFromPresentationStyle(
                                     command.presentationStyle)];
 
-  _lensViewController =
-      ios::provider::NewChromeLensViewFinderController(configuration);
-  [_lensViewController setLensViewFinderDelegate:self];
+  _lensController = ios::provider::NewChromeLensController(configuration);
+  _lensController.delegate = self;
 
+  _lensViewController = _lensController.inputSelectionViewController;
   _lensViewController.transitioningDelegate = _transitionManager;
   _lensViewController.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
   _lensViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
-
   [self.baseViewController presentViewController:_lensViewController
                                         animated:YES
                                       completion:nil];
 }
 
-- (void)lensOverlayDismissed {
-  [self exitLensViewFinder];
+#pragma mark - ChromeLensControllerDelegate
+
+- (void)lensControllerDidGenerateImage:(UIImage*)image {
 }
 
-#pragma mark - ChromeLensViewFinderDelegate
-
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
-             didSelectImage:(UIImage*)image
-    serializedViewportState:(NSString*)viewportState
-              isCameraImage:(BOOL)isCameraImage {
-  BOOL isPortrait = image.size.height > image.size.width;
-  if (isCameraImage && isPortrait) {
-    image = [self infilledImageForPortraitCameraCapture:image];
-  }
-
-  LensOverlayEntrypoint entrypoint =
-      isCameraImage ? LensOverlayEntrypoint::kLVFCameraCapture
-                    : LensOverlayEntrypoint::kLVFImagePicker;
-
-  id<LensOverlayCommands> _lensOverlayCommands = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LensOverlayCommands);
-  __weak id<ChromeLensViewFinderController> weakLensViewController =
-      _lensViewController;
-
-  // Once post capture is presented, the live camera can be torn down.
-  [_lensOverlayCommands
-      searchImageWithLens:image
-               entrypoint:entrypoint
-               completion:^(BOOL success) {
-                 [weakLensViewController tearDownCaptureInfrastructure];
-               }];
+- (void)lensControllerDidGenerateLoadParams:
+    (const web::NavigationManager::WebLoadParams&)params {
 }
 
-- (void)lensController:(id<ChromeLensViewFinderController>)lensController
-          didSelectURL:(GURL)url {
-  // NO-OP
+- (void)lensControllerDidSelectURL:(NSURL*)url {
 }
 
-- (void)lensControllerDidTapDismissButton:
-    (id<ChromeLensViewFinderController>)lensController {
-  [self exitLensViewFinder];
-}
-
-#pragma mark - Private
-- (void)exitLensViewFinder {
+- (void)lensControllerDidTapDismissButton {
   if (self.baseViewController.presentedViewController == _lensViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   }
 }
 
-// Rounds the bottom corners of the image and pads the bottom edge to match the
-// size of the viewport.
-- (UIImage*)infilledImageForPortraitCameraCapture:(UIImage*)image {
-  UIGraphicsImageRendererFormat* format =
-      [UIGraphicsImageRendererFormat preferredFormat];
-  format.scale = 1;
-
-  CGSize screenSize = [UIScreen mainScreen].bounds.size;
-  CGFloat scale = 3;
-  CGSize scaledScreenSize =
-      CGSizeMake(screenSize.width * scale, screenSize.height * scale);
-
-  CGFloat originalAspectRatio = image.size.width / image.size.height;
-
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:scaledScreenSize
-                                             format:format];
-
-  CGRect imageDrawRect =
-      CGRectMake(0, 0, scaledScreenSize.width,
-                 scaledScreenSize.width / originalAspectRatio);
-
-  UIBezierPath* path = [UIBezierPath
-      bezierPathWithRoundedRect:imageDrawRect
-              byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
-                    cornerRadii:CGSizeMake(kBottomCornerRadius,
-                                           kBottomCornerRadius)];
-
-  UIImage* imageWithInfill =
-      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        [[UIColor whiteColor] setFill];
-        UIRectFill(context.format.bounds);
-        [path addClip];
-        [image drawInRect:imageDrawRect];
-      }];
-
-  return imageWithInfill;
+- (CGRect)webContentFrame {
+  return [UIScreen mainScreen].bounds;
 }
 
 @end

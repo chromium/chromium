@@ -65,14 +65,9 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   _containerViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
 
-  UIViewController* presentingBase =
-      _baseViewController.presentedViewController == nil
-          ? _baseViewController
-          : _baseViewController.presentedViewController;
-
-  [presentingBase presentViewController:_containerViewController
-                               animated:animated
-                             completion:completion];
+  [_baseViewController presentViewController:_containerViewController
+                                    animated:animated
+                                  completion:completion];
 }
 
 - (void)dismissContainerAnimated:(BOOL)animated
