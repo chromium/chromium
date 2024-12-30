@@ -4197,7 +4197,7 @@ enum WebFeature {
   kSpeculationRulesBrowserPrefetchRule = 4831,
   kSpeculationRulesBrowserPrerenderRule = 4832,
   kFirstPartySharedWorkerSameSiteCookiesNone = 4833,
-  kCSSCustomStateDeprecatedSyntax = 4834,
+  kOBSOLETE_CSSCustomStateDeprecatedSyntax = 4834,
   kFullscreenAllowedByContentSetting = 4835,
   kSharedStorageAPI_CreateWorklet_Method = 4836,
   kCanvas2DLayers = 4837,
