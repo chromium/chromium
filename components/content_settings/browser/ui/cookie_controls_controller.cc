@@ -124,6 +124,8 @@ CookieControlsController::CookieControlsController(
       original_cookie_settings_(original_cookie_settings),
       settings_map_(settings_map),
       tracking_protection_settings_(tracking_protection_settings) {
+  CHECK(cookie_settings_);
+  CHECK(tracking_protection_settings_);
   cookie_observation_.Observe(cookie_settings_.get());
 }
 
@@ -208,8 +210,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   auto blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
   if (cookie_settings_->AreThirdPartyCookiesLimited()) {
     blocking_status = CookieBlocking3pcdStatus::kLimited;
-  } else if (tracking_protection_settings_ &&
-             tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
+  } else if (tracking_protection_settings_->AreAllThirdPartyCookiesBlocked()) {
     blocking_status = CookieBlocking3pcdStatus::kAll;
   }
 
@@ -232,21 +233,10 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           features};
 }
 
-bool CookieControlsController::ShowIpProtection() const {
-  return base::FeatureList::IsEnabled(
-             privacy_sandbox::kIpProtectionUserBypass) &&
-         tracking_protection_settings_->IsIpProtectionEnabled();
-}
-
-bool CookieControlsController::ShowFingerprintingProtection() const {
-  // Note: this is an interim check and will have to be updated for incognito
-  // FPP.
-  return base::FeatureList::IsEnabled(
-      privacy_sandbox::kFingerprintingProtectionUserBypass);
-}
-
 bool CookieControlsController::ShowActFeatures() {
-  return ShowIpProtection() || ShowFingerprintingProtection();
+  return base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
+         (tracking_protection_settings_->IsIpProtectionEnabled() ||
+          tracking_protection_settings_->IsFpProtectionEnabled());
 }
 
 std::vector<TrackingProtectionFeature>
@@ -264,13 +254,13 @@ CookieControlsController::CreateTrackingProtectionFeatureList(
   std::vector<TrackingProtectionFeature> features = {
       {FeatureType::kThirdPartyCookies, enforcement, status_label}};
 
-  if (ShowIpProtection()) {
+  if (tracking_protection_settings_->IsIpProtectionEnabled()) {
     features.push_back(
         {FeatureType::kIpProtection, CookieControlsEnforcement::kNoEnforcement,
          act_exception ? TrackingProtectionBlockingStatus::kVisible
                        : TrackingProtectionBlockingStatus::kHidden});
   }
-  if (ShowFingerprintingProtection()) {
+  if (tracking_protection_settings_->IsFpProtectionEnabled()) {
     features.push_back({FeatureType::kFingerprintingProtection,
                         CookieControlsEnforcement::kNoEnforcement,
                         act_exception

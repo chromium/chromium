@@ -1703,13 +1703,15 @@ class CookieControlsUserBypassTrackingProtectionUiTest
 
     std::vector<base::test::FeatureRef> enabled_features = {};
     if (std::get<1>(GetParam())) {
-      enabled_features.push_back(privacy_sandbox::kIpProtectionUserBypass);
+      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
       enabled_features.push_back(privacy_sandbox::kIpProtectionV1);
       profile()->GetPrefs()->SetBoolean(prefs::kIpProtectionEnabled, true);
     }
     if (std::get<2>(GetParam())) {
-      enabled_features.push_back(
-          privacy_sandbox::kFingerprintingProtectionUserBypass);
+      enabled_features.push_back(privacy_sandbox::kActUserBypassUx);
+      enabled_features.push_back(privacy_sandbox::kFingerprintingProtectionUx);
+      profile()->GetPrefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled,
+                                        true);
     }
     feature_list_.InitWithFeatures(enabled_features, {});
   }
@@ -1759,5 +1761,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CookieControlsUserBypassTrackingProtectionUiTest,
     testing::Combine(/*protections_on*/ testing::Bool(),
-                     /*kIpProtectionUserBypass*/ testing::Bool(),
-                     /*kFingerprintingProtectionUserBypass*/ testing::Bool()));
+                     /*kIpProtectionV1*/ testing::Bool(),
+                     /*kFingerprintingProtectionUx*/ testing::Bool()));

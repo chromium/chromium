@@ -66,6 +66,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -1579,8 +1580,8 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
  public:
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features =
-            {privacy_sandbox::kFingerprintingProtectionUserBypass},
+        enabled_features = {privacy_sandbox::kActUserBypassUx,
+                            privacy_sandbox::kFingerprintingProtectionUx},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1603,6 +1604,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_example));
 
   SetCookieControlsMode(content_settings::CookieControlsMode::kBlockThirdParty);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kFingerprintingProtectionEnabled, true);
 
   OpenPageInfoAndGoToCookiesSubpage(/*rws_owner =*/{});
 
