@@ -50,6 +50,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
@@ -658,6 +659,30 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   EXPECT_EQ(u"a\na.com", button->GetTooltipText(p));
   button->SetText(u"new title");
   EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
+}
+
+// Regression test for https://crbug.com/385805737. When BookmarkButton receives
+// an AddedToWidget call, it should also call the corresponding superclass
+// method (specifically, `LabelButton::AddedToWidget()` must be called).
+TEST_F(BookmarkBarViewInWidgetTest,
+       BookmarkButtonAddedToWidgetCallsSuperclass) {
+  widget()->ShowInactive();
+  widget()->Hide();
+
+  bookmarks::test::AddNodesFromModelString(model(),
+                                           model()->bookmark_bar_node(), "a b");
+  SizeUntilButtonsVisible(1);
+
+  // `BookmarkButton::AddedToWidget()` will have been called, so ensure that
+  // `LabelButton::AddedToWidget()` has been called as well.
+  ASSERT_EQ(1u, test_helper_->GetBookmarkButtonCount());
+  views::LabelButton* button = test_helper_->GetBookmarkButton(0);
+  ASSERT_TRUE(button);
+  // The `LabelButton::AddedToWidget()` call only has an effect for bookmark
+  // buttons on certain platforms, so gate the check.
+  if (views::PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+    EXPECT_TRUE(button->has_paint_as_active_subscription_for_testing());
+  }
 }
 
 // TODO(crbug.com/375364962): Flaky on Windows & Linux.

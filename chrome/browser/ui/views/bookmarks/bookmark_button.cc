@@ -118,12 +118,16 @@ BookmarkButton::BookmarkButton(PressedCallback callback,
 BookmarkButton::~BookmarkButton() = default;
 
 void BookmarkButton::AddedToWidget() {
+  BookmarkButtonBase::AddedToWidget();
+
   widget_observation_.Observe(GetWidget());
 
   UpdateMaxTooltipWidth();
 }
 
 void BookmarkButton::RemovedFromWidget() {
+  BookmarkButtonBase::RemovedFromWidget();
+
   widget_observation_.Reset();
 }
 
