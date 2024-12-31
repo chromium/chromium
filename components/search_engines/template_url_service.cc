@@ -1831,6 +1831,27 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
   DCHECK_EQ(type, syncer::SEARCH_ENGINES);
   models_associated_ = false;
   sync_processor_.reset();
+
+  base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
+  // Cleanup account template urls.
+  for (size_t i = 0; i < template_urls_.size();) {
+    TemplateURL* turl = template_urls_[i].get();
+    // Skip if the turl has no account data.
+    if (!turl->GetAccountData()) {
+      ++i;
+      continue;
+    }
+    // If turl has local data, remove only the account data. This is done by
+    // updating turl with a new TemplateURL containing only the local data
+    // instead of just dropping the account data to ensure all the mappings are
+    // correctly updated. Else, remove turl.
+    if (turl->GetLocalData()) {
+      Update(turl, TemplateURL(*turl->GetLocalData()));
+      ++i;
+    } else {
+      Remove(turl);
+    }
+  }
 }
 
 void TemplateURLService::ProcessTemplateURLChange(
@@ -2845,8 +2866,13 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // resolution.
     if (base::FeatureList::IsEnabled(
             syncer::kSeparateLocalAndAccountSearchEngines)) {
-      Update(conflicting_turl, *UpdateExistingURLWithAccountData(
-                                   conflicting_turl, sync_turl->data()));
+      // Skip overriding the default search provider.
+      if (conflicting_turl == GetDefaultSearchProvider()) {
+        ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
+      } else {
+        Update(conflicting_turl, *UpdateExistingURLWithAccountData(
+                                     conflicting_turl, sync_turl->data()));
+      }
       should_add_sync_turl = false;
       break;
     }

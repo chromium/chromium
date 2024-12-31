@@ -2205,7 +2205,16 @@ const TemplateURLData& TemplateURL::data() const {
 TemplateURLData& TemplateURL::active_data() {
   CHECK(local_data_ || base::FeatureList::IsEnabled(
                            syncer::kSeparateLocalAndAccountSearchEngines));
-  // TODO(crbug.com/374903497): Implement conflict resolution.
+  CHECK(!account_data_ || base::FeatureList::IsEnabled(
+                              syncer::kSeparateLocalAndAccountSearchEngines));
+  // TODO(crbug.com/386916073): Improve the conflict resolution.
+  if (local_data_ && account_data_) {
+    TemplateURL local_turl(local_data_, std::nullopt);
+    TemplateURL account_turl(std::nullopt, account_data_);
+    return local_turl.IsBetterThanConflictingEngine(&account_turl)
+               ? *local_data_
+               : *account_data_;
+  }
   return local_data_ ? *local_data_ : *account_data_;
 }
 
