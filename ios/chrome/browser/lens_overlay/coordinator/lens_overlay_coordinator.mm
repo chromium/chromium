@@ -719,7 +719,7 @@ const int kExpectedExitAnimationCount = 2;
 
 - (BOOL)termsOfServiceAccepted {
   if (!self.browser || !self.browser->GetProfile() ||
-      !!self.browser->GetProfile()->GetPrefs()) {
+      !self.browser->GetProfile()->GetPrefs()) {
     return NO;
   }
 
