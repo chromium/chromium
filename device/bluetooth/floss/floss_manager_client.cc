@@ -300,17 +300,6 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
 
-  if (floss::features::IsLLPrivacyAvailable()) {
-    SetLLPrivacy(
-        base::BindOnce([](DBusResult<bool> ret) {
-          if (!ret.has_value()) {
-            LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
-          } else if (!ret.value()) {
-            LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
-          }
-        }),
-        base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -544,6 +533,18 @@ void FlossManagerClient::CompleteSetFlossEnabled(DBusResult<bool> ret) {
     LOG(ERROR) << "Floss couldn't be enabled. Error=" << ret.error();
   } else {
     DVLOG(1) << "Completed SetFlossEnabled with value " << *ret;
+    // Set LL privacy if floss is enabled.
+    if (floss::features::IsLLPrivacyAvailable() && ret.value()) {
+      SetLLPrivacy(
+          base::BindOnce([](DBusResult<bool> ret) {
+            if (!ret.has_value()) {
+              LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
+            } else if (!ret.value()) {
+              LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
+            }
+          }),
+          base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+    }
   }
 }
 
