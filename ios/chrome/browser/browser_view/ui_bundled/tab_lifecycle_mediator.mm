@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
@@ -102,6 +104,13 @@
   id<PasswordGenerationProvider> generationProvider =
       passwordTabHelper->GetPasswordGenerationProvider();
   bottomSheetTabHelper->SetPasswordGenerationProvider(generationProvider);
+
+  SupervisedUserErrorContainer* supervisedUserErrorContainer =
+      SupervisedUserErrorContainer::FromWebState(webState);
+  if (supervisedUserErrorContainer) {
+    supervisedUserErrorContainer->SetParentAccessBottomSheetHandler(
+        HandlerForProtocol(_commandDispatcher, ParentAccessCommands));
+  }
 
   if (ios::provider::IsLensSupported()) {
     LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
@@ -221,6 +230,12 @@
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
+
+  SupervisedUserErrorContainer* supervisedUserErrorContainer =
+      SupervisedUserErrorContainer::FromWebState(webState);
+  if (supervisedUserErrorContainer) {
+    supervisedUserErrorContainer->SetParentAccessBottomSheetHandler(nil);
+  }
 
   LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
   if (lensTabHelper) {

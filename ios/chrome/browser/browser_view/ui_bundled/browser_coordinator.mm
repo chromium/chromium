@@ -29,6 +29,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -188,6 +189,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
@@ -228,6 +230,7 @@
 #import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
+#import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
@@ -323,6 +326,7 @@ enum class ToolbarKind {
     PageInfoCommands,
     PageInfoPresentation,
     ParcelTrackingOptInCommands,
+    ParentAccessCommands,
     PasswordBreachCommands,
     PasswordControllerDelegate,
     PasswordProtectionCommands,
@@ -476,6 +480,10 @@ enum class ToolbarKind {
 // Coordinator for parcel tracking opt-in UI presentation.
 @property(nonatomic, strong)
     ParcelTrackingOptInCoordinator* parcelTrackingOptInCoordinator;
+
+// Coordinator to display local web approvals parent access UI in a bottom
+// sheet.
+@property(nonatomic, strong) ParentAccessCoordinator* parentAccessCoordinator;
 
 // Coordinator for the PassKit UI presentation.
 @property(nonatomic, strong) PassKitCoordinator* passKitCoordinator;
@@ -989,6 +997,7 @@ enum class ToolbarKind {
     @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(MiniMapCommands),
     @protocol(ParcelTrackingOptInCommands),
+    @protocol(ParentAccessCommands),
     @protocol(UnitConversionCommands),
     @protocol(AddContactsCommands),
     @protocol(CountryCodePickerCommands),
@@ -3056,6 +3065,41 @@ enum class ToolbarKind {
     [self.parcelTrackingOptInCoordinator stop];
     self.parcelTrackingOptInCoordinator = nil;
   }
+}
+
+#pragma mark - ParentAccessCommands
+
+- (void)
+    showParentAccessBottomSheetForWebState:(web::WebState*)webState
+                                completion:
+                                    (void (^)(
+                                        supervised_user::LocalApprovalResult))
+                                        completion {
+  if (!supervised_user::IsLocalWebApprovalsEnabled()) {
+    return;
+  }
+
+  if (self.activeWebState != webState) {
+    // Do not show the sheet if the current tab is not the one where the
+    // user initiated parent local web approvals.
+    return;
+  }
+  // Close parent access local web approval if it was already opened for another
+  // URL.
+  if (self.parentAccessCoordinator) {
+    [self.parentAccessCoordinator stop];
+  }
+
+  self.parentAccessCoordinator = [[ParentAccessCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      completion:completion];
+  [self.parentAccessCoordinator start];
+}
+
+- (void)hideParentAccessBottomSheet {
+  [self.parentAccessCoordinator stop];
+  self.parentAccessCoordinator = nil;
 }
 
 #pragma mark - PasswordBreachCommands
