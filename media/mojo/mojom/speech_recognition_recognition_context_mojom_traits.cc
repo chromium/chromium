@@ -31,7 +31,7 @@ bool StructTraits<media::mojom::SpeechRecognitionRecognitionContextDataView,
          media::SpeechRecognitionRecognitionContext* out) {
   std::vector<media::SpeechRecognitionPhrase> phrases;
 
-  if (!data.ReadPhrases(&phrases) || phrases.empty()) {
+  if (!data.ReadPhrases(&phrases)) {
     return false;
   }
 
