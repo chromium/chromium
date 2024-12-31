@@ -52,7 +52,9 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
         ClientBehaviorConstants::kShowingCardBenefits);
   }
 
-  if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
+  if (card_->record_type() == CreditCard::RecordType::kVirtualCard ||
+      card_->card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
     std::optional<GURL> last_committed_primary_main_frame_origin;
     if (autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
       last_committed_primary_main_frame_origin =
@@ -111,11 +113,11 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
     return;
   }
 
-  // Currently only virtual cards are supported for OTP authentication.
-  // If non-virtual cards are allowed for OTP unmasking in the future,
-  // |OnDidSelectChallengeOption()| and |OnDidGetRealPan()| should allow for a
-  // generic error dialog.
-  CHECK_EQ(card->record_type(), CreditCard::RecordType::kVirtualCard);
+  // Currently only virtual cards and cards enrolled in runtime retrieval are
+  // supported for OTP authentication.
+  CHECK((card->record_type() == CreditCard::RecordType::kVirtualCard) ||
+        (card->card_info_retrieval_enrollment_state() ==
+         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled));
   CHECK(selected_challenge_option.type ==
             CardUnmaskChallengeOptionType::kSmsOtp ||
         selected_challenge_option.type ==
