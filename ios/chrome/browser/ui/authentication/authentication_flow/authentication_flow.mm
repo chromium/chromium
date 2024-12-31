@@ -142,7 +142,6 @@ BOOL IsIdentityInCoreAccountInfos(
   BOOL _didSignIn;
   CancelationReason _cancelationReason;
   BOOL _shouldSignOut;
-  BOOL _alreadySignedInWithTheSameAccount;
   // YES if the signed in account is a managed account and the sign-in flow
   // includes sync.
   BOOL _shouldShowManagedConfirmation;
@@ -462,8 +461,6 @@ BOOL IsIdentityInCoreAccountInfos(
     // sign-out is required.
     _shouldSignOut = YES;
   }
-  _alreadySignedInWithTheSameAccount =
-      [currentIdentity isEqual:_identityToSignIn];
 }
 
 - (void)multiProfileSignIn {
