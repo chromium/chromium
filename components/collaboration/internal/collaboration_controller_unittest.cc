@@ -347,7 +347,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
   tab_group.SetLocalGroupId(local_id);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillOnce(Return(tab_group));
-  EXPECT_CALL(*delegate_, ShowShareDialog(IsNotNullCallback()));
+  EXPECT_CALL(*delegate_, ShowShareDialog(either_id, IsNotNullCallback()));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingShareScreen);
@@ -357,7 +357,7 @@ TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
       tab_groups::CollaborationId(std::string(kGroupId)));
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
       .WillOnce(Return(tab_group));
-  EXPECT_CALL(*delegate_, ShowManageDialog(IsNotNullCallback()));
+  EXPECT_CALL(*delegate_, ShowManageDialog(either_id, IsNotNullCallback()));
 
   controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingManageScreen);

@@ -99,6 +99,7 @@ void CollaborationControllerDelegateAndroid::ShowJoinDialog(
 }
 
 void CollaborationControllerDelegateAndroid::ShowShareDialog(
+    const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showShareDialog(

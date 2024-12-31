@@ -40,8 +40,10 @@ class IOSCollaborationControllerDelegate
   void ShowJoinDialog(const data_sharing::GroupToken& token,
                       const data_sharing::SharedDataPreview& preview_data,
                       ResultCallback result) override;
-  void ShowShareDialog(ResultCallback result) override;
-  void ShowManageDialog(ResultCallback result) override;
+  void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
+                       ResultCallback result) override;
+  void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
+                        ResultCallback result) override;
   void PromoteTabGroup(const data_sharing::GroupId& group_id,
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;

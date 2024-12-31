@@ -125,6 +125,7 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
+    const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
   CHECK_EQ(flow_config_->type(),
            CollaborationFlowConfiguration::Type::kShareOrManage);
@@ -155,6 +156,7 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 }
 
 void IOSCollaborationControllerDelegate::ShowManageDialog(
+    const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
   CHECK_EQ(flow_config_->type(),
            CollaborationFlowConfiguration::Type::kShareOrManage);

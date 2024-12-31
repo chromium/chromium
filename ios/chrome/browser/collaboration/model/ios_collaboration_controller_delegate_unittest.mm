@@ -121,7 +121,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
   InitShareFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  delegate_->ShowShareDialog(completion_callback.Get());
+  delegate_->ShowShareDialog(tab_group_->tab_group_id(),
+                             completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
   // The callback is not expected to be called, as it is called when the
   // given ShareKit flow returns, i.e. when the presented view controller is
@@ -132,6 +133,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
 TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   InitShareFlowDelegate();
 
+  tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
+
   // Delete the tabGroup.
   web_state_list_.DeleteGroup(tab_group_);
 
@@ -139,7 +142,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
       completion_callback;
   EXPECT_CALL(completion_callback,
               Run(CollaborationControllerDelegate::Outcome::kFailure));
-  delegate_->ShowShareDialog(completion_callback.Get());
+  delegate_->ShowShareDialog(tab_group_id, completion_callback.Get());
   EXPECT_FALSE(base_view_controller_.presentedViewController);
 }
 

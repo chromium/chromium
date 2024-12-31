@@ -30,8 +30,16 @@ class MockCollaborationControllerDelegate
                const data_sharing::SharedDataPreview& preview_data,
                ResultCallback result),
               (override));
-  MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));
-  MOCK_METHOD(void, ShowManageDialog, (ResultCallback result), (override));
+  MOCK_METHOD(void,
+              ShowShareDialog,
+              (const tab_groups::EitherGroupID& either_id,
+               ResultCallback result),
+              (override));
+  MOCK_METHOD(void,
+              ShowManageDialog,
+              (const tab_groups::EitherGroupID& either_id,
+               ResultCallback result),
+              (override));
   MOCK_METHOD(void,
               PromoteTabGroup,
               (const data_sharing::GroupId& group_id, ResultCallback result),

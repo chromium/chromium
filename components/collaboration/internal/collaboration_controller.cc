@@ -361,10 +361,14 @@ class ShowingShareScreen : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    CHECK_EQ(controller->flow().type, Flow::Type::kShareOrManage);
+
     // TODO(crbug.com/382557489): Wait for sync to upload the group before
     // showing the system share sheet.
-    controller->delegate()->ShowShareDialog(base::BindOnce(
-        &ShowingShareScreen::ProcessOutcome, weak_ptr_factory_.GetWeakPtr()));
+    controller->delegate()->ShowShareDialog(
+        controller->flow().either_id(),
+        base::BindOnce(&ShowingShareScreen::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override {
@@ -382,8 +386,12 @@ class ShowingManageScreen : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
-    controller->delegate()->ShowManageDialog(base::BindOnce(
-        &ShowingManageScreen::ProcessOutcome, weak_ptr_factory_.GetWeakPtr()));
+    CHECK_EQ(controller->flow().type, Flow::Type::kShareOrManage);
+
+    controller->delegate()->ShowManageDialog(
+        controller->flow().either_id(),
+        base::BindOnce(&ShowingManageScreen::ProcessOutcome,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void OnProcessingFinishedWithSuccess() override { controller->Exit(); }

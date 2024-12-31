@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/public/types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -78,10 +79,12 @@ class CollaborationControllerDelegate {
       ResultCallback result) = 0;
 
   // Request to show the share dialog.
-  virtual void ShowShareDialog(ResultCallback result) = 0;
+  virtual void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
+                               ResultCallback result) = 0;
 
   // Request to show the manage dialog.
-  virtual void ShowManageDialog(ResultCallback result) = 0;
+  virtual void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
+                                ResultCallback result) = 0;
 
   // Open the local tab group associated with `group_id` in UI.
   virtual void PromoteTabGroup(const data_sharing::GroupId& group_id,
