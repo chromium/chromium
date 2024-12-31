@@ -353,9 +353,21 @@ void IdentityManager::PrepareForAddingNewAccount() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject> IdentityManager::GetJavaObject() {
+base::android::ScopedJavaLocalRef<jobject> IdentityManager::GetJavaObject()
+    const {
   DCHECK(java_identity_manager_);
   return base::android::ScopedJavaLocalRef<jobject>(java_identity_manager_);
+}
+
+// static
+IdentityManager* IdentityManager::FromJavaObject(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_identity_manager) {
+  if (!j_identity_manager) {
+    return nullptr;
+  }
+  return reinterpret_cast<IdentityManager*>(
+      Java_IdentityManager_getNativePointer(env, j_identity_manager));
 }
 
 base::android::ScopedJavaLocalRef<jobject>

@@ -170,7 +170,7 @@ SigninManagerAndroid::SigninManagerAndroid(
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      profile_->GetJavaObject(), identity_manager_->GetJavaObject(),
+      profile_, identity_manager_,
       identity_manager_->GetIdentityMutatorJavaObject(),
       SyncServiceFactory::GetForProfile(profile_)->GetJavaObject());
 }

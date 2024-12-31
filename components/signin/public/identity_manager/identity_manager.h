@@ -448,7 +448,12 @@ class IdentityManager : public KeyedService,
 
 #if BUILDFLAG(IS_ANDROID)
   // Get the reference on the java IdentityManager.
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+
+  // Get the reference on the java IdentityManager.
+  static IdentityManager* FromJavaObject(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_identity_manager);
 
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
@@ -756,5 +761,23 @@ struct ScopedObservationTraits<signin::IdentityManager,
 };
 
 }  // namespace base
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+template <>
+inline signin::IdentityManager* FromJniType<signin::IdentityManager*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_identity_manager) {
+  return signin::IdentityManager::FromJavaObject(env, j_identity_manager);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    signin::IdentityManager* identity_manager) {
+  return identity_manager ? identity_manager->GetJavaObject() : nullptr;
+}
+}  // namespace jni_zero
+#endif
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_MANAGER_H_

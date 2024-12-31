@@ -114,8 +114,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
-            Profile profile,
-            IdentityManager identityManager,
+            @JniType("Profile*") Profile profile,
+            @JniType("signin::IdentityManager*") IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         assert nativeSigninManagerAndroid != 0;

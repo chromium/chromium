@@ -185,6 +185,12 @@ public class IdentityManager {
         mRefreshTokenUpdateObserver = callback;
     }
 
+    /** Can be called by native code to convert from Java to the corresponding C++ object. */
+    @CalledByNative
+    private long getNativePointer() {
+        return mNativeIdentityManager;
+    }
+
     @NativeMethods
     public interface Natives {
         @Nullable
