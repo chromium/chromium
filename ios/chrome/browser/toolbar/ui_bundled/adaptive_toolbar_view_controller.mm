@@ -354,6 +354,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   [self.view updateTabGroupState:tabGroupState];
 }
 
+- (void)setTabGridButtonBlueDot:(BOOL)hasBlueDot {
+  self.view.tabGridButton.hasBlueDot = hasBlueDot;
+}
+
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
