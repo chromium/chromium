@@ -69,9 +69,12 @@ AudioBus::AudioBus(int channels, int frames)
     : frames_(base::checked_cast<size_t>(frames)), is_wrapper_(false) {
   CHECK(IsValidChannelCount(channels));
 
-  size_t size = CalculateMemorySizeInternal(channels, frames_);
+  // Over-allocate memory to make sure each channel can start at an aligned
+  // location.
+  size_t total_samples = channels * AlignFramesUp(frames_);
 
-  data_ = base::AlignedUninit<float>(size, AudioBus::kChannelAlignment);
+  data_ =
+      base::AlignedUninit<float>(total_samples, AudioBus::kChannelAlignment);
 
   BuildChannelData(channels, data_);
 }
@@ -312,7 +315,7 @@ void AudioBus::BuildChannelData(int channels, base::span<float> data) {
   CHECK(!is_bitstream_format_);
   CHECK(frames_);
   CHECK(IsValidChannelCount(channels));
-  CHECK_GE(data.size(), CalculateMemorySizeInternal(channels, frames_));
+  CHECK_GE(data.size_bytes(), CalculateMemorySizeInternal(channels, frames_));
   CHECK(IsAligned(data));
   CHECK(channel_data_.empty());
 
