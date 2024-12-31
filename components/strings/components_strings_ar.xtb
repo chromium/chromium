@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">التحقق من كلمات المرور</translation>
 <translation id="1187430513518041110">سيارات ومركبات</translation>
 <translation id="1190491977647722791">ورق (ثقيل الوزن)</translation>
+<translation id="1194278116501666615">‏إشعار بتقدُّم التحميل المُسبق لنظام التشغيل ArcVm</translation>
 <translation id="1195073053842921378">سيتم حذف هذا العنوان من هذا الجهاز.</translation>
 <translation id="1195558154361252544">يتم حظر الإشعارات تلقائيًا لجميع المواقع الإلكترونية باستثناء المواقع التي تسمح بها.</translation>
 <translation id="1197088940767939838">برتقالي</translation>
@@ -1147,6 +1148,7 @@
 <translation id="3061707000357573562">خدمة رمز التصحيح</translation>
 <translation id="306198082577913404">تفعيل ميزة "تحسينات التوقعات"</translation>
 <translation id="3062655045399308513">حذف بيانات التصفّح…</translation>
+<translation id="3063453392496098461">‏تعذَّر تثبيت خدمات VPN التي تُشغَّل في الخلفية.</translation>
 <translation id="306573536155379004">بدأت اللعبة.</translation>
 <translation id="3067505415088964188">السعر منخفض</translation>
 <translation id="3068118691172921711">سيبدأ تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> بعد دقيقة واحدة</translation>
@@ -1756,6 +1758,7 @@
 <translation id="4103592298805904008">ورق مقوّى (طبقة واحدة)</translation>
 <translation id="4104702906064390950">‏جارٍ حفظ معلومات رقم الحساب بصيغة IBAN</translation>
 <translation id="4106887816571530227">تم رفض المحتوى المُضمَّن.</translation>
+<translation id="4107047499377819067">‏بدأ تثبيت خدمات VPN التي تُشغَّل في الخلفية، وقد يستغرق هذا الإجراء بضع دقائق.</translation>
 <translation id="4110652170750985508">مراجعة الدفعة</translation>
 <translation id="4111546256784973544">لعبة "بينتبول"</translation>
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
@@ -2786,6 +2789,7 @@
 <translation id="6001839398155993679">البدء</translation>
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6002968396561884726">منتج تم عرضه مؤخرًا</translation>
+<translation id="6005188329423473970">‏اكتمل تثبيت خدمات VPN التي تُشغَّل في الخلفية. إذا لم تظهر لك تطبيقات VPN، يُرجى تسجيل الخروج ثم تسجيل الدخول مرة أخرى.</translation>
 <translation id="6005659677094197001">غير متقطع</translation>
 <translation id="6005765687956866568">تم محو المعلومات التي تم ملؤها تلقائيًا من النموذج.</translation>
 <translation id="6006365096047131769">3 × 5 بوصة</translation>

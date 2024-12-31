@@ -109,6 +109,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1186201132766001848">Jelszavak ellenőrzése</translation>
 <translation id="1187430513518041110">Autók és más járművek</translation>
 <translation id="1190491977647722791">Papír (nehézsúlyú)</translation>
+<translation id="1194278116501666615">ArcVm előzetes betöltésének állapotfrissítése</translation>
 <translation id="1195073053842921378">Ez a cím törlődni fog erről az eszközről.</translation>
 <translation id="1195558154361252544">Az Ön által engedélyezett webhelyek kivételével a böngésző automatikusan letiltja az értesítéseket</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
@@ -1146,6 +1147,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
 <translation id="306198082577913404">A várható kifejezések szolgáltatás fejlesztéseinek bekapcsolása</translation>
 <translation id="3062655045399308513">Böngészési adatok törlése…</translation>
+<translation id="3063453392496098461">Nem sikerült telepíteni a VPN-háttérszolgáltatásokat.</translation>
 <translation id="306573536155379004">A játék elindult.</translation>
 <translation id="3067505415088964188">Alacsony ár</translation>
 <translation id="3068118691172921711">A fájlok feltöltése a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba 1 perc múlva kezdődik</translation>
@@ -1752,6 +1754,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4103592298805904008">Karton (egyfalú)</translation>
 <translation id="4104702906064390950">IBAN-adatok mentése folyamatban</translation>
 <translation id="4106887816571530227">A beágyazott tartalmak nem engedélyezettek</translation>
+<translation id="4107047499377819067">Elkezdődött a VPN-háttérszolgáltatások telepítése. Ez eltarthat néhány percig.</translation>
 <translation id="4110652170750985508">Befizetés áttekintése</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
@@ -2781,6 +2784,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6001839398155993679">Kezdjük</translation>
 <translation id="6002122790816966947">Saját eszközök</translation>
 <translation id="6002968396561884726">Nemrégiben megtekintve</translation>
+<translation id="6005188329423473970">A VPN-háttérszolgáltatások telepítése befejeződött. Ha a VPN-alkalmazások nem láthatók, jelentkezzen ki, majd jelentkezzen be újra.</translation>
 <translation id="6005659677094197001">Folyamatos</translation>
 <translation id="6005765687956866568">Az automatikusan kitöltött adatok törölve lettek az űrlapról</translation>
 <translation id="6006365096047131769">3 × 5 hüvelyk</translation>

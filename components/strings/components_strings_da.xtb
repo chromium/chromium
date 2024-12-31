@@ -109,6 +109,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1186201132766001848">Tjek adgangskoder</translation>
 <translation id="1187430513518041110">Biler og køretøjer</translation>
 <translation id="1190491977647722791">Papir (tungt)</translation>
+<translation id="1194278116501666615">Opdatering af status for forudindlæsning af ArcVm</translation>
 <translation id="1195073053842921378">Adressen slettes fra denne enhed</translation>
 <translation id="1195558154361252544">Notifikationer blokeres automatisk for alle websites med undtagelse af dem, du har givet tilladelse til</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1146,6 +1147,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
 <translation id="306198082577913404">Aktivér forbedringer af forudsigelser</translation>
 <translation id="3062655045399308513">Slet browserdata...</translation>
+<translation id="3063453392496098461">Installationen af VPN-baggrundstjenester mislykkedes.</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068118691172921711">Din filupload til <ph name="CLOUD_PROVIDER" /> starter om 1 minut</translation>
@@ -1755,6 +1757,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4103592298805904008">Pap (med enkelt væg)</translation>
 <translation id="4104702906064390950">IBAN-oplysninger gemmes</translation>
 <translation id="4106887816571530227">Indlejret indhold er ikke tilladt</translation>
+<translation id="4107047499377819067">Installationen af VPN-baggrundstjenester er startet. Dette kan tage et par minutter.</translation>
 <translation id="4110652170750985508">Gennemgå din betaling</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
@@ -2784,6 +2787,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6001839398155993679">Lad os komme i gang</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6002968396561884726">Set for nylig</translation>
+<translation id="6005188329423473970">Installationen af VPN-baggrundstjenester er fuldført. Hvis du ikke kan se VPN-apps, skal du logge ud og logge ind igen.</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
 <translation id="6005765687956866568">De automatisk udfyldte oplysninger blev fjernet fra formularen</translation>
 <translation id="6006365096047131769">3 x 5 tommer</translation>

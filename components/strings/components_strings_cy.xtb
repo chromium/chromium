@@ -109,6 +109,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1186201132766001848">Gwirio Cyfrineiriau</translation>
 <translation id="1187430513518041110">Ceir a Cherbydau</translation>
 <translation id="1190491977647722791">Papur (Pwysau Trwm)</translation>
+<translation id="1194278116501666615">Diweddariad cynnydd rhaglwytho ArcVm</translation>
 <translation id="1195073053842921378">Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon</translation>
 <translation id="1195558154361252544">Mae hysbysiadau'n cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
 <translation id="1197088940767939838">Oren</translation>
@@ -1146,6 +1147,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3061707000357573562">Gwasanaeth Trwsio</translation>
 <translation id="306198082577913404">Troi gwelliannau rhagfynegiad ymlaen</translation>
 <translation id="3062655045399308513">Dileu Data Pori...</translation>
+<translation id="3063453392496098461">Wedi methu â gosod gwasanaethau cefndir VPN.</translation>
 <translation id="306573536155379004">Mae'r gêm wedi cychwyn.</translation>
 <translation id="3067505415088964188">Pris yn isel</translation>
 <translation id="3068118691172921711">Bydd eich uwchlwythiad ffeil i <ph name="CLOUD_PROVIDER" /> yn dechrau mewn 1 funud</translation>
@@ -1755,6 +1757,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4103592298805904008">Cardfwrdd (Wal Sengl)</translation>
 <translation id="4104702906064390950">Wrthi'n cadw gwybodaeth IBAN</translation>
 <translation id="4106887816571530227">Ni chaniateir cynnwys sydd wedi'i blannu</translation>
+<translation id="4107047499377819067">Mae gosod gwasanaethau cefndir VPN wedi dechrau, gall hyn gymryd ychydig funudau.</translation>
 <translation id="4110652170750985508">Adolygwch eich taliad</translation>
 <translation id="4111546256784973544">Pledu paent</translation>
 <translation id="4112140312785995938">Mynd yn ôl</translation>
@@ -2784,6 +2787,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6001839398155993679">I ffwrdd â ni</translation>
 <translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6002968396561884726">Gwelwyd yn Ddiweddar</translation>
+<translation id="6005188329423473970">Wedi gorffen gosod Gwasanaethau Cefndir VPN Os na welwch apiau VPN, allgofnodwch a mewngofnodwch eto.</translation>
 <translation id="6005659677094197001">Parhaus</translation>
 <translation id="6005765687956866568">Cliriwyd y wybodaeth a gafodd ei hawtolenwi o'r ffurflen</translation>
 <translation id="6006365096047131769">3 x 5 modfedd</translation>

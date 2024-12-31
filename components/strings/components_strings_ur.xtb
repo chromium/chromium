@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">پاس ورڈز چیک کریں</translation>
 <translation id="1187430513518041110">آٹوز اور گاڑیاں</translation>
 <translation id="1190491977647722791">کاغذ (ہیوی ویٹ)</translation>
+<translation id="1194278116501666615">‏‫ArcVm پیشگی لوڈ پیش رفت کی اپ ڈیٹ</translation>
 <translation id="1195073053842921378">یہ پتہ اس آلے سے حذف ہو جائے گا</translation>
 <translation id="1195558154361252544">تمام سائٹس کے لیے اطلاعات کو خودکار طور پر مسدود کر دیا گیا ہے سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="1197088940767939838">نارنجی</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">پیچ سروس</translation>
 <translation id="306198082577913404">پیشگوئی کی بہتریوں کے لیے آن کریں</translation>
 <translation id="3062655045399308513">براؤزنگ ڈیٹا حذف کریں...</translation>
+<translation id="3063453392496098461">‏‫VPN کی پس منظر سروسز کی انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
 <translation id="3067505415088964188">قیمت کم ہے</translation>
 <translation id="3068118691172921711">1 منٹ میں آپ کی فائل <ph name="CLOUD_PROVIDER" /> میں اپ لوڈ ہونا شروع ہو جائے گی</translation>
@@ -1756,6 +1758,7 @@
 <translation id="4103592298805904008">کارڈ بورڈ (سنگل وال)</translation>
 <translation id="4104702906064390950">‏‫IBAN کی معلومات کو محفوظ کیا جا رہا ہے</translation>
 <translation id="4106887816571530227">سرایت کردہ مواد کی اجازت نہیں ہے</translation>
+<translation id="4107047499377819067">‏‫VPN کی پس منظر سروسز کی انسٹالیشن شروع ہو گئی ہے، اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4110652170750985508">اپنی ادائیگی کا جائزہ لیں</translation>
 <translation id="4111546256784973544">پینٹ بال</translation>
 <translation id="4112140312785995938">پیچھے کریں</translation>
@@ -2785,6 +2788,7 @@
 <translation id="6001839398155993679">آئیے شروع کریں</translation>
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6002968396561884726">حال ہی میں ملاحظہ کردہ</translation>
+<translation id="6005188329423473970">‏‫VPN کی پس منظر سروسز کی انسٹالیشن مکمل ہو گئی۔ اگر آپ کو VPN ایپس نظر نہیں آتی ہیں تو براہ کرم لاگ آؤٹ کریں اور دوبارہ لاگ ان کریں۔</translation>
 <translation id="6005659677094197001">مسلسل</translation>
 <translation id="6005765687956866568">فارم سے خود کار طریقے سے پُر کی گئی معلومات کو صاف کر دیا گیا تھا</translation>
 <translation id="6006365096047131769">‏‎3 x 5 انچ</translation>

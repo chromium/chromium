@@ -113,6 +113,7 @@
 <translation id="1186201132766001848">Ստուգել գաղտնաբառերը</translation>
 <translation id="1187430513518041110">Ավտոմեքենաներ և փոխադրամիջոցներ</translation>
 <translation id="1190491977647722791">Թուղթ (բարձր խտությամբ)</translation>
+<translation id="1194278116501666615">ArcVm նախաբեռնման ընթացքի թարմացում</translation>
 <translation id="1195073053842921378">Այս հասցեն կհեռացվի այս սարքից</translation>
 <translation id="1195558154361252544">Բացի ձեր նշած կայքերից՝ մնացած բոլոր կայքերի համար ծանուցումներն ավտոմատ արգելափակվում են:</translation>
 <translation id="1197088940767939838">Նարնջագույն</translation>
@@ -1152,6 +1153,7 @@
 <translation id="3061707000357573562">Խոցելիության շտկում</translation>
 <translation id="306198082577913404">Միացրեք կանխատեսումների բարելավումները</translation>
 <translation id="3062655045399308513">Ջնջել այցելությունների պատմությունը...</translation>
+<translation id="3063453392496098461">Չհաջողվեց տեղադրել VPN-ի ֆոնային ծառայությունները։</translation>
 <translation id="306573536155379004">Խաղը սկսված է։</translation>
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3068118691172921711">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի 1 րոպեից</translation>
@@ -1761,6 +1763,7 @@
 <translation id="4103592298805904008">Ստվարաթուղթ (միաշերտ)</translation>
 <translation id="4104702906064390950">IBAN-ի մասին տեղեկությունները պահվում են</translation>
 <translation id="4106887816571530227">Զետեղված բովանդակությունն արգելված է</translation>
+<translation id="4107047499377819067">VPN-ի ֆոնային ծառայությունների տեղադրումը սկսվել է։ Այն կարող է մի քանի րոպե տևել։</translation>
 <translation id="4110652170750985508">Դիտեք վճարումը</translation>
 <translation id="4111546256784973544">Փեյնթբոլ</translation>
 <translation id="4112140312785995938">Հետ գնալ</translation>
@@ -2793,6 +2796,7 @@
 <translation id="6001839398155993679">Եկեք սկսենք</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6002968396561884726">Վերջին դիտումները</translation>
+<translation id="6005188329423473970">VPN-ի ֆոնային ծառայությունների տեղադրումն ավարտվել է։ Եթե չեք տեսնում VPN հավելվածները, դուրս գրվեք հաշվից և նորից մուտք գործեք։</translation>
 <translation id="6005659677094197001">Շարունակական</translation>
 <translation id="6005765687956866568">Ինքնալրացված տեղեկությունները ջնջվել են ձևից</translation>
 <translation id="6006365096047131769">3 x 5 դյույմ</translation>

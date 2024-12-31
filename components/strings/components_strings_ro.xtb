@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">Verifică parolele</translation>
 <translation id="1187430513518041110">Automobile și vehicule</translation>
 <translation id="1190491977647722791">Hârtie (grea)</translation>
+<translation id="1194278116501666615">Actualizare privind progresul preîncărcării ArcVm</translation>
 <translation id="1195073053842921378">Adresa va fi ștearsă de pe acest dispozitiv</translation>
 <translation id="1195558154361252544">Notificările sunt blocate automat pentru toate site-urile, cu excepția celor pe care le accepți</translation>
 <translation id="1197088940767939838">Portocaliu</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">Serviciu de corecție</translation>
 <translation id="306198082577913404">Activează îmbunătățirile predicțiilor</translation>
 <translation id="3062655045399308513">Șterge datele de navigare...</translation>
+<translation id="3063453392496098461">Serviciile VPN în fundal nu s-au instalat.</translation>
 <translation id="306573536155379004">Jocul a început.</translation>
 <translation id="3067505415088964188">Prețul este mic</translation>
 <translation id="3068118691172921711">Încărcarea fișierelor în <ph name="CLOUD_PROVIDER" /> va începe într-un minut</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">Carton (un perete)</translation>
 <translation id="4104702906064390950">Se salvează informațiile codului IBAN</translation>
 <translation id="4106887816571530227">Conținutul încorporat nu este permis</translation>
+<translation id="4107047499377819067">Instalarea serviciilor VPN în fundal a început. Poate dura câteva minute.</translation>
 <translation id="4110652170750985508">Examinează plata</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">Să începem</translation>
 <translation id="6002122790816966947">Dispozitivele tale</translation>
 <translation id="6002968396561884726">Afișate recent</translation>
+<translation id="6005188329423473970">Instalarea Serviciilor VPN în fundal s-a încheiat. Dacă nu vezi aplicațiile VPN, deconectează-te și conectează-te din nou.</translation>
 <translation id="6005659677094197001">Continuu</translation>
 <translation id="6005765687956866568">Informațiile completate automat au fost șterse din formular</translation>
 <translation id="6006365096047131769">3 x 5 in</translation>

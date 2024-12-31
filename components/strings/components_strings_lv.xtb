@@ -109,6 +109,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1186201132766001848">Pārbaudīt paroles</translation>
 <translation id="1187430513518041110">Automašīnas un transportlīdzekļi</translation>
 <translation id="1190491977647722791">Papīrs (augsta gramāža)</translation>
+<translation id="1194278116501666615">Paziņojums par ArcVM iepriekšējas ielādes norisi</translation>
 <translation id="1195073053842921378">Šī adrese tiks dzēsta no šīs ierīces.</translation>
 <translation id="1195558154361252544">Paziņojumi tiek automātiski bloķēti visās vietnēs, izņemot tās, kurās atļāvāt to rādīšanu.</translation>
 <translation id="1197088940767939838">Oranža</translation>
@@ -1146,6 +1147,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3061707000357573562">Ielāpu pakalpojums</translation>
 <translation id="306198082577913404">Ieslēdziet prognožu uzlabojumus</translation>
 <translation id="3062655045399308513">Dzēst pārlūkošanas datus…</translation>
+<translation id="3063453392496098461">Neizdevās instalēt VPN fona pakalpojumus.</translation>
 <translation id="306573536155379004">Spēle sākta.</translation>
 <translation id="3067505415088964188">Cena ir zema</translation>
 <translation id="3068118691172921711">Failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /> sāksies pēc vienas minūtes</translation>
@@ -1753,6 +1755,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4103592298805904008">Kartons (vienslāņa)</translation>
 <translation id="4104702906064390950">Notiek IBAN informācijas saglabāšana</translation>
 <translation id="4106887816571530227">Iegultais saturs nav atļauts</translation>
+<translation id="4107047499377819067">Ir sākta VPN fona pakalpojumu instalēšana. Tā var ilgt dažas minūtes.</translation>
 <translation id="4110652170750985508">Maksājuma pārskatīšana</translation>
 <translation id="4111546256784973544">Peintbols</translation>
 <translation id="4112140312785995938">Pārtīt atpakaļ</translation>
@@ -2782,6 +2785,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6001839398155993679">Aiziet!</translation>
 <translation id="6002122790816966947">Jūsu ierīces</translation>
 <translation id="6002968396561884726">Nesen skatītās</translation>
+<translation id="6005188329423473970">VPN fona pakalpojumu instalēšana ir pabeigta. Ja neredzat VPN lietotnes, izrakstieties un atkārtoti piesakieties.</translation>
 <translation id="6005659677094197001">Vienlaidu</translation>
 <translation id="6005765687956866568">Automātiski aizpildītā informācija tika notīrīta no veidlapas</translation>
 <translation id="6006365096047131769">3 x 5 collas</translation>

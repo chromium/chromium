@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">بررسی گذرواژه‌ها</translation>
 <translation id="1187430513518041110">اتومبیل و وسایل نقلیه</translation>
 <translation id="1190491977647722791">کاغذ (سنگین)</translation>
+<translation id="1194278116501666615">‏به‌روزرسانی پیشرفت پیش‌بارگیری ArcVm</translation>
 <translation id="1195073053842921378">این نشانی از این دستگاه حذف خواهد شد</translation>
 <translation id="1195558154361252544">اعلان‌ها به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="1197088940767939838">نارنجی</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">سرویس وصله</translation>
 <translation id="306198082577913404">«بهبود پیش‌بینی‌ها» را روشن کنید</translation>
 <translation id="3062655045399308513">حذف کردن داده‌های مرور…</translation>
+<translation id="3063453392496098461">سرویس‌های پس‌زمینه‌ای وی‌پی‌ان نصب نشدند.</translation>
 <translation id="306573536155379004">بازی شروع شد.</translation>
 <translation id="3067505415088964188">قیمت پایین است</translation>
 <translation id="3068118691172921711">بارگذاری فایل در <ph name="CLOUD_PROVIDER" /> تا ۱ دقیقه دیگر شروع خواهد شد</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">مقوا (تک‌جداره)</translation>
 <translation id="4104702906064390950">‏درحال ذخیره کردن اطلاعات IBAN</translation>
 <translation id="4106887816571530227">محتوای جاسازی‌شده مجاز نیست</translation>
+<translation id="4107047499377819067">نصب سرویس‌های پس‌زمینه‌ای وی‌پی‌ان شروع شد و ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4110652170750985508">مرور پرداخت</translation>
 <translation id="4111546256784973544">پینت‌بال</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">بیایید شروع کنیم</translation>
 <translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6002968396561884726">به‌تازگی مشاهده‌شده</translation>
+<translation id="6005188329423473970">نصب سرویس‌های پس‌زمینه‌ای وی‌پی‌ان تکمیل شد. اگر برنامه‌های وی‌پی‌ان را نمی‌بینید، از سیستم خارج شوید و دوباره به سیستم وارد شوید.</translation>
 <translation id="6005659677094197001">پیوسته</translation>
 <translation id="6005765687956866568">اطلاعاتی که به‌طور خودکار تکمیل شده بود از فرم پاک شده است</translation>
 <translation id="6006365096047131769">۵ × ۳ اینچ</translation>

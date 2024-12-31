@@ -109,6 +109,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1186201132766001848">Check Passwords</translation>
 <translation id="1187430513518041110">Cars and vehicles</translation>
 <translation id="1190491977647722791">Paper (heavyweight)</translation>
+<translation id="1194278116501666615">ArcVm preload progress update</translation>
 <translation id="1195073053842921378">This address will be deleted from this device</translation>
 <translation id="1195558154361252544">Notifications are automatically blocked for all sites except ones that you allow</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1146,6 +1147,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="306198082577913404">Turn on prediction improvements</translation>
 <translation id="3062655045399308513">Delete browsing data…</translation>
+<translation id="3063453392496098461">VPN background services installation failed.</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3068118691172921711">Your file upload to <ph name="CLOUD_PROVIDER" /> will begin in one minute</translation>
@@ -1755,6 +1757,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4103592298805904008">Cardboard (single wall)</translation>
 <translation id="4104702906064390950">Saving IBAN info</translation>
 <translation id="4106887816571530227">Embedded content not allowed</translation>
+<translation id="4107047499377819067">Installation of VPN background services has started, this may take a few minutes.</translation>
 <translation id="4110652170750985508">Review your payment</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
@@ -2784,6 +2787,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6001839398155993679">Let's go</translation>
 <translation id="6002122790816966947">Your devices</translation>
 <translation id="6002968396561884726">Recently viewed</translation>
+<translation id="6005188329423473970">VPN background services installation complete. If you do not see VPN apps, please log out and log back in.</translation>
 <translation id="6005659677094197001">Continuous</translation>
 <translation id="6005765687956866568">The auto-filled info was cleared from the form</translation>
 <translation id="6006365096047131769">3 in x 5 in</translation>

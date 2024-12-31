@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
 <translation id="1187430513518041110">Voitures et véhicules</translation>
 <translation id="1190491977647722791">Papier (épais)</translation>
+<translation id="1194278116501666615">Mise à jour de la progression du préchargement de la MV Arc</translation>
 <translation id="1195073053842921378">Cette adresse sera supprimée de cet appareil</translation>
 <translation id="1195558154361252544">Les notifications sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1145,6 +1146,7 @@
 <translation id="3061707000357573562">Service de correctif</translation>
 <translation id="306198082577913404">Activer les améliorations de prédiction</translation>
 <translation id="3062655045399308513">Supprimer les données de navigation…</translation>
+<translation id="3063453392496098461">L'installation des services de RPV en arrière-plan a échoué.</translation>
 <translation id="306573536155379004">Jeu démarré.</translation>
 <translation id="3067505415088964188">Le prix est bas</translation>
 <translation id="3068118691172921711">Le téléversement de votre fichier vers <ph name="CLOUD_PROVIDER" /> commencera dans une minute</translation>
@@ -1754,6 +1756,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4103592298805904008">Carton (paroi simple)</translation>
 <translation id="4104702906064390950">Enregistrement des informations IBAN en cours…</translation>
 <translation id="4106887816571530227">Contenu intégré non autorisé</translation>
+<translation id="4107047499377819067">L'installation des services de RPV en arrière-plan a commencé; cette opération peut prendre quelques minutes.</translation>
 <translation id="4110652170750985508">Examiner votre paiement</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Rechercher vers l'arrière</translation>
@@ -2782,6 +2785,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6001839398155993679">Accéder</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6002968396561884726">Récemment consulté</translation>
+<translation id="6005188329423473970">L'installation des services de RPV en arrière-plan est terminée. Si les applis de RPV ne s'affichent pas, veuillez vous déconnecter et vous reconnecter.</translation>
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">Les renseignements remplis automatiquement ont été effacés du formulaire</translation>
 <translation id="6006365096047131769">3 po x 5 po</translation>

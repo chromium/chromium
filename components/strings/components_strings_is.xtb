@@ -109,6 +109,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1186201132766001848">Yfirfara aðgangsorð</translation>
 <translation id="1187430513518041110">Bílar og ökutæki</translation>
 <translation id="1190491977647722791">Pappír (þykkur)</translation>
+<translation id="1194278116501666615">Framvinduuppfærsla fyrir forhleðslu ArcVm</translation>
 <translation id="1195073053842921378">Heimilisfanginu verður eytt úr tækinu</translation>
 <translation id="1195558154361252544">Sjálfkrafa er lokað á tilkynningar fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="1197088940767939838">Appelsínugulur</translation>
@@ -1146,6 +1147,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3061707000357573562">Plástraþjónusta</translation>
 <translation id="306198082577913404">Kveikja á bætingu flýtiritunar</translation>
 <translation id="3062655045399308513">Eyða vefskoðunargögnum...</translation>
+<translation id="3063453392496098461">Uppsetning á bakgrunnsþjónustu VPN mistókst.</translation>
 <translation id="306573536155379004">Leikur hafinn.</translation>
 <translation id="3067505415088964188">Verð er lágt</translation>
 <translation id="3068118691172921711">Upphleðsla skráa á <ph name="CLOUD_PROVIDER" /> hefst eftir eina mínútu</translation>
@@ -1755,6 +1757,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4103592298805904008">Pappi (einfaldur)</translation>
 <translation id="4104702906064390950">Vistar IBAN-upplýsingar</translation>
 <translation id="4106887816571530227">Innfellt efni er ekki leyft</translation>
+<translation id="4107047499377819067">Uppsetning á bakgrunnsþjónustu VPN er hafin, þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="4110652170750985508">Farðu yfir greiðsluna</translation>
 <translation id="4111546256784973544">Litbolti</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
@@ -2784,6 +2787,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6001839398155993679">Byrjum ballið</translation>
 <translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6002968396561884726">Nýlega skoðað</translation>
+<translation id="6005188329423473970">Uppsetningu á bakgrunnsþjónustu VPN lokið. Ef þú sérð engin VPN-forrit skaltu skrá þig út og aftur inn.</translation>
 <translation id="6005659677094197001">Samfelld prentun</translation>
 <translation id="6005765687956866568">Upplýsingar á eyðublaðinu sem voru fylltar út sjálfkrafa voru hreinsaðar</translation>
 <translation id="6006365096047131769">3 x 5 to.</translation>

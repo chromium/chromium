@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">পাসওয়ার্ড চেক করুন</translation>
 <translation id="1187430513518041110">অটো ও যানবাহন</translation>
 <translation id="1190491977647722791">পেপার (হেভিওয়েট)</translation>
+<translation id="1194278116501666615">ArcVm প্রিলোড করার প্রোগ্রেস সম্পর্কিত আপডেট</translation>
 <translation id="1195073053842921378">এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে</translation>
 <translation id="1195558154361252544">আপনার অনুমতি দেওয়া সাইট ছাড়া, বাকি সব সাইটের জন্য বিজ্ঞপ্তি অটোমেটিক ব্লক করা হয়েছে</translation>
 <translation id="1197088940767939838">কমলা</translation>
@@ -1147,6 +1148,7 @@
 <translation id="3061707000357573562">প্যাচ পরিষেবা</translation>
 <translation id="306198082577913404">পূর্বাভাসের উন্নতি চালু করুন</translation>
 <translation id="3062655045399308513">ব্রাউজ করা ডেটা মুছে দিন...</translation>
+<translation id="3063453392496098461">VPN ব্যাকগ্রাউন্ড পরিষেবা ইনস্টলেশন করা যায়নি।</translation>
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3067505415088964188">দাম কম</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />-এ আপনার ফাইল আপলোড ১ মিনিটে শুরু হবে</translation>
@@ -1756,6 +1758,7 @@
 <translation id="4103592298805904008">কার্ডবোর্ড (সিঙ্গেল ওয়াল)</translation>
 <translation id="4104702906064390950">IBAN সম্পর্কিত তথ্য সেভ করা হচ্ছে</translation>
 <translation id="4106887816571530227">এম্বেড করা কন্টেন্ট ব্যবহার করা যাবে না</translation>
+<translation id="4107047499377819067">VPN ব্যাকগ্রাউন্ড পরিষেবা ইনস্টলেশন চালু হয়েছে, এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="4110652170750985508">আপনার পেমেন্টের রিভিউ</translation>
 <translation id="4111546256784973544">পেন্টবল</translation>
 <translation id="4112140312785995938">পিছিয়ে যান</translation>
@@ -2785,6 +2788,7 @@
 <translation id="6001839398155993679">শুরু করা যাক</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6002968396561884726">সম্প্রতি দেখা হয়েছে</translation>
+<translation id="6005188329423473970">VPN ব্যাকগ্রাউন্ড পরিষেবা ইনস্টলেশন সম্পূর্ণ হয়েছে। আপনি যদি VPN অ্যাপ দেখতে না পান, সেক্ষেত্রে লগ-আউট করে আবার লগ-ইন করুন।</translation>
 <translation id="6005659677094197001">কন্টিনিউআস</translation>
 <translation id="6005765687956866568">ফর্ম থেকে আপনা-আপনি পূরণ হওয়া তথ্য মুছে ফেলা হয়েছে</translation>
 <translation id="6006365096047131769">৩ x ৫ ইঞ্চি</translation>

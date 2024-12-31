@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">パスワードを確認</translation>
 <translation id="1187430513518041110">自動車、乗り物</translation>
 <translation id="1190491977647722791">紙（重量）</translation>
+<translation id="1194278116501666615">ArcVm プリロードの進行状況</translation>
 <translation id="1195073053842921378">この住所をこのデバイスから削除します</translation>
 <translation id="1195558154361252544">許可したサイトを除くすべてのサイトで通知を自動的にブロックします</translation>
 <translation id="1197088940767939838">オレンジ</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="306198082577913404">予測の改善を有効にする</translation>
 <translation id="3062655045399308513">閲覧履歴データを削除...</translation>
+<translation id="3063453392496098461">VPN バックグラウンド サービスをインストールできませんでした。</translation>
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3067505415088964188">低価格</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> へのファイルのアップロードは 1 分後に開始されます</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">段ボール（一重）</translation>
 <translation id="4104702906064390950">IBAN 情報を保存しています</translation>
 <translation id="4106887816571530227">埋め込みコンテンツは許可されていません</translation>
+<translation id="4107047499377819067">VPN バックグラウンド サービスのインストールが開始しました。完了まで数分かかることがあります。</translation>
 <translation id="4110652170750985508">お支払いの確認</translation>
 <translation id="4111546256784973544">ペイントボール</translation>
 <translation id="4112140312785995938">後方に移動</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6002968396561884726">最近チェックしたアイテム</translation>
+<translation id="6005188329423473970">VPN バックグラウンド サービスのインストールが完了しました。VPN アプリが表示されない場合は、ログインし直してください。</translation>
 <translation id="6005659677094197001">連続</translation>
 <translation id="6005765687956866568">自動入力された情報をフォームから削除しました</translation>
 <translation id="6006365096047131769">3x5 インチ</translation>

@@ -109,6 +109,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1186201132766001848">Patikrinti slaptažodžius</translation>
 <translation id="1187430513518041110">Automobiliai ir transporto priemonės</translation>
 <translation id="1190491977647722791">Popierius (sunkus)</translation>
+<translation id="1194278116501666615">„ArcVm“ išankstinio įkėlimo eigos atnaujinimas</translation>
 <translation id="1195073053842921378">Šis adresas bus ištrintas iš šio įrenginio</translation>
 <translation id="1195558154361252544">Pranešimai automatiškai blokuojami visose svetainėse, išskyrus svetaines, kuriose leidote rodyti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
@@ -1146,6 +1147,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3061707000357573562">Pataisos paslauga</translation>
 <translation id="306198082577913404">Įjunkite numatymų patobulinimus</translation>
 <translation id="3062655045399308513">Ištrinti naršymo duomenis...</translation>
+<translation id="3063453392496098461">Nepavyko įdiegti VPN foninių paslaugų.</translation>
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3067505415088964188">Kaina yra maža</translation>
 <translation id="3068118691172921711">Failų įkėlimas į „<ph name="CLOUD_PROVIDER" />“ bus pradėtas po vienos minutės</translation>
@@ -1756,6 +1758,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4103592298805904008">Kartonas (vienos sienos)</translation>
 <translation id="4104702906064390950">Išsaugoma IBAN informacija</translation>
 <translation id="4106887816571530227">Neleidžiamas įterptas turinys</translation>
+<translation id="4107047499377819067">VPN foninių paslaugų diegimas pradėtas. Tai gali užtrukti kelias minutes.</translation>
 <translation id="4110652170750985508">Mokėjimo peržiūra</translation>
 <translation id="4111546256784973544">Dažasvydis</translation>
 <translation id="4112140312785995938">Prasukti atgal</translation>
@@ -2785,6 +2788,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6001839398155993679">Pradėkime</translation>
 <translation id="6002122790816966947">Jūsų įrenginiai</translation>
 <translation id="6002968396561884726">Neseniai peržiūrėti</translation>
+<translation id="6005188329423473970">VPN foninių paslaugų diegimas baigtas. Jei nematote VPN programų, atsijunkite ir vėl prisijunkite.</translation>
 <translation id="6005659677094197001">Nepertraukiamas</translation>
 <translation id="6005765687956866568">Automatiškai užpildyta informacija išvalyta iš formos</translation>
 <translation id="6006365096047131769">3 x 5 col.</translation>

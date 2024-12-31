@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">비밀번호 확인</translation>
 <translation id="1187430513518041110">자동차</translation>
 <translation id="1190491977647722791">용지(중량)</translation>
+<translation id="1194278116501666615">ArcVm 미리 로드 진행률 업데이트</translation>
 <translation id="1195073053842921378">이 주소가 기기에서 삭제됩니다.</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">서비스 패치</translation>
 <translation id="306198082577913404">예측 개선 사용 설정</translation>
 <translation id="3062655045399308513">인터넷 사용 기록 삭제…</translation>
+<translation id="3063453392496098461">VPN 백그라운드 서비스를 설치할 수 없습니다.</translation>
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
 <translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3068118691172921711">1분 후 <ph name="CLOUD_PROVIDER" />에 파일이 업로드되기 시작합니다</translation>
@@ -1755,6 +1757,7 @@
 <translation id="4103592298805904008">골판지(편면)</translation>
 <translation id="4104702906064390950">IBAN 정보 저장 중</translation>
 <translation id="4106887816571530227">삽입된 콘텐츠가 허용되지 않습니다.</translation>
+<translation id="4107047499377819067">VPN 백그라운드 서비스 설치가 시작되었습니다. 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="4110652170750985508">결제 검토</translation>
 <translation id="4111546256784973544">서바이벌 게임</translation>
 <translation id="4112140312785995938">뒤로 탐색</translation>
@@ -2784,6 +2787,7 @@
 <translation id="6001839398155993679">시작</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6002968396561884726">최근에 본 항목</translation>
+<translation id="6005188329423473970">VPN 백그라운드 서비스 설치가 완료되었습니다. VPN 앱이 표시되지 않으면 로그아웃했다가 다시 로그인하세요.</translation>
 <translation id="6005659677094197001">연속</translation>
 <translation id="6005765687956866568">양식에서 자동 완성 정보가 삭제되었습니다</translation>
 <translation id="6006365096047131769">3x5인치</translation>

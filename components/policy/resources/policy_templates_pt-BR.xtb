@@ -664,6 +664,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> tentará detectar se um servidor está na intranet. Só então ele responderá às solicitações IWA. Se um servidor for detectado como Internet, o <ph name="PRODUCT_NAME" /> ignorará as solicitações IWA dele.
 
       Observação: separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+<translation id="1488008594883876680">Ativar o pré-carregamento de imagens da <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Permitir o compartilhamento de apps Android para apps da Web</translation>
 <translation id="1490962807364514840">O tempo de execução da CPU contabiliza a taxa de coleta da telemetria em milissegundos.</translation>
 <translation id="1492223733885011596">Esta política permite o uso de GIFs no seletor de emojis no <ph name="PRODUCT_OS_NAME" />.
@@ -730,6 +731,44 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1542491165152947087">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios no dispositivo.</translation>
 <translation id="1542958897137600427">Ativar o provisionamento de certificado do cliente</translation>
 <translation id="1548431234399786388">Controla as configurações dos relatórios de eventos do navegador.</translation>
+<translation id="155018731031610976">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjunto primário.
+
+Cada item na lista do navegador precisa atender aos requisitos de um conjunto primário.
+O conjunto primário precisa conter um site primário e um ou mais sites membros.
+Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
+Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como conjuntos primários são usados pelo <ph name="PRODUCT_NAME" />.
+
+Todos os sites em um conjunto primário precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto primário também precisa ser único,
+o que significa que um site não pode ser listado mais de uma vez em um mesmo conjunto primário.
+
+Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos primários.
+
+No caso de todos os sites em um conjunto primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver presente
+em um conjunto primário na lista do navegador, ele será removido desse último conjunto.
+Em seguida, o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+No caso de todos os sites em um conjunto primário da lista de <ph name="ADDITIONS" />, se um site também estiver presente
+em um conjunto primário na lista do navegador, esse último será atualizado para que o
+novo conjunto primário possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+A lista de conjuntos primários do navegador exige que nenhum dos sites na lista esteja em
+mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
+<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
+
+Caracteres curinga (*) não podem ser usados como valor da política nem dentro de conjuntos primários nessas listas.
+
+Todos os conjuntos fornecidos pela política precisam ser um conjunto primário válido. Se não forem, ocorrerá
+um erro na saída.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Ela é equivalente à política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Qualquer uma dessas políticas pode ser usada, mas esta será descontinuada em breve. Portanto, a <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" /> é a opção mais recomendada.
+Ambas têm o mesmo efeito no comportamento do navegador.</translation>
 <translation id="1550295162561011575">Se a política for definida, os administradores poderão configurar a automação para iniciar apps em dispositivos <ph name="PRODUCT_NAME" />. Esses apps podem ser iniciados no login ou pelo usuário na tela de início.</translation>
 <translation id="1551782388466447648">Ativar o teclado virtual de toque na tela de login</translation>
 <translation id="1552418937045050762">Se esta configuração estiver ativada, os usuários poderão usar o recurso "Compartilhar por proximidade", que permite que eles enviem e recebam arquivos de pessoas próximas.
@@ -748,6 +787,17 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="1561424797596341174">A política modifica as versões de depuração do host de acesso remoto</translation>
 <translation id="1561967320164410511">U2F e extensões para declaração individual</translation>
 <translation id="1562846754315919408">Mostrar notificações quando dispositivos USB forem detectados</translation>
+<translation id="1563745847791078494">Se a política for definida, o URL de página inicial padrão será definido no <ph name="PRODUCT_NAME" />. O botão "Página inicial" abrirá a página inicial. No computador, as políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlam as páginas que são abertas na inicialização.
+
+Se a página inicial for definida como a página Nova guia, seja pelo usuário ou por <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, esta política não terá efeito.
+
+O URL precisa de um esquema padrão, como http://example.com ou https://example.com. Quando a política for definida, os usuários não poderão mudar o URL da página inicial no <ph name="PRODUCT_NAME" />.
+
+Se <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> não forem definidas, o usuário poderá escolher a página inicial.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1567718448549957373">Se a política for definida como "Ativada" ou não for definida, desafios de autenticação <ph name="BASIC_AUTH" /> recebidos por HTTP não seguro serão permitidos.
 
       Se a política for definida como "Desativada", solicitações HTTP não seguras não poderão usar o esquema de autenticação <ph name="BASIC_AUTH" />. Apenas conexões HTTPS seguras serão aceitas.
@@ -948,6 +998,13 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 
 Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai permitir que perfis de visitantes sejam iniciados.</translation>
 <translation id="1666001345366986837">Configurações do recurso de segundo plano de IA generativa para videochamadas</translation>
+<translation id="166702014436078732">Se a política for definida, será possível configurar um URL em que os usuários poderão mudar a senha após receber um alerta no navegador. O serviço de proteção de senha direcionará os usuários ao URL (apenas protocolos HTTP e HTTPS) designado pela política. Para que o <ph name="PRODUCT_NAME" /> capture corretamente o hash com sal da nova senha na página de mudança de senha, essa página precisa seguir as diretrizes apresentadas em https://www.chromium.org/developers/design-documents/create-amazing-password-forms (link em inglês).
+
+Se a política for desativada ou não for definida, o serviço vai direcionar os usuários para https://myaccount.google.com para mudar a senha.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1670638264428789878">Ativar conjuntos de sites relacionados</translation>
 <translation id="1671405606278443620">Configurações da pesquisa no histórico com tecnologia de IA</translation>
 <translation id="1673097259557436886">Sempre informar os sites de que não existem formas de pagamento salvas</translation>
@@ -1847,6 +1904,13 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 <translation id="2309284543927494965">Bloquear atualizações</translation>
 <translation id="2309341709647905294">Não relatar informações sobre periféricos que estão conectados ao dispositivo</translation>
 <translation id="2309390639296060546">Configuração padrão de geolocalização</translation>
+<translation id="2315759015564614266">Se a política for definida como "Ativada", uma pesquisa padrão será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL. Para especificar o provedor de pesquisa padrão, configure o restante das políticas de pesquisa padrão. Se essas políticas forem deixadas em branco, o usuário poderá escolher o provedor padrão. Se a política for definida como "Desativada", nenhuma pesquisa será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL. O valor "Desativado" não pode ser usado no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se você definir a política, ela não poderá ser mudada pelos usuários no <ph name="PRODUCT_NAME" />. Se ela não for definida, o provedor de pesquisa padrão ficará ativado e o usuário poderá definir a lista de provedores de pesquisa.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2316700579410680894">Se a política for definida, será possível criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e fornecedor especificados. Cada item na lista precisa ter os campos "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão de "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão de "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um campo "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
 
       O modelo de permissões de USB autorizará o URL especificado a acessar o dispositivo USB como uma origem de nível superior. Se os frames incorporados precisarem acessar dispositivos USB, o cabeçalho "usb" de <ph name="FEATURE_POLICY_HEADER_NAME" /> será usado para conceder o acesso. O URL precisa ser válido. Caso contrário, a política será ignorada.
@@ -2311,6 +2375,23 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
 <translation id="264771271300359481">Não permitir que sites usem a permissão do site para a área de transferência</translation>
 <translation id="2649537800219643135">Origem da imagem do protetor da tela de bloqueio do usuário.</translation>
 <translation id="2649896281375932517">Deixar os usuários decidirem</translation>
+<translation id="2649948251789347405">Esta política permite que os administradores definam um agregador de pesquisa corporativo designado para fornecer recomendações e resultados de pesquisa na barra de endereço quando for acionado por uma palavra-chave específica. É possível iniciar uma pesquisa digitando a palavra-chave especificada no campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> com ou sem o prefixo @ (por exemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />), seguida da barra de espaço ou tecla Tab, na barra de endereço.
+
+Estes campos são obrigatórios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+O campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde ao nome do mecanismo de pesquisa mostrado ao usuário na barra de endereço.
+
+O campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corresponde à palavra-chave inserida pelo usuário para acionar a pesquisa. O atalho pode incluir palavras e caracteres simples, mas não pode incluir espaços nem começar com o símbolo @. Os atalhos precisam ser exclusivos.
+
+O campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL em que a pesquisa será feita. Digite o endereço da Web da página de resultados do mecanismo de pesquisa e use <ph name="SEARCH_TERM_MARKER" /> no lugar da consulta.
+
+O campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL que fornece sugestões de pesquisa. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiver <ph name="SEARCH_TERM_MARKER" />, o Chrome vai receber sugestões de pesquisa por uma solicitação GET no URL, substituindo <ph name="SEARCH_TERM_MARKER" /> pela consulta de pesquisa do usuário. Caso contrário, uma solicitação POST será feita, e a consulta do usuário será transmitida nos parâmetros POST na chave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+O campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> especifica o URL de uma imagem que será usada nas sugestões de pesquisa. Um ícone padrão será usado quando este campo não estiver definido. Recomendamos usar um favicon (exemplo: <ph name="ICON_URL_EXAMPLE" />).
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Ação a ser realizada quando o usuário fecha a tampa</translation>
 <translation id="2656559539624760733">Não usar a Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usar a implementação legada de <ph name="CORS" /> em vez do novo <ph name="CORS" /></translation>
@@ -3195,6 +3276,8 @@ Se a política for definida como "true" (verdadeira) ou for deixada sem definiç
       Se ela for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, porque ela vai enfraquecer o sandbox usado pelos processos do renderizador. Só desative a política se softwares de terceiros que precisam ser executados nos processos do renderizador apresentarem problemas de compatibilidade.
 
       Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
+<translation id="3338041636115991551">A não ser que o modo temporário ou o login múltiplo esteja ativado durante a sessão do usuário, a definição da política ArcEnabled como verdadeira ativará o ARC para o usuário. Se a política for definida como falsa ou não for definida, usuários corporativos não poderão usar o ARC.
+Esta política só controla a <ph name="ARC_VM" /> no <ph name="PRODUCT_NAME" />. No <ph name="PRODUCT_OS_FLEX_NAME" />, consulte a política <ph name="DEVICE_FLEX_ARC_PRELOAD_ENABLED_POLICY_NAME" /> para mais detalhes.</translation>
 <translation id="3338431256935927407">Controla as configurações relacionadas ao recurso do Cloud Upload.</translation>
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
@@ -3522,6 +3605,7 @@ A definição desta política impede que a proteção de reversão se aplique a 
 Se essa política for definida para um valor menor, o efeito será permanente: o dispositivo PODE não ser capaz de fazer a reversão para versões anteriores mesmo depois de a política ser redefinida para um valor maior.
 
 As possibilidades de reversão reais também podem depender dos patches de vulnerabilidade críticos e do modelo.</translation>
+<translation id="3565284547329101236">Pré-carregar imagens da <ph name="ARC_VM" /> no Flex</translation>
 <translation id="35668690622495904">
           As chamadas não são recusadas por se originarem em contextos fora da
           lista de permissões. Elas ainda podem ser recusadas por outros motivos.</translation>
@@ -3886,6 +3970,19 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
       Os usuários não podem remover um gerenciador de protocolo registrado pela política. No entanto, ao instalar um novo gerenciador padrão, eles podem mudar os gerenciadores de protocolo instalados pela política.</translation>
 <translation id="3842619997238271109">Não permite que o host de acesso remoto use autenticações com PIN e pareamento ao aceitar conexões de clientes</translation>
+<translation id="3844931982362586388">A definição da política configura o URL padrão da página Nova guia e impede que os usuários o modifiquem.
+
+Essa página será aberta em novas guias e janelas.
+
+Esta política não decide quais páginas serão abertas na inicialização. Isso é controlado pelas políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Esta política afetará a página inicial e de inicialização se elas estiverem configuradas para abrir a página Nova guia.
+
+A prática recomendada é fornecer o URL totalmente canonizado. Se isso não ocorrer, o <ph name="PRODUCT_NAME" /> completará com https:// por padrão.
+
+Se a política não for configurada ou for deixada em branco, a página Nova guia padrão será usada.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir plano de fundo de IA generativa sem melhorar os modelos de IA</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3854609566862485607">Esta política controla um rótulo personalizado usado para identificar perfis gerenciados. Para perfis gerenciados, esse rótulo vai aparecer ao lado do avatar na barra de ferramentas. O rótulo personalizado não será traduzido.
@@ -3958,6 +4055,13 @@ Esta política não terá efeito se a <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR
  Se a política for deixada sem definição ou tiver um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado às solicitações de trabalho de impressão.
 </translation>
 <translation id="3896591584655529057">Ativar o salvamento de chaves de acesso no gerenciador de senhas</translation>
+<translation id="3896751141670591496">Se a política for definida como "Ativada" ou não for definida, os avisos de segurança vão aparecer apenas quando flags de linha de comando potencialmente perigosas forem usadas para iniciar o Chrome.
+
+Se a política for definida como "Desativada", os avisos de segurança não vão aparecer quando o Chrome for iniciado com flags de linha de comando potencialmente perigosas.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3897218615484393758">Limitar o tempo em que um usuário autenticado via SAML pode fazer login off-line na tela de bloqueio</translation>
 <translation id="3897860452756794695">Um novo comportamento de offsetParent vai ser usado.</translation>
 <translation id="3898345958122666461">Desativar NTLMv2</translation>
@@ -4489,6 +4593,11 @@ Por padrão, os AIWs que especificam permissões de cartão inteligente no manif
 <translation id="4278656834593750050">Ativar sons de carregamento</translation>
 <translation id="4282243913059705499">Sempre mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas</translation>
 <translation id="4285674129118156176">Permitir que usuários sem afiliação utilizem o ARC</translation>
+<translation id="4287004822156577027">Se a política for definida como "Ativada" ou não for definida, a Varredura do Chrome verificará o sistema periodicamente em busca de softwares indesejados e, caso algum seja encontrado, perguntará ao usuário se quer removê-lo. O usuário poderá acionar a Varredura do Chrome manualmente em chrome://settings.
+
+Se a política for definida como "Desativada", a Varredura do Chrome não fará verificações periódicas e o acionamento manual será desativado.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="428948795004445932">Frequência de amostragem e coleta de dados de rede. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
@@ -4887,6 +4996,13 @@ não é aceito para esta política.
 
 Se a política for deixada sem definição, todas as origens vão exigir um gesto anterior do usuário para chamar
 essas APIs.</translation>
+<translation id="4584427961967778141">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas atuais relacionadas a extensões. A política substitui todas as políticas legadas que possam estar definidas.
+
+Esta política mapeia um ID de extensão ou um URL de atualização apenas para a própria configuração específica. Uma configuração padrão pode ser definida para o ID especial <ph name="DEFAULT_SCOPE" />, que será aplicada a todas as extensões que não tiverem uma configuração personalizada definida nesta política. Com um URL de atualização, a configuração será aplicada a todas as extensões com o URL de atualização exato indicado no manifesto da extensão (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se a flag "override_update_url" for definida como verdadeira, a extensão será instalada e atualizada usando o URL de atualização especificado na política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou no campo "update_url" desta política. A flag "override_update_url" será ignorada se o campo "update_url" for um URL da Chrome Web Store.
+
+Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4591366717022345234">Oferecer Quick Fix Build a usuários</translation>
 <translation id="4593391169954484940">Hash SHA-256 do arquivo.</translation>
 <translation id="4594027034164195984">Permitir que imagens de terceiros enviem um prompt de autenticação</translation>
@@ -4908,6 +5024,13 @@ essas APIs.</translation>
 <translation id="4599810650416623373">Bloquear as otimizações do JavaScript nestes sites</translation>
 <translation id="4600786265870346112">Ativar cursor grande</translation>
 <translation id="4602988345256038309">Permitir conexões de suporte remoto a esta máquina</translation>
+<translation id="4605677392792989397">Se a política for definida, será possível definir uma lista de URLs de login corporativos (apenas protocolos HTTP e HTTPS). O serviço de proteção de senhas capturará hashes com sal de senhas nesses URLs e os usará para detectar a reutilização. Para que o <ph name="PRODUCT_NAME" /> capture hashes com sal de senhas corretamente, confira se a página de login segue as diretrizes apresentadas em https://www.chromium.org/developers/design-documents/create-amazing-password-forms (link em inglês).
+
+Se você desativar ou não definir essa configuração, o serviço de proteção de senhas vai capturar apenas os hashes com sal em https://accounts.google.com.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4607416370554533118">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para que o Chrome possa selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro utilizado, apenas os certificados correspondentes à solicitação do servidor serão selecionados.
 
       Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
@@ -5499,6 +5622,17 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="5033070732967197381">Permitir solicitações da API WebAuthn em sites com certificados TLS corrompidos.</translation>
 <translation id="5034504101537897433">Ativar relatórios de erros do dispositivo</translation>
 <translation id="5036013147560568855">Versão do protocolo de provisionamento de certificado. O valor padrão é 1, que é o protocolo "estático". 2 é o protocolo "dinâmico".</translation>
+<translation id="5036559232677914717">A definição desta política permite especificar o comportamento do sistema na inicialização. Desativar essa configuração é o mesmo que não defini-la, já que o <ph name="PRODUCT_NAME" /> precisa ter um comportamento de inicialização especificado.
+
+Se você definir a política, ela não poderá ser mudada pelos usuários no <ph name="PRODUCT_NAME" />. Se não for definida, ela poderá ser alterada.
+
+A definição da política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> ou <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> desativa algumas configurações que dependem de sessões ou que realizam ações ao sair, como a limpeza dos dados de navegação ou dos cookies de sessão.
+
+Se essa política for definida como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, o navegador vai restaurar a sessão anterior e abrir uma janela separada para mostrar URLs definidos em <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Além disso, os usuários podem optar por manter esses URLs abertos. Assim, eles também serão restaurados na próxima sessão.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5037749623252479780">As configurações Page Up/Page Down estão desativadas</translation>
 <translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
@@ -5823,6 +5957,7 @@ Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mud
 <translation id="5258651513421638932">Permitir a conexão de cartões inteligentes por Apps Isolados</translation>
 <translation id="5262320080678421295">Desativar confiança em certificados emitidos pela ICP legada da Symantec Corporation</translation>
 <translation id="5265613843467285323">Mostrar um botão da interface para excluir uma tela do modo espelho.</translation>
+<translation id="5270408671043421978">Desativar o pré-carregamento de imagens da <ph name="ARC_VM" /></translation>
 <translation id="5272332743749468542">Disponibilizar a opção "Excluir esta tela do modo espelho" para o usuário</translation>
 <translation id="5273744932022326215">Ativar o recurso de acessibilidade de destaque de cursor na tela de login.
 
@@ -6012,6 +6147,25 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
 
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.</translation>
 <translation id="5377606826822211923">Controla, no lugar do usuário, o uso de apps Android de fontes não confiáveis</translation>
+<translation id="5377826248281933035">Esta política oferece uma lista de sites em que o usuário pode pesquisar rapidamente usando atalhos na barra de endereço. É possível iniciar uma pesquisa digitando o atalho ou @atalho (por exemplo, @trabalho) seguido da barra de espaço ou tecla Tab na barra de endereço.
+
+Os campos a seguir são obrigatórios para cada site: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> e <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+O campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corresponde ao nome do site ou do mecanismo de pesquisa que será mostrado ao usuário na barra de endereço.
+
+O <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> pode incluir palavras e caracteres simples, mas não pode incluir espaços nem começar com o símbolo @. Os atalhos também precisam ser exclusivos.
+
+Para cada entrada, o campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> especifica o URL do mecanismo de pesquisa usado durante uma pesquisa com a palavra-chave correspondente. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário. Entradas inválidas e com atalhos duplicados são ignoradas.
+
+As entradas da pesquisa no site configuradas como em destaque aparecem na barra de endereço quando o usuário digita "@". Até três entradas podem ser selecionadas para ficar em destaque.
+
+Não é possível editar ou desativar entradas de pesquisa no site definidas pela política, mas o usuário pode adicionar novos atalhos para o mesmo URL. Além disso, não é possível criar novas entradas de pesquisa no site com um atalho criado anteriormente por esta política.
+
+Em caso de conflito com um atalho criado anteriormente pelo usuário, a configuração do usuário tem prioridade. No entanto, ainda é possível acionar a opção criada pela política digitando "@" na barra de pesquisa. Por exemplo, se o usuário já definiu "trabalho" como um atalho para URL1, e a política define "trabalho" como um atalho para URL2, digitar "trabalho" na barra de pesquisa aciona uma pesquisa para URL1, mas digitar "@trabalho" aciona uma pesquisa para URL2.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis</translation>
 <translation id="5378885577701865339">Desativar a área de transferência compartilhada</translation>
 <translation id="538108065117008131">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> lide com os seguintes tipos de conteúdo.</translation>
@@ -6171,6 +6325,17 @@ Observação: o comportamento do recurso de proteção de IP para usuários corp
 <translation id="5480380613778757009">Se a política for desativada ou deixada sem definição, todas as configurações de tela que foram definidas em Sessões de visitante gerenciadas serão redefinidas assim que a sessão for encerrada. Se a política for definida como "Verdadeira", as propriedades de tela permanecerão após a Sessão de visitante gerenciada ser encerrada.</translation>
 <translation id="5483012943408894695">Origens ou padrões de nome do host aos quais as restrições sobre origens não seguras não se aplicam</translation>
 <translation id="5483065054530244863">Permitir certificados SHA-1 assinados emitidos pelas âncoras de confiança locais</translation>
+<translation id="5486352219019836984">Se essa política for ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
+
+Se a política for definida como "Desativada", os relatórios anônimos também serão desativados e nenhum dado de uso ou falha será enviado ao Google. Os usuários não poderão mudar essa configuração.
+
+Se a polícia for deixada sem definição, será possível escolher o comportamento dos relatórios anônimos durante a instalação ou a primeira execução. Além disso, será possível mudar essa configuração mais tarde.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Para o <ph name="PRODUCT_OS_NAME" />, consulte <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5486917900445838803">Se a política for ativada ou deixada sem definição, a aceleração gráfica também será ativada, se disponível.
 
       Se ela for desativada, a aceleração gráfica também será.</translation>
@@ -6527,6 +6692,11 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
 <translation id="5708969689202733975">Configurar os modos de desbloqueio rápido permitidos</translation>
 <translation id="5714563837055244378">Ativar o compartilhamento do Android para apps da Web.</translation>
 <translation id="5715739768416614900">Ativar as ferramentas de solução de problemas em quiosques.</translation>
+<translation id="5716156630400143265">Se a <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> for definida como RestoreOnStartupIsURLs, definir <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> como uma lista de URLs especifica quais serão abertos.
+
+Se ela não for definida, a página Nova guia será aberta na inicialização.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5717973246079053225">Desativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="572155275267014074">Configurações do Android</translation>
 <translation id="5722577409367087850">Carregar a extensão</translation>
@@ -6767,6 +6937,15 @@ Se a política for desativada, os sons no "Modo sem distrações" também serão
 <translation id="5899751601113377553">Evitar que os usuários usem o <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">Informar configuração da rede</translation>
 <translation id="5901427587865226597">Apenas impressão duplex</translation>
+<translation id="5903484826174648217">Se a política for definida como "Ativada", a Navegação segura confiará nos domínios designados. Ela não verificará a presença de recursos perigosos como phishing, malware ou software indesejado. O serviço de proteção de downloads da Navegação segura não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização de senhas.
+
+Se a política não for definida, as proteções padrão da Navegação segura serão aplicadas a todos os recursos.
+
+Esta política não aceita o uso de expressões regulares. No entanto, os subdomínios de um determinado domínio estão na lista de permissões. Nomes de domínio totalmente qualificados (FQDNs, na sigla em inglês) não são obrigatórios.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5905114360004248993">Permitir pop-ups nesses sites</translation>
 <translation id="5905473632148429217">Ativar verificações OCSP/CRL on-line</translation>
 <translation id="5908808391744484238">Quando esta política é ativada ou não definida, o filtro do parâmetro de URL pode remover alguns parâmetros quando o usuário seleciona a opção "Abrir link em janela anônima" no menu de contexto.
@@ -6992,6 +7171,19 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="6099853574908182288">Modo de cor de impressão padrão</translation>
 <translation id="6102342563050263313">Permitir rolagem para texto especificado em fragmentos de URL</translation>
 <translation id="6102449843040973938">Não evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
+<translation id="6103130052818694000">Esta política foi descontinuada no <ph name="PRODUCT_NAME" /> 83. Use a <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+Se a política for definida como "Ativada", a Navegação segura do Chrome será ativada. Se a política for definida como "Desativada", a Navegação segura ficará desativada.
+
+Se você definir a política, os usuários não poderão mudá-la ou modificar a configuração "Ativar proteção contra phishing e malware" no Chrome. Se ela não for definida, a opção "Ativar proteção contra phishing e malware" será definida como verdadeira e os usuários não poderão mudá-la.
+
+Acesse mais informações sobre a Navegação segura (https://developers.google.com/safe-browsing).
+
+Se a <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> for definida, o valor da política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> será ignorado.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="610892566190435199">Ativar relatórios de status de energia do dispositivo</translation>
 <translation id="6111936128861357925">Permitir jogo easter egg de dinossauro</translation>
 <translation id="6118226055960302400">Restaurar o comportamento de permissões.</translation>
@@ -7276,6 +7468,13 @@ dessa versão, as restrições em âncoras de confiança são sempre aplicadas.<
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6279010879606347019">Se a política for definida como "Ativada", a página Nova guia será a página inicial do usuário. Qualquer local de URL de página inicial será ignorado. Se a política for definida como "Desativada", a página Nova guia não será a página inicial, a não ser que o URL dela seja definido como chrome://newtab.
+
+Se você definir a política, os usuários não poderão mudar a página inicial no <ph name="PRODUCT_NAME" />. Se a política não for definida, o usuário poderá escolher se a página Nova guia será a inicial.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="628084107912717806">Especifica se módulos WebAssembly podem ser enviados em origem cruzada</translation>
 <translation id="6280973140313576289">Seletor de perfil forçado na inicialização</translation>
 <translation id="6282524907402492171">Exibir avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -8089,6 +8288,13 @@ Até o Chrome 114, esta política exigia que a <ph name="SYNC_DISABLED_POLICY_NA
 <translation id="6766216162565713893">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo Bluetooth próximo</translation>
 <translation id="6770454900105963262">Denunciar informações sobre sessões de quiosque ativas</translation>
 <translation id="6774132787348495175">Não permitir o uso de máquinas virtuais necessárias para apps Linux</translation>
+<translation id="678121785914414680">Lista de tipos de arquivo que serão abertos automaticamente após o download. O separador à esquerda não pode ser incluído ao listar os tipos de arquivo. Então, liste "txt" em vez de ".txt".
+
+Os arquivos dos tipos que devem ser automaticamente abertos ainda estarão sujeitos às verificações ativadas da Navegação segura e não serão abertos se forem reprovados nessas verificações.
+
+Se essa política não for configurada, apenas os tipos de arquivo que o usuário já especificou para abrir automaticamente serão abertos após o download.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6782331708811245959">Ativar relatórios sobre o modo de inicialização do dispositivo</translation>
 <translation id="6783578496154221347">Use WeeklyTimeIntervalChecked no novo código.</translation>
 <translation id="6785201942412171878">Controla o atalho usado para acionar as teclas PageUp/PageDown</translation>
@@ -9756,6 +9962,13 @@ Aviso: recomendamos que você deixe as atualizações automáticas ativadas para
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8094095107731619070">Ativar a correção automática do teclado físico quando os usuários digitarem</translation>
+<translation id="8098760437853291958">Se a política for definida como "Ativada" ou não for definida, os arquivos transferidos por download serão enviados para análise pela Navegação segura, mesmo que sejam de uma fonte confiável.
+
+Se a política for definida como "Desativada", os arquivos transferidos por download não serão enviados para análise pela Navegação segura quando forem de uma fonte confiável.
+
+Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8099833343914898016">Uma lista predeterminada de atalhos com a tecla de acesso rápido nunca vai realizar uma ação em tela cheia.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
@@ -9889,6 +10102,43 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
       Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Se a política for definida, o layout de teclado Inscript hindi vai ser ativado no <ph name="PRODUCT_OS_NAME" />. Se ela for "false" ou não for definida, o layout não estará disponível.</translation>
 <translation id="8202834945144737726">Ativar o fluxo de atestado <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs na tela de login</translation>
+<translation id="8210117014924235250">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjuntos de sites relacionados.
+
+Esta política substitui a <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Cada item na lista do navegador precisa atender aos requisitos de um conjunto de sites relacionados.
+O conjunto de sites relacionados precisa conter um site primário e um ou mais sites membros.
+Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
+Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como o <ph name="PRODUCT_NAME" /> usa conjuntos de sites relacionados.
+
+
+Todos os sites em um conjunto de sites relacionados precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto também precisa ser único,
+ou seja, um site não pode ser listado mais de uma vez em um conjunto de sites relacionados.
+
+Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos de sites relacionados.
+
+Para todos os sites em um conjunto de sites relacionados da lista <ph name="REPLACEMENTS" />, se o site também estiver presente
+em um desses conjuntos na lista do navegador, ele será removido desse conjunto.
+Em seguida, o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
+
+Para todos os sites de um conjunto de sites relacionados na lista <ph name="ADDITIONS" />, se o site também estiver presente
+em um conjunto na lista do navegador, esse conjunto será atualizado para que o
+novo conjunto de sites relacionados possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+o conjunto de sites relacionados da política será adicionado à lista de conjuntos de sites relacionados do navegador.
+
+A lista de conjuntos de sites relacionados do navegador exige que nenhum dos sites na lista esteja em
+mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
+<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
+
+Caracteres curinga (*) não podem ser usados como valor da política, nem dentro de qualquer conjunto de sites relacionados nessas listas.
+
+Todos os conjuntos fornecidos pela política precisam ser conjuntos de sites relacionados válidos. Se não forem,
+um erro será gerado.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213475033260328041">Escolha se quer armazenar os dados cobertos do <ph name="PRODUCT_NAME" /> em uma localização geográfica específica.
 
 Se a política não for definida ou for definida como <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valor 0), os dados cobertos poderão ser armazenados em qualquer localização geográfica.
@@ -9988,6 +10238,23 @@ Se a política for desativada, a página será bloqueada.</translation>
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="8267520984570984190">O comportamento padrão de redimensionamento do teclado virtual não é modificado</translation>
 <translation id="8269238942896230153">Uma conta gerenciada precisa ser a principal. A importação de dados de navegação existentes é permitida no momento da criação do perfil</translation>
+<translation id="827020625039819798">A definição da política especifica uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados nem desativados pela interface do <ph name="PRODUCT_NAME" />. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
+
+Embora o <ph name="PRODUCT_NAME" /> tenha como objetivo impedir que os usuários desinstalem essas extensões, alguns sistemas operacionais não permitem que o <ph name="PRODUCT_NAME" /> proteja as extensões de modificações externas. Portanto, essa prevenção é uma tentativa de mitigação.
+
+Se a política não for definida, nenhum app ou extensão será instalado automaticamente e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.
+
+Esta política substitui a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se um app ou extensão de instalação forçada for removido da lista, será automaticamente desinstalado pelo <ph name="PRODUCT_NAME" />.
+
+O código-fonte de qualquer extensão pode ser alterado pelos usuários com as ferramentas para desenvolvedores, possivelmente prejudicando a funcionalidade da extensão. Se isso for uma preocupação, defina a política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização vai apontar para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). O URL de atualização vai usar um destes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ou <ph name="FILE_SCHEME" />. Por padrão, o URL de atualização da Chrome Web Store é usado. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL indicado no manifesto da extensão. O URL para atualizações subsequentes pode ser substituído usando a política <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Consulte http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Ativar IUs relacionadas à conexão no computador host quando uma conexão estiver ativa</translation>
 <translation id="8272422063636310696">Controla se uma página que usa tecnologias legadas será informada com base no URL dela.
@@ -10236,6 +10503,13 @@ configurados.</translation>
 <translation id="8452787853105404870">Enviar dados de hardware ao Google para apoiar as melhorias no ChromeOS Flex</translation>
 <translation id="8453218444172088993">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anúncios para os usuários.</translation>
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
+<translation id="8459662059679040042">Quando a política for definida como "Ativada", se a <ph name="CHROME_CLEANUP_NAME" /> detectar softwares indesejados, ela poderá enviar o registro da varredura ao Google, de acordo com a política definida por <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se querem realizar a varredura. Os resultados serão enviados ao Google.
+
+Quando a política for definida como "Desativada", se a <ph name="CHROME_CLEANUP_NAME" /> detectar software indesejado, os resultados não serão enviados ao Google, independente do valor de <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se querem realizar a varredura. Os resultados não serão enviados ao Google.
+
+Se a política não for definida, a <ph name="CHROME_CLEANUP_NAME" /> poderá enviar os resultados da varredura de software indesejado ao Google de acordo com a política definida por <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. A <ph name="CHROME_CLEANUP_NAME" /> perguntará aos usuários se querem fazer a varredura e compartilhar os resultados com o Google para ajudar na detecção de software indesejado no futuro. Esses resultados contêm metadados de arquivos, extensões instaladas automaticamente e chaves de registro, conforme descrito no artigo de Privacidade do Chrome.
+
+No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
 <translation id="8466326735698755782">Permitir o uso da Tabela de comparação sem melhorar os modelos de IA.</translation>
@@ -10706,6 +10980,13 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="8801680448782904838">Notifica um usuário de que a reinicialização do navegador ou do dispositivo é recomendada ou obrigatória</translation>
 <translation id="8802800226877198994">Ativar o suporte a GIFs.</translation>
 <translation id="8804685015028424497">Desativar o modo de navegação anônima</translation>
+<translation id="8806417793261941339">Esta política foi descontinuada. Use a <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
+
+      Se a política for definida como "Ativada", a Navegação segura confiará nos domínios designados. Ela não verificará a presença de recursos perigosos como phishing, malware ou software indesejado. O serviço de proteção de downloads da Navegação segura não verificará downloads hospedados nesses domínios. O serviço de proteção de senhas não verificará a reutilização de senhas.
+
+      Se a política for definida como "Desativada" ou não for definida, as proteções padrão da Navegação segura serão aplicadas a todos os recursos.
+
+       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="8806478127647484805">Impedir que usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
 <translation id="8807274441692477185">Não mostrar a tela de direção de rolagem do touchpad durante o login</translation>
 <translation id="8807313206348471682">Exibir a caixa de diálogo para confirmação de saída</translation>
@@ -10854,6 +11135,15 @@ Se desativada, apenas os dados de hardware padrão serão enviados.</translation
 <translation id="8897796778265450949">Limitar o tempo em que um usuário autenticado via GAIA sem SAML pode fazer login off-line</translation>
 <translation id="889814528399907891">Permitir que os usuários ativem o <ph name="LACROS_NAME" /> e torná-lo o navegador principal</translation>
 <translation id="8900312706328930425">Frequência em horas dos relatórios de nuvem</translation>
+<translation id="8902938589482529940">Esta política permite o pré-carregamento de imagens da <ph name="ARC_VM" /> no dispositivo com o <ph name="PRODUCT_OS_FLEX_NAME" /> instalado.
+
+Se a política for ativada, as imagens da <ph name="ARC_VM" /> serão pré-carregadas no <ph name="PRODUCT_OS_FLEX_NAME" /> separadamente.
+
+Se ela for desativada ou deixada sem definição, as imagens da <ph name="ARC_VM" /> não serão pré-carregadas no <ph name="PRODUCT_OS_FLEX_NAME" /> separadamente.
+
+Se uma imagem já tiver sido baixada e a política for atualizada posteriormente, essa imagem só será removida depois que o usuário sair ou reiniciar o dispositivo.
+
+Esta política só controla a <ph name="ARC_VM" /> no <ph name="PRODUCT_OS_FLEX_NAME" />. No <ph name="PRODUCT_NAME" />, consulte a política <ph name="ARC_ENABLED_POLICY_NAME" /> para mais detalhes.</translation>
 <translation id="8903283771634816230">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> usará impressão padrão do SO como o destino padrão para a visualização de impressão.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o <ph name="PRODUCT_NAME" /> usará a impressora usada mais recentemente como o destino padrão para a visualização de impressão.</translation>

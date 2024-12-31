@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1187430513518041110">ଅଟୋ ଓ ଯାନବାହନ</translation>
 <translation id="1190491977647722791">କାଗଜ (ହେଭିୱେଟ)</translation>
+<translation id="1194278116501666615">ArcVm ପ୍ରିଲୋଡ ପ୍ରୋଗ୍ରେସ ଅପଡେଟ</translation>
 <translation id="1195073053842921378">ଏହି ଡିଭାଇସରୁ ଏହି ଠିକଣାଟି ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="1195558154361252544">ଆପଣ ଅନୁମତି ଦେଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ ବ୍ୟତୀତ ସମସ୍ତ ସାଇଟ୍‌ରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="1197088940767939838">କମଳା</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">ପ୍ୟାଚ୍ ସେବା</translation>
 <translation id="306198082577913404">ପୂର୍ବାନୁମାନ ଉନ୍ନତିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3062655045399308513">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ...</translation>
+<translation id="3063453392496098461">VPN ବେକଗ୍ରାଉଣ୍ଡ ସେବାଗୁଡ଼ିକର ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="306573536155379004">ଗେମ୍ ଆରମ୍ଭ ହୋଇଛି।</translation>
 <translation id="3067505415088964188">ମୂଲ୍ୟ କମ ଅଟେ</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲର ଅପଲୋଡ 1 ମିନିଟରେ ଆରମ୍ଭ ହେବ</translation>
@@ -1752,6 +1754,7 @@
 <translation id="4103592298805904008">କାର୍ଡବୋର୍ଡ (ସିଙ୍ଗଲ ୱାଲ)</translation>
 <translation id="4104702906064390950">IBAN ସୂଚନା ସେଭ କରାଯାଉଛି</translation>
 <translation id="4106887816571530227">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
+<translation id="4107047499377819067">VPN ବେକଗ୍ରାଉଣ୍ଡ ସେବାଗୁଡ଼ିକର ଇନଷ୍ଟଲେସନ ଆରମ୍ଭ ହୋଇଛି, ଏଥିପାଇଁ କିଛି ମିନିଟ ଲାଗିପାରେ।</translation>
 <translation id="4110652170750985508">ଆପଣ ପେମେଣ୍ଟର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="4111546256784973544">ପେଣ୍ଟବଲ</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
@@ -2781,6 +2784,7 @@
 <translation id="6001839398155993679">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
 <translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6002968396561884726">ଏବେ ଦେଖାଯାଇଥିବା ଉତ୍ପାଦଗୁଡ଼ିକ</translation>
+<translation id="6005188329423473970">VPN ବେକଗ୍ରାଉଣ୍ଡ ସେବାଗୁଡ଼ିକର ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି। ଯଦି ଆପଣ VPN ଆପ୍ସ ଦେଖୁନାହାନ୍ତି, ତେବେ ଦୟାକରି ଲଗ ଆଉଟ କରି ପୁଣି ଲଗ ଇନ କରନ୍ତୁ।</translation>
 <translation id="6005659677094197001">ଅବିରତ</translation>
 <translation id="6005765687956866568">ଅଟୋଫିଲ ହୋଇଥିବା ସୂଚନାକୁ ଫର୍ମରୁ ଖାଲି କରାଯାଇଛି</translation>
 <translation id="6006365096047131769">3 x 5 ଇଞ୍ଚ</translation>

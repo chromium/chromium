@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="1187430513518041110">ਆਟੋ ਅਤੇ ਵਾਹਨ</translation>
 <translation id="1190491977647722791">ਪੇਪਰ (ਹੈਵੀਵੇਟ)</translation>
+<translation id="1194278116501666615">ArcVm ਪ੍ਰੀਲੋਡ ਪ੍ਰਗਤੀ ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
 <translation id="1195073053842921378">ਇਸ ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="1195558154361252544">ਸੂਚਨਾਵਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਜਾਜ਼ਤ ਦਿੱਤੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਛੱਡ ਕੇ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ</translation>
 <translation id="1197088940767939838">ਸੰਤਰੀ</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">ਪੈਚ ਸੇਵਾ</translation>
 <translation id="306198082577913404">ਪੂਰਵ-ਅਨੁਮਾਨ ਸੰਬੰਧੀ ਸੁਧਾਰਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3062655045399308513">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
+<translation id="3063453392496098461">VPN ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾਵਾਂ ਸੰਬੰਧੀ ਸਥਾਪਨਾ ਅਸਫਲ ਰਹੀ।</translation>
 <translation id="306573536155379004">ਗੇਮ ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ।</translation>
 <translation id="3067505415088964188">ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="3068118691172921711">ਤੁਹਾਡੀ ਫ਼ਾਈਲ <ph name="CLOUD_PROVIDER" /> 'ਤੇ 1 ਮਿੰਟ ਵਿੱਚ ਅੱਪਲੋਡ ਹੋਣੀ ਸ਼ੁਰੂ ਹੋ ਜਾਵੇਗੀ</translation>
@@ -1752,6 +1754,7 @@
 <translation id="4103592298805904008">ਕਾਰਡਬੋਰਡ (ਸਿੰਗਲ ਵਾਲ)</translation>
 <translation id="4104702906064390950">IBAN ਜਾਣਕਾਰੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="4106887816571530227">ਪਰੋਈ ਗਈ ਸਮੱਗਰੀ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
+<translation id="4107047499377819067">VPN ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾਵਾਂ ਸੰਬੰਧੀ ਸਥਾਪਨਾ ਸ਼ੁਰੂ ਹੋ ਗਈ ਹੈ, ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4110652170750985508">ਆਪਣੇ ਭੁਗਤਾਨ ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
 <translation id="4111546256784973544">ਪੇਂਟਬਾਲ</translation>
 <translation id="4112140312785995938">ਪਿੱਛੇ ਕਰੋ</translation>
@@ -2781,6 +2784,7 @@
 <translation id="6001839398155993679">ਚਲੋ ਸ਼ੁਰੂ ਕਰੀਏ</translation>
 <translation id="6002122790816966947">ਤੁਹਾਡੇ ਡੀਵਾਈਸ</translation>
 <translation id="6002968396561884726">ਹਾਲ ਹੀ ਵਿੱਚ ਦੇਖੇ ਗਏ</translation>
+<translation id="6005188329423473970">VPN ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾਵਾਂ ਸੰਬੰਧੀ ਸਥਾਪਨਾ ਪੂਰੀ ਹੋ ਗਈ। ਜੇ ਤੁਹਾਨੂੰ VPN ਐਪਾਂ ਨਹੀਂ ਦਿਖਾਈ ਦਿੰਦੀਆਂ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਲੌਗ-ਆਊਟ ਕਰੋ ਅਤੇ ਵਾਪਸ ਲੌਗ-ਇਨ ਕਰੋ।</translation>
 <translation id="6005659677094197001">ਲਗਾਤਾਰ</translation>
 <translation id="6005765687956866568">ਆਟੋਫਿਲ ਜਾਣਕਾਰੀ ਨੂੰ ਫ਼ਾਰਮ ਤੋਂ ਕਲੀਅਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6006365096047131769">3 x 5 ਇੰਚ</translation>

@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">检查密码</translation>
 <translation id="1187430513518041110">车辆与载具</translation>
 <translation id="1190491977647722791">纸（重磅纸）</translation>
+<translation id="1194278116501666615">ArcVm 预加载进度更新</translation>
 <translation id="1195073053842921378">该地址将从此设备中删除</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
 <translation id="1197088940767939838">橙色</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="306198082577913404">开启预测改进功能</translation>
 <translation id="3062655045399308513">删除浏览数据…</translation>
+<translation id="3063453392496098461">VPN 后台服务安装失败。</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
 <translation id="3067505415088964188">价格低</translation>
 <translation id="3068118691172921711">系统将在 1 分钟后开始将文件上传到<ph name="CLOUD_PROVIDER" /></translation>
@@ -1751,6 +1753,7 @@
 <translation id="4103592298805904008">纸板（单层）</translation>
 <translation id="4104702906064390950">正在保存 IBAN 信息</translation>
 <translation id="4106887816571530227">不允许嵌入内容</translation>
+<translation id="4107047499377819067">已开始安装 VPN 后台服务，这可能需要几分钟时间。</translation>
 <translation id="4110652170750985508">查看您的付款</translation>
 <translation id="4111546256784973544">彩弹射击</translation>
 <translation id="4112140312785995938">快退</translation>
@@ -2780,6 +2783,7 @@
 <translation id="6001839398155993679">开始</translation>
 <translation id="6002122790816966947">您的设备</translation>
 <translation id="6002968396561884726">最近查看过</translation>
+<translation id="6005188329423473970">VPN 后台服务安装完毕。如果您看不到 VPN 应用，请退出并重新登录。</translation>
 <translation id="6005659677094197001">连续纸</translation>
 <translation id="6005765687956866568">已从此表单中清除自动填充的信息</translation>
 <translation id="6006365096047131769">3 x 5 英寸</translation>

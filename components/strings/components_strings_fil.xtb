@@ -109,6 +109,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1186201132766001848">Suriin ang mga Password</translation>
 <translation id="1187430513518041110">Mga Sasakyan</translation>
 <translation id="1190491977647722791">Papel (Heavyweight)</translation>
+<translation id="1194278116501666615">Update sa pag-usad ng pag-preload ng ArcVm</translation>
 <translation id="1195073053842921378">Made-delete ang address na ito sa device na ito</translation>
 <translation id="1195558154361252544">Awtomatikong naka-block ang mga notification para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1146,6 +1147,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3061707000357573562">Serbisyo sa Pag-patch</translation>
 <translation id="306198082577913404">I-on ang mga pagpapahusay ng prediksyon</translation>
 <translation id="3062655045399308513">I-delete ang Data mula sa Pag-browse...</translation>
+<translation id="3063453392496098461">Hindi na-install ang mga serbisyo sa background ng VPN.</translation>
 <translation id="306573536155379004">Nagsimula na ang laro.</translation>
 <translation id="3067505415088964188">Mababa ang presyo</translation>
 <translation id="3068118691172921711">Magsisimula ang pag-upload ng iyong file sa <ph name="CLOUD_PROVIDER" /> sa loob ng 1 minuto</translation>
@@ -1755,6 +1757,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4103592298805904008">Cardboard (Single Wall)</translation>
 <translation id="4104702906064390950">Sine-save ang impormasyon ng IBAN</translation>
 <translation id="4106887816571530227">Hindi pinayagan ang naka-embed na content</translation>
+<translation id="4107047499377819067">Nagsimula na ang pag-install ng mga serbisyo sa background ng VPN, posible itong abutin nang ilang minuto.</translation>
 <translation id="4110652170750985508">Suriin ang iyong pagbabayad</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
@@ -2784,6 +2787,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6001839398155993679">Tara na</translation>
 <translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6002968396561884726">Kamakailang Tiningnan</translation>
+<translation id="6005188329423473970">Tapos na ang pag-install ng Mga Serbisyo sa Background ng VPN Kung wala kang nakikitang VPN app, mag-log out at mag-log in ulit.</translation>
 <translation id="6005659677094197001">Tuloy-tuloy</translation>
 <translation id="6005765687956866568">Na-clear sa form ang naka-autofill na impormasyon</translation>
 <translation id="6006365096047131769">3 x 5 in</translation>

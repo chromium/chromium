@@ -109,6 +109,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1186201132766001848">Verificar senhas</translation>
 <translation id="1187430513518041110">Automóveis e veículos</translation>
 <translation id="1190491977647722791">Papel (grosso)</translation>
+<translation id="1194278116501666615">Atualização do progresso de pré-carregamento da VM do ARC</translation>
 <translation id="1195073053842921378">O endereço vai ser excluído deste dispositivo</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
 <translation id="1197088940767939838">Laranja</translation>
@@ -1146,6 +1147,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="306198082577913404">Ativar melhorias de previsão</translation>
 <translation id="3062655045399308513">Excluir dados de navegação…</translation>
+<translation id="3063453392496098461">Falha na instalação dos serviços em segundo plano da VPN.</translation>
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3067505415088964188">Preço baixo</translation>
 <translation id="3068118691172921711">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em 1 minuto</translation>
@@ -1755,6 +1757,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4103592298805904008">Papelão (camada única)</translation>
 <translation id="4104702906064390950">Salvando informações do IBAN</translation>
 <translation id="4106887816571530227">Não é permitido incorporar conteúdo</translation>
+<translation id="4107047499377819067">A instalação dos serviços em segundo plano da VPN foi iniciada. Ela pode levar alguns minutos.</translation>
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Voltar</translation>
@@ -2784,6 +2787,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6001839398155993679">Vamos lá</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6002968396561884726">Acesso recente</translation>
+<translation id="6005188329423473970">A instalação dos serviços em segundo plano da VPN foi concluída. Se você não encontrar os apps de VPN, saia e faça login de novo.</translation>
 <translation id="6005659677094197001">Contínua</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>
 <translation id="6006365096047131769">3 x 5 pol.</translation>

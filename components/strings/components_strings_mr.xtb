@@ -109,6 +109,7 @@
 <translation id="1186201132766001848">पासवर्ड तपासा</translation>
 <translation id="1187430513518041110">ऑटो आणि वाहने</translation>
 <translation id="1190491977647722791">पेपर (हेवीवेट)</translation>
+<translation id="1194278116501666615">ArcVm प्रीलोड करण्याच्या प्रगतीसंबंधित अपडेट</translation>
 <translation id="1195073053842921378">हा पत्ता या डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="1195558154361252544">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी सूचना आपोआप ब्लॉक केल्या आहेत</translation>
 <translation id="1197088940767939838">नारिंगी</translation>
@@ -1146,6 +1147,7 @@
 <translation id="3061707000357573562">पॅच सेवा</translation>
 <translation id="306198082577913404">पूर्वानुमानामधील सुधारणा सुरू करा</translation>
 <translation id="3062655045399308513">ब्राउझिंग डेटा हटवा...</translation>
+<translation id="3063453392496098461">VPN बॅकग्राउंड सेवांचे इंस्टॉलेशन करता आले नाही.</translation>
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3068118691172921711">तुमचा <ph name="CLOUD_PROVIDER" /> मधील फाइल अपलोड १ मिनिटाने सुरू होईल</translation>
@@ -1754,6 +1756,7 @@
 <translation id="4103592298805904008">कार्डबोर्ड (सिंगल वॉल)</translation>
 <translation id="4104702906064390950">IBAN संबंधी माहिती सेव्ह करत आहे</translation>
 <translation id="4106887816571530227">एंबेड केलेल्या आशयाला अनुमती नाही</translation>
+<translation id="4107047499377819067">VPN बॅकग्राउंड सेवांचे इंस्टॉलेशन सुरू झाले आहे, यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="4110652170750985508">तुमचे पेमेंट पुन्हा एकदा तपासा</translation>
 <translation id="4111546256784973544">पेंटबॉल</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
@@ -2783,6 +2786,7 @@
 <translation id="6001839398155993679">चला करू या</translation>
 <translation id="6002122790816966947">तुमची डिव्हाइस</translation>
 <translation id="6002968396561884726">अलीकडे पाहिलेले</translation>
+<translation id="6005188329423473970">VPN बॅकग्राउंड सेवा यांचे इंस्टॉलेशन पूर्ण झाले आहे. तुम्हाला VPN अ‍ॅप्स दिसत नसल्यास, कृपया लॉग आउट करून पुन्हा लॉग इन करा.</translation>
 <translation id="6005659677094197001">कंटिन्युअस</translation>
 <translation id="6005765687956866568">फॉर्ममधून ऑटोफिल माहिती साफ केली गेली आहे</translation>
 <translation id="6006365096047131769">३ x ५ इं</translation>
