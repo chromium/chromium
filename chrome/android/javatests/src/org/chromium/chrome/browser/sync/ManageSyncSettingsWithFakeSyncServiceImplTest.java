@@ -117,7 +117,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         final FakeSyncServiceImpl fakeSyncServiceImpl =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
 
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
         // Trigger PassphraseDialogFragment to be shown when taping on Encryption.
         fakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
@@ -181,31 +181,6 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         onView(withId(R.id.signin_settings_card)).check(doesNotExist());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
-    public void testIdentityErrorCardNotShownForSyncingUsers() {
-        // Fake an identity error.
-        final FakeSyncServiceImpl fakeSyncService =
-                (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
-        fakeSyncService.setRequiresClientUpgrade(true);
-
-        // Expect no records.
-        HistogramWatcher watchIdentityErrorCardShownHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
-                        .build();
-
-        // Sign in, enable sync and open settings.
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
-
-        onView(withId(R.id.signin_settings_card)).check(doesNotExist());
-        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
     @Test

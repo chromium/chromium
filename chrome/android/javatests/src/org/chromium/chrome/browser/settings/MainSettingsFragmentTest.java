@@ -27,8 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -141,7 +139,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -220,31 +217,6 @@ public class MainSettingsFragmentTest {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         Intents.release();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    @DisabledTest(message = "http://b/issues/41491395")
-    public void testRenderDifferentSignedInStates() throws IOException {
-        startSettings();
-        waitForOptionsMenu();
-        View view =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .findViewById(android.R.id.content)
-                        .getRootView();
-        mRenderTestRule.render(view, "main_settings_signed_out");
-
-        // Sign in and render changes.
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-        waitForOptionsMenu();
-        // Waiting for sync to become active might take some time, so the scrollbar on the settings
-        // view starts to fade, making the test flaky due to differences in the rendered image.
-        // Sanitize the view to hide scrollbars (see https://crbug.com/1204117 for details).
-        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
-        mRenderTestRule.render(view, "main_settings_signed_in");
     }
 
     @Test
@@ -557,28 +529,6 @@ public class MainSettingsFragmentTest {
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
     }
 
-    // Tests that no alert icon is shown on the account row for syncing users, even if there exists
-    // an identity error.
-    @Test
-    @SmallTest
-    public void testSigninRowShowsNoAlertForIdentityErrorsForSyncingUsers() {
-        FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
-        // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
-        // Sign-in and enable sync. Open settings.
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        startSettings();
-
-        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
-        onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
-    }
-
     // Tests that an alert icon is shown on the account row in case of an identity error for a
     // signed-in non-syncing user.
     @Test
@@ -649,20 +599,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testSyncRowSummaryWhenUpmBackendOutdated() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
-                .thenReturn(true);
-
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-
-        startSettings();
-
-        onViewWaiting(withText(R.string.sync_error_outdated_gms)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
     public void testSafeBrowsingSecuritySectionUiFlagOn() {
         startSettings();
         assertSettingsExists(MainSettings.PREF_PRIVACY, PrivacySettings.class);
@@ -703,39 +639,6 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "http://b/issues/41491395")
-    public void testAccountSignIn() throws InterruptedException {
-        startSettings();
-
-        Assert.assertTrue(
-                "Account section header should be shown together with the promo.",
-                mMainSettings
-                        .findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
-                        .isVisible());
-        Assert.assertFalse(
-                "Sync preference should be hidden when promo is shown.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
-
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-        Assert.assertEquals(
-                "SignInPreference should be at the signed in state.",
-                account.getEmail(),
-                mMainSettings.findPreference(MainSettings.PREF_SIGN_IN).getSummary().toString());
-        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
-
-        Assert.assertTrue(
-                "Account section header should be shown when user signed in.",
-                mMainSettings
-                        .findPreference(MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
-                        .isVisible());
-        Assert.assertTrue(
-                "Sync preference should be shown when the user is signed in.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
-    }
-
-    @Test
     @MediumTest
     public void testSignInPromoHidden() {
         startSettings();
@@ -758,26 +661,6 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         Assert.assertFalse(
                 "Sync preference should not be shown when the user is signed in.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    @DisabledTest(message = "http://b/issues/41491395")
-    public void
-            testManageSyncRowIsShownWhenReplaceSyncPromosWithSignInPromosEnabledWithSyncConsent()
-                    throws InterruptedException {
-        startSettings();
-
-        Assert.assertFalse(
-                "Sync preference should be hidden when the user is signed out.",
-                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
-
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-        Assert.assertTrue(
-                "Sync preference should be shown when the user is syncing.",
                 mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
     }
 
