@@ -14,6 +14,8 @@ namespace webnn::ort {
 class ScopedOrtValue {
  public:
   ScopedOrtValue();
+  ScopedOrtValue(const ScopedOrtValue&) = delete;
+  ScopedOrtValue& operator=(const ScopedOrtValue&) = delete;
   ~ScopedOrtValue();
 
   OrtValue* get_ptr() { return *pptr_; }
@@ -26,6 +28,8 @@ class ScopedOrtValue {
 class ScopedOrtMemoryInfo {
  public:
   ScopedOrtMemoryInfo();
+  ScopedOrtMemoryInfo(const ScopedOrtMemoryInfo&) = delete;
+  ScopedOrtMemoryInfo& operator=(const ScopedOrtMemoryInfo&) = delete;
   ~ScopedOrtMemoryInfo();
 
   OrtMemoryInfo* get_ptr() { return *pptr_; }
@@ -38,6 +42,8 @@ class ScopedOrtMemoryInfo {
 class ScopedOrtOpAttr {
  public:
   ScopedOrtOpAttr();
+  ScopedOrtOpAttr(const ScopedOrtOpAttr&) = delete;
+  ScopedOrtOpAttr& operator=(const ScopedOrtOpAttr&) = delete;
   ~ScopedOrtOpAttr();
 
   OrtOpAttr* get_ptr() { return *pptr_; }
@@ -50,6 +56,8 @@ class ScopedOrtOpAttr {
 class ScopedOrtGraph {
  public:
   ScopedOrtGraph();
+  ScopedOrtGraph(const ScopedOrtGraph&) = delete;
+  ScopedOrtGraph& operator=(const ScopedOrtGraph&) = delete;
   ~ScopedOrtGraph();
 
   OrtGraph* get_ptr() { return *pptr_; }
@@ -62,6 +70,8 @@ class ScopedOrtGraph {
 class ScopedOrtShape {
  public:
   ScopedOrtShape();
+  ScopedOrtShape(const ScopedOrtShape&) = delete;
+  ScopedOrtShape& operator=(const ScopedOrtShape&) = delete;
   ~ScopedOrtShape();
 
   OrtShape* get_ptr() { return *pptr_; }
@@ -74,6 +84,8 @@ class ScopedOrtShape {
 class ScopedOrtValueInfo {
  public:
   ScopedOrtValueInfo();
+  ScopedOrtValueInfo(const ScopedOrtValueInfo&) = delete;
+  ScopedOrtValueInfo& operator=(const ScopedOrtValueInfo&) = delete;
   ~ScopedOrtValueInfo();
 
   OrtValueInfo* get_ptr() { return *pptr_; }
@@ -86,6 +98,8 @@ class ScopedOrtValueInfo {
 class ScopedOrtNode {
  public:
   ScopedOrtNode();
+  ScopedOrtNode(const ScopedOrtNode&) = delete;
+  ScopedOrtNode& operator=(const ScopedOrtNode&) = delete;
   ~ScopedOrtNode();
 
   OrtNode* get_ptr() { return *pptr_; }
@@ -98,6 +112,8 @@ class ScopedOrtNode {
 class ScopedOrtModel {
  public:
   ScopedOrtModel();
+  ScopedOrtModel(const ScopedOrtModel&) = delete;
+  ScopedOrtModel& operator=(const ScopedOrtModel&) = delete;
   ~ScopedOrtModel();
 
   OrtModel* get_ptr() { return *pptr_; }

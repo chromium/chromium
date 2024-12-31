@@ -52,14 +52,15 @@ class GraphImplOrt final : public WebNNGraphImpl {
   ~GraphImplOrt() override;
 
   struct Session {
-    Session(OrtSession* session, std::vector<base::HeapArray<uint8_t>> weights);
+    Session(OrtSession* session,
+            std::vector<base::HeapArray<uint8_t>> external_data);
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
     ~Session();
 
     OrtSession* GetSession() { return session.get(); }
 
-    std::vector<base::HeapArray<uint8_t>> weights;
+    std::vector<base::HeapArray<uint8_t>> external_data;
     raw_ptr<OrtSession> session;
   };
 

@@ -91,6 +91,8 @@ component("webnn_service") {
       "ort/graph_builder_ort.h",
       "ort/graph_impl_ort.cc",
       "ort/graph_impl_ort.h",
+      "ort/ort_model_builder.cc",
+      "ort/ort_model_builder.h",
       "ort/platform_functions_ort.cc",
       "ort/platform_functions_ort.h",
       "ort/scoped_ort_types.cc",

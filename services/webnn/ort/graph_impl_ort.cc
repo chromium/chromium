@@ -74,9 +74,10 @@ void GraphImplOrt::CreateAndBuild(
       std::move(wrapped_callback));
 }
 
-GraphImplOrt::Session::Session(OrtSession* session,
-                               std::vector<base::HeapArray<uint8_t>> weights)
-    : weights(std::move(weights)), session(session) {}
+GraphImplOrt::Session::Session(
+    OrtSession* session,
+    std::vector<base::HeapArray<uint8_t>> external_data)
+    : external_data(std::move(external_data)), session(session) {}
 
 GraphImplOrt::Session::~Session() {
   // TODO: Can we call `ReleaseSession` from Dllmain (because session owns a
@@ -132,7 +133,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   OrtSession* session;
   const OrtEnv* env = allocator->env();
   OrtStatus* status = GetOrtGraphApi()->CreateSessionFromModel(
-      env, result->model.get_ptr(), session_options, &session);
+      env, result->model_info->model.get_ptr(), session_options, &session);
   ort_api->ReleaseSessionOptions(session_options);
 
   if (status != NULL) {
@@ -145,8 +146,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   LOG(ERROR) << "Running on ORT=============";
 
-  return base::WrapUnique(
-      new GraphImplOrt::Session(session, std::move(result->weights)));
+  return base::WrapUnique(new GraphImplOrt::Session(
+      session, std::move(result->model_info->external_data)));
 }
 
 // static

@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +23,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "services/webnn/ort/ort_model_builder.h"
 
 namespace webnn {
 
@@ -60,20 +59,11 @@ class GraphBuilderOrt {
     Result& operator=(const Result&) = delete;
     ~Result();
 
-    const ScopedOrtModel& GetModel();
-
     const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
-    const std::map<uint64_t, OperandInfo>& id_to_operand_info_map() const;
-
-    ScopedOrtModel model;
-    std::map<uint64_t, OperandInfo> operand_infos;
-
-    // TODO: Consider reusing constant operands instead of copying them to
-    // `weights`.
-    //
-    // Store the weights which should be alive for inference session.
-    std::vector<base::HeapArray<uint8_t>> weights;
+    std::map<uint64_t, OperandInfo> id_to_operand_info;
+    
+    std::unique_ptr<OrtModelBuilder::ModelInfo> model_info;
   };
 
   // Factory method that creates a GraphBuilderOrt, builds and serializes the
@@ -148,8 +138,6 @@ class GraphBuilderOrt {
 
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> BuildModel();
 
-  scoped_refptr<AllocatorOrt> allocator_;
-
   // Used for inserting new operands into graph.
   uint64_t next_operand_id_ = 0;
 
@@ -163,7 +151,7 @@ class GraphBuilderOrt {
 
   const ContextProperties context_properties_;
 
-  ScopedOrtGraph graph_;
+  OrtModelBuilder model_builder_;
 
   std::unique_ptr<Result> result_;
 };
