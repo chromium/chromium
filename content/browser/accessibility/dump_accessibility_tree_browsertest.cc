@@ -4091,7 +4091,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, NameImgLabelledbyInputsTree) {
   RunHtmlTest(FILE_PATH_LITERAL("name-img-labelledby-inputs-tree.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReloadSelectionCrash) {
+// TODO(crbug.com/386918219): Flaky on UIA
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ReloadSelectionCrash DISABLED_ReloadSelectionCrash
+#else
+#define MAYBE_ReloadSelectionCrash ReloadSelectionCrash
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_ReloadSelectionCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("reload-selection-crash.html"));
 }
 
