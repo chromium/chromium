@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -150,9 +151,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab_group_sync_service, &tab);
     }
 
+    const auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile);
+    CHECK(pinned_actions_model);
     page_action_controller_ =
-        std::make_unique<page_actions::PageActionController>();
-    CHECK(tab.GetBrowserWindowInterface()->GetActions());
+        std::make_unique<page_actions::PageActionController>(
+            pinned_actions_model);
     page_action_controller_->Initialize(std::vector<actions::ActionId>(
         page_actions::kActionIds.begin(), page_actions::kActionIds.end()));
 

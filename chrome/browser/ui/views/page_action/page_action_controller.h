@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "ui/actions/action_id.h"
 
+class PinnedToolbarActionsModel;
+
 namespace page_actions {
 
 class PageActionModel;
@@ -23,7 +25,8 @@ class PageActionModelObserver;
 // receive updates from this controller.
 class PageActionController {
  public:
-  PageActionController();
+  explicit PageActionController(
+      const PinnedToolbarActionsModel* pinned_actions_model);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController();
@@ -31,8 +34,11 @@ class PageActionController {
   void Initialize(const std::vector<actions::ActionId>& action_ids);
   void Register(actions::ActionId action_id);
 
-  void Show(actions::ActionId action_id);
   void Hide(actions::ActionId action_id);
+  void Show(actions::ActionId action_id);
+  // Only attempts to show the page action if it's not already pinned.
+  // Returns true if the page action will be shown and false otherwise.
+  bool ShowIfNotPinned(actions::ActionId action_id);
 
   // Manages observers for the page action's underlying `PageActionModel`.
   void AddObserver(
@@ -44,9 +50,11 @@ class PageActionController {
   using PageActionModelsMap =
       std::map<actions::ActionId, std::unique_ptr<PageActionModel>>;
 
-  PageActionModel* FindPageActionModel(actions::ActionId action_id) const;
+  PageActionModel& FindPageActionModel(actions::ActionId action_id) const;
 
   PageActionModelsMap page_actions_;
+
+  const raw_ptr<const PinnedToolbarActionsModel> pinned_actions_model_;
 };
 
 }  // namespace page_actions

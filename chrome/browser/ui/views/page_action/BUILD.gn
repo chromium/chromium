@@ -7,7 +7,6 @@ assert(!is_android, "Page actions are for desktop platforms only")
 source_set("page_action") {
   public = [
     "action_ids.h",
-    "page_action_constants.h",
     "page_action_container_view.h",
     "page_action_controller.h",
     "page_action_model.h",
@@ -16,6 +15,7 @@ source_set("page_action") {
   ]
 
   sources = [
+    "page_action_constants.h",
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_model.cc",
@@ -27,9 +27,8 @@ source_set("page_action") {
     "//chrome/browser/ui/actions:actions_headers",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
-    "//ui/gfx",
     "//ui/views",
   ]
 
-  deps = []
+  deps = [ "//ui/gfx" ]
 }
