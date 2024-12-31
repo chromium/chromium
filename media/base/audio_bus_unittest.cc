@@ -67,11 +67,8 @@ class AudioBusTest : public testing::Test {
     ASSERT_EQ(expected->is_bitstream_format(), result->is_bitstream_format());
 
     if (expected->is_bitstream_format()) {
-      ASSERT_EQ(expected->GetBitstreamDataSize(),
-                result->GetBitstreamDataSize());
       ASSERT_EQ(expected->GetBitstreamFrames(), result->GetBitstreamFrames());
-      ASSERT_EQ(0, memcmp(expected->channel(0), result->channel(0),
-                          result->GetBitstreamDataSize()));
+      ASSERT_EQ(expected->bitstream_data(), result->bitstream_data());
       return;
     }
 
@@ -119,8 +116,16 @@ class AudioBusTest : public testing::Test {
   // Verify copying to and from |bus1| and |bus2|.
   void CopyTest(AudioBus* bus1, AudioBus* bus2) {
     // Fill |bus1| with dummy data.
-    for (int i = 0; i < bus1->channels(); ++i)
-      std::fill(bus1->channel(i), bus1->channel(i) + bus1->frames(), i);
+    if (bus1->is_bitstream_format()) {
+      uint8_t filler = 1;
+      std::ranges::generate(bus1->bitstream_data(),
+                            [filler]() mutable { return filler++; });
+    } else {
+      int filler = 1;
+      for (auto channel : bus1->AllChannels()) {
+        std::ranges::fill(channel, filler);
+      }
+    }
 
     // Verify copy from |bus1| to |bus2|.
     bus2->Zero();
@@ -756,9 +761,9 @@ TEST_F(AudioBusTest, Bitstream) {
   bus->set_is_bitstream_format(true);
   EXPECT_TRUE(bus->is_bitstream_format());
 
-  EXPECT_EQ(size_t{0}, bus->GetBitstreamDataSize());
-  bus->SetBitstreamDataSize(kDataSize);
-  EXPECT_EQ(kDataSize, bus->GetBitstreamDataSize());
+  EXPECT_EQ(0u, bus->bitstream_data().size());
+  bus->SetBitstreamSize(kDataSize);
+  EXPECT_EQ(kDataSize, bus->bitstream_data().size());
 
   EXPECT_EQ(0, bus->GetBitstreamFrames());
   bus->SetBitstreamFrames(kFrameCount);
@@ -768,7 +773,7 @@ TEST_F(AudioBusTest, Bitstream) {
   CopyTest(bus.get(), bus2.get());
 
   bus->Zero();
-  EXPECT_EQ(size_t{0}, bus->GetBitstreamDataSize());
+  EXPECT_EQ(0u, bus->bitstream_data().size());
   EXPECT_EQ(0, bus->GetBitstreamFrames());
 }
 

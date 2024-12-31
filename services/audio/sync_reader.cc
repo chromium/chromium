@@ -192,14 +192,12 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
         shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
     uint32_t data_size = buffer->params.bitstream_data_size;
     uint32_t bitstream_frames = buffer->params.bitstream_frames;
-    // |bitstream_frames| is cast to int below, so it must fit.
-    if (data_size > output_bus_buffer_size_ ||
-        !base::IsValueInRangeForNumericType<int>(bitstream_frames)) {
+    if (data_size > output_bus_buffer_size_) {
       // Received data doesn't fit in the buffer, shouldn't happen.
       dest->Zero();
       return true;
     }
-    output_bus_->SetBitstreamDataSize(data_size);
+    output_bus_->SetBitstreamSize(data_size);
     output_bus_->SetBitstreamFrames(bitstream_frames);
     output_bus_->CopyTo(dest);
     return true;
