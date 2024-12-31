@@ -85,6 +85,8 @@ EditorSubmenu GetEditorSubmenu(
       return EditorSubmenu::kTone;
     case chromeos::editor_menu::PresetQueryCategory::kProofread:
       return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kLobster:
+      return EditorSubmenu::kNone;
   }
 }
 

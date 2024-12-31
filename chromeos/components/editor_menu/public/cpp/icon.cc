@@ -6,10 +6,15 @@
 
 #include <string_view>
 
+#include "build/branding_buildflags.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/vector_icon_types.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace chromeos::editor_menu {
 
@@ -30,6 +35,12 @@ const gfx::VectorIcon& GetIconForPresetQueryCategory(
       return kEditorMenuFormalizeIcon;
     case PresetQueryCategory::kEmojify:
       return kEditorMenuEmojifyIcon;
+    case PresetQueryCategory::kLobster:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return kLobsterIcon;
+#else
+      return vector_icons::kKeyboardIcon;
+#endif
   }
 }
 

@@ -46,6 +46,14 @@ std::u16string GetEditorMenuLobsterTitle() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetEditorMenuLobsterChipLabel() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_CARD_LOBSTER_CHIP_LABEL);
+#else
+  return u"Lobster";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 std::u16string GetEditorMenuPromoCardTitle() {
   return ShouldUseL10nStrings()
              ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE)
