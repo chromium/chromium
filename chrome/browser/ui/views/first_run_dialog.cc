@@ -106,7 +106,8 @@ void FirstRunDialog::Done() {
   CHECK(!quit_runloop_.is_null());
 
   if (!closed_through_accept_button_) {
-    ChangeMetricsReportingState(false);
+    ChangeMetricsReportingState(
+        false, ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
   }
 
   quit_runloop_.Run();
@@ -116,7 +117,9 @@ bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
   closed_through_accept_button_ = true;
 
-  ChangeMetricsReportingState(report_crashes_->GetChecked());
+  ChangeMetricsReportingState(
+      report_crashes_->GetChecked(),
+      ChangeMetricsReportingStateCalledFrom::kUiFirstRun);
 
   if (make_default_->GetChecked()) {
     shell_integration::SetAsDefaultBrowser();
