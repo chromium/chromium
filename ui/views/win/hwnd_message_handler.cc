@@ -605,12 +605,8 @@ void HWNDMessageHandler::SetBounds(const gfx::Rect& bounds_in_pixels,
 }
 
 void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
-  HWND parent = GetParent(hwnd());
-  HWND owner = GetWindow(hwnd(), GW_OWNER);
-  // A hwnd cannot be a child window and an owned window at the same time.
-  DCHECK(!(parent && owner));
-
-  if (parent) {
+  LONG style = GetWindowLong(hwnd(), GWL_STYLE);
+  if (style & WS_CHILD) {
     // This is a child window.
     // TODO(crbug.com/40284685): allows setting NULL parent since WinAPI permits
     // it. It will require updating window styles. See
@@ -618,7 +614,6 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
     DCHECK(new_parent);
     SetParent(hwnd(), new_parent);
   } else {
-    // This is either an owned window or an un-owned window.
     SetWindowLongPtr(hwnd(), GWLP_HWNDPARENT,
                      reinterpret_cast<LONG_PTR>(new_parent));
   }

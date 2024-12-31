@@ -230,12 +230,22 @@ void GlicWindowController::HandleWindowDragWithOffset(
   // lead to crashes.
   if (!in_move_loop_) {
     // Prepare to start a new drag of the glic window using holder_widget_ as
-    // the new parent
+    // the new parent.
     MaybeCreateHolderWindowAndReparent();
     in_move_loop_ = true;
     const views::Widget::MoveLoopSource move_loop_source =
         views::Widget::MoveLoopSource::kMouse;
-    holder_widget_->RunMoveLoop(
+    // On Windows, RunMoveLoop doesn't work with `holder_widget_` because
+    // `widget_`'s hwnd received the mouse down and move messages, not
+    // `holder_widget_`'s hwnd. Calling RunMoveLoop on `holder_widget_` exits
+    // the loop immediately.
+    views::Widget* run_loop_widget =
+#if BUILDFLAG(IS_WIN)
+        widget_.get();
+#else
+        holder_widget_.get();
+#endif
+    run_loop_widget->RunMoveLoop(
         mouse_offset, move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
     in_move_loop_ = false;
