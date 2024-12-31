@@ -714,9 +714,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void VerifySearchQueryParameters(const GURL& url_to_process) {
     std::string gsc_value;
-    bool has_hsc_value =
+    bool has_gsc_value =
         net::GetValueForKeyInQuery(url_to_process, "gsc", &gsc_value);
-    EXPECT_TRUE(has_hsc_value);
+    EXPECT_TRUE(has_gsc_value);
 
     std::string hl_value;
     bool has_hl_value =
@@ -2108,16 +2108,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
-  DISABLED_SidePanel_SameTabSameOriginLinkClick
-#else
-#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
-  SidePanel_SameTabSameOriginLinkClick
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_SidePanel_SameTabSameOriginLinkClick) {
+                       SidePanel_SameTabSameOriginLinkClick) {
   WaitForPaint();
 
   // State should start in off.
@@ -2162,15 +2154,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Simulate a same-origin navigation on the results frame.
   const GURL nav_url("https://www.google.com/search?q=apples");
   content::TestNavigationObserver observer(
-      controller->GetSidePanelWebContentsForTesting());
+      controller->GetSidePanelWebContentsForTesting(),
+      /*expected_number_of_navigations=*/2);
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait for the navigation to finish and the page to finish loading.
-  observer.WaitForNavigationFinished();
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+  observer.Wait();
 
   // It should not open a new tab as this is a same-origin navigation.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
