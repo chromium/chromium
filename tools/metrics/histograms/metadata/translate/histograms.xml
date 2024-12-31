@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.ContentLength" units="characters"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>sclittle@chromium.org</owner>
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>

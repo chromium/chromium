@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.PermissionRenewedDeltaToExpiration"
-    units="hours" expires_after="2025-04-27">
+    units="hours" expires_after="2025-06-29">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>

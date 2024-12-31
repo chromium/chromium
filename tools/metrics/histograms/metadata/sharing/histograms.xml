@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2025-04-27">
+    enum="LinkGenerationSharedStatus" expires_after="2025-06-29">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>

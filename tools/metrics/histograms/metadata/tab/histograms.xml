@@ -1818,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled"
-    enum="Boolean" expires_after="2025-03-02">
+    enum="Boolean" expires_after="2025-06-29">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -2023,7 +2023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.LiveNTPCountAtResume" units="tabs"
-    expires_after="2025-04-28">
+    expires_after="2025-06-29">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3322,7 +3322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabState.RestoreMethod" enum="TabStateRestoreMethod"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>davidjm@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <summary>

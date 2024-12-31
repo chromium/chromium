@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CommitProblem" enum="CookieCommitProblem"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem occurs trying to commit changes to the cookie store
@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
-    enum="CookiesAllowedForUrlsUsage" expires_after="2025-04-27">
+    enum="CookiesAllowedForUrlsUsage" expires_after="2025-06-29">
   <owner>dylancutler@google.com</owner>
   <owner>sandormajor@chromium.org</owner>
   <summary>

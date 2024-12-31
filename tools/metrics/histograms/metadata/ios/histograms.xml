@@ -3200,7 +3200,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationsCustomized"
-    units="bitfield value" expires_after="2025-04-20">
+    units="bitfield value" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3212,7 +3212,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2025-04-20">
+    enum="IOSOverflowMenuDestination" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3223,7 +3223,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2025-04-20">
+    enum="IOSOverflowMenuDestination" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3234,7 +3234,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2025-04-20">
+    enum="IOSOverflowMenuDestination" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3245,7 +3245,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2025-04-20">
+    enum="IOSOverflowMenuDestination" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3275,7 +3275,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.SmartSortingStateChange"
-    enum="IOSOverflowMenuSmartSortingChange" expires_after="2025-04-20">
+    enum="IOSOverflowMenuSmartSortingChange" expires_after="2025-06-29">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -3751,7 +3751,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
-    enum="BooleanSuccess" expires_after="2025-04-27">
+    enum="BooleanSuccess" expires_after="2025-06-29">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -3994,7 +3994,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>sugoi@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
@@ -5375,7 +5375,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>

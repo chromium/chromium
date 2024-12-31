@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
-    expires_after="2025-04-28">
+    expires_after="2025-06-29">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
   <summary>TBD.</summary>
 </histogram>
 
-<histogram name="Memory.CommitLimitMB" units="MB" expires_after="2025-04-06">
+<histogram name="Memory.CommitLimitMB" units="MB" expires_after="2025-06-29">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.CommitPercentageUsed" units="%"
-    expires_after="2025-04-06">
+    expires_after="2025-06-29">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.CommitRemainingMB" units="MB"
-    expires_after="2025-04-06">
+    expires_after="2025-06-29">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -891,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2025-04-27">
+    units="MB" expires_after="2025-06-29">
   <owner>tasak@google.com</owner>
   <owner>mikt@chromium.org</owner>
   <summary>
@@ -1698,7 +1698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalUnparkingTime.5min" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1751,7 +1751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PerformanceInfoRetrievalSuccess" enum="Boolean"
-    expires_after="2025-04-06">
+    expires_after="2025-06-29">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

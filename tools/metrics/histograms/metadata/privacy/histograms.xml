@@ -615,7 +615,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
-    units="ms" expires_after="2025-04-27">
+    units="ms" expires_after="2025-06-29">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -784,7 +784,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
-    units="count" expires_after="2025-04-27">
+    units="count" expires_after="2025-06-29">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1300,7 +1300,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes"
-    units="KB" expires_after="2025-04-06">
+    units="KB" expires_after="2025-06-29">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1300,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.SellerWorkletIsolateUsedHeapSizeKilobytes"
-    units="KB" expires_after="2025-04-06">
+    units="KB" expires_after="2025-06-29">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -2064,7 +2064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumIterations"
-    units="count" expires_after="2025-04-27">
+    units="count" expires_after="2025-06-29">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -5097,7 +5097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
-    expires_after="2025-03-30">
+    expires_after="2025-06-29">
   <owner>jlebel@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5365,7 +5365,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Activated2"
-    enum="GestureNavigationDirection" expires_after="2025-04-27">
+    enum="GestureNavigationDirection" expires_after="2025-06-29">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5377,7 +5377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Cancelled2"
-    enum="GestureNavigationDirection" expires_after="2025-04-27">
+    enum="GestureNavigationDirection" expires_after="2025-06-29">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5388,7 +5388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Completed2"
-    enum="GestureNavigationDirection" expires_after="2025-04-27">
+    enum="GestureNavigationDirection" expires_after="2025-06-29">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5398,7 +5398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Reversed2" enum="GestureNavigationDirection"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -5409,7 +5409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GestureNavigation.Type2" enum="GestureNavigationType"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -7784,7 +7784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.AddOrReplaceEntry" enum="ReadingListStorageState"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>mastiz@chromium.org</owner>
   <owner>mmrashad@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -7916,7 +7916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.WebUI.LoadDocumentTime" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -9831,7 +9831,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.UploadingTraceSizeInKB" units="KB"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>oksamyt@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
@@ -10137,7 +10137,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UserManager.LoginUserType" enum="UserType"
-    expires_after="2025-04-24">
+    expires_after="2025-06-29">
   <owner>achuith@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -10332,7 +10332,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebDatabase.SucceededMigrationToVersion" units="version"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>battre@chromium.org</owner>
   <owner>fleimgruber@google.com</owner>
   <summary>

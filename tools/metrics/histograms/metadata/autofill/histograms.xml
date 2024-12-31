@@ -2930,7 +2930,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration"
-    units="microseconds" expires_after="2025-04-27">
+    units="microseconds" expires_after="2025-06-29">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2944,7 +2944,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Duration"
-    units="microseconds" expires_after="2025-04-27">
+    units="microseconds" expires_after="2025-06-29">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4568,7 +4568,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldStatus.ByFieldType"
-    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2025-04-27">
+    enum="AutofillPreFilledFieldStatusByFieldType" expires_after="2025-06-29">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

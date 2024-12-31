@@ -1155,7 +1155,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation"
-    enum="BooleanSkipped" expires_after="2025-04-27">
+    enum="BooleanSkipped" expires_after="2025-06-29">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <owner>jinho.bang@samsung.com</owner>

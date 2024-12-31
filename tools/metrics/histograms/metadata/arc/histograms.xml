@@ -2819,7 +2819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

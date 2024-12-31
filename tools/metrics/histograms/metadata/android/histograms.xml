@@ -963,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcessBinding.TotalConnections"
-    units="connections" expires_after="2025-04-27">
+    units="connections" expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.CpuAbiBitnessSupport" enum="CpuAbiBitnessSupport"
-    expires_after="2025-04-30">
+    expires_after="2025-06-29">
   <owner>tasak@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1225,7 +1225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DesktopWindowHeuristicResult"
-    enum="DesktopWindowHeuristicResult" expires_after="2025-04-30">
+    enum="DesktopWindowHeuristicResult" expires_after="2025-06-29">
   <owner>wenyufu@chromium.org</owner>
   <owner>aishwaryarj@google.com</owner>
   <summary>
@@ -2012,7 +2012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-hub-dev@google.com</owner>
   <summary>
@@ -2506,7 +2506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking.Hidden" enum="MessageIdentifier"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2763,7 +2763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultipleUserProfilesState"
-    enum="MultipleUserProfilesState" expires_after="2025-04-30">
+    enum="MultipleUserProfilesState" expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
@@ -4727,7 +4727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Sync.ActualSyncedTabCountPercentage"
-    units="% of tab count" expires_after="2025-04-27">
+    units="% of tab count" expires_after="2025-06-29">
   <owner>bjfong@google.com</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -4876,7 +4876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabGroupParity.TabGroupColorChangeActionType"
-    enum="TabGroupColorChangeActionType" expires_after="2025-04-30">
+    enum="TabGroupColorChangeActionType" expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -4888,7 +4888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabGroupParity.TabGroupCreationDialogResultAction"
-    enum="TabGroupCreationDialogResultAction" expires_after="2025-04-30">
+    enum="TabGroupCreationDialogResultAction" expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -4900,7 +4900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabGroupParity.TabGroupCreationFinalSelections"
-    enum="TabGroupCreationFinalSelections" expires_after="2025-04-30">
+    enum="TabGroupCreationFinalSelections" expires_after="2025-06-29">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>
   <owner>fredmello@chromium.org</owner>
@@ -5392,7 +5392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.VersionCode" enum="VersionCode"
-    expires_after="2025-04-30">
+    expires_after="2025-06-29">
   <owner>tasak@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>

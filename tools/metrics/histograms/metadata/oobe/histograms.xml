@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ConsolidatedConsentScreen.RecoveryOptInResult"
-    enum="RecoveryOptInResult" expires_after="2025-04-24">
+    enum="RecoveryOptInResult" expires_after="2025-06-29">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.Drive-pinning.Enabled" enum="BooleanEnabled"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>osamafathy@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -792,7 +792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaScreen.PasswordlessLoginRequests" enum="Boolean"
-    expires_after="2025-04-24">
+    expires_after="2025-06-29">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -1441,7 +1441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2025-04-27">
+    enum="BooleanChecked" expires_after="2025-06-29">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

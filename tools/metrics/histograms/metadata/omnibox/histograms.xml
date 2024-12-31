@@ -943,7 +943,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.GroupId.ToggledOff" enum="GroupId"
-    expires_after="2025-04-29">
+    expires_after="2025-06-29">
   <owner>mahmadi@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2055,7 +2055,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2.1"
-    units="ms" expires_after="2025-04-27">
+    units="ms" expires_after="2025-06-29">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2333,7 +2333,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.ElapsedTime"
-    units="microseconds" expires_after="2025-04-27">
+    units="microseconds" expires_after="2025-06-29">
   <owner>mahmadi@chromium.org</owner>
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2347,7 +2347,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.Matches" units="counts"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>mahmadi@chromium.org</owner>
   <owner>yoangela@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2359,7 +2359,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.MLScoreCache.CacheHit"
-    enum="BooleanCacheHit" expires_after="2025-04-27">
+    enum="BooleanCacheHit" expires_after="2025-06-29">
   <owner>khalidpeer@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2374,7 +2374,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.MLScoreCoverage"
-    units="% of matches" expires_after="2025-04-27">
+    units="% of matches" expires_after="2025-06-29">
   <owner>khalidpeer@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -2386,7 +2386,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.URLScoringModelExecuted.Preprocess.ValidInputSize"
-    enum="Boolean" expires_after="2025-04-27">
+    enum="Boolean" expires_after="2025-06-29">
   <owner>khalidpeer@chromium.org</owner>
   <owner>manukh@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>

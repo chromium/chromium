@@ -419,7 +419,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.Effects.NpuToGpuFallbackEvent" enum="Boolean"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>imranziad@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -882,7 +882,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.PortraitMode.AverageLatency"
-    units="microseconds" expires_after="2025-04-20">
+    units="microseconds" expires_after="2025-06-29">
   <owner>julianachang@google.com</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -1354,7 +1354,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
-    units="ms" expires_after="2025-04-27">
+    units="ms" expires_after="2025-06-29">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
