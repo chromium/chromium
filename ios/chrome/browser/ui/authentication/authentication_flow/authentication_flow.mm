@@ -146,8 +146,6 @@ BOOL IsIdentityInCoreAccountInfos(
   // as part of the signin flow. Can only be true if the to-be-signed-in account
   // is managed.
   BOOL _shouldConvertPersonalProfileToManaged;
-  // YES if user policies have to be fetched.
-  BOOL _shouldFetchUserPolicy;
   // YES if user is opted into bookmark and reading list account storage.
   BOOL _shouldShowSigninSnackbar;
 
@@ -312,7 +310,8 @@ BOOL IsIdentityInCoreAccountInfos(
       if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
         _shouldShowSigninSnackbar = YES;
       }
-      if (_shouldFetchUserPolicy) {
+      if (policy::IsAnyUserPolicyFeatureEnabled() &&
+          _identityToSignInHostedDomain.length > 0) {
         return REGISTER_FOR_USER_POLICY;
       } else if ([self shouldFetchCapabilities]) {
         return FETCH_CAPABILITIES;
@@ -598,8 +597,6 @@ BOOL IsIdentityInCoreAccountInfos(
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
   _identityToSignInHostedDomain = hostedDomain;
-  _shouldFetchUserPolicy =
-      [self shouldFetchUserPolicy] && hostedDomain.length > 0;
   [self continueFlow];
 }
 
@@ -672,11 +669,6 @@ BOOL IsIdentityInCoreAccountInfos(
 
 - (PrefService*)prefs {
   return [self originalProfile]->GetPrefs();
-}
-
-// Returns YES if should fetch user policy.
-- (BOOL)shouldFetchUserPolicy {
-  return policy::IsAnyUserPolicyFeatureEnabled();
 }
 
 // Return YES if capabilities should be fetched for the History Sync screen.
