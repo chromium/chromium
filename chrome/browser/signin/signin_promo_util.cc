@@ -37,6 +37,7 @@ using signin_util::SignedInState;
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
 
+// Maps to a subset of `signin_metrics::AccessPoint`.
 enum class AutofillSignInPromoType { kPassword, kAddress };
 
 // Performs base checks for whether the sign in promos should be shown.
@@ -132,6 +133,20 @@ bool ShouldShowPromoBasedOnImpressionCount(Profile& profile,
   }
 
   return show_count < kSigninPromoShownThreshold;
+}
+
+AutofillSignInPromoType GetAutofillSignInPromoType(
+    signin_metrics::AccessPoint access_point) {
+  CHECK(signin::IsAutofillSigninPromo(access_point));
+
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
+      return AutofillSignInPromoType::kPassword;
+    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      return AutofillSignInPromoType::kAddress;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -245,5 +260,45 @@ bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point) {
          access_point ==
              signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE;
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
+                            Profile* profile) {
+  CHECK(profile);
+
+  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(profile));
+  AutofillSignInPromoType promo_type = GetAutofillSignInPromoType(access_point);
+
+  // Record the pref per profile if there is no account present.
+  if (account.gaia.empty()) {
+    const char* pref_name;
+    switch (promo_type) {
+      case AutofillSignInPromoType::kPassword:
+        pref_name = prefs::kPasswordSignInPromoShownCountPerProfile;
+        break;
+      case AutofillSignInPromoType::kAddress:
+        pref_name = prefs::kAddressSignInPromoShownCountPerProfile;
+        break;
+    }
+
+    int show_count = profile->GetPrefs()->GetInteger(pref_name);
+    profile->GetPrefs()->SetInteger(pref_name, show_count + 1);
+    return;
+  }
+
+  // Record the pref for the account that was used for the promo, either because
+  // it is signed into the web or in sign in pending state.
+  switch (promo_type) {
+    case AutofillSignInPromoType::kPassword:
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementPasswordSigninPromoImpressionCount(account.gaia);
+      return;
+    case AutofillSignInPromoType::kAddress:
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementAddressSigninPromoImpressionCount(account.gaia);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

@@ -72,6 +72,8 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
       std::make_unique<AutofillBubbleSignInPromoView::DiceSigninPromoDelegate>(
           &controller_);
 
+  signin::RecordSignInPromoShown(access_point, profile);
+
   AddChildView(new BubbleSignInPromoView(
       profile, dice_sign_in_promo_delegate_.get(), access_point));
 }

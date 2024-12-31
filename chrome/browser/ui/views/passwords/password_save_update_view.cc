@@ -237,21 +237,6 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
       std::move(move_callback));
   AddChildView(std::move(sign_in_promo));
 
-  // Record that the sign in promo was shown.
-  Profile* profile = controller_.GetProfile();
-  AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
-      IdentityManagerFactory::GetForProfile(profile));
-
-  if (account.gaia.empty()) {
-    int show_count = profile->GetPrefs()->GetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile);
-    profile->GetPrefs()->SetInteger(
-        prefs::kPasswordSignInPromoShownCountPerProfile, show_count + 1);
-  } else {
-    SigninPrefs(*profile->GetPrefs())
-        .IncrementPasswordSigninPromoImpressionCount(account.gaia);
-  }
-
   // Notify the screen reader that the bubble changed.
   AnnounceBubbleChange();
 

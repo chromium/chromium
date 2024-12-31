@@ -7,11 +7,15 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
@@ -24,8 +28,8 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace signin {
 
@@ -310,6 +314,71 @@ TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
           .IsCountryEligibleForAccountStorage(non_eligible_country_code));
   EXPECT_FALSE(ShouldShowAddressSignInPromo(
       *profile(), CreateAddress(non_eligible_country_code)));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithoutAccount) {
+  // Add an account without cookies. The per-profile pref will be recorded.
+  AccountInfo account =
+      MakeAccountAvailable(identity_manager(), "test@email.com");
+
+  RecordSignInPromoShown(
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, profile());
+  RecordSignInPromoShown(
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, profile());
+
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   prefs::kPasswordSignInPromoShownCountPerProfile));
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   prefs::kAddressSignInPromoShownCountPerProfile));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetAddressSigninPromoImpressionCount(account.gaia));
+}
+
+TEST_F(ShowSigninPromoTestExplicitBrowserSignin,
+       RecordSignInPromoShownWithAccount) {
+  // Test setup for adding an account with cookies.
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                  ChromeSigninClientFactory::GetInstance(),
+                  base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                      &url_loader_factory)}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  // Add an account with cookies, which will record the per-account prefs.
+  AccountInfo account = identity_test_env->MakeAccountAvailable(
+      identity_test_env->CreateAccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN)
+          .WithCookie(true)
+          .Build("test@email.com"));
+
+  RecordSignInPromoShown(
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE, profile.get());
+  RecordSignInPromoShown(
+      signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE, profile.get());
+
+  EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
+                   prefs::kPasswordSignInPromoShownCountPerProfile));
+  EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
+                   prefs::kAddressSignInPromoShownCountPerProfile));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetPasswordSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetAddressSigninPromoImpressionCount(account.gaia));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
