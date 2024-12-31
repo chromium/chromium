@@ -474,6 +474,9 @@ public abstract class ChromeFeatureList {
     public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS =
             "ReplaceSyncPromosWithSignInPromos";
+    public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
+            "RightEdgeGoesForwardGestureNav";
+
     public static final String SAFETY_HUB = "SafetyHub";
     public static final String SAFETY_HUB_ANDROID_ORGANIC_SURVEY = "SafetyHubAndroidOrganicSurvey";
     public static final String SAFETY_HUB_ANDROID_SURVEY = "SafetyHubAndroidSurvey";
@@ -743,6 +746,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(PREFETCH_BROWSER_INITIATED_TRIGGERS, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
             newCachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
+
+    public static final CachedFlag sRightEdgeGoesForwardGestureNav =
+            newCachedFlag(RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV, false);
+
     public static final CachedFlag sSafetyHubMagicStack =
             newCachedFlag(SAFETY_HUB_MAGIC_STACK, false);
     public static final CachedFlag sSafetyHubWeakAndReusedPasswords =
@@ -883,6 +890,7 @@ public abstract class ChromeFeatureList {
                     sPostGetMyMemoryStateToBackground,
                     sPrefetchBrowserInitiatedTriggers,
                     sRedirectExplicitCTAIntentsToExistingActivity,
+                    sRightEdgeGoesForwardGestureNav,
                     sSafetyHubMagicStack,
                     sSafetyHubWeakAndReusedPasswords,
                     sSearchInCCT,

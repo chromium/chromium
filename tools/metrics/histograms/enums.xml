@@ -17375,6 +17375,7 @@ from previous Chrome versions.
   <int value="-1225772151" label="OfflineHome:disabled"/>
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
+  <int value="-1225073446" label="RightEdgeGoesForwardGestureNav:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
   <int value="-1224843921" label="DevToolsTabTarget:enabled"/>
   <int value="-1224643496" label="EnableClipboardDataControlsAndroid:disabled"/>
@@ -19371,6 +19372,7 @@ from previous Chrome versions.
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
   <int value="-419558747" label="AndroidBcivBottomControls:enabled"/>
+  <int value="-419476022" label="RightEdgeGoesForwardGestureNav:enabled"/>
   <int value="-419199747"
       label="UseHardwareBufferUsageFlagsFromVulkan:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>

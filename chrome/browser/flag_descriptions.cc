@@ -4783,6 +4783,11 @@ const char kRichAutocompletionAndroidDescription[] =
     "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
     "to any type of input that users repeatedly use to get to specific URLs.";
 
+const char kRightEdgeGoesForwardGestureNavName[] =
+    "RightEdgeGoesForwardGestureNav";
+const char kRightEdgeGoesForwardGestureNavDescription[] =
+    "Enables the right edge to navigate forward in OS gesture navigation mode.";
+
 const char kSafeBrowsingSyncCheckerCheckAllowlistName[] =
     "Safe Browsing Sync Checker Check Allowlist";
 const char kSafeBrowsingSyncCheckerCheckAllowlistDescription[] =

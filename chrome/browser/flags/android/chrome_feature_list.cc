@@ -318,6 +318,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesAllLanguage,
     &kRelatedSearchesSwitch,
     &kReportParentalControlSitesChild,
+    &kRightEdgeGoesForwardGestureNav,
     &kSearchInCCT,
     &kSearchInCCTAlternateTapHandling,
     &kSearchResumptionModuleAndroid,
@@ -996,6 +997,10 @@ BASE_FEATURE(kRelatedSearchesSwitch,
 BASE_FEATURE(kReportParentalControlSitesChild,
              "ReportParentalControlSitesChild",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRightEdgeGoesForwardGestureNav,
+             "RightEdgeGoesForwardGestureNav",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSettingsSingleActivity,
              "SettingsSingleActivity",

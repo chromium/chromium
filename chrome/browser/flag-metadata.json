@@ -7594,6 +7594,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "right-edge-goes-forward-gesture-nav",
+    "owners": [ "eleanorlee@google.com", "lazzzis@google.com", "twellington@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "rounded-display",
     "owners": [
       "zoraiznaeem@chromium.org",

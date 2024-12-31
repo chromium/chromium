@@ -2791,6 +2791,9 @@ extern const char kRelatedSearchesSwitchDescription[];
 extern const char kRichAutocompletionAndroidName[];
 extern const char kRichAutocompletionAndroidDescription[];
 
+extern const char kRightEdgeGoesForwardGestureNavName[];
+extern const char kRightEdgeGoesForwardGestureNavDescription[];
+
 extern const char kSafeBrowsingSyncCheckerCheckAllowlistName[];
 extern const char kSafeBrowsingSyncCheckerCheckAllowlistDescription[];
 
