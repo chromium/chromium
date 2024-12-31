@@ -130,23 +130,6 @@ BOOL IsIdentityInCoreAccountInfos(
 // The actions to perform following account sign-in.
 @property(nonatomic, assign) PostSignInActionSet postSignInActions;
 
-// Checks which sign-in steps to perform and updates member variables
-// accordingly.
-- (void)checkSigninSteps;
-
-// Continues the sign-in state machine starting from `_state` and invokes
-// `_signInCompletion` when finished.
-- (void)continueSignin;
-
-// Runs `_signInCompletion` asynchronously with `result` argument.
-- (void)completeSignInWithResult:(SigninCoordinatorResult)result;
-
-// Cancels the current sign-in flow.
-- (void)cancelFlowWithReason:(CancelationReason)byUser;
-
-// Handles an authentication error and show an alert to the user.
-- (void)handleAuthenticationError:(NSError*)error;
-
 @end
 
 @implementation AuthenticationFlow {
@@ -240,7 +223,7 @@ BOOL IsIdentityInCoreAccountInfos(
   // Related to http://crbug.com/1246480.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf continueSignin];
+    [weakSelf continueFlow];
   });
 }
 
@@ -366,7 +349,9 @@ BOOL IsIdentityInCoreAccountInfos(
   }
 }
 
-- (void)continueSignin {
+// Continues the sign-in state machine starting from `_state` and invokes
+// `_signInCompletion` when finished.
+- (void)continueFlow {
   ProfileIOS* profile = [self originalProfile];
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
@@ -380,7 +365,7 @@ BOOL IsIdentityInCoreAccountInfos(
 
     case CHECK_SIGNIN_STEPS:
       [self checkSigninSteps];
-      [self continueSignin];
+      [self continueFlow];
       return;
 
     case FETCH_MANAGED_STATUS:
@@ -457,7 +442,7 @@ BOOL IsIdentityInCoreAccountInfos(
       dispatch_async(dispatch_get_main_queue(), ^{
         self->_selfRetainer = nil;
       });
-      [self continueSignin];
+      [self continueFlow];
       return;
     }
     case DONE:
@@ -466,6 +451,8 @@ BOOL IsIdentityInCoreAccountInfos(
   NOTREACHED();
 }
 
+// Checks which sign-in steps to perform and updates member variables
+// accordingly.
 - (void)checkSigninSteps {
   id<SystemIdentity> currentIdentity =
       AuthenticationServiceFactory::GetForProfile([self originalProfile])
@@ -537,10 +524,11 @@ BOOL IsIdentityInCoreAccountInfos(
                                                          signin::Tribool
                                                              capability) {
         // The capability value is ignored.
-        [weakSelf continueSignin];
+        [weakSelf continueFlow];
       })];
 }
 
+// Runs `_signInCompletion` asynchronously with `result` argument.
 - (void)completeSignInWithResult:(SigninCoordinatorResult)result {
   DCHECK(_signInCompletion)
       << "`completeSignInWithResult` should not be called twice.";
@@ -560,13 +548,14 @@ BOOL IsIdentityInCoreAccountInfos(
                              withIdentity:_identityToSignIn
                                   browser:_browser];
   }
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (BOOL)canceled {
   return _cancelationReason != CancelationReason::kNotCanceled;
 }
 
+// Cancels the current sign-in flow.
 - (void)cancelFlowWithReason:(CancelationReason)reason {
   CHECK_NE(reason, CancelationReason::kNotCanceled);
   if ([self canceled]) {
@@ -574,9 +563,10 @@ BOOL IsIdentityInCoreAccountInfos(
     return;
   }
   _cancelationReason = reason;
-  [self continueSignin];
+  [self continueFlow];
 }
 
+// Handles an authentication error and show an alert to the user.
 - (void)handleAuthenticationError:(NSError*)error {
   if ([self canceled]) {
     // Avoid double handling of cancel or error.
@@ -593,7 +583,7 @@ BOOL IsIdentityInCoreAccountInfos(
                            return;
                          }
                          [strongSelf setHandlingError:NO];
-                         [strongSelf continueSignin];
+                         [strongSelf continueFlow];
                        }
                        viewController:_presentingViewController
                               browser:_browser];
@@ -602,11 +592,11 @@ BOOL IsIdentityInCoreAccountInfos(
 #pragma mark AuthenticationFlowPerformerDelegate
 
 - (void)didSignOut {
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didClearData {
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
@@ -616,7 +606,7 @@ BOOL IsIdentityInCoreAccountInfos(
   _identityToSignInHostedDomain = hostedDomain;
   _shouldFetchUserPolicy =
       [self shouldFetchUserPolicy] && hostedDomain.length > 0;
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didFailFetchManagedStatus:(NSError*)error {
@@ -647,7 +637,7 @@ BOOL IsIdentityInCoreAccountInfos(
       (!keepBrowsingDataSeparate ||
        _accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE);
 
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didCancelManagedConfirmation {
@@ -663,17 +653,17 @@ BOOL IsIdentityInCoreAccountInfos(
   _dmToken = dmToken;
   _clientID = clientID;
   _userAffiliationIDs = userAffiliationIDs;
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didFetchUserPolicyWithSuccess:(BOOL)success {
   DCHECK_EQ(FETCH_USER_POLICY, _state);
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
-  [self continueSignin];
+  [self continueFlow];
 }
 
 - (void)didMakePersonalProfileManaged {
-  [self continueSignin];
+  [self continueFlow];
 }
 
 #pragma mark - Private methods
@@ -754,7 +744,7 @@ BOOL IsIdentityInCoreAccountInfos(
                atAccessPoint:self.accessPoint
               currentProfile:profile];
   _didSignIn = YES;
-  [self continueSignin];
+  [self continueFlow];
 }
 
 #pragma mark - Used for testing
