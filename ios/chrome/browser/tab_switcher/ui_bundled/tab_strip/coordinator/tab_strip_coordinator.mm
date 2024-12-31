@@ -62,8 +62,8 @@
 @property(nonatomic, strong) TabStripMediator* mediator;
 // Helper providing context menu for tab strip items.
 @property(nonatomic, strong) TabStripContextMenuHelper* contextMenuHelper;
-
-@property TabStripViewController* tabStripViewController;
+// The view controller for the tab strip.
+@property(nonatomic, strong) TabStripViewController* tabStripViewController;
 
 @end
 
