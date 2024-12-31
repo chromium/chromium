@@ -51,6 +51,11 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type);
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type);
 
+// Do not use this function for data types which have multiple corresponding
+// user selectable types.
+std::optional<UserSelectableType> GetUserSelectableTypeFromDataType(
+    DataType data_type);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Chrome OS provides a separate UI with sync controls for OS data types. Note
 // that wallpaper is a special case due to its reliance on apps, so while it

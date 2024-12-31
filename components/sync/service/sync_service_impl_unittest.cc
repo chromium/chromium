@@ -2338,7 +2338,144 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
       {DEVICE_INFO, {"d1", "d2"}}};
   service()->TriggerLocalDataMigration(items);
 }
-#endif
+
+TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+       ShouldForwardUponSelectTypeAndMigrateLocalDataItemsWhenActive) {
+  SignInWithoutSyncConsent();
+
+  std::vector<LocalDataItemModel::DataId> items{{"d1"}};
+
+  // PASSWORDS will be passed to SelectTypeAndMigrateLocalDataItemsWhenActive(),
+  // and the user is not syncing. So data should be uploaded.
+  auto password_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*password_uploader, TriggerLocalDataMigration(items));
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true,
+                      std::move(password_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  service()->SelectTypeAndMigrateLocalDataItemsWhenActive(PASSWORDS, items);
+  EXPECT_TRUE(service()->GetActiveDataTypes().Has(PASSWORDS));
+}
+
+TEST_F(
+    SyncServiceImplWithBatchUploadDesktopTest,
+    ShouldForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithDataTypeDisabled) {
+  SignInWithoutSyncConsent();
+
+  std::vector<LocalDataItemModel::DataId> items{{"d1"}};
+
+  // PASSWORDS will be passed to SelectTypeAndMigrateLocalDataItemsWhenActive(),
+  // and the user is not syncing. So data should be uploaded.
+  auto password_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*password_uploader, TriggerLocalDataMigration(items));
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true,
+                      std::move(password_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  // Disable account storage for passwords, it will be enabled again.
+  service()->GetUserSettings()->SetSelectedType(UserSelectableType::kPasswords,
+                                                false);
+  ASSERT_FALSE(service()->GetActiveDataTypes().Has(PASSWORDS));
+
+  service()->SelectTypeAndMigrateLocalDataItemsWhenActive(PASSWORDS, items);
+  EXPECT_TRUE(service()->GetActiveDataTypes().Has(PASSWORDS));
+}
+
+TEST_F(
+    SyncServiceImplWithBatchUploadDesktopTest,
+    ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithEnterprisePolicy) {
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignInWithoutSyncConsent();
+
+  // PASSWORDS will be passed to SelectTypeAndMigrateLocalDataItemsWhenActive(),
+  // but there is an enterprise policy in place. So data should not be uploaded.
+  auto password_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*password_uploader, TriggerLocalDataMigration()).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true,
+                      std::move(password_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  // Sync was disabled due to the policy.
+  ASSERT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
+            service()->GetDisableReasons());
+  ASSERT_EQ(SyncService::TransportState::DISABLED,
+            service()->GetTransportState());
+
+  service()->SelectTypeAndMigrateLocalDataItemsWhenActive(PASSWORDS, {"d1"});
+  EXPECT_FALSE(service()->GetActiveDataTypes().Has(PASSWORDS));
+}
+
+TEST_F(
+    SyncServiceImplWithBatchUploadDesktopTest,
+    ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithTypeDisabledByPolicy) {
+  PrefValueMap policy_prefs;
+  SyncPrefs::SetTypeDisabledByPolicy(&policy_prefs,
+                                     UserSelectableType::kAutofill);
+  // Copy the policy prefs map over into the PrefService.
+  for (const auto& policy_pref : policy_prefs) {
+    prefs()->SetManagedPref(policy_pref.first, policy_pref.second.Clone());
+  }
+
+  SignInWithoutSyncConsent();
+
+  std::vector<LocalDataItemModel::DataId> items{{"d1"}};
+
+  // CONTACT_INFO will be passed to
+  // SelectTypeAndMigrateLocalDataItemsWhenActive(), but the data type is
+  // managed. So data should not be uploaded.
+  auto address_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*address_uploader, TriggerLocalDataMigration()).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(CONTACT_INFO, /*enable_transport_mode=*/true,
+                      std::move(address_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  service()->SelectTypeAndMigrateLocalDataItemsWhenActive(CONTACT_INFO, items);
+  EXPECT_FALSE(service()->GetActiveDataTypes().Has(CONTACT_INFO));
+}
+
+TEST_F(
+    SyncServiceImplWithBatchUploadDesktopTest,
+    ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithoutTransportOnlyMode) {
+  SignInWithoutSyncConsent();
+
+  std::vector<LocalDataItemModel::DataId> items{{"d1"}};
+
+  // BOOKMARKS will be passed to
+  // SelectTypeAndMigrateLocalDataItemsWhenActive(), but the data type is not
+  // available in transport-only mode. So data should not be uploaded.
+  auto bookmarks_uploader =
+      std::make_unique<MockDataTypeLocalDataBatchUploader>();
+  EXPECT_CALL(*bookmarks_uploader, TriggerLocalDataMigration()).Times(0);
+
+  std::vector<FakeControllerInitParams> params;
+  params.emplace_back(BOOKMARKS, /*enable_transport_mode=*/false,
+                      std::move(bookmarks_uploader));
+  InitializeService(std::move(params));
+  base::RunLoop().RunUntilIdle();
+
+  service()->SelectTypeAndMigrateLocalDataItemsWhenActive(BOOKMARKS, items);
+  EXPECT_FALSE(service()->GetActiveDataTypes().Has(BOOKMARKS));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SyncServiceImplTest, ShouldRecordLocalDataMigrationRequests) {
   base::HistogramTester histogram_tester;

@@ -152,9 +152,13 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(
       void,
       TriggerLocalDataMigration,
-      ((std::map<syncer::DataType,
-                 std::vector<syncer::LocalDataItemModel::DataId>> items)),
+      ((std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)),
       (override));
+  MOCK_METHOD(void,
+              SelectTypeAndMigrateLocalDataItemsWhenActive,
+              (DataType data_type,
+               std::vector<LocalDataItemModel::DataId> items),
+              (override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

@@ -39,6 +39,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_util.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
@@ -50,6 +51,7 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_engine_factory.h"
 #include "components/sync/service/sync_error.h"
@@ -446,6 +448,10 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   sync_status_recorder_ =
       std::make_unique<SyncFeatureStatusForMigrationsRecorder>(
           sync_client_->GetPrefService(), this);
+
+  local_data_migration_item_queue_ =
+      std::make_unique<LocalDataMigrationItemQueue>(this,
+                                                    data_type_manager_.get());
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -703,10 +709,12 @@ void SyncServiceImpl::Shutdown() {
 
   NotifyShutdown();
 
-  // Ensure the DataTypeManager is destroyed before the engine, since it has a
-  // pointer to the engine.
+  // Ensure the LocalDataMigrationItemQueue, the DataTypeManager and the
+  // engine are destroyed in order since they hold consecutive pointers to each
+  // other.
   std::unique_ptr<SyncEngine> engine =
       ResetEngine(ResetEngineReason::kShutdown);
+  local_data_migration_item_queue_.reset();
   data_type_manager_.reset();
   engine.reset();
 
@@ -2312,7 +2320,7 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
 }
 
 void SyncServiceImpl::TriggerLocalDataMigration(
-    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
+    std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {
   CHECK(switches::IsBatchUploadDesktopEnabled());
 
   for (const auto& [type, _] : items) {
@@ -2327,6 +2335,40 @@ void SyncServiceImpl::TriggerLocalDataMigration(
   }
 
   return data_type_manager_->TriggerLocalDataMigration(std::move(items));
+}
+
+void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
+    DataType data_type,
+    std::vector<LocalDataItemModel::DataId> items) {
+  CHECK(local_data_migration_item_queue_);
+  CHECK(IsSignedIn());
+  // Syncing users do not use separate local and account storages. Thus, there's
+  // no local-only data to migrate. The sign in through the promo should not
+  // have made the user consent to sync.
+  CHECK(!HasSyncConsent());
+
+  // TODO(crbug.com/386752831): Add a metric here.
+
+  std::optional<UserSelectableType> user_selectable_type =
+      GetUserSelectableTypeFromDataType(data_type);
+  CHECK(user_selectable_type.has_value());
+
+  // Do not proceed if the data type is managed for the account, disabled by
+  // policy or not available in transport-only mode.
+  if (GetUserSettings()->IsTypeManagedByPolicy(user_selectable_type.value()) ||
+      HasDisableReason(SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      !data_type_manager_->GetDataTypesForTransportOnlyMode().Has(data_type)) {
+    return;
+  }
+
+  // Enable account storage in case the user had been using local storage
+  // before.
+  GetUserSettings()->SetSelectedType(user_selectable_type.value(), true);
+
+  // Move the item as soon as the sync service activates.
+  local_data_migration_item_queue_
+      ->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(data_type,
+                                                               items);
 }
 
 }  // namespace syncer

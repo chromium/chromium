@@ -54,6 +54,9 @@ bool ShouldShowSignInPromoCommon(Profile& profile) {
     return false;
   }
 
+  // TODO(crbug.com/386774184): Check for policies which may disallow account
+  // storage.
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
 
