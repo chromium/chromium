@@ -328,9 +328,7 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
       alert_state == TabAlertState::VIDEO_RECORDING ||
       alert_state == TabAlertState::TAB_CAPTURING ||
       alert_state == TabAlertState::DESKTOP_CAPTURING) {
-    if (base::FeatureList::IsEnabled(
-            content_settings::features::kImprovedSemanticsActivityIndicators) &&
-        (alert_state == TabAlertState::MEDIA_RECORDING ||
+    if ((alert_state == TabAlertState::MEDIA_RECORDING ||
          alert_state == TabAlertState::AUDIO_RECORDING ||
          alert_state == TabAlertState::VIDEO_RECORDING) &&
         camera_mic_indicator_start_time_ == base::Time()) {
@@ -348,9 +346,7 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
   gfx::MultiAnimation::Parts parts;
   const bool is_for_fade_in = alert_state.has_value();
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators) &&
-      !is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
+  if (!is_for_fade_in && camera_mic_indicator_start_time_ != base::Time()) {
     base::TimeDelta delay =
         base::Time::Now() - camera_mic_indicator_start_time_;
     camera_mic_indicator_start_time_ = base::Time();

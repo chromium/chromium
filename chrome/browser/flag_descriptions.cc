@@ -2991,11 +2991,6 @@ const char kForcedColorsName[] = "Forced Colors";
 const char kForcedColorsDescription[] =
     "Enables forced colors mode for web content.";
 
-const char kImprovedSemanticsActivityIndicatorsName[] =
-    "Improved semantics activity indicators";
-const char kImprovedSemanticsActivityIndicatorsDescription[] =
-    "Enables experimental improved semantics indicators in the location bar.";
-
 const char kLeftHandSideActivityIndicatorsName[] =
     "Left-hand side activity indicators";
 const char kLeftHandSideActivityIndicatorsDescription[] =

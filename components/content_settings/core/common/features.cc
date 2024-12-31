@@ -78,10 +78,6 @@ BASE_FEATURE(kUserBypassFeedback,
              "UserBypassFeedback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kImprovedSemanticsActivityIndicators,
-             "ImprovedSemanticsActivityIndicators",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLeftHandSideActivityIndicators,
              "LeftHandSideActivityIndicators",
              base::FEATURE_ENABLED_BY_DEFAULT);

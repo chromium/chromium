@@ -8416,13 +8416,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOneTimePermissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(permissions::features::kOneTimePermission)},
 
-    {"improved-semantics-activity-indicators",
-     flag_descriptions::kImprovedSemanticsActivityIndicatorsName,
-     flag_descriptions::kImprovedSemanticsActivityIndicatorsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         content_settings::features::kImprovedSemanticsActivityIndicators)},
-
     {"left-hand-side-activity-indicators",
      flag_descriptions::kLeftHandSideActivityIndicatorsName,
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,

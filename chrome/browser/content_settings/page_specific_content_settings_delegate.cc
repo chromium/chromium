@@ -53,12 +53,9 @@ using content_settings::PageSpecificContentSettings;
 PageSpecificContentSettingsDelegate::PageSpecificContentSettingsDelegate(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators)) {
     media_observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
                                    ->GetMediaStreamCaptureIndicator()
                                    .get());
-  }
 }
 
 PageSpecificContentSettingsDelegate::~PageSpecificContentSettingsDelegate() =
