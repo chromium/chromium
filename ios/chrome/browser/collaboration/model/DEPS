@@ -9,3 +9,9 @@ include_rules = [
   "+ios/chrome/browser/share_kit/model",
   "+ios/chrome/browser/ui/authentication",
 ]
+
+specific_include_rules = {
+  ".*test\.mm": [
+    "+components/saved_tab_groups/test_support",
+  ]
+}

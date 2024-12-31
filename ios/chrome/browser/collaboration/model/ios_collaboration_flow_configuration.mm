@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 
-#import "base/check.h"
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 
 namespace collaboration {
@@ -16,11 +14,7 @@ namespace collaboration {
 #pragma mark - CollaborationFlowConfigurationShareOrManage
 
 CollaborationFlowConfigurationShareOrManage::
-    CollaborationFlowConfigurationShareOrManage(
-        base::WeakPtr<const TabGroup> tab_group)
-    : tab_group_(tab_group) {
-  CHECK(tab_group_);
-}
+    CollaborationFlowConfigurationShareOrManage() {}
 
 CollaborationFlowConfigurationShareOrManage::
     ~CollaborationFlowConfigurationShareOrManage() {}

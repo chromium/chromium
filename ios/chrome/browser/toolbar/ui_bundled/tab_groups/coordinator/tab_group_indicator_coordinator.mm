@@ -229,8 +229,7 @@
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
           std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>(
-              tabGroup->GetWeakPtr()));
+              collaboration::CollaborationFlowConfigurationShareOrManage>());
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());
 }

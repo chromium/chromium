@@ -6,9 +6,15 @@
 
 #import "base/check.h"
 #import "base/test/mock_callback.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -21,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -28,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -42,6 +50,11 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(
   return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
                                                nullptr);
 }
+
+std::unique_ptr<KeyedService> BuildFakeTabGroupSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+}
 }  // namespace
 
 namespace collaboration {
@@ -50,9 +63,15 @@ namespace collaboration {
 class IOSCollaborationControllerDelegateTest : public PlatformTest {
  protected:
   IOSCollaborationControllerDelegateTest() {
-    // Create a tabGroup from the `WebStateListBuilderFromDescription`.
-    EXPECT_TRUE(builder_.BuildWebStateListFromDescription("| a b [ 0 c ] d e"));
-    tab_group_ = builder_.GetTabGroupForIdentifier('0');
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kTabGroupSync,
+            kTabGroupsIPad,
+            kModernTabStrip,
+            data_sharing::features::kDataSharingFeature,
+        },
+        /*disable_features=*/{});
 
     // Init the delegate parameters.
     TestProfileIOS::Builder test_cbs_builder;
@@ -61,10 +80,31 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_cbs_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeTabGroupSyncService));
+    test_cbs_builder.AddTestingFactory(
         ShareKitServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestShareKitService));
     profile_ = std::move(test_cbs_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+
+    web_state_list_ = browser_->GetWebStateList();
+    web_state_list_->InsertWebState(std::make_unique<web::FakeWebState>());
+    web_state_list_->InsertWebState(std::make_unique<web::FakeWebState>());
+    web_state_list_->InsertWebState(std::make_unique<web::FakeWebState>());
+
+    web_state_list_->CreateGroup({1}, {},
+                                 tab_groups::TabGroupId::GenerateNew());
+
+    tab_group_ = web_state_list_->GetGroupOfWebStateAt(1);
+
+    tab_groups::SavedTabGroup saved_group =
+        tab_groups::test::CreateTestSavedTabGroup();
+    saved_group.SetLocalGroupId(tab_group_->tab_group_id());
+    tab_group_sync_service_ =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get());
+
+    tab_group_sync_service_->AddGroup(saved_group);
 
     CommandDispatcher* command_dispatcher = browser_->GetCommandDispatcher();
     application_commands_mock_ =
@@ -80,8 +120,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   void InitShareFlowDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
         browser_.get(), base_view_controller_,
-        std::make_unique<CollaborationFlowConfigurationShareOrManage>(
-            tab_group_->GetWeakPtr()));
+        std::make_unique<CollaborationFlowConfigurationShareOrManage>());
   }
 
   // Init the delegate for a join flow.
@@ -104,10 +143,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_{&web_state_list_delegate_};
-  WebStateListBuilderFromDescription builder_{&web_state_list_};
+  raw_ptr<WebStateList> web_state_list_;
   id<ApplicationCommands> application_commands_mock_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -136,7 +175,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
 
   // Delete the tabGroup.
-  web_state_list_.DeleteGroup(tab_group_);
+  web_state_list_->DeleteGroup(tab_group_);
 
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;

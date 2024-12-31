@@ -376,8 +376,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
           std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>(
-              _tabGroup->GetWeakPtr()));
+              collaboration::CollaborationFlowConfigurationShareOrManage>());
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                _tabGroup->tab_group_id());
 }

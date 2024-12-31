@@ -7,11 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/raw_ptr.h"
-#import "base/memory/weak_ptr.h"
 #import "components/saved_tab_groups/public/types.h"
-
-class TabGroup;
 
 namespace collaboration {
 
@@ -57,18 +53,11 @@ class CollaborationFlowConfigurationShareOrManage final
   static constexpr Type kType = Type::kShareOrManage;
 
   // Constructs a new CollaborationFlowConfigurationShareOrManage object.
-  explicit CollaborationFlowConfigurationShareOrManage(
-      base::WeakPtr<const TabGroup> tab_group);
+  explicit CollaborationFlowConfigurationShareOrManage();
   ~CollaborationFlowConfigurationShareOrManage() override;
 
   // CollaborationFlowConfiguration.
   Type type() const final;
-
-  // Returns the tab group associated with the flow configuration.
-  base::WeakPtr<const TabGroup> tab_group() const { return tab_group_; }
-
- private:
-  base::WeakPtr<const TabGroup> tab_group_;
 };
 
 // This class is the configuration for a join flow.

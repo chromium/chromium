@@ -129,10 +129,31 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
     ResultCallback result) {
   CHECK_EQ(flow_config_->type(),
            CollaborationFlowConfiguration::Type::kShareOrManage);
-  const CollaborationFlowConfigurationShareOrManage& share_flow =
-      flow_config_->As<CollaborationFlowConfigurationShareOrManage>();
 
-  base::WeakPtr<const TabGroup> tab_group = share_flow.tab_group();
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  if (!tab_group_sync_service) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_sync_service->GetGroup(either_id);
+
+  if (!saved_group.has_value()) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  const TabGroup* tab_group = nullptr;
+  for (const TabGroup* group : browser_->GetWebStateList()->GetGroups()) {
+    if (group->tab_group_id() == saved_group->local_group_id()) {
+      tab_group = group;
+      break;
+    }
+  }
+
   if (!tab_group) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
@@ -140,7 +161,7 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 
   ShareKitShareGroupConfiguration* config =
       [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tab_group.get();
+  config.tabGroup = tab_group;
   config.baseViewController = base_view_controller_;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
@@ -160,20 +181,12 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
     ResultCallback result) {
   CHECK_EQ(flow_config_->type(),
            CollaborationFlowConfiguration::Type::kShareOrManage);
-  const CollaborationFlowConfigurationShareOrManage& manage_configuration =
-      flow_config_->As<CollaborationFlowConfigurationShareOrManage>();
 
-  base::WeakPtr<const TabGroup> tab_group = manage_configuration.tab_group();
-  if (!tab_group) {
-    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
-    return;
-  }
-
-  tab_groups::TabGroupSyncService* sync_service =
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
   tab_groups::CollaborationId collaboration_id =
-      tab_groups::utils::GetTabGroupCollabID(tab_group.get(), sync_service);
+      tab_groups::utils::GetTabGroupCollabID(either_id, tab_group_sync_service);
   if (collaboration_id->empty()) {
     std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
     return;
