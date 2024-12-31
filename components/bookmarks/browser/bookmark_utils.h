@@ -234,6 +234,10 @@ bool HasDescendantsOf(
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url = GURL());
 
+// This pruning keeps visible, non-managed folder nodes.
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node);
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_UTILS_H_

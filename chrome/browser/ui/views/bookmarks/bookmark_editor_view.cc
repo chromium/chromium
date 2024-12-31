@@ -460,14 +460,14 @@ BookmarkEditorView::CreateRootNode() {
 void BookmarkEditorView::CreateNodes(const BookmarkNode* bb_node,
                                      BookmarkEditorView::EditorNode* b_node) {
   for (const auto& child_bb_node : bb_node->children()) {
-    if (child_bb_node->IsVisible() && child_bb_node->is_folder() &&
-        !bb_model_->client()->IsNodeManaged(child_bb_node.get())) {
-      EditorNode* new_b_node = b_node->Add(std::make_unique<EditorNode>(
-          child_bb_node->GetTitle(), child_bb_node->id()));
-      new_b_node->SetPlaceholderAccessibleTitle(
-          l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
-      CreateNodes(child_bb_node.get(), new_b_node);
+    if (bookmarks::PruneFoldersForDisplay(bb_model_, child_bb_node.get())) {
+      continue;
     }
+    EditorNode* const new_b_node = b_node->Add(std::make_unique<EditorNode>(
+        child_bb_node->GetTitle(), child_bb_node->id()));
+    new_b_node->SetPlaceholderAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER));
+    CreateNodes(child_bb_node.get(), new_b_node);
   }
 }
 

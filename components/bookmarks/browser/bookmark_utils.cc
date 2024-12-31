@@ -91,11 +91,6 @@ bool DoesBookmarkTextContainWords(const std::u16string& text,
   return true;
 }
 
-// This is used with a tree iterator to skip subtrees which are not visible.
-bool PruneInvisibleFolders(const BookmarkNode* node) {
-  return !node->IsVisible();
-}
-
 // Recursively searches for a node satisfying the functor `pred` . Returns
 // nullptr if not found.
 template <typename Predicate>
@@ -225,15 +220,10 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
     BookmarkModel* model) {
   std::vector<const BookmarkNode*> nodes;
   ui::TreeNodeIterator<const BookmarkNode> iterator(
-      model->root_node(), base::BindRepeating(&PruneInvisibleFolders));
+      model->root_node(), base::BindRepeating(&PruneFoldersForDisplay, model));
 
   while (iterator.has_next()) {
-    const BookmarkNode* const node = iterator.Next();
-    // Filter out managed nodes and non-folders.
-    if (model->client()->IsNodeManaged(node) || !node->is_folder()) {
-      continue;
-    }
-    nodes.push_back(node);
+    nodes.push_back(iterator.Next());
   }
 
   // TODO(crbug.com/354892429): Filter local permanent nodes if they shouldn't
@@ -556,6 +546,12 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
       GetMostRecentlyModifiedUserFolders(model);
   CHECK(!nodes.empty());
   return nodes[0];
+}
+
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node) {
+  return !node->IsVisible() || !node->is_folder() ||
+         model->client()->IsNodeManaged(node);
 }
 
 }  // namespace bookmarks
