@@ -1035,7 +1035,7 @@ base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
 }
 
 void ProxyImpl::QueueImageDecodeOnImpl(int request_id,
-                                       std::unique_ptr<PaintImage> image) {
+                                       std::unique_ptr<DrawImage> image) {
   host_impl_->QueueImageDecode(request_id, *image);
 }
 

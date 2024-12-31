@@ -2207,6 +2207,16 @@ ResourcePriority LayoutBox::ComputeResourcePriority() const {
       screen_area);
 }
 
+gfx::Size LayoutBox::GetSpeculativeDecodeSize() const {
+  NOT_DESTROYED();
+  return PhysicalContentBoxRect().PixelSnappedSize();
+}
+
+InterpolationQuality LayoutBox::GetSpeculativeDecodeQuality() const {
+  NOT_DESTROYED();
+  return StyleRef().GetInterpolationQuality();
+}
+
 void LayoutBox::LocationChanged() {
   NOT_DESTROYED();
   // The location may change because of layout of other objects. Should check
