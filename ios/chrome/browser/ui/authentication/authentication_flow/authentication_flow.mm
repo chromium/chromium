@@ -142,9 +142,6 @@ BOOL IsIdentityInCoreAccountInfos(
   BOOL _didSignIn;
   CancelationReason _cancelationReason;
   BOOL _shouldSignOut;
-  // YES if the signed in account is a managed account and the sign-in flow
-  // includes sync.
-  BOOL _shouldShowManagedConfirmation;
   // YES if the personal profile should be converted to a managed (work) profile
   // as part of the signin flow. Can only be true if the to-be-signed-in account
   // is managed.
@@ -290,7 +287,9 @@ BOOL IsIdentityInCoreAccountInfos(
     case CHECK_SIGNIN_STEPS:
       return FETCH_MANAGED_STATUS;
     case FETCH_MANAGED_STATUS:
-      if (_shouldShowManagedConfirmation) {
+      if (ShouldShowManagedConfirmationForHostedDomain(
+              _identityToSignInHostedDomain, _accessPoint,
+              _identityToSignIn.gaiaID, [self prefs])) {
         return SHOW_MANAGED_CONFIRMATION;
       } else if (_shouldSignOut) {
         return SIGN_OUT_IF_NEEDED;
@@ -598,8 +597,6 @@ BOOL IsIdentityInCoreAccountInfos(
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
-  _shouldShowManagedConfirmation =
-      [self ShouldShowManagedConfirmationForHostedDomain:hostedDomain];
   _identityToSignInHostedDomain = hostedDomain;
   _shouldFetchUserPolicy =
       [self shouldFetchUserPolicy] && hostedDomain.length > 0;
@@ -675,13 +672,6 @@ BOOL IsIdentityInCoreAccountInfos(
 
 - (PrefService*)prefs {
   return [self originalProfile]->GetPrefs();
-}
-
-// Returns YES if the managed confirmation dialog should be shown for the
-// hosted domain.
-- (BOOL)ShouldShowManagedConfirmationForHostedDomain:(NSString*)hostedDomain {
-  return ShouldShowManagedConfirmationForHostedDomain(
-      hostedDomain, _accessPoint, _identityToSignIn.gaiaID, [self prefs]);
 }
 
 // Returns YES if should fetch user policy.
