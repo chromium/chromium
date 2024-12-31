@@ -240,6 +240,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
+      this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
+          this.suppressGhostLoader_.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
@@ -277,6 +279,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     });
     this.eventTracker_.add(
         document, 'pointermove', this.updateCursorPosition.bind(this));
+    this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
+      this.suppressGhostLoader = false;
+      this.showErrorState = false;
+    });
+
     this.performanceTracker.startSession();
   }
 
@@ -426,6 +433,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private computeShowGhostLoader(): boolean {
     return this.isSearchboxFocused && !this.suppressGhostLoader;
+  }
+
+  private suppressGhostLoader_() {
+    // If tab is foregrounded don't show ghost loader.
+    this.suppressGhostLoader = true;
   }
 
   private onMoreOptionsButtonClick() {

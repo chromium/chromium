@@ -258,5 +258,8 @@ interface LensPage {
   // Copies the currently selected text to the users clipboard and displays the
   // text copied chip.
   TriggerCopyText();
+
+  // Suppress the ghost loader when tab is foregrounded.
+  SuppressGhostLoader();
 };
 

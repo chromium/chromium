@@ -386,6 +386,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 
   void TriggerCopyText() override { did_trigger_copy = true; }
 
+  void SuppressGhostLoader() override {}
+
   void Reset() {
     last_received_screenshot_.reset();
     last_received_theme_->reset();

@@ -1796,6 +1796,9 @@ void LensOverlayController::UpdatePageContextualization(
 }
 
 void LensOverlayController::SuppressGhostLoader() {
+  if (page_) {
+    page_->SuppressGhostLoader();
+  }
   if (side_panel_page_) {
     side_panel_page_->SuppressGhostLoader();
   }
@@ -2463,6 +2466,9 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
                  : State::kOverlay;
     if (state_ != State::kOverlayAndResults) {
       ShowPreselectionBubble();
+    }
+    if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+      SuppressGhostLoader();
     }
   }
 }

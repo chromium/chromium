@@ -188,6 +188,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(this.$.searchbox, 'focusout', () => {
       this.onSearchboxFocusOut_();
     });
+    this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
+      this.suppressGhostLoader = false;
+      this.showErrorState = false;
+    });
     this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
       if (event.key !== 'Escape' && this.isSearchboxFocused) {
         onSearchboxKeydown(this, this.$.searchbox);

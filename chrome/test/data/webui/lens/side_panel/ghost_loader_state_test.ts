@@ -43,7 +43,7 @@ suite('SearchboxBackButton', () => {
     assertFalse(isVisible(ghostLoader));
   });
 
-  test('reset ghost loader loading state', async () => {
+  test('input resets ghost loader loading state', async () => {
     const ghostLoader = lensSidePanelElement.shadowRoot!
                             .querySelector<SearchboxGhostLoaderElement>(
                                 'cr-searchbox-ghost-loader')!;
@@ -63,6 +63,27 @@ suite('SearchboxBackButton', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     // State should be switched back to loading state after any input.
+    assertTrue(
+        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+  });
+
+  test('click resets ghost loader loading state', async () => {
+    const ghostLoader = lensSidePanelElement.shadowRoot!
+                            .querySelector<SearchboxGhostLoaderElement>(
+                                'cr-searchbox-ghost-loader')!;
+    ghostLoader.showErrorStateForTesting();
+    lensSidePanelElement.makeGhostLoaderVisibleForTesting();
+    await waitAfterNextRender(lensSidePanelElement);
+    assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
+    // Click into the searchbox.
+    lensSidePanelElement.$.searchbox.dispatchEvent(
+        new KeyboardEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+        }));
+
+    await waitAfterNextRender(lensSidePanelElement);
+    // State should be switched back to loading state clicking into searchbox.
     assertTrue(
         isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
   });
