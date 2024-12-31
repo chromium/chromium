@@ -198,11 +198,22 @@ CGFloat FullscreenModel::GetTopContentInset() const {
 void FullscreenModel::SetYContentOffset(CGFloat y_content_offset) {
   CGFloat from_offset = y_content_offset_;
   y_content_offset_ = y_content_offset;
+  if (y_content_offset_ == from_offset) {
+    // The scroll did not change `y_content_offset_` (e.g., reached the bottom
+    // of the page).
+    fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kNone;
+  }
   switch (ActionForScrollFromOffset(from_offset)) {
     case ScrollAction::kUpdateBaseOffset:
       UpdateBaseOffset();
       break;
     case ScrollAction::kUpdateProgress:
+      // Updates `scroll_direction_` according to the offset.
+      if (y_content_offset_ > from_offset) {
+        fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kDown;
+      } else if (y_content_offset_ < from_offset) {
+        fullscreen_scroll_direction_ = FullscreenModelScrollDirection::kUp;
+      }
       UpdateProgress();
       break;
     case ScrollAction::kUpdateBaseOffsetAndProgress:
@@ -231,7 +242,6 @@ void FullscreenModel::SetScrollViewIsScrolling(bool scrolling) {
     for (auto& observer : observers_) {
       observer.FullscreenModelScrollEventStarted(this);
     }
-    initial_progress_ = progress();
   } else {
     // Stop ignoring the current scroll.
     ignoring_current_scroll_ = false;

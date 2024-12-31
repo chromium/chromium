@@ -174,7 +174,7 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
           base::UserMetricsAction("MobileFullscreenExitedBottomReached"));
     } else {
       AnimateWithStyle(
-          AnimatorStyleFromScrollDirection(model->LastDirection()));
+          AnimatorStyleFromScrollDirection(model_->GetLastScrollDirection()));
     }
   }
 }
@@ -265,6 +265,7 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
     FullscreenModelScrollDirection direction) {
   switch (direction) {
     case FullscreenModelScrollDirection::kUp:
+    case FullscreenModelScrollDirection::kNone:
       return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kDown:
       return FullscreenAnimatorStyle::ENTER_FULLSCREEN;

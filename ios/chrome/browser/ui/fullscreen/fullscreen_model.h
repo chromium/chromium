@@ -18,7 +18,7 @@
 class FullscreenModelObserver;
 
 // Represents the direction the user is scrolling.
-enum class FullscreenModelScrollDirection { kUp, kDown };
+enum class FullscreenModelScrollDirection : int { kUp, kDown, kNone };
 
 // Model object used to calculate fullscreen state.
 class FullscreenModel : public ChromeBroadcastObserverInterface {
@@ -202,16 +202,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void SetInsetsUpdateEnabled(bool enabled);
   bool IsInsetsUpdateEnabled() const;
 
-  // Returns the direction of the last scroll event.
-  FullscreenModelScrollDirection LastDirection() const {
-    CGFloat delta = initial_progress_ - progress();
-    if (delta > 0) {
-      return FullscreenModelScrollDirection::kDown;
-    } else if (delta < 0) {
-      return FullscreenModelScrollDirection::kUp;
-    }
-    return initial_progress_ >= 0.5 ? FullscreenModelScrollDirection::kUp
-                                    : FullscreenModelScrollDirection::kDown;
+  FullscreenModelScrollDirection GetLastScrollDirection() const {
+    return fullscreen_scroll_direction_;
   }
 
  private:
@@ -269,8 +261,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   CGFloat collapsed_bottom_toolbar_height_ = 0.0;
   // The current vertical content offset of the main content.
   CGFloat y_content_offset_ = 0.0;
-  // The progress at the start of a scroll event.
-  CGFloat initial_progress_ = 1.0;
   // The height of the scroll view displaying the current page.
   CGFloat scroll_view_height_ = 0.0;
   // The height of the current page's rendered content.
@@ -302,6 +292,9 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   bool insets_update_enabled_ = true;
   // Whether progress is currently being set.
   bool setting_progress_ = false;
+  // Current direction of scrolling initiated by the user.
+  FullscreenModelScrollDirection fullscreen_scroll_direction_ =
+      FullscreenModelScrollDirection::kNone;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
