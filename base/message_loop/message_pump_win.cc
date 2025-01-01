@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
+#include <memory>
 #include <type_traits>
 
 #include "base/auto_reset.h"
@@ -719,7 +720,18 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
 // MessagePumpForIO public:
 
 MessagePumpForIO::IOContext::IOContext() {
-  memset(&overlapped, 0, sizeof(overlapped));
+  std::construct_at(GetOverlapped());
+  std::memset(GetOverlapped(), 0, sizeof(OVERLAPPED));
+}
+
+MessagePumpForIO::IOContext::~IOContext() {
+  std::destroy_at(GetOverlapped());
+}
+
+OVERLAPPED* MessagePumpForIO::IOContext::GetOverlapped() {
+  static_assert(sizeof(OVERLAPPED) == sizeof(Sizer));
+  static_assert(alignof(OVERLAPPED) == alignof(Sizer));
+  return reinterpret_cast<OVERLAPPED*>(storage_);
 }
 
 MessagePumpForIO::IOHandler::IOHandler(const Location& from_here)

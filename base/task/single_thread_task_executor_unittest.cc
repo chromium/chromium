@@ -411,7 +411,7 @@ class TestIOHandler : public MessagePumpForIO::IOHandler {
                      DWORD error) override;
 
   void Init();
-  OVERLAPPED* context() { return &context_.overlapped; }
+  OVERLAPPED* context() { return context_.GetOverlapped(); }
   DWORD size() { return sizeof(buffer_); }
 
  private:
