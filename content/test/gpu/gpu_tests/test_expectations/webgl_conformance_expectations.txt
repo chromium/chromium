@@ -449,13 +449,6 @@ crbug.com/1490427 [ angle-vulkan arm fuchsia web-engine-shell ] conformance/rend
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/textures/image_bitmap_from_blob/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/textures/image_bitmap_from_image/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/uniforms/no-over-optimization-on-uniform-array-08.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] conformance/uniforms/no-over-optimization-on-uniform-array-14.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] deqp/data/gles2/shaders/constants.html [ RetryOnFailure ]
-crbug.com/1490427 [ fuchsia fuchsia-board-nelson ] deqp/data/gles2/shaders/reserved_operators.html [ RetryOnFailure ]
 
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/state/gl-object-get-calls.html [ RetryOnFailure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-astro ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ RetryOnFailure ]
