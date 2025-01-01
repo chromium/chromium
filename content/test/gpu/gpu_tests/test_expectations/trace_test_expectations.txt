@@ -214,7 +214,6 @@ crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_RenderPipeli
 
 # Fail or flaky on Windows and Linux. Flaky timeout on Mac.
 crbug.com/371949935 [ debug-x64 graphite-disabled nvidia-0x2184 nvidia_lt_535.183.01 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
-crbug.com/371949935 [ graphite-disabled intel-0x9bc5 release-x64 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 release target-cpu-64 win11 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ angle-opengl debug display-server-x linux no-clang-coverage nvidia-0x2184 nvidia_lt_535.183.01 renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ angle-metal apple-angle-metal-renderer:-apple-m2 graphite-enabled mac-arm64 no-asan no-clang-coverage release sonoma ] TraceTest_ViewTransitionsCapture [ Failure ]
