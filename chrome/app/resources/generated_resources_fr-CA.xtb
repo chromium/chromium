@@ -427,6 +427,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1282436639288565079">Détails du groupe d'onglets</translation>
 <translation id="1283126956823499975">Un problème est survenu lors de la configuration de l'appareil</translation>
 <translation id="1284277788676816155">Ne pas autoriser l'enregistrement des données</translation>
+<translation id="1284912418686719556">Chrome est en train de créer un mot de passe fort pour vous. Vous n'avez pas besoin de vous en souvenir, car il est enregistré pour vous dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour l'adresse <ph name="EMAIL" />.</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1285484354230578868">Stocker les données dans votre compte Google Disque</translation>
 <translation id="1285625592773741684">Le paramètre actuel d'utilisation de données est Données cellulaires</translation>
@@ -7565,6 +7566,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="637642201764944055">Les anciennes versions des applications Chrome ne s'ouvriront plus sur les appareils Linux après décembre 2022. Communiquez avec votre administrateur pour passer à une nouvelle version ou retirer cette application.</translation>
 <translation id="6377268785556383139">1 résultat trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6378392501584240055">Ouvrir dans la liste des réseaux Wi-Fi</translation>
+<translation id="6379228010899751161">Confirmez votre identité pour vous assurer de toujours pouvoir utiliser les mots de passe de votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
 <translation id="6383382161803538830">Le mode lecture n'est pas accessible sur cette page</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
@@ -9613,6 +9615,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de votre appareil Chrome OS. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Si le paramètre Activité sur le Web et dans les applications est activé pour votre compte Google, vos données Android peuvent être enregistrées dans ce dernier. Vous pouvez consulter et supprimer vos données ainsi que modifier vos paramètres de compte sur le site account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Remarque :<ph name="END_BOLD" /> Une personne ayant une voix semblable à la vôtre ou disposant d'un enregistrement de celle-ci pourrait aussi accéder à vos résultats personnalisés ou à votre Assistant. Pour économiser la pile, dans les paramètres de votre Assistant, vous pouvez sélectionner d'activer « Ok Google » uniquement lorsque cet appareil est connecté à une source d'alimentation.</translation>
+<translation id="7851196412551419054">Modification de votre mot de passe en cours…</translation>
 <translation id="7851457902707056880">La connexion a été restreinte au compte du propriétaire uniquement. Veuillez redémarrer et utiliser ce compte pour vous connecter. L'appareil redémarrera automatiquement dans 30 secondes.</translation>
 <translation id="7851716364080026749">Toujours bloquer l'accès à la caméra et au microphone</translation>
 <translation id="7851720427268294554">Analyseur IPP</translation>
@@ -11196,6 +11199,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8962863356073277855">L'URL doit respecter le format https://www.example.com</translation>
 <translation id="8962918469425892674">Ce site utilise des capteurs de mouvement ou de luminosité.</translation>
 <translation id="8963117664422609631">Accéder aux paramètres du site</translation>
+<translation id="8964927371396953727">Confirmez votre identité pour utiliser et enregistrer les mots de passe dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">Entrez l'ancien mot de passe</translation>
 <translation id="8966809848145604011">Autres profils</translation>
 <translation id="8967427617812342790">Ajouter à liste lecture</translation>

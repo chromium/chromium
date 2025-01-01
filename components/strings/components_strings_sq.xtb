@@ -109,6 +109,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1186201132766001848">Kontrollo fjalëkalimet</translation>
 <translation id="1187430513518041110">Automobila dhe automjete</translation>
 <translation id="1190491977647722791">Letër (e rëndë)</translation>
+<translation id="1194278116501666615">Përditësimi për progresin e ngarkimit paraprak të ArcVm</translation>
 <translation id="1195073053842921378">Kjo adresë do të fshihet nga kjo pajisje</translation>
 <translation id="1195558154361252544">Njoftimet janë bllokuar automatikisht për të gjitha sajtet përveçse për ato që lejon ti</translation>
 <translation id="1197088940767939838">Portokalli</translation>
@@ -1146,6 +1147,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3061707000357573562">Shërbimi i korrigjimit</translation>
 <translation id="306198082577913404">Aktivizo përmirësimet e parashikimit</translation>
 <translation id="3062655045399308513">Fshi të dhënat e shfletimit…</translation>
+<translation id="3063453392496098461">Instalimi i shërbimeve të VPN-së në sfond dështoi.</translation>
 <translation id="306573536155379004">Loja filloi.</translation>
 <translation id="3067505415088964188">Çmimi është i ulët</translation>
 <translation id="3068118691172921711">Ngarkimi i skedarit në <ph name="CLOUD_PROVIDER" /> do të fillojë pas 1 minute</translation>
@@ -1755,6 +1757,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4103592298805904008">Karton (me një mur)</translation>
 <translation id="4104702906064390950">Po ruhen informacionet e numrit IBAN</translation>
 <translation id="4106887816571530227">Përmbajtja e integruar nuk lejohet</translation>
+<translation id="4107047499377819067">Instalimi i shërbimeve të VPN-së në sfond ka filluar. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4110652170750985508">Rishiko pagesën tënde</translation>
 <translation id="4111546256784973544">Lojërat me armë me bojë</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
@@ -2784,6 +2787,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6001839398155993679">Fillojmë</translation>
 <translation id="6002122790816966947">Pajisjet e tua</translation>
 <translation id="6002968396561884726">Shikuar së fundi</translation>
+<translation id="6005188329423473970">Instalimi i shërbimeve të VPN-së në sfond ka përfunduar. Nëse nuk i shikon aplikacionet e VPN-së, dil dhe identifikohu përsëri.</translation>
 <translation id="6005659677094197001">I vazhdueshëm</translation>
 <translation id="6005765687956866568">Informacionet e plotësuara automatikisht u pastruan nga formulari</translation>
 <translation id="6006365096047131769">3 x 5 inç</translation>

@@ -109,6 +109,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1186201132766001848">Egiaztatu pasahitzak</translation>
 <translation id="1187430513518041110">Autoak eta ibilgailuak</translation>
 <translation id="1190491977647722791">Papera (astuna)</translation>
+<translation id="1194278116501666615">ARCko makina birtualak aurrez kargatzearen garapenari buruzko informazio eguneratua</translation>
 <translation id="1195073053842921378">Helbidea gailutik ezabatuko da</translation>
 <translation id="1195558154361252544">Webgune guztien jakinarazpenak automatikoki blokeatzen dira, zuk baimentzen dituzunenak izan ezik</translation>
 <translation id="1197088940767939838">Laranja</translation>
@@ -1146,6 +1147,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3061707000357573562">Adabaki-zerbitzua</translation>
 <translation id="306198082577913404">Aktibatu aurreikuspenen hobekuntzak</translation>
 <translation id="3062655045399308513">Ezabatu arakatze-datuak…</translation>
+<translation id="3063453392496098461">Ezin izan da gauzatu VPNaren atzeko planoko zerbitzuen instalazioa.</translation>
 <translation id="306573536155379004">Hasi da jokoa.</translation>
 <translation id="3067505415088964188">Prezioa baxua da</translation>
 <translation id="3068118691172921711">Fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzeko prozesua minutu bat barru hasiko da</translation>
@@ -1751,6 +1753,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4103592298805904008">Kartoia (horma bakarrekoa)</translation>
 <translation id="4104702906064390950">IBANaren informazioa gordetzen</translation>
 <translation id="4106887816571530227">Ukatu da eduki kapsulatua erabiltzeko baimena</translation>
+<translation id="4107047499377819067">Hasi da VPNaren atzeko planoko zerbitzuen instalazioa. Minutu batzuk beharko dira instalatzeko.</translation>
 <translation id="4110652170750985508">Berrikusi ordainketa</translation>
 <translation id="4111546256784973544">Paintballa</translation>
 <translation id="4112140312785995938">Atzeratu</translation>
@@ -2780,6 +2783,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6001839398155993679">Has gaitezen</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6002968396561884726">Duela gutxi ikusia</translation>
+<translation id="6005188329423473970">Osatu da VPNaren atzeko planoko zerbitzuen instalazioa. VPNko aplikaziorik ikusten ez baduzu, amaitu saioa eta has ezazu berriro.</translation>
 <translation id="6005659677094197001">Etengabea</translation>
 <translation id="6005765687956866568">Garbitu da inprimakian automatikoki betetako informazioa</translation>
 <translation id="6006365096047131769">7,62 × 12,7 cm (3 × 5 in)</translation>

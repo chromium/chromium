@@ -109,6 +109,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1186201132766001848">Skontrolovať heslá</translation>
 <translation id="1187430513518041110">Automobily a vozidlá</translation>
 <translation id="1190491977647722791">Papier (vysoká gramáž)</translation>
+<translation id="1194278116501666615">Informácie o priebehu prednačítania ArcVm</translation>
 <translation id="1195073053842921378">Táto adresa bude odstránená z tohto zariadenia</translation>
 <translation id="1195558154361252544">Upozornenia sú automaticky blokované pre všetky weby okrem tých, ktoré povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
@@ -1146,6 +1147,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3061707000357573562">Služba opráv</translation>
 <translation id="306198082577913404">Zapnite zlepšenia predpovedí</translation>
 <translation id="3062655045399308513">Odstrániť dáta prehliadania…</translation>
+<translation id="3063453392496098461">Inštalácia služieb VPN na pozadí sa nepodarila.</translation>
 <translation id="306573536155379004">Hra bola spustená.</translation>
 <translation id="3067505415088964188">Cena je nízka</translation>
 <translation id="3068118691172921711">Nahrávanie súborov do služby <ph name="CLOUD_PROVIDER" /> sa začne o 1 minútu</translation>
@@ -1751,6 +1753,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4103592298805904008">Kartón (jednovrstvový)</translation>
 <translation id="4104702906064390950">IBAN sa ukladá</translation>
 <translation id="4106887816571530227">Vložený obsah nie je povolený</translation>
+<translation id="4107047499377819067">Začala sa inštalácia služieb VPN na pozadí, môže to trvať niekoľko minút.</translation>
 <translation id="4110652170750985508">Kontrola platby</translation>
 <translation id="4111546256784973544">Paintbal</translation>
 <translation id="4112140312785995938">Pretočiť dozadu</translation>
@@ -2780,6 +2783,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6001839398155993679">Poďme na to</translation>
 <translation id="6002122790816966947">Vaše zariadenia</translation>
 <translation id="6002968396561884726">Naposledy zobrazené</translation>
+<translation id="6005188329423473970">Inštalácia služieb VPN na pozadí bola dokončená. Ak aplikácie VPN nevidíte, odhláste sa a znova sa prihláste.</translation>
 <translation id="6005659677094197001">Nepretržité</translation>
 <translation id="6005765687956866568">Automaticky doplnené informácie boli z formulára vymazané</translation>
 <translation id="6006365096047131769">3 × 5 palcov</translation>

@@ -109,6 +109,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
 <translation id="1187430513518041110">Automobiles et véhicules</translation>
 <translation id="1190491977647722791">Papier (haute densité)</translation>
+<translation id="1194278116501666615">Notification sur la progression du préchargement ARCVM</translation>
 <translation id="1195073053842921378">Cette adresse sera supprimée de cet appareil</translation>
 <translation id="1195558154361252544">Les notifications sont bloquées automatiquement pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
@@ -1146,6 +1147,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3061707000357573562">Service d'application de correctifs</translation>
 <translation id="306198082577913404">Activer les améliorations de prédiction</translation>
 <translation id="3062655045399308513">Supprimer les données de navigation...</translation>
+<translation id="3063453392496098461">Échec de l'installation des services d'arrière-plan VPN.</translation>
 <translation id="306573536155379004">Le jeu a commencé.</translation>
 <translation id="3067505415088964188">Prix bas</translation>
 <translation id="3068118691172921711">L'importation de vos fichiers dans <ph name="CLOUD_PROVIDER" /> commencera dans 1 minute</translation>
@@ -1755,6 +1757,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4103592298805904008">Carton (paroi simple)</translation>
 <translation id="4104702906064390950">Enregistrement des infos de l'IBAN…</translation>
 <translation id="4106887816571530227">Contenu intégré non autorisé</translation>
+<translation id="4107047499377819067">L'installation des services d'arrière-plan VPN a commencé. Elle peut prendre quelques minutes.</translation>
 <translation id="4110652170750985508">Vérifier votre paiement</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
@@ -2784,6 +2787,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6001839398155993679">OK</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6002968396561884726">Consulté récemment</translation>
+<translation id="6005188329423473970">Installation des services d'arrière-plan VPN terminée. Si vous ne voyez pas d'applis VPN, veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="6005659677094197001">Continu</translation>
 <translation id="6005765687956866568">Les infos de saisie automatique ont été effacées du formulaire</translation>
 <translation id="6006365096047131769">3 x 5 pouces</translation>

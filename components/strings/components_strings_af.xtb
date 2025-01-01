@@ -109,6 +109,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1186201132766001848">Gaan wagwoorde na</translation>
 <translation id="1187430513518041110">Motors en voertuie</translation>
 <translation id="1190491977647722791">Papier (swaar)</translation>
+<translation id="1194278116501666615">Vorderingopdatering van die vooraflaai van ArcVm</translation>
 <translation id="1195073053842921378">Hierdie adres sal van hierdie toestel af uitgevee word</translation>
 <translation id="1195558154361252544">Kennisgewings word outomaties geblokkeer vir alle werwe behalwe dié wat jy toelaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
@@ -1146,6 +1147,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3061707000357573562">Regstellingdiens</translation>
 <translation id="306198082577913404">Skakel voorspellingverbeterings aan</translation>
 <translation id="3062655045399308513">Vee blaaierdata uit ...</translation>
+<translation id="3063453392496098461">Installasie van VPN-agtergronddienste het misluk.</translation>
 <translation id="306573536155379004">Speletjie het begin.</translation>
 <translation id="3067505415088964188">Prys is laag</translation>
 <translation id="3068118691172921711">Jou lêeroplaai na <ph name="CLOUD_PROVIDER" /> sal oor 1 minuut begin</translation>
@@ -1755,6 +1757,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4103592298805904008">Katon (enkellaag)</translation>
 <translation id="4104702906064390950">Stoor tans IBAN-inligting</translation>
 <translation id="4106887816571530227">Ingebedde inhoud word nie toegelaat nie</translation>
+<translation id="4107047499377819067">Installasie van VPN-agtergronddienste het begin; dit kan ’n paar minute neem.</translation>
 <translation id="4110652170750985508">Gaan jou betaling na</translation>
 <translation id="4111546256784973544">Verfbal</translation>
 <translation id="4112140312785995938">Soek agtertoe</translation>
@@ -2784,6 +2787,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6001839398155993679">Kom ons begin</translation>
 <translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6002968396561884726">Onlangs bekyk</translation>
+<translation id="6005188329423473970">Installasie van VPN-agtergronddienste is voltooi. As jy nie VPN-apps sien nie, moet jy afmeld en weer aanmeld.</translation>
 <translation id="6005659677094197001">Aaneenlopend</translation>
 <translation id="6005765687956866568">Die inligting wat outomaties op die vorm ingevul is, is uitgevee</translation>
 <translation id="6006365096047131769">3x5 dm.</translation>

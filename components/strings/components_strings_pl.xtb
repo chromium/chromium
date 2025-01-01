@@ -109,6 +109,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1186201132766001848">Sprawdź hasła</translation>
 <translation id="1187430513518041110">Samochody i inne pojazdy</translation>
 <translation id="1190491977647722791">Papier (ciężki)</translation>
+<translation id="1194278116501666615">Informacja o postępie wstępnego wczytywania ArcVm</translation>
 <translation id="1195073053842921378">Ten adres zostanie usunięty z tego urządzenia</translation>
 <translation id="1195558154361252544">Powiadomienia są automatycznie blokowane w przypadku wszystkich stron, chyba że na nie zezwolisz</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
@@ -1146,6 +1147,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3061707000357573562">Zastosowanie poprawki do usługi</translation>
 <translation id="306198082577913404">Włącz ulepszenia podpowiedzi</translation>
 <translation id="3062655045399308513">Usuń dane przeglądania…</translation>
+<translation id="3063453392496098461">Nie udało się zainstalować usług VPN działających w tle.</translation>
 <translation id="306573536155379004">Gra się rozpoczęła.</translation>
 <translation id="3067505415088964188">Cena jest niska</translation>
 <translation id="3068118691172921711">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za minutę</translation>
@@ -1755,6 +1757,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4103592298805904008">Tektura (jednowarstwowa)</translation>
 <translation id="4104702906064390950">Zapisuję dane numeru IBAN</translation>
 <translation id="4106887816571530227">Umieszczona treść jest niedozwolona</translation>
+<translation id="4107047499377819067">Rozpoczęła się instalacja usług VPN działających w tle. Może to potrwać kilka minut.</translation>
 <translation id="4110652170750985508">Sprawdź szczegóły płatności</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
@@ -2784,6 +2787,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6001839398155993679">Do dzieła</translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6002968396561884726">Ostatnio wyświetlane</translation>
+<translation id="6005188329423473970">Usługi VPN działające w tle zostały zainstalowane. Jeśli nie widzisz aplikacji VPN, wyloguj się i zaloguj ponownie.</translation>
 <translation id="6005659677094197001">Ciągły</translation>
 <translation id="6005765687956866568">Informacje autouzupełniania zostały usunięte z formularza</translation>
 <translation id="6006365096047131769">3 x 5 cali</translation>

@@ -109,6 +109,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1186201132766001848">Revisar contraseñas</translation>
 <translation id="1187430513518041110">Automóviles y vehículos</translation>
 <translation id="1190491977647722791">Papel (alto gramaje)</translation>
+<translation id="1194278116501666615">Actualización del progreso de la precarga de ArcVM</translation>
 <translation id="1195073053842921378">Esta dirección se borrará de este dispositivo.</translation>
 <translation id="1195558154361252544">Las notificaciones se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="1197088940767939838">Naranja</translation>
@@ -1146,6 +1147,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3061707000357573562">Aplicar parche al servicio</translation>
 <translation id="306198082577913404">Activa las mejoras de predicción</translation>
 <translation id="3062655045399308513">Borrar datos de navegación…</translation>
+<translation id="3063453392496098461">No se pudieron instalar los servicios en segundo plano de la VPN.</translation>
 <translation id="306573536155379004">Comenzó el juego.</translation>
 <translation id="3067505415088964188">El precio es bajo</translation>
 <translation id="3068118691172921711">La carga de tu archivo a <ph name="CLOUD_PROVIDER" /> comenzará dentro de 1 minuto</translation>
@@ -1756,6 +1758,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4103592298805904008">Cartón (corrugado simple)</translation>
 <translation id="4104702906064390950">Guardando información del IBAN</translation>
 <translation id="4106887816571530227">No se permite el contenido incorporado</translation>
+<translation id="4107047499377819067">Comenzó la instalación de los servicios de segundo plano de la VPN. Esto puede tardar unos minutos.</translation>
 <translation id="4110652170750985508">Revisar el pago</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Buscar más atrás</translation>
@@ -2785,6 +2788,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6001839398155993679">Comenzar</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6002968396561884726">Vistos recientemente</translation>
+<translation id="6005188329423473970">Se completó la instalación de los servicios en segundo plano de la VPN. Si no ves las apps de VPN, sal de la cuenta y vuelve a acceder.</translation>
 <translation id="6005659677094197001">Continuo</translation>
 <translation id="6005765687956866568">Se borró la información autocompletada del formulario</translation>
 <translation id="6006365096047131769">7.62 × 12.7 cm (3 × 5 in)</translation>

@@ -109,6 +109,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1186201132766001848">Şifreleri Kontrol Et</translation>
 <translation id="1187430513518041110">Arabalar ve Taşıtlar</translation>
 <translation id="1190491977647722791">Kağıt (Kalın)</translation>
+<translation id="1194278116501666615">ArcVm önceden yükleme ilerleme durumu güncellemesi</translation>
 <translation id="1195073053842921378">Bu adres bu cihazdan silinecek</translation>
 <translation id="1195558154361252544">Bildirimler, izin verdikleriniz dışındaki tüm siteler için otomatik olarak engellenir</translation>
 <translation id="1197088940767939838">Turuncu</translation>
@@ -1146,6 +1147,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3061707000357573562">Yama Hizmeti</translation>
 <translation id="306198082577913404">Geliştirilmiş tahminleri etkinleştirin</translation>
 <translation id="3062655045399308513">Tarama Verilerini Sil</translation>
+<translation id="3063453392496098461">VPN arka plan hizmetleri yüklenemedi.</translation>
 <translation id="306573536155379004">Oyun başladı.</translation>
 <translation id="3067505415088964188">Düşük fiyatlı</translation>
 <translation id="3068118691172921711"><ph name="CLOUD_PROVIDER" /> hedefine dosya yükleme işleminiz 1 dakika sonra başlayacak</translation>
@@ -1755,6 +1757,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4103592298805904008">Karton (Tek Duvarlı)</translation>
 <translation id="4104702906064390950">IBAN bilgileri kaydediliyor</translation>
 <translation id="4106887816571530227">Yerleştirilmiş içeriğe izin verilmedi</translation>
+<translation id="4107047499377819067">VPN arka plan hizmetleri yüklenmeye başladı. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="4110652170750985508">Ödemenizi inceleyin</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
@@ -2784,6 +2787,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6001839398155993679">Başlayalım</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6002968396561884726">Son Görüntülenenler</translation>
+<translation id="6005188329423473970">VPN arka plan hizmetlerinin yüklenmesi tamamlandı. VPN uygulamalarını görmüyorsanız lütfen çıkış yapıp tekrar giriş yapın.</translation>
 <translation id="6005659677094197001">Sürekli</translation>
 <translation id="6005765687956866568">Otomatik doldurulan bilgiler formdan silindi</translation>
 <translation id="6006365096047131769">3 x 5 inç</translation>

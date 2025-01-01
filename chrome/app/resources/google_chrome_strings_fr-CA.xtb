@@ -244,6 +244,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom du fichier du programme d'installation n'est pas valide ou n'est pas pris en charge.</translation>
+<translation id="3968962723676998462">Entrez votre phrase de passe pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome souhaite supprimer vos données du gestionnaire de mots de passe Google. Tapez votre mot de passe Windows pour autoriser la suppression.</translation>
 <translation id="398236277091248993">Chrome reste rapide grâce à des fonctionnalités améliorant les performances</translation>
 <translation id="3999683152997576765">Vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
@@ -308,6 +309,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
 <translation id="4741235124132242877">La fonctionnalité a été épinglée! Utilisez à nouveau Lentille Google à partir de la barre d'outils</translation>
 <translation id="4747730611090640388">Chrome peut estimer vos centres d'intérêt.  Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
+<translation id="475321580758063259">Mettez à jour Chrome pour continuer à utiliser les données Chrome dans votre compte Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Cela fait appel au même correcteur orthographique que celui qui est utilisé dans la recherche Google. Le texte que vous tapez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrez comment Chrome assure votre sécurité</translation>
@@ -584,6 +586,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne répond pas aux exigences minimales concernant le matériel.</translation>
 <translation id="8111297389482307122">Chrome doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez, ces données resteront sur cet appareil.</translation>
+<translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lentille</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>

@@ -109,6 +109,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1186201132766001848">Zkontrolovat hesla</translation>
 <translation id="1187430513518041110">Auta a dopravní prostředky</translation>
 <translation id="1190491977647722791">Papír (těžký)</translation>
+<translation id="1194278116501666615">Informace o průběhu předběžného načítání ArcVm</translation>
 <translation id="1195073053842921378">Tato adresa bude smazána z tohoto zařízení</translation>
 <translation id="1195558154361252544">Oznámení jsou automaticky blokována u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
@@ -1146,6 +1147,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3061707000357573562">Služba oprav</translation>
 <translation id="306198082577913404">Zapněte vylepšování předpovědí</translation>
 <translation id="3062655045399308513">Vymazat údaje o prohlížení…</translation>
+<translation id="3063453392496098461">Instalace služeb VPN na pozadí selhala.</translation>
 <translation id="306573536155379004">Hra byla spuštěna.</translation>
 <translation id="3067505415088964188">Cena je nízká</translation>
 <translation id="3068118691172921711">Nahrávání vašeho souboru do služby <ph name="CLOUD_PROVIDER" /> začne za 1 minutu</translation>
@@ -1751,6 +1753,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4103592298805904008">Lepenka (jednovrstvá)</translation>
 <translation id="4104702906064390950">Ukládání informací o číslu IBAN</translation>
 <translation id="4106887816571530227">Vložený obsah není povolen</translation>
+<translation id="4107047499377819067">Byla zahájena instalace služeb VPN na pozadí, může to několik minut trvat.</translation>
 <translation id="4110652170750985508">Kontrola platby</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
@@ -2780,6 +2783,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6001839398155993679">Jdeme na to</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6002968396561884726">Nedávno zobrazeno</translation>
+<translation id="6005188329423473970">Byla dokončena instalace služeb VPN na pozadí. Pokud aplikace VPN nevidíte, odhlaste se a znovu se přihlaste.</translation>
 <translation id="6005659677094197001">Nepřetržité</translation>
 <translation id="6005765687956866568">Automaticky vyplněné informace byly z formuláře vymazány</translation>
 <translation id="6006365096047131769">3 × 5″</translation>
