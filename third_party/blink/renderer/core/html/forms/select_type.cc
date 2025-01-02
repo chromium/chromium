@@ -123,18 +123,26 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
       // whether the popover is opened or closed.
       select->GetShadowRoot()->SetNeedsAssignmentRecalc();
       // This is a CustomizableSelect popup. When it is shown, we should focus
-      // the selected option.
-      HTMLOptionElement* option_to_focus = select->SelectedOption();
-      if (!option_to_focus || !option_to_focus->IsFocusable()) {
-        for (auto& option : select->GetOptionList()) {
-          if (option.IsFocusable()) {
-            option_to_focus = &option;
-            break;
+      // on the selected option or on the first focusable element if we're in
+      // dialog mode.
+      if (select->IsInDialogMode()) {
+        if (Element* control =
+                select->GetFocusDelegate(/*autofocus_only=*/false)) {
+          control->Focus(FocusParams(FocusTrigger::kScript));
+        }
+      } else {
+        HTMLOptionElement* option_to_focus = select->SelectedOption();
+        if (!option_to_focus || !option_to_focus->IsFocusable()) {
+          for (auto& option : select->GetOptionList()) {
+            if (option.IsFocusable()) {
+              option_to_focus = &option;
+              break;
+            }
           }
         }
-      }
-      if (option_to_focus) {
-        option_to_focus->Focus(FocusParams(FocusTrigger::kScript));
+        if (option_to_focus) {
+          option_to_focus->Focus(FocusParams(FocusTrigger::kScript));
+        }
       }
       if (AXObjectCache* cache =
               select->GetDocument().ExistingAXObjectCache()) {

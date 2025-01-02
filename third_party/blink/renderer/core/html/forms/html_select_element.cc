@@ -1117,14 +1117,23 @@ HTMLOptionElement* HTMLSelectElement::SelectedOption() const {
 }
 
 bool HTMLSelectElement::IsInDialogMode() const {
-  return content_model_violations_count_ > 0U;
+  return RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+         IsAppearanceBaseButton(
+             HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
+         content_model_violations_count_ > 0U;
 }
 
 void HTMLSelectElement::IncreaseContentModelViolationCount() {
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  DCHECK(IsAppearanceBaseButton(
+      HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
   ++content_model_violations_count_;
 }
 
 void HTMLSelectElement::DecreaseContentModelViolationCount() {
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+  DCHECK(IsAppearanceBaseButton(
+      HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle));
   if (content_model_violations_count_ > 0U) {
     --content_model_violations_count_;
   }
