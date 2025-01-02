@@ -181,6 +181,10 @@ export class SettingsSyncAccountControlElement extends
 
     this.syncBrowserProxy_.getStoredAccounts().then(
         this.handleStoredAccounts_.bind(this));
+
+    this.syncBrowserProxy_.getProfileAvatar().then(
+        this.handleUpdateAvatar_.bind(this));
+
     this.addWebUiListener(
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(

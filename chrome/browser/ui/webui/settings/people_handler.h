@@ -231,7 +231,9 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   void HandleGetStoredAccounts(const base::Value::List& args);
   void HandleStartSyncingWithEmail(const base::Value::List& args);
+  void HandleGetProfileAvatar(const base::Value::List& args);
   base::Value::List GetStoredAccountsList();
+  base::Value GetProfileAvatar();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sends the updated chrome signin user choice info to UI.
@@ -252,7 +254,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void UpdateStoredAccounts();
 
   // Sends the computed profile avatar to the JavaScript WebUI code.
-  void UpdateProfileAvatar(const base::FilePath& profile_path);
+  void UpdateProfileAvatar();
 
   // Suppresses any further signin promos, since the user has signed in once.
   void MarkFirstSetupComplete();

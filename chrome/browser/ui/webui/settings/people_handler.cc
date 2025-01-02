@@ -371,6 +371,11 @@ void PeopleHandler::RegisterMessages() {
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "SyncSetupGetProfileAvatar",
+      base::BindRepeating(&PeopleHandler::HandleGetProfileAvatar,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
                           base::Unretained(this)));
@@ -523,14 +528,21 @@ void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
 
+void PeopleHandler::HandleGetProfileAvatar(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, GetProfileAvatar());
+}
+
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   UpdateStoredAccounts();
-  UpdateProfileAvatar(profile_->GetPath());
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   UpdateStoredAccounts();
-  UpdateProfileAvatar(profile_->GetPath());
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnRefreshTokenUpdatedForAccount(
@@ -571,13 +583,13 @@ void PeopleHandler::OnProfileAvatarChanged(const base::FilePath& profile_path) {
     return;
   }
 
-  UpdateProfileAvatar(profile_path);
+  UpdateProfileAvatar();
 }
 
-void PeopleHandler::UpdateProfileAvatar(const base::FilePath& profile_path) {
+base::Value PeopleHandler::GetProfileAvatar() {
   // Can be null in tests
   if (!g_browser_process->profile_manager()) {
-    return;
+    return base::Value();
   }
 
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = false};
@@ -587,13 +599,11 @@ void PeopleHandler::UpdateProfileAvatar(const base::FilePath& profile_path) {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_->GetPath());
 
-  FireWebUIListener(
-      "profile-avatar-changed",
-      base::Value(webui::GetBitmapDataUrl(
-          entry
-              ->GetAvatarIcon(profiles::kAvatarIconSize,
-                              /*use_high_res_file=*/true, icon_params)
-              .AsBitmap())));
+  return base::Value(webui::GetBitmapDataUrl(
+      entry
+          ->GetAvatarIcon(profiles::kAvatarIconSize,
+                          /*use_high_res_file=*/true, icon_params)
+          .AsBitmap()));
 }
 
 base::Value::List PeopleHandler::GetStoredAccountsList() {
@@ -1042,6 +1052,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
       UpdateChromeSigninUserChoiceInfo();
       UpdateStoredAccounts();
       UpdateSyncStatus();
+      UpdateProfileAvatar();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -1250,6 +1261,10 @@ void PeopleHandler::UpdateSyncStatus() {
 
 void PeopleHandler::UpdateStoredAccounts() {
   FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+}
+
+void PeopleHandler::UpdateProfileAvatar() {
+  FireWebUIListener("profile-avatar-changed", GetProfileAvatar());
 }
 
 void PeopleHandler::MarkFirstSetupComplete() {
