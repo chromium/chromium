@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 179) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 181) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -49,6 +49,9 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | |
 | # Create Shortcut |
 | create_shortcut | Site, WindowOptions |  | 29 | Implemented | Use the 'create shortcut' functionality at the given location using the "Create Shortcut" menu option (3-dot->"More Tools"->"Create Shortcut)  The WindowOption specified if the "Open in a window" checkbox should be selected. |  |
+| create_shortcut_tabbed | Site | create_shortcut($1, Browser) | 54 | Parameterized |  |  |
+| create_shortcut_windowed | Site | create_shortcut($1, Windowed) | 179 | Parameterized |  |  |
+| create_shortcut_all | Site | create_shortcut($1, WindowOptions::All) | 180 | Parameterized |  |  |
 | |
 | # Install |
 | install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
@@ -57,19 +60,14 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | install_no_shortcut | Site | install_policy_app($1, NoShortcut, WindowOptions::All, WebApp) | 56 | Parameterized |  |  |
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser, WebApp) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed_no_shortcut | Site | install_policy_app($1, NoShortcut, Windowed, WebApp) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |
-| install_by_user_windowed | Site | install_omnibox_icon($1) & install_menu_option($1) | 137 | Parameterized | All user installation methods that result in a windowed webapp without shortcut. |  |
-| install_windowed | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 178 | Parameterized | All installation methods that result in a windowed webapp. |  |
 | # Install & Create Shortcut Parameterized |
-| install_or_shortcut | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
-| install_or_shortcut_by_user | Site | create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_menu_option($1) | 53 | Parameterized |  |  |
-| install_or_shortcut_by_user_tabbed | Site | create_shortcut($1, Browser) | 54 | Parameterized |  |  |
-| install_or_shortcut_by_user_windowed | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_menu_option($1) | 55 | Parameterized |  |  |
-| install_or_shortcut_tabbed | Site | create_shortcut($1, Browser) & install_policy_app($1, ShortcutOptions::All, Browser, WebApp) | 61 | Parameterized | All installation methods that result in a tabbed webapp. |  |
-| install_or_shortcut_tabbed_with_shortcut | Site | create_shortcut($1, Browser) & install_policy_app($1, WithShortcut, Browser) | 128 | Parameterized | All installation methods that result in a tabbed webapp with shortcut created. |  |
-| install_or_shortcut_windowed | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 62 | Parameterized | All installation methods that result in a windowed webapp. |  |
-| install_or_shortcut_windowed_with_shortcut | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) &  install_policy_app($1, WithShortcut, Windowed, WebApp) & install_menu_option($1) | 130 | Parameterized | All installation methods that result in a windowed webapp with shortcut created. |  |
-| install_or_shortcut_by_user_windowed_with_shortcut | Site | create_shortcut($1, Windowed) & install_omnibox_icon($1) & install_menu_option($1) | 136 | Parameterized | All user initiated installation methods that result in a windowed webapp with shortcut created. |  |
-| install_or_shortcut_with_shortcut | Site | install_policy_app($1, WithShortcut, WindowOptions::All, WebApp) & create_shortcut($1, WindowOptions::All) & install_omnibox_icon($1) & install_menu_option($1) | 63 | Parameterized |  |  |
+| install | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, WindowOptions::All, WebApp) & install_menu_option($1) | 52 | Parameterized |  |  |
+| install_tabbed | Site | install_policy_app($1, ShortcutOptions::All, Browser, WebApp) | 61 | Parameterized | All installation methods that result in a tabbed webapp. |  |
+| install_tabbed_with_shortcut | Site | install_policy_app($1, WithShortcut, Browser, WebApp) | 128 | Parameterized | All installation methods that result in a tabbed webapp with shortcut created. |  |
+| install_windowed | Site | install_omnibox_icon($1) & install_policy_app($1, ShortcutOptions::All, Windowed, WebApp) & install_menu_option($1) | 62 | Parameterized | All installation methods that result in a windowed webapp. |  |
+| install_windowed_with_shortcut | Site | install_omnibox_icon($1) & install_policy_app($1, WithShortcut, Windowed, WebApp) & install_menu_option($1) | 130 | Parameterized | All installation methods that result in a windowed webapp with shortcut created. |  |
+| install_by_user | Site | install_omnibox_icon($1) & install_menu_option($1) | 136 | Parameterized | All user initiated installation methods that result in a windowed webapp with shortcut created. |  |
+| install_with_shortcut | Site | install_policy_app($1, WithShortcut, WindowOptions::All, WebApp) & install_omnibox_icon($1) & install_menu_option($1) | 63 | Parameterized |  |  |
 | |
 | # Uninstall |
 | uninstall_from_os | Site |  | 87 | Implemented | Uninstalls the app from OS integration - e.g. Windows Control Panel / Start menu |  |

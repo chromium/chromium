@@ -17,13 +17,13 @@ using WebAppIntegration = WebAppIntegrationTest;
 // Manual tests:
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, EnterAndExitFullScreenApp) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.EnterFullScreenApp();
   helper_.ExitFullScreenApp();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.UninstallFromList(Site::kStandalone);
   helper_.CheckAppNotInList(Site::kStandalone);
 }
@@ -90,14 +90,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdatePolicyAppTitle) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, LaunchFromMenuOption) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.LaunchFromMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.OpenInChrome();
   helper_.CheckTabCreated(Number::kOne);
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
 #define MAYBE_ManifestUpdateDisplayBrowser ManifestUpdateDisplayBrowser
 #endif
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_ManifestUpdateDisplayBrowser) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
   helper_.AwaitManifestUpdate(Site::kStandalone);
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_ManifestUpdateDisplayBrowser) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        ManifestUpdateDisplayOverrideWindowControlsOverlay) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
@@ -135,13 +135,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WindowControlsOverlayNotEnabledWithoutWCOManifest) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlay(Site::kStandalone, IsOn::kOff);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ToggleWindowControlsOverlay) {
-  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kWco);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ToggleWindowControlsOverlay) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
                        WindowControlsOverlayStatePreservesBetweenLaunches) {
-  helper_.CreateShortcut(Site::kWco, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kWco);
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kWco, IsShown::kShown);
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOff);
@@ -215,20 +215,26 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, RicherInstallModal) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigation) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckBrowserNavigation(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Explicit skip to prevent EXPECT_NONFATAL_FAILURE to be triggered";
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kBrowser);
+  helper_.InstallMenuOption(Site::kStandaloneNestedA);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandaloneNestedA);
+  helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
   EXPECT_NONFATAL_FAILURE(helper_.CheckBrowserNavigation(Site::kStandalone),
                           "webapps_integration/standalone/foo/basic.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, AppLaunchedInTab) {
+  helper_.InstallMenuOption(Site::kStandalone);
+  helper_.SetOpenInTabFromAppSettings(Site::kStandalone);
+  helper_.CheckAppInListTabbed(Site::kStandalone);
+  helper_.LaunchFromChromeApps(Site::kStandalone);
+  helper_.CheckAppLoadedInTab(Site::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
@@ -246,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, NewAppTab) {
-  helper_.CreateShortcut(Site::kTabbed, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kTabbed);
   helper_.CheckAppNavigation(Site::kTabbed);
   helper_.NewAppTab(Site::kTabbed);
   helper_.CheckAppTabCreated();
@@ -2661,6 +2667,16 @@ IN_PROC_BROWSER_TEST_F(
   helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       WAI_InstallMenuOptionChromeUrlWindowed) {
+  // Test contents are generated by script. Please do not modify!
+  // See `docs/webapps/why-is-this-test-failing.md` or
+  // `docs/webapps/integration-testing-framework` for more info.
+  // Gardeners: Disabling this test is supported.
+  helper_.InstallMenuOption(Site::kChromeUrl);
+  helper_.CheckWindowCreated();
 }
 
 IN_PROC_BROWSER_TEST_F(

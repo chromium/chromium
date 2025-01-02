@@ -1227,18 +1227,10 @@ void WebAppIntegrationTestDriver::EnableFileHandling(Site site) {
   AfterStateChangeAction();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 void WebAppIntegrationTestDriver::CreateShortcut(Site site,
                                                  WindowOptions options) {
   bool open_in_window = options == WindowOptions::kWindowed;
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/344912771): Remove tests that use the current create
-  // shortcut flow once ShortcutsNotApps is launched to 100% Stable.
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Shortcuts are no longer web apps if kShortcutsNotApps is enabled";
-  }
-#endif
 
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
@@ -1262,6 +1254,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppIntegrationTestDriver::InstallMenuOption(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
@@ -3137,14 +3130,6 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
 }
 
 void WebAppIntegrationTestDriver::CheckCreateShortcutNotShown() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/344912771): Remove tests that use the current create
-  // shortcut flow once ShortcutsNotApps is launched to 100% Stable.
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Shortcuts are no longer web apps if kShortcutsNotApps is enabled";
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
@@ -3153,14 +3138,6 @@ void WebAppIntegrationTestDriver::CheckCreateShortcutNotShown() {
 }
 
 void WebAppIntegrationTestDriver::CheckCreateShortcutShown() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/344912771): Remove tests that use the current create
-  // shortcut flow once ShortcutsNotApps is launched to 100% Stable.
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Shortcuts are no longer web apps if kShortcutsNotApps is enabled";
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }

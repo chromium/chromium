@@ -275,7 +275,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void EnableFileHandling(Site site);
   void DisableWindowControlsOverlay(Site site);
   void EnableWindowControlsOverlay(Site site);
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateShortcut(Site site, WindowOptions window_options);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void InstallMenuOption(Site site);
   void InstallLocally(Site site);
   void InstallOmniboxIcon(InstallableSite site);

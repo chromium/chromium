@@ -14,7 +14,7 @@ using WebAppIntegration = WebAppIntegrationTest;
 // Manual tests:
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromOs) {
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.UninstallFromOs(Site::kStandalone);
   helper_.CheckAppNotInList(Site::kStandalone);
 }
