@@ -12158,8 +12158,9 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="GpuErrorReason">
   <int value="0" label="Other"/>
   <int value="1" label="DXGI_ERROR_DEVICE_HUNG"/>
-  <int value="2" label="DXGI_ERROR_DEVICE_REMOVED"/>
+  <int value="2" label="DXGI_ERROR_DEVICE_REMOVED or VK_ERROR_DEVICE_LOST"/>
   <int value="3" label="Failed to create device."/>
+  <int value="4" label="VK_ERROR_OUT_OF_DEVICE_MEMORY"/>
 </enum>
 
 <enum name="GpuImageUsageState">
