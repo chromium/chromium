@@ -305,9 +305,9 @@ chromium-metrics-reviews@google.com.
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
-    The time to download the favicon as the image preview for sharing an link
-    using Android share sheet. Recorded when sharing a link with Android share
-    sheet only.
+    The time to download the favicon as the image preview or processing the
+    provided preview image as URI, for sharing an link using Android share
+    sheet. Recorded when sharing a link with Android share sheet only.
   </summary>
 </histogram>
 

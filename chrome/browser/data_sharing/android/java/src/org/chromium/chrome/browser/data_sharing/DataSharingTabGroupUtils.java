@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -268,5 +270,24 @@ public class DataSharingTabGroupUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * @param context The activity context.
+     * @param collaborationId The sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The title of the tab group.
+     */
+    @Nullable
+    public static String getTabGroupTitle(
+            Context context, String collaborationId, TabGroupSyncService tabGroupSyncService) {
+        SavedTabGroup tabGroup =
+                getTabGroupForCollabIdFromSync(collaborationId, tabGroupSyncService);
+        if (tabGroup == null) {
+            return null;
+        }
+        return TextUtils.isEmpty(tabGroup.title)
+                ? TabGroupTitleUtils.getDefaultTitle(context, tabGroup.savedTabs.size())
+                : tabGroup.title;
     }
 }

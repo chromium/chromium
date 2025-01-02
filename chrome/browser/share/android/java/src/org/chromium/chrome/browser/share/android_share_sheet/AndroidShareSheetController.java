@@ -189,12 +189,16 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             return;
         }
 
-        long iconPrepStartTime = SystemClock.elapsedRealtime();
         ChromeCustomShareAction.Provider finalProvider = provider;
-        preparePreviewFavicon(
-                activity,
-                profile,
-                params.getUrl(),
+
+        if (params.getPreviewImageUri() != null) {
+            ShareHelper.shareWithSystemShareSheetUi(
+                    params, profile, chromeShareExtras.saveLastUsed(), finalProvider);
+            return;
+        }
+
+        long iconPrepStartTime = SystemClock.elapsedRealtime();
+        Callback<Uri> shareWithPreviewUri =
                 (uri) -> {
                     RecordHistogram.recordTimesHistogram(
                             "Sharing.PreparePreviewFaviconDuration",
@@ -202,7 +206,14 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                     params.setPreviewImageUri(uri);
                     ShareHelper.shareWithSystemShareSheetUi(
                             params, profile, chromeShareExtras.saveLastUsed(), finalProvider);
-                });
+                };
+
+        if (params.getPreviewImageBitmap() != null) {
+            getUriForPreviewImage(params.getPreviewImageBitmap(), shareWithPreviewUri);
+            return;
+        }
+
+        preparePreviewFavicon(activity, profile, params.getUrl(), shareWithPreviewUri);
     }
 
     /**
@@ -210,7 +221,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      *
      * @param params The original {@link ShareParams} for sharing the highlight text.
      * @param chromeShareExtras The original {@link ChromeShareExtras} for sharing the highlight
-     *         text.
+     *     text.
      * @return Whether this share is process through a {@link LinkToTextCoordinator}.
      */
     private boolean processShareWithLinkToText(
@@ -261,6 +272,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                     FaviconUtils.createGenericFaviconBitmap(
                             context, size, context.getColor(R.color.modern_white));
         }
+        getUriForPreviewImage(bitmap, onImageUriAvailable);
+    }
+
+    private static void getUriForPreviewImage(Bitmap bitmap, Callback<Uri> onImageUriAvailable) {
         String fileName = String.valueOf(System.currentTimeMillis());
         ShareImageFileUtils.generateTemporaryUriFromBitmap(fileName, bitmap, onImageUriAvailable);
     }

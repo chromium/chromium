@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabbed_mode;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -1313,6 +1314,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Override
             public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl) {
                 CustomTabActivity.showInfoPage(context, gurl.getSpec());
+            }
+
+            @Override
+            public void getPreviewBitmap(
+                    String collaborationId, int size, Callback<Bitmap> callback) {
+                // TODO(https://crbug.com/386833405): implement this.
+                callback.onResult(null);
             }
         };
     }

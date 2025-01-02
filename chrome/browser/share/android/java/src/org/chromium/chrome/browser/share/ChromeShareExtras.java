@@ -30,6 +30,7 @@ public class ChromeShareExtras {
         DetailedContentType.SCREENSHOT,
         DetailedContentType.WEB_SHARE,
         DetailedContentType.PAGE_INFO,
+        DetailedContentType.TAB_GROUP_LINK,
     })
     public @interface DetailedContentType {
         int NOT_SPECIFIED = 0;
@@ -39,6 +40,7 @@ public class ChromeShareExtras {
         int SCREENSHOT = 4;
         int WEB_SHARE = 5;
         int PAGE_INFO = 6;
+        int TAB_GROUP_LINK = 7;
     }
 
     /** Whether to save the chosen activity for future direct sharing. */

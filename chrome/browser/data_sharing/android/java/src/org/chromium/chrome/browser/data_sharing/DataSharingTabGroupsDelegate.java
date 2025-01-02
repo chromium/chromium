@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
+import org.chromium.base.Callback;
 import org.chromium.url.GURL;
 
 /** An interface to handle actions related to tab groups. */
@@ -24,4 +26,13 @@ public interface DataSharingTabGroupsDelegate {
      * @param gurl The GURL of the page to be opened in CCT.
      */
     public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl);
+
+    /**
+     * Create a preview image for the tab group to show in share sheet.
+     *
+     * @param collaborationId The collaboration ID of the tab group.
+     * @param size The expected size in pixels of the preview bitmap.
+     * @param onResult The callback to return the preview image.
+     */
+    public void getPreviewBitmap(String collaborationId, int size, Callback<Bitmap> onResult);
 }

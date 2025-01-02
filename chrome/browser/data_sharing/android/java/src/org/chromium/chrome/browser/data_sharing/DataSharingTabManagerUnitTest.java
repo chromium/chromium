@@ -24,6 +24,7 @@ import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
@@ -154,7 +156,9 @@ public class DataSharingTabManagerUnitTest {
     @Mock private FaviconHelper mFaviconHelper;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mTabGroupPreviewCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
+    @Captor private ArgumentCaptor<ShareParams> mShareParamsCaptor;
 
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
@@ -411,7 +415,18 @@ public class DataSharingTabManagerUnitTest {
         assertNotNull(uiConfig.getManageCallback());
         uiConfig.getManageCallback()
                 .onShareInviteLinkClicked(new GroupToken(COLLABORATION_ID1, ACCESS_TOKEN1));
-        verify(mShareDelegate).share(any(), any(), eq(ShareDelegate.ShareOrigin.TAB_GROUP));
+
+        verify(mDataSharingTabGroupsDelegate)
+                .getPreviewBitmap(
+                        eq(COLLABORATION_ID1), anyInt(), mTabGroupPreviewCallbackCaptor.capture());
+        Bitmap preview = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        mTabGroupPreviewCallbackCaptor.getValue().onResult(preview);
+
+        verify(mShareDelegate)
+                .share(
+                        mShareParamsCaptor.capture(),
+                        any(),
+                        eq(ShareDelegate.ShareOrigin.TAB_GROUP));
     }
 
     @Test
@@ -455,6 +470,12 @@ public class DataSharingTabManagerUnitTest {
                         (result) -> {
                             assertTrue(result);
                         });
+
+        verify(mDataSharingTabGroupsDelegate)
+                .getPreviewBitmap(
+                        eq(COLLABORATION_ID1), anyInt(), mTabGroupPreviewCallbackCaptor.capture());
+        Bitmap preview = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        mTabGroupPreviewCallbackCaptor.getValue().onResult(preview);
 
         // Verifying DataSharingService createGroup API is called.
         verify(mTabGroupSyncService).makeTabGroupShared(LOCAL_ID, COLLABORATION_ID1);

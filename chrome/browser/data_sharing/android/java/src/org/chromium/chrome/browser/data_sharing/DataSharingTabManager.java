@@ -613,17 +613,10 @@ public class DataSharingTabManager {
                         showShareSheet(
                                 new GroupData(
                                         result.getGroupId(),
-                                        result.getDisplayName(),
+                                        tabGroupDisplayName,
                                         /* members= */ null,
-                                        result.getAccessToken()));
-
-                        PostTask.postTask(
-                                TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    if (onCreateFinished != null) {
-                                        onCreateFinished.onResult(true);
-                                    }
-                                });
+                                        result.getAccessToken()),
+                                onCreateFinished);
                     }
 
                     @Override
@@ -645,11 +638,23 @@ public class DataSharingTabManager {
         //     activity, sessionId, convertToTabsPreviewList(existingGroup.savedTabs, 4));
     }
 
-    private void showShareSheet(GroupData groupData) {
+    private void showShareSheet(GroupData groupData, Callback<Boolean> onShareSheetShown) {
+        mDataSharingTabGroupsDelegate.getPreviewBitmap(
+                groupData.groupToken.collaborationId,
+                // TODO(386833405): Expose dimen.share_preview_favicon_size.
+                80,
+                (preview) -> {
+                    showShareSheetWithPreview(groupData, preview, onShareSheetShown);
+                });
+    }
+
+    private void showShareSheetWithPreview(
+            GroupData groupData, Bitmap preview, Callback<Boolean> onShareSheetShown) {
         GURL url = mDataSharingService.getDataSharingUrl(groupData);
         if (url == null) {
             // TODO(ritikagup) : Show error dialog showing fetching URL failed. Contact owner for
             // new link.
+            Callback.runNullSafe(onShareSheetShown, false);
             DataSharingMetrics.recordShareActionFlowState(
                     DataSharingMetrics.ShareActionStateAndroid.URL_CREATION_FAILED);
             return;
@@ -658,17 +663,26 @@ public class DataSharingTabManager {
                 DataSharingMetrics.ShareActionStateAndroid.SHARE_SHEET_SHOWN);
         var chromeShareExtras =
                 new ChromeShareExtras.Builder()
-                        .setDetailedContentType(DetailedContentType.PAGE_INFO)
-                        .build();
-        // TODO (b/358666351) : Add correct text for Share URL based on UX.
-        ShareParams shareParams =
-                new ShareParams.Builder(mWindowAndroid, groupData.displayName, url.getSpec())
-                        .setText("")
+                        .setDetailedContentType(DetailedContentType.TAB_GROUP_LINK)
                         .build();
 
+        ShareParams.Builder shareParamsBuilder =
+                new ShareParams.Builder(mWindowAndroid, groupData.displayName, url.getSpec());
+
+        if (preview != null) {
+            shareParamsBuilder.setPreviewImageBitmap(preview);
+        }
         mShareDelegateSupplier
                 .get()
-                .share(shareParams, chromeShareExtras, ShareDelegate.ShareOrigin.TAB_GROUP);
+                .share(
+                        shareParamsBuilder.build(),
+                        chromeShareExtras,
+                        ShareDelegate.ShareOrigin.TAB_GROUP);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Callback.runNullSafe(onShareSheetShown, true);
+                });
     }
 
     /**
@@ -681,6 +695,11 @@ public class DataSharingTabManager {
         assert mProfile != null;
 
         DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
+        TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mProfile);
+        String tabGroupName =
+                DataSharingTabGroupUtils.getTabGroupTitle(
+                        activity, collaborationId, tabGroupSyncService);
 
         DataSharingStringConfig stringConfig =
                 new DataSharingStringConfig.Builder()
@@ -704,23 +723,14 @@ public class DataSharingTabManager {
 
                     @Override
                     public void onShareInviteLinkClickedWithWait(
-                            GroupToken groupToken, Callback<Boolean> onCreateFinished) {
-                        // TODO(ssid): Pass in the title and refactor showShareSheet to depend on
-                        // GroupToken instead.
+                            GroupToken groupToken, Callback<Boolean> onFinished) {
                         showShareSheet(
                                 new GroupData(
                                         groupToken.collaborationId,
-                                        "Tab Group",
+                                        tabGroupName,
                                         /* members= */ null,
-                                        groupToken.accessToken));
-
-                        PostTask.postTask(
-                                TaskTraits.UI_DEFAULT,
-                                () -> {
-                                    if (onCreateFinished != null) {
-                                        onCreateFinished.onResult(true);
-                                    }
-                                });
+                                        groupToken.accessToken),
+                                onFinished);
                     }
                 };
         DataSharingManageUiConfig manageConfig =
