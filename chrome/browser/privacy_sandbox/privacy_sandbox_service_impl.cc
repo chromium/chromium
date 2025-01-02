@@ -341,6 +341,10 @@ std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
       return privacy_sandbox::IsConsentRequired()
                  ? GetProtectedAudienceMeasurementNoticeName(surface_type)
                  : GetThreeAdsAPIsNoticeName(surface_type);
+    // Ads API UX Enhancements
+    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
+    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened:
+      return GetProtectedAudienceMeasurementNoticeName(surface_type);
     default:
       return empty_view;
   }
@@ -896,7 +900,8 @@ void UpdateNoticeStorage(
     return;
   }
 
-  // Set correct notice names, ready to receive and log PromptActions
+  // Set correct notice names, ready to receive and log PromptActions. Update
+  // GetNoticeName when adding more entries to the switch statement.
   std::string_view notice_name = GetNoticeName(action, surface_type);
 
   switch (action) {
@@ -942,14 +947,15 @@ void UpdateNoticeStorage(
           privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
       break;
     }
-    case PromptAction::kNoticeMoreInfoOpened: {
+    case PromptAction::kNoticeMoreInfoOpened:
+    // Ads API UX Enhancements
+    case PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened:
+    case PromptAction::kNoticeAdsMeasurementMoreInfoOpened: {
       notice_storage->SetNoticeActionTaken(
           pref_service, notice_name,
           privacy_sandbox::NoticeActionTaken::kLearnMore, base::Time::Now());
       break;
     }
-    // TODO(crbug.com/377557616): Update notice storage with new Ads API UX
-    // Enhancements prompt actions
 
     // Restricted notices
     case PromptAction::kRestrictedNoticeShown: {

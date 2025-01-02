@@ -3030,7 +3030,20 @@ INSTANTIATE_TEST_SUITE_P(
           .feature_flag = NoticeFeature(),
           .shown_type = PromptAction::kNoticeShown,
           .prompt_action = PromptAction::kNoticeMoreInfoOpened,
-          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal}}));
+          .notice_name = privacy_sandbox::kThreeAdsAPIsNoticeModal},
+         // Ads API UX Enhancements
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeSiteSuggestedAdsMoreInfoOpened,
+          .notice_name =
+              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal},
+         {.surface_type = SurfaceType::kDesktop,
+          .feature_flag = ConsentFeature(),
+          .shown_type = PromptAction::kNoticeShown,
+          .prompt_action = PromptAction::kNoticeAdsMeasurementMoreInfoOpened,
+          .notice_name =
+              privacy_sandbox::kProtectedAudienceMeasurementNoticeModal}}));
 
 class PrivacySandboxServiceM1RestrictedNoticeTest
     : public PrivacySandboxServiceTest {
