@@ -115,7 +115,8 @@ TEST_F(ViewScreenRequestTest, InitViewScreenRequestSucceed) {
   std::unique_ptr<ViewScreenRequest> request =
       std::make_unique<ViewScreenRequest>(
           request_sender(), std::move(session_id),
-          ViewScreenParam("1", "d1", "2", "d2"), future.GetCallback());
+          ViewScreenParam("1", "d1", "2", "d2"), kSchoolToolsApiBaseUrl,
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -148,7 +149,8 @@ TEST_F(ViewScreenRequestTest, InitViewScreenAndFail) {
   std::unique_ptr<ViewScreenRequest> request =
       std::make_unique<ViewScreenRequest>(
           request_sender(), std::move(session_id),
-          ViewScreenParam("1", "d1", "2", "d2"), future.GetCallback());
+          ViewScreenParam("1", "d1", "2", "d2"), kSchoolToolsApiBaseUrl,
+          future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 

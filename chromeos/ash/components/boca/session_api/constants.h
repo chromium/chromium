@@ -100,7 +100,7 @@ inline constexpr char kSpotlightConnectionCode[] = "spotlightConnectionCode";
 inline constexpr char kSpotlightConnectionParam[] = "spotlightConnectionParam";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
+    net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(
           semantics: {
             sender: "Boca"
             description: "Provide ChromeOS access to school tools server"

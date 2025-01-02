@@ -47,13 +47,14 @@ ViewScreenParam::~ViewScreenParam() = default;
 ViewScreenRequest::ViewScreenRequest(google_apis::RequestSender* sender,
                                      std::string session_id,
                                      ViewScreenParam view_screen_param,
+                                     std::string url_base,
                                      ViewScreenRequestCallback callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
       session_id_(std::move(session_id)),
       view_screen_param_(std::move(view_screen_param)),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 ViewScreenRequest ::~ViewScreenRequest() = default;
