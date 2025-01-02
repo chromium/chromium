@@ -481,10 +481,30 @@ class CONTENT_EXPORT NavigationRequest
     return *commit_params_;
   }
 
-  // Updates the navigation start time.
-  void set_navigation_start_time(const base::TimeTicks& time) {
-    common_params_->navigation_start = time;
-  }
+  // This describes the cases where the navigation start time is adjusted to be
+  // later in time, after BeforeUnloadCompleted. This enum is used in UMA
+  // histograms, so existing values should be neither reordered nor removed.
+  enum class NavigationStartAdjustmentType {
+    // No adjustment to the navigation start time was made.
+    kNone = 0,
+    // The start time was adjusted so that the navigation could proceed via a
+    // posted task, even though there were no beforeunload handlers registered.
+    kLegacyPostTask = 1,
+    // The start time was adjusted because beforeunload handlers ran, but no
+    // dialog was displayed to the user.
+    kBeforeUnloadHandlers = 2,
+    // The start time was adjusted because a beforeunload dialog was shown.
+    kBeforeUnloadDialog = 3,
+    kMaxValue = kBeforeUnloadDialog,
+  };
+
+  // Updates the navigation start time, after beforeunload has completed.
+  // `for_legacy` indicates that the navigation proceeded in a separate task for
+  // legacy reasons, without running beforeunload handlers. `showed_dialog`
+  // indicates whether the beforeunload handlers actually displayed a dialog.
+  void UpdateNavigationStartTime(const base::TimeTicks& time,
+                                 bool for_legacy,
+                                 bool showed_dialog);
 
   void set_is_cross_site_cross_browsing_context_group(
       bool is_cross_site_cross_browsing_context_group) {
@@ -2096,6 +2116,11 @@ class CONTENT_EXPORT NavigationRequest
 
   void MaybeRecordTraceEventsAndHistograms();
 
+  // Records how much the navigation start time was adjusted for beforeunload
+  // handlers, for various scenarios (legacy, beforeunload handlers only, and
+  // beforeunload dialogs). See https://crbug.com/385170155.
+  void MaybeRecordNavigationStartAdjustments();
+
   void ResetViewTransitionState();
 
   // This check is to prevent a race condition where a parent fenced frame
@@ -2370,6 +2395,18 @@ class CONTENT_EXPORT NavigationRequest
 
   // Timing information of loading for the navigation. Used for recording UMAs.
   NavigationHandleTiming navigation_handle_timing_;
+
+  // The original value of navigation start for a given navigation, before any
+  // adjustment is made to avoid counting beforeunload dialogs. This is null
+  // (i.e., `TimeTicks()`) unless an adjustment was made.
+  base::TimeTicks original_navigation_start_;
+
+  // Tracks whether an adjustment to the navigation start time was done for
+  // legacy PostTask reasons rather than for running a beforeunload handler.
+  bool navigation_start_adjustment_for_legacy_ = false;
+
+  // Tracks whether a beforeunload dialog was shown as part of this navigation.
+  bool beforeunload_dialog_shown_ = false;
 
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;

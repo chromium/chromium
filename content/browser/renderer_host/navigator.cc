@@ -1123,7 +1123,9 @@ void Navigator::NavigateFromFrameProxy(
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
                                       bool proceed,
-                                      const base::TimeTicks& proceed_time) {
+                                      const base::TimeTicks& proceed_time,
+                                      bool for_legacy,
+                                      bool showed_dialog) {
   DCHECK(frame_tree_node);
 
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
@@ -1157,7 +1159,8 @@ void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
 
   // Update the navigation start: it should be when it was determined that the
   // navigation will proceed.
-  navigation_request->set_navigation_start_time(proceed_time);
+  navigation_request->UpdateNavigationStartTime(proceed_time, for_legacy,
+                                                showed_dialog);
 
   DCHECK_EQ(NavigationRequest::WAITING_FOR_RENDERER_RESPONSE,
             navigation_request->state());
