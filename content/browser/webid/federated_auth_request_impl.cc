@@ -151,7 +151,8 @@ std::string ComputeUrlEncodedTokenPostData(
     const RpMode& rp_mode,
     const std::optional<std::vector<std::string>>& fields,
     const std::vector<std::string>& disclosure_shown_for,
-    const std::string& params_json) {
+    const std::string& params_json,
+    const std::optional<std::string>& type) {
   std::string query;
   if (!client_id.empty()) {
     query +=
@@ -227,7 +228,9 @@ std::string ComputeUrlEncodedTokenPostData(
                base::EscapeUrlEncodedData(params_json, /*use_plus=*/true);
     }
   }
-
+  if (IsFedCmIdPRegistrationEnabled() && type) {
+    query += "&type=" + base::EscapeUrlEncodedData(*type, /*use_plus=*/true);
+  }
   return query;
 }
 
@@ -2339,7 +2342,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
         idp_info.provider->nonce, account_id,
         identity_selection_type_ != kExplicit, rp_mode_,
         idp_info.provider->fields, disclosure_shown_for,
-        idp_info.provider->params_json.value_or(""));
+        idp_info.provider->params_json.value_or(""),
+        idp_info.provider->config->type);
   }
 
   network_manager_->SendTokenRequest(

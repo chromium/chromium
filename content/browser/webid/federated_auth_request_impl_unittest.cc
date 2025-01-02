@@ -155,6 +155,7 @@ struct IdentityProviderParameters {
   const char* domain_hint;
   std::optional<std::vector<std::string>> fields;
   const char* params_json;
+  std::optional<std::string> type;
 };
 
 // Parameters for a call to RequestToken.
@@ -206,6 +207,7 @@ struct MockConfig {
   std::optional<SkColor> brand_background_color;
   std::optional<SkColor> brand_text_color;
   std::string requested_label;
+  std::vector<std::string> types;
 };
 
 struct MockIdpInfo {
@@ -373,6 +375,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     idp_metadata.brand_background_color = config.brand_background_color;
     idp_metadata.brand_text_color = config.brand_text_color;
     idp_metadata.requested_label = config.requested_label;
+    idp_metadata.types = config.types;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -1144,6 +1147,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       options->fields = std::move(identity_provider.fields);
       if (identity_provider.params_json) {
         options->params_json = identity_provider.params_json;
+      }
+      if (identity_provider.type) {
+        options->config->type = *identity_provider.type;
       }
       idp_ptrs.push_back(std::move(options));
     }
@@ -3687,6 +3693,29 @@ TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagIfInQuietPeriod) {
       "Auto re-authn was previously triggered less than 10 minutes ago. Only "
       "one auto re-authn request can be made every 10 minutes.";
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
+}
+
+TEST_F(FederatedAuthRequestImplTest, RegisteredIdpInIdAssertion) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIdPRegistration);
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  RequestParameters request = kDefaultRequestParameters;
+  constexpr char kType[] = "someType";
+  request.identity_providers[0].type = kType;
+  checker->SetExpectedTokenPostData(
+      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
+      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true" +
+      "&is_auto_selected=false&mode=passive&fields=name,email,picture&"
+      "disclosure_shown_for="
+      "name,email,picture"
+      "&type=" +
+      kType);
+  SetNetworkRequestManager(std::move(checker));
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].config.types = {kType};
+  RunAuthTest(request, kExpectationSuccess, config);
 }
 
 namespace {
