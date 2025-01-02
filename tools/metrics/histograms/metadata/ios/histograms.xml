@@ -3495,7 +3495,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheet.AcceptAttempts.{Action}" units="count"
-    expires_after="2025-01-05">
+    expires_after="2025-03-17">
   <owner>vincb@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>sugoi@chromium.org</owner>
@@ -3508,8 +3508,8 @@ the generic promo launch. -->
     be handled yet.
   </summary>
   <token key="Action">
-    <variant name=".Accept" summary="accept suggestion"/>
-    <variant name=".Dismiss" summary="dismiss without accepting suggestion"/>
+    <variant name="Accept" summary="accept suggestion"/>
+    <variant name="Dismiss" summary="dismiss without accepting suggestion"/>
   </token>
 </histogram>
 
