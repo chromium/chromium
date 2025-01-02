@@ -120,6 +120,7 @@ template("chrome_extra_paks") {
       "$root_gen_dir/components/crashes_resources.pak",
       "$root_gen_dir/components/flags_ui_resources.pak",
       "$root_gen_dir/components/metrics/metrics_server_urls.pak",
+      "$root_gen_dir/components/user_actions_ui_resources.pak",
       "$root_gen_dir/components/version_ui_resources.pak",
       "$root_gen_dir/content/attribution_internals_resources.pak",
       "$root_gen_dir/content/content_resources.pak",

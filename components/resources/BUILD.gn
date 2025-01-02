@@ -35,6 +35,7 @@ group("resources") {
     "../crash/core/browser/resources:resources",
     "../flags_ui/resources:resources",
     "../signin/core/browser/resources",
+    "../user_actions_ui/resources:resources",
     "../version_ui/resources:resources",
   ]
 }

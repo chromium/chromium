@@ -1043,6 +1043,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [7440],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/user_actions_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [7450],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/version_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
     "includes": [7460],
