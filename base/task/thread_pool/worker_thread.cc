@@ -14,10 +14,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_features.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/threading/hang_watcher.h"
@@ -99,19 +97,10 @@ void WorkerThread::Delegate::WaitForWork() {
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
-bool WorkerThread::Delegate::IsDelayFirstWorkerSleepEnabled() {
-  static bool state = FeatureList::IsEnabled(kDelayFirstWorkerWake);
-  return state;
-}
-
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 TimeDelta WorkerThread::Delegate::GetSleepDurationBeforePurge(TimeTicks now) {
   base::TimeDelta sleep_duration_before_purge = kPurgeThreadCacheIdleDelay;
-
-  if (!IsDelayFirstWorkerSleepEnabled()) {
-    return sleep_duration_before_purge;
-  }
 
   // Use the first time a worker goes to sleep in this process as an
   // approximation of the process creation time.
@@ -174,20 +163,6 @@ bool WorkerThread::Start(
     scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer) {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
-
-  // Prime kDelayFirstWorkerWake's feature state right away on thread creation
-  // instead of looking it up for the first time later on thread as this avoids
-  // a data race in tests that may ~FeatureList while the first worker thread
-  // is still initializing (the first WorkerThread will be started on the main
-  // thread as part of ThreadPoolImpl::Start() so doing it then avoids this
-  // race), crbug.com/1344573.
-  // Note 1: the feature state is always available at this point as
-  // ThreadPoolInstance::Start() contractually happens-after FeatureList
-  // initialization.
-  // Note 2: This is done on Start instead of in the constructor as construction
-  // happens under a ThreadGroup lock which precludes calling into
-  // FeatureList (as that can also use a lock).
-  delegate()->IsDelayFirstWorkerSleepEnabled();
 
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(thread_handle_.is_null());

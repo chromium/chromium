@@ -21,11 +21,6 @@ extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
 
-// This feature controls whether ThreadPool WorkerThreads should hold off waking
-// up to purge PartitionAlloc within the first minute of their lifetime. See
-// base::internal::GetSleepDurationBeforePurge.
-BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
-
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAddTaskLeewayFeature);
