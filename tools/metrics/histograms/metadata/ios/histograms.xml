@@ -4266,7 +4266,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SandboxMetrics.WebKitCacheSize" units="MB"
-    expires_after="2025-01-05">
+    expires_after="2025-05-01">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
