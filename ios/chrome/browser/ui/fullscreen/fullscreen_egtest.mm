@@ -24,6 +24,7 @@
 #import "ios/web/public/test/http_server/error_page_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -76,6 +77,16 @@ void WaitforPDFExtensionView() {
   NSString* errorMessage = @"PDFExtensionTopView was not visible";
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, condition),
              errorMessage);
+}
+
+// Helper function to create HTML responses.
+std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
+    const std::string& content) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  response->set_content(content);
+  return response;
 }
 
 }  // namespace
@@ -208,13 +219,18 @@ void WaitforPDFExtensionView() {
 
 // Tests hiding and showing of the header with a user scroll on a long page.
 - (void)testHideHeaderUserScrollLongPage {
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://tallpage");
-  // A page long enough to ensure that the toolbar goes away on scrolling.
-  responses[URL] =
-      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
-  web::test::SetUpSimpleHttpServer(responses);
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/tallpage") {
+          return CreateHttpResponse(base::StringPrintf(
+              "<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM));
+        }
+        return nullptr;
+      }));
 
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/tallpage");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
   // Simulate a user scroll down.
@@ -229,16 +245,20 @@ void WaitforPDFExtensionView() {
 // Tests that reloading of a page shows the header even if it was not shown
 // previously.
 - (void)testShowHeaderOnReload {
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
-  // This is a tall page -- necessary to make sure scrolling can hide away the
-  // toolbar safely-- and with a link to reload itself.
-  responses[URL] = base::StringPrintf(
-      "<p style='height:%dem'>Tall page</p>"
-      "<a onclick='window.location.reload();' id='link'>link</a>",
-      kPageHeightEM);
-  web::test::SetUpSimpleHttpServer(responses);
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/origin") {
+          return CreateHttpResponse(base::StringPrintf(
+              "<p style='height:%dem'>Tall page</p>"
+              "<a onclick='window.location.reload();' id='link'>link</a>",
+              kPageHeightEM));
+        }
+        return nullptr;
+      }));
 
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/origin");
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Tall page"];
 
@@ -312,24 +332,26 @@ void WaitforPDFExtensionView() {
 // loaded from a page where the header was not see before.
 // Also tests that auto-hide works correctly on new page loads.
 - (void)testShowHeaderOnRegularPageLoad {
-  std::map<GURL, std::string> responses;
-  const GURL originURL = web::test::HttpServer::MakeUrl("http://origin");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        const std::string manyLines = base::StringPrintf(
+            "<p style='height:%dem'>a</p><p>End of lines</p>", kPageHeightEM);
 
-  const std::string manyLines = base::StringPrintf(
-      "<p style='height:%dem'>a</p><p>End of lines</p>", kPageHeightEM);
+        if (request.relative_url == "/origin") {
+          return CreateHttpResponse(
+              manyLines + "<a href='/destination' id='link1'>link1</a>");
+        } else if (request.relative_url == "/destination") {
+          return CreateHttpResponse(manyLines +
+                                    "<a href='javascript:void(0)' "
+                                    "onclick='window.history.back()' "
+                                    "id='link2'>link2</a>");
+        }
+        return nullptr;
+      }));
 
-  // A long page representing many lines and a link to the destination URL page.
-  responses[originURL] = manyLines + "<a href='" + destinationURL.spec() +
-                         "' id='link1'>link1</a>";
-  // A long page representing many lines and a link to go back.
-  responses[destinationURL] = manyLines +
-                              "<a href='javascript:void(0)' "
-                              "onclick='window.history.back()' "
-                              "id='link2'>link2</a>";
-  web::test::SetUpSimpleHttpServer(responses);
-
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL originURL = self.testServer->GetURL("/origin");
   [ChromeEarlGrey loadURL:originURL];
 
   [ChromeEarlGrey waitForWebStateContainingText:"link1"];
@@ -358,16 +380,20 @@ void WaitforPDFExtensionView() {
 // Tests that the header is shown when a native page is loaded from a page where
 // the header was not seen before.
 - (void)testShowHeaderOnNativePageLoad {
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/origin") {
+          return CreateHttpResponse(base::StringPrintf(
+              "<p style='height:%dem'>a</p>"
+              "<a onclick='window.history.back()' id='link'>link</a>",
+              kPageHeightEM));
+        }
+        return nullptr;
+      }));
 
-  // A long page representing many lines and a link to go back.
-  std::string manyLines = base::StringPrintf(
-      "<p style='height:%dem'>a</p>"
-      "<a onclick='window.history.back()' id='link'>link</a>",
-      kPageHeightEM);
-  responses[URL] = manyLines;
-  web::test::SetUpSimpleHttpServer(responses);
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/origin");
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"link"];
@@ -386,19 +412,24 @@ void WaitforPDFExtensionView() {
 // Tests that the header is shown when loading an error page in a native view
 // even if fullscreen was enabled previously.
 - (void)testShowHeaderOnErrorPage {
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
-  // A long page with some simple text -- a long page is necessary so that
-  // enough content is present to ensure that the toolbar can be hidden safely.
-  responses[URL] = base::StringPrintf(
-      "<p style='height:%dem'>a</p>"
-      "<a href=\"%s\" id=\"link\">bad link</a>",
-      kPageHeightEM,
-      ErrorPageResponseProvider::GetDnsFailureUrl().spec().c_str());
-  std::unique_ptr<web::DataResponseProvider> provider(
-      new ErrorPageResponseProvider(responses));
-  web::test::SetUpHttpServer(std::move(provider));
+  GURL errorURL = ErrorPageResponseProvider::GetDnsFailureUrl();
 
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const std::string& errorURLSpec,
+         const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/origin") {
+          return CreateHttpResponse(
+              base::StringPrintf("<p style='height:%dem'>a</p>"
+                                 "<a href=\"%s\" id=\"link\">bad link</a>",
+                                 kPageHeightEM, errorURLSpec.c_str()));
+        }
+        return nullptr;
+      },
+      errorURL.spec()));
+
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/origin");
   [ChromeEarlGrey loadURL:URL];
   HideToolbarUsingUI();
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
@@ -410,12 +441,18 @@ void WaitforPDFExtensionView() {
 
 // Tests collapsing of toolbar when a user scroll on a long page and rotate.
 - (void)testCollapseToolbarOnScrollAndRotate {
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://tallpage");
-  // A page long enough to ensure that the toolbar goes away on scrolling.
-  responses[URL] =
-      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
-  web::test::SetUpSimpleHttpServer(responses);
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/tallpage") {
+          return CreateHttpResponse(base::StringPrintf(
+              "<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM));
+        }
+        return nullptr;
+      }));
+
+  GREYAssertTrue(self.testServer->Start(), @"The server has not started");
+  GURL URL = self.testServer->GetURL("/tallpage");
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];

@@ -157,6 +157,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common",
     "//ios/web/public/test/http_server",
+    "//net:test_support",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
