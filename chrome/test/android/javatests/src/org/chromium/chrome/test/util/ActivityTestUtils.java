@@ -120,7 +120,8 @@ public class ActivityTestUtils {
     }
 
     /**
-     * Captures an activity of a particular type that is triggered from some action.
+     * Captures an activity of a particular type that is triggered from some action, and wait for it
+     * to complete layout.
      *
      * @param activityType The class type of the activity.
      * @param activityTrigger The action that will trigger the new activity (run in this thread).
@@ -128,6 +129,36 @@ public class ActivityTestUtils {
      * @return The spawned activity.
      */
     public static <T> T waitForActivityWithTimeout(
+            Instrumentation instrumentation,
+            Class<T> activityType,
+            Callable<Void> activityTrigger,
+            long timeOut)
+            throws Exception {
+        T activity =
+                launchActivityWithTimeout(instrumentation, activityType, activityTrigger, timeOut);
+        if (activity == null) {
+            return null;
+        }
+
+        // Most of the time #waitForIdleSync will include the first layout pass. But once in a while
+        // it does not. This is a problem for tests that are going to very quickly try to perform a
+        // render of a view.
+        View view = ((Activity) activity).getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(() -> view.getMeasuredWidth() > 0);
+
+        return activity;
+    }
+
+    /**
+     * Captures an activity of a particular type that is triggered from some action, without waiting
+     * for it to become ready.
+     *
+     * @param activityType The class type of the activity.
+     * @param activityTrigger The action that will trigger the new activity (run in this thread).
+     * @param timeOut The maximum time to wait for activity creation
+     * @return The spawned activity.
+     */
+    public static <T> T launchActivityWithTimeout(
             Instrumentation instrumentation,
             Class<T> activityType,
             Callable<Void> activityTrigger,
@@ -145,12 +176,6 @@ public class ActivityTestUtils {
         }
         if (activity == null) logRunningChromeActivities();
         Assert.assertNotNull(activityType.getName() + " did not start in: " + timeOut, activity);
-
-        // Most of the time #waitForIdleSync will include the first layout pass. But once in a while
-        // it does not. This is a problem for tests that are going to very quickly try to perform a
-        // render of a view.
-        View view = activity.getWindow().getDecorView().getRootView();
-        CriteriaHelper.pollUiThread(() -> view.getMeasuredWidth() > 0);
 
         return activityType.cast(activity);
     }

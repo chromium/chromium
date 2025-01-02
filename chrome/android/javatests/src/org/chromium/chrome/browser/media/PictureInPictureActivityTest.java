@@ -24,6 +24,7 @@ import android.util.Rational;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -74,6 +75,7 @@ public class PictureInPictureActivityTest {
     @Rule public JniMocker mMocker = new JniMocker();
 
     private static final long NATIVE_OVERLAY = 100L;
+    private static final long NATIVE_OVERLAY_2 = 101L;
     private static final long PIP_TIMEOUT_MILLISECONDS = 10000L;
 
     @Mock private PictureInPictureActivity.Natives mNativeMock;
@@ -318,6 +320,76 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
         verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testSecondPipWindowFreesPending() throws Throwable {
+        // Pretend that an earlier window was pending, waiting for `OnStart`, when a second window
+        // replaces it.  The first native window should be freed.
+        PictureInPictureActivity.setPendingWindowForTesting(NATIVE_OVERLAY_2);
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        // The earlier window should be freed when this one starts.
+        verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY_2);
+        testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
+        verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testSecondPipWindowDoesNotDoubleFree() throws Throwable {
+        // If the pending native pip window is replaced between `createActivity` and `onStart`, then
+        // the activity should not free it.  It was freed when the pending window was replaced.
+        PictureInPictureActivity activity =
+                ActivityTestUtils.launchActivityWithTimeout(
+                        InstrumentationRegistry.getInstrumentation(),
+                        PictureInPictureActivity.class,
+                        new Callable<Void>() {
+                            @Override
+                            public Void call() throws TimeoutException {
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () -> {
+                                            PictureInPictureActivity.createActivity(
+                                                    NATIVE_OVERLAY,
+                                                    mTab,
+                                                    mSourceRectHint.left,
+                                                    mSourceRectHint.top,
+                                                    mSourceRectHint.width(),
+                                                    mSourceRectHint.height());
+                                            // Pretend that a new native overlay was created.
+                                            // Note that `onStart` has not had a chance to run
+                                            // yet for the activity we just started.
+                                            PictureInPictureActivity.setPendingWindowForTesting(
+                                                    NATIVE_OVERLAY_2);
+                                        });
+                                return null;
+                            }
+                        },
+                        PIP_TIMEOUT_MILLISECONDS);
+
+        // The activity should be destroyed, because its native window is gone.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getLifecycle().getCurrentState(),
+                            Matchers.is(Lifecycle.State.DESTROYED));
+                },
+                PIP_TIMEOUT_MILLISECONDS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // Native should not have been notified about any activity start for any native window.
+        verify(mNativeMock, times(0)).onActivityStart(anyInt(), any(), any());
+        // `NATIVE_OVERLAY` should not be destroyed, because `onStart` would see that something else
+        // replace the pending native window.  It should assume that it was already freed, and not
+        // try to free it.  This is the double free that we're testing.
+        verify(mNativeMock, times(0)).destroy(NATIVE_OVERLAY);
+        // Nobody should destroy the replacement window, either, because we just made it up.  It's
+        // not associated with any activity.
+        verify(mNativeMock, times(0)).destroy(NATIVE_OVERLAY_2);
     }
 
     private WebContents getWebContents() {
