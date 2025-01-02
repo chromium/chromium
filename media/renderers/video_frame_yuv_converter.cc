@@ -129,8 +129,8 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   // For pure software pixel upload path with video frame that does not have
   // textures.
   auto [src_shared_image, si_sync_token, status] =
-      shared_image_cache->GetSharedImage(video_frame, raster_context_provider,
-                                         src_usage);
+      shared_image_cache->GetOrCreateSharedImage(
+          video_frame, raster_context_provider, src_usage);
   CHECK(src_shared_image);
   if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Since the video frame id matches, no need to upload pixels or copy shared

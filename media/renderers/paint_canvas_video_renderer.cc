@@ -1527,66 +1527,67 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   CHECK(!video_frame->HasSharedImage());
 
-  auto* sii = raster_context_provider->SharedImageInterface();
-  gpu::raster::RasterInterface* source_ri =
-      raster_context_provider->RasterInterface();
+  // We copy the contents of the source VideoFrame into the intermediate SI
+  // over the raster interface and read out the contents of the intermediate
+  // SI into the destination GL texture via the GLES2 interface.
+  gpu::SharedImageUsageSet src_usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
+    src_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  } else {
+    src_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  }
+
+  // Recreate both the caches if not set.
+  if (!yuv_cache_.rgb_shared_image_cache &&
+      !yuv_cache_.yuv_shared_image_cache) {
+    yuv_cache_.rgb_shared_image_cache =
+        std::make_unique<VideoFrameSharedImageCache>();
+    yuv_cache_.yuv_shared_image_cache =
+        std::make_unique<VideoFrameSharedImageCache>();
+  }
+
+  DCHECK(yuv_cache_.rgb_shared_image_cache &&
+         yuv_cache_.yuv_shared_image_cache);
 
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
-  gpu::SyncToken token;
-  if (yuv_cache_.rgb_shared_image &&
-      yuv_cache_.size == video_frame->coded_size() &&
-      yuv_cache_.raster_context_provider == raster_context_provider) {
-    token = yuv_cache_.sync_token;
-  } else {
-    yuv_cache_.Reset();
-    yuv_cache_.raster_context_provider = raster_context_provider;
-    yuv_cache_.size = video_frame->coded_size();
-
-    // We copy the contents of the source VideoFrame into the intermediate SI
-    // over the raster interface and read out the contents of the intermediate
-    // SI into the destination GL texture via the GLES2 interface.
-    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-    if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    } else {
-      usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-    }
-
-    yuv_cache_.rgb_shared_image = sii->CreateSharedImage(
-        {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-         video_frame->CompatRGBColorSpace(), usage, "PaintCanvasVideoRenderer"},
-        gpu::kNullSurfaceHandle);
-    CHECK(yuv_cache_.rgb_shared_image);
-    token = sii->GenUnverifiedSyncToken();
-  }
+  auto [rgb_shared_image, rgb_sync_token, status] =
+      yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
+          video_frame.get(), raster_context_provider, src_usage,
+          SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
+  yuv_cache_.raster_context_provider = raster_context_provider;
+  CHECK(rgb_shared_image);
 
   // On the source Raster context, do the YUV->RGB conversion.
   gpu::MailboxHolder dest_holder;
-  dest_holder.mailbox = yuv_cache_.rgb_shared_image->mailbox();
+  dest_holder.mailbox = rgb_shared_image->mailbox();
   dest_holder.texture_target = GL_TEXTURE_2D;
-  dest_holder.sync_token = token;
+  // Pass the rgb sync token here to be waited upon before performing raster
+  // tasks.
+  dest_holder.sync_token = rgb_sync_token;
   internals::ConvertYuvVideoFrameToRgbSharedImage(
       video_frame.get(), raster_context_provider, dest_holder,
-      /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image.get());
+      /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image_cache.get());
 
   gpu::SyncToken post_conversion_sync_token;
-  source_ri->GenUnverifiedSyncTokenCHROMIUM(
+  raster_context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
       post_conversion_sync_token.GetData());
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
-  yuv_cache_.sync_token = CopySharedImageToTexture(
+  rgb_sync_token = CopySharedImageToTexture(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-      yuv_cache_.rgb_shared_image.get(), post_conversion_sync_token, target,
-      texture, internal_format, format, type, level, premultiply_alpha, flip_y);
+      rgb_shared_image.get(), post_conversion_sync_token, target, texture,
+      internal_format, format, type, level, premultiply_alpha, flip_y);
+
+  // Update the rgb sync token to be waited upon based on gles tasks performed
+  // earlier.
+  yuv_cache_.rgb_shared_image_cache->UpdateSyncToken(rgb_sync_token);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
   // data we used was CPU-side (IsMappable) to begin with. If there were any
   // textures, we didn't use them.
-
-  // The temporary SkImages should be automatically cleaned up here.
 
   // Kick off a timer to release the cache.
   cache_deleting_timer_.Reset();
@@ -1874,30 +1875,23 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   return sync_token;
 }
 
-PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache()
-    : yuv_shared_image(std::make_unique<VideoFrameSharedImageCache>()) {}
+PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
 PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
   Reset();
 }
 
 void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  if (!rgb_shared_image) {
+  if (!rgb_shared_image_cache && !yuv_shared_image_cache) {
     return;
   }
   DCHECK(raster_context_provider);
+  rgb_shared_image_cache.reset();
+  yuv_shared_image_cache.reset();
 
-  gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  ri->OrderingBarrierCHROMIUM();
-
-  auto* sii = raster_context_provider->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::move(rgb_shared_image));
-
-  yuv_shared_image.reset();
-
-  // Kick off the GL work up to the OrderingBarrierCHROMIUM above as well as the
-  // SharedImageInterface work, to ensure the shared image memory is released in
-  // a timely fashion.
+  // Kick off the GL work as well as the SharedImageInterface work, to ensure
+  // the shared image memory is released in a timely fashion.
+  // TODO(crbug.com/343011436): Replace the FlushPendingWork with
+  // SharedImageInterface::Flush.
   raster_context_provider->ContextSupport()->FlushPendingWork();
   raster_context_provider.reset();
 }

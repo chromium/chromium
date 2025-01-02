@@ -31,7 +31,6 @@ class RectF;
 
 namespace gpu {
 struct Capabilities;
-class ClientSharedImage;
 
 namespace gles2 {
 class GLES2Interface;
@@ -290,19 +289,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // The ContextProvider that holds the texture.
     scoped_refptr<viz::RasterContextProvider> raster_context_provider;
 
-    // The size of the texture.
-    gfx::Size size;
-
-    // The RGB shared image backing the texture.
-    scoped_refptr<gpu::ClientSharedImage> rgb_shared_image;
+    // The RGB shared image cache backing the texture.
+    std::unique_ptr<VideoFrameSharedImageCache> rgb_shared_image_cache;
 
     // Cache of YUV shared images that are created to upload CPU video frame
     // data to the GPU.
-    std::unique_ptr<VideoFrameSharedImageCache> yuv_shared_image;
-
-    // A SyncToken after last usage, used for reusing or destroying texture and
-    // shared image.
-    gpu::SyncToken sync_token;
+    std::unique_ptr<VideoFrameSharedImageCache> yuv_shared_image_cache;
   };
   YUVTextureCache yuv_cache_;
 };
