@@ -496,7 +496,6 @@ TabDragController::Liveness TabDragController::Init(
             source_view->GetMirroredXInView(source_view_offset)) /
         source_view->width();
   }
-  ref->InitWindowCreatePoint();
   ref->initial_selection_model_ = std::move(initial_selection_model);
 
   ref->window_finder_ = std::make_unique<WindowFinder>();
@@ -868,43 +867,6 @@ void TabDragController::OnActiveStripWebContentsReplaced(
 
 ///////////////////////////////////////////////////////////////////////////////
 // TabDragController, private:
-
-void TabDragController::InitWindowCreatePoint() {
-  // window_create_point_ is only used in CompleteDrag() (through
-  // GetWindowCreatePoint() to get the start point of the docked window) when
-  // the attached_context_ is NULL and all the window's related bound
-  // information are obtained from source_context_. So, we need to get the
-  // first_tab based on source_context_, not attached_context_. Otherwise,
-  // the window_create_point_ is not in the correct coordinate system. Please
-  // refer to http://crbug.com/6223 comment #15 for detailed information.
-  views::View* first_tab = source_context_->GetTabAt(0);
-  views::View::ConvertPointToWidget(first_tab, &first_source_tab_point_);
-  window_create_point_ = first_source_tab_point_;
-  window_create_point_.Offset(mouse_offset_.x(), mouse_offset_.y());
-}
-
-gfx::Point TabDragController::GetWindowCreatePoint(
-    const gfx::Point& origin) const {
-  // If the cursor is outside the monitor area, move it inside. For example,
-  // dropping a tab onto the task bar on Windows produces this situation.
-  gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(origin).work_area();
-  gfx::Point create_point(origin);
-  if (!work_area.IsEmpty()) {
-    if (create_point.x() < work_area.x()) {
-      create_point.set_x(work_area.x());
-    } else if (create_point.x() > work_area.right()) {
-      create_point.set_x(work_area.right());
-    }
-    if (create_point.y() < work_area.y()) {
-      create_point.set_y(work_area.y());
-    } else if (create_point.y() > work_area.bottom()) {
-      create_point.set_y(work_area.bottom());
-    }
-  }
-  return gfx::Point(create_point.x() - window_create_point_.x(),
-                    create_point.y() - window_create_point_.y());
-}
 
 void TabDragController::SaveFocus() {
   DCHECK(source_context_);
@@ -1876,6 +1838,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
 }
 
 void TabDragController::RevertDrag() {
+  CHECK(attached_context_);
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
@@ -1893,18 +1856,16 @@ void TabDragController::RevertDrag() {
 
   MaybeResumeTrackingSavedTabGroup();
 
-  if (attached_context_) {
-    if (did_restore_window_) {
-      MaximizeAttachedWindow();
+  if (did_restore_window_) {
+    MaximizeAttachedWindow();
+  }
+  if (attached_context_ == source_context_) {
+    source_context_->StoppedDragging();
+    if (header_drag_) {
+      source_context_->GetTabStripModel()->MoveTabGroup(group_.value());
     }
-    if (attached_context_ == source_context_) {
-      source_context_->StoppedDragging();
-      if (header_drag_) {
-        source_context_->GetTabStripModel()->MoveTabGroup(group_.value());
-      }
-    } else {
-      attached_context_->DraggedTabsDetached();
-    }
+  } else {
+    attached_context_->DraggedTabsDetached();
   }
 
   // If tabs were closed during this drag, the initial selection might include
@@ -2015,6 +1976,7 @@ void TabDragController::RevertHeaderDrag(tab_groups::TabGroupId group_id) {
 
 void TabDragController::RevertDragAt(size_t drag_index) {
   CHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK(attached_context_);
   CHECK(source_context_);
   // We can't revert if `contents` was destroyed during the drag, or if this is
   // a group header.
@@ -2037,53 +1999,45 @@ void TabDragController::RevertDragAt(size_t drag_index) {
           ? std::make_optional(drag_data.value().group_id)
           : std::nullopt;
 
-  if (attached_context_) {
-    int index = attached_context_->GetTabStripModel()->GetIndexOfWebContents(
-        data->contents);
-    if (attached_context_ != source_context_) {
-      std::unique_ptr<base::AutoReset<bool>> removing_last_tab_setter;
-      if (attached_context_->GetTabStripModel()->count() == 1) {
-        removing_last_tab_setter = std::make_unique<base::AutoReset<bool>>(
-            &is_removing_last_tab_for_revert_, true);
-      }
-      // The Tab was inserted into another TabDragContext. We need to
-      // put it back into the original one. Marking the view as detached tells
-      // the TabStrip to not animate its closure, as it's actually being moved.
-      data->attached_view->set_detached();
-      std::unique_ptr<tabs::TabModel> detached_tab =
-          attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
-      // No-longer removing the last tab, so reset state.
-      removing_last_tab_setter.reset();
-      // TODO(beng): (Cleanup) seems like we should use Attach() for this
-      //             somehow.
-      source_context_->GetTabStripModel()->InsertDetachedTabAt(
-          target_index, std::move(detached_tab),
-          (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
-    } else {
-      // The Tab was moved within the TabDragContext where the drag
-      // was initiated. Move it back to the starting location.
+  const int index =
+      attached_context_->GetTabStripModel()->GetIndexOfWebContents(
+          data->contents);
+  if (attached_context_ != source_context_) {
+    std::unique_ptr<base::AutoReset<bool>> removing_last_tab_setter;
+    if (attached_context_->GetTabStripModel()->count() == 1) {
+      removing_last_tab_setter = std::make_unique<base::AutoReset<bool>>(
+          &is_removing_last_tab_for_revert_, true);
+    }
+    // The Tab was inserted into another TabDragContext. We need to
+    // put it back into the original one. Marking the view as detached tells
+    // the TabStrip to not animate its closure, as it's actually being moved.
+    data->attached_view->set_detached();
+    std::unique_ptr<tabs::TabModel> detached_tab =
+        attached_context_->GetTabStripModel()->DetachTabAtForInsertion(index);
+    // No-longer removing the last tab, so reset state.
+    removing_last_tab_setter.reset();
+    // TODO(beng): (Cleanup) seems like we should use Attach() for this
+    //             somehow.
+    source_context_->GetTabStripModel()->InsertDetachedTabAt(
+        target_index, std::move(detached_tab),
+        (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
+  } else {
+    // The Tab was moved within the TabDragContext where the drag
+    // was initiated. Move it back to the starting location.
 
-      // If the target index is to the right, then other unreverted tabs are
-      // occupying indices between this tab and the target index. Those
-      // unreverted tabs will later be reverted to the right of the target
-      // index, so we skip those indices.
-      if (target_index > index) {
-        for (size_t i = drag_index + 1; i < drag_data_.size(); ++i) {
-          if (drag_data_[i].contents) {
-            ++target_index;
-          }
+    // If the target index is to the right, then other unreverted tabs are
+    // occupying indices between this tab and the target index. Those
+    // unreverted tabs will later be reverted to the right of the target
+    // index, so we skip those indices.
+    if (target_index > index) {
+      for (size_t i = drag_index + 1; i < drag_data_.size(); ++i) {
+        if (drag_data_[i].contents) {
+          ++target_index;
         }
       }
-      source_context_->GetTabStripModel()->MoveWebContentsAt(
-          index, target_index, false, existing_group);
     }
-  } else {
-    // The Tab was detached from the TabDragContext where the drag
-    // began, and has not been attached to any other TabDragContext.
-    // We need to put it back into the source TabDragContext.
-    source_context_->GetTabStripModel()->InsertDetachedTabAt(
-        target_index, std::move(data->owned_tab),
-        (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
+    source_context_->GetTabStripModel()->MoveWebContentsAt(
+        index, target_index, false, existing_group);
   }
 
   if (drag_data.has_value() && !existing_group.has_value()) {
@@ -2094,73 +2048,46 @@ void TabDragController::RevertDragAt(size_t drag_index) {
 }
 
 void TabDragController::CompleteDrag() {
-  DCHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK(attached_context_);
 
-  if (attached_context_) {
-    if (is_dragging_new_browser_ || did_restore_window_) {
-      if (IsSnapped(attached_context_)) {
-        was_source_maximized_ = false;
-        was_source_fullscreen_ = false;
-      }
+  if (is_dragging_new_browser_ || did_restore_window_) {
+    if (IsSnapped(attached_context_)) {
+      was_source_maximized_ = false;
+      was_source_fullscreen_ = false;
+    }
 
-      // If source window was maximized - maximize the new window as well.
+    // If source window was maximized - maximize the new window as well.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
-      // Keeping maximized state breaks snap to Grid on Windows when dragging
-      // tabs from maximized windows. TODO:(crbug.com/727051) Explore doing this
-      // for other desktop OS's. kMaximizedStateRetainedOnTabDrag in
-      // tab_drag_controller_interactive_uitest.cc will need to be initialized
-      // to false on each desktop OS that changes this behavior.
-      // macOS opts out since this maps maximize to fullscreen, which can
-      // violate user expectations and interacts poorly with some window
-      // management actions.
-      if (was_source_maximized_ || was_source_fullscreen_) {
-        MaximizeAttachedWindow();
-      }
+    // Keeping maximized state breaks snap to Grid on Windows when dragging
+    // tabs from maximized windows. TODO:(crbug.com/727051) Explore doing this
+    // for other desktop OS's. kMaximizedStateRetainedOnTabDrag in
+    // tab_drag_controller_interactive_uitest.cc will need to be initialized
+    // to false on each desktop OS that changes this behavior.
+    // macOS opts out since this maps maximize to fullscreen, which can
+    // violate user expectations and interacts poorly with some window
+    // management actions.
+    if (was_source_maximized_ || was_source_fullscreen_) {
+      MaximizeAttachedWindow();
+    }
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
-    }
-    attached_context_->StoppedDragging();
+  }
+  attached_context_->StoppedDragging();
 
-    // Tabbed PWAs with a home tab should have a home tab in every window.
-    // This means when dragging tabs out to create a new window, a home tab
-    // needs to be added.
-    if (is_dragging_new_browser_) {
-      Browser* new_browser =
-          BrowserView::GetBrowserViewForNativeWindow(
-              attached_context_->GetWidget()->GetNativeWindow())
-              ->browser();
-
-      if (new_browser->app_controller() &&
-          new_browser->app_controller()->has_tab_strip()) {
-        web_app::MaybeAddPinnedHomeTab(new_browser,
-                                       new_browser->app_controller()->app_id());
-      }
-    }
-  } else {
-    // Compel the model to construct a new window for the detached
-    // WebContentses.
-    views::Widget* widget = source_context_->GetWidget();
-    gfx::Rect window_bounds(widget->GetRestoredBounds());
-    window_bounds.set_origin(GetWindowCreatePoint(last_point_in_screen_));
-
-    base::AutoReset<bool> setter(&is_mutating_, true);
-
-    std::vector<TabStripModelDelegate::NewStripContents> tabs;
-    for (auto& drag_datum : drag_data_) {
-      TabStripModelDelegate::NewStripContents item;
-      // We should have owned_contents here, this CHECK is used to gather data
-      // for https://crbug.com/677806.
-      CHECK(drag_datum.owned_tab);
-      item.tab = std::move(drag_datum.owned_tab);
-      item.add_types =
-          drag_datum.pinned ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_NONE;
-      tabs.push_back(std::move(item));
-    }
-
+  // Tabbed PWAs with a home tab should have a home tab in every window.
+  // This means when dragging tabs out to create a new window, a home tab
+  // needs to be added.
+  if (is_dragging_new_browser_) {
     Browser* new_browser =
-        source_context_->GetTabStripModel()->delegate()->CreateNewStripWithTabs(
-            std::move(tabs), window_bounds, widget->IsMaximized());
-    ResetSelection(new_browser->tab_strip_model());
-    new_browser->window()->Show();
+        BrowserView::GetBrowserViewForNativeWindow(
+            attached_context_->GetWidget()->GetNativeWindow())
+            ->browser();
+
+    if (new_browser->app_controller() &&
+        new_browser->app_controller()->has_tab_strip()) {
+      web_app::MaybeAddPinnedHomeTab(new_browser,
+                                     new_browser->app_controller()->app_id());
+    }
   }
 
   if (header_drag_) {
