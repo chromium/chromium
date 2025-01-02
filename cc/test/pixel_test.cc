@@ -262,19 +262,17 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
     const SkBitmap& source) {
   auto* shared_image_interface = context_provider->SharedImageInterface();
   DCHECK(shared_image_interface);
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-      {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-       gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
-      std::move(shared_image_mapping.shared_image);
-  base::WritableSharedMemoryMapping mapping =
-      std::move(shared_image_mapping.mapping);
+      shared_image_interface->CreateSharedImageForSoftwareCompositor(
+          {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
+  auto mapping = shared_image->Map();
   gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   const size_t row_bytes = info.minRowBytes();
-  base::span<uint8_t> mem(mapping);
+  base::span<uint8_t> mem = mapping->GetMemoryForPlane(0);
   CHECK_GE(mem.size(), info.computeByteSize(row_bytes));
   source.readPixels(info, mem.data(), row_bytes, 0, 0);
 
