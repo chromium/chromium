@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 
 namespace collaboration {
@@ -18,7 +17,7 @@ class CollaborationControllerDelegateAndroid
     : public CollaborationControllerDelegate {
  public:
   explicit CollaborationControllerDelegateAndroid(
-      base::android::ScopedJavaGlobalRef<jobject> java_obj);
+      const base::android::JavaParamRef<jobject>& j_object);
   ~CollaborationControllerDelegateAndroid() override;
 
   // CollaborationControllerDelegate.
@@ -32,6 +31,8 @@ class CollaborationControllerDelegateAndroid
                       ResultCallback result) override;
   void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
                        ResultCallback result) override;
+  void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
+                        ResultCallback result) override;
   void PromoteTabGroup(const data_sharing::GroupId& group_id,
                        ResultCallback result) override;
   void PromoteCurrentScreen() override;

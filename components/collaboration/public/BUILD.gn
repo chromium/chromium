@@ -95,6 +95,7 @@ if (is_android) {
       "//components/tab_groups:tab_groups_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
 
     srcjar_deps = [
@@ -168,6 +169,18 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//url:gurl_junit_test_support",
       "//url:url_java",
+    ]
+  }
+
+  static_library("conversion_utils") {
+    sources = [
+      "android/conversion_utils.cc",
+      "android/conversion_utils.h",
+    ]
+
+    deps = [
+      ":public",
+      "//base",
     ]
   }
 }

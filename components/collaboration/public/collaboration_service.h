@@ -70,9 +70,9 @@ class CollaborationService : public KeyedService,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const GURL& url) = 0;
 
-  // Starts a new share flow. This will cancel all existing ongoing join and
-  // share flows in the same browser instance.
-  // Note: EitherGroupID is either a local tab group id or a sync id.
+  // Starts a new share or manage flow. This will cancel all existing ongoing
+  // flows in the same browser instance. Note: EitherGroupID is either a local
+  // tab group id or a sync id.
   virtual void StartShareOrManageFlow(
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       const tab_groups::EitherGroupID& either_id) = 0;

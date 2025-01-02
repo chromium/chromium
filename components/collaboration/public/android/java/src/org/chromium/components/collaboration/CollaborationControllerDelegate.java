@@ -5,4 +5,12 @@
 package org.chromium.components.collaboration;
 
 /** An interface to manage collaboration flow UI screens. */
-public interface CollaborationControllerDelegate {}
+public interface CollaborationControllerDelegate {
+    /**
+     * This method is called exactly once, and the service takes ownership of the native and java
+     * object after this call.
+     *
+     * @return The native pointer of the current delegate.
+     */
+    long getNativePtr();
+}

@@ -52,8 +52,10 @@ static_library("core_internal") {
 
     deps += [
       ":core_jni_headers",
+      "//components/collaboration/public:conversion_utils",
       "//components/collaboration/public:core_jni_headers",
       "//components/data_sharing/public:android_utils",
+      "//components/saved_tab_groups/public:conversion_utils",
     ]
   }
 }
@@ -228,6 +230,7 @@ if (is_android) {
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
   }
 

@@ -17,6 +17,17 @@ import org.chromium.components.data_sharing.SharedDataPreview;
 /** An interface to manage collaboration flow UI screens. */
 @JNINamespace("collaboration")
 public class CollaborationControllerDelegateImpl implements CollaborationControllerDelegate {
+    private long mNativePtr;
+
+    CollaborationControllerDelegateImpl() {
+        mNativePtr = CollaborationControllerDelegateImplJni.get().createNativeObject(this);
+    }
+
+    @Override
+    public long getNativePtr() {
+        return mNativePtr;
+    }
+
     /**
      * Prepare and wait for the UI to be ready to be shown.
      *
@@ -91,6 +102,17 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     }
 
     /**
+     * Show the manage dialog screen.
+     *
+     * @param resultCallback The callback to notify the outcome of the UI screen.
+     */
+    @CalledByNative
+    void showManageDialog(long resultCallback) {
+        CollaborationControllerDelegateImplJni.get()
+                .runResultCallback(Outcome.FAILURE, resultCallback);
+    }
+
+    /**
      * Open and show the local tab group.
      *
      * @param collaborationId The collaboration id of the tab group to promote.
@@ -106,8 +128,15 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     @CalledByNative
     void promoteCurrentScreen() {}
 
+    @CalledByNative
+    private void clearNativePtr() {
+        mNativePtr = 0;
+    }
+
     @NativeMethods
     interface Natives {
         void runResultCallback(int joutcome, long resultCallback);
+
+        long createNativeObject(CollaborationControllerDelegateImpl jdelegate);
     }
 }

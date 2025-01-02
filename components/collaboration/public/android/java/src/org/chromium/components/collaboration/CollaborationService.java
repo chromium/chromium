@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.url.GURL;
 
 /**
  * CollaborationService is the core class for managing collaboration group flows. It represents a
@@ -25,6 +26,22 @@ public interface CollaborationService {
      */
     @VisibleForTesting
     boolean isEmptyService();
+
+    /**
+     * Starts a new collaboration join flow.
+     *
+     * @param delegate The delegate to perform action on the Android UI.
+     * @param url The URL of the join request.
+     */
+    void startJoinFlow(CollaborationControllerDelegate delegate, GURL url);
+
+    /**
+     * Starts a new collaboration share or manage flow.
+     *
+     * @param delegate The delegate to perform action on the Android UI.
+     * @param either_id The ID to identify a tab group.
+     */
+    void startShareOrManageFlow(CollaborationControllerDelegate delegate, String syncId);
 
     /** Returns the current {@link ServiceStatus} of the service. */
     @NonNull

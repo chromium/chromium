@@ -5,6 +5,7 @@
 #include "chrome/browser/collaboration/android/collaboration_controller_delegate_android.h"
 
 #include "base/android/jni_string.h"
+#include "components/collaboration/public/android/conversion_utils.h"
 #include "components/data_sharing/public/android/conversion_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -17,45 +18,43 @@ using ResultCallback =
 
 namespace collaboration {
 
-namespace {
-
-jlong GetCallbackPointer(ResultCallback result) {
-  std::unique_ptr<ResultCallback> wrapped_callback =
-      std::make_unique<ResultCallback>(std::move(result));
-  CHECK(wrapped_callback.get());
-  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
-  wrapped_callback.release();
-
-  return j_native_ptr;
-}
-
-}  // namespace
-
 static void JNI_CollaborationControllerDelegateImpl_RunResultCallback(
     JNIEnv* env,
     jint joutcome,
     jlong callback) {
-  std::unique_ptr<ResultCallback> callback_ptr(
-      reinterpret_cast<ResultCallback*>(callback));
+  std::unique_ptr<ResultCallback> callback_ptr =
+      conversion::GetNativeResultCallbackFromJava(callback);
   CollaborationControllerDelegate::Outcome outcome =
       static_cast<CollaborationControllerDelegate::Outcome>(joutcome);
   std::move(*callback_ptr).Run(outcome);
 }
 
+static jlong JNI_CollaborationControllerDelegateImpl_CreateNativeObject(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_object) {
+  std::unique_ptr<CollaborationControllerDelegate> delegate_unique_ptr =
+      std::make_unique<CollaborationControllerDelegateAndroid>(j_object);
+
+  return conversion::GetJavaDelegateUniquePtr(std::move(delegate_unique_ptr));
+}
+
 CollaborationControllerDelegateAndroid::CollaborationControllerDelegateAndroid(
-    ScopedJavaGlobalRef<jobject> java_obj) {
-  DCHECK(java_obj);
-  java_obj_.Reset(java_obj);
+    const base::android::JavaParamRef<jobject>& j_object) {
+  DCHECK(j_object);
+  java_obj_.Reset(base::android::ScopedJavaGlobalRef<jobject>(j_object));
 }
 
 CollaborationControllerDelegateAndroid::
-    ~CollaborationControllerDelegateAndroid() = default;
+    ~CollaborationControllerDelegateAndroid() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CollaborationControllerDelegateImpl_clearNativePtr(env, java_obj_);
+}
 
 void CollaborationControllerDelegateAndroid::PrepareFlowUI(
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_prepareFlowUI(
-      env, java_obj_, GetCallbackPointer(std::move(result)));
+      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::ShowError(const ErrorInfo& error,
@@ -63,20 +62,20 @@ void CollaborationControllerDelegateAndroid::ShowError(const ErrorInfo& error,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showError(
       env, java_obj_, static_cast<int>(error.type),
-      GetCallbackPointer(std::move(result)));
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::Cancel(ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_cancel(
-      env, java_obj_, GetCallbackPointer(std::move(result)));
+      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::ShowAuthenticationUi(
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showAuthenticationUi(
-      env, java_obj_, GetCallbackPointer(std::move(result)));
+      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::NotifySignInAndSyncStatusChange() {
@@ -95,7 +94,7 @@ void CollaborationControllerDelegateAndroid::ShowJoinDialog(
       data_sharing::conversion::CreateJavaGroupToken(env, token),
       data_sharing::conversion::CreateJavaSharedTabGroupPreview(
           env, preview_data.shared_tab_group_preview.value()),
-      GetCallbackPointer(std::move(result)));
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::ShowShareDialog(
@@ -103,7 +102,15 @@ void CollaborationControllerDelegateAndroid::ShowShareDialog(
     ResultCallback result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CollaborationControllerDelegateImpl_showShareDialog(
-      env, java_obj_, GetCallbackPointer(std::move(result)));
+      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
+}
+
+void CollaborationControllerDelegateAndroid::ShowManageDialog(
+    const tab_groups::EitherGroupID& either_id,
+    ResultCallback result) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_CollaborationControllerDelegateImpl_showManageDialog(
+      env, java_obj_, conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::PromoteTabGroup(
@@ -113,7 +120,7 @@ void CollaborationControllerDelegateAndroid::PromoteTabGroup(
   Java_CollaborationControllerDelegateImpl_promoteTabGroup(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, group_id.value()),
-      GetCallbackPointer(std::move(result)));
+      conversion::GetJavaResultCallbackPtr(std::move(result)));
 }
 
 void CollaborationControllerDelegateAndroid::PromoteCurrentScreen() {

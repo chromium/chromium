@@ -3298,6 +3298,7 @@ static_library("browser") {
       "//components/browsing_data/content/android:jni_headers",
       "//components/cbor",
       "//components/cdm/browser",
+      "//components/collaboration/public:conversion_utils",
       "//components/commerce/core:commerce_subscription_db_content_proto",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:heuristics_provider",
