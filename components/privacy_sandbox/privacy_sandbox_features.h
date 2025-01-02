@@ -316,6 +316,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
 
+// If true, the Privacy Sandbox prompt will show dismissal buttons with
+// equalized styling.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxEqualizedPromptButtons);
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

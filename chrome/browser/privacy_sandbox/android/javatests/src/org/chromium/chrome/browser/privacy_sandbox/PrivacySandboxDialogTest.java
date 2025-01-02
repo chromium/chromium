@@ -48,6 +48,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -72,6 +73,7 @@ import java.util.Map;
 
 /** Tests {@link PrivacySandboxDialog}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DoNotBatch(reason = "Need to evaluate these tests for batching; some test startup behavior.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class PrivacySandboxDialogTest {
     @ClassRule
@@ -89,6 +91,8 @@ public final class PrivacySandboxDialogTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setRevision(2)
+                    .setDescription("Changed feature flag behavior for button equalization")
                     .build();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
@@ -425,6 +429,33 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS,
+        ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS,
+    })
+    public void testRenderEeaNoticeV2AdMeasurementDropdownWithEqualizedButtons()
+            throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNoticeEeaV2(
+                                    sActivityTestRule.getActivity(),
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    SurfaceType.BR_APP,
+                                    sActivityTestRule.getProfile(false),
+                                    sActivityTestRule.getActivity().getWindowAndroid());
+                    mDialog.show();
+                });
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        tryClickOn(withId(R.id.ad_measurement_dropdown_element));
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog,
+                "privacy_sandbox_eea_notice_dialog_v2_ad_measurement_dropdown_equalized_buttons");
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testEeaNoticeV2AckButton() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
@@ -558,6 +589,27 @@ public final class PrivacySandboxDialogTest {
                     mDialog.show();
                 });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS)
+    public void testRenderEeaNoticeAdMeasurementDropdownWithEqualizedButtons() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNoticeEEA(
+                                    sActivityTestRule.getActivity(),
+                                    new PrivacySandboxBridge(sActivityTestRule.getProfile(false)),
+                                    SurfaceType.BR_APP);
+                    mDialog.show();
+                });
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog));
+        tryClickOn(withId(R.id.dropdown_element));
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog_equalized_buttons");
     }
 
     @Test

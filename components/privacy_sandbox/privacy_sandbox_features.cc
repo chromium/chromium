@@ -283,4 +283,7 @@ BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
              "PrivacySandboxAllowPromptForBlocked3PCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxEqualizedPromptButtons,
+             "PrivacySandboxEqualizedPromptButtons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox

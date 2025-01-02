@@ -103,7 +103,7 @@ export class PrivacySandboxDialogConsentStepElement extends
   }
 
   private getButtonsClass_() {
-    return this.shouldShowV2() ? 'tonal-button' : '';
+    return this.equalizedButtons() ? 'tonal-button' : '';
   }
 }
 
