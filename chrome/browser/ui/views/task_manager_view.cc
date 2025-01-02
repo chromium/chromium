@@ -405,6 +405,10 @@ void TaskManagerView::PerformFilter(DisplayCategory category) {
   // Redraw the table immediately by scheduling a paint since the rows most
   // likely changed in between switching models.
   tab_table_->OnItemsChanged(/*start=*/0, table_model_->RowCount());
+
+  // Model row count may differ, leading to off-screen row rendering. Recompute
+  // scroll position.
+  tab_table_->InvalidateLayout();
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
