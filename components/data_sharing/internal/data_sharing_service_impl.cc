@@ -179,6 +179,16 @@ std::optional<GroupMemberPartialData>
 DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
     const GaiaId& member_gaia_id) {
+  if (group_data_for_testing_.contains(group_id)) {
+    CHECK_IS_TEST();
+    const auto& group = group_data_for_testing_[group_id];
+    for (const auto& member : group.members) {
+      if (member.gaia_id == member_gaia_id) {
+        return GroupMemberPartialData::FromGroupMember(member);
+      }
+    }
+  }
+
   if (!group_data_model_) {
     return std::nullopt;
   }
