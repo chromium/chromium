@@ -219,14 +219,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * to null in case the user is signed out.
      */
     private void maybeUpdateLegacyPrimaryAccountEmail() {
-        @ConsentLevel
-        int consentLevel =
-                SigninFeatureMap.isEnabled(
-                                SigninFeatures
-                                        .USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
-                        ? ConsentLevel.SIGNIN
-                        : ConsentLevel.SYNC;
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(consentLevel);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (Objects.equals(
                 CoreAccountInfo.getEmailFrom(accountInfo),
                 SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {

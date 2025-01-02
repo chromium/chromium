@@ -21,7 +21,6 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceSupervisedSigninWithCapabilities,
     &switches::kSkipCheckForAccountManagementOnSignin,
-    &switches::kUseConsentLevelSigninForLegacyAccountEmailPref,
     &switches::kCctSignInPrompt,
     &switches::kUnoForAuto,
 };
