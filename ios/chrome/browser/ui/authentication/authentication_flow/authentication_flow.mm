@@ -146,8 +146,6 @@ BOOL IsIdentityInCoreAccountInfos(
   // as part of the signin flow. Can only be true if the to-be-signed-in account
   // is managed.
   BOOL _shouldConvertPersonalProfileToManaged;
-  // YES if user is opted into bookmark and reading list account storage.
-  BOOL _shouldShowSigninSnackbar;
 
   raw_ptr<Browser> _browser;
   id<SystemIdentity> _identityToSignIn;
@@ -307,9 +305,6 @@ BOOL IsIdentityInCoreAccountInfos(
     case SIGN_OUT_IF_NEEDED:
       return SIGN_IN;
     case SIGN_IN:
-      if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
-        _shouldShowSigninSnackbar = YES;
-      }
       if (policy::IsAnyUserPolicyFeatureEnabled() &&
           _identityToSignInHostedDomain.length > 0) {
         return REGISTER_FOR_USER_POLICY;
@@ -538,7 +533,8 @@ BOOL IsIdentityInCoreAccountInfos(
     _signInCompletion = nil;
     signInCompletion(result);
   }
-  if (_shouldShowSigninSnackbar) {
+  if (self.postSignInActions.Has(PostSignInAction::kShowSnackbar) &&
+      result == SigninCoordinatorResult::SigninCoordinatorResultSuccess) {
     [_performer completePostSignInActions:_postSignInActions
                              withIdentity:_identityToSignIn
                                   browser:_browser];
