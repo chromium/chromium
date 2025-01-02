@@ -20,8 +20,9 @@ enum QuantityBucket {
   kMultiple,
 };
 
-// Types that qualify a navigation for the DIPS.TrustIndicator.DirectNavigation
-// UKM event. Should only contain core page transition types (no qualifiers).
+// Types that qualify a navigation for the
+// DIPS.TrustIndicator.DirectNavigationV2 UKM event. Should only contain core
+// page transition types (no qualifiers).
 constexpr const std::array<ui::PageTransition, 2>&
     kDirectNavigationPageTransitions{
         ui::PAGE_TRANSITION_TYPED,
@@ -102,11 +103,11 @@ void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
                                  ukm::SourceId entrypoint_source_id,
                                  int32_t flow_id,
                                  DIPSRedirectType exit_redirect_type) {
-  ukm::builders::DIPS_SuspectedTrackerFlowReferrer(referrer_source_id)
+  ukm::builders::DIPS_SuspectedTrackerFlowReferrerV2(referrer_source_id)
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());
 
-  ukm::builders::DIPS_SuspectedTrackerFlowEntrypoint(entrypoint_source_id)
+  ukm::builders::DIPS_SuspectedTrackerFlowEntrypointV2(entrypoint_source_id)
       .SetExitRedirectType(static_cast<int64_t>(exit_redirect_type))
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());
@@ -125,7 +126,7 @@ void MaybeEmitDirectNavigationUkm(content::NavigationHandle* navigation_handle,
                                 ? first_server_redirect->url.source_id
                                 : navigation_handle->GetNextPageUkmSourceId();
 
-  ukm::builders::DIPS_TrustIndicator_DirectNavigation(source_id)
+  ukm::builders::DIPS_TrustIndicator_DirectNavigationV2(source_id)
       .SetNavigationSource(
           ToDirectNavigationSource(navigation_handle->GetPageTransition()))
       .Record(ukm::UkmRecorder::Get());
@@ -426,7 +427,7 @@ void DipsNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
     return;
   }
 
-  ukm::builders::DIPS_TrustIndicator_InFlowInteraction(
+  ukm::builders::DIPS_TrustIndicator_InFlowInteractionV2(
       previous_page_visit_info_->source_id)
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());

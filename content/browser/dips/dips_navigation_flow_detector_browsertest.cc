@@ -94,15 +94,15 @@ std::string StringifyNavigationFlowNodeEntry(
 
 std::string_view kNavigationFlowNodeUkmEventName = "DIPS.NavigationFlowNode";
 std::string_view kSuspectedTrackerFlowReferrerUkmEventName =
-    "DIPS.SuspectedTrackerFlowReferrer";
+    "DIPS.SuspectedTrackerFlowReferrerV2";
 std::string_view kSuspectedTrackerFlowEntrypointUkmEventName =
-    "DIPS.SuspectedTrackerFlowEntrypoint";
+    "DIPS.SuspectedTrackerFlowEntrypointV2";
 std::string_view kInFlowInteractionUkmEventName =
-    "DIPS.TrustIndicator.InFlowInteraction";
+    "DIPS.TrustIndicator.InFlowInteractionV2";
 std::string_view kInFlowSuccessorInteractionUkmEventName =
     "DIPS.TrustIndicator.InFlowSuccessorInteraction";
 std::string_view kDirectNavigationUkmEventName =
-    "DIPS.TrustIndicator.DirectNavigation";
+    "DIPS.TrustIndicator.DirectNavigationV2";
 std::string_view kSiteA = "a.test";
 std::string_view kSiteB = "b.test";
 std::string_view kSiteC = "c.test";

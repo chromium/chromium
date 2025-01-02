@@ -7475,18 +7475,18 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.SuspectedTrackerFlowEntrypoint">
+<event name="DIPS.SuspectedTrackerFlowEntrypointV2" singular="True">
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
-    When: - a tab's primary main frame is navigated to three consecutive URLs
-    A-&gt;B-&gt;C, - B accesses cookies or storage, - the eTLD+1 for B is
-    different from the eTLD+1s of A and C, - at least A and C commit (become the
-    primary main page), - the navigation A-&gt;B is content-initiated but not
-    user-initiated, and - either: - both B did not commit and the navigation
-    B-&gt;C was a server redirect; or - both B did commit (become the primary
-    main page) and the navigation B-&gt;C was content-initiated but not
-    user-initiated, then this event is recorded for URL B.
+    For this event to be emitted for a URL B, all of the following must be true:
+    a tab's primary main frame was navigated to three consecutive URLs
+    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
+    from the eTLD+1s of A and C; at least A and C committed (became the primary
+    main page); and the navigation A-&gt;B was content-initiated but not
+    user-initiated. One of the following must also be true: a) B did not commit
+    and the navigation B-&gt;C was a server redirect; or b) B did commit and the
+    navigation B-&gt;C was content-initiated but not user-initiated.
   </summary>
   <metric name="ExitRedirectType" enum="DIPSRedirectType">
     <summary>
@@ -7502,18 +7502,18 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.SuspectedTrackerFlowReferrer">
+<event name="DIPS.SuspectedTrackerFlowReferrerV2" singular="True">
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
-    When: - a tab's primary main frame is navigated to three consecutive URLs
-    A-&gt;B-&gt;C, - B accesses cookies or storage, - the eTLD+1 for B is
-    different from the eTLD+1s of A and C, - at least A and C commit (become the
-    primary main page), - the navigation A-&gt;B is content-initiated but not
-    user-initiated, and - either: - both B did not commit and the navigation
-    B-&gt;C was a server redirect; or - both B did commit (become the primary
-    main page) and the navigation B-&gt;C was content-initiated but not
-    user-initiated, then this event is recorded for URL A.
+    For this event to be emitted for a URL A, all of the following must be true:
+    a tab's primary main frame was navigated to three consecutive URLs
+    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
+    from the eTLD+1s of A and C; at least A and C committed (became the primary
+    main page); and the navigation A-&gt;B was content-initiated but not
+    user-initiated. One of the following must also be true: a) B did not commit
+    and the navigation B-&gt;C was a server redirect; or b) B did commit and the
+    navigation B-&gt;C was content-initiated but not user-initiated.
   </summary>
   <metric name="FlowId">
     <summary>
@@ -7555,7 +7555,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.TrustIndicator.DirectNavigation">
+<event name="DIPS.TrustIndicator.DirectNavigationV2" singular="True">
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
@@ -7572,16 +7572,16 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="DIPS.TrustIndicator.InFlowInteraction">
+<event name="DIPS.TrustIndicator.InFlowInteractionV2" singular="True">
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
-    When a tab's primary main frame is navigated to three consecutive URLs
-    A-&gt;B-&gt;C, B accesses cookies or storage, the eTLD+1 for B is different
-    from the eTLD+1s of A and C, A, B, and C commit (become the primary main
-    page), the navigations A-&gt;B and B-&gt;C were content-initiated but not
-    user-initiated, and B receives user activation (click, scroll, etc.), then
-    this event is recorded for URL B.
+    For this event to be emitted for a URL B, all of the following must be true:
+    a tab's primary main frame was navigated to three consecutive URLs
+    A-&gt;B-&gt;C; B accessed cookies or storage; the eTLD+1 for B was different
+    from the eTLD+1s of A and C; A, B, and C committed (became the primary main
+    page); the navigations A-&gt;B and B-&gt;C were content-initiated but not
+    user-initiated; and B received user activation (click, scroll, etc.).
   </summary>
   <metric name="FlowId">
     <summary>
@@ -7595,20 +7595,25 @@ be describing additional metrics about the same event.
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
-    For this event to be emitted, a tab's primary main frame must be navigated
-    to at least four consecutive URLs A-&gt;B-&gt;C-&gt;D(-&gt;E…), A must
-    commit, the eTLD+1s for A and B must be different, and the navigation from
-    A-&gt;B must be content-initiated and not user-initiated. There must also be
-    a URL C or later (the &quot;successor&quot;), where all navigations in the
-    subchain B-&gt;…-&gt;successor are either server redirects or both
-    content-initiated and not user-initiated, all subchain URLs [B, …,
-    successor] have the same eTLD+1, the successor commits, and the successor
-    receives user interaction. There must also be another URL after the sucessor
-    in the navigation chain (the &quot;flow end&quot;) that commits, where all
-    navigations in the subchain successor-&gt;…-&gt;flow end are
-    content-initiated or server redirects, all subchain URLs [successor, …, flow
-    end) (exclusive of flow end itself) have the same eTLD+1, and successor and
-    flow end have different eTLD+1s.
+    For this event to be emitted for a URL B, all of the following must be true:
+    a tab's primary main frame must be navigated to at least four consecutive
+    URLs A-&gt;B-&gt;C-&gt;D(-&gt;E…); A must commit; the eTLD+1s for A and B
+    must be different; and the navigation from A-&gt;B must be content-initiated
+    and not user-initiated. There must also be a URL C or later (the
+    &quot;successor&quot;), for which all of the following are true: all
+    navigations in the subchain B-&gt;…-&gt;successor are either server
+    redirects or both content-initiated and not user-initiated; all subchain
+    URLs [B, …, successor] have the same eTLD+1; the successor commits; and the
+    successor receives user activation. There must also be another URL after the
+    successor in the navigation chain (the &quot;flow end&quot;) for which all
+    of the following are true: the flow end commits; all navigations in the
+    subchain successor-&gt;…-&gt;flow end are content-initiated or server
+    redirects; all subchain URLs [successor, …, flow end) (exclusive of flow end
+    itself) have the same eTLD+1; and successor and flow end have different
+    eTLD+1s. This event will be emitted once for each qualifying successor, but
+    this event is not singular because it is emitted with a source of URL B,
+    rather than the successor, and can therefore have multiple emissions for the
+    same source.
   </summary>
   <metric name="DidEntrypointAccessStorage">
     <summary>
