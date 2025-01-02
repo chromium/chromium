@@ -608,9 +608,8 @@ class CONTENT_EXPORT FrameTree {
   // A map to store RenderViewHosts, keyed by SiteInstanceGroup ID.
   // This map does not cover all RenderViewHosts in a FrameTree. See
   // `speculative_render_view_host_`.
-  using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
-                                               RenderViewHostImpl*,
-                                               RenderViewHostMapId::Hasher>;
+  using RenderViewHostMap =
+      std::unordered_map<RenderViewHostMapId, RenderViewHostImpl*>;
   // Map of RenderViewHostMapId to RenderViewHost. This allows us to look up the
   // RenderViewHost for a given SiteInstance when creating RenderFrameHosts.
   // Each RenderViewHost maintains a refcount and is deleted when there are no

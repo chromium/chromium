@@ -277,9 +277,7 @@ class AdsPageLoadMetricsObserver
 
   // Per-frame memory usage by V8 in bytes. Memory data is stored for each frame
   // on the page during the navigation.
-  std::unordered_map<content::FrameTreeNodeId,
-                     uint64_t,
-                     content::FrameTreeNodeId::Hasher>
+  std::unordered_map<content::FrameTreeNodeId, uint64_t>
       v8_current_memory_usage_map_;
 
   // Tracks page-level information for the navigation.

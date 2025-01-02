@@ -25,8 +25,7 @@ class SaveItem;
 using SaveItemId = base::IdType32<SaveItem>;
 
 // Map from save_item_id into final file path.
-using FinalNamesMap =
-    std::unordered_map<SaveItemId, base::FilePath, SaveItemId::Hasher>;
+using FinalNamesMap = std::unordered_map<SaveItemId, base::FilePath>;
 
 // This structure is used to handle and deliver some info
 // when processing each save item job.

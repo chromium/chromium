@@ -155,8 +155,8 @@ class CONTENT_EXPORT SavePackage final
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, DownloadItemDestroyed);
 
   // Map from SaveItem::id() (aka save_item_id) into a SaveItem.
-  using SaveItemIdMap = std::
-      unordered_map<SaveItemId, std::unique_ptr<SaveItem>, SaveItemId::Hasher>;
+  using SaveItemIdMap =
+      std::unordered_map<SaveItemId, std::unique_ptr<SaveItem>>;
 
   using FileNameSet = std::set<base::FilePath::StringType,
                                bool (*)(base::FilePath::StringPieceType,
@@ -378,9 +378,7 @@ class CONTENT_EXPORT SavePackage final
   // GetSerializedHtmlWithLocalLinksResponse) to the right SaveItem.
   // Note that |frame_tree_node_id_to_save_item_| does NOT own SaveItems - they
   // remain owned by waiting_item_queue_, in_progress_items_, etc.
-  std::unordered_map<FrameTreeNodeId,
-                     raw_ptr<SaveItem, CtnExperimental>,
-                     FrameTreeNodeId::Hasher>
+  std::unordered_map<FrameTreeNodeId, raw_ptr<SaveItem, CtnExperimental>>
       frame_tree_node_id_to_save_item_;
 
   // Used to limit which local paths get exposed to which frames
@@ -389,8 +387,7 @@ class CONTENT_EXPORT SavePackage final
   // SaveItems - they remain owned by waiting_item_queue_, in_progress_items_,
   // etc.
   std::unordered_map<FrameTreeNodeId,
-                     std::vector<raw_ptr<SaveItem, VectorExperimental>>,
-                     FrameTreeNodeId::Hasher>
+                     std::vector<raw_ptr<SaveItem, VectorExperimental>>>
       frame_tree_node_id_to_contained_save_items_;
 
   // Number of frames that we still need to get a response from.

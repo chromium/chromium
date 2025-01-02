@@ -49,8 +49,7 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-using FrameTreeNodeIdMap = std::
-    unordered_map<FrameTreeNodeId, FrameTreeNode*, FrameTreeNodeId::Hasher>;
+using FrameTreeNodeIdMap = std::unordered_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
