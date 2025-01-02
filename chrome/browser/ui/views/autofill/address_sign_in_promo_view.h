@@ -32,9 +32,6 @@ class AddressSignInPromoView : public AddressBubbleBaseView {
 
   // views::WidgetDelegate:
   void WindowClosing() override;
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill
