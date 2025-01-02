@@ -8,7 +8,6 @@
 #import "base/notimplemented.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -18,7 +17,6 @@
 #import "ios_share_url_interception_context.h"
 #import "url/gurl.h"
 
-using collaboration::CollaborationFlowConfigurationJoin;
 using collaboration::IOSCollaborationControllerDelegate;
 
 namespace data_sharing {
@@ -60,8 +58,7 @@ void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(GURL url,
 
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate =
       std::make_unique<IOSCollaborationControllerDelegate>(
-          browser, base_view_controller,
-          std::make_unique<CollaborationFlowConfigurationJoin>());
+          browser, base_view_controller);
   collaboration_service_->StartJoinFlow(std::move(delegate), url);
 }
 

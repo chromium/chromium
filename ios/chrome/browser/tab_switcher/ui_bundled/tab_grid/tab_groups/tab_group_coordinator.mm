@@ -12,7 +12,6 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -374,9 +373,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>());
+          browser, self.baseViewController);
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                _tabGroup->tab_group_id());
 }

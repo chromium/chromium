@@ -11,7 +11,6 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -32,11 +31,8 @@ namespace collaboration {
 
 IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
     Browser* browser,
-    UIViewController* base_view_controller,
-    std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow)
-    : browser_(browser),
-      base_view_controller_(base_view_controller),
-      flow_config_(std::move(collaboration_flow)) {
+    UIViewController* base_view_controller)
+    : browser_(browser), base_view_controller_(base_view_controller) {
   CHECK(browser_);
   CHECK(base_view_controller_);
   share_kit_service_ =
@@ -108,7 +104,6 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
     const data_sharing::GroupToken& token,
     const data_sharing::SharedDataPreview& preview_data,
     ResultCallback result) {
-  CHECK_EQ(flow_config_->type(), CollaborationFlowConfiguration::Type::kJoin);
 
   ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
   config.token = token;
@@ -127,8 +122,6 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(
 void IOSCollaborationControllerDelegate::ShowShareDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  CHECK_EQ(flow_config_->type(),
-           CollaborationFlowConfiguration::Type::kShareOrManage);
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
@@ -179,8 +172,6 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
     ResultCallback result) {
-  CHECK_EQ(flow_config_->type(),
-           CollaborationFlowConfiguration::Type::kShareOrManage);
 
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(

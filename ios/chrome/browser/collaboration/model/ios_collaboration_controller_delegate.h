@@ -14,16 +14,13 @@ class ShareKitService;
 
 namespace collaboration {
 
-class CollaborationFlowConfiguration;
 
 // iOS implementation of CollaborationControllerDelegate.
 class IOSCollaborationControllerDelegate
     : public CollaborationControllerDelegate {
  public:
-  IOSCollaborationControllerDelegate(
-      Browser* browser,
-      UIViewController* base_view_controller,
-      std::unique_ptr<CollaborationFlowConfiguration> collaboration_flow);
+  IOSCollaborationControllerDelegate(Browser* browser,
+                                     UIViewController* base_view_controller);
 
   IOSCollaborationControllerDelegate(
       const IOSCollaborationControllerDelegate&) = delete;
@@ -52,7 +49,6 @@ class IOSCollaborationControllerDelegate
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<Browser> browser_;
   __weak UIViewController* base_view_controller_;
-  std::unique_ptr<CollaborationFlowConfiguration> flow_config_;
   NSString* session_id_ = nil;
 };
 

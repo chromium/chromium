@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -804,9 +803,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
-          browser, self.baseViewController,
-          std::make_unique<
-              collaboration::CollaborationFlowConfigurationShareOrManage>());
+          browser, self.baseViewController);
   collaborationService->StartShareOrManageFlow(std::move(delegate),
                                                tabGroup->tab_group_id());
 }

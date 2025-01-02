@@ -6,8 +6,6 @@ source_set("collaboration_delegate") {
   sources = [
     "ios_collaboration_controller_delegate.h",
     "ios_collaboration_controller_delegate.mm",
-    "ios_collaboration_flow_configuration.h",
-    "ios_collaboration_flow_configuration.mm",
   ]
   deps = [
     "//base",

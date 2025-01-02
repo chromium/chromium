@@ -12,7 +12,6 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
-#import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
@@ -116,18 +115,10 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     base_view_controller_ = [[FakeUIViewController alloc] init];
   }
 
-  // Init the delegate for a share flow.
-  void InitShareFlowDelegate() {
+  // Init the delegate for a flow.
+  void InitDelegate() {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
-        browser_.get(), base_view_controller_,
-        std::make_unique<CollaborationFlowConfigurationShareOrManage>());
-  }
-
-  // Init the delegate for a join flow.
-  void InitJoinFlowDelegate() {
-    delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
-        browser_.get(), base_view_controller_,
-        std::make_unique<CollaborationFlowConfigurationJoin>());
+        browser_.get(), base_view_controller_);
   }
 
   // Sign in in the authentication service with a fake identity.
@@ -157,7 +148,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 
 // Tests `ShowShareDialog` with a valid tabGroup.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
-  InitShareFlowDelegate();
+  InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   delegate_->ShowShareDialog(tab_group_->tab_group_id(),
@@ -170,7 +161,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogValid) {
 
 // Tests `ShowShareDialog` with an invalid tabGroup.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
-  InitShareFlowDelegate();
+  InitDelegate();
 
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
 
@@ -187,7 +178,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
 
 // Tests `ShowJoinDialog`.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
-  InitJoinFlowDelegate();
+  InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   data_sharing::SharedDataPreview preview_data;
@@ -201,7 +192,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
 
 // Tests `ShowAuthenticationUi` from a share flow.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiShareFlow) {
-  InitShareFlowDelegate();
+  InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   OCMExpect([application_commands_mock_
@@ -216,7 +207,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiShareFlow) {
 
 // Tests `ShowAuthenticationUi` from a join flow.
 TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiJoinFlow) {
-  InitJoinFlowDelegate();
+  InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   OCMExpect([application_commands_mock_
@@ -233,7 +224,7 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowAuthenticationUiJoinFlow) {
 TEST_F(IOSCollaborationControllerDelegateTest,
        ShowAuthenticationUiSyncJoinFlow) {
   SignIn();
-  InitJoinFlowDelegate();
+  InitDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
   OCMExpect([application_commands_mock_
@@ -249,7 +240,7 @@ TEST_F(IOSCollaborationControllerDelegateTest,
 // Tests `NotifySignInAndSyncStatusChange`.
 TEST_F(IOSCollaborationControllerDelegateTest,
        NotifySignInAndSyncStatusChange) {
-  InitJoinFlowDelegate();
+  InitDelegate();
   delegate_->NotifySignInAndSyncStatusChange();
 }
 
