@@ -691,10 +691,6 @@ static_library("test_support") {
     }
   }
 
-  if (is_chromeos) {
-    deps += [ ":web_ui_test_mojo_bindings" ]
-  }
-
   # HID support is not available without udev.
   is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
   if (!is_linux_without_udev && !is_android) {
@@ -1120,46 +1116,11 @@ mojom("content_test_mojo_bindings") {
   ]
 }
 
-# Testing JS bindings only on Ash, since they are primarily used there and
-# because this test relies on the URL WebUI mojo bindings, which are
-# TypeScript only on other platforms.
-if (is_chromeos) {
-  mojom("web_ui_test_mojo_bindings") {
-    testonly = true
-    sources = [
-      "data/web_ui_test.test-mojom",
-      "data/web_ui_test_types.test-mojom",
-    ]
-    public_deps = [ "//url/mojom:url_mojom_gurl" ]
-    webui_module_path = "/content/test/data"
-
-    # Generate WebUI bindings in JavaScript instead of TypeScript. This is
-    # necessary since this target is intentionally testing JS WebUI bindings.
-    generate_webui_js_bindings = true
-  }
-}
-
 mojom("web_ui_managed_interface_tests_bindings") {
   testonly = true
   sources = [ "data/web_ui_managed_interface_test.test-mojom" ]
 
   webui_module_path = "/content/test/data"
-}
-
-# Closure compilation is only used on Ash. See below for TypeScript targets
-# which are used across platforms.
-if (is_chromeos) {
-  js_library("web_ui_mojo_test_js") {
-    sources = [ "data/web_ui_mojo_test.js" ]
-    deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
-  }
-
-  # NOTE: Building this target serves as a compile test for type-checking of
-  # WebUI JS that consumes generated Mojom JS bindings.
-  js_type_check("web_ui_mojo_test_js_type_check") {
-    deps = [ ":web_ui_mojo_test_js" ]
-    closure_flags = default_closure_args + mojom_js_args
-  }
 }
 
 # Test cross target mojo typemapping.
@@ -1984,10 +1945,6 @@ test("content_browsertests") {
     ]
   }
 
-  if (is_chromeos) {
-    deps += [ ":web_ui_test_mojo_bindings" ]
-  }
-
   if (enable_plugins) {
     sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
   }
@@ -2141,10 +2098,7 @@ test("content_browsertests") {
   }
 
   if (is_chromeos) {
-    deps += [
-      ":web_ui_mojo_test_js_type_check",
-      "//chromeos/ash/components/assistant:buildflags",
-    ]
+    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
   }
 
   if (is_android) {
@@ -2410,10 +2364,6 @@ grit("web_ui_mojo_test_resources") {
     "web_ui_mojo_test_resources.pak",
   ]
   deps = [ ":web_ui_mojo_test_build_ts" ]
-
-  if (is_chromeos) {
-    deps += [ ":web_ui_test_mojo_bindings_js__generator" ]
-  }
 }
 
 static_library("run_all_unittests") {
