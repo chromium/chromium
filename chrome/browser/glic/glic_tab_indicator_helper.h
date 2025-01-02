@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
 #define CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +27,8 @@ class GlicTabIndicatorHelper {
   ~GlicTabIndicatorHelper();
 
  private:
+  class PromoHelper;
+
   // Sets the last focused tab to `contents`.
   void SetLastFocusedTab(const content::WebContents* contents);
 
@@ -37,6 +41,7 @@ class GlicTabIndicatorHelper {
   const raw_ref<BrowserWindowInterface> browser_;
   base::WeakPtr<const content::WebContents> last_focused_tab_;
   base::CallbackListSubscription change_subscription_;
+  const std::unique_ptr<PromoHelper> promo_helper_;
 };
 
 }  // namespace glic

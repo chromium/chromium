@@ -53,6 +53,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window:browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
     "//chrome/common",
     "//components/favicon/content:content",
     "//components/guest_view/browser",

@@ -581,7 +581,9 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
-          .SetMetadata(133, "dfried@chromium.org", "Trigger TBD")));
+          .SetMetadata(
+              133, "dfried@chromium.org",
+              "Attempts to trigger when the user is on a supported page.")));
 
   // kIPHGMCCastStartStopFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
