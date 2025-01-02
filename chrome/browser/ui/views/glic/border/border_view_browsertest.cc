@@ -8,12 +8,47 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace glic {
+
+namespace {
+using BorderViewBrowserTest = InProcessBrowserTest;
+}
+
+// Exercise that, the border is resized correctly whenever the browser's size
+// changes.
+IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
+  // TODO(crbug.com/385828490): We should exercise the proper closing flow.
+  // Currently the BookmarkModel has a dangling observer during destruction, if
+  // the glic UI is toggled.
+  auto* border =
+      browser()->window()->AsBrowserView()->contents_web_view()->glic_border();
+  border->StartAnimation();
+  auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
+  EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
+
+  // Note: there is a minimal size that the desktop window can be. It seems to
+  // be around 500px by 500px.
+  const gfx::Size new_size(600, 600);
+  auto* browser_window = browser()->window();
+  const gfx::Rect new_bounds(browser_window->GetBounds().origin(), new_size);
+  EXPECT_NE(browser_window->GetBounds(), new_bounds);
+
+  {
+    SCOPED_TRACE("resizing");
+    browser_window->SetBounds(new_bounds);
+    content::RunAllPendingInMessageLoop();
+  }
+
+  // Resized correctly.
+  EXPECT_EQ(browser_window->GetBounds(), new_bounds);
+  EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
+}
 
 namespace {
 

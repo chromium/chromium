@@ -70,6 +70,13 @@ void BorderView::OnChildViewReordered(views::View* observed_view,
   MakeTopMostChild(observed_view, child);
 }
 
+void BorderView::OnViewBoundsChanged(views::View* observed_view) {
+  if (observed_view != parent()) {
+    return;
+  }
+  SetBoundsRect(parent()->bounds());
+}
+
 void BorderView::OnAnimationStep(base::TimeTicks timestamp) {
   // Update the border style based on`timestamp` and the motion curve(s).
 }
@@ -87,7 +94,7 @@ void BorderView::StartAnimation() {
     return;
   }
   animation_ongoing_ = true;
-  SetBoundsRect(parent()->GetVisibleBounds());
+  SetBoundsRect(parent()->bounds());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
@@ -102,7 +109,8 @@ void BorderView::CancelAnimation() {
   DestroyLayer();
 }
 
-void BorderView::MakeTopMostChild(View* parent_view, View* child) {
+void BorderView::MakeTopMostChild(views::View* parent_view,
+                                  views::View* child) {
   CHECK(parent());
   if (parent_view != parent()) {
     return;

@@ -46,7 +46,9 @@ class BorderView : public views::View,
   // `views::ViewObserver`:
   void OnChildViewAdded(views::View* observed_view,
                         views::View* child) override;
-  void OnChildViewReordered(View* observed_view, View* child) override;
+  void OnChildViewReordered(views::View* observed_view,
+                            views::View* child) override;
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   // `ui::CompositorAnimationObserver`:
   void OnAnimationStep(base::TimeTicks timestamp) override;
@@ -58,7 +60,7 @@ class BorderView : public views::View,
 
  private:
   // Reorder `this` to make sure `this` is the topmost child of `parent()`.
-  void MakeTopMostChild(View* observed_view, View* child);
+  void MakeTopMostChild(views::View* observed_view, views::View* child);
 
   // Tracks if we are during a `MakeTopMostChild()`. Used to prevent infinite
   // re-entrance to `MakeTopMostChild()`,
