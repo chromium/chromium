@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -254,21 +253,16 @@ public class FullscreenSigninMediator
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            if (isSigninSupported) {
-                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
-            }
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            boolean isSyncDataManaged =
-                    IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
-                            .anyMatch(syncService::isTypeManagedByPolicy);
-            mModel.set(
-                    FullscreenSigninProperties.SUBTITLE_STRING_ID,
-                    isSyncDataManaged
-                            ? R.string.signin_fre_subtitle_without_sync
-                            : mConfig.subtitleId);
+        if (isSigninSupported) {
+            mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
         }
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        boolean isSyncDataManaged =
+                IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
+                        .anyMatch(syncService::isTypeManagedByPolicy);
+        mModel.set(
+                FullscreenSigninProperties.SUBTITLE_STRING_ID,
+                isSyncDataManaged ? R.string.signin_fre_subtitle_without_sync : mConfig.subtitleId);
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
         mModel.set(
