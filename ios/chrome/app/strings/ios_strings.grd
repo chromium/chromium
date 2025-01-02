@@ -5227,6 +5227,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT" desc="Button text next to a Set Up List item suggesting to the user to try the action.">
         Try
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_GOT_IT" desc="Title of the button to close the error message, letting the user notify Chrome of their understanding of the error message.">
+        Got it
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_MESSAGE" desc="Title for a generic alert when an error happened.">
+        There was an error. Try again.
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_TITLE" desc="Title for a generic alert when an error happened.">
+        Something went wrong
+      </message>
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
         Share group
       </message>

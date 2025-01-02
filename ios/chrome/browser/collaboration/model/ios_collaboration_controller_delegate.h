@@ -9,6 +9,7 @@
 
 #import "components/collaboration/public/collaboration_controller_delegate.h"
 
+@class AlertCoordinator;
 class Browser;
 class ShareKitService;
 
@@ -50,6 +51,7 @@ class IOSCollaborationControllerDelegate
   raw_ptr<Browser> browser_;
   __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
+  AlertCoordinator* alert_coordinator_ = nil;
 };
 
 }  // namespace collaboration

@@ -20,12 +20,15 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace collaboration {
 
@@ -50,8 +53,32 @@ void IOSCollaborationControllerDelegate::PrepareFlowUI(ResultCallback result) {
 
 void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
                                                    ResultCallback result) {
-  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
-  // TODO(crbug.com/377306986): Implement this.
+  NSString* title = nil;
+  NSString* message = nil;
+  switch (error.type) {
+    case ErrorInfo::Type::kUnknown:
+      NOTREACHED();
+    case ErrorInfo::Type::kGenericError: {
+      title = l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_TITLE);
+      message = l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_MESSAGE);
+      break;
+    }
+  }
+
+  auto result_block = base::CallbackToBlock(std::move(result));
+  alert_coordinator_ =
+      [[AlertCoordinator alloc] initWithBaseViewController:base_view_controller_
+                                                   browser:browser_
+                                                     title:title
+                                                   message:message];
+  [alert_coordinator_
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_GOT_IT)
+                action:^{
+                  result_block(
+                      CollaborationControllerDelegate::Outcome::kSuccess);
+                }
+                 style:UIAlertActionStyleDefault];
+  [alert_coordinator_ start];
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
