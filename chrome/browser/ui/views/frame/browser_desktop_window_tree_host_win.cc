@@ -297,12 +297,7 @@ void BrowserDesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(
     bool restored) {
   DesktopWindowTreeHostWin::HandleWindowMinimizedOrRestored(restored);
 
-  // This is necessary since OnWidgetVisibilityChanged() doesn't get called on
-  // Windows when the window is minimized or restored.
-  if (base::FeatureList::IsEnabled(
-          features::kStopLoadingAnimationForHiddenWindow)) {
-    browser_view_->UpdateLoadingAnimations(restored);
-  }
+  browser_view_->UpdateLoadingAnimations(restored);
 }
 
 std::string BrowserDesktopWindowTreeHostWin::GetWorkspace() const {

@@ -1662,12 +1662,8 @@ void BrowserView::UpdateDevTools() {
 }
 
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
-  bool should_animate = browser_->tab_strip_model()->TabsAreLoading();
-
-  if (base::FeatureList::IsEnabled(
-          features::kStopLoadingAnimationForHiddenWindow)) {
-    should_animate &= is_visible;
-  }
+  const bool should_animate =
+      is_visible && browser_->tab_strip_model()->TabsAreLoading();
 
   if (should_animate == loading_animation_timer_.IsRunning()) {
     // Early return if the loading animation state doesn't change.
@@ -2767,10 +2763,7 @@ void BrowserView::TryNotifyWindowBoundsChanged(const gfx::Rect& widget_bounds) {
 
 void BrowserView::OnWidgetVisibilityChanged(views::Widget* widget,
                                             bool visible) {
-  if (base::FeatureList::IsEnabled(
-          features::kStopLoadingAnimationForHiddenWindow)) {
-    UpdateLoadingAnimations(visible);
-  }
+  UpdateLoadingAnimations(visible);
 }
 
 std::optional<bool> BrowserView::GetCanResizeFromWebAPI() const {

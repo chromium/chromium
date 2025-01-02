@@ -412,12 +412,6 @@ BASE_FEATURE(kViewsJSAppModalDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Reduce resource usage when view is hidden by not rendering loading animation.
-// TODO(crbug.com/40224168): Clean up the feature in M117.
-BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
-             "StopLoadingAnimationForHiddenWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUsePortalAccentColor,
              "UsePortalAccentColor",

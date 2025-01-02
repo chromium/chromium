@@ -63,26 +63,6 @@
 
 namespace {
 
-// Class for BrowserView unit tests for the loading animation feature.
-// Creates a Browser with a |features_list| where
-// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
-class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
-    : public TestWithBrowserView {
- public:
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
-    feature_list_.InitAndEnableFeature(
-        features::kStopLoadingAnimationForHiddenWindow);
-  }
-
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
   gfx::Rect tabstrip_bounds(browser_view->frame()->GetBoundsForTabStripRegion(
@@ -743,8 +723,7 @@ TEST_F(BrowserViewWindowTypeTest, TestWindowIsNotReturned) {
 
 // Tests Feature to ensure that the loading animation is not rendered after the
 // window changes to hidden.
-TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
-       LoadingAnimationNotRenderedWhenWindowHidden) {
+TEST_F(TestWithBrowserView, LoadingAnimationNotRenderedWhenWindowHidden) {
   TabActivitySimulator tab_activity_simulator;
   content::WebContents* web_contents =
       tab_activity_simulator.AddWebContentsAndNavigate(
