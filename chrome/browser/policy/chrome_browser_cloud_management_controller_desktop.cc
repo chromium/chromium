@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/default_clock.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

@@ -12,24 +12,26 @@
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace base {
+
 class Clock;
 class TickClock;
 
-// WallClockTimer is based on OneShotTimer and provides a simple timer API
-// which is mostly similar to OneShotTimer's API. The main difference is that
-// WallClockTimer is using Time (which is system-dependent) to schedule task.
-// WallClockTimer calls you back once scheduled time has come.
+// `WallClockTimer` is based on `OneShotTimer` and provides a similar API.
+// Where `OneShotTimer` uses `TimeTicks`, however, `WallClockTimer` uses `Time`.
+// On some platforms, `TimeTicks` freezes during suspend; `Time` does not.
+// `WallClockTimer` recomputes the desired delay after resuming from suspend, so
+// on these platforms, suspends will "delay" `OneShotTimer` but not
+// `WallClockTimer`.
 //
-// Comparison with OneShotTimer: WallClockTimer runs |user_task_| after |delay_|
-// expires according to usual time, while OneShotTimer runs |user_task_| after
-// |delay_| expires according to TimeTicks which may freeze on some platforms
-// when power suspends (desktop falls asleep). On platforms where TimeTicks
-// don't freeze, the WallClockTimer has the same behavior as OneShotTimer.
+// This does not attempt to observe and accommodate other `Time` changes, e.g.
+// `Time` moving backwards in response to a DST change. `WallClockTimer` will
+// only notice such changes if the system is subsequently suspended (which will
+// cause a recalculation on resume that will coincidentally take them into
+// account).
 //
 // After construction, the timer will become bound to the first sequence any
 // method is called on. All subsequent calls must happen on that sequence until
@@ -46,7 +48,6 @@ class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
   WallClockTimer(const Clock* clock, const TickClock* tick_clock);
   WallClockTimer(const WallClockTimer&) = delete;
   WallClockTimer& operator=(const WallClockTimer&) = delete;
-
   ~WallClockTimer() override;
 
   // Starts the timer to run at the given |desired_run_time|. If the timer is
@@ -67,10 +68,10 @@ class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
           BindOnce(method, Unretained(receiver)));
   }
 
-  // Stops the timer. It is a no-op if the timer is not running.
+  // Stops the timer. No-op if the timer is not running.
   void Stop();
 
-  // Returns true if the timer is running.
+  // Returns whether the timer is running.
   bool IsRunning() const;
 
   // PowerSuspendObserver:
@@ -82,19 +83,9 @@ class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
   }
 
  private:
-  void AddObserver();
-
-  void RemoveObserver();
-
-  // Actually run scheduled task
   void RunUserTask();
 
-  // Returns the current time count.
-  Time Now() const;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  bool observer_added_ = false;
 
   // Location in user code.
   Location posted_from_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -104,7 +95,6 @@ class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
 
   OnceClosure user_task_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Timer which should notify to run task in the period while system awake
   OneShotTimer timer_;
 
   // The clock used to calculate the run time for scheduled tasks.
