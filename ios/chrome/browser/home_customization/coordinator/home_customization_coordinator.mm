@@ -110,13 +110,9 @@ CGFloat const kSheetCornerRadius = 30;
     self.firstPageViewController = menuPage;
   }
 
-  [self.currentPageViewController
-      presentViewController:menuPage
-                   animated:YES
-                 completion:^{
-                   UIAccessibilityPostNotification(
-                       UIAccessibilityScreenChangedNotification, menuPage);
-                 }];
+  [self.currentPageViewController presentViewController:menuPage
+                                               animated:YES
+                                             completion:nil];
 
   self.currentPageViewController = menuPage;
 
