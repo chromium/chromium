@@ -18,6 +18,9 @@ enum class LensEntrypoint;
 // Opens the input selection UI with the given settings.
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command;
 
+// Notifies that the associated post capture has been dismissed.
+- (void)lensOverlayDismissed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LENS_COMMANDS_H_

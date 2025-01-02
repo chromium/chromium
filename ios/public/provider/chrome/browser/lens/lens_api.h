@@ -87,6 +87,9 @@ enum class LensEntrypoint;
 // Sets the delegate for LVF.
 - (void)setLensViewFinderDelegate:(id<ChromeLensViewFinderDelegate>)delegate;
 
+// Tears down the live camera preview and destroys the UI.
+- (void)tearDownCaptureInfrastructure;
+
 @end
 
 namespace ios {

@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -274,17 +275,19 @@ const int kExpectedExitAnimationCount = 2;
 #pragma mark - LensOverlayCommands
 
 - (void)searchImageWithLens:(UIImage*)image
-                 entrypoint:(LensOverlayEntrypoint)entrypoint {
+                 entrypoint:(LensOverlayEntrypoint)entrypoint
+                 completion:(void (^)(BOOL))completion {
   [self prepareOverlayWithEntrypoint:entrypoint];
   // Even if the image is already prepared at this point, the snapshotting
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
-  _shouldResetSelectionToInitialPositionOnExit = NO;
+  _shouldResetSelectionToInitialPositionOnExit =
+      (entrypoint == LensOverlayEntrypoint::kLVFCameraCapture);
   [self handleOverlayImageCaptured:image
                         entrypoint:entrypoint
                           animated:YES
-                        completion:nil];
+                        completion:completion];
 }
 
 - (void)createAndShowLensUI:(BOOL)animated
@@ -315,19 +318,20 @@ const int kExpectedExitAnimationCount = 2;
 
   BOOL success = [self createUIWithSnapshot:snapshot entrypoint:entrypoint];
   if (success) {
-    [self showLensUI:animated];
+    [self showLensUI:animated completion:completion];
   } else {
     [self destroyLensUI:NO
                  reason:lens::LensOverlayDismissalSource::
                             kErrorScreenshotCreationFailed];
-  }
-
-  if (completion) {
-    completion(success);
+    completion(NO);
   }
 }
 
 - (void)showLensUI:(BOOL)animated {
+  [self showLensUI:animated completion:nil];
+}
+
+- (void)showLensUI:(BOOL)animated completion:(void (^)(BOOL))completion {
   if (!self.isUICreated || self.isLensOverlayVisible) {
     return;
   }
@@ -347,6 +351,9 @@ const int kExpectedExitAnimationCount = 2;
       presentContainerAnimated:animated
                     sceneState:self.browser->GetSceneState()
                     completion:^{
+                      if (completion) {
+                        completion(YES);
+                      }
                       [weakSelf onContainerViewControllerPresented];
                     }];
 }
@@ -407,7 +414,12 @@ const int kExpectedExitAnimationCount = 2;
   _associatedTabHelper->UpdateSnapshotStorage();
   [self dismissRestorationWindow];
 
-  [_containerPresenter dismissContainerAnimated:animated completion:nil];
+  __weak id<LensCommands> weakCommands =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  [_containerPresenter dismissContainerAnimated:animated
+                                     completion:^{
+                                       [weakCommands lensOverlayDismissed];
+                                     }];
 }
 
 - (void)destroyLensUI:(BOOL)animated
@@ -445,8 +457,11 @@ const int kExpectedExitAnimationCount = 2;
   // the cleanup process. Exiting fullscreen has to happen on destruction to
   // ensure a smooth transition back to the content.
   __weak __typeof(self) weakSelf = self;
+  __weak id<LensCommands> weakCommands =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   void (^onAnimationFinished)() = ^{
     [weakSelf dismissLensOverlayWithCompletion:^{
+      [weakCommands lensOverlayDismissed];
       [weakSelf destroyViewControllersAndMediators];
     }];
   };
