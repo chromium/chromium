@@ -22,6 +22,7 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,9 +59,11 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
@@ -734,6 +737,35 @@ bool AppListClientImpl::HasReordered() {
   return current_model_updater_->ModelHasBeenReorderedInThisSession();
 }
 
+void AppListClientImpl::GetAssistantNewEntryPointEligibility(
+    GetAssistantNewEntryPointEligibilityCallback callback) {
+  if (profile_ == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Assistant new entry point is supported only for a primary profile.
+  bool is_primary_profile = user_manager::UserManager::Get()->IsPrimaryUser(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  if (!is_primary_profile) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ash::assistant::AssistantBrowserDelegate* delegate =
+      ash::assistant::AssistantBrowserDelegate::Get();
+  if (!delegate) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  delegate->is_new_entry_point_eligible_for_primary_profile_ready().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &AppListClientImpl::OnAssistantNewEntryPointEligibilityReady,
+          weak_ptr_factory_.GetWeakPtr(), profile_, std::move(callback)));
+}
+
 std::unique_ptr<ash::ScopedIphSession>
 AppListClientImpl::CreateLauncherSearchIphSession() {
   if (profile_ == nullptr) {
@@ -960,6 +992,32 @@ void AppListClientImpl::MaybeRecordActivatedItemVisibility(
                     ash::AppsCollectionsController::Get()
                         ->GetUserExperimentalArmAsHistogramSuffix()}),
       default_app_name.value());
+}
+
+void AppListClientImpl::OnAssistantNewEntryPointEligibilityReady(
+    Profile* profile,
+    GetAssistantNewEntryPointEligibilityCallback callback) {
+  // A profile might have been switched during the async call. Fail-safe if it
+  // has changed.
+  if (profile != profile_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ash::assistant::AssistantBrowserDelegate* delegate =
+      ash::assistant::AssistantBrowserDelegate::Get();
+  if (!delegate) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::expected<bool, ash::assistant::AssistantBrowserDelegate::Error>
+      eligibility = delegate->IsNewEntryPointEligibleForPrimaryProfile();
+  CHECK(eligibility.has_value())
+      << "AppListClientImpl is reading a value after waiting the ready event. "
+         "There should be no error.";
+
+  std::move(callback).Run(eligibility.value());
 }
 
 std::optional<bool> AppListClientImpl::IsNewUser(

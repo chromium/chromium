@@ -7,6 +7,8 @@
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/component_export.h"
+#include "base/one_shot_event.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
@@ -30,6 +32,13 @@ namespace ash::assistant {
 // |ash::assistant::Service|.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
  public:
+  enum class Error {
+    kProfileNotReady,
+    kWebAppProviderNotReadyToRead,
+    kNewEntryPointNotEnabled,
+    kNewEntryPointNotFound,
+  };
+
   AssistantBrowserDelegate();
   AssistantBrowserDelegate(const AssistantBrowserDelegate&) = delete;
   AssistantBrowserDelegate& operator=(const AssistantBrowserDelegate&) = delete;
@@ -85,6 +94,22 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
   // to OS Settings url which may cause deviation from this behavior.
   virtual void OpenUrl(GURL url) = 0;
 
+  // Returns true if a primary profile is eligible for Assistant new entry
+  // point. Note that an error might be returned if you read this value before
+  // `is_new_entry_point_eligible_for_primary_profile_ready` event is signaled.
+  virtual base::expected<bool, Error>
+  IsNewEntryPointEligibleForPrimaryProfile() = 0;
+
+  // An event signaled if the new entry point eligibility value is ready to
+  // read. There is initialization happening as an async operation. Early read
+  // of `IsNewEntryPointEligibleForPrimaryProfile` can return an error value.
+  // TODO(crbug.com/386257055): update API as this supports eligibility change
+  // events, e.g., uninstall.
+  const base::OneShotEvent&
+  is_new_entry_point_eligible_for_primary_profile_ready() {
+    return on_is_new_entry_point_eligible_ready_;
+  }
+
   // Opens the new entry point.
   virtual void OpenNewEntryPoint() = 0;
 
@@ -94,6 +119,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
       mojo::PendingReceiver<libassistant::mojom::LibassistantService>
           receiver) = 0;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
+ protected:
+  base::OneShotEvent on_is_new_entry_point_eligible_ready_;
 };
 
 }  // namespace ash::assistant

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -14,7 +15,12 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -22,16 +28,19 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
@@ -50,6 +59,18 @@
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/ash/services/libassistant/public/mojom/service.mojom.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+
+namespace {
+
+Profile* GetActiveUserProfile() {
+  user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+
+  return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+}
+
+}  // namespace
 
 AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   auto* session_manager = session_manager::SessionManager::Get();
@@ -114,6 +135,39 @@ void AssistantBrowserDelegateImpl::OnAppTerminating() {
   }
 
   ash::assistant::AssistantService::Get()->Shutdown();
+}
+
+void AssistantBrowserDelegateImpl::InitializeNewEntryPointFor(
+    Profile* profile) {
+  CHECK(profile);
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    // `WebAppProvider` is not available if `GetBrowserContextForWebApps` in
+    // `web_app_utils.cc` returns nullptr, e.g., guest session. This is
+    // non-recoverable, i.e., no need to wait and/or re-try.
+    return;
+  }
+
+  if (profile_for_new_entry_point_) {
+    CHECK_EQ(profile_for_new_entry_point_, profile)
+        << "profile_for_new_entry_point_ is already initialized with a "
+           "different profile. There should be only a single primary profile.";
+    return;
+  }
+
+  // Profile is set only if `WebAppProvider` is available for the profile.
+  profile_for_new_entry_point_ = profile;
+
+  // Assistant new entry point is loaded to `WebAppProvider` as an async
+  // operation. We have to wait for the async load before checking if Assistant
+  // new entry point is installed on a device/profile.
+  provider->on_external_managers_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &AssistantBrowserDelegateImpl::OnExternalManagersSynchronized,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantStatusChanged(
@@ -182,49 +236,91 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
+base::expected<const web_app::WebApp*,
+               ash::assistant::AssistantBrowserDelegate::Error>
+AssistantBrowserDelegateImpl::ResolveNewEntryPointIfEligible() {
+  if (!profile_for_new_entry_point_) {
+    return base::unexpected(
+        ash::assistant::AssistantBrowserDelegate::Error::kProfileNotReady);
+  }
+
+  if (!on_is_new_entry_point_eligible_ready_.is_signaled()) {
+    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
+                                kWebAppProviderNotReadyToRead);
+  }
+
+  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
+    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
+                                kNewEntryPointNotEnabled);
+  }
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile_for_new_entry_point_);
+  CHECK(provider) << "WebAppProvider must be available if "
+                     "on_is_new_entry_point_eligible_ready_ is signaled";
+
+  std::string app_id = entry_point_id_for_testing_.empty()
+                           ? chromeos::assistant::kEntryPointId
+                           : entry_point_id_for_testing_;
+  const web_app::WebApp* web_app =
+      provider->registrar_unsafe().GetAppById(app_id);
+  if (!web_app) {
+    return base::unexpected(ash::assistant::AssistantBrowserDelegate::Error::
+                                kNewEntryPointNotFound);
+  }
+
+  return web_app;
+}
+
+void AssistantBrowserDelegateImpl::OnExternalManagersSynchronized() {
+  on_is_new_entry_point_eligible_ready_.Signal();
+}
+
+base::expected<bool, ash::assistant::AssistantBrowserDelegate::Error>
+AssistantBrowserDelegateImpl::IsNewEntryPointEligibleForPrimaryProfile() {
+  // TODO(crbug.com/382561528): add metrics for has_value and error.
+  base::expected<const web_app::WebApp*,
+                 ash::assistant::AssistantBrowserDelegate::Error>
+      maybe_web_app = ResolveNewEntryPointIfEligible();
+  if (maybe_web_app.has_value()) {
+    return true;
+  }
+
+  auto non_transient_error =
+      base::MakeFixedFlatSet<ash::assistant::AssistantBrowserDelegate::Error>(
+          {ash::assistant::AssistantBrowserDelegate::Error::
+               kNewEntryPointNotEnabled,
+           ash::assistant::AssistantBrowserDelegate::Error::
+               kNewEntryPointNotFound});
+  if (non_transient_error.contains(maybe_web_app.error())) {
+    return false;
+  }
+
+  return base::unexpected(maybe_web_app.error());
+}
+
 void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
-  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
-    return;
-  }
-
-  auto entry_point_id = entry_point_id_for_testing_.empty()
-                            ? chromeos::assistant::kEntryPointId
-                            : entry_point_id_for_testing_;
-
-  // Get the current active user profile.  This is different from `profile_`
-  // which is only initialized when Assistant is allowed.
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
-
-  auto* profile = ash::ProfileHelper::Get()->GetProfileByUser(active_user);
-
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  if (!provider) {
-    return;
-  }
-  auto* app = provider->registrar_unsafe().GetAppById(entry_point_id);
-  if (!app) {
-    return;
-  }
+  ASSIGN_OR_RETURN(const web_app::WebApp* web_app,
+                   ResolveNewEntryPointIfEligible(), [](auto) {});
+  CHECK(profile_for_new_entry_point_);
 
   // Check if the app is already running. If it is, bring the window to front.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
     if ((browser->is_type_app() || browser->is_type_app_popup()) &&
-        entry_point_id ==
+        web_app->app_id() ==
             web_app::GetAppIdFromApplicationName(browser->app_name()) &&
-        profile == browser->profile()) {
+        profile_for_new_entry_point_ == browser->profile()) {
       browser->window()->Show();
       return;
     }
   }
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-      apps::AppLaunchParams(entry_point_id,
-                            apps::LaunchContainer::kLaunchContainerWindow,
-                            WindowOpenDisposition::NEW_WINDOW,
-                            // TODO(xiaohuic): maybe add new source
-                            apps::LaunchSource::kUnknown));
+  apps::AppServiceProxyFactory::GetForProfile(profile_for_new_entry_point_)
+      ->LaunchAppWithParams(apps::AppLaunchParams(
+          web_app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW,
+          // TODO(xiaohuic): maybe add new source
+          apps::LaunchSource::kUnknown));
 }
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -263,6 +359,10 @@ void AssistantBrowserDelegateImpl::OnUserProfileLoaded(
 }
 
 void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
+  if (is_primary_user) {
+    InitializeNewEntryPointFor(GetActiveUserProfile());
+  }
+
   if (ash::features::IsOobeSkipAssistantEnabled()) {
     return;
   }

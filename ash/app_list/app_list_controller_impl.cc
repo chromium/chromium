@@ -74,6 +74,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -1797,15 +1798,15 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
   SearchBoxModel* search_box_model = GetSearchModel()->search_box();
   search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
-  // TODO(crbug.com/384781179): wire this to entry point eligibility check code
-  search_box_model->SetShowAssistantNewEntryPointButton(
-      ash::assistant::features::IsNewEntryPointEnabled());
   search_box_model->SetShowSunfishButton(IsSunfishAllowedAndEnabled());
 
   if (!client_) {
     return;
   }
 
+  client_->GetAssistantNewEntryPointEligibility(base::BindOnce(
+      &AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady,
+      weak_ptr_factory_.GetWeakPtr()));
   client_->RecalculateWouldTriggerLauncherSearchIph();
 }
 
@@ -2072,6 +2073,11 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
       app_list_page_ != AppListState::kStateEmbeddedAssistant;
   return should_show_behind_apps ? kShellWindowId_HomeScreenContainer
                                  : kShellWindowId_AppListContainer;
+}
+
+void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
+    bool eligible) {
+  GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(eligible);
 }
 
 int AppListControllerImpl::GetPreferredBubbleWidth(

@@ -1407,6 +1407,7 @@ TEST_P(AssistantNewEntryPointTest, NewEntryPointButtonOpensNewEntryPoint) {
           ->GetSearchBoxView()
           ->assistant_new_entry_point_button();
   ASSERT_TRUE(new_entry_point_button);
+  ASSERT_TRUE(new_entry_point_button->GetVisible());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   if (IsTabletMode()) {

@@ -5,6 +5,9 @@
 #include "chromeos/ash/services/assistant/test_support/scoped_assistant_browser_delegate.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/types/expected.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace ash::assistant {
 
@@ -40,6 +43,16 @@ void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+base::expected<bool, AssistantBrowserDelegate::Error>
+ScopedAssistantBrowserDelegate::IsNewEntryPointEligibleForPrimaryProfile() {
+  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
+    return base::unexpected(
+        AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled);
+  }
+
+  return true;
 }
 
 void ScopedAssistantBrowserDelegate::OpenNewEntryPoint() {

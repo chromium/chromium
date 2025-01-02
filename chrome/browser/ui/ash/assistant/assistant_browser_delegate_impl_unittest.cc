@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -22,7 +23,10 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -42,6 +46,8 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
+    delegate_.emplace();
+
     TestingProfile::Builder profile_builder;
     profile_ = profile_builder.Build();
     auto account_id = AccountId::FromUserEmail(profile_->GetProfileUserName());
@@ -53,11 +59,17 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
 
+    session_manager::SessionManager* session_manager =
+        session_manager::SessionManager::Get();
+    session_manager->CreateSession(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*is_child=*/false);
+    session_manager->SessionStarted();
+
     web_app::FakeWebAppProvider::Get(profile_.get())
         ->SetDatabaseFactory(
             std::make_unique<web_app::FakeWebAppDatabaseFactory>());
-
-    delegate_.emplace();
   }
 
  protected:
@@ -72,10 +84,28 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
         fake_provider().GetDatabaseFactory());
   }
 
-  std::optional<AssistantBrowserDelegateImpl> delegate_;
+  void InstallNewEntryPointApp() {
+    const GURL start_url = GURL("https://example.com/path");
+    const webapps::AppId app_id =
+        web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
+    auto web_app = std::make_unique<web_app::WebApp>(app_id);
+    web_app->SetStartUrl(start_url);
+    web_app->SetName("test app");
+    web_app->AddSource(web_app::WebAppManagement::kSystem);
+    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
+    web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
+
+    web_app::Registry registry;
+    registry[app_id] = std::move(web_app);
+    database_factory().WriteRegistry(registry);
+
+    delegate_->OverrideEntryPointIdForTesting(app_id);
+  }
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
+  std::optional<AssistantBrowserDelegateImpl> delegate_;
 
   base::test::TestFuture<apps::AppLaunchParams,
                          web_app::LaunchWebAppWindowSetting>
@@ -83,23 +113,10 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
 };
 
 TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointOpensApp) {
-  // Install the new entry point app.
-  const GURL start_url = GURL("https://example.com/path");
-  const webapps::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(start_url);
-  web_app->SetName("test app");
-  web_app->AddSource(web_app::WebAppManagement::kSystem);
-  web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
 
-  web_app::Registry registry;
-  registry[app_id] = std::move(web_app);
-  database_factory().WriteRegistry(registry);
-
-  delegate_->OverrideEntryPointIdForTesting(app_id);
-
+  InstallNewEntryPointApp();
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
@@ -114,7 +131,35 @@ TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointOpensApp) {
       << "New entry point should launch, but didn't.";
 }
 
+TEST_F(AssistantBrowserDelegateImplTest, EligibleToNewEntryPoint) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  InstallNewEntryPointApp();
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  ASSERT_TRUE(
+      delegate_->IsNewEntryPointEligibleForPrimaryProfile().has_value());
+  EXPECT_TRUE(delegate_->IsNewEntryPointEligibleForPrimaryProfile().value());
+}
+
+TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  InstallNewEntryPointApp();
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  ASSERT_TRUE(
+      delegate_->IsNewEntryPointEligibleForPrimaryProfile().has_value());
+  EXPECT_FALSE(delegate_->IsNewEntryPointEligibleForPrimaryProfile().value());
+}
+
 TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointDoNotOpenIfNotInstalled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
+
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile());
@@ -130,4 +175,15 @@ TEST_F(AssistantBrowserDelegateImplTest, NewEntryPointDoNotOpenIfNotInstalled) {
   // New entry point should not open.
   ASSERT_FALSE(app_launch_future_.IsReady())
       << "New entry point should not launch, but somehow it did.";
+}
+
+TEST_F(AssistantBrowserDelegateImplTest, NotEligibleBecauseOfNoEntryPointApp) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_TRUE(
+      delegate_->IsNewEntryPointEligibleForPrimaryProfile().has_value());
+  EXPECT_FALSE(delegate_->IsNewEntryPointEligibleForPrimaryProfile().value());
 }

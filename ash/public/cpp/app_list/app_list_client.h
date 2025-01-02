@@ -157,6 +157,15 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Whether the app list was reordered locally.
   virtual bool HasReordered() = 0;
 
+  // Callback for reading Assistant new entry point eligibility.
+  using GetAssistantNewEntryPointEligibilityCallback =
+      base::OnceCallback<void(bool)>;
+
+  // Read Assistant new entry point eligibility from Assistant delegate as an
+  // async operation.
+  virtual void GetAssistantNewEntryPointEligibility(
+      GetAssistantNewEntryPointEligibilityCallback callback) = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

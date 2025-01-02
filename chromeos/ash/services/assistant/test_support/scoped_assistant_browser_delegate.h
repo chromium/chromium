@@ -58,6 +58,8 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
       mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
           receiver) override {}
   void OpenUrl(GURL url) override;
+  base::expected<bool, AssistantBrowserDelegate::Error>
+  IsNewEntryPointEligibleForPrimaryProfile() override;
   void OpenNewEntryPoint() override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
