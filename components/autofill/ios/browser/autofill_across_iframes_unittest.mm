@@ -29,6 +29,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/mock_password_autofill_agent_delegate.h"
 #import "components/autofill/ios/browser/new_frame_catcher.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
@@ -427,10 +428,8 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     autofill_agent_ = [[AutofillAgent alloc] initWithPrefService:prefs_.get()
                                                         webState:web_state()];
 
-    // Driver factory needs to exist before any call to
-    // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state(), &autofill_client_, /*bridge=*/autofill_agent_);
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        web_state(), autofill_agent_);
 
     // Password autofill agent needs to exist before any call to fill data.
     autofill::PasswordAutofillAgent::CreateForWebState(web_state(),
@@ -575,7 +574,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     GURL url = test_server_.GetURL("/testpage");
     web::test::LoadUrl(web_state(), url);
     web_state()->WasShown();
-    autofill_client_.set_last_committed_primary_main_frame_url(url);
+    autofill_client_->set_last_committed_primary_main_frame_url(url);
   }
 
   // Returns the frame that corresponds to `frame_id`.
@@ -670,7 +669,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<PrefService> prefs_;
-  autofill::TestAutofillClient autofill_client_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
   autofill::MockPasswordAutofillAgentDelegate delegate_mock_;
   base::test::ScopedFeatureList feature_list_;

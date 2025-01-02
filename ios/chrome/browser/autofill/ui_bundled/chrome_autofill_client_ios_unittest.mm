@@ -23,6 +23,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -97,9 +98,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
     autofill_agent.snackbarHandler = mock_snackbar_handler_;
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
-    autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
-        profile_.get(), web_state_.get(),
-        InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
+    autofill_client_ =
+        std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+            profile_.get(), web_state_.get(),
+            InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state_.get());

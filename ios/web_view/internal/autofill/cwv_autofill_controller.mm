@@ -45,10 +45,12 @@
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
+#import "ios/web_view/internal/cwv_web_view_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
+#import "ios/web_view/public/cwv_web_view.h"
 #import "net/base/apple/url_conversions.h"
 
 using autofill::FieldRendererId;
@@ -138,10 +140,18 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
 
-    _autofillClient =
-        autofillClientForTest
-            ? std::move(autofillClientForTest)
-            : autofill::WebViewAutofillClientIOS::Create(_webState, self);
+    auto from_web_state_impl =
+        [](web::WebState* web_state) -> autofill::AutofillClientIOS* {
+      if (CWVWebView* web_view = [CWVWebView webViewForWebState:web_state]) {
+        CWVAutofillController* controller = web_view.autofillController;
+        return [controller autofillClient];
+      }
+      return nullptr;
+    };
+    _autofillClient = autofillClientForTest
+                          ? std::move(autofillClientForTest)
+                          : autofill::WebViewAutofillClientIOS::Create(
+                                from_web_state_impl, _webState, self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
@@ -162,6 +172,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 }
 
 #pragma mark - Public Methods
+
+- (autofill::WebViewAutofillClientIOS*)autofillClient {
+  return _autofillClient.get();
+}
 
 - (void)clearFormWithName:(NSString*)formName
           fieldIdentifier:(NSString*)fieldIdentifier

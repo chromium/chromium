@@ -38,12 +38,13 @@ namespace autofill {
 
 // static
 std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
+    FromWebStateImpl from_web_state_impl,
     web::WebState* web_state,
     id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge) {
   auto* browser_state = ios_web_view::WebViewBrowserState::FromBrowserState(
       web_state->GetBrowserState());
   return std::make_unique<autofill::WebViewAutofillClientIOS>(
-      browser_state->GetPrefs(),
+      from_web_state_impl, browser_state->GetPrefs(),
       ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewAutocompleteHistoryManagerFactory::
@@ -60,6 +61,7 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
 }
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(
+    FromWebStateImpl from_web_state_impl,
     PrefService* pref_service,
     PersonalDataManager* personal_data_manager,
     AutocompleteHistoryManager* autocomplete_history_manager,
@@ -69,7 +71,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     StrikeDatabase* strike_database,
     syncer::SyncService* sync_service,
     LogRouter* log_router)
-    : web_state_(web_state),
+    : AutofillClientIOS(from_web_state_impl, web_state, bridge),
       bridge_(bridge),
       pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),
@@ -77,19 +79,16 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       identity_manager_(identity_manager),
       strike_database_(strike_database),
       sync_service_(sync_service),
-      log_router_(log_router) {
-  AutofillDriverIOSFactory::CreateForWebState(web_state, this, bridge);
-}
+      log_router_(log_router) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
-  if (auto* factory = AutofillDriverIOSFactory::FromWebState(web_state_)) {
-    // Autofill expects that AutofillDrivers and their ownees are destroyed
-    // before the AutofillClient. It's not clear if that's the case on iOS
-    // WebView. As a temporary fix, we explicitly delete the drivers.
-    // TODO(crbug.com/380442588): Investigate and look for a better fix.
-    static_cast<web::WebStateObserver*>(factory)->WebStateDestroyed(web_state_);
-  }
+  // Autofill expects that AutofillDrivers and their ownees are destroyed
+  // before the AutofillClient. It's not clear if that's the case on iOS
+  // WebView. As a temporary fix, we explicitly delete the drivers.
+  // TODO(crbug.com/380442588): Investigate and look for a better fix.
+  static_cast<web::WebStateObserver&>(GetAutofillDriverFactory())
+      .WebStateDestroyed(web_state());
 }
 
 base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
@@ -102,17 +101,13 @@ const std::string& WebViewAutofillClientIOS::GetAppLocale() const {
 }
 
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
-  return web_state_->GetBrowserState()->IsOffTheRecord();
+  return web_state()->GetBrowserState()->IsOffTheRecord();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 WebViewAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state_->GetBrowserState()->GetURLLoaderFactory());
-}
-
-AutofillDriverIOSFactory& WebViewAutofillClientIOS::GetAutofillDriverFactory() {
-  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+      web_state()->GetBrowserState()->GetURLLoaderFactory());
 }
 
 AutofillCrowdsourcingManager&
@@ -126,17 +121,7 @@ WebViewAutofillClientIOS::GetCrowdsourcingManager() {
 }
 
 VotesUploader& WebViewAutofillClientIOS::GetVotesUploader() {
-  if (!votes_uploader_) {
-    // We need to do lazy evaluation because AutofillDriverIOSFactory is created
-    // only after WebViewAutofillClientIOS. This is OK because only
-    // BrowserAutofillManager, which is owned by AutofillClientIOS and thus
-    // instantiated after AutofillDriverIOSFactory, calls GetVotesUploader().
-    //
-    // TODO(crbug.com/355907668): Make AutofillDriverIOSFactory owned by
-    // WebViewAutofillClientIOS and initialize  `votes_uploader_` non-lazily.
-    votes_uploader_ = std::make_unique<VotesUploader>(this);
-  }
-  return *votes_uploader_;
+  return votes_uploader_;
 }
 
 PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
@@ -202,7 +187,7 @@ AddressNormalizer* WebViewAutofillClientIOS::GetAddressNormalizer() {
 
 const GURL& WebViewAutofillClientIOS::GetLastCommittedPrimaryMainFrameURL()
     const {
-  return web_state_->GetLastCommittedURL();
+  return web_state()->GetLastCommittedURL();
 }
 
 url::Origin WebViewAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
@@ -212,7 +197,7 @@ url::Origin WebViewAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 WebViewAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
-  return security_state::GetSecurityLevelForWebState(web_state_);
+  return security_state::GetSecurityLevelForWebState(web_state());
 }
 
 const translate::LanguageState* WebViewAutofillClientIOS::GetLanguageState() {
@@ -285,7 +270,7 @@ void WebViewAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
                                            bool is_refill) {}
 
 bool WebViewAutofillClientIOS::IsContextSecure() const {
-  return IsContextSecureForWebState(web_state_);
+  return IsContextSecureForWebState(web_state());
 }
 
 autofill::FormInteractionsFlowId

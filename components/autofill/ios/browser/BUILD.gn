@@ -10,6 +10,8 @@ source_set("browser") {
   sources = [
     "autofill_agent.h",
     "autofill_agent.mm",
+    "autofill_client_ios.h",
+    "autofill_client_ios.mm",
     "autofill_client_ios_bridge.h",
     "autofill_driver_ios.h",
     "autofill_driver_ios.mm",
@@ -129,6 +131,8 @@ source_set("test_support") {
     "mock_password_autofill_agent_delegate.mm",
     "new_frame_catcher.h",
     "new_frame_catcher.mm",
+    "test_autofill_client_ios.h",
+    "test_autofill_client_ios.mm",
     "test_autofill_java_script_feature_container.h",
     "test_autofill_java_script_feature_container.mm",
     "test_autofill_manager_injector.h",

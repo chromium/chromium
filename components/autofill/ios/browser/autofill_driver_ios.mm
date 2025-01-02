@@ -22,6 +22,7 @@
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -69,8 +70,10 @@ base::TimeDelta GetFilteredDocumentFormScanPeriod() {
 AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
     web::WebState* web_state,
     web::WebFrame* web_frame) {
-  return AutofillDriverIOSFactory::FromWebState(web_state)->DriverForFrame(
-      web_frame);
+  if (AutofillClientIOS* client = AutofillClientIOS::FromWebState(web_state)) {
+    return client->GetAutofillDriverFactory().DriverForFrame(web_frame);
+  }
+  return nullptr;
 }
 
 // static

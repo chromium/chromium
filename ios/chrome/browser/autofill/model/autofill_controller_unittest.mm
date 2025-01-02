@@ -40,6 +40,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
@@ -387,8 +388,9 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
-      profile_.get(), web_state(), infobar_manager, autofill_agent_);
+  autofill_client_ =
+      std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+          profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
       .address_data_manager()

@@ -58,8 +58,16 @@ AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
+  auto from_web_state_impl =
+      [](web::WebState* web_state) -> autofill::AutofillClientIOS* {
+    if (auto* ath = AutofillTabHelper::FromWebState(web_state)) {
+      return ath->autofill_client();
+    }
+    return nullptr;
+  };
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
-      profile_, web_state, infobar_manager, autofill_agent_);
+      from_web_state_impl, profile_, web_state, infobar_manager,
+      autofill_agent_);
 
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state)

@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "ios/web/public/web_state.h"
 
 namespace autofill {
 
@@ -137,7 +138,5 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   // `web_frame` already.
   return driver.get();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AutofillDriverIOSFactory)
 
 }  //  namespace autofill
