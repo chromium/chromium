@@ -87,6 +87,7 @@ struct ScoredUrlRow {
   // Basic scoring and history data for this URL.
   ScoredUrl scored_url;
   history::URLRow row;
+  bool is_url_known_to_sync = false;
 
   // All passages and embeddings for this URL (i.e. not a partial set).
   UrlData passages_embeddings;

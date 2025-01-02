@@ -4865,6 +4865,34 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
   EXPECT_TRUE(added_visit.is_known_to_sync);
 }
 
+TEST_F(HistoryBackendTest, GetIsUrlKnownToSync) {
+  // Visit a url multiple times for setup.
+  GURL url("http://www.google.com");
+  std::vector<VisitInfo> visits_info;
+  visits_info.emplace_back(base::Time::Now() - base::Days(5),
+                           ui::PAGE_TRANSITION_LINK);
+  visits_info.emplace_back(base::Time::Now() - base::Days(1),
+                           ui::PAGE_TRANSITION_LINK);
+  visits_info.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
+  AddVisits(url, visits_info, SOURCE_BROWSED);
+
+  // Get visit and row info from database.
+  VisitVector visit_vector;
+  URLRow row;
+  URLID url_id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id, &visit_vector));
+
+  // Verify that none of the visits are yet known to sync.
+  bool is_url_known_to_sync;
+  ASSERT_TRUE(backend_->GetIsUrlKnownToSync(url_id, &is_url_known_to_sync));
+  EXPECT_FALSE(is_url_known_to_sync);
+
+  // Mark the 2nd visit as known to sync and verify.
+  backend_->MarkVisitAsKnownToSync(visit_vector[1].visit_id);
+  ASSERT_TRUE(backend_->GetIsUrlKnownToSync(url_id, &is_url_known_to_sync));
+  EXPECT_TRUE(is_url_known_to_sync);
+}
+
 #if BUILDFLAG(IS_IOS)
 TEST_F(HistoryBackendTest,
        UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {

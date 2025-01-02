@@ -152,6 +152,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
       item->source_passage = scored_url_row.GetBestPassage();
     }
 
+    item->is_url_known_to_sync = scored_url_row.is_url_known_to_sync;
     mojom_search_result->items.push_back(std::move(item));
   }
   page_->SearchResultChanged(std::move(mojom_search_result));

@@ -1753,6 +1753,13 @@ QueryURLResult HistoryBackend::GetMostRecentVisitsForGurl(GURL url,
   return result;
 }
 
+bool HistoryBackend::GetIsUrlKnownToSync(URLID id, bool* is_known_to_sync) {
+  if (db_) {
+    return db_->GetIsUrlKnownToSync(id, is_known_to_sync);
+  }
+  return false;
+}
+
 bool HistoryBackend::GetForeignVisit(const std::string& originator_cache_guid,
                                      VisitID originator_visit_id,
                                      VisitRow* visit_row) {

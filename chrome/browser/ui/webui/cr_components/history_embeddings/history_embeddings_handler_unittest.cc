@@ -194,6 +194,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   scored_url_row.row.set_last_visit(base::Time::Now() - base::Hours(1));
   history_embeddings::ScoredUrlRow other_scored_url_row = scored_url_row;
   other_scored_url_row.row = history::URLRow(GURL("http://other.com"));
+  other_scored_url_row.is_url_known_to_sync = true;
 
   history_embeddings::SearchResult embeddings_result;
   embeddings_result.scored_url_rows = {
@@ -231,6 +232,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
             scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(mojo_result->items[0]->url_for_display, "google.com");
   EXPECT_EQ(mojo_result->items[0]->answer_data.is_null(), true);
+  EXPECT_EQ(mojo_result->items[0]->is_url_known_to_sync, false);
   EXPECT_EQ(mojo_result->items[1]->url.spec(), "http://other.com/");
   EXPECT_EQ(mojo_result->items[1]->url_for_display, "other.com");
   EXPECT_EQ(mojo_result->items[1]->answer_data.is_null(), false);
@@ -238,6 +240,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
             1u);
   EXPECT_EQ(mojo_result->items[1]->answer_data->answer_text_directives[0],
             "text fragment");
+  EXPECT_EQ(mojo_result->items[1]->is_url_known_to_sync, true);
 }
 
 TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {

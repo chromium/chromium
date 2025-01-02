@@ -22,6 +22,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "base/uuid.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
@@ -95,6 +96,10 @@ void FinishSearchResultWithHistory(
         // history_embeddings database went out of sync. It's theoretically
         // possible since operations across separate databases are not atomic.
         result.scored_url_rows.pop_back();
+      } else {
+        history_backend->GetIsUrlKnownToSync(
+            result.scored_url_rows.back().row.id(),
+            &result.scored_url_rows.back().is_url_known_to_sync);
       }
     }
   }

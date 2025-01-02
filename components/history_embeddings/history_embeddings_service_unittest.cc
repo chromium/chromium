@@ -20,6 +20,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -993,6 +995,89 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlDataInTimeRange) {
     EXPECT_EQ(url_datas.front().url_id, 1);
     EXPECT_EQ(url_datas.back().url_id, 3);
   }
+}
+
+namespace {
+
+class AddSyncedVisitTask : public history::HistoryDBTask {
+ public:
+  AddSyncedVisitTask(base::RunLoop* run_loop,
+                     const GURL& url,
+                     const history::VisitRow& visit)
+      : run_loop_(run_loop), url_(url), visit_(visit) {}
+
+  AddSyncedVisitTask(const AddSyncedVisitTask&) = delete;
+  AddSyncedVisitTask& operator=(const AddSyncedVisitTask&) = delete;
+
+  ~AddSyncedVisitTask() override = default;
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    history::VisitID visit_id = backend->AddSyncedVisit(
+        url_, u"Title", /*hidden=*/false, visit_, std::nullopt, std::nullopt);
+    EXPECT_NE(visit_id, history::kInvalidVisitID);
+    LOG(ERROR) << "Added visit!";
+    return true;
+  }
+
+  void DoneRunOnMainThread() override { run_loop_->QuitWhenIdle(); }
+
+ private:
+  raw_ptr<base::RunLoop> run_loop_;
+
+  GURL url_;
+  history::VisitRow visit_;
+};
+
+}  // namespace
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchGetsIfUrlIsKnownToSync) {
+  AddTestHistoryPage("http://not-synced.com");
+  AddTestHistoryPage("http://synced.com");
+
+  // Add a synced visit, as it would be created by HISTORY sync. The API to do
+  // this isn't exposed in HistoryService (only HistoryBackend).
+  {
+    history::VisitRow visit;
+    visit.visit_time = base::Time::Now() - base::Days(2);
+    visit.originator_cache_guid = "some_originator";
+    visit.transition = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+        ui::PAGE_TRANSITION_CHAIN_END);
+    visit.is_known_to_sync = true;
+
+    base::RunLoop run_loop;
+    base::CancelableTaskTracker tracker;
+    history_service_->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<AddSyncedVisitTask>(&run_loop,
+                                             GURL("http://synced.com"), visit),
+        &tracker);
+    run_loop.Run();
+  }
+
+  OnPassagesEmbeddingsComputed(UrlData(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(2, 2, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+
+  base::test::TestFuture<SearchResult> future;
+  OverrideVisibilityScoresForTesting({{"my query", 0.99}});
+  service_->Search(nullptr, "my query", {}, 3, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
+  SearchResult result = future.Take();
+
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
+  EXPECT_EQ(result.scored_url_rows[0].is_url_known_to_sync, false);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 2);
+  EXPECT_EQ(result.scored_url_rows[1].is_url_known_to_sync, true);
 }
 
 }  // namespace history_embeddings

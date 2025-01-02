@@ -663,6 +663,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   QueryURLResult GetMostRecentVisitsForGurl(GURL url, int max_visits);
 
+  // Gets whether the URL is known to sync.
+  bool GetIsUrlKnownToSync(URLID id, bool* is_known_to_sync);
+
   // Searches for a visit with the given `originator_visit_id` coming from
   // another device (identified by `originator_cache_guid`). If found, returns
   // true and writes the visit into `visit_row`; otherwise returns false.
