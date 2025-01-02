@@ -39,6 +39,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
                     if (mIsFullscreen) {
                         assert (mEdgeSwipeGestureDetector != null);
                         mEdgeSwipeGestureDetector.setIsReadyForNewScroll(false);
+                        mIsAnimationActive = true;
                         mOnSwipeAutomotiveToolbar.startAnimation(mHideOnSwipeToolbarAnimation);
                     }
                 }
@@ -57,6 +58,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
     private Animation mHideOnSwipeToolbarAnimation;
     private boolean mIsFullscreen;
     private boolean mIsVerticalToolbar;
+    private boolean mIsAnimationActive;
 
     interface OnSwipeCallback {
         /** Handles actions required after a swipe occurs. */
@@ -70,7 +72,11 @@ public class AutomotiveBackButtonToolbarCoordinator {
             new OnSwipeCallback() {
                 @Override
                 public void handleSwipe() {
-                    if (mIsFullscreen && mOnSwipeAutomotiveToolbar.getVisibility() == View.GONE) {
+                    if (mIsFullscreen
+                            && !mIsAnimationActive
+                            && mOnSwipeAutomotiveToolbar.getVisibility() == View.GONE) {
+                        mIsAnimationActive = true;
+                        mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
                         mOnSwipeAutomotiveToolbar.startAnimation(mShowOnSwipeToolbarAnimation);
                         mHandler.postDelayed(mHideToolbar, SHOW_TOOLBAR_ON_SWIPE_DURATION_MS);
                     }
@@ -79,7 +85,9 @@ public class AutomotiveBackButtonToolbarCoordinator {
                 @Override
                 public void handleBackSwipe() {
                     if (mIsFullscreen
+                            && !mIsAnimationActive
                             && mOnSwipeAutomotiveToolbar.getVisibility() == View.VISIBLE) {
+                        mIsAnimationActive = true;
                         mOnSwipeAutomotiveToolbar.startAnimation(mHideOnSwipeToolbarAnimation);
                         mHandler.removeCallbacks(mHideToolbar);
                     }
@@ -154,14 +162,10 @@ public class AutomotiveBackButtonToolbarCoordinator {
         mShowOnSwipeToolbarAnimation.setAnimationListener(
                 new EmptyAnimationListener() {
                     @Override
-                    public void onAnimationStart(Animation animation) {
-                        mOnSwipeAutomotiveToolbar.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
                     public void onAnimationEnd(Animation animation) {
                         assert (mEdgeSwipeGestureDetector != null);
                         mEdgeSwipeGestureDetector.setIsReadyForNewScroll(true);
+                        mIsAnimationActive = false;
                     }
                 });
 
@@ -177,6 +181,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
                         mOnSwipeAutomotiveToolbar.setVisibility(View.GONE);
                         assert (mEdgeSwipeGestureDetector != null);
                         mEdgeSwipeGestureDetector.setIsReadyForNewScroll(true);
+                        mIsAnimationActive = false;
                     }
                 });
         // TODO(https://crbug.com/376740682): Configure back press behavior for Automotive Toolbar
