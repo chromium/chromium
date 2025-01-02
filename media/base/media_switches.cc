@@ -1006,12 +1006,6 @@ const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset{
         &kHardwareSecureDecryptionFallback, "on_hardware_context_reset", true};
 
-// If active, enable HiDPI mode that increases the display scale factor
-// while capturing a low-resolution tab.
-BASE_FEATURE(kWebContentsCaptureHiDpi,
-             "WebContentsCaptureHiDPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables handling of hardware media keys for controlling media.
 BASE_FEATURE(kHardwareMediaKeyHandling,
              "HardwareMediaKeyHandling",

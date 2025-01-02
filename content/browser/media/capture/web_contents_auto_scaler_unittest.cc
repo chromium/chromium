@@ -38,10 +38,6 @@ class WebContentsAutoScalerTest : public ::testing::Test {
   WebContentsAutoScalerTest() = default;
   ~WebContentsAutoScalerTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
-  }
-
   void CreateAutoScaler(const gfx::Size& capture_size) {
     scaler_ = std::make_unique<WebContentsAutoScaler>(delegate_, capture_size);
   }

@@ -24650,24 +24650,6 @@
             ]
         }
     ],
-    "WebContentsCaptureHiDPI": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebContentsCaptureHiDPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebContentsDiscard": [
         {
             "platforms": [

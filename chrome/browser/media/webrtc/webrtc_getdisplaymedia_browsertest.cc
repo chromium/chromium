@@ -128,8 +128,7 @@ struct TestConfigForFakeUI {
   const char* display_surface;
 };
 
-struct TestConfigForHiDpi {
-  bool enable_hidpi;
+struct TestConfigForMediaResolution {
   int constraint_width;
   int constraint_height;
 };
@@ -923,29 +922,21 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
     !(defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
 class GetDisplayMediaHiDpiBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<TestConfigForHiDpi> {
+      public testing::WithParamInterface<TestConfigForMediaResolution> {
  public:
   GetDisplayMediaHiDpiBrowserTest() : test_config_(GetParam()) {}
 
   // The browser window size must be consistent with the
-  // INSTANTIATE_TEST_SUITE_P TestConfigForHiDpi configurations below. See the
-  // comments there for more details.
+  // INSTANTIATE_TEST_SUITE_P TestConfigForMediaResolution configurations below.
+  // See the comments there for more details.
   static constexpr int kBrowserWindowWidth = 800;
   static constexpr int kBrowserWindowHeight = 600;
 
-  bool enable_hidpi() const { return test_config_.enable_hidpi; }
   int constraint_width() const { return test_config_.constraint_width; }
   int constraint_height() const { return test_config_.constraint_height; }
 
   void SetUpInProcessBrowserTestFixture() override {
-    if (enable_hidpi()) {
-      feature_list_.InitAndEnableFeature(media::kWebContentsCaptureHiDpi);
-    } else {
-      feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
-    }
-
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
-
     DetectErrorsInJavaScript();
   }
 
@@ -1012,8 +1003,7 @@ class GetDisplayMediaHiDpiBrowserTest
         .ExtractString();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  const TestConfigForHiDpi test_config_;
+  const TestConfigForMediaResolution test_config_;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> tab_ = nullptr;
 };
 
@@ -1048,10 +1038,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
   WaitForVideoToPlay(Tab());
 
   // If the video size is higher resolution than the browser window
-  // size, expect that HiDPI mode should be active. This requires
-  // the feature to be enabled.
-  bool expect_hidpi = enable_hidpi() &&
-                      constraint_width() > kBrowserWindowWidth &&
+  // size, expect that HiDPI mode should be active.
+  bool expect_hidpi = constraint_width() > kBrowserWindowWidth &&
                       constraint_height() > kBrowserWindowHeight;
 
   double device_pixel_ratio = GetDevicePixelRatio();
@@ -1071,15 +1059,10 @@ INSTANTIATE_TEST_SUITE_P(
     // (cf. kBrowserWindowWidth and kBrowserWindowHeight in
     // GetDisplayMediaHiDpiBrowserTest above), and the large sizes must be
     // significantly larger than the browser window size.
-    Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
-                              /*constraint_width=*/3840,
-                              /*constraint_height=*/2160},
-           TestConfigForHiDpi{/*enable_hidpi=*/true,
-                              /*constraint_width=*/640,
-                              /*constraint_height=*/480},
-           TestConfigForHiDpi{/*enable_hidpi=*/true,
-                              /*constraint_width=*/3840,
-                              /*constraint_height=*/2160}));
+    Values(TestConfigForMediaResolution{/*constraint_width=*/640,
+                                        /*constraint_height=*/480},
+           TestConfigForMediaResolution{/*constraint_width=*/3840,
+                                        /*constraint_height=*/2160}));
 #endif
 
 class GetDisplayMediaChangeSourceBrowserTest

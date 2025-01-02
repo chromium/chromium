@@ -15218,7 +15218,6 @@ from previous Chrome versions.
   <int value="-2072877761" label="WaylandUiScale:disabled"/>
   <int value="-2072754800" label="HelpAppAppsList:disabled"/>
   <int value="-2072471036" label="OobeHidDetectionRevamp:disabled"/>
-  <int value="-2072181147" label="WebContentsCaptureHiDPI:enabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
   <int value="-2071202821" label="CopyLinkToText:enabled"/>
   <int value="-2069855464"
@@ -22872,7 +22871,6 @@ from previous Chrome versions.
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
   <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>
-  <int value="982932009" label="WebContentsCaptureHiDPI:disabled"/>
   <int value="982983280" label="LauncherSearchControl:enabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983236654" label="TrackingProtection3pcd:enabled"/>
