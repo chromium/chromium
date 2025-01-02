@@ -14,6 +14,10 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
@@ -23,10 +27,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
-#import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 @interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
                                     IdentityManagerObserverBridgeDelegate> {

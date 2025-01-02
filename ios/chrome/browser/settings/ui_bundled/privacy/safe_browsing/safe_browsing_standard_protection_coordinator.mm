@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow/authentication_flow.h"
 
 @interface SafeBrowsingStandardProtectionCoordinator () <
     SafeBrowsingStandardProtectionViewControllerPresentationDelegate>

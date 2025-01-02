@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/authentication/signin",
+  "+ios/chrome/browser/authentication/ui_bundled/signin",
   "+ios/chrome/browser/alert_view/ui_bundled",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/ntp/model",

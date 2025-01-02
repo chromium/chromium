@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_cell.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"

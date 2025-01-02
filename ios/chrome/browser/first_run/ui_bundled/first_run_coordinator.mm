@@ -12,6 +12,8 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_coordinator.h"
@@ -23,8 +25,6 @@
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 @interface FirstRunCoordinator () <FirstRunScreenDelegate,

@@ -14,6 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 using base::RecordAction;

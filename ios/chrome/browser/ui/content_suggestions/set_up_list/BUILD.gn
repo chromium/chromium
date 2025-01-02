@@ -220,11 +220,11 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/ntp/model:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
-#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 
 typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection);
 

@@ -11,6 +11,7 @@ source_set("collaboration_delegate") {
     "//base",
     "//components/collaboration/public",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/share_kit/model:factory",
@@ -18,7 +19,6 @@ source_set("collaboration_delegate") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//url",
   ]
 }

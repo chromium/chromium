@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/sharing_status_consumer.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"

@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 namespace {

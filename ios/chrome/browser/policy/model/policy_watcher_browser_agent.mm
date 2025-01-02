@@ -18,6 +18,7 @@
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
 NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "components/signin/public/base/signin_metrics.h"
-#include "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @protocol SystemIdentity;
 

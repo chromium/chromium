@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/sharing/recipient_info.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 
 @implementation RecipientInfoForIOSDisplay
 

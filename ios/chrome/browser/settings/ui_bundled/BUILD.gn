@@ -116,6 +116,11 @@ source_set("ui_bundled") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled:util",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
@@ -216,11 +221,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/authentication:signin_presenter",
-    "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/voice/model",
@@ -238,7 +238,8 @@ source_set("ui_bundled") {
     "//ui/base",
     "//url",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser/ui/authentication" ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/authentication/ui_bundled" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -343,6 +344,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations/service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ios/chrome/browser/content_settings/model",
@@ -377,7 +379,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/voice/model",
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web/model",
@@ -484,6 +485,10 @@ source_set("eg2_tests") {
     "//components/sync/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync:pref_names",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:earl_grey_ui_test_util",
@@ -496,10 +501,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:test_constants",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/authentication/cells:constants",
-    "//ios/chrome/browser/ui/authentication/history_sync:pref_names",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",
