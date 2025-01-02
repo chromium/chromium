@@ -1807,7 +1807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.ActiveCountAtStartup" units="tabs"
-    expires_after="2025-05-11">
+    expires_after="2025-12-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtResume2" units="tabs" expires_after="2025-06-08">
+<histogram name="Tabs.CountAtResume2" units="tabs" expires_after="2025-12-12">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -1893,7 +1893,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2025-06-22">
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2025-12-12">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2025-06-22">
+<histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2025-12-12">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -1924,7 +1924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
-    expires_after="2025-06-22">
+    expires_after="2025-12-12">
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -1953,7 +1953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.DuplicatesCountAtStartup" units="tabs"
-    expires_after="2025-06-22">
+    expires_after="2025-12-12">
   <owner>ewannpv@chromium.org</owner>
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
@@ -2012,7 +2012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.InactiveCountAtStartup" units="tabs"
-    expires_after="2025-05-11">
+    expires_after="2025-12-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -2145,7 +2145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.OldCountAtStartup2" units="tabs"
-    expires_after="2025-02-08">
+    expires_after="2025-12-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -2351,7 +2351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PinnedCountAtStartup" units="tabs"
-    expires_after="2025-05-11">
+    expires_after="2025-12-12">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[iOS] The number of pinned tabs opened at cold launch.</summary>
@@ -2444,7 +2444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RestoredFromInactiveCount" units="tabs"
-    expires_after="2025-05-11">
+    expires_after="2025-12-12">
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -3398,7 +3398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TimeSinceCreationAtStartup" enum="IOSAllOpenTabsAge"
-    expires_after="2025-05-11">
+    expires_after="2025-12-12">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -3408,7 +3408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.UnusedCountAtStartup2" units="tabs"
-    expires_after="2025-02-08">
+    expires_after="2025-12-12">
   <owner>ewannpv@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
