@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.DeclutterTabCount" units="tabs"
-    expires_after="2025-02-10">
+    expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.ExcludedTabCount" units="tabs"
-    expires_after="2025-02-10">
+    expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.TotalTabCount" units="tabs"
-    expires_after="2025-02-10">
+    expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.TotalUsageCount" units="units"
-    expires_after="2025-02-10">
+    expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.Trigger.BucketedCTR"
-    enum="TabOrganizationDeclutterTriggerCTRBucket" expires_after="2025-02-10">
+    enum="TabOrganizationDeclutterTriggerCTRBucket" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.Declutter.Trigger.Outcome"
-    enum="TabOrganizationTriggerOutcome" expires_after="2025-02-10">
+    enum="TabOrganizationTriggerOutcome" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -495,7 +495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Organization.SelectorCTR"
-    enum="TabOrganizationSelectorCTREvent" expires_after="2025-02-10">
+    enum="TabOrganizationSelectorCTREvent" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>shibalik@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

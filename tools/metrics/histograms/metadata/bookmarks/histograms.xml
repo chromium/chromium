@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.UtilizationPerBookmark.OnProfileLoad.DaysSinceUsed"
-    units="Days" expires_after="2025-02-10">
+    units="Days" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerBookmarks.SidePanel.ViewTypeShown"
-    enum="BookmarksSidePanelViewType" expires_after="2025-02-10">
+    enum="BookmarksSidePanelViewType" expires_after="2025-06-22">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-sea@google.com</owner>
   <component>1457140</component>
