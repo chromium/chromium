@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
@@ -122,12 +121,6 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
 }
 
 }  // namespace
-
-scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& key) {
-  return DecryptCbcsBuffer(input, base::as_byte_span(key.key()));
-}
 
 scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
                                                base::span<const uint8_t> key) {
