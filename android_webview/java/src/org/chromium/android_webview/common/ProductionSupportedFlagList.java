@@ -302,6 +302,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_PL_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Poland."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
+                "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_SUBMITTED_FORM_IN_HTML_SUBMISSION,
                 "When enabled, Autofill will start falling back to the saved form when HTML"
                         + " submission happens and form extraction fails."),
@@ -1019,8 +1022,8 @@ public final class ProductionSupportedFlagList {
                 "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),
         Flag.baseFeature(
-                 "CSSReadingFlow",
-                 "Enables new CSS reading-flow property for focus navigation in visual order."),
+                "CSSReadingFlow",
+                "Enables new CSS reading-flow property for focus navigation in visual order."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

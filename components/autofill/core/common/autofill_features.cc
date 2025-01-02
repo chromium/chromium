@@ -408,6 +408,11 @@ BASE_FEATURE(kAutofillSupportPhoneticNameForJP,
              "AutofillSupportPhoneticNameForJP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using custom name model with last name prefixes support.
+BASE_FEATURE(kAutofillSupportLastNamePrefix,
+             "AutofillSupportLastNamePrefix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for the Netherlands, overriding the
 // legacy one.
 BASE_FEATURE(kAutofillUseNLAddressModel,

@@ -105,6 +105,8 @@ BASE_DECLARE_FEATURE(kAutofillIncludeUrlInCrowdsourcing);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSupportPhoneticNameForJP);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillSupportLastNamePrefix);
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kNumberOfIgnoredSuggestions;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
