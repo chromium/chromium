@@ -108,9 +108,15 @@ const char kSignedInWithCredentialProvider[] =
 // Boolean which stores if the user is allowed to signin to chrome.
 const char kSigninAllowed[] = "signin.allowed";
 
-// Contains last |ListAccounts| data which corresponds to Gaia cookies.
+// Contains last |ListAccounts| data which corresponds to Gaia cookies encoded
+// in jspb.
 const char kGaiaCookieLastListAccountsData[] =
     "gaia_cookie.last_list_accounts_data";
+
+// Contains last |ListAccounts| data which corresponds to Gaia cookies in
+// base64-encoded protobuf.
+const char kGaiaCookieLastListAccountsBinaryData[] =
+    "gaia_cookie.last_list_accounts_binary_data";
 
 // The timestamp when History Sync was last declined (in the opt-in screen or
 // in the settings).

@@ -88,6 +88,16 @@ bool IsGoogleRobotAccountEmail(std::string_view email);
 // a GAIA origin and will in that case return false.
 COMPONENT_EXPORT(GOOGLE_APIS) bool HasGaiaSchemeHostPort(const GURL& url);
 
+// Parses binary proto data returned by /ListAccounts call into the given
+// ListedAccounts. An email addresses is considered valid if a passive login
+// would succeed (i.e. the user does not need to reauthenticate).
+// If there was a parse error, this method returns false.
+// If |accounts| is null, the corresponding accounts returned from /ListAccounts
+// will be ignored.
+COMPONENT_EXPORT(GOOGLE_APIS)
+bool ParseBinaryListAccountsData(const std::string& data,
+                                 std::vector<ListedAccount>* accounts);
+
 // Parses JSON data returned by /ListAccounts call, returning a vector of
 // email/valid pairs.  An email addresses is considered valid if a passive
 // login would succeed (i.e. the user does not need to reauthenticate).

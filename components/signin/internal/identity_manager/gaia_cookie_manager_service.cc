@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -440,17 +441,27 @@ GaiaCookieManagerService::GaiaCookieManagerService(
   std::string gaia_cookie_last_list_accounts_data =
       signin_client_->GetPrefs()->GetString(
           prefs::kGaiaCookieLastListAccountsData);
+  std::string gaia_cookie_last_list_accounts_binary_data =
+      signin_client_->GetPrefs()->GetString(
+          prefs::kGaiaCookieLastListAccountsBinaryData);
 
+  // Parse ListAccounts data from prefs. In case both jspb and protobuf encoded
+  // data are present prefer the jspb one.
+  bool parse_success = false;
   if (!gaia_cookie_last_list_accounts_data.empty()) {
-    if (!gaia::ParseListAccountsData(gaia_cookie_last_list_accounts_data,
-                                     &accounts_)) {
-      DLOG(WARNING) << "GaiaCookieManagerService::ListAccounts: Failed to "
-                       "parse list accounts data from pref.";
-      accounts_.clear();
-      return;
-    }
-    InitializeListedAccountsIds();
+    parse_success = gaia::ParseListAccountsData(
+        gaia_cookie_last_list_accounts_data, &accounts_);
+  } else if (!gaia_cookie_last_list_accounts_binary_data.empty()) {
+    parse_success = gaia::ParseBinaryListAccountsData(
+        gaia_cookie_last_list_accounts_binary_data, &accounts_);
   }
+  if (!parse_success) {
+    DLOG(WARNING) << "GaiaCookieManagerService::ListAccounts: Failed to "
+                     "parse list accounts data from pref.";
+    accounts_.clear();
+    return;
+  }
+  InitializeListedAccountsIds();
 }
 
 GaiaCookieManagerService::~GaiaCookieManagerService() {
@@ -462,6 +473,8 @@ GaiaCookieManagerService::~GaiaCookieManagerService() {
 // static
 void GaiaCookieManagerService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kGaiaCookieLastListAccountsData,
+                               std::string());
+  registry->RegisterStringPref(prefs::kGaiaCookieLastListAccountsBinaryData,
                                std::string());
 }
 
@@ -691,10 +704,16 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
          GaiaCookieRequestType::LIST_ACCOUNTS);
   fetcher_backoff_.InformOfRequest(true);
 
-  if (!gaia::ParseListAccountsData(data, &accounts_)) {
+  bool parse_success = base::FeatureList::IsEnabled(
+                           gaia::features::kListAccountsUsesBinaryFormat)
+                           ? gaia::ParseBinaryListAccountsData(data, &accounts_)
+                           : gaia::ParseListAccountsData(data, &accounts_);
+  if (!parse_success) {
     accounts_.clear();
     signin_client_->GetPrefs()->ClearPref(
         prefs::kGaiaCookieLastListAccountsData);
+    signin_client_->GetPrefs()->ClearPref(
+        prefs::kGaiaCookieLastListAccountsBinaryData);
     GoogleServiceAuthError error =
         GoogleServiceAuthError::FromUnexpectedServiceResponse(
             "Error parsing ListAccounts response");
@@ -702,8 +721,18 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
     return;
   }
 
-  signin_client_->GetPrefs()->SetString(prefs::kGaiaCookieLastListAccountsData,
-                                        data);
+  if (base::FeatureList::IsEnabled(
+          gaia::features::kListAccountsUsesBinaryFormat)) {
+    signin_client_->GetPrefs()->SetString(
+        prefs::kGaiaCookieLastListAccountsBinaryData, data);
+    signin_client_->GetPrefs()->ClearPref(
+        prefs::kGaiaCookieLastListAccountsData);
+  } else {
+    signin_client_->GetPrefs()->SetString(
+        prefs::kGaiaCookieLastListAccountsData, data);
+    signin_client_->GetPrefs()->ClearPref(
+        prefs::kGaiaCookieLastListAccountsBinaryData);
+  }
   RecordListAccountsFailure(GoogleServiceAuthError::NONE);
 
   InitializeListedAccountsIds();

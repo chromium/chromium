@@ -13,9 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -381,6 +383,20 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://lso.example.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://www.exampleapis.com/reauth/v1beta/users/");
+}
+
+TEST_F(GaiaUrlsTest, InitializeDefault_ListAccountsFormat) {
+  base::test::ScopedFeatureList feature_list;
+
+  // Default behaviour - kListAccountsUsesBinaryFormat disabled.
+  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
+            "https://accounts.google.com/"
+            "ListAccounts?gpsia=1&source=fake_source&json=standard");
+  feature_list.InitAndEnableFeature(
+      gaia::features::kListAccountsUsesBinaryFormat);
+  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
+            "https://accounts.google.com/"
+            "ListAccounts?gpsia=1&source=fake_source&laf=b64bin&json=standard");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {

@@ -60,6 +60,8 @@ extern const char kSigninAllowed[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieLastListAccountsData[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kGaiaCookieLastListAccountsBinaryData[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninAllowedOnNextStartup[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninInterceptionIDPCookiesUrl[];
