@@ -316,17 +316,21 @@ class FormFieldParser {
       const AutofillField& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
-      const char* regex_name);
+      const char* regex_name,
+      bool is_negative_pattern = false);
 
   // Like `Match()`, but only for the label or name of the field.
-  static std::optional<MatchInfo> MatchInLabel(ParsingContext& context,
-                                               const AutofillField& field,
-                                               std::u16string_view pattern,
-                                               const char* regex_name);
+  static std::optional<MatchInfo> MatchInLabel(
+      ParsingContext& context,
+      const AutofillField& field,
+      std::u16string_view pattern,
+      const char* regex_name,
+      bool is_negative_pattern = false);
   static std::optional<MatchInfo> MatchInName(ParsingContext& context,
                                               const AutofillField& field,
                                               std::u16string_view pattern,
-                                              const char* regex_name);
+                                              const char* regex_name,
+                                              bool is_negative_pattern = false);
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
   // |parse| method to match content to a given field type.
