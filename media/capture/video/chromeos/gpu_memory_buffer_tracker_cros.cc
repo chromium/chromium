@@ -6,13 +6,15 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
-GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() : buffer_(nullptr) {}
+GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() = default;
 
 GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
@@ -32,13 +34,9 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
           ? gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE
           : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
-  buffer_ =
-      buffer_factory_.CreateGpuMemoryBuffer(dimensions, *gfx_format, usage);
-  if (!buffer_) {
-    DLOG(ERROR) << "Failed to create GPU memory buffer";
-    return false;
-  }
-  return true;
+  shared_image_ =
+      buffer_factory_.CreateSharedImage(dimensions, *gfx_format, usage);
+  return shared_image_ ? true : false;
 }
 
 bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
@@ -49,8 +47,8 @@ bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
   if (!gfx_format) {
     return false;
   }
-  return (*gfx_format == buffer_->GetFormat() &&
-          dimensions == buffer_->GetSize());
+  return (viz::GetSharedImageFormat(*gfx_format) == shared_image_->format() &&
+          dimensions == shared_image_->size());
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
@@ -65,8 +63,8 @@ GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
-  DCHECK(buffer_);
-  // Overriding the GpuMemoryBuffer id to an invalid id to avoid buffer
+  CHECK(shared_image_);
+  // Overriding the GpuMemoryBufferHandle id to an invalid id to avoid buffer
   // collision in GpuMemoryBufferFactoryNativePixmap when we pass the handle
   // to a different process. (crbug.com/993265)
   //
@@ -75,7 +73,14 @@ GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   // re-using a wrong pixmap handle in the cache.
   //
   // [1]: https://tinyurl.com/yymtv22y
-  gfx::GpuMemoryBufferHandle handle = buffer_->CloneHandle();
+  // TODO(crbug.com/359601431): Remove this method once all
+  // GpuMemoryBufferTrackers are converted to use MappableSI.
+  // Note that the above case of buffer collision will not be an issue with use
+  // of MappableSI everywhere since it does not internally use or cache buffer
+  // ids to refer to underlying buffer. Instead all the shared images are
+  // referred to by mailboxes.
+  gfx::GpuMemoryBufferHandle handle =
+      shared_image_->CloneGpuMemoryBufferHandle();
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   return handle;
 }
@@ -85,15 +90,14 @@ VideoCaptureBufferType GpuMemoryBufferTrackerCros::GetBufferType() {
 }
 
 uint32_t GpuMemoryBufferTrackerCros::GetMemorySizeInBytes() {
-  DCHECK(buffer_);
-  switch (buffer_->GetFormat()) {
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return buffer_->GetSize().width() * buffer_->GetSize().height() * 3 / 2;
-    case gfx::BufferFormat::R_8:
-      return buffer_->GetSize().width() * buffer_->GetSize().height();
-    default:
-      NOTREACHED() << "Unsupported gfx buffer format";
+  CHECK(shared_image_);
+  auto size =
+      shared_image_->format().EstimatedSizeInBytes(shared_image_->size());
+  if ((shared_image_->format() != viz::MultiPlaneFormat::kNV12) &&
+      (shared_image_->format() != viz::SinglePlaneFormat::kR_8)) {
+    NOTREACHED() << "Unsupported shared image format";
   }
+  return size;
 }
 
 }  // namespace media
