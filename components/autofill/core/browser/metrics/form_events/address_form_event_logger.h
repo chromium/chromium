@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_ADDRESS_FORM_EVENT_LOGGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_ADDRESS_FORM_EVENT_LOGGER_H_
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -52,7 +53,9 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   void OnDidShownAutofillOnTyping(FieldGlobalId field_global_id);
 
-  void OnDidAcceptAutofillOnTyping(FieldGlobalId field_global_id);
+  void OnDidAcceptAutofillOnTyping(FieldGlobalId field_global_id,
+                                   const std::u16string& value);
+  void LogAutofillAddressOnTypingCorrectnessMetrics(const FormStructure& form);
 
  protected:
   void RecordPollSuggestions() override;
@@ -84,6 +87,11 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   // Defines fields where `SuggestionType::kAddressEntryOnTyping`
   // suggestions were shown.
   std::set<FieldGlobalId> fields_where_autofill_on_typing_was_shown_;
+  // For fields where `SuggestionType::kAddressEntryOnTyping` suggestions were
+  // accepted, stored the filled value. This is used later
+  // for correctness metrics emission.
+  std::map<FieldGlobalId, std::u16string> autofill_on_typing_value_used_;
+
   size_t record_type_count_ = 0;
 };
 

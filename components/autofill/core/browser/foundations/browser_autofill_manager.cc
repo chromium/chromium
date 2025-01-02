@@ -1001,6 +1001,8 @@ void BrowserAutofillManager::LogSubmissionMetrics(
 
   if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
+    metrics_->address_form_event_logger
+        .LogAutofillAddressOnTypingCorrectnessMetrics(*submitted_form);
   }
   if (client().IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
@@ -1716,8 +1718,10 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
 }
 
 void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
-    const FieldGlobalId& field_id) {
-  metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(field_id);
+    const FieldGlobalId& field_id,
+    const std::u16string& value) {
+  metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(field_id,
+                                                                  value);
 }
 
 void BrowserAutofillManager::UndoAutofill(

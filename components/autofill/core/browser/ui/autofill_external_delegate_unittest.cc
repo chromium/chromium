@@ -314,7 +314,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               OnDidFillAddressOnTypingSuggestion,
-              (const FieldGlobalId&),
+              (const FieldGlobalId&, const std::u16string&),
               (override));
 
  private:
@@ -2433,8 +2433,11 @@ TEST_F(AutofillExternalDelegateTest,
           profile.GetRawInfo(*suggestion.field_by_field_filling_type_used),
           SuggestionType::kAddressEntryOnTyping, std::optional(NAME_FULL)));
   EXPECT_CALL(manager(), OnDidFillAddressFormFillingSuggestion).Times(0);
-  EXPECT_CALL(manager(),
-              OnDidFillAddressOnTypingSuggestion(IsQueriedFieldId()));
+  EXPECT_CALL(
+      manager(),
+      OnDidFillAddressOnTypingSuggestion(
+          IsQueriedFieldId(),
+          profile.GetRawInfo(*suggestion.field_by_field_filling_type_used)));
 
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});

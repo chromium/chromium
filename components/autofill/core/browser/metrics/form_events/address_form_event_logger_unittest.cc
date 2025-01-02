@@ -247,23 +247,45 @@ class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
 TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   base::HistogramTester histogram_tester_;
   FormData form = test::GetFormData({.fields = {{}, {}, {}}});
-
-  // See and accept first suggestion.
+  // Simulate that the autofill manager has seen this form on page load.
+  SeeForm(form);
+  // See, accept and do not correct the first suggestion.
   static constexpr DenseSet<SuggestionType> kShownSuggestionTypes = {
       SuggestionType::kAddressEntryOnTyping, SuggestionType::kSeparator,
       SuggestionType::kManageAddress};
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[0].global_id());
+  const std::u16string filled_value = u"Jon snow";
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
-      form.fields()[0].global_id());
+      form.fields()[0].global_id(), filled_value);
+  std::vector<FormFieldData> form_fields = form.ExtractFields();
+  // Note that the first field value has the same as the one from the first
+  // suggestion.
+  form_fields[0].set_value(filled_value);
+  form.set_fields(std::move(form_fields));
 
   // Only see second suggestion.
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[1].global_id());
 
+  // See, accept and edit the third suggestion.
+  autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
+                                        form.fields()[2].global_id());
+  autofill_manager().OnDidFillAddressOnTypingSuggestion(
+      form.fields()[2].global_id(), filled_value);
+  form_fields = form.ExtractFields();
+  // Set the third field value as something different from what was autofilled,
+  // simulating a correction.
+  form_fields[2].set_value(u"Sansa Stark");
+  form.set_fields(std::move(form_fields));
+
+  SubmitForm(form);
   ResetDriverToCommitMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.AddressSuggestionOnTypingAcceptance"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
 }
 

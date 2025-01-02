@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -108,8 +109,10 @@ void AddressFormEventLogger::OnDidShownAutofillOnTyping(
 }
 
 void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
-    FieldGlobalId field_global_id) {
+    FieldGlobalId field_global_id,
+    const std::u16string& value) {
   CHECK(fields_where_autofill_on_typing_was_shown_.contains(field_global_id));
+  autofill_on_typing_value_used_[field_global_id] = value;
   base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
                             true);
   fields_where_autofill_on_typing_was_shown_.erase(field_global_id);
@@ -155,6 +158,39 @@ void AddressFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
   base::UmaHistogramEnumeration(
       "Autofill.Leipzig.FillingAssistanceCategory",
       ProfileCategoriesToMetricBucket(profile_categories_filled_));
+}
+
+void AddressFormEventLogger::LogAutofillAddressOnTypingCorrectnessMetrics(
+    const FormStructure& form) {
+  const std::vector<std::unique_ptr<AutofillField>>& submitted_form_fields =
+      form.fields();
+
+  // For each field in the submitted form, record its value.
+  auto submitted_fields_values =
+      base::MakeFlatMap<FieldGlobalId, std::u16string>(
+          submitted_form_fields, {},
+          [](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(),
+                                  field->value(ValueSemantics::kCurrent));
+          });
+  // Used to delete fields for which correctness was logged from
+  // `autofill_on_typing_value_used_`.
+  std::set<FieldGlobalId> logged_correctness_for_field;
+  for (const auto& [field_global_id, filled_value] :
+       autofill_on_typing_value_used_) {
+    if (submitted_fields_values.contains(field_global_id)) {
+      base::UmaHistogramBoolean(
+          "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping",
+          filled_value == submitted_fields_values.at(field_global_id));
+      logged_correctness_for_field.insert(field_global_id);
+    }
+  }
+
+  // Remove from `autofill_on_typing_value_used_` fields for which correctness
+  // metrics were logged.
+  for (const FieldGlobalId field : logged_correctness_for_field) {
+    autofill_on_typing_value_used_.erase(field);
+  }
 }
 
 void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {

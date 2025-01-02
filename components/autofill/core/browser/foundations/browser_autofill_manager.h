@@ -166,8 +166,8 @@ class BrowserAutofillManager : public AutofillManager {
   // Logs metrics when the user accepts a
   // `SuggestionType::kAddressEntryOnTyping` suggestion on the field represented
   // by `field_id`.
-  virtual void OnDidFillAddressOnTypingSuggestion(
-      const FieldGlobalId& field_id);
+  virtual void OnDidFillAddressOnTypingSuggestion(const FieldGlobalId& field_id,
+                                                  const std::u16string& value);
 
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,

@@ -1149,7 +1149,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
           profile, query_form_.global_id(), query_field_.global_id(),
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
     } else if (suggestion.type == SuggestionType::kAddressEntryOnTyping) {
-      manager_->OnDidFillAddressOnTypingSuggestion(query_field_.global_id());
+      manager_->OnDidFillAddressOnTypingSuggestion(query_field_.global_id(),
+                                                   filling_value);
     }
   }
 }

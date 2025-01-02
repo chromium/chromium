@@ -2329,6 +2329,17 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2025-06-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Emitted on form submission, for each field where an autofill address
+    suggestion on typing is accepted, logs whether the filled value was changed
+    between acceptance and submission time.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
     enum="AutofilledFieldUserEditingStatus" expires_after="2025-06-15">
   <owner>koerber@google.com</owner>
