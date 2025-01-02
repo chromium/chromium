@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -182,18 +183,6 @@ void WriteTraceTiming(const net::LoadTimingInfo& timing,
   dict.Add("pushEnd", timing.push_end.since_origin().InSecondsF());
 }
 
-bool IsCachedResponse(const network::mojom::URLResponseHead& response_head) {
-  if (response_head.was_fetched_via_cache) {
-    return true;
-  }
-
-  // was_fetched_via_cache only includes the cases where the entry was fresh
-  // or was validated. Include `response_head.original_response_time
-  // < response_head.response_time` so that we include the cases the entry
-  // was updated as well.
-  return response_head.original_response_time < response_head.response_time;
-}
-
 }  // namespace
 
 AuctionDownloader::AuctionDownloader(
@@ -263,8 +252,9 @@ AuctionDownloader::AuctionDownloader(
   simple_url_loader_->SetOnRedirectCallback(base::BindRepeating(
       &AuctionDownloader::OnRedirect, base::Unretained(this)));
 
-  simple_url_loader_->SetOnResponseStartedCallback(base::BindRepeating(
-      &AuctionDownloader::OnResponseStarted, base::Unretained(this)));
+  simple_url_loader_->SetOnResponseStartedCallback(
+      base::BindRepeating(&AuctionDownloader::OnResponseStarted,
+                          base::Unretained(this), base::Time::Now()));
 
   simple_url_loader_->SetTimeoutDuration(kRequestTimeout);
 
@@ -409,6 +399,7 @@ std::optional<std::string> AuctionDownloader::CheckResponseAllowed(
 }
 
 void AuctionDownloader::OnResponseStarted(
+    base::Time request_time,
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
   if (network_events_delegate_ != nullptr) {
@@ -482,11 +473,11 @@ void AuctionDownloader::OnResponseStarted(
 
   // Record the cached response's age if there was an entry in the cache.
   if (is_trusted_bidding_signals_kvv1_download_ &&
-      IsCachedResponse(response_head) &&
-      response_head.original_response_time < response_head.request_time) {
+      response_head.was_fetched_via_cache &&
+      response_head.original_response_time < request_time) {
     base::UmaHistogramTimes(
-        "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge",
-        response_head.request_time - response_head.original_response_time);
+        "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2",
+        request_time - response_head.original_response_time);
   }
 
   if (response_started_callback_) {

@@ -145,7 +145,8 @@ class CONTENT_EXPORT AuctionDownloader {
                   const net::RedirectInfo& redirect_info,
                   const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* removed_headers);
-  void OnResponseStarted(const GURL& final_url,
+  void OnResponseStarted(base::Time request_time,
+                         const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head);
 
   // Notifies tracing, devtools and callback of a failure and cancels any
