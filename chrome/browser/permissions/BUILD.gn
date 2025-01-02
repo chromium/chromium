@@ -138,6 +138,7 @@ source_set("permissions") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/app_mode/isolated_web_app",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/shimless_rma",

@@ -16,6 +16,7 @@ source_set("browser_tests") {
     "kiosk_file_system_volumes_browsertest.cc",
     "kiosk_installed_apps_browsertest.cc",
     "kiosk_iwa_browsertest.cc",
+    "kiosk_iwa_permissions_browsertest.cc",
     "kiosk_settings_browsertest.cc",
     "kiosk_web_app_offline_enabled_browsertest.cc",
     "new_windows_in_kiosk_allowed_browsertest.cc",
