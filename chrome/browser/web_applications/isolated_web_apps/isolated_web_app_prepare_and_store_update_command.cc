@@ -338,25 +338,28 @@ Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
   return *Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
 
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
-    IwaSourceWithModeAndFileOp source,
-    std::optional<base::Version> expected_version,
-    bool allow_downgrades)
+IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::
+    IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
+        IwaSourceWithModeAndFileOp source,
+        std::optional<base::Version> expected_version,
+        bool allow_downgrades)
     : source_(std::move(source)),
       expected_version_(std::move(expected_version)),
       allow_downgrades_(allow_downgrades) {}
 
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::~UpdateInfo() = default;
+IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::
+    ~IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo() = default;
 
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
-    const UpdateInfo&) = default;
+IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::
+    IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
+        const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&) = default;
 
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo&
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::operator=(
-    const UpdateInfo&) = default;
+IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&
+IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::operator=(
+    const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&) = default;
 
-base::Value
-IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::AsDebugValue() const {
+base::Value IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo::AsDebugValue()
+    const {
   return base::Value(
       base::Value::Dict()
           .Set("source", source_.ToDebugValue())

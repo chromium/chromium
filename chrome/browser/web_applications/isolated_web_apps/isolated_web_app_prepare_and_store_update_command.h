@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
@@ -34,6 +33,10 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -65,6 +68,33 @@ std::ostream& operator<<(
     std::ostream& os,
     const IsolatedWebAppUpdatePrepareAndStoreCommandError& error);
 
+class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo {
+ public:
+  IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
+      IwaSourceWithModeAndFileOp source,
+      std::optional<base::Version> expected_version,
+      bool allow_downgrades = false);
+  ~IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo();
+
+  IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
+      const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&);
+  IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& operator=(
+      const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&);
+
+  base::Value AsDebugValue() const;
+
+  const IwaSourceWithModeAndFileOp& source() const { return source_; }
+  const std::optional<base::Version>& expected_version() const {
+    return expected_version_;
+  }
+  bool allow_downgrades() const { return allow_downgrades_; }
+
+ private:
+  IwaSourceWithModeAndFileOp source_;
+  std::optional<base::Version> expected_version_;
+  bool allow_downgrades_;
+};
+
 using IsolatedWebAppUpdatePrepareAndStoreCommandResult =
     base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,
                    IsolatedWebAppUpdatePrepareAndStoreCommandError>;
@@ -76,29 +106,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
     : public WebAppCommand<AppLock,
                            IsolatedWebAppUpdatePrepareAndStoreCommandResult> {
  public:
-  class UpdateInfo {
-   public:
-    UpdateInfo(IwaSourceWithModeAndFileOp source,
-               std::optional<base::Version> expected_version,
-               bool allow_downgrades = false);
-    ~UpdateInfo();
-
-    UpdateInfo(const UpdateInfo&);
-    UpdateInfo& operator=(const UpdateInfo&);
-
-    base::Value AsDebugValue() const;
-
-    const IwaSourceWithModeAndFileOp& source() const { return source_; }
-    const std::optional<base::Version>& expected_version() const {
-      return expected_version_;
-    }
-    bool allow_downgrades() const { return allow_downgrades_; }
-
-   private:
-    IwaSourceWithModeAndFileOp source_;
-    std::optional<base::Version> expected_version_;
-    bool allow_downgrades_;
-  };
+  using UpdateInfo = IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo;
 
   // `update_info` specifies the location of the update for the IWA referred to
   // in `url_info`. This command is safe to run even if the IWA is not installed

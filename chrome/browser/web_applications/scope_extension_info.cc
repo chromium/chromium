@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/scope_extension_info.h"
+
 #include <tuple>
 
-#include "chrome/browser/web_applications/scope_extension_info.h"
+#include "base/values.h"
 
 namespace web_app {
 

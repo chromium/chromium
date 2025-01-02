@@ -33,6 +33,7 @@
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -963,7 +964,7 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppManagement::Type management_type,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location) override {
     tried_to_uninstall_ = true;
     EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));

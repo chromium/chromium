@@ -507,7 +507,7 @@ class WebApp {
   webapps::AppId app_id_;
 
   // This set always contains at least one source.
-  WebAppManagementTypes sources_{};
+  WebAppManagementTypes sources_;
 
   std::string name_;
   std::string description_;

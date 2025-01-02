@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 

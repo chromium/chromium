@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
+#include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
@@ -449,7 +450,7 @@ void WebAppCommandScheduler::RemoveAllManagementTypesAndUninstall(
 
 void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
     webapps::WebappUninstallSource uninstall_source,
-    UninstallAllUserInstalledWebAppsCommand::Callback callback,
+    UninstallAllUserInstalledWebAppsCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(

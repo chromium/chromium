@@ -436,7 +436,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
       WebAppManagement::Type install_source,
       const GURL& install_url,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE) override {
     uninstall_external_web_app_urls_.push_back(install_url);
 
@@ -459,7 +459,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppManagement::Type install_source,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE) override {
     UnregisterApp(app_id);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

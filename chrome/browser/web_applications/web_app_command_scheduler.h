@@ -18,29 +18,23 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/commands/external_app_resolution_command.h"
-#include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
-#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
-#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
-#include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
-#include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
-#include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
-#include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
 class GURL;
 class Profile;
+class Browser;
 
 namespace content {
 class StoragePartitionConfig;
@@ -58,18 +52,33 @@ namespace web_app {
 
 class IsolatedWebAppInstallSource;
 class IsolatedWebAppUrlInfo;
+class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo;
 class IsolationData;
 class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
 enum class ApiApprovalState;
 enum class FallbackBehavior;
+enum class InstallableCheckResult;
 enum class IsolatedInstallabilityCheckResult;
+enum class LaunchWebAppWindowSetting;
+enum class RunOnOsLoginMode;
+enum class ManifestUpdateCheckResult;
+enum class ManifestUpdateResult;
+enum class NavigateAndTriggerInstallDialogCommandResult;
+struct CleanupOrphanedIsolatedWebAppsCommandError;
+struct CleanupOrphanedIsolatedWebAppsCommandSuccess;
 struct ComputedAppSize;
+struct ExternalInstallOptions;
+struct ExternallyManagedAppManagerInstallResult;
+struct InstallIsolatedWebAppCommandError;
+struct InstallIsolatedWebAppCommandSuccess;
 struct IsolatedWebAppApplyUpdateCommandError;
+struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
+struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess;
 struct SynchronizeOsOptions;
-struct WebAppInstallInfo;
 struct WebAppIconDiagnosticResult;
+struct WebAppInstallInfo;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -85,7 +94,9 @@ struct WebAppIconDiagnosticResult;
 class WebAppCommandScheduler {
  public:
   using ManifestWriteCallback =
-      ManifestUpdateFinalizeCommand::ManifestWriteCallback;
+      base::OnceCallback<void(const GURL& url,
+                              const webapps::AppId& app_id,
+                              ManifestUpdateResult result)>;
   using InstallIsolatedWebAppCallback = base::OnceCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError>)>;
@@ -97,6 +108,17 @@ class WebAppCommandScheduler {
   using WebInstallFromUrlCommandCallback =
       base::OnceCallback<void(const GURL& manifest_id,
                               webapps::InstallResultCode code)>;
+  using UninstallCallback =
+      base::OnceCallback<void(webapps::UninstallResultCode)>;
+  using LaunchWebAppCallback =
+      base::OnceCallback<void(base::WeakPtr<Browser> browser,
+                              base::WeakPtr<content::WebContents> web_contents,
+                              apps::LaunchContainer container)>;
+  using LaunchWebAppDebugValueCallback =
+      base::OnceCallback<void(base::WeakPtr<Browser> browser,
+                              base::WeakPtr<content::WebContents> web_contents,
+                              apps::LaunchContainer container,
+                              base::Value debug_value)>;
 
   explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
@@ -144,11 +166,13 @@ class WebAppCommandScheduler {
       const WebAppInstallParams& install_params,
       const base::Location& location = FROM_HERE);
 
+  using ExternalInstallCallback =
+      base::OnceCallback<void(ExternallyManagedAppManagerInstallResult)>;
   // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,
       std::optional<webapps::AppId> installed_placeholder_app_id,
-      ExternalAppResolutionCommand::InstalledCallback installed_callback,
+      ExternalInstallCallback installed_callback,
       const base::Location& location = FROM_HERE);
 
   void PersistFileHandlersUserChoice(
@@ -157,6 +181,9 @@ class WebAppCommandScheduler {
       base::OnceClosure callback,
       const base::Location& location = FROM_HERE);
 
+  using ManifestUpdateCheckCompletedCallback = base::OnceCallback<void(
+      ManifestUpdateCheckResult check_result,
+      std::unique_ptr<WebAppInstallInfo> new_install_info)>;
   // Schedule a command that performs fetching data from the manifest
   // for a manifest update.
   void ScheduleManifestUpdateCheck(
@@ -164,7 +191,7 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       base::Time check_time,
       base::WeakPtr<content::WebContents> contents,
-      ManifestUpdateCheckCommand::CompletedCallback callback,
+      ManifestUpdateCheckCompletedCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that performs the data writes into the DB for
@@ -178,12 +205,20 @@ class WebAppCommandScheduler {
       ManifestWriteCallback callback,
       const base::Location& location = FROM_HERE);
 
+  using FetchInstallabilityForChromeManagementCallback =
+      base::OnceCallback<void(InstallableCheckResult result,
+                              std::optional<webapps::AppId> app_id)>;
   void FetchInstallabilityForChromeManagement(
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
       FetchInstallabilityForChromeManagementCallback callback,
       const base::Location& location = FROM_HERE);
 
+  // The navigation will always succeed. The `result` indicates whether the
+  // command was able to trigger the install dialog.
+  using NavigateAndTriggerInstallDialogCommandCallback =
+      base::OnceCallback<void(
+          NavigateAndTriggerInstallDialogCommandResult result)>;
   void ScheduleNavigateAndTriggerInstallDialog(
       const GURL& install_url,
       const GURL& origin_url,
@@ -208,6 +243,9 @@ class WebAppCommandScheduler {
       CleanupOrphanedIsolatedWebAppsCallback callback,
       const base::Location& call_location = FROM_HERE);
 
+  using PrepareAndStoreIsolatedWebAppUpdateCallback = base::OnceCallback<void(
+      base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,
+                     IsolatedWebAppUpdatePrepareAndStoreCommandError>)>;
   // Schedules a command to prepare the update of an Isolated Web App.
   // `update_info` specifies the location of the update for the IWA referred to
   // in `url_info`. This command is safe to run even if the IWA is not installed
@@ -215,12 +253,11 @@ class WebAppCommandScheduler {
   // the update succeeds, then the `update_info` is persisted in the
   // `IsolationData::pending_update_info()` of the IWA in the Web App database.
   virtual void PrepareAndStoreIsolatedWebAppUpdate(
-      const IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo& update_info,
+      const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::OnceCallback<void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)>
-          callback,
+      PrepareAndStoreIsolatedWebAppUpdateCallback callback,
       const base::Location& call_location = FROM_HERE);
 
   // Schedules a command to apply a prepared pending update of an Isolated Web
@@ -280,7 +317,7 @@ class WebAppCommandScheduler {
       WebAppManagement::Type install_source,
       const GURL& install_url,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that removes an install sources from a given web app.
@@ -295,7 +332,7 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppManagement::Type install_management,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Removes all management types that the user can remove, adds the
@@ -309,13 +346,15 @@ class WebAppCommandScheduler {
   void RemoveUserUninstallableManagements(
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE);
 
+  using UninstallAllUserInstalledWebAppsCallback =
+      base::OnceCallback<void(const std::optional<std::string>& error_message)>;
   // Schedules a command that uninstalls all user-installed web apps.
   void UninstallAllUserInstalledWebApps(
       webapps::WebappUninstallSource uninstall_source,
-      UninstallAllUserInstalledWebAppsCommand::Callback callback,
+      UninstallAllUserInstalledWebAppsCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Completely removes the web_app from the database by removing all management
@@ -330,7 +369,7 @@ class WebAppCommandScheduler {
       base::PassKey<WebAppSyncBridge>,
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
-      UninstallJob::Callback callback,
+      UninstallCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that updates run on os login to provided `login_mode`
