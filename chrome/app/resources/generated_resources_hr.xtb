@@ -784,7 +784,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1543538514740974167">Brže otvaranje ove stranice</translation>
 <translation id="1544588554445317666">Pokušajte upotrijebiti kraći naziv datoteke ili je spremiti u drugu mapu</translation>
 <translation id="1545177026077493356">Automatski način kioska</translation>
-<translation id="1545749641540134597">Skenirajte QR kod</translation>
+<translation id="1545749641540134597">Skenirajte QR kôd</translation>
 <translation id="1545775234664667895">Instalirana tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Anonimni se prozor neće ponovno otvoriti.}one{Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1546280085599573572">Ovo proširenje promijenilo je stranicu koja se prikazuje kada se klikne gumb Početna.</translation>
@@ -3202,7 +3202,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3240426699337459095">Veza je kopirana</translation>
 <translation id="3241638166094654466">Ćelije u svakom retku:</translation>
 <translation id="3241680850019875542">Odaberite korijenski direktorij proširenja za pakiranje. Da biste ažurirali proširenje, odaberite i datoteku osobnog ključa za ponovnu upotrebu.</translation>
-<translation id="3241810535741601486">Ta je promjena trajna i ne može se poništiti. Proširena ažuriranja primjenjuju se na sve korisnike ovog uređaja. <ph name="LINK_START" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="3241810535741601486">Ta je promjena trajna i ne može se poništiti. Produžena podrška za ažuriranje uređaja primjenjuje se na sve korisnike ovog uređaja. <ph name="LINK_START" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3242289508736283383">Aplikaciju s atributom manifesta kiosk_only potrebno je instalirati u načinu kioska Chrome OS-a</translation>
 <translation id="3243017971870859287">Čitaj serijske brojeve Chrome OS Flex uređaja i komponenti</translation>
 <translation id="324366796737464147">Uklanjanje buke</translation>
@@ -4441,7 +4441,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4089235344645910861">Postavke spremljene. Sinkronizacija pokrenuta.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Omogući potvrđeni pristup</translation>
-<translation id="4091307190120921067">Odabrane aplikacije instalirat će se nakon postavljanja. Više preporuka pronađite kasnije u aplikaciji Istražite.</translation>
 <translation id="4092709865241032354">Da biste pomogli Google upravitelju zaporki da spremi vaše podatke za prijavu, dodajte svoje korisničko ime za ovu web-lokaciju</translation>
 <translation id="4093865285251893588">Profilna slika</translation>
 <translation id="4093955363990068916">Lokalna datoteka:</translation>

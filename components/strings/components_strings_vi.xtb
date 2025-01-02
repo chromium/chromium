@@ -109,6 +109,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1186201132766001848">Kiểm tra mật khẩu</translation>
 <translation id="1187430513518041110">Ô tô và xe cộ</translation>
 <translation id="1190491977647722791">Giấy (Nặng)</translation>
+<translation id="1194278116501666615">Thông tin cập nhật về tiến trình tải trước ArcVm</translation>
 <translation id="1195073053842921378">Địa chỉ này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="1195558154361252544">Đã tự động chặn thông báo đối với mọi trang web, ngoại trừ những trang web bạn cho phép</translation>
 <translation id="1197088940767939838">Màu cam</translation>
@@ -1146,6 +1147,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3061707000357573562">Dịch vụ vá lỗi</translation>
 <translation id="306198082577913404">Bật tính năng cải thiện nội dung gợi ý</translation>
 <translation id="3062655045399308513">Xoá dữ liệu duyệt web...</translation>
+<translation id="3063453392496098461">Không cài đặt được dịch vụ nền VPN.</translation>
 <translation id="306573536155379004">Đã bắt đầu trò chơi.</translation>
 <translation id="3067505415088964188">Giá thấp</translation>
 <translation id="3068118691172921711">Quá trình tải tệp lên <ph name="CLOUD_PROVIDER" /> sẽ bắt đầu sau 1 phút</translation>
@@ -1755,6 +1757,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4103592298805904008">Bìa cứng (Một lớp)</translation>
 <translation id="4104702906064390950">Đang lưu thông tin IBAN</translation>
 <translation id="4106887816571530227">Không cho phép nội dung đã nhúng</translation>
+<translation id="4107047499377819067">Quá trình cài đặt dịch vụ nền VPN đã bắt đầu. Quá trình này có thể mất vài phút.</translation>
 <translation id="4110652170750985508">Xem xét thanh toán của bạn</translation>
 <translation id="4111546256784973544">Bắn súng đạn nước sơn</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
@@ -2784,6 +2787,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6001839398155993679">Bắt đầu</translation>
 <translation id="6002122790816966947">Các thiết bị của bạn</translation>
 <translation id="6002968396561884726">Đã xem gần đây</translation>
+<translation id="6005188329423473970">Đã hoàn tất cài đặt Dịch vụ nền VPN. Nếu bạn không thấy ứng dụng VPN, vui lòng đăng xuất rồi đăng nhập lại.</translation>
 <translation id="6005659677094197001">Liên tục</translation>
 <translation id="6005765687956866568">Thông tin tự động điền đã bị xoá khỏi biểu mẫu</translation>
 <translation id="6006365096047131769">3 x 5 inch</translation>

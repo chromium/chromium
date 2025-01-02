@@ -8925,7 +8925,7 @@ Khi bạn đặt chính sách này thành False (Sai), hành vi cũ sẽ đượ
       Trường hợp ngoại lệ: Thông tin TPM do <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> kiểm soát trong M95 trở xuống.</translation>
 <translation id="739556497251174388">Cho phép sử dụng lại thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> để xác thực mạng</translation>
 <translation id="7395790871181951311">Không cho phép Ứng dụng tách biệt kết nối với Thẻ thông minh</translation>
-<translation id="7400208209734208176">Mở đường liên kết trong trình duyệt Chrome theo mặc định</translation>
+<translation id="7400208209734208176">Mở đường liên kết bằng trình duyệt Chrome theo mặc định</translation>
 <translation id="7402257017733669351">Ngăn quy trình của trình duyệt tạo mã động</translation>
 <translation id="7406039009275722824">Việc tắt <ph name="CHROME_SYNC_NAME" /> sẽ khiến tính năng Sao lưu và khôi phục trên Android hoạt động không bình thường.</translation>
 <translation id="7406276857470642718">Kiểm soát các chế độ cài đặt của người dùng được xác thực qua SAML bằng IdP bên ngoài</translation>
