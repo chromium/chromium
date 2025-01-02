@@ -328,6 +328,7 @@ std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
     case PromptAction::kConsentShown:
     case PromptAction::kConsentAccepted:
     case PromptAction::kConsentDeclined:
+    case PromptAction::kConsentMoreInfoOpened:
       return GetTopicsConsentNoticeName(surface_type);
     case PromptAction::kRestrictedNoticeShown:
     case PromptAction::kRestrictedNoticeAcknowledge:
@@ -336,6 +337,7 @@ std::string_view GetNoticeName(PromptAction action, SurfaceType surface_type) {
     case PromptAction::kNoticeShown:
     case PromptAction::kNoticeAcknowledge:
     case PromptAction::kNoticeOpenSettings:
+    case PromptAction::kNoticeMoreInfoOpened:
       return privacy_sandbox::IsConsentRequired()
                  ? GetProtectedAudienceMeasurementNoticeName(surface_type)
                  : GetThreeAdsAPIsNoticeName(surface_type);
@@ -916,6 +918,12 @@ void UpdateNoticeStorage(
           privacy_sandbox::NoticeActionTaken::kOptOut, base::Time::Now());
       break;
     }
+    case PromptAction::kConsentMoreInfoOpened: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name,
+          privacy_sandbox::NoticeActionTaken::kLearnMore, base::Time::Now());
+      break;
+    }
     // EEA and ROW notices
     case PromptAction::kNoticeShown: {
       notice_storage->SetNoticeShown(pref_service, notice_name,
@@ -932,6 +940,12 @@ void UpdateNoticeStorage(
       notice_storage->SetNoticeActionTaken(
           pref_service, notice_name,
           privacy_sandbox::NoticeActionTaken::kSettings, base::Time::Now());
+      break;
+    }
+    case PromptAction::kNoticeMoreInfoOpened: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, notice_name,
+          privacy_sandbox::NoticeActionTaken::kLearnMore, base::Time::Now());
       break;
     }
     // TODO(crbug.com/377557616): Update notice storage with new Ads API UX

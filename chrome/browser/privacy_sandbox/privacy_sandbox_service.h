@@ -113,6 +113,8 @@ class PrivacySandboxService : public KeyedService {
     // has made the decision (accepted or declined the consent).
     kConsentClosedNoDecision = 10,
 
+    // TODO(crbug.com/386240885): Clean up old learn more, as it is not used for
+    // any of the Privacy Sandbox Dialogs anymore.
     // Interaction with notice bubble: click on the link to open interests
     // settings.
     kNoticeLearnMore = 11,
