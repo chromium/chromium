@@ -325,6 +325,9 @@ public final class ProductionSupportedFlagList {
                         + " match different types. Applied only for parsing of address forms in"
                         + " Turkish."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_SUPPORT_PHONETIC_NAME_FOR_JP,
+                "When enabled, Autofill will support phonetic name for Japan."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UKM_EXPERIMENTAL_FIELDS,
                 "Enables UKM collection for experimental fields"),
         Flag.baseFeature(
