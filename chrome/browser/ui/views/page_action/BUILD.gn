@@ -24,6 +24,7 @@ source_set("page_action") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/actions:actions_headers",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
