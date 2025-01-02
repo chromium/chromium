@@ -57,7 +57,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_local.h"
+#include "base/synchronization/lock.h"
 #include "net/base/lookup_string_in_fixed_set.h"
 #include "net/base/net_module.h"
 #include "net/base/url_util.h"
@@ -87,11 +87,11 @@ struct MappedHostComponent {
   bool is_canonical;
 };
 
-// A thread-local cache of the last `kMaxCacheSize` registry lookups. Call
-// GetCacheForThread to retrieve a thread-local instance. Implemented with a
-// circular array but could just as easily be a std::list if you want LRU, with
-// the additional overhead of the doubly-linked list pointers and seemingly
-// negligible hit rate win. See crbug.com/383728878 for more information.
+// A thread-safe cache of the last `kMaxCacheSize` registry lookups. Implemented
+// with a circular array but could just as easily be a base::LRUCache if you
+// want LRU, with the additional overhead of the doubly-linked list pointers and
+// seemingly negligible hit rate win. See crbug.com/383728878 for more
+// information.
 class RegistryLookupCache {
  public:
   constexpr static uint8_t kMaxCacheSize = 5;
@@ -100,30 +100,20 @@ class RegistryLookupCache {
   RegistryLookupCache(const RegistryLookupCache&) = delete;
   RegistryLookupCache& operator=(const RegistryLookupCache&) = delete;
 
-  // Retrieve a thread-local cache.
-  static RegistryLookupCache* GetCacheForThread(bool reset_cache = false) {
-    static base::NoDestructor<
-        base::ThreadLocalOwnedPointer<RegistryLookupCache>>
-        thread_local_cache;
-    RegistryLookupCache* cache = thread_local_cache->Get();
-    if (!cache || reset_cache) {
-      thread_local_cache->Set(std::make_unique<RegistryLookupCache>());
-      return thread_local_cache->Get();
-    }
-    return cache;
-  }
-
   // The returned string_view is a reference to the incoming `host` and
   // therefore has the same lifetime.
   std::optional<std::string_view> Get(std::string_view host,
                                       PrivateRegistryFilter private_filter) {
     std::optional<std::string_view> result;
 
-    for (const CachedRegistryLookup& cached_result : cache_) {
-      if (cached_result.host == host &&
-          cached_result.private_filter == private_filter) {
-        result = host.substr(cached_result.offset);
-        break;
+    {
+      base::AutoLock scoped_lock(lock_);
+      for (const CachedRegistryLookup& cached_result : cache_) {
+        if (cached_result.host == host &&
+            cached_result.private_filter == private_filter) {
+          result = host.substr(cached_result.offset);
+          break;
+        }
       }
     }
     UMA_HISTOGRAM_BOOLEAN(
@@ -137,8 +127,8 @@ class RegistryLookupCache {
   void Set(std::string_view host,
            PrivateRegistryFilter private_filter,
            size_t offset) {
-    CHECK_LE(0u, write_index_);
-    CHECK_GT(kMaxCacheSize, write_index_);
+    base::AutoLock scoped_lock(lock_);
+    DCHECK_GT(kMaxCacheSize, write_index_);
     cache_[write_index_] = CachedRegistryLookup(host, private_filter, offset);
     write_index_ = (write_index_ + 1) % kMaxCacheSize;
   }
@@ -161,12 +151,9 @@ class RegistryLookupCache {
     uint32_t offset;
   };
 
-  // Note that there is no ThreadChecker for this class because
-  // CalledOnValidThread will return false when called from tasks posted to
-  // SingleThreadTaskRunners bound to different sequences.
-
-  std::array<CachedRegistryLookup, kMaxCacheSize> cache_ = {};
-  uint8_t write_index_ = 0u;
+  base::Lock lock_;
+  std::array<CachedRegistryLookup, kMaxCacheSize> cache_ GUARDED_BY(lock_) = {};
+  uint8_t write_index_ GUARDED_BY(lock_) = 0u;
 };
 
 // Used as the output of functions that calculate the registry length in a
@@ -299,9 +286,10 @@ std::string_view GetDomainAndRegistryImpl(
   CHECK(!host.empty());
 
   // Because this function is called frequently, and is quite expensive, we
-  // 'memoize' previous instantiations of this function by using a thread-local
-  // cache.
-  RegistryLookupCache* cache = RegistryLookupCache::GetCacheForThread();
+  // 'memoize' previous instantiations of this function by using a cache. Since
+  // this method can be called on dozens of sequences and threads, we make it
+  // thread-safe.
+  static base::NoDestructor<RegistryLookupCache> cache;
 
   // Check for the origin in the cache.
   std::optional<std::string_view> cached_result =
@@ -646,10 +634,6 @@ void ResetFindDomainGraphForTesting() {
 void SetFindDomainGraphForTesting(base::span<const uint8_t> domains) {
   CHECK(!domains.empty());
   g_graph = domains;
-}
-
-void ResetGetDomainAndRegistryCacheForTesting() {
-  RegistryLookupCache::GetCacheForThread(/*reset_cache =*/true);
 }
 
 }  // namespace net::registry_controlled_domains

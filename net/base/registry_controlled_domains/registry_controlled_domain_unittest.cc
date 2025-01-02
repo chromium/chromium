@@ -86,8 +86,6 @@ size_t GetCanonicalHostRegistryLengthIncludingPrivate(const std::string& host) {
 
 class RegistryControlledDomainTest : public testing::Test {
  protected:
-  void SetUp() override { ResetGetDomainAndRegistryCacheForTesting(); }
-
   void UseDomainData(base::span<const uint8_t> graph) {
     // This is undone in TearDown.
     SetFindDomainGraphForTesting(graph);
