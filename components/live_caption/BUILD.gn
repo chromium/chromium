@@ -85,6 +85,7 @@ if (!is_android && !is_ios) {
       "//google_apis:google_apis",
       "//media",
       "//media/mojo/mojom",
+      "//net",
       "//services/data_decoder/public/cpp:cpp",
       "//services/data_decoder/public/mojom:mojom",
       "//services/network/public/cpp",

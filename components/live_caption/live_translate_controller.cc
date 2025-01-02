@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/translation_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -51,11 +52,10 @@ void LiveTranslateController::RegisterProfilePrefs(
                                speech::kEnglishLocaleNoCountry);
 }
 
-void LiveTranslateController::GetTranslation(
-    const std::string& result,
-    std::string source_language,
-    std::string target_language,
-    OnTranslateEventCallback callback) {
+void LiveTranslateController::GetTranslation(const std::string& result,
+                                             std::string source_language,
+                                             std::string target_language,
+                                             TranslateEventCallback callback) {
   translation_dispatcher_->GetTranslation(result, source_language,
                                           target_language, std::move(callback));
 }

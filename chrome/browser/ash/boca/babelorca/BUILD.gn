@@ -25,5 +25,6 @@ static_library("babelorca") {
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/live_caption:live_translate",
+    "//components/live_caption:utils",
   ]
 }

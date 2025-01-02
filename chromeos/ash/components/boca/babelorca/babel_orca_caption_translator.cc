@@ -130,8 +130,21 @@ void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const captions::TranslateEvent& event) {
+  // In case of error just return the non-translated text and dip
+  // out.
+  //
+  // TODO(384018894) Record error metrics?
+  // TODO(384026579) Communicate something went wrong to the
+  // end user.
+  if (!event.has_value()) {
+    VLOG(1) << event.error();
+    std::move(callback).Run(
+        media::SpeechRecognitionResult(original_transcription, is_final));
+    return;
+  }
+
+  std::string formatted_result = event.value();
 
   bool is_non_ideographic_source_or_ideographic_target =
       IsNonIdeographicSourceOrIdeographicTarget(source_language,
@@ -147,7 +160,7 @@ void BabelOrcaCaptionTranslator::OnTranslationDispatcherCallback(
   if (is_non_ideographic_source_or_ideographic_target && is_final) {
     translation_cache_.Clear();
   } else if (is_non_ideographic_source_or_ideographic_target) {
-    translation_cache_.InsertIntoCache(original_transcription, result,
+    translation_cache_.InsertIntoCache(original_transcription, event.value(),
                                        source_language, target_language);
   } else if (is_final) {
     // Append a space after final results when translating from an ideographic

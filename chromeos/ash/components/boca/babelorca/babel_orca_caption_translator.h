@@ -50,7 +50,7 @@ class BabelOrcaCaptionTranslator {
       const std::string& source_language,
       const std::string& target_language,
       bool is_final,
-      const std::string& result);
+      const captions::TranslateEvent& event);
 
   std::optional<std::string> current_source_language_;
   std::optional<std::string> current_target_language_;

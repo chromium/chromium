@@ -10,7 +10,7 @@
 #include <string>
 
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
-#include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
@@ -18,18 +18,13 @@ namespace ash::babelorca {
 class FakeBabelOrcaTranslationDispatcher
     : public BabelOrcaTranslationDipsatcher {
  public:
-  using CustomGetTranslationHandle = base::RepeatingCallback<void(
-      const std::string& result,
-      const std::string& source_language,
-      const std::string& target_language,
-      captions::OnTranslateEventCallback callback)>;
   FakeBabelOrcaTranslationDispatcher();
   ~FakeBabelOrcaTranslationDispatcher() override;
 
   void GetTranslation(const std::string& result,
                       const std::string& source_language,
                       const std::string& target_language,
-                      captions::OnTranslateEventCallback callback) override;
+                      captions::TranslateEventCallback callback) override;
 
   int GetNumGetTranslationCalls() { return num_translation_calls_; }
 

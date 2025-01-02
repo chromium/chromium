@@ -114,7 +114,9 @@ class SystemLiveCaptionService
                              const std::string& source_language,
                              const std::string& target_language,
                              bool is_final,
-                             const std::string& result);
+                             const ::captions::TranslateEvent& result);
+
+  void AttemptDispatch(const std::string& text, bool is_final);
 
   // Binds to the correct observer list based on `source_`
   void BindToBrowserInterface();
