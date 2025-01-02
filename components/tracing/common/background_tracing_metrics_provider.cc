@@ -93,11 +93,11 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
               system_profile.ParsePartialFromString(*serialized_system_profile);
               uma_proto->mutable_system_profile()->MergeFrom(system_profile);
             }
-            // Serialize the log on the background instead of on the main
+            // Serialize the log on a worker thread instead of on the main
             // thread.
             base::ThreadPool::PostTask(
                 FROM_HERE,
-                {base::TaskPriority::BEST_EFFORT,
+                {base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                 std::move(serialize_log_callback)
                     .Then(base::BindPostTask(
