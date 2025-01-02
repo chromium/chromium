@@ -188,29 +188,27 @@ PaymentManifestWebDataService::SetBrowserBoundKeyImpl(
           std::move(browser_bound_key_id)));
 }
 
-WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetBrowserBoundKeyForTest(
+WebDataServiceBase::Handle PaymentManifestWebDataService::GetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &PaymentManifestWebDataService::GetBrowserBoundKeyImplForTest, this,
-          std::move(credential_id), std::move(relying_party_id)),
+      base::BindOnce(&PaymentManifestWebDataService::GetBrowserBoundKeyImpl,
+                     this, std::move(credential_id),
+                     std::move(relying_party_id)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetBrowserBoundKeyImplForTest(
+PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     WebDatabase* db) {
   return std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
       BROWSER_BOUND_KEY,
-      PaymentMethodManifestTable::FromWebDatabase(db)
-          ->GetBrowserBoundKeyForTest(std::move(credential_id),  // IN-TEST
-                                      std::move(relying_party_id)));
+      PaymentMethodManifestTable::FromWebDatabase(db)->GetBrowserBoundKey(
+          std::move(credential_id), std::move(relying_party_id)));
 }
 
 void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(

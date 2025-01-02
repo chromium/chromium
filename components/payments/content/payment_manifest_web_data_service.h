@@ -95,7 +95,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   // Get the browser bound key id given the `credential_id` and
   // `relying_party_id`. Returns the key id or nullopt to the `consumer`, which
   // must outlive the DB operation, because DB tasks cannot be cancelled.
-  virtual WebDataServiceBase::Handle GetBrowserBoundKeyForTest(
+  virtual WebDataServiceBase::Handle GetBrowserBoundKey(
       const std::vector<uint8_t> credential_id,
       std::string relying_party_id,
       WebDataServiceConsumer* consumer);
@@ -142,7 +142,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       std::string relying_party_id,
       std::vector<uint8_t> browser_bound_key_id,
       WebDatabase* db);
-  std::unique_ptr<WDTypedResult> GetBrowserBoundKeyImplForTest(
+  std::unique_ptr<WDTypedResult> GetBrowserBoundKeyImpl(
       std::vector<uint8_t> credential_id,
       std::string relying_party_id,
       WebDatabase* db);

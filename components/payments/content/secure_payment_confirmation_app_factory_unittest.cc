@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
@@ -17,11 +18,19 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/webdata/common/web_data_service_consumer.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments {
 namespace {
@@ -29,9 +38,11 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::SaveArg;
 
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
@@ -467,8 +478,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
       caller_origin, /*expected_require_third_party_payment_bit=*/false);
 }
 
-TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-       CorrectlyCalculatesThirdPartyPaymentRequirement_OriginSameDomainAsRpId) {
+TEST_F(
+    SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
+    CorrectlyCalculatesThirdPartyPaymentRequirGement_OriginSameDomainAsRpId) {
   // Because the RP ID is 'rp.example', and our origin is
   // 'https://www.rp.example', this is a first-party payment authentication.
   url::Origin caller_origin =
@@ -512,6 +524,85 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
 
   secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
+    : public SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
+};
+
+// Test that the browser bound key is retrieved
+TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
+       RetrievesBrowserBoundKey) {
+  base::test::ScopedFeatureList feature_list{
+      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
+  WebDataServiceBase::Handle web_data_service_handle = 1234;
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  ASSERT_EQ(credential_ids.size(), 1u);
+  std::string relying_party_id =
+      method_data->secure_payment_confirmation->rp_id;
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  auto mock_authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  EXPECT_CALL(*mock_authenticator,
+              IsUserVerifyingPlatformAuthenticatorAvailable(_))
+      .WillOnce(RunOnceCallback<0>(true));
+  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          method_data->secure_payment_confirmation->credential_ids));
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_ids[0]),
+                                                Eq(relying_party_id), _))
+      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
+                      Return(web_data_service_handle)));
+  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+      .WillRepeatedly(Return(mock_service));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+
+  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  ASSERT_TRUE(web_data_service_consumer);
+  web_data_service_consumer->OnWebDataServiceRequestDone(
+      web_data_service_handle,
+      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+          WDResultType::BROWSER_BOUND_KEY, browser_bound_key_id));
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*https_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+
+  ASSERT_TRUE(secure_payment_confirmation_app);
+  EXPECT_EQ(static_cast<SecurePaymentConfirmationApp*>(
+                secure_payment_confirmation_app.get())
+                ->GetBrowserBoundKeyIdForTesting(),
+            browser_bound_key_id);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace payments

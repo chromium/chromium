@@ -318,7 +318,7 @@ bool PaymentMethodManifestTable::SetBrowserBoundKey(
 }
 
 std::optional<std::vector<uint8_t>>
-PaymentMethodManifestTable::GetBrowserBoundKeyForTest(
+PaymentMethodManifestTable::GetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string_view relying_party_id) {
   sql::Statement s(db()->GetUniqueStatement(

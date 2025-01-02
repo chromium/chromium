@@ -136,6 +136,7 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
+      /*browser_bound_key_id=*/std::nullopt,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),
@@ -178,17 +179,19 @@ TEST_F(SecurePaymentConfirmationAppTest, AddsBrowserBoundKeyAndSignature) {
   const std::vector<uint8_t> client_data_json({0x01, 0x02, 0x03, 0x04});
   const std::vector<uint8_t> public_key_as_cose_key({0x05, 0x06, 0x07, 0x08});
   const std::vector<uint8_t> signature({0x09, 0x0a, 0x0b, 0x0c});
+  const std::vector<uint8_t> browser_bound_key_id({0x0d, 0x0e, 0x0f, 0x10});
   FakeBrowserBoundKey browser_bound_key(public_key_as_cose_key, signature,
                                         client_data_json);
   SecurePaymentConfirmationApp app(
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
+      browser_bound_key_id,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),
       /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
   app.SetBrowserBoundKeyStoreForTesting(MakeFakeBrowserBoundKeyStore());
-  browser_bound_key_store_->PutFakeKey(credential_id, browser_bound_key);
+  browser_bound_key_store_->PutFakeKey(browser_bound_key_id, browser_bound_key);
 
   EXPECT_CALL(*mock_authenticator,
               SetPaymentOptions(Pointee(
@@ -240,6 +243,7 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       web_contents_, "effective_rp.example", payment_instrument_label_,
       /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
       std::move(credential_id),
+      /*browser_bound_key_id=*/std::nullopt,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
       /*network_label=*/u"", /*network_icon=*/SkBitmap(),

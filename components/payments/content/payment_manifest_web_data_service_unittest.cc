@@ -96,7 +96,7 @@ TEST_F(PaymentManifestWebDataServiceTest, BrowserBoundKey) {
   actual_result.reset(nullptr);
 
   // Retrieve the browser bound key id.
-  handle = payment_manifest_web_data_service_->GetBrowserBoundKeyForTest(
+  handle = payment_manifest_web_data_service_->GetBrowserBoundKey(
       credential_id, relying_party_id, &mock_web_data_service_consumer);
   task_environment_.RunUntilQuit();
 

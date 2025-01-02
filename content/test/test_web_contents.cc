@@ -122,6 +122,18 @@ int TestWebContents::DownloadImage(const GURL& url,
   return g_next_image_download_id;
 }
 
+int TestWebContents::DownloadImageInFrame(
+    const GlobalRenderFrameHostId& initiator_frame_routing_id,
+    const GURL& url,
+    bool is_favicon,
+    const gfx::Size& preferred_size,
+    uint32_t max_bitmap_size,
+    bool bypass_cache,
+    ImageDownloadCallback callback) {
+  return DownloadImage(url, is_favicon, preferred_size, max_bitmap_size,
+                       bypass_cache, std::move(callback));
+}
+
 const GURL& TestWebContents::GetLastCommittedURL() {
   if (last_committed_url_.is_valid()) {
     return last_committed_url_;

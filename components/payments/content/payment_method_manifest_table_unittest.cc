@@ -529,7 +529,7 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKey) {
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id,
                                         browser_bound_key_id));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id =
-      table->GetBrowserBoundKeyForTest(credential_id, relying_party_id);
+      table->GetBrowserBoundKey(credential_id, relying_party_id);
 
   EXPECT_EQ(browser_bound_key_id, actual_browser_bound_key_id);
 }
@@ -543,7 +543,7 @@ TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenNotFound) {
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
 
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id =
-      table->GetBrowserBoundKeyForTest(credential_id, relying_party_id);
+      table->GetBrowserBoundKey(credential_id, relying_party_id);
 
   EXPECT_EQ(std::nullopt, actual_browser_bound_key_id);
 }
@@ -556,10 +556,10 @@ TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenEmptyArguments) {
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
 
-  EXPECT_EQ(std::nullopt, table->GetBrowserBoundKeyForTest(/*credential_id=*/{},
-                                                           relying_party_id));
-  EXPECT_EQ(std::nullopt, table->GetBrowserBoundKeyForTest(
-                              credential_id, /*relying_party_id=*/{}));
+  EXPECT_EQ(std::nullopt,
+            table->GetBrowserBoundKey(/*credential_id=*/{}, relying_party_id));
+  EXPECT_EQ(std::nullopt,
+            table->GetBrowserBoundKey(credential_id, /*relying_party_id=*/{}));
 }
 
 // Tests that no entry is stored when empty credential id, relying party id, or
@@ -573,16 +573,16 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenEmptyArguments) {
 
   EXPECT_FALSE(table->SetBrowserBoundKey(/*credential_id=*/{}, relying_party_id,
                                          browser_bound_key_id));
-  EXPECT_EQ(std::nullopt, table->GetBrowserBoundKeyForTest(/*credential_id=*/{},
-                                                           relying_party_id));
+  EXPECT_EQ(std::nullopt,
+            table->GetBrowserBoundKey(/*credential_id=*/{}, relying_party_id));
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, /*relying_party_id=*/"",
                                          browser_bound_key_id));
-  EXPECT_EQ(std::nullopt, table->GetBrowserBoundKeyForTest(
-                              credential_id, /*relying_party_id=*/{}));
+  EXPECT_EQ(std::nullopt,
+            table->GetBrowserBoundKey(credential_id, /*relying_party_id=*/{}));
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, relying_party_id,
                                          /*browser_bound_key_id=*/{}));
   EXPECT_EQ(std::nullopt,
-            table->GetBrowserBoundKeyForTest(credential_id, relying_party_id));
+            table->GetBrowserBoundKey(credential_id, relying_party_id));
 }
 
 // Tests that two browser bound key ids can be set for two different relying
@@ -601,9 +601,9 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameCredentialId) {
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id, relying_party_id_2,
                                         browser_bound_key_id_2));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_1 =
-      table->GetBrowserBoundKeyForTest(credential_id, relying_party_id_1);
+      table->GetBrowserBoundKey(credential_id, relying_party_id_1);
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_2 =
-      table->GetBrowserBoundKeyForTest(credential_id, relying_party_id_2);
+      table->GetBrowserBoundKey(credential_id, relying_party_id_2);
 
   EXPECT_EQ(browser_bound_key_id_1, actual_browser_bound_key_id_1);
   EXPECT_EQ(browser_bound_key_id_2, actual_browser_bound_key_id_2);
@@ -625,9 +625,9 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameRelyingParty) {
   EXPECT_TRUE(table->SetBrowserBoundKey(credential_id_2, relying_party_id,
                                         browser_bound_key_id_2));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_1 =
-      table->GetBrowserBoundKeyForTest(credential_id_1, relying_party_id);
+      table->GetBrowserBoundKey(credential_id_1, relying_party_id);
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id_2 =
-      table->GetBrowserBoundKeyForTest(credential_id_2, relying_party_id);
+      table->GetBrowserBoundKey(credential_id_2, relying_party_id);
 
   EXPECT_EQ(browser_bound_key_id_1, actual_browser_bound_key_id_1);
   EXPECT_EQ(browser_bound_key_id_2, actual_browser_bound_key_id_2);
@@ -649,7 +649,7 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenDuplicateEntry) {
   EXPECT_FALSE(table->SetBrowserBoundKey(credential_id, relying_party_id,
                                          browser_bound_key_id_2));
   std::optional<std::vector<uint8_t>> actual_browser_bound_key_id =
-      table->GetBrowserBoundKeyForTest(credential_id, relying_party_id);
+      table->GetBrowserBoundKey(credential_id, relying_party_id);
 
   // Expect the first browser bound key id stored to be unaffected.
   EXPECT_EQ(browser_bound_key_id_1, actual_browser_bound_key_id);

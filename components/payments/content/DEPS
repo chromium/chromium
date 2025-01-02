@@ -17,6 +17,7 @@ include_rules = [
   "+components/webdata/common",
   "+components/webdata_services",
   "+content/public",
+  "+content/test",
   "+crypto",
   "+device/fido/fido_transport_protocol.h",
   "+device/fido/fido_types.h",
