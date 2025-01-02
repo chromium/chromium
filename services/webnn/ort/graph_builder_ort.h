@@ -17,13 +17,13 @@
 #include "base/memory/stack_allocated.h"
 #include "base/types/expected.h"
 #include "services/webnn/ort/allocator_ort.h"
+#include "services/webnn/ort/ort_model_builder.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/ort/ort_model_builder.h"
 
 namespace webnn {
 
@@ -62,7 +62,7 @@ class GraphBuilderOrt {
     const OperandInfo& GetOperandInfo(uint64_t operand_id) const;
 
     std::map<uint64_t, OperandInfo> id_to_operand_info;
-    
+
     std::unique_ptr<OrtModelBuilder::ModelInfo> model_info;
   };
 

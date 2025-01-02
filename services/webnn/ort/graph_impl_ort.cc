@@ -22,6 +22,7 @@
 #include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/providers/dml/dml_provider_factory.h"
 
 namespace webnn::ort {
 
@@ -132,8 +133,8 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();
-  OrtStatus* status = GetOrtGraphApi()->CreateSessionFromModel(
-      env, result->model_info->model.get_ptr(), session_options, &session);
+  OrtStatus* status = GetOrtModelBuilderApi()->CreateSessionFromModel(
+      env, result->model_info->model, session_options, &session);
   ort_api->ReleaseSessionOptions(session_options);
 
   if (status != NULL) {

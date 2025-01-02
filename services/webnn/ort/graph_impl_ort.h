@@ -22,7 +22,7 @@
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn {
 

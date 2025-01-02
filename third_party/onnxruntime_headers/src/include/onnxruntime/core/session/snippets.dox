@@ -1,0 +1,8 @@
+[OrtStatus Return Value]
+<returns>If no error, nullptr will be returned. If there is an error, a pointer to an ::OrtStatus that contains error details will be returned. Use OrtApi::ReleaseStatus to free this pointer.</returns>
+[OrtStatus Return Value]
+
+[Log Verbosity Level]
+The log verbosity level controls the display of ::ORT_LOGGING_LEVEL_VERBOSE severity log messages at a finer granularity.
+It only has an effect in debug builds. The higher the value, the more verbose the log output will be.
+[Log Verbosity Level]

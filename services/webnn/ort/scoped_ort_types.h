@@ -7,121 +7,47 @@
 
 #include <memory>
 
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "services/webnn/ort/utils_ort.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
-class ScopedOrtValue {
- public:
-  ScopedOrtValue();
-  ScopedOrtValue(const ScopedOrtValue&) = delete;
-  ScopedOrtValue& operator=(const ScopedOrtValue&) = delete;
-  ~ScopedOrtValue();
+#define SCOPED_ORT_TYPE_PTR_DECLARATION(ort_type)                          \
+  class ScopedOrt##ort_type##Ptr {                                         \
+   public:                                                                 \
+    ScopedOrt##ort_type##Ptr();                                            \
+    ~ScopedOrt##ort_type##Ptr();                                           \
+    ScopedOrt##ort_type##Ptr(const ScopedOrt##ort_type##Ptr&) = delete;    \
+    ScopedOrt##ort_type##Ptr& operator=(const ScopedOrt##ort_type##Ptr&) = \
+        delete;                                                            \
+    ScopedOrt##ort_type##Ptr(ScopedOrt##ort_type##Ptr&&);                  \
+    ScopedOrt##ort_type##Ptr& operator=(ScopedOrt##ort_type##Ptr&&);       \
+    operator Ort##ort_type *() const {                                     \
+      return *pptr_;                                                       \
+    }                                                                      \
+    Ort##ort_type* Get() const {                                           \
+      return *pptr_;                                                       \
+    }                                                                      \
+    Ort##ort_type** GetAddressOf() const {                                 \
+      return pptr_.get();                                                  \
+    }                                                                      \
+    Ort##ort_type* Release() {                                             \
+      return *pptr_.release();                                             \
+    }                                                                      \
+                                                                           \
+   private:                                                                \
+    std::unique_ptr<Ort##ort_type*> pptr_;                                 \
+  };
 
-  OrtValue* get_ptr() { return *pptr_; }
-  OrtValue** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtValue*> pptr_;
-};
-
-class ScopedOrtMemoryInfo {
- public:
-  ScopedOrtMemoryInfo();
-  ScopedOrtMemoryInfo(const ScopedOrtMemoryInfo&) = delete;
-  ScopedOrtMemoryInfo& operator=(const ScopedOrtMemoryInfo&) = delete;
-  ~ScopedOrtMemoryInfo();
-
-  OrtMemoryInfo* get_ptr() { return *pptr_; }
-  OrtMemoryInfo** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtMemoryInfo*> pptr_;
-};
-
-class ScopedOrtOpAttr {
- public:
-  ScopedOrtOpAttr();
-  ScopedOrtOpAttr(const ScopedOrtOpAttr&) = delete;
-  ScopedOrtOpAttr& operator=(const ScopedOrtOpAttr&) = delete;
-  ~ScopedOrtOpAttr();
-
-  OrtOpAttr* get_ptr() { return *pptr_; }
-  OrtOpAttr** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtOpAttr*> pptr_;
-};
-
-class ScopedOrtGraph {
- public:
-  ScopedOrtGraph();
-  ScopedOrtGraph(const ScopedOrtGraph&) = delete;
-  ScopedOrtGraph& operator=(const ScopedOrtGraph&) = delete;
-  ~ScopedOrtGraph();
-
-  OrtGraph* get_ptr() { return *pptr_; }
-  OrtGraph** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtGraph*> pptr_;
-};
-
-class ScopedOrtShape {
- public:
-  ScopedOrtShape();
-  ScopedOrtShape(const ScopedOrtShape&) = delete;
-  ScopedOrtShape& operator=(const ScopedOrtShape&) = delete;
-  ~ScopedOrtShape();
-
-  OrtShape* get_ptr() { return *pptr_; }
-  OrtShape** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtShape*> pptr_;
-};
-
-class ScopedOrtValueInfo {
- public:
-  ScopedOrtValueInfo();
-  ScopedOrtValueInfo(const ScopedOrtValueInfo&) = delete;
-  ScopedOrtValueInfo& operator=(const ScopedOrtValueInfo&) = delete;
-  ~ScopedOrtValueInfo();
-
-  OrtValueInfo* get_ptr() { return *pptr_; }
-  OrtValueInfo** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtValueInfo*> pptr_;
-};
-
-class ScopedOrtNode {
- public:
-  ScopedOrtNode();
-  ScopedOrtNode(const ScopedOrtNode&) = delete;
-  ScopedOrtNode& operator=(const ScopedOrtNode&) = delete;
-  ~ScopedOrtNode();
-
-  OrtNode* get_ptr() { return *pptr_; }
-  OrtNode** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtNode*> pptr_;
-};
-
-class ScopedOrtModel {
- public:
-  ScopedOrtModel();
-  ScopedOrtModel(const ScopedOrtModel&) = delete;
-  ScopedOrtModel& operator=(const ScopedOrtModel&) = delete;
-  ~ScopedOrtModel();
-
-  OrtModel* get_ptr() { return *pptr_; }
-  OrtModel** get_pptr() { return pptr_.get(); }
-
- private:
-  std::unique_ptr<OrtModel*> pptr_;
-};
+SCOPED_ORT_TYPE_PTR_DECLARATION(Value)
+SCOPED_ORT_TYPE_PTR_DECLARATION(MemoryInfo)
+SCOPED_ORT_TYPE_PTR_DECLARATION(OpAttr)
+SCOPED_ORT_TYPE_PTR_DECLARATION(TypeInfo)
+SCOPED_ORT_TYPE_PTR_DECLARATION(TensorTypeAndShapeInfo)
+SCOPED_ORT_TYPE_PTR_DECLARATION(ValueInfo)
+SCOPED_ORT_TYPE_PTR_DECLARATION(Node)
+SCOPED_ORT_TYPE_PTR_DECLARATION(Graph)
+SCOPED_ORT_TYPE_PTR_DECLARATION(Model)
 
 }  // namespace webnn::ort
 

@@ -105,6 +105,7 @@ component("webnn_service") {
     deps += [
       "//third_party/fp16",
       "//third_party/microsoft_dxheaders:dxguids",
+      "//third_party/onnxruntime_headers",
       "//ui/gl",
       "//ui/gl/init",
     ]

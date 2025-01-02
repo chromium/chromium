@@ -14,7 +14,7 @@
 #include "services/webnn/ort/allocator_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn {
 
@@ -30,7 +30,7 @@ class OrtModelBuilder final {
     ModelInfo& operator=(const ModelInfo&) = delete;
     ~ModelInfo();
 
-    ScopedOrtModel model;
+    ScopedOrtModelPtr model;
 
     // TODO: Consider reusing constant operands instead of copying them to
     // `external_data`.
@@ -61,13 +61,14 @@ class OrtModelBuilder final {
                                     base::span<const int64_t> shape,
                                     base::span<const uint8_t> data,
                                     ONNXTensorElementDataType data_type);
+
   using OrtOpAttrData = absl::variant<int64_t,
                                       float,
                                       std::string_view,
                                       base::span<const int64_t>,
                                       base::span<const float>,
                                       base::span<const char*>>;
-  void CreateAttribute(ScopedOrtOpAttr& attribute,
+  void CreateAttribute(ScopedOrtOpAttrPtr& attribute,
                        std::string_view name,
                        OrtOpAttrData data);
 
@@ -75,14 +76,17 @@ class OrtModelBuilder final {
                std::string_view node_name,
                base::span<const char*> input_names,
                base::span<const char*> output_names,
-               base::span<OrtOpAttr**> attributes = {});
+               base::span<OrtOpAttr*> attributes = {});
 
   std::unique_ptr<ModelInfo> BuildAndTakeModelInfo();
 
  private:
   scoped_refptr<AllocatorOrt> allocator_;
 
-  ScopedOrtGraph graph_;
+  std::vector<ScopedOrtValueInfoPtr> inputs_;
+  std::vector<ScopedOrtValueInfoPtr> outputs_;
+
+  ScopedOrtGraphPtr graph_;
 
   std::unique_ptr<ModelInfo> model_info_;
 };

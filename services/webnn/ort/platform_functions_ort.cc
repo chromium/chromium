@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
-#include "third_party/onnx/proto/onnx.pb.h"
 
 namespace webnn::ort {
 
@@ -39,16 +38,18 @@ PlatformFunctions::PlatformFunctions() {
     return;
   }
 
-  const OrtApi* ort_api =
-      ort_get_api_base_proc()->GetApi(onnx::Version::IR_VERSION);
+  // ORT_API_VERSION is defined in onnxruntime_c_api.h and must be passed to
+  // `OrtApiBase::OrtApi()`.
+  const OrtApi* ort_api = ort_get_api_base_proc()->GetApi(ORT_API_VERSION);
   if (!ort_api) {
     LOG(ERROR) << "[WebNN] Failed to get OrtApi.";
     return;
   }
 
-  const OrtGraphApi* ort_graph_api = ort_api->GetGraphApi();
-  if (!ort_graph_api) {
-    LOG(ERROR) << "[WebNN] Failed to get OrtGraphApi.";
+  const OrtModelBuilderApi* ort_model_builder_api =
+      ort_api->GetModelBuilderApi();
+  if (!ort_model_builder_api) {
+    LOG(ERROR) << "[WebNN] Failed to get OrtModelBuilderApi.";
     return;
   }
 
@@ -56,7 +57,7 @@ PlatformFunctions::PlatformFunctions() {
   ort_library_ = std::move(ort_library);
   ort_get_api_base_proc_ = std::move(ort_get_api_base_proc);
   ort_api_ = ort_api;
-  ort_graph_api_ = ort_graph_api;
+  ort_model_builder_api_ = ort_model_builder_api;
 }
 
 PlatformFunctions::~PlatformFunctions() = default;
@@ -71,7 +72,7 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
 }
 
 bool PlatformFunctions::AllFunctionsLoaded() {
-  return ort_get_api_base_proc_ && ort_api_ && ort_graph_api_;
+  return ort_get_api_base_proc_ && ort_api_ && ort_model_builder_api_;
 }
 
 }  // namespace webnn::ort

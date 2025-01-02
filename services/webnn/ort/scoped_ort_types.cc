@@ -4,67 +4,30 @@
 
 #include "services/webnn/ort/scoped_ort_types.h"
 
-#include <memory>
-
-#include "services/webnn/ort/utils_ort.h"
-
 namespace webnn::ort {
 
-ScopedOrtValue::ScopedOrtValue() {
-  pptr_ = std::make_unique<OrtValue*>(nullptr);
-}
-ScopedOrtValue::~ScopedOrtValue() {
-  // TODO: use deleter instead.
-  GetOrtApi()->ReleaseValue(*pptr_);
-}
+#define SCOPED_ORT_TYPE_PTR_DEFINITION(ort_type, ort_api)        \
+  ScopedOrt##ort_type##Ptr::ScopedOrt##ort_type##Ptr() {         \
+    pptr_ = std::make_unique<Ort##ort_type*>(nullptr);           \
+  }                                                              \
+  ScopedOrt##ort_type##Ptr::~ScopedOrt##ort_type##Ptr() {        \
+    if (pptr_) {                                                 \
+      Get##ort_api()->Release##ort_type(*pptr_);                 \
+    }                                                            \
+  }                                                              \
+  ScopedOrt##ort_type##Ptr::ScopedOrt##ort_type##Ptr(            \
+      ScopedOrt##ort_type##Ptr&&) = default;                     \
+  ScopedOrt##ort_type##Ptr& ScopedOrt##ort_type##Ptr::operator=( \
+      ScopedOrt##ort_type##Ptr&&) = default;
 
-ScopedOrtMemoryInfo::ScopedOrtMemoryInfo() {
-  pptr_ = std::make_unique<OrtMemoryInfo*>(nullptr);
-}
-ScopedOrtMemoryInfo::~ScopedOrtMemoryInfo() {
-  GetOrtApi()->ReleaseMemoryInfo(*pptr_);
-}
-
-ScopedOrtOpAttr::ScopedOrtOpAttr() {
-  pptr_ = std::make_unique<OrtOpAttr*>(nullptr);
-}
-ScopedOrtOpAttr::~ScopedOrtOpAttr() {
-  GetOrtApi()->ReleaseOpAttr(*pptr_);
-}
-
-ScopedOrtGraph::ScopedOrtGraph() {
-  pptr_ = std::make_unique<OrtGraph*>(nullptr);
-}
-ScopedOrtGraph::~ScopedOrtGraph() {
-  GetOrtGraphApi()->ReleaseGraph(*pptr_);
-}
-
-ScopedOrtShape::ScopedOrtShape() {
-  pptr_ = std::make_unique<OrtShape*>(nullptr);
-}
-ScopedOrtShape::~ScopedOrtShape() {
-  GetOrtGraphApi()->ReleaseShape(*pptr_);
-}
-
-ScopedOrtValueInfo::ScopedOrtValueInfo() {
-  pptr_ = std::make_unique<OrtValueInfo*>(nullptr);
-}
-ScopedOrtValueInfo::~ScopedOrtValueInfo() {
-  GetOrtGraphApi()->ReleaseValueInfo(*pptr_);
-}
-
-ScopedOrtNode::ScopedOrtNode() {
-  pptr_ = std::make_unique<OrtNode*>(nullptr);
-}
-ScopedOrtNode::~ScopedOrtNode() {
-  GetOrtGraphApi()->ReleaseNode(*pptr_);
-}
-
-ScopedOrtModel::ScopedOrtModel() {
-  pptr_ = std::make_unique<OrtModel*>(nullptr);
-}
-ScopedOrtModel::~ScopedOrtModel() {
-  GetOrtGraphApi()->ReleaseModel(*pptr_);
-}
+SCOPED_ORT_TYPE_PTR_DEFINITION(Value, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(MemoryInfo, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(OpAttr, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(TypeInfo, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(TensorTypeAndShapeInfo, OrtApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(ValueInfo, OrtModelBuilderApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(Node, OrtModelBuilderApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(Graph, OrtModelBuilderApi)
+SCOPED_ORT_TYPE_PTR_DEFINITION(Model, OrtModelBuilderApi)
 
 }  // namespace webnn::ort

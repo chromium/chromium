@@ -1,0 +1,6 @@
+Name: onnxruntime_headers
+URL: https://github.com/microsoft/onnxruntime/tree/main/include
+Revision: 6e76179a4e1e76761bfd7be2ad6d12c3f99ec938
+
+Description:
+This directory contains a copy of the ONNX Runtime headers.

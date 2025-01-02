@@ -7,7 +7,7 @@
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
@@ -16,7 +16,7 @@ ONNXTensorElementDataType OperandTypeToONNXTensorElementDataType(
 
 const OrtApi* GetOrtApi();
 
-const OrtGraphApi* GetOrtGraphApi();
+const OrtModelBuilderApi* GetOrtModelBuilderApi();
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
                             const std::string& error_message,

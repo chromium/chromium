@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "third_party/microsoft_dxheaders/include/onnxruntime_c_api.h"
+#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
