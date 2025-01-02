@@ -43,11 +43,6 @@ namespace {
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kAppInstallParentWindowFound[] =
-    "Apps.AppInstallParentWindowFound";
-#endif
-
 constexpr std::string_view kAppInstallHost = "install-app";
 constexpr std::string_view kAppInstallPath = "//install-app";
 constexpr std::string_view kAppInstallPackageIdParam = "package_id";
@@ -101,12 +96,10 @@ std::optional<AppInstallService::WindowIdentifier> GetAnchorWindow(
       proxy->BrowserAppInstanceTracker()->GetAppInstance(browser);
 
   if (browser_window) {
-    base::UmaHistogramBoolean(kAppInstallParentWindowFound, true);
     return browser_window->id;
   }
 
   if (browser_app) {
-    base::UmaHistogramBoolean(kAppInstallParentWindowFound, true);
     return browser_app->id;
   }
 
@@ -116,7 +109,6 @@ std::optional<AppInstallService::WindowIdentifier> GetAnchorWindow(
   // tracked at this point. In this case the dialog will not be anchored to any
   // parent.
   DLOG(WARNING) << "App Install Dialog parent not found.";
-  base::UmaHistogramBoolean(kAppInstallParentWindowFound, false);
   return std::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
