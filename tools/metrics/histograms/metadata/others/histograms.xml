@@ -1330,6 +1330,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.TrustedBidderBatchCompute"
+    units="microseconds" expires_after="2025-03-02">
+  <owner>morlovich@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    How long it takes to compute URL(s) for a batch of trusted bidding signals
+    fetches (using V1 protocol).
+
+    Reported only on clients with high-resolution clocks.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.TrustedBidderSignalsOriginRelation"
     enum="BidderSignalsOriginRelation" expires_after="2025-05-10">
   <owner>morlovich@chromium.org</owner>
@@ -1337,6 +1352,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     At time of generateBid(), records how the trusted signals URL, if any,
     related to the script URL.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.TrustedSellerBatchCompute"
+    units="microseconds" expires_after="2025-03-02">
+  <owner>morlovich@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    How long it takes to compute URL(s) for a batch of trusted bidding signals
+    fetches (using V1 protocol).
+
+    Reported only on clients with high-resolution clocks.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.

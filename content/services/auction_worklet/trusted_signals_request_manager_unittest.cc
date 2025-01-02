@@ -22,6 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/reader.h"
@@ -640,6 +641,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
+  base::HistogramTester histogram_tester;
+
   const std::vector<std::string> kKeys{"key2", "key1"};
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
@@ -669,9 +672,16 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
                            "&keys=key1,key2&interestGroupNames=name1"
                            "&trusted_bidding_signals_slot_size_param=foo",
                            "Completion Status: net::OK"));
+  // Measured time for URL computation is zero since this is using MOCK_TIME
+  // and nothing advances it during straight computation.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TrustedBidderBatchCompute", base::TimeDelta(),
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
+  base::HistogramTester histogram_tester;
+
   const GURL kRenderUrl = GURL("https://foo.test/");
   const std::vector<std::string> kAdComponentRenderUrls{
       "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/"};
@@ -693,6 +703,12 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
       R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
       R"("https://barsub.test/":[3],"https://bazsub.test/":"4"}})",
       ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+
+  // Measured time for URL computation is zero since this is using MOCK_TIME
+  // and nothing advances it during straight computation.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TrustedSellerBatchCompute", base::TimeDelta(),
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {
