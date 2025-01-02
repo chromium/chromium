@@ -3682,16 +3682,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(controller->state() == State::kOverlay);
 }
 
-// TODO(b/340886492): Fix and reenable test on MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OverlayClosesSidePanelBeforeOpening \
-  DISABLED_OverlayClosesSidePanelBeforeOpening
-#else
-#define MAYBE_OverlayClosesSidePanelBeforeOpening \
-  OverlayClosesSidePanelBeforeOpening
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_OverlayClosesSidePanelBeforeOpening) {
+                       OverlayClosesSidePanelBeforeOpening) {
   WaitForPaint();
 
   // State should start in off.
