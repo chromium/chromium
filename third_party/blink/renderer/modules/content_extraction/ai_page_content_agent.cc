@@ -487,6 +487,7 @@ void AIPageContentAgent::ProcessIframe(
     // frames.
     auto child_content_node = MaybeGenerateContentNode(
         *child_layout_view, *child_layout_view->Style());
+    CHECK(child_content_node);
     WalkChildren(*child_layout_view, *child_content_node,
                  *child_layout_view->Style());
     content_node.children_nodes.emplace_back(std::move(child_content_node));
