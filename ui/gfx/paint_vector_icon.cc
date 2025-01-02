@@ -441,7 +441,10 @@ class VectorIconSource : public CanvasImageSource {
 
   VectorIconSource(const std::string& definition, int dip_size, SkColor color)
       : CanvasImageSource(Size(dip_size, dip_size)),
-        data_(kNoneIcon, dip_size, color, &kNoneIcon),
+        data_(VectorIcon::EmptyIcon(),
+              dip_size,
+              color,
+              &VectorIcon::EmptyIcon()),
         path_(PathFromSource(definition)) {}
 
   VectorIconSource(const VectorIconSource&) = delete;
@@ -510,14 +513,12 @@ IconDescription::IconDescription(const VectorIcon& icon,
     : icon(icon),
       dip_size(dip_size),
       color(color),
-      badge_icon(badge_icon ? *badge_icon : kNoneIcon) {
+      badge_icon(badge_icon ? *badge_icon : VectorIcon::EmptyIcon()) {
   if (dip_size == 0)
     this->dip_size = GetDefaultSizeOfVectorIcon(icon);
 }
 
 IconDescription::~IconDescription() {}
-
-const VectorIcon kNoneIcon = {};
 
 void PaintVectorIcon(Canvas* canvas, const VectorIcon& icon, SkColor color) {
   PaintVectorIcon(canvas, icon, GetDefaultSizeOfVectorIcon(icon), color);
@@ -550,7 +551,8 @@ ImageSkia CreateVectorIcon(const VectorIcon& icon, SkColor color) {
 ImageSkia CreateVectorIcon(const VectorIcon& icon,
                            int dip_size,
                            SkColor color) {
-  return CreateVectorIcon(IconDescription(icon, dip_size, color, &kNoneIcon));
+  return CreateVectorIcon(
+      IconDescription(icon, dip_size, color, &VectorIcon::EmptyIcon()));
 }
 
 ImageSkia CreateVectorIconWithBadge(const VectorIcon& icon,

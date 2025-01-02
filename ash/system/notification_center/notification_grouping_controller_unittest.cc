@@ -389,7 +389,7 @@ TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   auto* message_center = MessageCenter::Get();
   std::string id0, id1, id2;
   const GURL url(u"http://test-url.com/");
-  const auto icon = gfx::VectorIcon();
+  const auto& icon = gfx::VectorIcon::EmptyIcon();
   const auto small_image = gfx::Image();
   const std::u16string display_source0 = u"test_display_source0";
 

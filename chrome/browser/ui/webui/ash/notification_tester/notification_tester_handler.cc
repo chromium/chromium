@@ -175,7 +175,7 @@ NotificationTesterHandler::GetRichDataSmallImageFromString(
     return kSmartphoneIcon;
   }
 
-  return gfx::kNoneIcon;
+  return gfx::VectorIcon::EmptyIcon();
 }
 
 std::vector<message_center::ButtonInfo>

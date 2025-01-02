@@ -36,8 +36,6 @@ struct COMPONENT_EXPORT(GFX) IconDescription {
   const raw_ref<const VectorIcon> badge_icon;
 };
 
-COMPONENT_EXPORT(GFX) extern const VectorIcon kNoneIcon;
-
 // Draws a vector icon identified by |id| onto |canvas| at (0, 0). |color| is
 // used as the fill. The size will come from the .icon file (the 1x version, if
 // multiple versions exist).

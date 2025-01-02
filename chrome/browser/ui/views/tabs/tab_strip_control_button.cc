@@ -59,7 +59,6 @@ class ControlButtonHighlightPathGenerator
 
 const int TabStripControlButton::kIconSize = 16;
 const gfx::Size TabStripControlButton::kButtonSize{28, 28};
-const gfx::VectorIcon kEmptyIcon;
 
 TabStripControlButton::TabStripControlButton(
     TabStripController* tab_strip_controller,
@@ -82,7 +81,7 @@ TabStripControlButton::TabStripControlButton(
     Edge animated_flat_edge)
     : TabStripControlButton(tab_strip_controller,
                             std::move(callback),
-                            kEmptyIcon,
+                            gfx::VectorIcon::EmptyIcon(),
                             text,
                             fixed_flat_edge,
                             animated_flat_edge) {}

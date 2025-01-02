@@ -18,6 +18,7 @@
 #include "components/onc/onc_constants.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 
@@ -194,7 +195,7 @@ void ManagedSimLockNotifier::ShowNotification() {
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_ptr_factory_.GetWeakPtr()),
-          /*small_image=*/gfx::VectorIcon(),
+          /*small_image=*/gfx::VectorIcon::EmptyIcon(),
           message_center::SystemNotificationWarningLevel::WARNING);
   notification->set_host_view_element_id(
       kCellularManagedSimLockNotificationElementId);

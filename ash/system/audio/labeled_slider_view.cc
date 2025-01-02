@@ -24,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
@@ -132,7 +133,8 @@ LabeledSliderView::LabeledSliderView(TrayDetailedView* detailed_view,
 
   // Creates and formats the device name view.
   device_name_view_ = detailed_view->AddScrollListCheckableItem(
-      this, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
+      this, gfx::VectorIcon::EmptyIcon(), GetAudioDeviceName(device),
+      device.active);
   ConfigureDeviceNameView(device);
 
   // Puts `unified_slider_view_` beneath `device_name_view_`.

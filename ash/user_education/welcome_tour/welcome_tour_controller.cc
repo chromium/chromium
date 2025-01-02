@@ -56,7 +56,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -78,7 +78,7 @@ CreateHelpBubbleExtendedProperties(HelpBubbleId help_bubble_id) {
       user_education_util::CreateExtendedProperties(
           ui::mojom::ModalType::kSystem),
       user_education_util::CreateExtendedProperties(
-          /*body_icon=*/gfx::kNoneIcon));
+          /*body_icon=*/gfx::VectorIcon::EmptyIcon()));
 }
 
 user_education::HelpBubbleParams::ExtendedProperties
