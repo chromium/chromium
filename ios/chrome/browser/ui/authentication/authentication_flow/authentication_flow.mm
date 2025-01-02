@@ -55,7 +55,6 @@ namespace {
 // The states of the sign-in flow state machine.
 enum AuthenticationState {
   BEGIN,
-  CHECK_SIGNIN_STEPS,
   FETCH_MANAGED_STATUS,
   SHOW_MANAGED_CONFIRMATION,
   CONVERT_PERSONAL_PROFILE_TO_MANAGED,
@@ -141,7 +140,6 @@ BOOL IsIdentityInCoreAccountInfos(
   AuthenticationState _state;
   BOOL _didSignIn;
   CancelationReason _cancelationReason;
-  BOOL _shouldSignOut;
   // YES if the personal profile should be converted to a managed (work) profile
   // as part of the signin flow. Can only be true if the to-be-signed-in account
   // is managed.
@@ -251,7 +249,6 @@ BOOL IsIdentityInCoreAccountInfos(
   DCHECK([self canceled]);
   switch (_state) {
     case BEGIN:
-    case CHECK_SIGNIN_STEPS:
     case FETCH_MANAGED_STATUS:
     case SHOW_MANAGED_CONFIRMATION:
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
@@ -279,27 +276,19 @@ BOOL IsIdentityInCoreAccountInfos(
   DCHECK(![self canceled]);
   switch (_state) {
     case BEGIN:
-      return CHECK_SIGNIN_STEPS;
-    case CHECK_SIGNIN_STEPS:
       return FETCH_MANAGED_STATUS;
     case FETCH_MANAGED_STATUS:
       if (ShouldShowManagedConfirmationForHostedDomain(
               _identityToSignInHostedDomain, _accessPoint,
               _identityToSignIn.gaiaID, [self prefs])) {
         return SHOW_MANAGED_CONFIRMATION;
-      } else if (_shouldSignOut) {
-        return SIGN_OUT_IF_NEEDED;
-      } else {
-        return SIGN_IN;
       }
+      return SIGN_OUT_IF_NEEDED;
     case SHOW_MANAGED_CONFIRMATION:
       if (_shouldConvertPersonalProfileToManaged) {
         return CONVERT_PERSONAL_PROFILE_TO_MANAGED;
-      } else if (_shouldSignOut) {
-        return SIGN_OUT_IF_NEEDED;
-      } else {
-        return SIGN_IN;
       }
+      return SIGN_OUT_IF_NEEDED;
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
       return SIGN_IN;
     case SIGN_OUT_IF_NEEDED:
@@ -355,11 +344,6 @@ BOOL IsIdentityInCoreAccountInfos(
     case BEGIN:
       NOTREACHED();
 
-    case CHECK_SIGNIN_STEPS:
-      [self checkSigninSteps];
-      [self continueFlow];
-      return;
-
     case FETCH_MANAGED_STATUS:
       [_performer fetchManagedStatus:profile forIdentity:_identityToSignIn];
       return;
@@ -382,9 +366,7 @@ BOOL IsIdentityInCoreAccountInfos(
     }
 
     case SIGN_OUT_IF_NEEDED:
-      // TODO(crbug.com/375605482): skip sign out if there is a profile
-      // switching.
-      [_performer signOutProfile:profile];
+      [self signOutIfNeededStep];
       return;
 
     case SIGN_IN:
@@ -443,17 +425,20 @@ BOOL IsIdentityInCoreAccountInfos(
   NOTREACHED();
 }
 
-// Checks which sign-in steps to perform and updates member variables
-// accordingly.
-- (void)checkSigninSteps {
+// Signs out, if the user is already signed in with a different identity.
+// Otherwise, this step does nothing and the flow continues to the next step.
+- (void)signOutIfNeededStep {
+  ProfileIOS* profile = [self originalProfile];
   id<SystemIdentity> currentIdentity =
-      AuthenticationServiceFactory::GetForProfile([self originalProfile])
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
   if (currentIdentity && ![currentIdentity isEqual:_identityToSignIn]) {
-    // If the identity to sign-in is different than the current identity,
-    // sign-out is required.
-    _shouldSignOut = YES;
+    // TODO(crbug.com/375605482): skip sign out if there is a profile
+    // switching.
+    [_performer signOutProfile:profile];
+    return;
   }
+  [self continueFlow];
 }
 
 - (void)multiProfileSignIn {
