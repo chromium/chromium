@@ -45,7 +45,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,7 +63,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -190,7 +188,6 @@ public class SyncPromoControllerUiTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -223,7 +220,6 @@ public class SyncPromoControllerUiTest {
     @MediumTest
     // Disabled on Automotive since the choose account button doesn't exist on Automotive.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
