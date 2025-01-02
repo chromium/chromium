@@ -12,8 +12,7 @@ build_webui("build") {
     "user_actions.html",
   ]
 
-  # TODO(crbug.com/385317090): Migrate to TypeScript.
-  non_web_component_files = [ "user_actions.js" ]
+  non_web_component_files = [ "user_actions.ts" ]
 
   if (!is_ios) {
     ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
