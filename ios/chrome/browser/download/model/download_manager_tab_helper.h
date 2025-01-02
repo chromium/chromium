@@ -37,6 +37,10 @@ class DownloadManagerTabHelper
   // save to drive policy, and incognito.
   static bool ShouldRestrictDownload(web::WebState* web_state);
 
+  // Returns whether downloads to file should be restricted. It checks if
+  // downloads should be restricted based on the download restriction policy.
+  static bool ShouldRestrictDownloadToFile(web::WebState* web_state);
+
   // Set the current download task for this tab.
   virtual void SetCurrentDownload(std::unique_ptr<web::DownloadTask> task);
 

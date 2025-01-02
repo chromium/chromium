@@ -14,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -98,6 +99,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
       std::make_unique<web::FakeNavigationManager>());
   test_web_state->SetCurrentURL(test_url);
   test_web_state->SetBrowserState(browser_->GetProfile());
+  DownloadManagerTabHelper::CreateForWebState(test_web_state.get());
 
   auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
   web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();

@@ -51,19 +51,26 @@ DownloadManagerTabHelper::~DownloadManagerTabHelper() {
 #pragma mark - Public methods
 
 // static
+bool DownloadManagerTabHelper::ShouldRestrictDownloadToFile(
+    web::WebState* web_state) {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  PrefService* pref_service = profile->GetPrefs();
+  return static_cast<policy::DownloadRestriction>(pref_service->GetInteger(
+             policy::policy_prefs::kDownloadRestrictions)) ==
+         policy::DownloadRestriction::ALL_FILES;
+}
+
+// static
 bool DownloadManagerTabHelper::ShouldRestrictDownload(
     web::WebState* web_state) {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   PrefService* pref_service = profile->GetPrefs();
-  bool restrict_download_on_file =
-      static_cast<policy::DownloadRestriction>(pref_service->GetInteger(
-          policy::policy_prefs::kDownloadRestrictions)) ==
-      policy::DownloadRestriction::ALL_FILES;
   bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
       profile->IsOffTheRecord(), IdentityManagerFactory::GetForProfile(profile),
       drive::DriveServiceFactory::GetForProfile(profile), pref_service);
-  return restrict_download_on_file && !is_save_to_drive_available;
+  return ShouldRestrictDownloadToFile(web_state) && !is_save_to_drive_available;
 }
 
 void DownloadManagerTabHelper::SetCurrentDownload(
