@@ -15,7 +15,6 @@ const WebRequestEvents = [
   {name: 'onBeforeRequest', shouldTrigger: true},
   {name: 'onBeforeSendHeaders', shouldTrigger: true},
   {name: 'onCompleted', shouldTrigger: true},
-  {name: 'onErrorOccurred', shouldTrigger: false},
   {name: 'onHeadersReceived', shouldTrigger: true},
   {name: 'onHeadersReceived', shouldTrigger: true},
   {name: 'onSendHeaders', shouldTrigger: true},
@@ -36,6 +35,13 @@ promise_test(async (test) => {
         eventCounter.bind({name: eventName}), {urls: ['<all_urls>']});
   }
 
+  // Temporarily add special case for onErrorOccurred here to monitor it being
+  // triggered in the CI.
+  // TODO(crbug.com/386380410): clean up.
+  window['occurredErrors'] = [];
+  controlledframe.request.onErrorOccurred.addListener(function(details) {
+    window['occurredErrors'].push(details.error);
+  }, {urls: ['<all_urls>']});
 
   const targetUrl = new URL(controlledframe.src);
   targetUrl.pathname = '/handbag.png';
@@ -61,4 +67,15 @@ promise_test(async (test) => {
               window['count' + eventName]} time(s).`);
     }
   }
+
+  // Temporarily add special case for onErrorOccurred here to monitor it being
+  // triggered in the CI.
+  // TODO(crbug.com/386380410): clean up.
+  assert_true(
+      window['occurredErrors'].length === 0,
+      `\nonErrorOccurred triggered ${
+          window['occurredErrors'].length} times, errors are:\n${
+          window['occurredErrors']
+              .map((item, index) => `${index + 1}. ${item}`)
+              .join('\n')}\n`);
 }, 'WebRequest Event Handlers');
