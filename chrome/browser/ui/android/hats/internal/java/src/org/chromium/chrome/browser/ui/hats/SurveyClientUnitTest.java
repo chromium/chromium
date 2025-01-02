@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -15,7 +16,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -387,13 +387,13 @@ public class SurveyClientUnitTest {
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
                         mProfile);
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
                     client.showSurvey(mActivity, mLifecycleDispatcher);
                 });
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -404,7 +404,7 @@ public class SurveyClientUnitTest {
         stringValues.clear();
         bitValues.clear();
         bitValues.put("bitField", true);
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -415,7 +415,7 @@ public class SurveyClientUnitTest {
         stringValues.clear();
         bitValues.clear();
         stringValues.put("stringField", "value");
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -427,7 +427,7 @@ public class SurveyClientUnitTest {
         bitValues.clear();
         stringValues.put("stringField", "value");
         stringValues.put("stringField2", "value2");
-        Assert.assertThrows(
+        assertThrows(
                 "Extra string PSDs were provided.",
                 AssertionError.class,
                 () -> {
