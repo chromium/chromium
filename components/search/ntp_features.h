@@ -21,7 +21,6 @@ namespace ntp_features {
 // the .cc file.
 
 BASE_DECLARE_FEATURE(kConfirmSuggestionRemovals);
-BASE_DECLARE_FEATURE(kCustomizeChromeColorExtraction);
 BASE_DECLARE_FEATURE(kCustomizeChromeSidePanelExtensionsCard);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
