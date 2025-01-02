@@ -758,7 +758,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.NoiseCancellationEnabledSource"
-    enum="AudioSettingsChangeSource" expires_after="2025-01-05">
+    enum="AudioSettingsChangeSource" expires_after="2026-01-05">
   <owner>gavinwill@chromium.org</owner>
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
