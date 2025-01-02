@@ -196,10 +196,14 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         boolean wasInDesktopWindow = mAppHeaderState != null && mAppHeaderState.isInDesktopWindow();
         boolean isInDesktopWindow = newState.isInDesktopWindow();
         boolean desktopWindowingModeChanged = wasInDesktopWindow != isInDesktopWindow;
+        boolean headerHeightChanged =
+                mAppHeaderState != null
+                        && mAppHeaderState.getAppHeaderHeight() != newState.getAppHeaderHeight();
 
-        // Force trigger the strip height transition when the app is switching desktop windowing
-        // mode, to update the strip top padding.
-        mForceUpdateHeight = desktopWindowingModeChanged;
+        // Force trigger the strip height transition when:
+        // 1. The app is switching desktop windowing mode, to update the strip top padding.
+        // 2. The app header height changes.
+        mForceUpdateHeight = desktopWindowingModeChanged || headerHeightChanged;
 
         // Force fade in an invisible tab strip when the app is exiting desktop windowing mode, and
         // the height transition is blocked.

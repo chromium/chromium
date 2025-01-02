@@ -193,28 +193,23 @@ public class AppHeaderCoordinator
     }
 
     private void onInsetsRectsUpdated(@NonNull Rect widestUnoccludedRect) {
-        mHeuristicResult =
-                checkIsInDesktopWindow(
-                        mActivity, mInsetObserver, mCaptionBarRectProvider, mHeuristicResult);
+        mHeuristicResult = checkIsInDesktopWindow(mCaptionBarRectProvider, mHeuristicResult);
         var isInDesktopWindow = mHeuristicResult == DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW;
 
         // Avoid determining the mode when there are no window insets, which may be the case in the
         // middle of a windowing mode change. Presence of insets indicates that the window is in a
         // stable state.
+        assert mInsetObserver.getLastRawWindowInsets() != null
+                : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
             mWindowingMode =
                     AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow, mWindowingMode);
         }
 
-        // Use an empty |widestUnoccludedRect| instead of the cached Rect while creating the
-        // AppHeaderState while not in or while exiting desktop windowing mode, so that it always
-        // holds a valid state for observers to use.
         var appHeaderState =
                 new AppHeaderState(
                         mCaptionBarRectProvider.getWindowRect(),
-                        isInDesktopWindow
-                                ? mCaptionBarRectProvider.getWidestUnoccludedRect()
-                                : new Rect(),
+                        widestUnoccludedRect,
                         isInDesktopWindow);
         if (appHeaderState.equals(mAppHeaderState)) return;
 
@@ -254,8 +249,7 @@ public class AppHeaderCoordinator
      *
      * <ol type=1>
      *   <li>Caption bar has insets.top > 0;
-     *   <li>There's no bottom insets from the navigation bar;
-     *   <li>Caption bar has 2 bounding rects;
+     *   <li>Widest unoccluded rect in caption bar has space available to draw the tab strip;
      *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
      * </ol>
      *
@@ -263,31 +257,14 @@ public class AppHeaderCoordinator
      * an AppHeaderCoordinator instance, especially the cached {@link AppHeaderState}.
      */
     private static @DesktopWindowHeuristicResult int checkIsInDesktopWindow(
-            Activity activity,
-            InsetObserver insetObserver,
             InsetsRectProvider insetsRectProvider,
             @DesktopWindowHeuristicResult int currentResult) {
         @DesktopWindowHeuristicResult int newResult;
 
-        assert insetObserver.getLastRawWindowInsets() != null
-                : "Attempt to read the insets too early.";
-        var navBarInsets =
-                insetObserver
-                        .getLastRawWindowInsets()
-                        .getInsets(WindowInsetsCompat.Type.navigationBars());
-
-        int numOfBoundingRects = insetsRectProvider.getBoundingRects().size();
         Insets captionBarInset = insetsRectProvider.getCachedInset();
 
-        if (!activity.isInMultiWindowMode()) {
-            newResult = DesktopWindowHeuristicResult.NOT_IN_MULTIWINDOW_MODE;
-        } else if (navBarInsets.bottom > 0) {
-            // Disable DW mode if there is a navigation bar (though it may or may not be visible /
-            // dismissed).
-            newResult = DesktopWindowHeuristicResult.NAV_BAR_BOTTOM_INSETS_PRESENT;
-        } else if (numOfBoundingRects != 2) {
-            Log.w(TAG, "Unexpected number of bounding rects is observed! " + numOfBoundingRects);
-            newResult = DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER;
+        if (insetsRectProvider.getWidestUnoccludedRect().isEmpty()) {
+            newResult = DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY;
         } else if (captionBarInset.top == 0) {
             newResult = DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT;
         } else if (insetsRectProvider.getWidestUnoccludedRect().bottom != captionBarInset.top) {

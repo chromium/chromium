@@ -114,4 +114,12 @@ public class WindowInsetsUtilsJavaUnitTest {
                 WindowInsetsUtils.getBoundingRectsFromInsets(
                         insets, WindowInsetsCompat.Type.captionBar()));
     }
+
+    @Test
+    @SmallTest
+    public void testGetWidestUnoccludedRect_NoBlockedRects() {
+        Rect region = new Rect(0, 0, 600, 800);
+        List<Rect> blocks = List.of();
+        assertEquals(new Rect(), WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
+    }
 }

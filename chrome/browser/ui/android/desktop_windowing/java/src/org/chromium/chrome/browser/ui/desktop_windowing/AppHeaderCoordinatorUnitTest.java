@@ -72,6 +72,7 @@ public class AppHeaderCoordinatorUnitTest {
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT);
     private static final int KEYBOARD_INSET = 736;
+    private static final int APPEARANCE_LIGHT_CAPTION_BARS = 1 << 8;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -97,7 +98,6 @@ public class AppHeaderCoordinatorUnitTest {
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mSpyActivity = spy(activity));
         mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(mSpyActivity.getWindow());
-        doReturn(true).when(mSpyActivity).isInMultiWindowMode();
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
@@ -146,7 +146,8 @@ public class AppHeaderCoordinatorUnitTest {
                 List.of(
                         new Rect(0, 0, LEFT_BLOCK, HEADER_HEIGHT - 10),
                         new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, HEADER_HEIGHT - 10));
-        Rect widestUnoccludedRect = new Rect(0, 20, WINDOW_WIDTH, HEADER_HEIGHT - 10);
+        Rect widestUnoccludedRect =
+                new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT - 10);
         setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
         notifyInsetsRectObserver();
 
@@ -157,78 +158,17 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void notEnabledWithLessThanTwoBoundingRects() {
+    public void notEnabledWhenWidestUnoccludedRectIsEmpty() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DesktopWindowHeuristicResult",
-                        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER);
-        // Top insets with height of 30.
-        Insets insets = Insets.of(0, 30, 0, 0);
-        // Left block: 10
-        List<Rect> blockedRects = List.of(new Rect(0, 0, LEFT_BLOCK, 30));
-        Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH, 30);
-        setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
+                        DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY);
+        setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
         notifyInsetsRectObserver();
 
         verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop Windowing enabled with only one bounding rect.");
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void notEnabledWithMoreThanTwoBoundingRects() {
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult",
-                        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER);
-        // Top insets with height of 30.
-        Insets insets = Insets.of(0, 30, 0, 0);
-        // Left block: 10, two right block: 5, 15
-        List<Rect> blockedRects =
-                List.of(
-                        new Rect(0, 0, LEFT_BLOCK, 30),
-                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH - 15, 30),
-                        new Rect(WINDOW_WIDTH - 15, 0, WINDOW_WIDTH, 30));
-        Rect widestUnoccludedRect = new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, 30);
-        setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
-        notifyInsetsRectObserver();
-
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop Windowing enabled with more than two bounding rects.");
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void notEnabledWhenNotInMultiWindowMode() {
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult",
-                        DesktopWindowHeuristicResult.NOT_IN_MULTIWINDOW_MODE);
-        doReturn(false).when(mSpyActivity).isInMultiWindowMode();
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop Windowing does not enable when not in multi window mode.");
-        watcher.assertExpected();
-    }
-
-    @Test
-    public void notEnabledWhenNavBarBottomInsetsSeen() {
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult",
-                        DesktopWindowHeuristicResult.NAV_BAR_BOTTOM_INSETS_PRESENT);
-        setupWithLeftAndRightBoundingRect();
-        // Override the last seen raw insets so there's a bottom nav bar insets.
-        mLastSeenRawWindowInsets =
-                new WindowInsetsCompat.Builder()
-                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
-                        .build();
-        notifyInsetsRectObserver();
-
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop Windowing does not enable when there are bottom insets.");
+                /* error= */ "Desktop windowing should not be enabled when widest unoccluded rect"
+                        + " is empty.");
         watcher.assertExpected();
     }
 
@@ -395,13 +335,13 @@ public class AppHeaderCoordinatorUnitTest {
         assertEquals(
                 "Background is dark. Expecting APPEARANCE_LIGHT_CAPTION_BARS not set.",
                 0,
-                insetController.getSystemBarsAppearance() & (1 << 8));
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
 
         mAppHeaderCoordinator.updateForegroundColor(Color.WHITE);
         assertEquals(
                 "Background is light. Expecting APPEARANCE_LIGHT_CAPTION_BARS set.",
-                (1 << 8),
-                insetController.getSystemBarsAppearance() & (1 << 8));
+                APPEARANCE_LIGHT_CAPTION_BARS,
+                insetController.getSystemBarsAppearance() & APPEARANCE_LIGHT_CAPTION_BARS);
     }
 
     @Test

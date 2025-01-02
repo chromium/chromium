@@ -1224,17 +1224,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DesktopWindowHeuristicResult"
-    enum="DesktopWindowHeuristicResult" expires_after="2025-06-29">
-  <owner>wenyufu@chromium.org</owner>
+<histogram name="Android.DesktopWindowHeuristicResult2"
+    enum="DesktopWindowHeuristicResult2" expires_after="2025-07-02">
   <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Records the result of the heuristics used to determine whether the app is in
     a desktop window. The histogram will be emitted only if the result changed
     since the last time it was emitted. This is to avoid emitting noisy data,
     since we believe that most of the conditions in these heuristics are
     unlikely to change for a given OS/OEM across these checks that may be
-    relatively significantly larger in number. Android V+ only.
+    relatively significantly larger in number.
   </summary>
 </histogram>
 

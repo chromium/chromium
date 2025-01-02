@@ -93,9 +93,6 @@ public class AppHeaderState {
 
     /** Return whether the state is valid. */
     boolean isValid() {
-        if (!mIsInDesktopWindow) {
-            return mWidestUnoccludedRect.isEmpty();
-        }
         return (mAppWindowRect.isEmpty() && mWidestUnoccludedRect.isEmpty())
                 || mAppWindowRect.contains(mWidestUnoccludedRect);
     }
