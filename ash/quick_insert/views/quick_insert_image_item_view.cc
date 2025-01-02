@@ -65,6 +65,15 @@ void QuickInsertImageItemView::SetAction(QuickInsertActionType action) {
   }
 }
 
+void QuickInsertImageItemView::FitToWidth(int width) {
+  const gfx::Size original_dimensions = image_view_->GetImageBounds().size();
+  const int height = original_dimensions.width() == 0
+                         ? 0
+                         : (width * original_dimensions.height()) /
+                               original_dimensions.width();
+  image_view_->SetImageSize(gfx::Size(width, height));
+}
+
 BEGIN_METADATA(QuickInsertImageItemView)
 END_METADATA
 

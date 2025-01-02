@@ -33,6 +33,10 @@ class ASH_EXPORT QuickInsertImageItemView : public QuickInsertItemView {
 
   void SetAction(QuickInsertActionType action);
 
+  // Resizes the contained image to `width`, with the height scaled to retain
+  // the same aspect ratio.
+  void FitToWidth(int width);
+
   views::ImageView* image_view_for_testing() const { return image_view_; }
 
  private:

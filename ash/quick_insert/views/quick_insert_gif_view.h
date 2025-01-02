@@ -44,8 +44,6 @@ class ASH_EXPORT QuickInsertGifView : public views::ImageView {
   ~QuickInsertGifView() override;
 
   // views::ImageViewBase:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:

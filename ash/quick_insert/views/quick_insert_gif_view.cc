@@ -60,18 +60,6 @@ QuickInsertGifView::QuickInsertGifView(
 
 QuickInsertGifView::~QuickInsertGifView() = default;
 
-gfx::Size QuickInsertGifView::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  // Calculate the height to retain aspect ratio.
-  const int preferred_width =
-      views::ImageView::CalculatePreferredSize(available_size).width();
-  const int height = original_dimensions_.width() == 0
-                         ? 0
-                         : (preferred_width * original_dimensions_.height()) /
-                               original_dimensions_.width();
-  return gfx::Size(preferred_width, height);
-}
-
 void QuickInsertGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::ImageView::OnBoundsChanged(previous_bounds);
 
