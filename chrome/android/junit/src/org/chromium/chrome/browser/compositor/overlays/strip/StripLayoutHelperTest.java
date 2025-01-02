@@ -3000,6 +3000,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_NotLastTab() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 2);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3019,6 +3020,7 @@ public class StripLayoutHelperTest {
 
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3039,6 +3041,7 @@ public class StripLayoutHelperTest {
 
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         Tab tab = mModel.getTabAt(0);
 
@@ -3081,6 +3084,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Positive() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -3117,6 +3121,7 @@ public class StripLayoutHelperTest {
     public void testTabGroupDeleteDialog_DragOffStrip_Sync_Negative() {
         // Set up resources for testing tab group delete dialog.
         setUpTabGroupForDialog(0, 1);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(0);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start dragging tab out of group.
@@ -4380,6 +4385,7 @@ public class StripLayoutHelperTest {
         // Initialize with 10 tabs.
         int selectedIndex = 5;
         initializeTest(false, false, selectedIndex, 10);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(selectedIndex);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab draggedTab =
@@ -4476,6 +4482,7 @@ public class StripLayoutHelperTest {
     public void testDrag2_DragActiveClickedTabOutOfStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 1, 5);
+        mStripLayoutHelper.setActiveClickedTabAtIndexForTesting(1);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
 

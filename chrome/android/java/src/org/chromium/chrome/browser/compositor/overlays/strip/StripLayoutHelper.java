@@ -4308,7 +4308,7 @@ public class StripLayoutHelper
     }
 
     private void dragActiveClickedTabOntoStrip(float x, boolean startReorder) {
-        StripLayoutTab draggedTab = getSelectedStripTab();
+        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
         assert draggedTab != null;
 
         finishAnimationsAndPushTabUpdates();
@@ -4347,7 +4347,7 @@ public class StripLayoutHelper
     }
 
     private void dragActiveClickedTabOutOfStrip(long time) {
-        StripLayoutTab draggedTab = getSelectedStripTab();
+        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
         assert draggedTab != null;
 
         int tabId = draggedTab.getTabId();
