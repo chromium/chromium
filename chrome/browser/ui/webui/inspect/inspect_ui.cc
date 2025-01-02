@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/inspect_ui.h"
+#include "chrome/browser/ui/webui/inspect/inspect_ui.h"
 
 #include <memory>
 #include <utility>
@@ -24,7 +24,8 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/inspect_resources.h"
+#include "chrome/grit/inspect_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/switches.h"
@@ -115,9 +116,8 @@ base::Value::List GetUiDevToolsTargets() {
 void CreateAndAddInspectUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIInspectHost);
-  source->AddResourcePath("inspect.css", IDR_INSPECT_CSS);
-  source->AddResourcePath("inspect.js", IDR_INSPECT_JS);
-  source->SetDefaultResource(IDR_INSPECT_HTML);
+  source->AddResourcePaths(kInspectResources);
+  source->SetDefaultResource(IDR_INSPECT_INSPECT_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");

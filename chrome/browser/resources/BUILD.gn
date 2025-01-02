@@ -37,6 +37,7 @@ group("resources") {
       "gaia_auth_host:resources",
       "history:resources",
       "identity_internals:resources",
+      "inspect:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
       "lens/shared:resources",
