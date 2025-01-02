@@ -134,8 +134,6 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
     // Always put the backdrop view under other children.
     backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
     backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    backdrop_view_->SetBackground(
-        views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
 
     ui::Layer* layer = backdrop_view_->layer();
 
@@ -185,6 +183,15 @@ void WindowMiniView::ResetRoundedCorners() {
   preview_view_rounded_corners_.reset();
   exposed_rounded_corners_.reset();
   OnRoundedCornersSet();
+}
+
+void WindowMiniView::OnThemeChanged() {
+  View::OnThemeChanged();
+
+  if (backdrop_view_) {
+    backdrop_view_->layer()->SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysScrim));
+  }
 }
 
 bool WindowMiniView::Contains(aura::Window* window) const {
