@@ -192,6 +192,38 @@ public class PrivacySandboxSurveyController {
         showSurvey(surveyType);
     }
 
+    // Schedules the launch of an Ads CCT control survey.
+    // Clients expected to see a control survey will not see any Ads CCT dialogs.
+    public void scheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
+        if (!shouldLaunchAdsCctSurvey(appId)) {
+            return;
+        }
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> maybeLaunchAdsCctControlSurvey(promptType),
+                /*20 seconds*/ 20000);
+    }
+
+    // Determines the appropriate survey to launch based on the prompt type.
+    private void maybeLaunchAdsCctControlSurvey(@PromptType int promptType) {
+        switch (promptType) {
+            case PromptType.M1_CONSENT:
+                // Case where we expected the client to see the EEA consent.
+                showSurvey(PrivacySandboxSurveyType.CCT_EEA_CONTROL);
+                break;
+            case PromptType.M1_NOTICE_ROW:
+                // Case where we expected the client to see the ROW notice.
+                showSurvey(PrivacySandboxSurveyType.CCT_ROW_CONTROL);
+                break;
+            case PromptType.NONE:
+            case PromptType.M1_NOTICE_EEA:
+            case PromptType.M1_NOTICE_RESTRICTED:
+                // TODO(crbug.com/379930582): Emit a histogram detailing that we expected to surface
+                // a survey but we did not encounter a expected case
+                return;
+        }
+    }
+
     private SurveyClient constructSurveyClient(PrivacySandboxSurveyType survey) {
         SurveyConfig surveyConfig = SurveyConfig.get(mProfile, sSurveyTriggers.get(survey));
         if (surveyConfig == null) {
