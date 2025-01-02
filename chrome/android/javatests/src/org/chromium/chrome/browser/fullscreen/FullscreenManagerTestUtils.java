@@ -106,6 +106,22 @@ public class FullscreenManagerTestUtils {
      */
     public static void waitForBrowserControlsToBeMoveable(
             ChromeActivityTestRule testRule, final Tab tab) {
+        waitForBrowserControlsToBeMoveable(testRule, tab, /* showControls= */ true);
+    }
+
+    /**
+     * Waits for the browser controls to be moveable by user gesture.
+     *
+     * <p>This function requires the browser controls to start fully visible. Then it ensures that
+     * at some point the controls can be moved by user gesture. If @param showControls is true, it
+     * will restore the controls to show fully.
+     *
+     * @param testRule The test rule for the currently running test.
+     * @param tab The current activity tab.
+     * @param showControls Whether to keep the controls shown at the end.
+     */
+    public static void waitForBrowserControlsToBeMoveable(
+            ChromeActivityTestRule testRule, final Tab tab, boolean showControls) {
         waitForBrowserControlsPosition(testRule, 0);
 
         final CallbackHelper contentMovedCallback = new CallbackHelper();
@@ -148,9 +164,11 @@ public class FullscreenManagerTestUtils {
                     testRule.getActivity(), dragX, dragX, dragStartY, dragEndY, 100, downTime);
 
             try {
-                contentMovedCallback.waitForCallback(0, 1, 500, TimeUnit.MILLISECONDS);
+                contentMovedCallback.waitForCallback(0, 1, 1, TimeUnit.SECONDS);
                 scrollBrowserControls(testRule, false);
-                scrollBrowserControls(testRule, true);
+                if (showControls) {
+                    scrollBrowserControls(testRule, true);
+                }
                 return;
             } catch (TimeoutException e) {
                 // Ignore and retry
