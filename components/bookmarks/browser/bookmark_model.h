@@ -500,6 +500,15 @@ class BookmarkModel : public BookmarkUndoProvider,
       BookmarkNode* node,
       NodeTypeForUuidLookup type_for_uuid_lookup);
 
+  // Updates the UUID index to ensure that `node`, whose former type was
+  // `old_type_for_uuid_lookup`, is instead indexed under type
+  // `new_type_for_uuid_lookup`. This is exercised when a node is moved across
+  // type boundaries, which requires updating the UUID index.
+  void UpdateUuidIndexUponNodeMoveRecursive(
+      const BookmarkNode* node,
+      NodeTypeForUuidLookup old_type_for_uuid_lookup,
+      NodeTypeForUuidLookup new_type_for_uuid_lookup);
+
   // Returns true if the parent and index are valid.
   bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
 

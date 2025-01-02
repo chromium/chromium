@@ -458,16 +458,8 @@ void BookmarkModel::Move(const BookmarkNode* node,
       DetermineTypeForUuidLookupForExistingNode(new_parent);
 
   if (old_type_for_uuid_lookup != new_type_for_uuid_lookup) {
-    uuid_index_[old_type_for_uuid_lookup].erase(node);
-
-    bool success = uuid_index_[new_type_for_uuid_lookup].insert(node).second;
-
-    if (!success) {
-      // It is possible that the UUID exists in the new index. In this case, to
-      // avoid the collision, it is necessary to assign a new UUID.
-      AsMutable(node)->SetNewRandomUuid();
-      CHECK(uuid_index_[new_type_for_uuid_lookup].insert(node).second);
-    }
+    UpdateUuidIndexUponNodeMoveRecursive(node, old_type_for_uuid_lookup,
+                                         new_type_for_uuid_lookup);
   }
 
   BookmarkNode* mutable_old_parent = AsMutable(old_parent);
@@ -1319,6 +1311,31 @@ void BookmarkModel::RemoveNodeFromIndicesRecursive(
   for (size_t i = node->children().size(); i > 0; --i) {
     RemoveNodeFromIndicesRecursive(node->children()[i - 1].get(),
                                    type_for_uuid_lookup);
+  }
+}
+
+void BookmarkModel::UpdateUuidIndexUponNodeMoveRecursive(
+    const BookmarkNode* node,
+    NodeTypeForUuidLookup old_type_for_uuid_lookup,
+    NodeTypeForUuidLookup new_type_for_uuid_lookup) {
+  CHECK(node);
+  CHECK_NE(old_type_for_uuid_lookup, new_type_for_uuid_lookup);
+
+  uuid_index_[old_type_for_uuid_lookup].erase(node);
+
+  bool success = uuid_index_[new_type_for_uuid_lookup].insert(node).second;
+
+  if (!success) {
+    // It is possible that the UUID exists in the new index. In this case, to
+    // avoid the collision, it is necessary to assign a new UUID.
+    AsMutable(node)->SetNewRandomUuid();
+    CHECK(uuid_index_[new_type_for_uuid_lookup].insert(node).second);
+  }
+
+  // Recursively do the same for all descendants.
+  for (const auto& child : node->children()) {
+    UpdateUuidIndexUponNodeMoveRecursive(child.get(), old_type_for_uuid_lookup,
+                                         new_type_for_uuid_lookup);
   }
 }
 
