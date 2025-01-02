@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
@@ -32,6 +33,20 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         default void onPopupMenuDismissed() {}
     }
 
+    @FunctionalInterface
+    interface PopupMenuHelper {
+        /**
+         * Called when the popup menu is requested to be shown or dismissed, then inject a test
+         * value.
+         *
+         * @param menu The popup menu owned by the ListMenuHost.
+         * @return The menu to be owned during test.
+         */
+        AnchoredPopupWindow injectPopupMenu(@Nullable AnchoredPopupWindow menu);
+    }
+
+    private static ListMenuHost.PopupMenuHelper sPopupMenuHelperForTesting;
+
     private final View mView;
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
@@ -44,7 +59,8 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     private @Nullable ListMenuDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
-    private boolean mPositionedAtEnd;
+    private final boolean mPositionedAtStart;
+    private final boolean mPositionedAtEnd;
 
     /**
      * Creates a new {@link ListMenuHost}.
@@ -64,7 +80,11 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuVerticalOverlapAnchor, true);
-        mPositionedAtEnd = a.getBoolean(R.styleable.ListMenuButton_menuPositionedAtEnd, true);
+        mPositionedAtStart = a.getBoolean(R.styleable.ListMenuButton_menuPositionedAtStart, false);
+        mPositionedAtEnd = a.getBoolean(R.styleable.ListMenuButton_menuPositionedAtEnd, false);
+
+        assert !(mPositionedAtStart && mPositionedAtEnd)
+                : "menuPositionedAtStart and menuPositionedAtEnd are both true.";
 
         a.recycle();
     }
@@ -89,6 +109,11 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
     public void dismiss() {
         if (mPopupMenu != null) {
             mPopupMenu.dismiss();
+            mPopupMenu = null;
+
+            if (sPopupMenuHelperForTesting != null) {
+                mPopupMenu = sPopupMenuHelperForTesting.injectPopupMenu(null);
+            }
         }
     }
 
@@ -131,6 +156,11 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
                         new ColorDrawable(Color.TRANSPARENT),
                         contentView,
                         mDelegate.getRectProvider(mView));
+
+        if (sPopupMenuHelperForTesting != null) {
+            mPopupMenu = sPopupMenuHelperForTesting.injectPopupMenu(mPopupMenu);
+        }
+
         mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
         mPopupMenu.setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor);
         mPopupMenu.setMaxWidth(mMenuMaxWidth);
@@ -140,7 +170,10 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
             mPopupMenu.setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding);
         }
         mPopupMenu.setFocusable(true);
-        mPopupMenu.setLayoutObserver(this);
+        mPopupMenu.setAnimateFromAnchor(true);
+        if (mPositionedAtStart || mPositionedAtEnd) {
+            mPopupMenu.setLayoutObserver(this);
+        }
         mPopupMenu.addOnDismissListener(
                 () -> {
                     mPopupMenu = null;
@@ -176,8 +209,7 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
         if (mPositionedAtEnd) {
             mPopupMenu.setAnimationStyle(
                     positionBelow ? R.style.EndIconMenuAnim : R.style.EndIconMenuAnimBottom);
-
-        } else {
+        } else if (mPositionedAtStart) {
             mPopupMenu.setAnimationStyle(
                     positionBelow ? R.style.StartIconMenuAnim : R.style.StartIconMenuAnimBottom);
         }
@@ -210,5 +242,10 @@ public class ListMenuHost implements AnchoredPopupWindow.LayoutObserver {
                 l.onPopupMenuDismissed();
             }
         }
+    }
+
+    static void setMenuChangedListenerForTesting(PopupMenuHelper listener) {
+        sPopupMenuHelperForTesting = listener;
+        ResettersForTesting.register(() -> sPopupMenuHelperForTesting = null);
     }
 }

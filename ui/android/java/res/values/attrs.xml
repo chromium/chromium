@@ -59,9 +59,11 @@ found in the LICENSE file.
         <attr name="menuMaxWidth" format="reference|dimension" />
         <attr name="menuVerticalOverlapAnchor" format="boolean" />
         <attr name="menuHorizontalOverlapAnchor" format="boolean" />
-        <!-- Used to specify if a menu button is positioned at the start or at
-        the end of a layout so the correct menu popup anim file can be applied.
-        The default is set to true -->
+        <!-- Used to specify if a menu button is positioned at the start or at the end of a layout
+             so the correct menu popup anim file can be applied. If none is set, the menu will be
+             positioned based on the space available around the anchor; if one of menuPositionedAt*
+             is set, menu will be forced to position as setting. Cannot be set to True together. -->
+        <attr name="menuPositionedAtStart" format="boolean" />
         <attr name="menuPositionedAtEnd" format="boolean" />
     </declare-styleable>
 </resources>
