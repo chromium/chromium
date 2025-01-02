@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.AvatarProvider;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
@@ -129,6 +130,7 @@ public class RecentActivityListMediatorUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/382626225")
     public void testTwoItemsTitleAndDescription() {
         // Expected title: "You changed a tab".
         ActivityLogItem logItem1 = createLog1(CollaborationEvent.TAB_UPDATED);
@@ -279,6 +281,7 @@ public class RecentActivityListMediatorUnitTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/382626225")
     public void testGetTitleResStringForAllEventTypes() {
         // Create one item for each type of collaboration event and add to the backend.
         int[] events = {

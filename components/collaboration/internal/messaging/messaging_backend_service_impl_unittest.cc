@@ -596,11 +596,11 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogCollaborationEvents) {
   // Use name from DB and no email. This is not intended to happen, because we
   // should always have the member data, but this tests that we still work
   // without it.
-  EXPECT_EQ("gaia_1 name", activity_log[0].user_display_name);
-  EXPECT_EQ(u"", activity_log[0].description);
+  EXPECT_EQ(u"gaia_1 name joined the group", activity_log[0].title_text);
+  EXPECT_EQ(u"", activity_log[0].description_text);
   // Use name and email from DataSharingService.
-  EXPECT_EQ("Given Name 2", activity_log[1].user_display_name);
-  EXPECT_EQ(u"gaia2@gmail.com", activity_log[1].description);
+  EXPECT_EQ(u"Given Name 2 left the group", activity_log[1].title_text);
+  EXPECT_EQ(u"gaia2@gmail.com", activity_log[1].description_text);
   // We should also fill in the MessageAttribution.
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[1].activity_metadata.affected_user->email);
@@ -718,7 +718,7 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
   ASSERT_EQ(2u, activity_log.size());
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_NAME_UPDATED,
             activity_log[0].collaboration_event);
-  EXPECT_EQ(tab_group.title(), activity_log[0].description);
+  EXPECT_EQ(tab_group.title(), activity_log[0].description_text);
   EXPECT_EQ(CollaborationEvent::TAB_GROUP_COLOR_UPDATED,
             activity_log[1].collaboration_event);
 }
@@ -1026,8 +1026,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
   EXPECT_EQ(CollaborationEvent::TAB_ADDED, activity_log[0].collaboration_event);
   EXPECT_EQ(tab1->url().spec(),
             *activity_log[0].activity_metadata.tab_metadata->last_known_url);
-  EXPECT_EQ(u"example.com", activity_log[0].description);
-  EXPECT_EQ("Given Name 1", activity_log[0].user_display_name);
+  EXPECT_EQ(u"example.com", activity_log[0].description_text);
+  EXPECT_EQ(u"Given Name 1 added a tab", activity_log[0].title_text);
   EXPECT_EQ("gaia1@gmail.com",
             activity_log[0].activity_metadata.triggering_user->email);
 
@@ -1036,8 +1036,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
             activity_log[1].collaboration_event);
   EXPECT_EQ(tab2->url().spec(),
             *activity_log[1].activity_metadata.tab_metadata->last_known_url);
-  EXPECT_EQ(u"example2.com", activity_log[1].description);
-  EXPECT_EQ("Given Name 2", activity_log[1].user_display_name);
+  EXPECT_EQ(u"example2.com", activity_log[1].description_text);
+  EXPECT_EQ(u"Given Name 2 changed a tab", activity_log[1].title_text);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[1].activity_metadata.triggering_user->email);
 
@@ -1046,8 +1046,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
             activity_log[2].collaboration_event);
   EXPECT_EQ(tab3.url().spec(),
             *activity_log[2].activity_metadata.tab_metadata->last_known_url);
-  EXPECT_EQ(u"example3.com", activity_log[2].description);
-  EXPECT_EQ("Given Name 2", activity_log[2].user_display_name);
+  EXPECT_EQ(u"example3.com", activity_log[2].description_text);
+  EXPECT_EQ(u"Given Name 2 removed a tab", activity_log[2].title_text);
   EXPECT_EQ("gaia2@gmail.com",
             activity_log[2].activity_metadata.triggering_user->email);
 }

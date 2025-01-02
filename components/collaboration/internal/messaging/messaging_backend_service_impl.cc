@@ -24,7 +24,9 @@
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace collaboration::messaging {
 namespace {
@@ -860,6 +862,33 @@ MessagingBackendServiceImpl::GetDisplayNameForUserInGroup(
   return std::nullopt;
 }
 
+int GetTitleStringRes(CollaborationEvent collaboration_event) {
+  switch (collaboration_event) {
+    case CollaborationEvent::TAB_ADDED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_ADDED;
+    case CollaborationEvent::TAB_REMOVED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_REMOVED;
+    case CollaborationEvent::TAB_UPDATED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_UPDATED;
+    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_NAME_UPDATED;
+    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_TAB_GROUP_COLOR_UPDATED;
+    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_USER_JOINED_GROUP;
+    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
+      return IDS_DATA_SHARING_RECENT_ACTIVITY_USER_LEFT_GROUP;
+    case CollaborationEvent::TAB_GROUP_ADDED:
+    case CollaborationEvent::TAB_GROUP_REMOVED:
+    case CollaborationEvent::COLLABORATION_ADDED:
+    case CollaborationEvent::COLLABORATION_REMOVED:
+    case CollaborationEvent::UNDEFINED:
+      CHECK(false) << "No string res for collaboration event "
+                   << static_cast<size_t>(collaboration_event);
+  }
+  return 0;
+}
+
 std::optional<ActivityLogItem>
 MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     const collaboration_pb::Message& message) {
@@ -884,16 +913,17 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
         GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
                                      std::nullopt, message);
     if (user_name_for_display) {
-      item.user_display_name = *user_name_for_display;
+      item.title_text = l10n_util::GetStringFUTF16(
+          GetTitleStringRes(item.collaboration_event),
+          base::UTF8ToUTF16(*user_name_for_display));
     }
   }
 
   // TODO(crbug.com/380517719): Compare GaiaId with current user in this
   // profile.
-  item.user_is_self = false;
 
   // By default, we use an empty description. This is special cased below.
-  item.description = u"";
+  item.description_text = u"";
   item.time_delta =
       base::Time::Now() - base::Time::FromTimeT(message.event_timestamp());
   item.action =
@@ -920,7 +950,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       GURL url = GURL(*item.activity_metadata.tab_metadata->last_known_url);
       item.activity_metadata.triggering_user = group_member;
 
-      item.description =
+      item.description_text =
           url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
               url);
 
@@ -935,7 +965,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
       // Only tab group name changes have specialized description.
       if (message.event_type() == collaboration_pb::TAB_GROUP_NAME_UPDATED) {
         if (item.activity_metadata.tab_group_metadata->last_known_title) {
-          item.description = base::UTF8ToUTF16(
+          item.description_text = base::UTF8ToUTF16(
               *item.activity_metadata.tab_group_metadata->last_known_title);
         }
       }
@@ -945,7 +975,7 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
     case MessageCategory::kCollaboration:
       item.activity_metadata.affected_user = group_member;
       if (group_member) {
-        item.description = base::UTF8ToUTF16(group_member->email);
+        item.description_text = base::UTF8ToUTF16(group_member->email);
       }
       break;
     default:
