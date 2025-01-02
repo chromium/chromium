@@ -1646,7 +1646,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // Only add the keyword if the match does not have a duplicate keyword
       // with a more relevant match.
       if (!keywords.count(keyword) ||
-          (kIsDesktop && match.type == AutocompleteMatchType::STARTER_PACK)) {
+          (kIsDesktop && AutocompleteMatch::IsFeaturedSearchType(match.type))) {
         keywords.insert(keyword);
         match.associated_keyword = std::make_unique<AutocompleteMatch>(
             keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
