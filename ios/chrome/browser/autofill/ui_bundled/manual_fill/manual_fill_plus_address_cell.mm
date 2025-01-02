@@ -54,19 +54,25 @@ CGFloat GetFaviconSize() {
 
 @end
 
-@implementation ManualFillPlusAddressItem
+@implementation ManualFillPlusAddressItem {
+  // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
+  // was triggered for passwords.
+  BOOL _isAddressManualFallbackUI;
+}
 
 - (instancetype)initWithPlusAddress:(ManualFillPlusAddress*)plusAddress
                     contentInjector:
                         (id<ManualFillContentInjector>)contentInjector
                         menuActions:(NSArray<UIAction*>*)menuActions
-        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
     _manualFillPlusAddress = plusAddress;
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _isAddressManualFallbackUI = isAddressManualFallbackUI;
     self.cellClass = [ManualFillPlusAddressCell class];
   }
   return self;
@@ -78,7 +84,8 @@ CGFloat GetFaviconSize() {
   [cell setUpWithPlusAddress:self.manualFillPlusAddress
                   contentInjector:self.contentInjector
                       menuActions:self.menuActions
-      cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel];
+      cellIndexAccessibilityLabel:_cellIndexAccessibilityLabel
+        isAddressManualFallbackUI:_isAddressManualFallbackUI];
 }
 
 - (const GURL&)faviconURL {
@@ -137,7 +144,11 @@ CGFloat GetFaviconSize() {
 
 @end
 
-@implementation ManualFillPlusAddressCell
+@implementation ManualFillPlusAddressCell {
+  // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
+  // was triggered for passwords.
+  BOOL _isAddressManualFallbackUI;
+}
 
 #pragma mark - Public
 
@@ -160,17 +171,20 @@ CGFloat GetFaviconSize() {
   self.plusAddress = nil;
 
   self.grayLine.hidden = NO;
+  _isAddressManualFallbackUI = NO;
 }
 
 - (void)setUpWithPlusAddress:(ManualFillPlusAddress*)plusAddress
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel {
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+      isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI {
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
   self.contentInjector = contentInjector;
   self.plusAddress = plusAddress;
+  _isAddressManualFallbackUI = isAddressManualFallbackUI;
 
   // Holds the views whose leading anchor is constrained relative to the cell's
   // leading anchor.
@@ -295,8 +309,16 @@ CGFloat GetFaviconSize() {
 }
 
 - (void)userDidTapPlusAddressButton:(UIButton*)button {
-  base::RecordAction(
-      base::UserMetricsAction("ManualFallback_PlusAddress_SelectPlusAddress"));
+  if (_isAddressManualFallbackUI) {
+    base::RecordAction(base::UserMetricsAction(
+        "PlusAddresses."
+        "StandaloneFillSuggestionOnAddressManualFallbackAccepted"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "PlusAddresses."
+        "StandaloneFillSuggestionOnPasswordManualFallbackAccepted"));
+  }
+
   [self.contentInjector userDidPickContent:self.plusAddress.plusAddress
                              passwordField:NO
                              requiresHTTPS:NO];

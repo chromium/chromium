@@ -224,7 +224,8 @@
                 initWithPlusAddress:plusAddresses[i]
                     contentInjector:self
                         menuActions:menuActions
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:_isAddressManualFallbackUI];
     [items addObject:item];
   }
 

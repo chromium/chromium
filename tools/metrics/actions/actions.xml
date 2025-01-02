@@ -20413,15 +20413,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ManualFallback_PlusAddress_SelectPlusAddress">
-  <owner>vidhanj@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <description>
-    The user tapped on the plus address in the Address/Password manual fill
-    view.
-  </description>
-</action>
-
 <action name="ManualFallback_Profiles_Address1">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
