@@ -446,9 +446,7 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
-    public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingDisabled()
-            throws TimeoutException {
+    public void testCreditCardArtUrlIsFormattedWithImageSpecs() throws TimeoutException {
         GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
         GURL cardArtUrl = new GURL("http://google.com/test");
         int widthPixels = 32;
@@ -470,42 +468,6 @@ public class PersonalDataManagerTest {
                                 cardArtUrl, widthPixels, heightPixels))
                 .isEqualTo(
                         new GURL(cardArtUrl.getSpec() + "=w" + widthPixels + "-h" + heightPixels));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)
-    public void testCreditCardArtUrlIsFormattedWithImageSpecs_serverSideStretchingEnabled()
-            throws TimeoutException {
-        GURL capitalOneIconUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
-        GURL cardArtUrl = new GURL("http://google.com/test");
-        int widthPixels = 32;
-        int heightPixels = 20;
-
-        // The URL should be updated as `cardArtUrl=w{width}-h{height}-s`.
-        assertThat(
-                        AutofillUiUtils.getCreditCardIconUrlWithParams(
-                                capitalOneIconUrl, widthPixels, heightPixels))
-                .isEqualTo(
-                        new GURL(
-                                capitalOneIconUrl.getSpec()
-                                        + "=w"
-                                        + widthPixels
-                                        + "-h"
-                                        + heightPixels
-                                        + "-s"));
-        assertThat(
-                        AutofillUiUtils.getCreditCardIconUrlWithParams(
-                                cardArtUrl, widthPixels, heightPixels))
-                .isEqualTo(
-                        new GURL(
-                                cardArtUrl.getSpec()
-                                        + "=w"
-                                        + widthPixels
-                                        + "-h"
-                                        + heightPixels
-                                        + "-s"));
     }
 
     @Test

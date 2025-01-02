@@ -344,9 +344,6 @@ extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 
-extern const char kAutofillEnableCardArtServerSideStretchingName[];
-extern const char kAutofillEnableCardArtServerSideStretchingDescription[];
-
 extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
 extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
 

@@ -569,11 +569,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "autofill-enable-card-art-server-side-stretching",
-    "owners": ["vishwasuppoor@google.com", "alexandertekle@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "autofill-enable-card-benefits-for-american-express",
     "owners": [ "alexandertekle@google.com"],
     "expiry_milestone": 135

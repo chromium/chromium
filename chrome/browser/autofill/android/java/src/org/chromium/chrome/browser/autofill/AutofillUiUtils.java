@@ -589,11 +589,6 @@ public class AutofillUiUtils {
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
         url.append("=w").append(width).append("-h").append(height);
 
-        // If SCS supports stretching, add it as a param to fetch images of exact dimensions.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_SERVER_SIDE_STRETCHING)) {
-            url.append("-s");
-        }
         return new GURL(url.toString());
     }
 
@@ -669,20 +664,17 @@ public class AutofillUiUtils {
 
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
+     *
      * @param bitmap to be updated.
      * @param cardIconSpecs {@link CardIconSpecs} instance containing the specs for the card icon.
      * @param addRoundedCornersAndGreyBorder If true, the bitmap corners are rounded, and a grey
-     *         border is added. If false, no enhancements are applied to the bitmap.
+     *     border is added. If false, no enhancements are applied to the bitmap.
      * @return Resized {@link Bitmap} with rounded corners and grey border.
      */
     public static Bitmap resizeAndAddRoundedCornersAndGreyBorder(
             Bitmap bitmap, CardIconSpecs cardIconSpecs, boolean addRoundedCornersAndGreyBorder) {
-        // Until AutofillEnableCardArtServerSideStretching is rolled out, the server maintains the
-        // card art image's aspect ratio, so the fetched image might not be the exact required size.
-        // Scale the icon to the desired dimension.
-        // TODO(crbug.com/40274131): Remove scaling when AutofillEnableCardArtServerSideStretching
-        // is
-        // rolled out.
+        // The server maintains the card art image's aspect ratio, so the fetched image might not be
+        // the exact required size. Scale the icon to the desired dimension.
         if (bitmap.getWidth() != cardIconSpecs.getWidth()
                 || bitmap.getHeight() != cardIconSpecs.getHeight()) {
             bitmap =

@@ -9815,13 +9815,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableNewCardArtAndNetworkImages)},
 
-    {"autofill-enable-card-art-server-side-stretching",
-     flag_descriptions::kAutofillEnableCardArtServerSideStretchingName,
-     flag_descriptions::kAutofillEnableCardArtServerSideStretchingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableCardArtServerSideStretching)},
-
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
      flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
      FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},

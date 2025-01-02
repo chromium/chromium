@@ -43,12 +43,6 @@ BASE_FEATURE(kAutofillEnableCardArtImage,
              "AutofillEnableCardArtImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, server will return card art images of the exact required
-// dimension.
-BASE_FEATURE(kAutofillEnableCardArtServerSideStretching,
-             "AutofillEnableCardArtServerSideStretching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, card benefits offered by American Express will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress,
