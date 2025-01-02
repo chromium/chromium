@@ -102,9 +102,9 @@ ActivityLogType ConvertCollaborationEvent(
   for (auto& log : _messagingService->GetActivityLog(params)) {
     RecentActivityLogItem* item = [[RecentActivityLogItem alloc] init];
     item.type = ConvertCollaborationEvent(log.collaboration_event);
-    item.title = base::SysUTF8ToNSString(log.title_text);
-    item.actionDescription = base::SysUTF8ToNSString(log.description_text);
-    item.timestamp = base::SysUTF8ToNSString(log.timestamp_text);
+    item.title = base::SysUTF16ToNSString(log.title_text);
+    item.actionDescription = base::SysUTF16ToNSString(log.description_text);
+    item.timestamp = base::SysUTF16ToNSString(log.time_delta_text);
 
     // Get a favicon from the URL and set it to `item`.
     if (log.activity_metadata.tab_metadata.has_value()) {

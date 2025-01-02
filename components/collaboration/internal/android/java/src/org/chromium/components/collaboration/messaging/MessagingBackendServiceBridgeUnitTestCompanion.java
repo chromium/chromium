@@ -19,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -183,20 +182,17 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         Assert.assertEquals(2, logItems.size());
 
         Assert.assertEquals(CollaborationEvent.TAB_UPDATED, logItems.get(0).collaborationEvent);
-        Assert.assertEquals("User 1", logItems.get(0).userDisplayName);
-        Assert.assertTrue(logItems.get(0).userIsSelf);
-        Assert.assertEquals("https://google.com", logItems.get(0).description);
-        Assert.assertEquals(
-                TimeUtils.MILLISECONDS_PER_MINUTE * 60 * 2, logItems.get(0).timeDeltaMs);
+        Assert.assertEquals("User 1", logItems.get(0).titleText);
+        Assert.assertEquals("https://google.com", logItems.get(0).descriptionText);
+        Assert.assertEquals("2 hours ago", logItems.get(0).timeDeltaText);
         Assert.assertTrue(logItems.get(0).showFavicon);
         Assert.assertEquals(RecentActivityAction.REOPEN_TAB, logItems.get(0).action);
 
         Assert.assertEquals(
                 CollaborationEvent.COLLABORATION_MEMBER_ADDED, logItems.get(1).collaborationEvent);
-        Assert.assertEquals("User 2", logItems.get(1).userDisplayName);
-        Assert.assertFalse(logItems.get(1).userIsSelf);
-        Assert.assertEquals("foo@gmail.com", logItems.get(1).description);
-        Assert.assertEquals(TimeUtils.MILLISECONDS_PER_DAY * 3, logItems.get(1).timeDeltaMs);
+        Assert.assertEquals("User 2", logItems.get(1).titleText);
+        Assert.assertEquals("foo@gmail.com", logItems.get(1).descriptionText);
+        Assert.assertEquals("3 days ago", logItems.get(1).timeDeltaText);
         Assert.assertFalse(logItems.get(1).showFavicon);
         Assert.assertEquals(RecentActivityAction.MANAGE_SHARING, logItems.get(1).action);
 
