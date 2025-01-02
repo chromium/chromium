@@ -12155,6 +12155,24 @@
             ]
         }
     ],
+    "IOSUpdateFirstRunSequence": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDBPromoFirstAndSignInRemoved",
+                    "params": {
+                        "updated-first-run-sequence-param": "3"
+                    },
+                    "enable_features": [
+                        "UpdatedFirstRunSequence"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [

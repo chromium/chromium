@@ -73,6 +73,7 @@ source_set("flags") {
     "//ios/chrome/browser/download/ui_bundled:features",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/find_in_page/model:util",
+    "//ios/chrome/browser/first_run/ui_bundled:features",
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/follow/model:feature_flags",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",

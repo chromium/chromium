@@ -1106,6 +1106,10 @@ extern const char kTabResumptionImagesDescription[];
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];
 extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
+// Title and description for the flag to update the sequence of the FRE screens.
+extern const char kUpdatedFRESequenceName[];
+extern const char kUpdatedFRESequenceDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

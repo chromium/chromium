@@ -8843,6 +8843,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "updated-fre-screens-sequence",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "upload-office-to-cloud",
     "owners": [ "jboulic@chromium.org", "alexbn@chromium.org", "simmonsjosh@google.com" ],
     "expiry_milestone": 133
