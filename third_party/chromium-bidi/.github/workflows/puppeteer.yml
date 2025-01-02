@@ -48,6 +48,9 @@ jobs:
         with:
           node-version-file: './bidi/.nvmrc'
           cache-dependency-path: 'puppeteer/package-lock.json,bidi/package-lock.json'
+      - name: Disable AppArmor
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - uses: google/wireit@83d7f8bed70b7bcfc40f4b9f54f4b7485753991b # setup-github-actions-caching/v2.0.1
       - name: Install Chromium-BiDi dependencies
         working-directory: bidi
