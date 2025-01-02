@@ -34,7 +34,7 @@ bool DisableInfoBars() {
 
 // InfoBarManager::Observer ---------------------------------------------------
 
-InfoBarManager::Observer::~Observer() {}
+InfoBarManager::Observer::~Observer() = default;
 
 void InfoBarManager::Observer::OnInfoBarAdded(InfoBar* infobar) {}
 

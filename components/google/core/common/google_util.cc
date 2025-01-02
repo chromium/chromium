@@ -319,9 +319,8 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".ytimg.com",
   };
   const std::string host = url.host();
-  for (size_t i = 0; i < std::size(kSuffixesToSetHeadersFor); ++i) {
-    if (base::EndsWith(host, kSuffixesToSetHeadersFor[i],
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+  for (auto* i : kSuffixesToSetHeadersFor) {
+    if (base::EndsWith(host, i, base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
     }
   }
@@ -330,8 +329,8 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
   static const char* kHostsToSetHeadersFor[] = {
       "googleweblight.com",
   };
-  for (size_t i = 0; i < std::size(kHostsToSetHeadersFor); ++i) {
-    if (base::EqualsCaseInsensitiveASCII(host, kHostsToSetHeadersFor[i])) {
+  for (auto* i : kHostsToSetHeadersFor) {
+    if (base::EqualsCaseInsensitiveASCII(host, i)) {
       return true;
     }
   }

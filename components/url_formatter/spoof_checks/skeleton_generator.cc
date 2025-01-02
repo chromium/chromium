@@ -316,7 +316,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
   // Thus, the number of skeleton strings in the queue item will always
   // correspond to the index of the input string processed so far.
   std::queue<QueueItem> q;
-  q.push(QueueItem());
+  q.emplace();
 
   while (!q.empty()) {
     QueueItem current = q.front();
@@ -335,7 +335,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
     // First, add the original character from input.
     char16_t c = input_buffer[current.size()];
     QueueItem new_item1 = current;
-    new_item1.push_back(std::u16string(1, c));
+    new_item1.emplace_back(1, c);
     q.push(new_item1);
 
     // Then, find all alternative characters for the current input character and

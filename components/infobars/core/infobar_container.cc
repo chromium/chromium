@@ -17,7 +17,7 @@
 
 namespace infobars {
 
-InfoBarContainer::Delegate::~Delegate() {}
+InfoBarContainer::Delegate::~Delegate() = default;
 
 InfoBarContainer::InfoBarContainer(Delegate* delegate)
     : delegate_(delegate),

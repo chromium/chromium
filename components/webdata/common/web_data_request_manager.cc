@@ -115,8 +115,8 @@ void WebDataRequestManager::RequestCompleted(
 
 WebDataRequestManager::~WebDataRequestManager() {
   base::AutoLock l(pending_lock_);
-  for (auto i = pending_requests_.begin(); i != pending_requests_.end(); ++i) {
-    i->second->MarkAsInactive();
+  for (auto& pending_request : pending_requests_) {
+    pending_request.second->MarkAsInactive();
   }
   pending_requests_.clear();
 }

@@ -122,20 +122,16 @@ class HostComponentTransform : public AppendComponentTransform {
     if (component_text.length() ==
         stripped_component_text.length() + kMobilePrefixLength + kWwwLength) {
       // Add www. and m. offsets.
-      offset_adjustments.push_back(
-          base::OffsetAdjuster::Adjustment(0, kWwwLength, 0));
-      offset_adjustments.push_back(
-          base::OffsetAdjuster::Adjustment(0, kMobilePrefixLength, 0));
+      offset_adjustments.emplace_back(0, kWwwLength, 0);
+      offset_adjustments.emplace_back(0, kMobilePrefixLength, 0);
     } else if (component_text.length() ==
                stripped_component_text.length() + kWwwLength) {
       // Add www. offset.
-      offset_adjustments.push_back(
-          base::OffsetAdjuster::Adjustment(0, kWwwLength, 0));
+      offset_adjustments.emplace_back(0, kWwwLength, 0);
     } else if (component_text.length() ==
                stripped_component_text.length() + kMobilePrefixLength) {
       // Add m. offset
-      offset_adjustments.push_back(
-          base::OffsetAdjuster::Adjustment(0, kMobilePrefixLength, 0));
+      offset_adjustments.emplace_back(0, kMobilePrefixLength, 0);
     }
     std::u16string unicode_result =
         IDNToUnicodeWithAdjustments(stripped_component_text, adjustments)
@@ -358,8 +354,8 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     size_t new_component_length = out16.length() - new_component_start;
 
     if (component_result.converted && adjustments) {
-      adjustments->push_back(base::OffsetAdjuster::Adjustment(
-          component_start, component_length, new_component_length));
+      adjustments->emplace_back(component_start, component_length,
+                                new_component_length);
     }
 
     // Need to add the dot we just found (if we found one).
@@ -646,18 +642,18 @@ std::u16string FormatUrlWithAdjustments(
       if (parsed.username.is_nonempty() && parsed.password.is_nonempty()) {
         // The seeming off-by-two is to account for the ':' after the username
         // and '@' after the password.
-        adjustments->push_back(base::OffsetAdjuster::Adjustment(
+        adjustments->emplace_back(
             static_cast<size_t>(parsed.username.begin),
             static_cast<size_t>(parsed.username.len + parsed.password.len + 2),
-            0));
+            0);
       } else {
         const url::Component* nonempty_component =
             parsed.username.is_nonempty() ? &parsed.username : &parsed.password;
         // The seeming off-by-one is to account for the '@' after the
         // username/password.
-        adjustments->push_back(base::OffsetAdjuster::Adjustment(
+        adjustments->emplace_back(
             static_cast<size_t>(nonempty_component->begin),
-            static_cast<size_t>(nonempty_component->len + 1), 0));
+            static_cast<size_t>(nonempty_component->len + 1), 0);
       }
     }
   } else {
@@ -712,15 +708,13 @@ std::u16string FormatUrlWithAdjustments(
       trimmed_length += parsed.ref.len + 1;
     }
 
-    adjustments->push_back(
-        base::OffsetAdjuster::Adjustment(parsed.path.begin, trimmed_length, 0));
+    adjustments->emplace_back(parsed.path.begin, trimmed_length, 0);
 
   } else if ((format_types & kFormatUrlOmitTrailingSlashOnBareHostname) &&
              CanStripTrailingSlash(url)) {
     // Omit the path, which is a single trailing slash. There's no query or ref.
     if (parsed.path.is_nonempty()) {
-      adjustments->push_back(base::OffsetAdjuster::Adjustment(
-          parsed.path.begin, parsed.path.len, 0));
+      adjustments->emplace_back(parsed.path.begin, parsed.path.len, 0);
     }
   } else {
     // Append the formatted path, query, and ref.

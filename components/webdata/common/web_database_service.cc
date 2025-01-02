@@ -39,7 +39,8 @@ BASE_FEATURE(kUseNewEncryptionKeyForWebData,
 class WebDatabaseService::BackendDelegate
     : public WebDatabaseBackend::Delegate {
  public:
-  BackendDelegate(const base::WeakPtr<WebDatabaseService>& web_database_service)
+  explicit BackendDelegate(
+      const base::WeakPtr<WebDatabaseService>& web_database_service)
       : web_database_service_(web_database_service),
         callback_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 

@@ -20,7 +20,7 @@ namespace infobars {
 
 const int InfoBarDelegate::kNoIconID = 0;
 
-InfoBarDelegate::~InfoBarDelegate() {}
+InfoBarDelegate::~InfoBarDelegate() = default;
 
 int InfoBarDelegate::GetIconId() const {
   return kNoIconID;

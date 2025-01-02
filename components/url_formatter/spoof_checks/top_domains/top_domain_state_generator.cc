@@ -19,9 +19,7 @@ using net::huffman_trie::HuffmanBuilder;
 using net::huffman_trie::HuffmanRepresentationTable;
 using net::huffman_trie::TrieWriter;
 
-namespace url_formatter {
-
-namespace top_domains {
+namespace url_formatter::top_domains {
 
 namespace {
 
@@ -163,6 +161,4 @@ std::string TopDomainStateGenerator::Generate(
   return output;
 }
 
-}  // namespace top_domains
-
-}  // namespace url_formatter
+}  // namespace url_formatter::top_domains
