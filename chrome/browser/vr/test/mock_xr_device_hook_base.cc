@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 
 #include "content/public/test/xr_test_utils.h"
@@ -227,8 +222,7 @@ device::ControllerFrameData MockXRDeviceHookBase::CreateValidController(
   device::ControllerFrameData ret;
   // Because why shouldn't a 64 button controller exist?
   ret.supported_buttons = UINT64_MAX;
-  memset(ret.axis_data, 0,
-         sizeof(device::ControllerAxisData) * device::kMaxNumAxes);
+  std::ranges::fill(ret.axis_data, device::ControllerAxisData{});
   ret.role = role;
   ret.is_valid = true;
   // Identity matrix.
