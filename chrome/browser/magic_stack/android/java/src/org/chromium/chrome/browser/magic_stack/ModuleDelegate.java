@@ -31,7 +31,7 @@ public interface ModuleDelegate {
         ModuleType.DEPRECATED_EDUCATIONAL_TIP,
         ModuleType.AUXILIARY_SEARCH,
         ModuleType.DEFAULT_BROWSER_PROMO,
-        ModuleType.TAB_GROUPS,
+        ModuleType.TAB_GROUP,
         ModuleType.TAB_GROUP_SYNC,
         ModuleType.QUICK_DELETE,
         ModuleType.NUM_ENTRIES
@@ -45,7 +45,7 @@ public interface ModuleDelegate {
         int DEPRECATED_EDUCATIONAL_TIP = 4;
         int AUXILIARY_SEARCH = 5;
         int DEFAULT_BROWSER_PROMO = 6;
-        int TAB_GROUPS = 7;
+        int TAB_GROUP = 7;
         int TAB_GROUP_SYNC = 8;
         int QUICK_DELETE = 9;
         int NUM_ENTRIES = 10;

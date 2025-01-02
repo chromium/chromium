@@ -10,7 +10,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUPS;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
@@ -91,7 +91,7 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
             case SAFETY_HUB:
                 return resources.getString(R.string.safety_hub_magic_stack_module_name);
             case DEFAULT_BROWSER_PROMO:
-            case TAB_GROUPS:
+            case TAB_GROUP:
             case TAB_GROUP_SYNC:
             case QUICK_DELETE:
                 // All tips use the same name.

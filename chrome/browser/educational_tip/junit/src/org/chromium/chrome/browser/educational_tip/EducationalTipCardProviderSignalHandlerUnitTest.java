@@ -24,9 +24,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -90,10 +90,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
         InputContext inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-                        mActionDelegate,
-                        mProfile,
-                        mTracker);
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(2, inputContext.getSizeForTesting());
 
         // Test signal "should_show_non_role_manager_default_browser_promo".
@@ -101,10 +98,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 .thenReturn(true);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-                        mActionDelegate,
-                        mProfile,
-                        mTracker);
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 1,
                 inputContext.getEntryForTesting(
@@ -116,10 +110,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 .thenReturn(false);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-                        mActionDelegate,
-                        mProfile,
-                        mTracker);
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 0,
                 inputContext.getEntryForTesting(
@@ -132,10 +123,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 .thenReturn(true);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-                        mActionDelegate,
-                        mProfile,
-                        mTracker);
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 0,
                 inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
@@ -146,10 +134,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 .thenReturn(false);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.DEFAULT_BROWSER_PROMO,
-                        mActionDelegate,
-                        mProfile,
-                        mTracker);
+                        ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 1,
                 inputContext.getEntryForTesting("has_default_browser_promo_shown_in_other_surface")
@@ -165,7 +150,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
         InputContext inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(2, inputContext.getSizeForTesting());
 
         // Test signal "tab_group_exists".
@@ -173,14 +158,14 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(0, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
 
         when(mNormalFilter.getTabGroupCount()).thenReturn(5);
         when(mIncognitoFilter.getTabGroupCount()).thenReturn(6);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(1, inputContext.getEntryForTesting("tab_group_exists").floatValue, 0.01);
 
         // Test signal "number_of_tabs".
@@ -188,28 +173,28 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         when(mIncognitoModel.getCount()).thenReturn(0);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(0, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
 
         when(mNormalModel.getCount()).thenReturn(5);
         when(mIncognitoModel.getCount()).thenReturn(0);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(5, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
 
         when(mNormalModel.getCount()).thenReturn(0);
         when(mIncognitoModel.getCount()).thenReturn(10);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(10, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
 
         when(mNormalModel.getCount()).thenReturn(10);
         when(mIncognitoModel.getCount()).thenReturn(10);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP, mActionDelegate, mProfile, mTracker);
         assertEquals(20, inputContext.getEntryForTesting("number_of_tabs").floatValue, 0.01);
     }
 
@@ -222,7 +207,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
 
         InputContext inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
         assertEquals(1, inputContext.getSizeForTesting());
 
         // Test signal "synced_tab_group_exists".
@@ -230,14 +215,14 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 1, inputContext.getEntryForTesting("synced_tab_group_exists").floatValue, 0.01);
 
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 0, inputContext.getEntryForTesting("synced_tab_group_exists").floatValue, 0.01);
 
@@ -245,7 +230,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID});
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
-                        EducationalTipCardType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
+                        ModuleType.TAB_GROUP_SYNC, mActionDelegate, mProfile, mTracker);
         assertEquals(
                 0, inputContext.getEntryForTesting("synced_tab_group_exists").floatValue, 0.01);
     }

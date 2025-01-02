@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider.EducationalTipCardType;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -28,13 +28,13 @@ public class EducationalTipCardProviderSignalHandler {
     /** Creates an instance of InputContext. */
     @VisibleForTesting
     static InputContext createInputContext(
-            @EducationalTipCardType int cardType,
+            @ModuleType int moduleType,
             EducationTipModuleActionDelegate actionDelegate,
             @NonNull Profile profile,
             Tracker tracker) {
         InputContext inputContext = new InputContext();
-        switch (cardType) {
-            case EducationalTipCardType.DEFAULT_BROWSER_PROMO:
+        switch (moduleType) {
+            case ModuleType.DEFAULT_BROWSER_PROMO:
                 inputContext.addEntry(
                         "should_show_non_role_manager_default_browser_promo",
                         ProcessedValue.fromFloat(
@@ -44,7 +44,7 @@ public class EducationalTipCardProviderSignalHandler {
                         ProcessedValue.fromFloat(
                                 hasDefaultBrowserPromoShownInOtherSurface(tracker)));
                 return inputContext;
-            case EducationalTipCardType.TAB_GROUP:
+            case ModuleType.TAB_GROUP:
                 inputContext.addEntry(
                         "tab_group_exists",
                         ProcessedValue.fromFloat(tabGroupExists(actionDelegate)));
@@ -52,12 +52,12 @@ public class EducationalTipCardProviderSignalHandler {
                         "number_of_tabs",
                         ProcessedValue.fromFloat(getCurrentTabCount(actionDelegate)));
                 return inputContext;
-            case EducationalTipCardType.TAB_GROUP_SYNC:
+            case ModuleType.TAB_GROUP_SYNC:
                 inputContext.addEntry(
                         "synced_tab_group_exists",
                         ProcessedValue.fromFloat(syncedTabGroupExists(profile)));
                 return inputContext;
-            case EducationalTipCardType.QUICK_DELETE:
+            case ModuleType.QUICK_DELETE:
                 return inputContext;
             default:
                 assert false : "Card type not supported!";

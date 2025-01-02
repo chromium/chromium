@@ -585,7 +585,7 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
+                        ModuleType.TAB_GROUP,
                         ModuleType.TAB_GROUP_SYNC,
                         ModuleType.QUICK_DELETE);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
@@ -600,7 +600,7 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
+                        ModuleType.TAB_GROUP,
                         ModuleType.TAB_GROUP_SYNC,
                         ModuleType.QUICK_DELETE);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
@@ -627,7 +627,7 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.SAFETY_HUB,
                         ModuleType.AUXILIARY_SEARCH,
                         ModuleType.DEFAULT_BROWSER_PROMO,
-                        ModuleType.TAB_GROUPS,
+                        ModuleType.TAB_GROUP,
                         ModuleType.TAB_GROUP_SYNC,
                         ModuleType.QUICK_DELETE);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());

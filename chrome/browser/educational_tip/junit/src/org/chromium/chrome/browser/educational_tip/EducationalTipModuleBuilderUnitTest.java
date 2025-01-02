@@ -137,7 +137,7 @@ public class EducationalTipModuleBuilderUnitTest {
         assertNull(inputContextForTest.getEntryForTesting("number_of_tabs"));
 
         EducationalTipModuleBuilder moduleBuilderForTabGroupPromo =
-                new EducationalTipModuleBuilder(ModuleType.TAB_GROUPS, mActionDelegate);
+                new EducationalTipModuleBuilder(ModuleType.TAB_GROUP, mActionDelegate);
         inputContextForTest = moduleBuilderForTabGroupPromo.createInputContext();
         assertNull(
                 inputContextForTest.getEntryForTesting(

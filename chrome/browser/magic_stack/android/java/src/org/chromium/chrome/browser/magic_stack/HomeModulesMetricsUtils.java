@@ -11,7 +11,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUPS;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
@@ -95,17 +95,6 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
-    private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
-
-    private static final String PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT = "price_change_freshness";
-
-    private static final String TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT = "tab_resumption_freshness";
-
-    private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
-
-    private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
-            "auxiliary_search_freshness";
-
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
      * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type
@@ -128,35 +117,12 @@ public class HomeModulesMetricsUtils {
                 return "AuxiliarySearch";
             case DEFAULT_BROWSER_PROMO:
                 return "DefaultBrowserPromo";
-            case TAB_GROUPS:
+            case TAB_GROUP:
                 return "TabGroupPromo";
             case TAB_GROUP_SYNC:
                 return "TabGroupSyncPromo";
             case QUICK_DELETE:
                 return "QuickDeletePromo";
-            default:
-                assert false : "Module type not supported!";
-                return null;
-        }
-    }
-
-    /**
-     * Returns the freshness score key used by InputContext for the given module. Remember to update
-     * the variant ModuleType in tools/metrics/histograms/metadata/magic_stack/histograms.xml when
-     * adding a new module type
-     */
-    public static String getFreshnessInputContextString(@ModuleType int moduleType) {
-        switch (moduleType) {
-            case SINGLE_TAB:
-                return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
-            case PRICE_CHANGE:
-                return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
-            case TAB_RESUMPTION:
-                return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
-            case SAFETY_HUB:
-                return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
-            case AUXILIARY_SEARCH:
-                return AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT;
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -178,7 +144,7 @@ public class HomeModulesMetricsUtils {
             case "DefaultBrowserPromo":
                 return DEFAULT_BROWSER_PROMO;
             case "TabGroupPromo":
-                return TAB_GROUPS;
+                return TAB_GROUP;
             case "TabGroupSyncPromo":
                 return TAB_GROUP_SYNC;
             case "QuickDeletePromo":
