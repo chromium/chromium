@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CorruptAppShim) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, IncompatibleAppShim) {
   // Install and close the PWA.
-  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.ClosePwa();
   // Now mess up the shortcut.
@@ -84,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, IncompatibleAppShim) {
   web_app::startup::SetStartupDoneCallbackForTesting(base::BindOnce(
       []() { apps::TakeShimStartupDoneCallbackForTesting().Run(); }));
 
-  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone,
+                                     /*allow_shim_failure=*/true);
   helper_.CheckWindowCreated();
 }
 

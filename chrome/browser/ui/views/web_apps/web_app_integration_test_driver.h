@@ -305,9 +305,14 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromChromeApps(Site site);
   void LaunchFromLaunchIcon(Site site);
   void LaunchFromMenuOption(Site site);
-  void LaunchFromPlatformShortcut(Site site);
 #if BUILDFLAG(IS_MAC)
   void LaunchFromAppShimFallback(Site site);
+  // If `allow_shim_failure` is set to true, this won't assert that the initial
+  // app shim launch was successful. The step will still verify that the launch
+  // was eventually successful.
+  void LaunchFromPlatformShortcut(Site site, bool allow_shim_failure = false);
+#else
+  void LaunchFromPlatformShortcut(Site site);
 #endif
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);

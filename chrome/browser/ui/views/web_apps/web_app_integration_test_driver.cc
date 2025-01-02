@@ -1792,7 +1792,13 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   AfterStateChangeAction();
 }
 
+#if BUILDFLAG(IS_MAC)
+void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(
+    Site site,
+    bool allow_shim_failure) {
+#else
 void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Not implemented on Chrome OS.";
 #else
@@ -1824,10 +1830,19 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
         had_open_browsers = true;
       }
     }
+    if (app_browser_ || had_open_browsers) {
+      EXPECT_FALSE(allow_shim_failure)
+          << "Allowing shim launch failures while there are already open "
+             "browsers will result in flaky tests, as there is nothing to wait "
+             "for to detect the launch.";
+    }
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
-    ASSERT_TRUE(LaunchFromAppShim(site, /*urls=*/{},
-                                  /*wait_for_complete_launch=*/true));
+    bool launch_result = LaunchFromAppShim(site, /*urls=*/{},
+                                           /*wait_for_complete_launch=*/true);
+    if (!allow_shim_failure) {
+      ASSERT_TRUE(launch_result);
+    }
     run_loop.Run();
     if (!app_browser_ && !had_open_browsers) {
       browser_added_waiter.Wait();
@@ -1838,6 +1853,10 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
       EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
     }
   } else {
+    EXPECT_FALSE(allow_shim_failure)
+        << "Allowing shim launch failures for browser-tab PWAs could result in "
+           "flaky tests because there is nothing to wait for to detect the "
+           "launch.";
     base::RunLoop run_loop;
     apps::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     ASSERT_TRUE(LaunchFromAppShim(site, /*urls=*/{},
