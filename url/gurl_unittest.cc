@@ -517,6 +517,7 @@ TEST_P(GURLTypedTest, Resolve) {
         // result's host should remain empty unless a relative URL specify a
         // host.
         {"git://", "", "git://"},
+        {"git://", "/", "git:///"},
         {"git://", ".", "git:///"},
         {"git://", "..", "git:///"},
         {"git://", "a", "git:///a"},
