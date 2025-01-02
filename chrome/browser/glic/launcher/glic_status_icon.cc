@@ -27,9 +27,15 @@
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
     : controller_(controller), status_tray_(status_tray) {
-  // TODO(https://crbug.com/382287104): Use correct icon.
-  gfx::ImageSkia status_tray_icon =
-      gfx::CreateVectorIcon(kGlicButtonIcon, SK_ColorBLACK);
+  // TODO(crbug.com/382287104): Use correct icon.
+  // TODO(crbug.com/386839488): Chose color based on system theme.
+  gfx::ImageSkia status_tray_icon = gfx::CreateVectorIcon(kGlicButtonIcon,
+#if BUILDFLAG(IS_LINUX)
+                                                          SK_ColorWHITE
+#else
+                                                          SK_ColorBLACK
+#endif
+  );
 
   status_icon_ = status_tray_->CreateStatusIcon(
       StatusTray::GLIC_ICON, status_tray_icon,
