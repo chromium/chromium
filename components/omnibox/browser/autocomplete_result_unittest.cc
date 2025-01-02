@@ -2319,7 +2319,8 @@ TEST_F(AutocompleteResultTest, CalculateNumMatchesPerUrlCountTest) {
       matches.push_back(m);
     }
     const size_t num_matches = AutocompleteResult::CalculateNumMatches(
-        false, matches, comparison_object);
+        false, AutocompleteInput::FeaturedKeywordMode::kFalse, matches,
+        comparison_object);
     EXPECT_EQ(num_matches, expected_num_matches);
   };
 

@@ -44,6 +44,10 @@
 
 namespace {
 
+// Max number of featured enterprise suggestions to show when the user types '@'
+// or '@...'.
+constexpr int kMaxEnterpriseSuggestions = 4;
+
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
@@ -182,6 +186,7 @@ FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
 void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
+  size_t enterprise_count = 0;
   if (input.GetFeaturedKeywordMode() !=
       AutocompleteInput::FeaturedKeywordMode::kFalse) {
     TemplateURLService::TemplateURLVector matches;
@@ -196,8 +201,10 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
           continue;
         }
         AddStarterPackMatch(*match, input);
-      } else if (match->featured_by_policy()) {
+      } else if (match->featured_by_policy() &&
+                 enterprise_count < kMaxEnterpriseSuggestions) {
         AddFeaturedEnterpriseSearchMatch(*match, input);
+        enterprise_count++;
       }
     }
   }

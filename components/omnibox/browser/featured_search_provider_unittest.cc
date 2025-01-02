@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,23 +50,13 @@ constexpr char16_t kHistoryKeyword[] = u"@history";
 constexpr char16_t kTabsKeyword[] = u"@tabs";
 constexpr char16_t kGeminiKeyword[] = u"@gemini";
 
-constexpr char16_t kFeaturedKeyword1[] = u"@featured1";
-constexpr char16_t kFeaturedKeyword2[] = u"@featured2";
-constexpr char16_t kFeaturedKeyword3[] = u"@featured3";
-constexpr char16_t kFeaturedKeyword4[] = u"@featured4";
-
-const char* const kBookmarksUrl =
+const std::string kBookmarksUrl =
     TemplateURLStarterPackData::bookmarks.destination_url;
-const char* const kHistoryUrl =
+const std::string kHistoryUrl =
     TemplateURLStarterPackData::history.destination_url;
-const char* const kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
-const char* const kGeminiUrl =
+const std::string kTabsUrl = TemplateURLStarterPackData::tabs.destination_url;
+const std::string kGeminiUrl =
     TemplateURLStarterPackData::Gemini.destination_url;
-
-constexpr char kFeaturedUrl1[] = "https://featured1.com/q={searchTerms}";
-constexpr char kFeaturedUrl2[] = "https://featured2.com/q={searchTerms}";
-constexpr char kFeaturedUrl3[] = "https://featured3.com/q={searchTerms}";
-constexpr char kFeaturedUrl4[] = "https://featured4.com/q={searchTerms}";
 
 struct TestData {
   const std::u16string input;
@@ -78,6 +69,14 @@ struct IphData {
   const std::u16string iph_link_text;
   const GURL iph_link_url;
 };
+
+std::u16string FeaturedKeywordN(int n) {
+  return base::UTF8ToUTF16("@featured" + base::NumberToString(n));
+}
+
+std::string FeaturedUrlN(int n) {
+  return "https://featured" + base::NumberToString(n) + ".com/q={searchTerms}";
+}
 
 }  // namespace
 
@@ -101,9 +100,9 @@ class FeaturedSearchProviderTest : public testing::Test {
   }
   void TearDown() override { provider_ = nullptr; }
 
-  void RunTest(const TestData cases[], size_t num_cases) {
+  void RunTest(const std::vector<TestData> cases) {
     ACMatches matches;
-    for (size_t i = 0; i < num_cases; ++i) {
+    for (size_t i = 0; i < cases.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf(
           "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
       AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,
@@ -182,7 +181,7 @@ class FeaturedSearchProviderTest : public testing::Test {
 };
 
 TEST_F(FeaturedSearchProviderTest, NonAtPrefix) {
-  TestData test_cases[] = {
+  std::vector<TestData> test_cases = {
       // Typing text that doesn't start with "@" should give nothing.
       {u"g@rb@g3", {}},
       {u"www.google.com", {}},
@@ -194,7 +193,7 @@ TEST_F(FeaturedSearchProviderTest, NonAtPrefix) {
       {u"chrome://version", {}},
   };
 
-  RunTest(test_cases, std::size(test_cases));
+  RunTest(test_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest, DoesNotSupportMatchesOnFocus) {
@@ -220,7 +219,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPack) {
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  TestData typing_scheme_cases[] = {
+  std::vector<TestData> typing_scheme_cases = {
       // Typing the keyword without '@' or past the keyword shouldn't produce
       // results.
       {u"b", {}},
@@ -251,7 +250,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPack) {
       {kTabsKeyword, {kTabsUrl}},
   };
 
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
@@ -259,7 +258,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
   features.InitAndEnableFeature(omnibox::kStarterPackExpansion);
 
   AddStarterPackEntriesToTemplateUrlService();
-  TestData typing_scheme_cases[] = {
+  std::vector<TestData> typing_scheme_cases = {
       // Typing the keyword without '@' or past the keyword shouldn't produce
       // results.
       {u"b", {}},
@@ -291,7 +290,7 @@ TEST_F(FeaturedSearchProviderTest, StarterPackExpansion) {
       {kGeminiKeyword, {kGeminiUrl}},
   };
 
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest, StarterPackExpansionRelevance) {
@@ -332,17 +331,24 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(2), FeaturedUrlN(2),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(3), FeaturedUrlN(3),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
   AddFeaturedEnterpriseSearchEngine(
-      kFeaturedKeyword4, kFeaturedUrl4,
+      FeaturedKeywordN(4), FeaturedUrlN(4),
       TemplateURLData::PolicyOrigin::kSearchAggregator);
+  // At most 4 featured enterprise keywords should be shown.
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(5), FeaturedUrlN(5),
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(6), FeaturedUrlN(6),
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(7), FeaturedUrlN(7),
+                                    TemplateURLData::PolicyOrigin::kSiteSearch);
 
-  TestData typing_scheme_cases[] = {
+  std::vector<TestData> typing_scheme_cases = {
       // Typing the keyword without '@' or past the keyword shouldn't produce
       // results.
       {u"f", {}},
@@ -357,17 +363,17 @@ TEST_F(FeaturedSearchProviderTest, FeaturedEnterpriseSearch) {
       // alphabetical order). Re-ordering by relevance will be made
       // later on.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
-        kFeaturedUrl4, kGeminiUrl, kHistoryUrl, kTabsUrl}},
+       {kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2), FeaturedUrlN(3),
+        FeaturedUrlN(4), kGeminiUrl, kHistoryUrl, kTabsUrl}},
 
       // Typing a portion of "@featured" should give the featured engine
       // suggestions.
-      {std::u16string(kFeaturedKeyword1, 0, 3),
-       {kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3, kFeaturedUrl4}},
-      {kFeaturedKeyword1, {kFeaturedUrl1}},
+      {std::u16string(FeaturedKeywordN(1), 0, 3),
+       {FeaturedUrlN(1), FeaturedUrlN(2), FeaturedUrlN(3), FeaturedUrlN(4)}},
+      {FeaturedKeywordN(1), {FeaturedUrlN(1)}},
   };
 
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
@@ -396,10 +402,10 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestStarterPackIPHSuggestion) {
 
   // "@" state - Confirm expected starter pack is still shown but no ZPS.
   AddStarterPackEntriesToTemplateUrlService();
-  TestData typing_scheme_cases[] = {
+  std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@", {kBookmarksUrl, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest,
@@ -448,14 +454,14 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(2), FeaturedUrlN(2),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(3), FeaturedUrlN(3),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
   AddFeaturedEnterpriseSearchEngine(
-      kFeaturedKeyword4, kFeaturedUrl4,
+      FeaturedKeywordN(4), FeaturedUrlN(4),
       TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
@@ -477,12 +483,12 @@ TEST_F(FeaturedSearchProviderTest, ZeroSuggestFeaturedSearchIPHSuggestion) {
   EXPECT_EQ(matches.size(), 0u);
 
   // "@" state - Confirm expected starter pack is still shown but no ZPS.
-  TestData typing_scheme_cases[] = {
+  std::vector<TestData> typing_scheme_cases = {
       // Typing '@' should give all the starter pack suggestions, and no IPH.
       {u"@",
-       {kBookmarksUrl, kFeaturedUrl1, kFeaturedUrl2, kFeaturedUrl3,
-        kFeaturedUrl4, kGeminiUrl, kHistoryUrl, kTabsUrl}}};
-  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
+       {kBookmarksUrl, FeaturedUrlN(1), FeaturedUrlN(2), FeaturedUrlN(3),
+        FeaturedUrlN(4), kGeminiUrl, kHistoryUrl, kTabsUrl}}};
+  RunTest(typing_scheme_cases);
 }
 
 TEST_F(FeaturedSearchProviderTest,
@@ -499,14 +505,14 @@ TEST_F(FeaturedSearchProviderTest,
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(2), FeaturedUrlN(2),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(3), FeaturedUrlN(3),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
   AddFeaturedEnterpriseSearchEngine(
-      kFeaturedKeyword4, kFeaturedUrl4,
+      FeaturedKeywordN(4), FeaturedUrlN(4),
       TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.
@@ -553,14 +559,14 @@ TEST_F(FeaturedSearchProviderTest,
 
   AddStarterPackEntriesToTemplateUrlService();
 
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword2, kFeaturedUrl2,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(2), FeaturedUrlN(2),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword1, kFeaturedUrl1,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(1), FeaturedUrlN(1),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
-  AddFeaturedEnterpriseSearchEngine(kFeaturedKeyword3, kFeaturedUrl3,
+  AddFeaturedEnterpriseSearchEngine(FeaturedKeywordN(3), FeaturedUrlN(3),
                                     TemplateURLData::PolicyOrigin::kSiteSearch);
   AddFeaturedEnterpriseSearchEngine(
-      kFeaturedKeyword4, kFeaturedUrl4,
+      FeaturedKeywordN(4), FeaturedUrlN(4),
       TemplateURLData::PolicyOrigin::kSearchAggregator);
 
   // "Focus" omnibox with zero input to put us in Zero suggest mode.

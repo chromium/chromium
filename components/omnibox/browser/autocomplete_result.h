@@ -48,7 +48,10 @@ class AutocompleteResult {
   // may be different for zero suggest and non zero suggest. Does not take into
   // account the boost conditionally provided by the
   // omnibox::kDynamicMaxAutocomplete feature.
-  static size_t GetMaxMatches(bool is_zero_suggest = false);
+  static size_t GetMaxMatches(
+      bool is_zero_suggest = false,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode =
+          AutocompleteInput::FeaturedKeywordMode::kFalse);
   // Defaults to GetMaxMatches if omnibox::kDynamicMaxAutocomplete is disabled;
   // otherwise returns the boosted dynamic limit.
   static size_t GetDynamicMaxMatches();
@@ -221,6 +224,7 @@ class AutocompleteResult {
   // and relevancies.
   static size_t CalculateNumMatches(
       bool is_zero_suggest,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode,
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
   // Determines how many matches to keep depending on how many URLs would be
