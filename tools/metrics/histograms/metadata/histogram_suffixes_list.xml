@@ -223,6 +223,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
   <suffix name="feedv2" label="Feed V2 Module"/>
+  <suffix name="google3" label="Google3 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="read_aloud_playback" label="Read Aloud Playback Module"/>
   <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
