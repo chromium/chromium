@@ -405,6 +405,14 @@ TEST_F(KioskLaunchControllerTest, CleanUpShouldReenableAccelerators) {
   EXPECT_TRUE(accelerator_controller().enabled());
 }
 
+TEST_F(KioskLaunchControllerTest, CleanUpShouldLogLaunchDuration) {
+  base::HistogramTester histogram;
+
+  controller().Start(kiosk_app(), /*auto_launch=*/false);
+  CleanUpController();
+  histogram.ExpectTotalCount("Kiosk.LaunchDuration.Web", 1);
+}
+
 TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {
   controller().Start(kiosk_app(), /*auto_launch=*/false);
   VerifyLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
