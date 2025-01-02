@@ -183,6 +183,14 @@ interface SeaPenProvider {
     // Called when the user close the introduction dialog for SeaPen feature.
     HandleSeaPenIntroductionDialogClosed();
 
+    // Determines whether to show the SeaPen freeform introduction dialog.
+    ShouldShowSeaPenFreeformIntroductionDialog() =>
+        (bool should_show_freeform_dialog);
+
+    // Called when the user close the introduction dialog for SeaPen freeform
+    // feature.
+    HandleSeaPenFreeformIntroductionDialogClosed();
+
     // Indicates whether the device is in tablet mode.
     IsInTabletMode() => (bool tablet_mode);
 

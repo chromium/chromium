@@ -935,6 +935,27 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_FALSE(should_show_dialog_future.Take());
 }
 
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       ShouldShowSeaPenFreeformIntroductionDialog) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kSeaPen}, {});
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before the dialog is closed.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  sea_pen_provider_remote()->HandleSeaPenFreeformIntroductionDialogClosed();
+
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after the dialog is closed.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Guest) {
   SetUpProfileForTesting("guest", user_manager::GuestAccountId(),
                          user_manager::UserType::kGuest);
