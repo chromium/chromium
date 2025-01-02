@@ -805,6 +805,25 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 }
 
+TEST_F(
+    CanvasResourceProviderTest,
+    CanvasResourceProviderSwapChain_NonDefaultColorSpaceIsPropagatedToResource) {
+  const gfx::Size kSize(10, 10);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32(
+      10, 10, kPremul_SkAlphaType, SkColorSpace::MakeSRGBLinear());
+
+  auto provider = CanvasResourceProvider::CreateSwapChainProvider(
+      kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_);
+
+  ASSERT_TRUE(provider);
+  ASSERT_EQ(provider->GetSkImageInfo(), kInfo);
+
+  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_EQ(resource->CreateSkImageInfo(), kInfo);
+}
+
 TEST_F(CanvasResourceProviderTest, FlushForImage) {
   auto src_provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(10, 10), kN32_SkColorType, kPremul_SkAlphaType,
