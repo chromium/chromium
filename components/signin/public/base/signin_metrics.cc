@@ -480,9 +480,12 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
     case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
-    case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
+    case AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromCollaborationTabGroup"));
+      break;
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
               << "for access point " << static_cast<int>(access_point);

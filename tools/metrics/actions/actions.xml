@@ -38761,6 +38761,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromCollaborationTabGroup">
+  <owner>gambard@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromContentArea">
   <obsolete>Removed in M116.</obsolete>
   <owner>gogerald@chromium.org</owner>
