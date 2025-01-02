@@ -296,9 +296,8 @@ class NET_EXPORT CookieInclusionStatus {
     kMaxValue = kScheme
   };
 
-  using ExclusionReasonBitset =
-      std::bitset<ExclusionReason::NUM_EXCLUSION_REASONS>;
-  using WarningReasonBitset = std::bitset<WarningReason::NUM_WARNING_REASONS>;
+  using ExclusionReasonBitset = std::bitset<32>;
+  using WarningReasonBitset = std::bitset<32>;
 
   // Makes a status that says include and should not warn.
   CookieInclusionStatus();
