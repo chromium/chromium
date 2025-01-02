@@ -6,6 +6,7 @@
 #define BASE_STRINGS_TO_STRING_H_
 
 #include <concepts>
+#include <iomanip>
 #include <ios>
 #include <memory>
 #include <sstream>
@@ -134,6 +135,7 @@ struct ToStringHelper<std::tuple<T...>> {
 template <typename... Ts>
 std::string ToString(const Ts&... values) {
   std::ostringstream ss;
+  ss.setf(std::ios_base::boolalpha);  // Stringify bools as "true"/"false".
   (...,
    internal::ToStringHelper<std::remove_cvref_t<decltype(values)>>::Stringify(
        values, ss));
