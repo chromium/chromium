@@ -41,7 +41,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
@@ -98,7 +97,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     @After
     public void tearDown() {
         RealtimeEngagementSignalObserver.ScrollState.setInstanceForTesting(null);
-        FeatureList.setTestValues(null);
     }
 
     @Test

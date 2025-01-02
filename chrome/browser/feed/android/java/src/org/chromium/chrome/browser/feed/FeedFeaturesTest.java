@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,11 +63,6 @@ public class FeedFeaturesTest {
 
         mParamsTestValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mParamsTestValues);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test

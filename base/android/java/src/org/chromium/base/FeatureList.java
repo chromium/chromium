@@ -207,41 +207,41 @@ public class FeatureList {
     /**
      * Override feature flags for testing. Convenience method for #setTestValues() without params.
      *
-     * <p>If |testFeatures| is null, resets all feature flag and param test overrides (including
-     * ones added by @EnableFeatures, @DisableFeatures and @CommandLineFlags).
-     *
      * <p>TODO(crbug.com/386813115): Migrate usages to #setTestFeature or #setTestValues to delete
      * this method.
      */
     @VisibleForTesting
-    public static void setTestFeatures(@Nullable Map<String, Boolean> testFeatures) {
-        if (testFeatures == null) {
-            setTestValues(null);
-        } else {
-            TestValues testValues = new TestValues();
-            testValues.setFeatureFlagsOverride(testFeatures);
-            setTestValues(testValues);
-        }
+    public static void setTestFeatures(Map<String, Boolean> testFeatures) {
+        assert testFeatures != null;
+
+        TestValues testValues = new TestValues();
+        testValues.setFeatureFlagsOverride(testFeatures);
+        setTestValues(testValues);
     }
 
     /**
      * Adds overrides to feature flags and field trial parameters in addition to existing ones.
      *
-     * <p>If |testFeatures| is null, resets all feature flag and param test overrides (including
-     * ones added by @EnableFeatures, @DisableFeatures and @CommandLineFlags).
-     *
-     * <p>Otherwise, it's an alias for #mergeTestValues(testValues, replace=true).
-     *
-     * <p>TODO(crbug.com/386813115): Create resetTestValues() to remove all test values and make
-     * this param @NotNull.
+     * <p>An alias for #mergeTestValues(testValues, replace=true).
      */
     @VisibleForTesting
-    public static void setTestValues(@Nullable TestValues testValues) {
-        if (testValues == null) {
-            overwriteTestValues(null);
-        } else {
-            mergeTestValues(testValues, /* replace= */ true);
-        }
+    public static void setTestValues(TestValues testValues) {
+        assert testValues != null;
+        mergeTestValues(testValues, /* replace= */ true);
+    }
+
+    /**
+     * Rarely necessary. Remove all Java overrides to feature flags and field trial parameters.
+     *
+     * <p>You don't need to call this on tearDown() or at the end of a test. ResettersForTesting
+     * already resets test values.
+     *
+     * <p>@Features annotations and @CommandLineFlags --enable/disable-features are affected by
+     * this.
+     */
+    @VisibleForTesting
+    public static void removeAllTestOverrides() {
+        overwriteTestValues(null);
     }
 
     private static void overwriteTestValues(@Nullable TestValues testValues) {

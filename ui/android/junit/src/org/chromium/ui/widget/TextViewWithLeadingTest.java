@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -42,11 +41,6 @@ public class TextViewWithLeadingTest {
     @BeforeClass
     public static void beforeClass() {
         sActivityTestRule.launchActivity(null);
-    }
-
-    @After
-    public void after() {
-        FeatureList.setTestFeatures(null);
     }
 
     private void inflateAndVerify(@LayoutRes int layoutRes) {

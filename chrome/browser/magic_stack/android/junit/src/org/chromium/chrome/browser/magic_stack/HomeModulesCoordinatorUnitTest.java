@@ -145,7 +145,6 @@ public class HomeModulesCoordinatorUnitTest {
     @After
     public void tearDown() {
         mCoordinator.destroy();
-        FeatureList.setTestValues(null);
     }
 
     @Test

@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -124,7 +123,6 @@ public class ContextMenuRenderTest {
                     NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
                     mListItems.clear();
                 });
-        FeatureList.setTestValues(null);
     }
 
     @Test

@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,11 +55,6 @@ public class DefaultBrowserPromoImpressionCounterTest {
 
         doReturn(false).when(mMockSearchEngineChoiceService).isDefaultBrowserPromoSuppressed();
         SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test

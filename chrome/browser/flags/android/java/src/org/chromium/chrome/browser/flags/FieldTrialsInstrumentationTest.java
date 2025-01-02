@@ -63,7 +63,7 @@ public final class FieldTrialsInstrumentationTest {
     public void testNative_EnableWithParams() {
         // @Param overrides as Java level, but should also override at native level. Remove the
         // override at Java level to check the override at native level.
-        FeatureList.setTestValues(null);
+        FeatureList.removeAllTestOverrides();
         mActivityTestRule.startMainActivityOnBlankPage();
 
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
@@ -85,7 +85,7 @@ public final class FieldTrialsInstrumentationTest {
         // @CommandLine overrides as Java level, but should also override at native level. Remove
         // the override at Java level to check the override at native level.
         mActivityTestRule.startMainActivityOnBlankPage();
-        FeatureList.setTestValues(null);
+        FeatureList.removeAllTestOverrides();
 
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
         Assert.assertEquals("b2", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a2"));
@@ -110,7 +110,7 @@ public final class FieldTrialsInstrumentationTest {
         // @CommandLine overrides as Java level, but should also override at native level. Remove
         // the override at Java level to check the override at native level.
         mActivityTestRule.startMainActivityOnBlankPage();
-        FeatureList.setTestValues(null);
+        FeatureList.removeAllTestOverrides();
 
         Assert.assertEquals(
                 "%:/.,",

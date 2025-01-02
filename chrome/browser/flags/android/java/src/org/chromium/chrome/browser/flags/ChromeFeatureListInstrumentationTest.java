@@ -65,7 +65,5 @@ public class ChromeFeatureListInstrumentationTest {
 
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
-
-        FeatureList.setTestFeatures(null);
     }
 }

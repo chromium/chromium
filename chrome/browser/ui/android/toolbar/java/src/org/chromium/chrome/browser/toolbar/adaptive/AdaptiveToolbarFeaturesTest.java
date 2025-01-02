@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,11 +30,6 @@ public class AdaptiveToolbarFeaturesTest {
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
         FeatureList.setTestValues(mTestValues);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test

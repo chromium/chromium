@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -199,7 +198,6 @@ public class OmahaBaseTest {
 
     @After
     public void tearDown() {
-        FeatureList.setTestValues(null);
         OmahaBase.setIsDisabledForTesting(true);
     }
 

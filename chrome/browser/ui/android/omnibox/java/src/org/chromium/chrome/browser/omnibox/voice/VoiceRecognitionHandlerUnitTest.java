@@ -46,7 +46,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -143,7 +142,6 @@ public class VoiceRecognitionHandlerUnitTest {
         // will be taken care of here.
         ShadowLooper.shadowMainLooper().idle();
         mHandler.removeObserver(mObserver);
-        FeatureList.setTestValues(null);
         mProfileSupplier.set(null);
         ProfileManager.resetForTesting();
     }

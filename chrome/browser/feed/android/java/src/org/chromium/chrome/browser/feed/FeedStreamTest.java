@@ -1215,7 +1215,6 @@ public class FeedStreamTest {
                         /* SingleWebFeedHelper= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
-        FeatureList.setTestFeatures(null);
     }
 
     @Test
@@ -1239,7 +1238,6 @@ public class FeedStreamTest {
                         /* SingleWebFeedHelper= */ null,
                         new FeedSurfaceRendererBridgeFactory());
         assertNotNull(stream.getUnreadContentObserverForTest());
-        FeatureList.setTestFeatures(null);
     }
 
     @Test

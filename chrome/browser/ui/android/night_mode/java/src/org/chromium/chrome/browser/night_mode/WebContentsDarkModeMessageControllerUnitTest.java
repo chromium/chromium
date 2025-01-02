@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -187,11 +186,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
         TrackerFactory.setTrackerForTests(mMockTracker);
         ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     private void setOptOut(boolean optOut) {
