@@ -186,17 +186,15 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
-      exe_path.Append(FILE_PATH_LITERAL("old_updater"));
+      exe_path.Append(FILE_PATH_LITERAL("old_updater"))
+          .AppendASCII(base::StrCat({base::ToLowerASCII(BROWSER_NAME_STRING),
+                                     "_linux64", arch_suffix}));
 
-#if BUILDFLAG(CHROMIUM_BRANDING)
-  old_updater_path = old_updater_path.AppendASCII("chromium_linux64");
-#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.AppendASCII("chrome_linux64");
-#endif
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.AppendASCII("cipd");
 #endif

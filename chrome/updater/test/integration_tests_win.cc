@@ -1637,19 +1637,20 @@ void InvokeTestServiceFunction(const std::string& function_name,
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
-  std::vector<std::wstring> supported_archs;
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
+  std::vector<std::string> supported_archs;
 
 #if defined(ARCH_CPU_ARM64)
   supported_archs = {
-      L"" BROWSER_NAME_STRING "_win_arm64",
-      L"" BROWSER_NAME_STRING "_win_x86_64",
-      L"" BROWSER_NAME_STRING "_win_x86",
+      BROWSER_NAME_STRING "_win_arm64",
+      BROWSER_NAME_STRING "_win_x86_64",
+      BROWSER_NAME_STRING "_win_x86",
   };
 #elif defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
   supported_archs = {
-      L"" BROWSER_NAME_STRING "_win_x86_64",
-      L"" BROWSER_NAME_STRING "_win_x86",
+      BROWSER_NAME_STRING "_win_x86_64",
+      BROWSER_NAME_STRING "_win_x86",
   };
 #endif
 
@@ -1667,9 +1668,10 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
   std::vector<TestUpdaterVersion> updater_versions;
   base::ranges::transform(
       supported_archs, std::back_inserter(updater_versions),
-      [&](const std::wstring& arch) -> TestUpdaterVersion {
+      [&](const std::string& arch) -> TestUpdaterVersion {
         const base::FilePath updater_setup_path =
-            old_updater_path.Append(arch).Append(path_suffix);
+            old_updater_path.AppendASCII(base::StrCat({arch, arch_suffix}))
+                .Append(path_suffix);
         return {updater_setup_path,
                 base::Version(base::UTF16ToUTF8(
                     FileVersionInfo::CreateFileVersionInfo(updater_setup_path)

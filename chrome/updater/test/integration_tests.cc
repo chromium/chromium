@@ -1580,32 +1580,42 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-class IntegrationInstallIdTest
+TEST_F(IntegrationTest, InstallId) {
+  ScopedServer test_server(test_commands_);
+  constexpr std::string kAppId("test");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
+      base::Version(kUpdaterVersion), "\"iid\":\"my_install_id\""));
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      kAppId, /*is_silent_install=*/true,
+      base::StrCat({"appguid=", kAppId, "&iid=my_install_id"})));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+class IntegrationSansInstallIdTest
     : public ::testing::WithParamInterface<TestUpdaterVersion>,
       public IntegrationTest {};
 
-INSTANTIATE_TEST_SUITE_P(IntegrationInstallIdTestCases,
-                         IntegrationInstallIdTest,
-                         ::testing::ValuesIn(GetRealUpdaterVersions()));
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationSansInstallIdTestCases,
+    IntegrationSansInstallIdTest,
+    ::testing::ValuesIn(GetRealUpdaterLowerVersions("_sans_iid")));
 
-TEST_P(IntegrationInstallIdTest, Test) {
+TEST_P(IntegrationSansInstallIdTest, Test) {
   if (!GetParam().version.IsValid()) {
     GTEST_SKIP() << "Skipping test since the version for "
                  << GetParam().updater_setup_path << " is not valid";
   }
 
   ScopedServer test_server(test_commands_);
-  const std::string kAppId("test");
-  const base::Version v1("1");
+  constexpr std::string kAppId("test");
 
-  // r1395118 `Updater: Transmit install ID over IPC (Windows)` landed in
-  // version `133.0.6891.0`.
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), v1, false, false, GetParam().version,
-      GetParam().version >= base::Version("133.0.6891.0")
-          ? "\"iid\":\"my_install_id\""
-          : ".*"));
+      base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
+      GetParam().version, ".*"));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId, "&iid=my_install_id"}),

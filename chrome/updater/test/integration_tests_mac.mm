@@ -281,21 +281,26 @@ bool WaitForUpdaterExit() {
       [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
       exe_path.Append(FILE_PATH_LITERAL("old_updater"));
 
+  std::string arch;
 #if BUILDFLAG(CHROMIUM_BRANDING)
 #if defined(ARCH_CPU_ARM64)
-  old_updater_path = old_updater_path.Append("chromium_mac_arm64");
+  arch = "chromium_mac_arm64";
 #elif defined(ARCH_CPU_X86_64)
-  old_updater_path = old_updater_path.Append("chromium_mac_amd64");
+  arch = "chromium_mac_amd64";
 #endif
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  old_updater_path = old_updater_path.Append("chrome_mac_universal");
+  arch = "chrome_mac_universal";
 #endif
+
+  old_updater_path = old_updater_path.Append(base::StrCat({arch, arch_suffix}));
+
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif

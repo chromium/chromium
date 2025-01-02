@@ -286,7 +286,8 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
 // Gets the real updater lower version paths/versions.
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix = {});
 
 // Gets the real updater current and lower version paths/versions.
 std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
