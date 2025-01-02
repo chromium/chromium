@@ -55,9 +55,10 @@ suite('HistoryListTest', function() {
    *     and the lazy loaded module has been loaded.
    */
   function finishSetup(
-      queryResults: HistoryEntry[], query?: string): Promise<any> {
+      queryResults: HistoryEntry[], finished: boolean = true,
+      query?: string): Promise<any> {
     testService.setQueryResult(
-        {info: createHistoryInfo(query), value: queryResults});
+        {info: {finished: finished, term: query || ''}, value: queryResults});
     document.body.appendChild(app);
 
     element = app.$.history;
@@ -369,7 +370,8 @@ suite('HistoryListTest', function() {
 
   test('ChangingSearchDeselectsItems', async function() {
     await finishSetup(
-        [createHistoryEntry('2016-06-9', 'https://www.example.com')], 'ex');
+        [createHistoryEntry('2016-06-9', 'https://www.example.com')], true,
+        'ex');
     await flushTasks();
     const item = element.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
@@ -720,6 +722,74 @@ suite('HistoryListTest', function() {
         await getMessagesForResults('new query', TEST_HISTORY_RESULTS);
     assertEquals(
         `Found 4 exact matches for 'new query'`, multipleResultsMessage);
+  });
+
+  test('ScrollingLoadsMore', async () => {
+    // Simulate a shorter window to make this easier.
+    document.body.style.maxHeight = '300px';
+    document.body.style.height = '300px';
+    const results = [...TEST_HISTORY_RESULTS, ...ADDITIONAL_RESULTS];
+    await finishSetup(results, /*finished=*/ false);
+    testService.reset();
+    // Make scroll debounce shorter to shorten some wait times below.
+    element.setScrollDebounceForTest(1);
+
+    assertTrue(!!app.scrollTarget);
+    // This check ensures the line below actually scrolls.
+    assertGT(
+        app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 600);
+    // Scroll to just under the threshold to make sure more results don't load.
+    app.scrollTarget.scrollTop =
+        app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 600;
+    // Wait longer than scroll debounce.
+    await new Promise(resolve => setTimeout(resolve, 10));
+    assertEquals(0, testService.getCallCount('queryHistoryContinuation'));
+
+    // Set up more results.
+    testService.setQueryResult({
+      info: {finished: false, term: ''},
+      value: [
+        createHistoryEntry('2013-02-13 10:00', 'https://en.wikipedia.org'),
+        createHistoryEntry('2013-02-13 9:50', 'https://www.youtube.com'),
+        createHistoryEntry('2013-02-11', 'https://www.google.com'),
+        createHistoryEntry('2013-02-10', 'https://www.example.com'),
+      ],
+    });
+
+    // Scroll to within 500px of the scroll height. More results should be
+    // requested.
+    app.scrollTarget.scrollTop =
+        app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 400;
+    await testService.whenCalled('queryHistoryContinuation');
+    await flushTasks();
+    assertEquals(1, testService.getCallCount('queryHistoryContinuation'));
+    testService.reset();
+
+    // Should not respond to scroll when inactive.
+    element.isActive = false;
+    flush();
+    // This check ensures the line below actually scrolls.
+    assertGT(
+        app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 500);
+    app.scrollTarget.scrollTop =
+        app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 400;
+    // Wait longer than scroll debounce.
+    await new Promise(resolve => setTimeout(resolve, 10));
+    assertEquals(0, testService.getCallCount('queryHistoryContinuation'));
+  });
+
+  test('ResizingLoadsMore', async () => {
+    // Simulate a shorter window to make this easier.
+    document.body.style.maxHeight = '300px';
+    document.body.style.height = '300px';
+    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+    testService.reset();
+
+    // Simulate resizing the window. More results should be loaded.
+    document.body.style.maxHeight = '800px';
+    document.body.style.height = '800px';
+    await testService.whenCalled('queryHistoryContinuation');
+    assertEquals(1, testService.getCallCount('queryHistoryContinuation'));
   });
 
   teardown(function() {

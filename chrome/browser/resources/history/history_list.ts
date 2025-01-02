@@ -108,6 +108,13 @@ export class HistoryListElement extends HistoryListElementBase {
       },
       scrollOffset: Number,
 
+      // Whether this element is active, i.e. visible to the user.
+      isActive: {
+        type: Boolean,
+        value: true,
+        observer: 'onIsActiveChanged_',
+      },
+
       isEmpty: {
         type: Boolean,
         reflectToAttribute: true,
@@ -120,9 +127,22 @@ export class HistoryListElement extends HistoryListElementBase {
   private canDeleteHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
+  private lastOffsetHeight_: number = 0;
+  private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
+    if (this.lastOffsetHeight_ === 0) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      return;
+    }
+    if (this.scrollTarget.offsetHeight > this.lastOffsetHeight_) {
+      this.lastOffsetHeight_ = this.scrollTarget.offsetHeight;
+      this.onScrollOrResize_();
+    }
+  });
   private resultLoadingDisabled_: boolean = false;
-  private scrollListener_: EventListener = () => this.onScroll_();
+  private scrollDebounce_: number = 200;
+  private scrollListener_: EventListener = () => this.onScrollOrResize_();
   private scrollTimeout_: number|null = null;
+  isActive: boolean;
   isEmpty: boolean;
   searchedTerm: string = '';
   selectedItems: Set<number> = new Set();
@@ -641,6 +661,16 @@ export class HistoryListElement extends HistoryListElementBase {
         !!this.searchedTerm && this.historyData_?.length > 0;
   }
 
+  private onIsActiveChanged_() {
+    if (this.isActive) {
+      // Active changed from false to true. Add the scroll observer.
+      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+    } else {
+      // Active changed from true to false. Remove scroll observer.
+      this.scrollTarget.removeEventListener('scroll', this.scrollListener_);
+    }
+  }
+
   private onScrollTargetChanged_(
       _newTarget: HTMLElement, oldTarget?: HTMLElement) {
     // It is possible (eg, when middle clicking the reload button) for all other
@@ -649,25 +679,32 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$['infinite-list'].notifyResize();
 
     if (oldTarget) {
+      this.resizeObserver_.disconnect();
       oldTarget.removeEventListener('scroll', this.scrollListener_);
     }
     if (this.scrollTarget) {
+      this.resizeObserver_.observe(this.scrollTarget);
       this.scrollTarget.addEventListener('scroll', this.scrollListener_);
     }
   }
 
-  private onScroll_() {
+  setScrollDebounceForTest(debounce: number) {
+    this.scrollDebounce_ = debounce;
+  }
+
+  private onScrollOrResize_() {
     // Debounce by 200ms.
     if (this.scrollTimeout_) {
       clearTimeout(this.scrollTimeout_);
     }
-    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
+    this.scrollTimeout_ =
+        setTimeout(() => this.onScrollTimeout_(), this.scrollDebounce_);
   }
 
   private onScrollTimeout_() {
     this.scrollTimeout_ = null;
-    const lowerScroll =
-        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
+    const lowerScroll = this.scrollTarget.scrollHeight -
+        this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
     if (lowerScroll < 500) {
       this.onScrollToBottom_();
     }

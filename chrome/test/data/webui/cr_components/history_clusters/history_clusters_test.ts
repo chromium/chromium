@@ -12,7 +12,7 @@ import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_compo
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {ClientId as PageImageServiceClientId, PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -33,7 +33,59 @@ function createBrowserProxy() {
       new PageImageServiceBrowserProxy(imageServiceHandler));
 }
 
-suite('history-clusters', () => {
+function getTestVisit(rawData?: RawVisitData): URLVisit {
+  const rawVisitData: RawVisitData = rawData || {
+    url: {url: ''},
+    visitTime: {internalValue: BigInt(0)},
+  };
+
+  return {
+    visitId: BigInt(1),
+    normalizedUrl: {url: 'https://www.google.com'},
+    urlForDisplay: 'https://www.google.com',
+    pageTitle: '',
+    titleMatchPositions: [],
+    urlForDisplayMatchPositions: [],
+    duplicates: [],
+    relativeDate: '',
+    annotations: [],
+    debugInfo: {},
+    rawVisitData: rawVisitData,
+    isKnownToSync: false,
+    hasUrlKeyedImage: false,
+  };
+}
+
+function getTestCluster(id: bigint, visits: URLVisit[]) {
+  return {
+    id: id,
+    visits: visits,
+    label: '',
+    labelMatchPositions: [],
+    relatedSearches: [],
+    imageUrl: null,
+    fromPersistence: false,
+    debugInfo: null,
+    tabGroupName: null,
+  };
+}
+
+function getTestResult(): QueryResult {
+  const cluster1: Cluster = getTestCluster(BigInt(111), [getTestVisit()]);
+
+  const cluster2: Cluster = getTestCluster(BigInt(222), []);
+
+  const queryResult: QueryResult = {
+    query: '',
+    clusters: [cluster1, cluster2],
+    canLoadMore: false,
+    isContinuation: false,
+  };
+
+  return queryResult;
+}
+
+suite('HistoryClustersTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       isHistoryClustersImagesEnabled: true,
@@ -45,64 +97,6 @@ suite('history-clusters', () => {
 
     createBrowserProxy();
   });
-
-  function getTestVisit(): URLVisit {
-    const rawVisitData: RawVisitData = {
-      url: {url: ''},
-      visitTime: {internalValue: BigInt(0)},
-    };
-
-    return {
-      visitId: BigInt(1),
-      normalizedUrl: {url: 'https://www.google.com'},
-      urlForDisplay: 'https://www.google.com',
-      pageTitle: '',
-      titleMatchPositions: [],
-      urlForDisplayMatchPositions: [],
-      duplicates: [],
-      relativeDate: '',
-      annotations: [],
-      debugInfo: {},
-      rawVisitData: rawVisitData,
-      isKnownToSync: false,
-      hasUrlKeyedImage: false,
-    };
-  }
-
-  function getTestResult(): QueryResult {
-    const cluster1: Cluster = {
-      id: BigInt(111),
-      visits: [getTestVisit()],
-      label: '',
-      labelMatchPositions: [],
-      relatedSearches: [],
-      imageUrl: null,
-      fromPersistence: false,
-      debugInfo: null,
-      tabGroupName: null,
-    };
-
-    const cluster2: Cluster = {
-      id: BigInt(222),
-      visits: [],
-      label: '',
-      labelMatchPositions: [],
-      relatedSearches: [],
-      imageUrl: null,
-      fromPersistence: false,
-      debugInfo: null,
-      tabGroupName: null,
-    };
-
-    const queryResult: QueryResult = {
-      query: '',
-      clusters: [cluster1, cluster2],
-      canLoadMore: false,
-      isContinuation: false,
-    };
-
-    return queryResult;
-  }
 
   async function setupClustersElement() {
     const clustersElement = new HistoryClustersElement();
@@ -369,5 +363,216 @@ suite('history-clusters', () => {
     assertEquals(
         1,
         clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+  });
+});
+
+suite('HistoryClustersFocusTest', () => {
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      isHistoryClustersImagesEnabled: true,
+    });
+  });
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    createBrowserProxy();
+  });
+
+  // Set up a clusters element that has a fixed size parent and scrollable
+  // <div> as the scrollTarget for the list. This simulates a smaller window,
+  // so we don't have to implicitly rely on the size of the window in browser
+  // tests, which may vary and is not controllable from the test, and allows
+  // the element to scroll for any content past a default 300px height.
+  async function setupScrollableClustersElement():
+      Promise<HistoryClustersElement> {
+    document.body.style.height = '300px';
+    document.body.style.maxHeight = '300px';
+    document.body.style.overflow = 'hidden';
+
+    const scrollTarget = document.createElement('div');
+    scrollTarget.style.height = '100%';
+    scrollTarget.style.overflowY = 'auto';
+    document.body.appendChild(scrollTarget);
+
+    const clustersElement = new HistoryClustersElement();
+    clustersElement.scrollTarget = scrollTarget;
+    clustersElement.setScrollDebounceForTest(1);
+    scrollTarget.appendChild(clustersElement);
+    // Set item size estimate to measured size of items - the amount they are
+    // allowed to overflow (i.e.  'overflow-clip-margin' * 2). This means that
+    // the estimated scroll height should not change significantly on scroll,
+    // which is important when trying to scroll to specific px values to trigger
+    // or not trigger cluster loading.
+    clustersElement.$.clusters.itemSize = 141 - 16;
+
+    const query = (await handler.whenCalled('startQueryClusters'))[0];
+    assertEquals(query, '');
+    handler.reset();
+
+    return clustersElement;
+  }
+
+  // Set up some test clusters used by the tests below. These are intentionally
+  // all 1 visit clusters so that all elements have the same height so that we
+  // can predicatably scroll to a certain px value before the end and have the
+  // average item height, which is used to compute scroll height, not change.
+  const visit1 = getTestVisit(
+      {url: {url: 'www.chromium.org'}, visitTime: {internalValue: BigInt(1)}});
+  const visit2 = getTestVisit({
+    url: {url: 'chrome://extensions'},
+    visitTime: {internalValue: BigInt(2)},
+  });
+  const visit3 = getTestVisit(
+      {url: {url: 'chrome://settings'}, visitTime: {internalValue: BigInt(3)}});
+  const cluster1: Cluster = getTestCluster(BigInt(111), [visit1]);
+  const cluster2: Cluster = getTestCluster(BigInt(222), [visit2]);
+  const cluster3: Cluster = getTestCluster(BigInt(333), [visit3]);
+
+  test('Cluster removed loads more clusters', async () => {
+    const clustersElement = await setupScrollableClustersElement();
+    // Initial result doesn't fill the entire height, so more clusters are
+    // requested.
+    callbackRouterRemote.onClustersQueryResult({
+      query: '',
+      clusters: [cluster1],
+      canLoadMore: true,
+      isContinuation: false,
+    });
+    await handler.whenCalled('loadMoreClusters');
+
+    const continuationResult: QueryResult = {
+      query: '',
+      clusters: [cluster2, cluster3],
+      canLoadMore: true,
+      isContinuation: true,
+    };
+    callbackRouterRemote.onClustersQueryResult(continuationResult);
+    await new Promise(resolve => requestIdleCallback(resolve));
+    assertEquals(1, handler.getCallCount('loadMoreClusters'));
+    handler.reset();
+
+    assertEquals(
+        3,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+
+    // Visit 1 and visit 2 are removed. This opens up new space for more
+    // clusters to be loaded, so more clusters should be requested.
+    callbackRouterRemote.onVisitsRemoved([visit1]);
+    await Promise.all([
+      callbackRouterRemote.$.flushForTesting(),
+      eventToPromise('remove-cluster', clustersElement),
+    ]);
+    callbackRouterRemote.onVisitsRemoved([visit2]);
+    await Promise.all([
+      callbackRouterRemote.$.flushForTesting(),
+      eventToPromise('remove-cluster', clustersElement),
+    ]);
+    await handler.whenCalled('loadMoreClusters');
+
+    callbackRouterRemote.onClustersQueryResult(
+        Object.assign(continuationResult, {canLoadMore: false}));
+    await new Promise(resolve => requestIdleCallback(resolve));
+    assertEquals(1, handler.getCallCount('loadMoreClusters'));
+
+    // Cluster 1 is removed since it contained only 1 visit, which matched the
+    // removed one. 1 more cluster is added for a total of 3.
+    assertEquals(
+        3,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+  });
+
+  test('Scroll to load more clusters', async () => {
+    const clustersElement = await setupScrollableClustersElement();
+
+    // Set up some test data. We intentionally load a lot of clusters for this
+    // test so that the scroll height will be much larger than 300px.
+    const clusters = [];
+    for (let i = 0; i < 10; i++) {
+      clusters.push(...[cluster1, cluster2, cluster3]);
+    }
+    callbackRouterRemote.onClustersQueryResult({
+      query: '',
+      clusters: clusters,
+      canLoadMore: true,
+      isContinuation: false,
+    });
+    await new Promise(resolve => requestIdleCallback(resolve));
+
+    const scrollTarget = document.body.querySelector('div');
+    assertTrue(!!scrollTarget);
+    // This check ensures the line below actually scrolls.
+    assertGT(scrollTarget.scrollHeight, scrollTarget.offsetHeight + 600);
+    // Scroll to just under the threshold to make sure more clusters don't load.
+    scrollTarget.scrollTop =
+        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 600;
+    // Wait longer than scroll debounce and for the clusters to be rendered.
+    await Promise.all([
+      new Promise(resolve => setTimeout(resolve, 10)),
+      eventToPromise('viewport-filled', clustersElement),
+    ]);
+    await microtasksFinished();
+    assertEquals(0, handler.getCallCount('loadMoreClusters'));
+
+    // Scroll to within 500px of the scroll height. More clusters should be
+    // requested.
+    scrollTarget.scrollTop =
+        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 400;
+    await handler.whenCalled('loadMoreClusters');
+
+    // Simulate more clusters loaded.
+    callbackRouterRemote.onClustersQueryResult({
+      query: '',
+      clusters: [cluster1, cluster2, cluster3],
+      canLoadMore: true,
+      isContinuation: true,
+    });
+    await new Promise(resolve => requestIdleCallback(resolve));
+    assertEquals(1, handler.getCallCount('loadMoreClusters'));
+    handler.reset();
+
+    // If history-clusters isn't active, scrolling doesn't load more. In prod
+    // code this value is only set if the clusters are not visible (e.g. not
+    // the active tab in the chrome://history UI).
+    assertGT(
+        scrollTarget.scrollHeight,
+        scrollTarget.offsetHeight + scrollTarget.scrollTop + 500);
+    clustersElement.isActive = false;
+    await microtasksFinished();
+    scrollTarget.scrollTop =
+        scrollTarget.scrollHeight - scrollTarget.offsetHeight - 400;
+    // Wait longer than scroll debounce.
+    await new Promise(resolve => setTimeout(resolve, 10));
+    assertEquals(0, handler.getCallCount('loadMoreClusters'));
+  });
+
+  test('Resize to load more clusters', async () => {
+    const clustersElement = await setupScrollableClustersElement();
+    clustersElement.setScrollDebounceForTest(1);
+
+    // This result should fill the default 300px height.
+    callbackRouterRemote.onClustersQueryResult({
+      query: '',
+      clusters: [
+        cluster1,
+        cluster2,
+        cluster3,
+        cluster1,
+        cluster2,
+        cluster3,
+        cluster1,
+      ],
+      canLoadMore: true,
+      isContinuation: false,
+    });
+    // Wait longer than scroll debounce.
+    await new Promise(resolve => requestIdleCallback(resolve));
+    assertEquals(0, handler.getCallCount('loadMoreClusters'));
+
+    // Resize the clusters element by resizing its parent (simulates resizing
+    // browser window). More clusters should be requested.
+    document.body.style.maxHeight = '1000px';
+    document.body.style.height = '1000px';
+    await handler.whenCalled('loadMoreClusters');
+    assertEquals(1, handler.getCallCount('loadMoreClusters'));
   });
 });
