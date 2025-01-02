@@ -155,6 +155,7 @@ ConsumerHost::TracingSession::TracingSession(
     : host_(host),
       tracing_session_client_(std::move(tracing_session_client)),
       receiver_(this, std::move(tracing_session_host)),
+      privacy_filtering_enabled_(true),
       tracing_priority_(priority) {
   host_->service()->RegisterTracingSession(this);
 
