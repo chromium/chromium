@@ -129,7 +129,7 @@ class GraphBuilderOrt {
   void AddConv2dOperation(const mojom::Conv2d& conv2d);
   void AddGemmOperation(const mojom::Gemm& gemm);
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
-  void AddMatmulOperation(const mojom::Matmul& matmul);
+  void AddMatMulOperation(const mojom::Matmul& matmul);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
   void AddReshapeOperation(const mojom::Reshape& reshape);
   void AddSoftmaxOperation(const mojom::Softmax& softmax);

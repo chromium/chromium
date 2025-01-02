@@ -59,7 +59,7 @@ constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeGemm[] = "Gemm";
 
-constexpr char kOpTypeMatmul[] = "Matmul";
+constexpr char kOpTypeMatMul[] = "MatMul";
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 constexpr char kOpTypeMaxPool2d[] = "MaxPool";
 constexpr char kOpTypeLpPool2d[] = "LpPool";
@@ -561,7 +561,7 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
 
-void GraphBuilderOrt::AddMatmulOperation(const mojom::Matmul& matmul) {
+void GraphBuilderOrt::AddMatMulOperation(const mojom::Matmul& matmul) {
   const std::string node_name = GetNodeName(matmul.label);
   const std::string input_a_name = GetOperandName(matmul.a_operand_id);
   const std::string input_b_name = GetOperandName(matmul.b_operand_id);
@@ -571,7 +571,7 @@ void GraphBuilderOrt::AddMatmulOperation(const mojom::Matmul& matmul) {
                                             input_b_name.c_str()};
   std::array<const char*, 1> output_names = {output_name.c_str()};
 
-  model_builder_.AddNode(kOpTypeMatmul, node_name, input_names, output_names);
+  model_builder_.AddNode(kOpTypeMatMul, node_name, input_names, output_names);
 }
 
 void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
@@ -812,7 +812,7 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kMatmul: {
-        AddMatmulOperation(*operation->get_matmul());
+        AddMatMulOperation(*operation->get_matmul());
         break;
       }
       case mojom::Operation::Tag::kPool2d: {
