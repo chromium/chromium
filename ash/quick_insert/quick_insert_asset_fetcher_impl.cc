@@ -13,6 +13,8 @@
 #include "ash/quick_insert/quick_insert_asset_fetcher_impl_delegate.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/rand_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
@@ -109,6 +111,10 @@ void DownloadGifMediaToString(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
+base::TimeDelta GetRetryJitter() {
+  return base::RandTimeDelta(base::Milliseconds(100), base::Seconds(1));
+}
+
 }  // namespace
 
 QuickInsertAssetFetcherImpl::QuickInsertAssetFetcherImpl(
@@ -120,18 +126,48 @@ QuickInsertAssetFetcherImpl::~QuickInsertAssetFetcherImpl() = default;
 void QuickInsertAssetFetcherImpl::FetchGifFromUrl(
     const GURL& url,
     QuickInsertGifFetchedCallback callback) {
+  if (pending_network_requests_ >= kMaxPendingNetworkRequests) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&QuickInsertAssetFetcherImpl::FetchGifFromUrl,
+                       weak_ptr_factory_.GetWeakPtr(), url,
+                       std::move(callback)),
+        GetRetryJitter());
+    return;
+  }
+
+  ++pending_network_requests_;
   DownloadGifMediaToString(
       url, delegate_->GetSharedURLLoaderFactory(),
-      base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
+      base::BindOnce(
+          &image_util::DecodeAnimationData,
+          std::move(callback).Then(base::BindOnce(
+              &QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted,
+              weak_ptr_factory_.GetWeakPtr()))));
 }
 
 void QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl(
     const GURL& url,
     QuickInsertImageFetchedCallback callback) {
+  if (pending_network_requests_ >= kMaxPendingNetworkRequests) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl,
+            weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)),
+        GetRetryJitter());
+    return;
+  }
+
+  ++pending_network_requests_;
   DownloadGifMediaToString(
       url, delegate_->GetSharedURLLoaderFactory(),
-      base::BindOnce(&image_util::DecodeImageData, std::move(callback),
-                     data_decoder::mojom::ImageCodec::kDefault));
+      base::BindOnce(
+          &image_util::DecodeImageData,
+          std::move(callback).Then(base::BindOnce(
+              &QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted,
+              weak_ptr_factory_.GetWeakPtr())),
+          data_decoder::mojom::ImageCodec::kDefault));
 }
 
 void QuickInsertAssetFetcherImpl::FetchFileThumbnail(
@@ -139,6 +175,10 @@ void QuickInsertAssetFetcherImpl::FetchFileThumbnail(
     const gfx::Size& size,
     FetchFileThumbnailCallback callback) {
   delegate_->FetchFileThumbnail(path, size, std::move(callback));
+}
+
+void QuickInsertAssetFetcherImpl::OnNetworkRequestCompleted() {
+  --pending_network_requests_;
 }
 
 }  // namespace ash

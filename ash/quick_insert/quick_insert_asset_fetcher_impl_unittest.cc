@@ -76,6 +76,10 @@ class MockQuickInsertAssetUrlLoaderFactory
     test_url_loader_factory_.AddResponse(url.spec(), content, status);
   }
 
+  size_t GetTotalRequests() const {
+    return test_url_loader_factory_.total_requests();
+  }
+
  protected:
   ~MockQuickInsertAssetUrlLoaderFactory() override = default;
 
@@ -197,6 +201,39 @@ TEST_F(QuickInsertAssetFetcherImplTest, ForwardsToDelegateToFetchThumbnail) {
   const base::File::Error kError = base::File::Error::FILE_ERROR_FAILED;
   std::move(callback).Run(kBitmap, kError);
   EXPECT_THAT(callback_future.Take(), FieldsAre(kBitmap, kError));
+}
+
+TEST_F(QuickInsertAssetFetcherImplTest, ThrottlesTooManySimultaneousRequests) {
+  scoped_refptr<MockQuickInsertAssetUrlLoaderFactory> url_loader_factory =
+      base::MakeRefCounted<MockQuickInsertAssetUrlLoaderFactory>();
+  const GURL kGifPreviewImageUrl(
+      "https://media.tenor.com/gif-image-preview.png");
+  constexpr gfx::Size kGifPreviewImageDimensions(10, 20);
+  url_loader_factory->AddResponse(
+      kGifPreviewImageUrl,
+      CreateEncodedImageForTesting(kGifPreviewImageDimensions), net::HTTP_OK);
+  MockQuickInsertAssetFetcherDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
+      .WillRepeatedly(Return(url_loader_factory));
+  QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
+
+  // Issue the maximum number of network requests.
+  for (size_t i = 0u;
+       i < QuickInsertAssetFetcherImpl::kMaxPendingNetworkRequests; ++i) {
+    asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
+                                              base::DoNothing());
+  }
+  // Issue one more request, which should be throttled.
+  base::test::TestFuture<const gfx::ImageSkia&> throttled_future;
+  asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
+                                            throttled_future.GetCallback());
+
+  EXPECT_EQ(url_loader_factory->GetTotalRequests(),
+            QuickInsertAssetFetcherImpl::kMaxPendingNetworkRequests);
+  // The throttled request should be processed eventually.
+  EXPECT_TRUE(throttled_future.Wait());
+  EXPECT_EQ(url_loader_factory->GetTotalRequests(),
+            QuickInsertAssetFetcherImpl::kMaxPendingNetworkRequests + 1);
 }
 
 }  // namespace
