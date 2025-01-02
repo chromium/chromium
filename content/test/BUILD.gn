@@ -546,6 +546,7 @@ static_library("test_support") {
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
     "//cc:test_support",
+    "//cc/slim",
     "//components/attribution_reporting:data_host_mojom",
     "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:source_type_mojom",
@@ -662,6 +663,7 @@ static_library("test_support") {
       "//content/shell:android_shell_descriptors",
       "//mojo/public/java/system:native_support",
       "//testing/android/native_test:native_browser_test_support",
+      "//ui/android:android",
     ]
   } else {
     sources += [
@@ -1064,7 +1066,6 @@ static_library("browsertest_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//cc/slim",
     "//components/input",
     "//components/network_session_configurator/common:common",
     "//components/services/storage:storage",
@@ -1083,10 +1084,7 @@ static_library("browsertest_support") {
   ]
 
   if (is_android) {
-    deps += [
-      "//content/public/app",
-      "//ui/android:android",
-    ]
+    deps += [ "//content/public/app" ]
   } else {
     deps += [ "//content/public/browser" ]
   }
