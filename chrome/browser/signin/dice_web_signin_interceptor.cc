@@ -809,8 +809,7 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     return false;
   }
 
-  if (switches::IsImprovedSigninUIOnDesktopEnabled() ||
-      IsPrimaryAccountInterception(intercepted_account_info.account_id,
+  if (IsPrimaryAccountInterception(intercepted_account_info.account_id,
                                    identity_manager_)) {
     return true;
   }
