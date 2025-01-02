@@ -24,6 +24,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 #include "chrome/common/profiler/process_type.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
@@ -80,9 +81,9 @@ namespace {
 // Encapsulates the setup required to create the Chrome unwinder on 32 bit
 // Android.
 #if ARM32_UNWINDING_SUPPORTED
-class ChromeUnwinderCreator {
+class ChromeUnwinderAndroid32Creator {
  public:
-  ChromeUnwinderCreator() {
+  ChromeUnwinderAndroid32Creator() {
     constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
     constexpr char kSplitName[] = "stack_unwinder";
 
@@ -93,8 +94,10 @@ class ChromeUnwinderCreator {
         chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
     CHECK(mapped_file_ok);
   }
-  ChromeUnwinderCreator(const ChromeUnwinderCreator&) = delete;
-  ChromeUnwinderCreator& operator=(const ChromeUnwinderCreator&) = delete;
+  ChromeUnwinderAndroid32Creator(const ChromeUnwinderAndroid32Creator&) =
+      delete;
+  ChromeUnwinderAndroid32Creator& operator=(
+      const ChromeUnwinderAndroid32Creator&) = delete;
 
   std::unique_ptr<base::Unwinder> Create() {
     return std::make_unique<base::ChromeUnwinderAndroid32>(
@@ -125,22 +128,31 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
   // it involves some additional latency.
   CHECK_NE(getpid(), gettid());
 
-#if ARM64_UNWINDING_SUPPORTED
-  // For now, we only use Libunwindstack on 64 bit (no other unwinders).
-  return CreateLibunwindstackUnwinders();
-#else
   static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate;
-  static base::NoDestructor<ChromeUnwinderCreator> chrome_unwinder_creator;
+#if ARM32_UNWINDING_SUPPORTED
+  static base::NoDestructor<ChromeUnwinderAndroid32Creator>
+      chrome_unwinder_android_32_creator;
+#endif
 
   // Note order matters: the more general unwinder must appear first in the
   // vector.
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
   unwinders.push_back(std::make_unique<base::NativeUnwinderAndroid>(
       reinterpret_cast<uintptr_t>(&__executable_start), map_delegate.get()));
-  unwinders.push_back(chrome_unwinder_creator->Create());
-
-  return unwinders;
+#if ARM32_UNWINDING_SUPPORTED
+  // ARM32 requires our custom Chrome unwinder.
+  unwinders.push_back(chrome_unwinder_android_32_creator->Create());
+#else
+  // ARM64 builds with frame pointers so we can use FramePointerUnwinder there.
+  unwinders.push_back(std::make_unique<base::FramePointerUnwinder>(
+      base::BindRepeating([](const base::Frame& current_frame) {
+        return current_frame.module &&
+               current_frame.module->GetBaseAddress() ==
+                   reinterpret_cast<uintptr_t>(&__executable_start);
+      }),
+      /*is_system_unwinder=*/false));
 #endif
+  return unwinders;
 }
 
 // Manages installation of the module prerequisite for unwinding. Android, in
@@ -237,8 +249,21 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
     return base::StackSamplingProfiler::UnwindersFactory();
   }
 #if UNWINDING_SUPPORTED
+#if ARM32_UNWINDING_SUPPORTED
   LoadModule();
   return base::BindOnce(CreateCoreUnwinders);
+#else   // ARM32_UNWINDING_SUPPORTED
+  // On ARM64 for now, mimic the existing support for browser main thread, which
+  // uses the libunwindstack unwinder.
+  // TODO(crbug.com/380487894): determine if we can avoid this special case and
+  // just use the core unwinders, based on observed data quality.
+  if (GetProfilerProcessType(*base::CommandLine::ForCurrentProcess()) ==
+          sampling_profiler::ProfilerProcessType::kBrowser &&
+      getpid() == gettid()) {
+    return CreateLibunwindstackUnwinderFactory();
+  }
+  return base::BindOnce(CreateCoreUnwinders);
+#endif  // ARM32_UNWINDING_SUPPORTED
 #else   // UNWINDING_SUPPORTED
   return base::StackSamplingProfiler::UnwindersFactory();
 #endif  // UNWINDING_SUPPORTED

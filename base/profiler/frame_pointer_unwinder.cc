@@ -51,8 +51,10 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
 namespace base {
 
 FramePointerUnwinder::FramePointerUnwinder(
-    CanUnwindFromDelegate can_unwind_from_delegate)
-    : can_unwind_from_delegate_(can_unwind_from_delegate) {}
+    CanUnwindFromDelegate can_unwind_from_delegate,
+    bool is_system_unwinder)
+    : can_unwind_from_delegate_(can_unwind_from_delegate),
+      is_system_unwinder_(is_system_unwinder) {}
 
 FramePointerUnwinder::~FramePointerUnwinder() = default;
 
@@ -108,7 +110,8 @@ UnwindResult FramePointerUnwinder::TryUnwind(
     // If `next_frame` is 0, we've hit the root and `retaddr` isn't useful.
     // Bail without recording the frame.
     if (next_frame == 0) {
-      return UnwindResult::kCompleted;
+      return is_system_unwinder_ ? UnwindResult::kCompleted
+                                 : UnwindResult::kUnrecognizedFrame;
     }
     const ModuleCache::Module* module =
         module_cache()->GetModuleForAddress(retaddr);

@@ -22,6 +22,7 @@ namespace base {
 //  * iOS, ARM64 and X86_64,
 //  * macOS
 //  * ChromeOS X86_64 and ARM64
+//  * Android ARM64 (Chrome module)
 class BASE_EXPORT
 #if BUILDFLAG(IS_APPLE)
 API_AVAILABLE(ios(12))
@@ -32,7 +33,8 @@ API_AVAILABLE(ios(12))
       RepeatingCallback<bool(const Frame& current_frame)>;
 
   FramePointerUnwinder(
-      CanUnwindFromDelegate can_unwind_from_delegate = CanUnwindFromDelegate());
+      CanUnwindFromDelegate can_unwind_from_delegate = CanUnwindFromDelegate(),
+      bool is_system_unwinder = true);
   ~FramePointerUnwinder() override;
 
   FramePointerUnwinder(const FramePointerUnwinder&) = delete;
@@ -47,6 +49,7 @@ API_AVAILABLE(ios(12))
 
  private:
   CanUnwindFromDelegate can_unwind_from_delegate_;
+  const bool is_system_unwinder_;
 };
 
 }  // namespace base
