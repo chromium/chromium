@@ -290,7 +290,7 @@ BOOL IsIdentityInCoreAccountInfos(
       }
       return SIGN_OUT_IF_NEEDED;
     case CONVERT_PERSONAL_PROFILE_TO_MANAGED:
-      return SIGN_IN;
+      return SIGN_OUT_IF_NEEDED;
     case SIGN_OUT_IF_NEEDED:
       return SIGN_IN;
     case SIGN_IN:
