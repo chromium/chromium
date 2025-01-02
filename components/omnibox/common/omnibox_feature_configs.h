@@ -193,7 +193,10 @@ class SearchAggregatorProvider : public Config<SearchAggregatorProvider> {
             const std::string& search_url,
             const std::string& suggest_url,
             const std::string& icon_url,
-            bool trigger_omnibox_blending);
+            bool trigger_omnibox_blending,
+            base::TimeDelta callback_delay,
+            int num_suggestions,
+            const std::string& response_type);
   // Same as `Init(,,,,,,)` setting all string arguments as empty.
   void Init(bool enabled, bool trigger_omnibox_blending);
 
@@ -218,6 +221,16 @@ class SearchAggregatorProvider : public Config<SearchAggregatorProvider> {
   // If enabled, Chrome will blend search suggestions with other Omnibox
   // suggestions without requiring keyword mode.
   bool trigger_omnibox_blending_ = false;
+  // The amount of time to wait before calling the callback function after
+  // making a request to get enterprise suggestions.
+  base::TimeDelta callback_delay_;
+  // The number of suggestions to show users.
+  int num_suggestions_;
+  // Type of request response. Can be one of the following strings.
+  // "success" - Successful response.
+  // "success_no_suggestions" - Successful response but empty suggestions field.
+  // "backoff" - No response was sent or response took too long.
+  std::string response_type_;
 };
 
 // If enabled, uses RichAnswerTemplate instead of SuggestionAnswer to display

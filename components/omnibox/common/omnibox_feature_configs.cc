@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
 
@@ -117,6 +118,17 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
       /*trigger_omnibox_blending=*/
       base::FeatureParam<bool>(&kSearchAggregatorProvider,
                                "trigger_omnibox_blending", false)
+          .Get(),
+      /*callback_delay=*/
+      base::FeatureParam<base::TimeDelta>(
+          &kSearchAggregatorProvider, "callback_delay", base::Milliseconds(0))
+          .Get(),
+      /*num_suggestions=*/
+      base::FeatureParam<int>(&kSearchAggregatorProvider, "num_suggestions", 0)
+          .Get(),
+      /*response_type=*/
+      base::FeatureParam<std::string>(&kSearchAggregatorProvider,
+                                      "response_type", "success")
           .Get());
 }
 
@@ -145,7 +157,10 @@ void SearchAggregatorProvider::Init(bool enabled,
                                     const std::string& search_url,
                                     const std::string& suggest_url,
                                     const std::string& icon_url,
-                                    bool trigger_omnibox_blending) {
+                                    bool trigger_omnibox_blending,
+                                    base::TimeDelta callback_delay,
+                                    int num_suggestions,
+                                    const std::string& response_type) {
   enabled_ = enabled;
   if (!enabled_) {
     return;
@@ -157,6 +172,9 @@ void SearchAggregatorProvider::Init(bool enabled,
   suggest_url_ = suggest_url;
   icon_url_ = icon_url;
   trigger_omnibox_blending_ = trigger_omnibox_blending;
+  callback_delay_ = callback_delay;
+  num_suggestions_ = num_suggestions;
+  response_type_ = response_type;
 
   // Perform some soft validation to prevent crashes downstream.
   valid_search_engine_ =
@@ -178,7 +196,10 @@ void SearchAggregatorProvider::Init(bool enabled,
        /*search_url=*/"",
        /*suggest_url=*/"",
        /*icon_url=*/"",
-       /*trigger_omnibox_blending=*/trigger_omnibox_blending);
+       /*trigger_omnibox_blending=*/trigger_omnibox_blending,
+       /*callback_delay=*/base::Milliseconds(0),
+       /*num_suggestions=*/0,
+       /*response_type=*/"success");
 }
 
 base::Value::Dict SearchAggregatorProvider::CreateMockSearchAggregator(

@@ -285,9 +285,13 @@ class EnterpriseSearchManagerProviderInjectionTest
                         const std::string& search_url,
                         const std::string& suggest_url,
                         const std::string& icon_url,
-                        bool trigger_omnibox_blending) {
+                        bool trigger_omnibox_blending,
+                        base::TimeDelta callback_delay,
+                        int num_suggestions,
+                        const std::string& response_type) {
     scoped_config_.Get().Init(enabled, name, shortcut, search_url, suggest_url,
-                              icon_url, trigger_omnibox_blending);
+                              icon_url, trigger_omnibox_blending,
+                              callback_delay, num_suggestions, response_type);
   }
 
   void InitScopedConfig(bool enabled, bool trigger_omnibox_blending) {
@@ -348,7 +352,10 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
         /*search_url=*/"https://www.mocked.com/q={searchTerms}",
         /*suggest_url=*/"https://www.mocked.com/ac",
         /*icon_url=*/"https://www.mocked.com/favicon.ico",
-        /*trigger_omnibox_blending=*/true);
+        /*trigger_omnibox_blending=*/true,
+        /*callback_delay=*/base::Milliseconds(0),
+        /*num_suggestions=*/4,
+        /*response_type=*/"success");
 
     ASSERT_TRUE(scoped_config_.Get().enabled());
     ASSERT_EQ(
