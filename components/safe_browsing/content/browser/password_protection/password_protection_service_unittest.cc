@@ -56,6 +56,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -1123,7 +1124,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   AccountInfo account_info;
   account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
-  account_info.gaia = "gaia";
+  account_info.gaia = GaiaId("gaia");
   account_info.hosted_domain = "example.com";
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
@@ -1350,7 +1351,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   AccountInfo account_info;
   account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
-  account_info.gaia = "gaia";
+  account_info.gaia = GaiaId("gaia");
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
@@ -1495,7 +1496,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   AccountInfo account_info;
   account_info.account_id = CoreAccountId::FromGaiaId("gaia");
   account_info.email = "email";
-  account_info.gaia = "gaia";
+  account_info.gaia = GaiaId("gaia");
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
