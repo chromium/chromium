@@ -4329,6 +4329,7 @@ interface HTMLImageElement : HTMLElement
     getter alt
     getter attributionSrc
     getter border
+    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -4359,6 +4360,7 @@ interface HTMLImageElement : HTMLElement
     setter alt
     setter attributionSrc
     setter border
+    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority
@@ -5484,6 +5486,7 @@ interface Image
     getter alt
     getter attributionSrc
     getter border
+    getter browsingTopics
     getter complete
     getter crossOrigin
     getter currentSrc
@@ -5514,6 +5517,7 @@ interface Image
     setter alt
     setter attributionSrc
     setter border
+    setter browsingTopics
     setter crossOrigin
     setter decoding
     setter fetchPriority
