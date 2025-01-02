@@ -19,18 +19,17 @@ namespace syncer {
 
 class LocalDataMigrationItemQueueTest : public testing::Test {
  protected:
-  LocalDataMigrationItemQueueTest() {
-    local_data_migration_item_queue_ =
-        std::make_unique<LocalDataMigrationItemQueue>(sync_service(),
-                                                      data_type_manager());
-
+  LocalDataMigrationItemQueueTest()
+      : local_data_migration_item_queue_(
+            std::make_unique<LocalDataMigrationItemQueue>(sync_service(),
+                                                          data_type_manager())),
+        item_({{PASSWORDS, {"d0"}}}) {
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
 
     sync_service()->GetUserSettings()->SetSelectedTypes(
         false, {UserSelectableType::kPasswords, UserSelectableType::kAutofill});
     ON_CALL(data_type_manager_, state())
         .WillByDefault(testing::Return(DataTypeManager::State::CONFIGURED));
-    item_ = {{PASSWORDS, {"d0"}}};
   }
 
   TestSyncService* sync_service() { return &sync_service_; }
@@ -48,11 +47,11 @@ class LocalDataMigrationItemQueueTest : public testing::Test {
   }
 
  private:
-  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
-      item_;
-  std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
   TestSyncService sync_service_;
   testing::NiceMock<DataTypeManagerMock> data_type_manager_;
+  std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
+  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+      item_;
 };
 
 TEST_F(LocalDataMigrationItemQueueTest, MoveWithSyncServiceActive) {
