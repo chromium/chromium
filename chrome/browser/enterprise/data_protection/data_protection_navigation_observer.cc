@@ -221,7 +221,7 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
 }
 
 // static
-void DataProtectionNavigationObserver::GetDataProtectionSettings(
+void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
     Profile* profile,
     content::WebContents* web_contents,
     Callback callback) {
