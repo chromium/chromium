@@ -4738,7 +4738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.CSDCacheContainsImages"
-    enum="BooleanPresent" expires_after="2025-02-10">
+    enum="BooleanPresent" expires_after="2026-02-10">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4938,7 +4938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.SuccessfulPhishingDetectionWithinTimeout"
-    enum="BooleanSuccess" expires_after="2025-02-10">
+    enum="BooleanSuccess" expires_after="2026-02-10">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4960,7 +4960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.VisualFeatureExtractionDuration" units="ms"
-    expires_after="2025-02-10">
+    expires_after="2026-02-10">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
