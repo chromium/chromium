@@ -42,6 +42,16 @@ class VIEWS_EXPORT WidgetDelegate {
       base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
 
+  // NonClientFrameViewFactory is a RepeatingCallback because the
+  // NonClientFrameView is rebuilt on Aura platforms when WindowTreeHost
+  // properties that might affect its appearance change. Rebuilding the entire
+  // NonClientFrameView is a pretty big hammer for that but it's the one we
+  // have.
+  // TODO(b:387350163): Investigate if NonClientFrameView can handle these
+  // changes in a more granular way.
+  using NonClientFrameViewFactory =
+      base::RepeatingCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
+
   struct Params {
     Params();
     ~Params();
@@ -399,6 +409,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void RegisterWindowWillCloseCallback(base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
+  void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
 
   // Returns true if the title text should be centered.
@@ -488,6 +499,7 @@ class VIEWS_EXPORT WidgetDelegate {
   ClosureVector delete_delegate_callbacks_;
 
   ClientViewFactory client_view_factory_;
+  NonClientFrameViewFactory non_client_frame_view_factory_;
   OverlayViewFactory overlay_view_factory_;
 
   TitleChangedCallback title_changed_callback_;
