@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_impl.h"
 #include "chromeos/ash/components/boca/babelorca/transcript_sender_rate_limiter.h"
 #include "components/live_caption/pref_names.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -136,8 +137,10 @@ void BabelOrcaProducer::OnLocalCaptionConfigUpdated(
     return;
   }
 
-  speech_recognizer_->ObserveTranscriptionResult(
+  speech_recognizer_->ObserveSpeechRecognition(
       base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&BabelOrcaProducer::OnLanguageIdentificationEvent,
                           weak_ptr_factory_.GetWeakPtr()));
   speech_recognizer_->Start();
 }
@@ -165,8 +168,10 @@ void BabelOrcaProducer::InitSending(bool signed_in) {
   if (local_captions_enabled_) {
     return;
   }
-  speech_recognizer_->ObserveTranscriptionResult(
+  speech_recognizer_->ObserveSpeechRecognition(
       base::BindRepeating(&BabelOrcaProducer::OnTranscriptionResult,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&BabelOrcaProducer::OnLanguageIdentificationEvent,
                           weak_ptr_factory_.GetWeakPtr()));
   speech_recognizer_->Start();
 }
@@ -182,7 +187,7 @@ void BabelOrcaProducer::OnTranscriptionResult(
       result,
       base::BindOnce(&BabelOrcaProducer::DispatchToBubble,
                      weak_ptr_factory_.GetWeakPtr()),
-      pref_service_->GetString(prefs::kUserMicrophoneCaptionLanguageCode),
+      source_language,
       pref_service_->GetString(prefs::kLiveTranslateTargetLanguageCode));
 
   // `session_captions_enabled_` can be enabled but `rate_limited_sender_` is
@@ -191,6 +196,12 @@ void BabelOrcaProducer::OnTranscriptionResult(
     return;
   }
   rate_limited_sender_->Send(result, source_language);
+}
+
+void BabelOrcaProducer::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  caption_controller_wrapper_->OnLanguageIdentificationEvent(event);
 }
 
 void BabelOrcaProducer::OnSendFailed() {
@@ -209,7 +220,7 @@ void BabelOrcaProducer::StopRecognition() {
   speech_recognizer_->Stop();
   caption_controller_wrapper_->OnAudioStreamEnd();
   // This should be a no-op if not currently observing.
-  speech_recognizer_->RemoveTranscriptionResultObservation();
+  speech_recognizer_->RemoveSpeechRecognitionObservation();
   rate_limited_sender_.reset();
 }
 

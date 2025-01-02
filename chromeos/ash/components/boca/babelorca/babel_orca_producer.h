@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client_impl.h"
 #include "components/prefs/pref_service.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace media {
 struct SpeechRecognitionResult;
@@ -69,6 +70,12 @@ class BabelOrcaProducer : public BabelOrcaController {
 
   void OnTranscriptionResult(const media::SpeechRecognitionResult& result,
                              const std::string& source_language);
+
+  // This callback method forwards language identification events to the
+  // live caption controller wrapper, the source language for translations
+  // is passed per call to OnTranscriptionResult above.
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event);
 
   void OnSendFailed();
 

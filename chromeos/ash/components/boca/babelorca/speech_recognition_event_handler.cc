@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
@@ -24,13 +25,31 @@ void SpeechRecognitionEventHandler::OnSpeechResult(
   }
 }
 
-void SpeechRecognitionEventHandler::SetTranscriptionResultCallback(
-    BabelOrcaSpeechRecognizer::TranscriptionResultCallback callback) {
-  transcription_result_callback_ = callback;
+void SpeechRecognitionEventHandler::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  if (event->asr_switch_result ==
+      media::mojom::AsrSwitchResult::kSwitchSucceeded) {
+    source_language_ = event->language;
+  }
+
+  // This will make its way back to the live caption controller and bubble,
+  // which has its own logic to complete regardless of the value of
+  // `event->asr_switch_result`.
+  language_identification_callback_.Run(event);
 }
 
-void SpeechRecognitionEventHandler::RemoveTranscriptionResultObservation() {
+void SpeechRecognitionEventHandler::SetTranscriptionResultCallback(
+    BabelOrcaSpeechRecognizer::TranscriptionResultCallback
+        transcription_result_callback,
+    BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
+        language_identification_callback) {
+  language_identification_callback_ = language_identification_callback;
+  transcription_result_callback_ = transcription_result_callback;
+}
+
+void SpeechRecognitionEventHandler::RemoveSpeechRecognitionObservation() {
   transcription_result_callback_.Reset();
+  language_identification_callback_.Reset();
 }
 
 }  // namespace ash::babelorca

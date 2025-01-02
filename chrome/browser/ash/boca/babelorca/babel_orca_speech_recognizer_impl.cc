@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/boca/babelorca/babel_orca_speech_recognizer_impl.h"
 
+#include <optional>
+
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
@@ -12,6 +14,8 @@
 #include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
 
@@ -31,6 +35,11 @@ void BabelOrcaSpeechRecognizerImpl::OnSpeechResult(
   speech_recognition_event_handler_.OnSpeechResult(result);
 }
 
+void BabelOrcaSpeechRecognizerImpl::OnLanguageIdentificationEvent(
+    media::mojom::LanguageIdentificationEventPtr event) {
+  speech_recognition_event_handler_.OnLanguageIdentificationEvent(event);
+}
+
 void BabelOrcaSpeechRecognizerImpl::Start() {
   SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(
       primary_profile_)
@@ -47,15 +56,18 @@ void BabelOrcaSpeechRecognizerImpl::Stop() {
       ->ToggleLiveCaptionForBabelOrca(false);
 }
 
-void BabelOrcaSpeechRecognizerImpl::ObserveTranscriptionResult(
+void BabelOrcaSpeechRecognizerImpl::ObserveSpeechRecognition(
     BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-        transcrcription_result_callback) {
+        transcription_result_callback,
+    BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
+        language_identification_callback) {
   speech_recognition_event_handler_.SetTranscriptionResultCallback(
-      std::move(transcrcription_result_callback));
+      std::move(transcription_result_callback),
+      std::move(language_identification_callback));
 }
 
-void BabelOrcaSpeechRecognizerImpl::RemoveTranscriptionResultObservation() {
-  speech_recognition_event_handler_.RemoveTranscriptionResultObservation();
+void BabelOrcaSpeechRecognizerImpl::RemoveSpeechRecognitionObservation() {
+  speech_recognition_event_handler_.RemoveSpeechRecognitionObservation();
 }
 
 }  // namespace ash::babelorca
