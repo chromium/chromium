@@ -701,7 +701,7 @@ void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
   if (auto* delete_edit_view = GetDeleteEditShortcut()) {
     if (const auto bounds = delete_edit_view->GetBoundsInScreen();
-        !bounds.Contains(event.root_location())) {
+        !bounds.Contains(event.target()->GetScreenLocation(event))) {
       RemoveDeleteEditShortcutWidget();
     }
   }
