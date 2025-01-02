@@ -1478,12 +1478,6 @@ BASE_FEATURE(kSplitKeyboardRefactor,
              "SplitKeyboardRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to start AssistantAudioDecoder service on demand (at query
-// response time).
-BASE_FEATURE(kStartAssistantAudioDecoderOnDemand,
-             "StartAssistantAudioDecoderOnDemand",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, used to configure the heuristic rules for some advanced IME
 // features (e.g. auto-correct).
 BASE_FEATURE(kImeRuleConfig, "ImeRuleConfig", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3833,10 +3827,6 @@ bool IsInstantHotspotRebrandEnabled() {
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
          switches::HasHps();
-}
-
-bool IsStartAssistantAudioDecoderOnDemandEnabled() {
-  return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
 }
 
 bool IsInternalServerSideSpeechRecognitionEnabled() {
