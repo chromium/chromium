@@ -126,6 +126,8 @@
   DCHECK(_downloadManagerTabHelperDelegate);
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
       _downloadManagerTabHelperDelegate);
+  DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(
+      static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
   DCHECK(_tabHelperDelegate);
   NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(
@@ -245,6 +247,7 @@
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
+  DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(nil);
 
   NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(nil);
 

@@ -1689,6 +1689,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
           Configuration profile available
       </message>
+      <message name="IDS_IOS_DOWNLOAD_RESTRICTION_SNACKBAR_TEXT" desc="The snackbar message to inform users that the download is blocked. [iOS only]">
+          Saving files is blocked by your organization
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_RESTRICTION_SNACKBAR_BUTTON_TEXT" desc="The text of the snackbar button to dismiss the snackbar. [iOS only]">
+          GOT IT
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED" desc="Title for an alert which is presented when a file selected by the user cannot be opened in the Drive file picker. [iOS only]">
           <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> couldn't be opened
       </message>
