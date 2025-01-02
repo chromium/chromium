@@ -424,7 +424,7 @@ void CertGenerator::GenerateCert() {
     cert_builder_->SetCaIssuersAndOCSPUrls(ca_issuers_urls, ocsp_urls);
   }
   if (GetBool()) {
-    std::vector<GURL> urls;
+    std::vector<std::string> urls;
     while (GetBool()) {
       urls.emplace_back(GetString());
     }

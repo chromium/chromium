@@ -188,10 +188,16 @@ class CertBuilder {
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |url| in distributionPoint.fullName.
   void SetCrlDistributionPointUrl(const GURL& url);
+  // Same as |SetCrlDistributionPointUrl| above, but the inputs can be an
+  // arbitrary string.
+  void SetCrlDistributionPointUrl(const std::string_view& url);
 
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |urls| in distributionPoints.fullName.
   void SetCrlDistributionPointUrls(const std::vector<GURL>& urls);
+  // Same as |SetCrlDistributionPointUrls| above, but the inputs can be
+  // arbitrary strings.
+  void SetCrlDistributionPointUrls(const std::vector<std::string>& urls);
 
   // Sets the issuer bytes that will be encoded into the generated certificate.
   // If this is not called, or |issuer_tlv| is empty, the subject field from
