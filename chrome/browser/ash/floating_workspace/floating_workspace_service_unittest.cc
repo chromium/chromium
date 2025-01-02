@@ -60,6 +60,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -420,7 +421,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
                                       /*is_child=*/false);
     CoreAccountInfo account_info;
     account_info.email = kTestAccount;
-    account_info.gaia = "gaia";
+    account_info.gaia = GaiaId("gaia");
     account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
     test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
 
@@ -2303,7 +2304,7 @@ class FloatingWorkspaceServiceMultiUserTest
                                       /*is_child=*/false);
     CoreAccountInfo account_info;
     account_info.email = kTestAccount2;
-    account_info.gaia = "gaia2";
+    account_info.gaia = GaiaId("gaia2");
     account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
     test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account_info);
     fake_desk_sync_service2_ =
