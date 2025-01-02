@@ -18,7 +18,8 @@ import copy
 import pytest
 from anys import ANY_STR
 from test_helpers import (ANY_SHARED_ID, ANY_UUID, execute_command, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe)
+                          read_JSON_message, send_JSON_command,
+                          stabilize_key_values, subscribe)
 
 
 def _strip_handle(obj):
@@ -394,8 +395,8 @@ async def test_serialization_internal_id(websocket, context_id):
             "method": "script.evaluate",
             "params": {
                 "expression": "(()=>{"
-                              " const foo={a: []};"
-                              " const bar=[1,2];"
+                              " const foo={a: [], document};"
+                              " const bar=[1,2, document];"
                               " const result={1: foo, 2: foo, 3: bar, 4: bar};"
                               " result.self=result;"
                               " return result;"
@@ -408,26 +409,35 @@ async def test_serialization_internal_id(websocket, context_id):
             }
         })
 
-    internal_id_1 = result["result"]["internalId"]
-    internal_id_2 = result["result"]["value"][0][1]["internalId"]
-    internal_id_3 = result["result"]["value"][2][1]["internalId"]
+    stabilize_key_values(result, ["internalId", "sharedId"])
 
     assert result["result"] == {
         "type": "object",
         "handle": ANY_STR,
-        "internalId": internal_id_1,
+        "internalId": "stable_4",
         "value": [[
             '1', {
                 "type": "object",
                 "value": [["a", {
                     "type": "array",
                     "value": []
-                }]],
-                "internalId": internal_id_2
+                }],
+                          [
+                              'document', {
+                                  'internalId': 'stable_1',
+                                  'sharedId': 'stable_0',
+                                  'type': 'node',
+                                  'value': {
+                                      'childNodeCount': 1,
+                                      'nodeType': 9,
+                                  }
+                              }
+                          ]],
+                "internalId": "stable_2",
             }
         ], ['2', {
             "type": "object",
-            "internalId": internal_id_2
+            "internalId": "stable_2",
         }],
                   [
                       '3', {
@@ -438,16 +448,18 @@ async def test_serialization_internal_id(websocket, context_id):
                           }, {
                               "type": "number",
                               "value": 2
+                          }, {
+                              'internalId': 'stable_1',
+                              'type': 'node',
                           }],
-                          "internalId": internal_id_3
+                          "internalId": "stable_3",
                       }
                   ], ['4', {
                       "type": "array",
-                      "internalId": internal_id_3
-                  }],
-                  ["self", {
+                      "internalId": "stable_3",
+                  }], ["self", {
                       "type": "object",
-                      "internalId": internal_id_1
+                      "internalId": "stable_4",
                   }]],
     }
 

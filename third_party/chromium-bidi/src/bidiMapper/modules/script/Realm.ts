@@ -112,15 +112,18 @@ export abstract class Realm {
         internalIdMap.set(weakLocalObjectReference, uuidv4());
       }
 
-      (deepSerializedValue as any).internalId = internalIdMap.get(
-        weakLocalObjectReference,
-      );
+      (
+        deepSerializedValue as Protocol.Runtime.DeepSerializedValue & {
+          internalId?: string;
+        }
+      ).internalId = internalIdMap.get(weakLocalObjectReference);
       delete deepSerializedValue['weakLocalObjectReference'];
     }
 
     if (
-      (deepSerializedValue as any).type === 'node' &&
-      Object.hasOwn(deepSerializedValue?.value, 'frameId')
+      deepSerializedValue.type === 'node' &&
+      deepSerializedValue.value &&
+      Object.hasOwn(deepSerializedValue.value, 'frameId')
     ) {
       // `frameId` is not needed in BiDi as it is not yet specified.
       delete deepSerializedValue.value['frameId'];
@@ -128,7 +131,7 @@ export abstract class Realm {
 
     // Platform object is a special case. It should have only `{type: object}`
     // without `value` field.
-    if ((deepSerializedValue as any).type === 'platformobject') {
+    if ((deepSerializedValue.type as string) === 'platformobject') {
       return {type: 'object'};
     }
 
