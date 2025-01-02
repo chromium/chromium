@@ -12,6 +12,9 @@ include_rules = [
   "+google_apis",
   "+services/network/test",
   "+mojo/public/cpp/base",
+  "+third_party/private-join-and-compute/src",
+  "+third_party/private-join-and-compute/base",
+  "+third_party/fuzztest",
 ]
 
 # time.h and statusor.h are required for quiche integration

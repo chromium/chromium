@@ -10,7 +10,7 @@ Security Critical: yes
 Shipped: yes
 
 Description:
-The package contains a communicative cipher. It's used to communicate with the leak detection Google server.
+The package contains a communicative cipher. It's used to communicate with the leak detection Google server. The package is used from ip_protection component to re-randomize elgamal ciphers.
 
 Local Modifications:
 Stripped all the dependencies except for BoringSSL. chromium_patch.h is the only new file. Other modifications are removing the includes, fixing the macroses to those used in Chrome and removing unused functions and classes. The diff files are in order of modifications:
