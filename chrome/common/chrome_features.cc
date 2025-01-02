@@ -700,12 +700,15 @@ BASE_FEATURE(kInternalOnlyUisPref,
              "InternalOnlyUisPref",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Enables automatic updates of Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppAutomaticUpdates,
              "IsolatedWebAppAutomaticUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
 
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.

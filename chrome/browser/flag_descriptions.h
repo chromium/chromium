@@ -902,10 +902,10 @@ extern const char kEnableGamepadMultitouchDescription[];
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 
-#if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableIsolatedWebAppAutomaticUpdatesName[];
 extern const char kEnableIsolatedWebAppAutomaticUpdatesDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kEnableIsolatedWebAppUnmanagedInstallName[];
 extern const char kEnableIsolatedWebAppUnmanagedInstallDescription[];
 

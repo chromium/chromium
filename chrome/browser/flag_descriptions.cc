@@ -1440,13 +1440,13 @@ const char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
 
-#if BUILDFLAG(IS_CHROMEOS)
 const char kEnableIsolatedWebAppAutomaticUpdatesName[] =
     "Enable automatic updates of Isolated Web Apps";
 const char kEnableIsolatedWebAppAutomaticUpdatesDescription[] =
     "Enables experimental support for automatically updating Isolated Web "
     "Apps.";
 
+#if BUILDFLAG(IS_CHROMEOS)
 const char kEnableIsolatedWebAppUnmanagedInstallName[] =
     "Enable Isolated Web App unmanaged installation";
 const char kEnableIsolatedWebAppUnmanagedInstallDescription[] =

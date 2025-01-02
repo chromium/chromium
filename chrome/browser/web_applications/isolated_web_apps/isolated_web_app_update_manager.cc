@@ -151,7 +151,6 @@ namespace {
 using IwaBundleIdToUpdateOptionsMap =
     base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>;
 
-#if BUILDFLAG(IS_CHROMEOS)
 IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
     Profile* profile) {
   IwaBundleIdToUpdateOptionsMap result;
@@ -177,6 +176,7 @@ IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
   return result;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
   IwaBundleIdToUpdateOptionsMap result;
   std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
@@ -195,17 +195,14 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
 
 IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
     Profile* profile) {
-// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
 #if BUILDFLAG(IS_CHROMEOS)
   // DeviceLocalAccounts policy defines an IWA used in kiosk mode.
   // IsolatedWebAppInstallForceList is used in other session types.
   if (chromeos::IsKioskSession()) {
     return GetKioskPolicyIsolatedWebApps();
   }
-  return GetForceInstalledPolicyIsolatedWebApps(profile);
-#else
-  return {};
 #endif
+  return GetForceInstalledPolicyIsolatedWebApps(profile);
 }
 
 bool ShouldProceedWithVersionChange(
@@ -251,16 +248,10 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
           !profile.IsOffTheRecord() &&
-#if BUILDFLAG(IS_CHROMEOS)
           base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates)
-#else
-          false
-#endif
-              ),
+              features::kIsolatedWebAppAutomaticUpdates)),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
-      task_queue_{*this} {
-}
+      task_queue_{*this} {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 

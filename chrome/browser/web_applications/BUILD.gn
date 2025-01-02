@@ -1062,6 +1062,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_file_handling_browsertest.cc",
     "isolated_web_apps/isolated_web_app_install_prepare_apply_update_browsertest.cc",
     "isolated_web_apps/isolated_web_app_uninstall_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_update_manager_browsertest.cc",
     "isolated_web_apps/isolated_web_app_url_loader_factory_browsertest.cc",
     "isolated_web_apps/key_distribution/iwa_key_distribution_component_installer_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
@@ -1096,10 +1097,6 @@ source_set("web_applications_browser_tests") {
       "isolated_web_apps/isolated_web_app_managed_configuration_api_browsertest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc",
       "web_app_run_on_os_login_manager_browsertest.cc",
-
-      # TODO(crbug.com/40274058): Support automatic IWA updates on other
-      # platforms.
-      "isolated_web_apps/isolated_web_app_update_manager_browsertest.cc",
     ]
   }
 

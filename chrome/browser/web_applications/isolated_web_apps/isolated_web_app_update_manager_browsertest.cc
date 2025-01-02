@@ -126,13 +126,13 @@ constexpr std::string_view kServiceWorkerScript = R"(
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 const UpdateChannel kRandomChannel = UpdateChannel::Create("random").value();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::DirectoryExists(
       CHECK_DEREF(profile).GetPath().Append(kIwaDirName).Append(directory)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class UpdateDiscoveryTaskResultWaiter
     : public IsolatedWebAppUpdateManager::Observer {
@@ -1082,11 +1082,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               /*integrity_block_data=*/_)));
 }
 
-// TODO(crbug.com/40929933): Session restore does not restore app windows on
-// Lacros. Forcing the IWA to open via the `--app-id` command line switch is
-// also not viable, because `WebAppBrowserTestBase` expects a `browser()`
-// to open before the `WebAppProvider` is ready.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Session restore related tests that can only be run in ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        PRE_AppliesUpdateOnStartupIfAppWindowNeverCloses) {
@@ -1212,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   CheckBundleExists(profile(), app_update_location);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
