@@ -166,7 +166,8 @@ InterestGroup::Ad::Ad(
     std::optional<std::vector<std::string>>
         selectable_buyer_and_seller_reporting_ids,
     std::optional<std::string> ad_render_id,
-    std::optional<std::vector<url::Origin>> allowed_reporting_origins)
+    std::optional<std::vector<url::Origin>> allowed_reporting_origins,
+    std::optional<std::string> creative_scanning_metadata)
     : size_group(std::move(size_group)),
       metadata(std::move(metadata)),
       buyer_reporting_id(std::move(buyer_reporting_id)),
@@ -174,7 +175,8 @@ InterestGroup::Ad::Ad(
       selectable_buyer_and_seller_reporting_ids(
           std::move(selectable_buyer_and_seller_reporting_ids)),
       ad_render_id(std::move(ad_render_id)),
-      allowed_reporting_origins(std::move(allowed_reporting_origins)) {
+      allowed_reporting_origins(std::move(allowed_reporting_origins)),
+      creative_scanning_metadata(std::move(creative_scanning_metadata)) {
   if (render_gurl.is_valid()) {
     render_url_ = render_gurl.spec();
   }
@@ -210,19 +212,13 @@ size_t InterestGroup::Ad::EstimateSize() const {
       size += origin.Serialize().size();
     }
   }
+  if (creative_scanning_metadata) {
+    size += creative_scanning_metadata->size();
+  }
   return size;
 }
 
-bool InterestGroup::Ad::operator==(const Ad& other) const {
-  return std::tie(render_url_, size_group, metadata, buyer_reporting_id,
-                  buyer_and_seller_reporting_id,
-                  selectable_buyer_and_seller_reporting_ids, ad_render_id,
-                  allowed_reporting_origins) ==
-         std::tie(other.render_url_, other.size_group, other.metadata,
-                  other.buyer_reporting_id, other.buyer_and_seller_reporting_id,
-                  other.selectable_buyer_and_seller_reporting_ids,
-                  other.ad_render_id, other.allowed_reporting_origins);
-}
+bool InterestGroup::Ad::operator==(const Ad& other) const = default;
 
 InterestGroup::InterestGroup() = default;
 InterestGroup::~InterestGroup() = default;
@@ -423,6 +419,7 @@ bool InterestGroup::IsValid() const {
   return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
 }
 
+// If this is changed, also change blink::EstimateBlinkInterestGroupSize().
 size_t InterestGroup::EstimateSize() const {
   size_t size = 0u;
   size += owner.Serialize().size();

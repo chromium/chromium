@@ -136,6 +136,11 @@ class InterestGroupStorageTest : public testing::Test {
   // in that version will be added. By default, all fields for the current
   // version are added.
   //
+  // For best coverage, changes within the fields that don't require any
+  // active database migration (e.g. adding an optional field to a proto) should
+  // still get their own version number with `version_changed_ig_fields`
+  // set to true.
+  //
   // If non-null, *version_changed_ig_fields will be set indicating if
   // `version_number` changed any new interest group fields when compared to
   // `version_number` - 1, if it exists. (Some versions merely changed the
@@ -196,6 +201,10 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 31:
+        result.ads.value()[0].creative_scanning_metadata = "scan 1";
+        result.ad_components.value()[1].creative_scanning_metadata = "scan 2";
+        ABSL_FALLTHROUGH_INTENDED;
       case 30:
         // Compressed AdsProto, but introduced no new fields.
         ABSL_FALLTHROUGH_INTENDED;
@@ -2989,7 +2998,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
     }
 
     // Make sure the database still works if we open it again.
@@ -3002,7 +3011,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
 
       bool version_changed_ig_fields;
       blink::InterestGroup next_version_expected =
@@ -3011,7 +3020,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
         // Make sure IgExpect[Not]EqualsForTesting() gets updated to compare the
         // newly introduced field(s).
         next_version_expected.expiry = actual.expiry;
-        IgExpectNotEqualsForTesting(next_version_expected, actual);
+        IgExpectNotEqualsForTesting(actual, next_version_expected);
       }
     }
 

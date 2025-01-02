@@ -143,6 +143,7 @@ size_t EstimateBlinkInterestGroupSize(
           size += origin->ToString().length();
         }
       }
+      size += ad->creative_scanning_metadata.length();
     }
   }
 
@@ -152,6 +153,7 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->size_group.length();
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
+      size += ad->creative_scanning_metadata.length();
     }
   }
 

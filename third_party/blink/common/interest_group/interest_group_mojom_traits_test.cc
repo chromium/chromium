@@ -447,6 +447,22 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAdsWithCreativeScanningMetadata) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(GURL(kUrl1),
+                                   /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(GURL(kUrl2),
+                                   /*metadata=*/"[]");
+  interest_group.ads->emplace_back(GURL("https://example.org/"),
+                                   /*metadata=*/"[]");
+  interest_group.ads.value()[0].creative_scanning_metadata = "hi";
+  interest_group.ads.value()[1].creative_scanning_metadata = "there";
+  interest_group.ads.value()[2].creative_scanning_metadata = std::nullopt;
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();

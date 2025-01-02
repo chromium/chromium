@@ -41,6 +41,12 @@ struct InterestGroupAd {
   // receive reports with macros. All origins must be HTTPS. Only meaningful in
   // `InterestGroup.ads`, but ignored in `InterestGroup.ad_components`.
   array<url.mojom.Origin>? allowed_reporting_origins;
+
+  // Optional metadata sent to trusted seller signals server in V1 protocol,
+  // ostensively to help do things like scan creatives against malware.
+  // This is opaque to Chrome, and will be passed to the server URL verbatim
+  // (modulo escaping required by being a query param).
+  string? creative_scanning_metadata;
 };
 
 // The maximum size of a valid interest group in bytes.

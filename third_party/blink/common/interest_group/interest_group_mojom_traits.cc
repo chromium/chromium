@@ -22,7 +22,8 @@ bool StructTraits<
           &out->selectable_buyer_and_seller_reporting_ids) ||
       !data.ReadMetadata(&out->metadata) ||
       !data.ReadAdRenderId(&out->ad_render_id) ||
-      !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins)) {
+      !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins) ||
+      !data.ReadCreativeScanningMetadata(&out->creative_scanning_metadata)) {
     return false;
   }
   return true;

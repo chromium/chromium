@@ -4647,6 +4647,47 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
           /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupCreativeScanningMetadata) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.ads[0]))");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
+
+  interest_group_ads_[0].creative_scanning_metadata = "123";
+  interest_group_ad_components_.value()[0].creative_scanning_metadata = "456";
+  // Not set because the feature is off.
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.ads[0]))");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
+}
+
+class BidderWorkletCreativeScanningTest : public BidderWorkletTest {
+ public:
+  BidderWorkletCreativeScanningTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletCreativeScanningTest,
+       GenerateBidInterestGroupCreativeScanningMetadata) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.ads[0]))");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(!('creativeScanningMetadata' in interestGroup.adComponents[0]))");
+
+  interest_group_ads_[0].creative_scanning_metadata = "123";
+  interest_group_ad_components_.value()[0].creative_scanning_metadata = "456";
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(interestGroup.ads[0].creativeScanningMetadata === "123")");
+  RunGenerateBidExpectingExpressionIsTrue(
+      R"(interestGroup.adComponents[0].creativeScanningMetadata === "456")");
+}
+
 // Test multiple GenerateBid calls on a single worklet, in parallel. Do this
 // twice, once before the worklet has loaded its Javascript, and once after, to
 // make sure both cases work.

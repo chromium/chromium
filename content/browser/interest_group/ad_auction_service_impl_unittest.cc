@@ -1569,7 +1569,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
                   "buyerReportingId": "ignored1",
                   "buyerAndSellerReportingId": "ignored2",
                   "adRenderId": "456def",
-                  "allowedReportingOrigins": ["https://ignored.test"]
+                  "allowedReportingOrigins": ["https://ignored.test"],
+                  "creativeScanningMetadata": "please check"
                  }],
 "adSizes": {"size_new": {"width": "300px", "height": "150px"}},
 "sizeGroups": {"group_new": ["size_new"]},
@@ -1737,6 +1738,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       group.ad_components.value()[0].allowed_reporting_origins.has_value());
   ASSERT_TRUE(group.ad_components.value()[0].ad_render_id.has_value());
   EXPECT_EQ(group.ad_components.value()[0].ad_render_id.value(), "456def");
+  ASSERT_TRUE(
+      group.ad_components.value()[0].creative_scanning_metadata.has_value());
+  EXPECT_EQ(group.ad_components.value()[0].creative_scanning_metadata.value(),
+            "please check");
   ASSERT_TRUE(group.ad_sizes.has_value());
   ASSERT_EQ(group.ad_sizes->size(), 1u);
   EXPECT_EQ(group.ad_sizes->at("size_new"),

@@ -2077,6 +2077,10 @@
       status: "test",
     },
     {
+      name: "FledgeTrustedSignalsKVv1CreativeScanning",
+      status: "test",
+    },
+    {
       name: "FledgeTrustedSignalsKVv2Support",
       status: "test",
     },

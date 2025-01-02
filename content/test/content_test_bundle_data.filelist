@@ -5599,10 +5599,10 @@ data/accessibility/mac/methods/accessibility-is-ignored-expected.txt
 data/accessibility/mac/methods/accessibility-is-ignored.html
 data/accessibility/mac/methods/accessibility-label-expected.txt
 data/accessibility/mac/methods/accessibility-label.html
-data/accessibility/mac/methods/accessibility-number-of-characters-expected.txt
-data/accessibility/mac/methods/accessibility-number-of-characters.html
 data/accessibility/mac/methods/accessibility-linked-ui-elements-expected.txt
 data/accessibility/mac/methods/accessibility-linked-ui-elements.html
+data/accessibility/mac/methods/accessibility-number-of-characters-expected.txt
+data/accessibility/mac/methods/accessibility-number-of-characters.html
 data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
 data/accessibility/mac/methods/accessibility-placeholder-value.html
 data/accessibility/mac/methods/accessibility-role-description-expected.txt
@@ -7194,6 +7194,7 @@ data/interest_group/auction_only_new_name.wbn.mock-http-headers
 data/interest_group/autogenSchemaV28.sql
 data/interest_group/autogenSchemaV29.sql
 data/interest_group/autogenSchemaV30.sql
+data/interest_group/autogenSchemaV31.sql
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js
@@ -7481,9 +7482,9 @@ data/mixed-content/redundant-cert-error-in-iframe.html
 data/mojo_bindings_web_test.test-mojom
 data/mojo_bindings_web_test_types.test-mojom
 data/mojo_web_test_helper.test-mojom
+data/navigate-has-ua-visual-transition.html
 data/navigate_on_load.html
 data/navigate_opener.html
-data/navigate-has-ua-visual-transition.html
 data/navigation_controller/beforeunload_dialog.html
 data/navigation_controller/beforeunload_replacestate_1.html
 data/navigation_controller/beforeunload_replacestate_2.html

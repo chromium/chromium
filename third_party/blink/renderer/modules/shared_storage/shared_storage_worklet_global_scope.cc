@@ -142,6 +142,9 @@ Member<AuctionAd> ConvertMojomAdToIDLAd(
     }
     ad->setAllowedReportingOrigins(std::move(allowed_reporting_origins));
   }
+  if (mojom_ad->creative_scanning_metadata) {
+    ad->setCreativeScanningMetadata(mojom_ad->creative_scanning_metadata);
+  }
 
   return ad;
 }

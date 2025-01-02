@@ -238,8 +238,9 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 29 adds selectableBuyerAndSellerReportingIds field to ad object.
 // Version 30 compresses the AdsProto field using Snappy compression and runs a
 // VACUUM command.
+// Version 31 adds creative_scanning_metadata field to ad object.
 
-const int kCurrentVersionNumber = 30;
+const int kCurrentVersionNumber = 31;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -432,6 +433,9 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
             allowed_reporting_origin.Serialize());
       }
     }
+    if (ad.creative_scanning_metadata.has_value()) {
+      ad_proto->set_creative_scanning_metadata(*ad.creative_scanning_metadata);
+    }
   }
   return ad_protos;
 }
@@ -566,6 +570,10 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
       }
       ad.allowed_reporting_origins =
           std::move(allowed_reporting_origins_vector);
+    }
+    if (ad_proto.has_creative_scanning_metadata()) {
+      ad.creative_scanning_metadata =
+          std::move(*ad_proto.mutable_creative_scanning_metadata());
     }
   }
   UMA_HISTOGRAM_TIMES("Storage.InterestGroup.AdProtoDeserializationTime",
@@ -3039,6 +3047,9 @@ bool UpgradeDB(sql::Database& db,
         if (!UpgradeV29SchemaToV30(db, meta_table)) {
           return false;
         }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 30:
+        // Conversion is a no-op, just bookkeeping for a proto change.
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }

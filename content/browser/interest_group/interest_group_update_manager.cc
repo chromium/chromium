@@ -495,6 +495,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
       }
     }
+    const std::string* maybe_creative_scanning_metadata =
+        ads_dict->FindString("creativeScanningMetadata");
+    if (maybe_creative_scanning_metadata) {
+      ad.creative_scanning_metadata = *maybe_creative_scanning_metadata;
+    }
     const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
       std::string metadata;

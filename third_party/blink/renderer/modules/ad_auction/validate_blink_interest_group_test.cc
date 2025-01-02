@@ -39,7 +39,8 @@ mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
       /*buyer_and_seller_reporting_id=*/String(),
       /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*metadata=*/String(), /*ad_render_id=*/String(),
-      /*allowed_reporting_origins=*/std::nullopt);
+      /*allowed_reporting_origins=*/std::nullopt,
+      /*creative_scanning_metadata=*/String());
 }
 
 }  // namespace
@@ -146,6 +147,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     mojo_ad1->ad_render_id = String::FromUTF8("\"NotTooLong\"");
     mojo_ad1->allowed_reporting_origins.emplace();
     mojo_ad1->allowed_reporting_origins->emplace_back(kOrigin);
+    mojo_ad1->creative_scanning_metadata = String::FromUTF8("scan me");
     blink_interest_group->ads->push_back(std::move(mojo_ad1));
     auto mojo_ad2 = mojom::blink::InterestGroupAd::New();
     mojo_ad2->render_url =
@@ -165,6 +167,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     auto mojo_ad_component2 = mojom::blink::InterestGroupAd::New();
     mojo_ad_component2->render_url =
         KURL(String::FromUTF8("https://origin.test/foo?component#baz2"));
+    mojo_ad_component2->creative_scanning_metadata =
+        String::FromUTF8("scan this");
     blink_interest_group->ad_components->push_back(
         std::move(mojo_ad_component2));
 
@@ -1031,7 +1035,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
         /*buyer_and_seller_reporting_id=*/String(),
         /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
         /*metadata=*/String(), /*ad_render_id=*/String(),
-        /*allowed_reporting_origins=*/std::nullopt));
+        /*allowed_reporting_origins=*/std::nullopt,
+        /*creative_scanning_metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -1074,7 +1079,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
             /*buyer_and_seller_reporting_id=*/String(),
             /*selectable_buyer_and_seller_reporting_id=*/std::nullopt,
             /*metadata=*/String(), /*ad_render_id=*/String(),
-            /*allowed_reporting_origins=*/std::nullopt));
+            /*allowed_reporting_origins=*/std::nullopt,
+            /*creative_scanning_metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(

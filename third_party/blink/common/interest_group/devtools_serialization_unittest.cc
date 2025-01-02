@@ -270,7 +270,8 @@ TEST(SerializeInterestGroupTest, Basic) {
            GURL("https://example.com/train"), "metadata", "sizegroup", "bid",
            "bsid", std::vector<std::string>{"selectable_id1", "selectable_id2"},
            "ad_render_id",
-           {{url::Origin::Create(GURL("https://reporting.example.org"))}}),
+           {{url::Origin::Create(GURL("https://reporting.example.org"))}},
+           "please scan creative for bad stuff"),
        blink::InterestGroup::Ad(GURL("https://example.com/plane"), "meta2")}};
   ig.ad_components = {{
       {GURL("https://example.com/locomotive"), "meta3"},
@@ -315,7 +316,8 @@ TEST(SerializeInterestGroupTest, Basic) {
       "selectableBuyerAndSellerReportingIds": [ "selectable_id1", "selectable_id2" ],
       "buyerReportingId": "bid",
       "metadata": "metadata",
-      "renderURL": "https://example.com/train"
+      "renderURL": "https://example.com/train",
+      "creativeScanningMetadata": "please scan creative for bad stuff"
     }, {
       "metadata": "meta2",
       "renderURL": "https://example.com/plane"

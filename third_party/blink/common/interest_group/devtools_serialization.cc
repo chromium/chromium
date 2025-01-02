@@ -302,6 +302,8 @@ base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
   SerializeIntoDict("adRenderId", ad.ad_render_id, result);
   SerializeIntoDict("allowedReportingOrigins", ad.allowed_reporting_origins,
                     result);
+  SerializeIntoDict("creativeScanningMetadata", ad.creative_scanning_metadata,
+                    result);
   return base::Value(std::move(result));
 }
 
