@@ -61,6 +61,13 @@ public class CoreAccountInfo {
         return mGaiaId;
     }
 
+    // TODO(crbug.com/380416867): Remove this API once all callers, including internal ones, are
+    // migrated.
+    /** Returns the Gaia ID in string form */
+    public String getGaiaIdAsString() {
+        return mGaiaId;
+    }
+
     @Override
     public String toString() {
         return String.format("CoreAccountInfo{id[%s], name[%s]}", getId(), getEmail());
@@ -119,8 +126,17 @@ public class CoreAccountInfo {
         return accountInfo == null ? null : accountInfo.getGaiaId();
     }
 
-    /** Creates a {@link CoreAccountInfo} object from email and gaiaID. */
+    /**
+     * Creates a {@link CoreAccountInfo} object from email and string representation of a gaia ID.
+     */
+    // TODO(crbug.com/380416867): Remove this API once all callers, including internal ones, are
+    // migrated.
     public static CoreAccountInfo createFromEmailAndGaiaId(String email, String gaiaId) {
         return new CoreAccountInfo(new CoreAccountId(gaiaId), email, gaiaId);
+    }
+
+    /** Creates a {@link CoreAccountInfo} object from email and gaiaID. */
+    public static CoreAccountInfo createFromEmailAndGaiaId(String email, GaiaId gaiaId) {
+        return new CoreAccountInfo(new CoreAccountId(gaiaId.toString()), email, gaiaId.toString());
     }
 }

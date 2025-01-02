@@ -16,6 +16,7 @@
 #include "components/signin/public/android/jni_headers/AccountInfo_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountId_jni.h"
 #include "components/signin/public/android/jni_headers/CoreAccountInfo_jni.h"
+#include "components/signin/public/android/jni_headers/GaiaId_jni.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #endif
@@ -236,6 +237,13 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaCoreAccountId(
       env, base::android::ConvertUTF8ToJavaString(env, account_id.ToString()));
 }
 
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaGaiaId(
+    JNIEnv* env,
+    const GaiaId& gaia_id) {
+  CHECK(!gaia_id.empty());
+  return signin::Java_GaiaId_Constructor(env, gaia_id.ToString());
+}
+
 CoreAccountInfo ConvertFromJavaCoreAccountInfo(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_core_account_info) {
@@ -280,4 +288,11 @@ CoreAccountId ConvertFromJavaCoreAccountId(
           signin::Java_CoreAccountId_getId(env, j_core_account_id)));
   return id;
 }
+
+GaiaId ConvertFromJavaGaiaId(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& j_gaia_id) {
+  CHECK(j_gaia_id);
+  return GaiaId(signin::Java_GaiaId_toString(env, j_gaia_id));
+}
+
 #endif
