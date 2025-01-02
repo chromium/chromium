@@ -74,6 +74,8 @@ const CGFloat kTopBarLargeInset = 20;
   UIView* _border;
 
   TabGroupSnapshotsView* _groupSnapshotsView;
+
+  UIViewController* _facePileViewController;
 }
 
 // `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
@@ -210,8 +212,7 @@ const CGFloat kTopBarLargeInset = 20;
   self.selected = NO;
   self.opacity = 1.0;
   self.hidden = NO;
-  self.facePileViewController = nil;
-  self.facePileParentViewController = nil;
+  [self setFacePileViewController:nil parentViewController:nil];
 }
 
 #pragma mark - UIAccessibility
@@ -319,34 +320,30 @@ const CGFloat kTopBarLargeInset = 20;
   super.alpha = _opacity;
 }
 
-- (void)setFacePileViewController:(UIViewController*)facePileViewController {
-  // TODO(crbug.com/375590170): Update the UI for the `facePileViewController's
-  // view` empty state.
-  if (!_facePileParentViewController ||
-      _facePileViewController == facePileViewController) {
+- (void)setFacePileViewController:(UIViewController*)facePileViewController
+             parentViewController:(UIViewController*)parentViewController {
+  if (_facePileViewController == facePileViewController) {
     return;
   }
 
-  if (_facePileViewController) {
-    [_facePileViewController willMoveToParentViewController:nil];
-    [_facePileViewController.view removeFromSuperview];
-    [_facePileViewController removeFromParentViewController];
-  }
+  [_facePileViewController willMoveToParentViewController:nil];
+  [_facePileViewController.view removeFromSuperview];
+  [_facePileViewController removeFromParentViewController];
 
   _facePileViewController = facePileViewController;
   _groupColorView.hidden = _facePileViewController != nil;
 
   if (_facePileViewController) {
-    [_facePileParentViewController
-        addChildViewController:_facePileViewController];
+    CHECK(parentViewController);
+    [parentViewController addChildViewController:_facePileViewController];
     UIView* facePileView = _facePileViewController.view;
     [_facePileContainerView addSubview:facePileView];
     [_facePileViewController
-        didMoveToParentViewController:_facePileParentViewController];
+        didMoveToParentViewController:parentViewController];
     facePileView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(facePileView, _facePileContainerView);
-    [self updateTopBarConstraints];
   }
+  [self updateTopBarConstraints];
 }
 
 #pragma mark - Private
@@ -362,9 +359,11 @@ const CGFloat kTopBarLargeInset = 20;
 
   _facePileContainerView = [[UIView alloc] init];
   _facePileContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_facePileContainerView
-      setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
-                        forAxis:UILayoutConstraintAxisHorizontal];
+
+  NSLayoutConstraint* facePileSmallWidth =
+      [_facePileContainerView.widthAnchor constraintEqualToConstant:0];
+  facePileSmallWidth.priority = UILayoutPriorityDefaultLow;
+  facePileSmallWidth.active = YES;
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;

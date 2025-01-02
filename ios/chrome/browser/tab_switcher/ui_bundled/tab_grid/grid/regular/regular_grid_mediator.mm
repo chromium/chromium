@@ -53,7 +53,7 @@ using ScopedTabGroupSyncObservation =
                             tab_groups::TabGroupSyncService::Observer>;
 
 // The preferred size in points for the avatar icons.
-constexpr CGFloat kFacePileAvatarSize = 20;
+constexpr CGFloat kFacePileAvatarSize = 16;
 
 }  // namespace
 
