@@ -35,13 +35,6 @@ BASE_FEATURE(kTabGroupsSaveV2,
              "TabGroupsSaveV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This flag controls the UI update made to saved tab groups as well as model
-// and sync support for pinning saved tab groups.
-BASE_FEATURE(kTabGroupsSaveUIUpdate,
-             "TabGroupsSaveUIUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
-
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will use the TabGroupSyncService. When disabled, desktop platforms will
 // continue to use SavedTabGroupKeyedService.
@@ -103,7 +96,7 @@ bool IsTabGroupsSaveV2Enabled() {
 }
 
 bool IsTabGroupsSaveUIUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsSaveUIUpdate);
+  return true;
 }
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {

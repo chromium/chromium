@@ -3677,11 +3677,6 @@ const char kCompactModeDescription[] =
     "(tabstrip, toolbar, bookmarks bar, etc.) to allow more space for the web "
     "contents";
 
-const char kTabGroupsSaveUIUpdateId[] = "tab-groups-save-ui-update";
-const char kTabGroupsSaveUIUpdateName[] = "Tab Groups Save UI Update";
-const char kTabGroupsSaveUIUpdateDescription[] =
-    "Enables saved tab group pinning, everything menu and bookmarks bar change";
-
 const char kTabGroupSyncServiceDesktopMigrationId[] =
     "tab-group-sync-service-desktop-migration";
 const char kTabGroupSyncServiceDesktopMigrationName[] =

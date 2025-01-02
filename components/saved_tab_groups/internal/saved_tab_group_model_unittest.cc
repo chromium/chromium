@@ -48,21 +48,11 @@ MATCHER_P(HasGroupId, guid, "") {
 }
 
 // Serves to test the functions in SavedTabGroupModelObserver.
-class SavedTabGroupModelObserverTest
-    : public ::testing::Test,
-      public SavedTabGroupModelObserver,
-      public ::testing::WithParamInterface<bool> {
+class SavedTabGroupModelObserverTest : public ::testing::Test,
+                                       public SavedTabGroupModelObserver {
  protected:
-  SavedTabGroupModelObserverTest() {
-    if (IsV2UIEnabled()) {
-      feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
-    }
-  }
+  SavedTabGroupModelObserverTest() = default;
   ~SavedTabGroupModelObserverTest() override = default;
-
-  bool IsV2UIEnabled() const { return GetParam(); }
 
   void SetUp() override {
     saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
@@ -138,23 +128,15 @@ class SavedTabGroupModelObserverTest
 };
 
 // Serves to test the functions in SavedTabGroupModel.
-class SavedTabGroupModelTest : public ::testing::Test,
-                               public ::testing::WithParamInterface<bool> {
+class SavedTabGroupModelTest : public ::testing::Test {
  protected:
   SavedTabGroupModelTest()
       : id_1_(base::Uuid::GenerateRandomV4()),
         id_2_(base::Uuid::GenerateRandomV4()),
         id_3_(base::Uuid::GenerateRandomV4()) {
-    if (IsV2UIEnabled()) {
-      feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
-    }
   }
 
   ~SavedTabGroupModelTest() override { RemoveTestData(); }
-
-  bool IsV2UIEnabled() const { return GetParam(); }
 
   void SetUp() override {
     saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
@@ -230,14 +212,14 @@ class SavedTabGroupModelTest : public ::testing::Test,
 };
 
 // Tests that SavedTabGroupModel::Count holds 3 elements initially.
-TEST_P(SavedTabGroupModelTest, InitialCountThree) {
+TEST_F(SavedTabGroupModelTest, InitialCountThree) {
   EXPECT_EQ(saved_tab_group_model_->Count(), 3);
   EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), 3u);
 }
 
 // Tests that SavedTabGroupModel::Contains returns the 3, the number of starting
 // ids added to the model.
-TEST_P(SavedTabGroupModelTest, InitialGroupsAreSaved) {
+TEST_F(SavedTabGroupModelTest, InitialGroupsAreSaved) {
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_1_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_2_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_3_));
@@ -247,21 +229,15 @@ TEST_P(SavedTabGroupModelTest, InitialGroupsAreSaved) {
 
 // Tests that the SavedTabGroupModel::GetIndexOf preserves the order the
 // SavedTabGroups were inserted into.
-TEST_P(SavedTabGroupModelTest, InitialOrderAdded) {
-  if (IsV2UIEnabled()) {
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_1_), 2);
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_2_), 1);
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), 0);
-  } else {
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_1_), 0);
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_2_), 1);
-    EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), 2);
-  }
+TEST_F(SavedTabGroupModelTest, InitialOrderAdded) {
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_1_), 2);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_2_), 1);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), 0);
 }
 
 // Tests that the SavedTabGroupModel::IsEmpty has elements and once all elements
 // are removed is empty.
-TEST_P(SavedTabGroupModelTest, ContainsNoElementsOnRemoval) {
+TEST_F(SavedTabGroupModelTest, ContainsNoElementsOnRemoval) {
   EXPECT_FALSE(saved_tab_group_model_->IsEmpty());
   RemoveTestData();
   EXPECT_TRUE(saved_tab_group_model_->IsEmpty());
@@ -269,7 +245,7 @@ TEST_P(SavedTabGroupModelTest, ContainsNoElementsOnRemoval) {
 
 // Tests that the SavedTabGroupModel::Remove removes the correct element given
 // an id.
-TEST_P(SavedTabGroupModelTest, RemovesCorrectElements) {
+TEST_F(SavedTabGroupModelTest, RemovesCorrectElements) {
   saved_tab_group_model_->RemovedLocally(id_3_);
   EXPECT_FALSE(saved_tab_group_model_->Contains(id_3_));
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_2_));
@@ -277,14 +253,14 @@ TEST_P(SavedTabGroupModelTest, RemovesCorrectElements) {
 }
 
 // Tests that the SavedTabGroupModel only adds unique TabGroupIds.
-TEST_P(SavedTabGroupModelTest, OnlyAddUniqueElements) {
+TEST_F(SavedTabGroupModelTest, OnlyAddUniqueElements) {
   EXPECT_EQ(saved_tab_group_model_->Count(), 3);
   EXPECT_CHECK_DEATH(AddTestData());
 }
 
 // Tests that SavedTabGroupModel::Add adds an extra element into the model and
 // keeps the data.
-TEST_P(SavedTabGroupModelTest, AddNewElement) {
+TEST_F(SavedTabGroupModelTest, AddNewElement) {
   base::Uuid id_4 = base::Uuid::GenerateRandomV4();
   const std::u16string title_4 = u"Test Test";
   const tab_groups::TabGroupColorId& color_4 =
@@ -300,7 +276,7 @@ TEST_P(SavedTabGroupModelTest, AddNewElement) {
   saved_tab_group_model_->AddedLocally(group_4);
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_4));
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_4), IsV2UIEnabled() ? 0 : 3);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_4), true ? 0 : 3);
   EXPECT_EQ(saved_tab_group_model_->Count(), 4);
 
   const SavedTabGroup* saved_group = saved_tab_group_model_->Get(id_4);
@@ -312,7 +288,7 @@ TEST_P(SavedTabGroupModelTest, AddNewElement) {
 
 // Tests that SavedTabGroupModel::Update updates the correct element if the
 // title or color are different.
-TEST_P(SavedTabGroupModelTest, UpdateElement) {
+TEST_F(SavedTabGroupModelTest, UpdateElement) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   const std::u16string original_title = group->title();
   const tab_groups::TabGroupColorId& original_color = group->color();
@@ -362,7 +338,7 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
 }
 
 // Tests that the correct tabs are added to the correct position in group 1.
-TEST_P(SavedTabGroupModelTest, AddTabToGroup) {
+TEST_F(SavedTabGroupModelTest, AddTabToGroup) {
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "4th group", u"First Tab 4th Group", id_1_, /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -391,7 +367,7 @@ TEST_P(SavedTabGroupModelTest, AddTabToGroup) {
 }
 
 // Tests that the correct tabs are removed from the correct position in group 1.
-TEST_P(SavedTabGroupModelTest, RemoveTabFromGroup) {
+TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "4th group", u"First Tab 4th Group", id_1_, /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -418,7 +394,7 @@ TEST_P(SavedTabGroupModelTest, RemoveTabFromGroup) {
 
 // Tests that a group is removed from the model when the last tab is removed
 // from it.
-TEST_P(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
+TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
@@ -429,7 +405,7 @@ TEST_P(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
 }
 
 // Tests updating a tab in a saved group.
-TEST_P(SavedTabGroupModelTest, UpdateTabInGroup) {
+TEST_F(SavedTabGroupModelTest, UpdateTabInGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
@@ -444,7 +420,7 @@ TEST_P(SavedTabGroupModelTest, UpdateTabInGroup) {
 }
 
 // Tests that the correct tabs are moved in group 1.
-TEST_P(SavedTabGroupModelTest, MoveTabInGroup) {
+TEST_F(SavedTabGroupModelTest, MoveTabInGroup) {
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "4th group", u"First Tab 4th Group", id_1_, /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -468,43 +444,25 @@ TEST_P(SavedTabGroupModelTest, MoveTabInGroup) {
                                  {group->saved_tabs()[0], tab1, tab2});
 }
 
-TEST_P(SavedTabGroupModelTest, MoveElement) {
-  if (IsV2UIEnabled()) {
-    ASSERT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
-    ASSERT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
-    ASSERT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 2);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_1_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 0);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_3_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 1);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
-  } else {
-    ASSERT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
-    ASSERT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
-    ASSERT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 2);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_3_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 0);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_1_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-    saved_tab_group_model_->ReorderGroupLocally(id_2_, 1);
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-  }
+TEST_F(SavedTabGroupModelTest, MoveElement) {
+  ASSERT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
+  ASSERT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
+  ASSERT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 2);
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_1_));
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 0);
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_3_));
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 1);
+  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_3_));
+  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
+  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_1_));
 }
 
-TEST_P(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
+TEST_F(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
   SavedTabGroup shared_group =
       saved_tab_group_model_->Get(id_1_)->CloneAsSharedTabGroup(
           CollaborationId("collaboration"));
@@ -525,7 +483,7 @@ TEST_P(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
       UnorderedElementsAre(Pointee(HasGroupId(shared_group.saved_guid()))));
 }
 
-TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
+TEST_F(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
   std::unique_ptr<SavedTabGroup> group =
       std::make_unique<SavedTabGroup>(*saved_tab_group_model_->Get(id_3_));
 
@@ -535,7 +493,7 @@ TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
   saved_tab_group_model_->LoadStoredEntries({*group}, group->saved_tabs());
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_3_));
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), IsV2UIEnabled() ? 0 : 2);
+  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(id_3_), true ? 0 : 2);
   EXPECT_EQ(saved_tab_group_model_->Count(), 3);
 
   const SavedTabGroup* saved_group = saved_tab_group_model_->Get(id_3_);
@@ -550,7 +508,7 @@ TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
 
 // Tests that merging a group with the same group_id changes the state of the
 // object correctly.
-TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
+TEST_F(SavedTabGroupModelTest, MergeGroupsFromModel) {
   const SavedTabGroup* group1 = saved_tab_group_model_->Get(id_1_);
 
   SavedTabGroup group2(*group1);
@@ -573,7 +531,7 @@ TEST_P(SavedTabGroupModelTest, MergeGroupsFromModel) {
             merged_group->update_time_windows_epoch_micros());
 }
 
-TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
+TEST_F(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   auto guid1 = base::Uuid::GenerateRandomV4();
   auto guid2 = base::Uuid::GenerateRandomV4();
 
@@ -588,13 +546,8 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   EXPECT_EQ(0, group2->position());
 
   // Verify group 2 should be the 1st one in the list.
-  if (IsV2UIEnabled()) {
     ASSERT_THAT(GetSavedTabGroupIds(),
                 testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
-  } else {
-    ASSERT_THAT(GetSavedTabGroupIds(),
-                testing::ElementsAre(guid2, guid1, id_1_, id_2_, id_3_));
-  }
 
   // Change group 2 position from 0 to 1.
   SavedTabGroup updated_group2(*group2);
@@ -614,60 +567,11 @@ TEST_P(SavedTabGroupModelTest, MergePinnedGroupRetainPosition) {
   EXPECT_EQ(1, merged_group->position());
 
   // Verify group 2 should be the 2nd one in the list.
-  if (IsV2UIEnabled()) {
     ASSERT_THAT(GetSavedTabGroupIds(),
                 testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
-  } else {
-    ASSERT_THAT(GetSavedTabGroupIds(),
-                testing::ElementsAre(guid1, guid2, id_1_, id_2_, id_3_));
-  }
 }
 
-TEST_P(SavedTabGroupModelTest, MergeUnpinnedGroupRetainUnpinned) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  auto guid1 = base::Uuid::GenerateRandomV4();
-  auto guid2 = base::Uuid::GenerateRandomV4();
-
-  // Add group 1 at position 0.
-  saved_tab_group_model_->AddedLocally(SavedTabGroup(
-      u"Title 1", tab_groups::TabGroupColorId::kPink, {}, 0, guid1));
-
-  // Add group 2 at position 0.
-  saved_tab_group_model_->AddedLocally(SavedTabGroup(
-      u"Title", tab_groups::TabGroupColorId::kPink, {}, 0, guid2));
-  const SavedTabGroup* group2 = saved_tab_group_model_->Get(guid2);
-  EXPECT_EQ(0, group2->position());
-
-  // Verify group 2 should be the 1st one in the list.
-  ASSERT_THAT(GetSavedTabGroupIds(),
-              testing::ElementsAre(guid2, guid1, id_3_, id_2_, id_1_));
-
-  // Unpin group 2.
-  SavedTabGroup updated_group2(*group2);
-  EXPECT_EQ(0, updated_group2.position());
-  updated_group2.SetPinned(false);
-  EXPECT_EQ(std::nullopt, updated_group2.position());
-
-  // Merge the updated group 2 and verify it's unpinned.
-  const SavedTabGroup* merged_group =
-      saved_tab_group_model_->MergeRemoteGroupMetadata(
-          updated_group2.saved_guid(), updated_group2.title(),
-          updated_group2.color(), updated_group2.position(),
-          updated_group2.creator_cache_guid(),
-          updated_group2.last_updater_cache_guid(),
-          updated_group2.update_time_windows_epoch_micros(),
-          /*updated_by=*/GaiaId());
-  EXPECT_EQ(std::nullopt, merged_group->position());
-
-  // Verify group 2 should place behind group 1.
-  ASSERT_THAT(GetSavedTabGroupIds(),
-              testing::ElementsAre(guid1, guid2, id_3_, id_2_, id_1_));
-}
-
-TEST_P(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
+TEST_F(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
   const GaiaId kCreator("123");
   const GaiaId kUpdater("456");
 
@@ -695,7 +599,7 @@ TEST_P(SavedTabGroupModelTest, MergeSharedTabGroupAttribution) {
 
 // Tests that merging a tab with the same tab_id changes the state of the object
 // correctly.
-TEST_P(SavedTabGroupModelTest, MergeTabsFromModel) {
+TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
   SavedTabGroupTab tab1 = saved_tab_group_model_->Get(id_1_)->saved_tabs()[0];
   SavedTabGroupTab tab2(tab1);
   tab2.SetTitle(u"Updated Title");
@@ -715,7 +619,7 @@ TEST_P(SavedTabGroupModelTest, MergeTabsFromModel) {
 
 // Tests that groups inserted in the model are in order stay inserted in sorted
 // order.
-TEST_P(SavedTabGroupModelTest, GroupsSortedWithInOrderPositions) {
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithInOrderPositions) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -751,7 +655,7 @@ TEST_P(SavedTabGroupModelTest, GroupsSortedWithInOrderPositions) {
 
 // Tests that groups inserted in the model out of order are still inserted in
 // sorted order.
-TEST_P(SavedTabGroupModelTest, GroupsSortedWithOutOfOrderPositions) {
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithOutOfOrderPositions) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -787,7 +691,7 @@ TEST_P(SavedTabGroupModelTest, GroupsSortedWithOutOfOrderPositions) {
 
 // Tests that groups inserted in the model with gaps between the positions are
 // still inserted in sorted order.
-TEST_P(SavedTabGroupModelTest, GroupsSortedWithGapsInPositions) {
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithGapsInPositions) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -824,7 +728,7 @@ TEST_P(SavedTabGroupModelTest, GroupsSortedWithGapsInPositions) {
 
 // Tests that groups inserted in the model with gaps and in decreasing order
 // between the positions are still inserted in increasing sorted order.
-TEST_P(SavedTabGroupModelTest, GroupsSortedWithDecreasingPositions) {
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithDecreasingPositions) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -861,7 +765,7 @@ TEST_P(SavedTabGroupModelTest, GroupsSortedWithDecreasingPositions) {
 
 // Tests that groups inserted in the model with a more recent update time take
 // precedence over groups with the same position.
-TEST_P(SavedTabGroupModelTest, GroupWithSamePositionSortedByUpdateTime) {
+TEST_F(SavedTabGroupModelTest, GroupWithSamePositionSortedByUpdateTime) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -887,7 +791,7 @@ TEST_P(SavedTabGroupModelTest, GroupWithSamePositionSortedByUpdateTime) {
 // Tests that groups inserted in the model with no position are inserted at the
 // back of the model and have their position set to the last index at the time
 // they were inserted.
-TEST_P(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
+TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   RemoveTestData();
 
   // Create an arbitrary number of groups, with the positions the groups should
@@ -914,10 +818,6 @@ TEST_P(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   saved_tab_group_model_->AddedLocally(group_5);
   saved_tab_group_model_->AddedLocally(group_6);
 
-  if (!IsV2UIEnabled()) {
-    groups[5].SetPosition(5);
-  }
-
   EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
 
   // Expect the 6th group to have a position of 5 (0-based indexing).
@@ -933,134 +833,9 @@ TEST_P(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
   }
 }
 
-// Expect the pinned group is added to the front of the list.
-TEST_P(SavedTabGroupModelTest, AddPinnedGroup) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  EXPECT_EQ(3u, saved_tab_group_model_->saved_tab_groups().size());
-  SavedTabGroup group(u"Tab Group", tab_groups::TabGroupColorId::kRed, {},
-                      std::nullopt);
-  group.SetPinned(true);
-  saved_tab_group_model_->AddedLocally(group);
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group.saved_guid()));
-  EXPECT_EQ(4u, saved_tab_group_model_->saved_tab_groups().size());
-}
-
-// Expect pin group to move the 2nd group to the front of the list.
-TEST_P(SavedTabGroupModelTest, PinGroup) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  EXPECT_EQ(3u, saved_tab_group_model_->saved_tab_groups().size());
-  SavedTabGroup group1(u"Tab Group 1", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  group1.SetPinned(true);
-  saved_tab_group_model_->AddedLocally(group1);
-
-  SavedTabGroup group2(u"Tab Group 2", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group2);
-
-  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group2.saved_guid()));
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-
-  EXPECT_FALSE(
-      saved_tab_group_model_->IsGroupPinned(group2.saved_guid()).value());
-  saved_tab_group_model_->TogglePinState(group2.saved_guid());
-  EXPECT_TRUE(
-      saved_tab_group_model_->IsGroupPinned(group2.saved_guid()).value());
-
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group2.saved_guid()));
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-}
-
-// Expect unpin group to move the front group to the 2nd of the list.
-TEST_P(SavedTabGroupModelTest, UnpinGroup) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  EXPECT_EQ(3u, saved_tab_group_model_->saved_tab_groups().size());
-  SavedTabGroup group1(u"Tab Group 1", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  group1.SetPinned(true);
-  saved_tab_group_model_->AddedLocally(group1);
-
-  SavedTabGroup group2(u"Tab Group 2", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  group2.SetPinned(true);
-  saved_tab_group_model_->AddedLocally(group2);
-
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group2.saved_guid()));
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-
-  EXPECT_TRUE(
-      saved_tab_group_model_->IsGroupPinned(group2.saved_guid()).value());
-  saved_tab_group_model_->TogglePinState(group2.saved_guid());
-  EXPECT_FALSE(
-      saved_tab_group_model_->IsGroupPinned(group2.saved_guid()).value());
-
-  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group2.saved_guid()));
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-}
-
-TEST_P(SavedTabGroupModelTest, MigrateSavedTabGroup2FromV1) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  // Add 5 unpinned SavedTabGroups to the model.
-  SavedTabGroup group4(u"Tab Group 4", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group4);
-
-  SavedTabGroup group5(u"Tab Group 5", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group5);
-
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-
-  // Verify orders of the added groups.
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group5.saved_guid()));
-  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group4.saved_guid()));
-  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-  EXPECT_EQ(3, saved_tab_group_model_->GetIndexOf(id_2_));
-  EXPECT_EQ(4, saved_tab_group_model_->GetIndexOf(id_1_));
-
-  // Verify all groups are unpinned.
-  EXPECT_EQ(false,
-            saved_tab_group_model_->IsGroupPinned(group5.saved_guid()).value());
-  EXPECT_EQ(false,
-            saved_tab_group_model_->IsGroupPinned(group4.saved_guid()).value());
-  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_3_).value());
-  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_2_).value());
-  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_1_).value());
-
-  saved_tab_group_model_->MigrateTabGroupSavesUIUpdate();
-
-  // Verify orders of the added groups don't change.
-  EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(group5.saved_guid()));
-  EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(group4.saved_guid()));
-  EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-  EXPECT_EQ(3, saved_tab_group_model_->GetIndexOf(id_2_));
-  EXPECT_EQ(4, saved_tab_group_model_->GetIndexOf(id_1_));
-
-  // Verify the first 4 groups are pinned.
-  EXPECT_EQ(true,
-            saved_tab_group_model_->IsGroupPinned(group5.saved_guid()).value());
-  EXPECT_EQ(true,
-            saved_tab_group_model_->IsGroupPinned(group4.saved_guid()).value());
-  EXPECT_EQ(true, saved_tab_group_model_->IsGroupPinned(id_3_).value());
-  EXPECT_EQ(true, saved_tab_group_model_->IsGroupPinned(id_2_).value());
-  EXPECT_EQ(false, saved_tab_group_model_->IsGroupPinned(id_1_).value());
-}
-
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
 // the model.
-TEST_P(SavedTabGroupModelObserverTest, AddElement) {
+TEST_F(SavedTabGroupModelObserverTest, AddElement) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   saved_tab_group_model_->AddedLocally(group_4);
 
@@ -1079,7 +854,7 @@ TEST_P(SavedTabGroupModelObserverTest, AddElement) {
 
 // Tests that SavedTabGroupModelObserver::Removed passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, RemovedElement) {
+TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   saved_tab_group_model_->AddedLocally(group_4);
   saved_tab_group_model_->RemovedLocally(group_4.saved_guid());
@@ -1095,7 +870,7 @@ TEST_P(SavedTabGroupModelObserverTest, RemovedElement) {
 
 // Tests that SavedTabGroupModelObserver::Updated passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
+TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   group_4.SetLocalGroupId(test::GenerateRandomTabGroupID());
   saved_tab_group_model_->AddedLocally(group_4);
@@ -1124,7 +899,7 @@ TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
 
 // Tests that SavedTabGroupModelObserver::AddedFromSync passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, AddElementFromSync) {
+TEST_F(SavedTabGroupModelObserverTest, AddElementFromSync) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   group_4.SetPosition(0);
   saved_tab_group_model_->AddedFromSync(group_4);
@@ -1144,7 +919,7 @@ TEST_P(SavedTabGroupModelObserverTest, AddElementFromSync) {
 
 // Tests that SavedTabGroupModelObserver::RemovedFromSync passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, RemovedElementFromSync) {
+TEST_F(SavedTabGroupModelObserverTest, RemovedElementFromSync) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   saved_tab_group_model_->AddedLocally(group_4);
   saved_tab_group_model_->RemovedFromSync(group_4.saved_guid());
@@ -1160,7 +935,7 @@ TEST_P(SavedTabGroupModelObserverTest, RemovedElementFromSync) {
 
 // Tests that SavedTabGroupModelObserver::UpdatedFromSync passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, UpdatedElementFromSync) {
+TEST_F(SavedTabGroupModelObserverTest, UpdatedElementFromSync) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
   saved_tab_group_model_->AddedLocally(group_4);
 
@@ -1188,7 +963,7 @@ TEST_P(SavedTabGroupModelObserverTest, UpdatedElementFromSync) {
 
 // Verify that SavedTabGroupModel::OnGroupClosedInTabStrip passes the correct
 // index.
-TEST_P(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
+TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
   group_4.SetLocalGroupId(tab_group_id);
@@ -1213,7 +988,7 @@ TEST_P(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
 
 // Tests that SavedTabGroupModelObserver::Moved passes the correct
 // element from the model.
-TEST_P(SavedTabGroupModelObserverTest, MoveElement) {
+TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   SavedTabGroup stg_1(std::u16string(u"stg_1"),
                       tab_groups::TabGroupColorId::kGrey, {}, std::nullopt,
                       base::Uuid::GenerateRandomV4());
@@ -1231,18 +1006,12 @@ TEST_P(SavedTabGroupModelObserverTest, MoveElement) {
   saved_tab_group_model_->ReorderGroupLocally(stg_2.saved_guid(), 2);
 
   EXPECT_TRUE(reordered_called_);
-  if (IsV2UIEnabled()) {
     EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(stg_3.saved_guid()));
     EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(stg_1.saved_guid()));
     EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
-  } else {
-    EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(stg_1.saved_guid()));
-    EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(stg_3.saved_guid()));
-    EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
-  }
 }
 
-TEST_P(SavedTabGroupModelObserverTest, ReordedTabsUpdatePositions) {
+TEST_F(SavedTabGroupModelObserverTest, ReordedTabsUpdatePositions) {
   SavedTabGroup group = test::CreateTestSavedTabGroup();
   base::Uuid group_id = group.saved_guid();
   base::Uuid tab1_id = group.saved_tabs()[0].saved_tab_guid();
@@ -1257,7 +1026,7 @@ TEST_P(SavedTabGroupModelObserverTest, ReordedTabsUpdatePositions) {
   EXPECT_EQ(1, saved_tab_group_model_->Get(group_id)->GetIndexOfTab(tab1_id));
 }
 
-TEST_P(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
+TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   // Add a non matching SavedTabGroup.
   saved_tab_group_model_->AddedLocally(test::CreateTestSavedTabGroup());
 
@@ -1292,60 +1061,7 @@ TEST_P(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
             saved_tab_group_model_->GetGroupContainingTab(LocalTabID()));
 }
 
-// Toggle pin state should trigger SavedTabGroupUpdatedLocally.
-TEST_P(SavedTabGroupModelObserverTest, TogglePinState) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  SavedTabGroup group(test::CreateTestSavedTabGroup());
-  saved_tab_group_model_->AddedLocally(group);
-
-  saved_tab_group_model_->TogglePinState(group.saved_guid());
-
-  const int index = retrieved_group_.size() - 1;
-  ASSERT_GE(index, 0);
-
-  SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_TRUE(received_group.is_pinned());
-  EXPECT_EQ(group.local_group_id(), received_group.local_group_id());
-  EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
-            retrieved_index_);
-}
-
-TEST_P(SavedTabGroupModelObserverTest, MigrateSavedTabGroupsFromV1) {
-  if (!IsV2UIEnabled()) {
-    GTEST_SKIP() << "N/A for V1";
-  }
-
-  // Add 5 unpinned SavedTabGroups to the model.
-  SavedTabGroup group1(u"Tab Group 1", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group1);
-  SavedTabGroup group2(u"Tab Group 2", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group2);
-  SavedTabGroup group3(u"Tab Group 3", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group3);
-  SavedTabGroup group4(u"Tab Group 4", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group4);
-  SavedTabGroup group5(u"Tab Group 5", tab_groups::TabGroupColorId::kRed, {},
-                       std::nullopt);
-  saved_tab_group_model_->AddedLocally(group5);
-
-  EXPECT_EQ(5u, saved_tab_group_model_->saved_tab_groups().size());
-
-  ClearSignals();
-  ASSERT_EQ(0u, retrieved_group_.size());
-
-  // Verify 4 of them are updated.
-  saved_tab_group_model_->MigrateTabGroupSavesUIUpdate();
-  ASSERT_EQ(4u, retrieved_group_.size());
-}
-
-TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuid) {
+TEST_F(SavedTabGroupModelObserverTest, UpdateLocalCacheGuid) {
   base::Uuid group_1_id = base::Uuid::GenerateRandomV4();
   base::Uuid group_2_id = base::Uuid::GenerateRandomV4();
   base::Uuid group_3_id = base::Uuid::GenerateRandomV4();
@@ -1402,7 +1118,7 @@ TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuid) {
             edit_to_cache_guid);
 }
 
-TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuidForTabs) {
+TEST_F(SavedTabGroupModelObserverTest, UpdateLocalCacheGuidForTabs) {
   const std::string cache_guid1 = "cache_guid1";
   const std::string cache_guid2 = "cache_guid2";
   const std::string cache_guid_tab2 = "cache_guid_tab2";
@@ -1442,13 +1158,6 @@ TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuidForTabs) {
   EXPECT_EQ(retrieved_tab1->creator_cache_guid(), cache_guid2);
   EXPECT_EQ(retrieved_tab2->creator_cache_guid(), std::nullopt);
 }
-
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,
-                         SavedTabGroupModelTest,
-                         testing::Bool());
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,
-                         SavedTabGroupModelObserverTest,
-                         testing::Bool());
 
 }  // namespace
 

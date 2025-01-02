@@ -100,7 +100,6 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.push_back(tab_groups::kTabGroupsSaveV2);
-    enabled_features.push_back(tab_groups::kTabGroupsSaveUIUpdate);
     enabled_features.push_back(
         tab_groups::kTabGroupSyncServiceDesktopMigration);
 

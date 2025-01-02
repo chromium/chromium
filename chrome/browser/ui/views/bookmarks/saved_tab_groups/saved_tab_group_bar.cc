@@ -650,7 +650,7 @@ void SavedTabGroupBar::UpsertSavedTabGroupButton(const base::Uuid& guid) {
     RemoveChildViewT(button);
   }
 
-  InvalidateLayout();
+  SavedTabGroupReordered();
 }
 
 void SavedTabGroupBar::SavedTabGroupReordered() {

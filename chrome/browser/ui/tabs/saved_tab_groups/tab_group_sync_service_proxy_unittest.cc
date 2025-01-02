@@ -35,7 +35,6 @@ class TabGroupSyncServiceProxyUnitTest
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.push_back(tab_groups::kTabGroupsSaveV2);
-    enabled_features.push_back(tab_groups::kTabGroupsSaveUIUpdate);
 
     if (IsMigrationEnabled()) {
       enabled_features.push_back(

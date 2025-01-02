@@ -50,6 +50,7 @@ namespace {
 
 using testing::NotNull;
 
+// THIS TEST MIGHT NEED TO BE DELETED
 class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
@@ -57,7 +58,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
     features_.InitWithFeatures(
         {tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {tab_groups::kTabGroupsSaveUIUpdate});
+        {});
   }
 
   void OnWillBeDestroyed() override {
@@ -306,6 +307,10 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
             GURL("http://www.google.com/1"));
 }
 
+// SaveTabGroup with position set is always placed before the one without
+// position set. If both have position set, the one with lower position number
+// should place before. If both positions are the same or both are not set, the
+// one with more recent update time should place before.
 // Regression test. See crbug.com/370013915.
 IN_PROC_BROWSER_TEST_F(
     TabGroupSyncDelegateBrowserTest,
@@ -323,37 +328,55 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       browser()->tab_strip_model()->group_model()->ContainsTabGroup(local_id));
   WaitUntilCallbackReceived();
-  std::optional<SavedTabGroup> group_1 = service->GetGroup(local_id);
-  EXPECT_TRUE(group_1);
+
+  // The first group is automatically set to 0. it should be first in the list.
+  std::optional<SavedTabGroup> locally_created_group_at_0 =
+      service->GetGroup(local_id);
+  ASSERT_TRUE(locally_created_group_at_0);
+  ASSERT_EQ(0, locally_created_group_at_0->position());
   EXPECT_EQ(2u, saved_tab_group_bar->children().size());
 
-  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kPink, {}, 2);
+  // const std::u16string& title,
+  // const tab_groups::TabGroupColorId& color,
+  // const std::vector<SavedTabGroupTab>& urls,
+  // std::optional<size_t> position = std::nullopt,
+  SavedTabGroup group_with_position_set_2(
+      u"Group 2",                          // title
+      tab_groups::TabGroupColorId::kPink,  // color
+      {},                                  // urls
+      2                                    // position
+  );
   SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
-                        group_2.saved_guid(),
+                        group_with_position_set_2.saved_guid(),
                         /*position=*/0);
-  group_2.AddTabLocally(tab2);
+  group_with_position_set_2.AddTabLocally(tab2);
 
-  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kGreen, {},
-                        10);
+  SavedTabGroup group_with_position_set_10(
+      u"Group 3", tab_groups::TabGroupColorId::kGreen, {}, 10);
   SavedTabGroupTab tab3(GURL("about:blank"), u"about:blank",
-                        group_3.saved_guid(),
+                        group_with_position_set_10.saved_guid(),
                         /*position=*/0);
-  group_3.AddTabLocally(tab3);
+  group_with_position_set_10.AddTabLocally(tab3);
 
-  const base::Uuid sync_id_1 = group_1->saved_guid();
-  const base::Uuid sync_id_2 = group_2.saved_guid();
-  const base::Uuid sync_id_3 = group_3.saved_guid();
+  const base::Uuid sync_id_1 = locally_created_group_at_0->saved_guid();
+  const base::Uuid sync_id_2 = group_with_position_set_2.saved_guid();
+  const base::Uuid sync_id_3 = group_with_position_set_10.saved_guid();
 
   // FromSync calls are asynchronous, so wait for the task to complete.
-  model_->AddedFromSync(std::move(group_3));
+  model_->AddedFromSync(std::move(group_with_position_set_10));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service->GetGroup(sync_id_3).has_value(); }));
   EXPECT_EQ(3u, saved_tab_group_bar->children().size());
 
-  model_->AddedFromSync(std::move(group_2));
+  model_->AddedFromSync(std::move(group_with_position_set_2));
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service->GetGroup(sync_id_2).has_value(); }));
   EXPECT_EQ(4u, saved_tab_group_bar->children().size());
+
+  // Make sure positions werent updated.
+  ASSERT_EQ(service->GetGroup(sync_id_1).value().position(), 0);
+  ASSERT_EQ(service->GetGroup(sync_id_2).value().position(), 2);
+  ASSERT_EQ(service->GetGroup(sync_id_3).value().position(), 10);
 
   // Verify the ordering is group 1, group 2, group 3
   EXPECT_TRUE(views::IsViewClass<SavedTabGroupButton>(

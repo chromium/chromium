@@ -2117,10 +2117,6 @@ extern const char kTabGroupsSaveV2Id[];
 extern const char kTabGroupsSaveV2Name[];
 extern const char kTabGroupsSaveV2Description[];
 
-extern const char kTabGroupsSaveUIUpdateId[];
-extern const char kTabGroupsSaveUIUpdateName[];
-extern const char kTabGroupsSaveUIUpdateDescription[];
-
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
 extern const char kTabGroupSyncServiceDesktopMigrationDescription[];

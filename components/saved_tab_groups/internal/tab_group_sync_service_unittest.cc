@@ -2036,10 +2036,7 @@ TEST_F(TabGroupSyncServiceTest, ShouldNotReturnOriginatingTabGroupOnRemoteAdd) {
 
 class PinningTabGroupSyncServiceTest : public TabGroupSyncServiceTest {
  public:
-  PinningTabGroupSyncServiceTest() {
-    feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
-  }
-
+  PinningTabGroupSyncServiceTest() = default;
   PinningTabGroupSyncServiceTest(const PinningTabGroupSyncServiceTest&) =
       delete;
   PinningTabGroupSyncServiceTest& operator=(
