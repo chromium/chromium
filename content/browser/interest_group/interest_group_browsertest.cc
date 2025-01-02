@@ -14751,6 +14751,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
   sellerCurrency: 'EUR',
+  sendCreativeScanningMetadata: true,
 })",
                    seller_origin, seller_script_url,
                    embedded_https_test_server().GetURL(
@@ -14902,7 +14903,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
-  sellerCurrency: 'EUR'
+  sellerCurrency: 'EUR',
+  sendCreativeScanningMetadata: true,
 })",
                          seller_origin, seller_script_url,
                          embedded_https_test_server().GetURL(

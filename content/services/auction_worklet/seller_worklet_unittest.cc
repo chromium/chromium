@@ -234,6 +234,8 @@ class SellerWorkletTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource time_mode =
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : task_environment_(time_mode) {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
     SetDefaultParameters();
   }
 
@@ -288,6 +290,7 @@ class SellerWorkletTest : public testing::Test,
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/false);
     experiment_group_id_ = std::nullopt;
+    send_creative_scanning_metadata_ = std::nullopt;
     public_key_ = nullptr;
     browser_signals_other_seller_.reset();
     component_expect_bid_currency_ = std::nullopt;
@@ -810,6 +813,7 @@ class SellerWorkletTest : public testing::Test,
         trusted_signals_kvv2_manager_.get(), decision_logic_url_,
         trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
+        send_creative_scanning_metadata_,
         public_key_ ? public_key_.Clone() : nullptr,
         base::BindRepeating(&SellerWorkletTest::GetNextThreadIndex,
                             base::Unretained(this)),
@@ -896,6 +900,7 @@ class SellerWorkletTest : public testing::Test,
     }
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   // Extra headers to append to replies for JavaScript resources.
@@ -922,6 +927,7 @@ class SellerWorkletTest : public testing::Test,
   url::Origin top_window_origin_;
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   std::optional<uint16_t> experiment_group_id_;
+  std::optional<bool> send_creative_scanning_metadata_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
@@ -2070,6 +2076,37 @@ TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
   experiment_group_id_ = 954u;
   RunScoreAdWithReturnValueExpectingResult("auctionConfig.experimentGroupId",
                                            954);
+}
+
+TEST_F(SellerWorkletTest, ScoreAdSendCreativeScanParam) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"("sendCreativeScanningMetadata" in auctionConfig ? 1 : 0)", 0);
+
+  send_creative_scanning_metadata_ = true;
+  RunScoreAdWithReturnValueExpectingResult(
+      "auctionConfig.sendCreativeScanningMetadata ? 1 : 0", 1);
+
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back();
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(("sendCreativeScanningMetadata" in
+         auctionConfig.componentAuctions[0]) ? 1 : 0)",
+      0);
+
+  component_auctions[0].send_creative_scanning_metadata = false;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(("sendCreativeScanningMetadata" in
+         auctionConfig.componentAuctions[0]) ? 1 : 0)",
+      1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "auctionConfig.componentAuctions[0].sendCreativeScanningMetadata ? 1 : 0",
+      0);
 }
 
 // Tests that trusted scoring signals are correctly passed to scoreAd(). Each

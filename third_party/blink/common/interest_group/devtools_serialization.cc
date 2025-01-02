@@ -424,6 +424,9 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
                     conf.non_shared_params.per_buyer_real_time_reporting_types,
                     result);
 
+  SerializeIntoDict("sendCreativeScanningMetadata",
+                    conf.send_creative_scanning_metadata, result);
+
   // For component auctions, we only serialize the seller names to give a
   // quick overview, since they'll get their own events.
   if (!conf.non_shared_params.component_auctions.empty()) {

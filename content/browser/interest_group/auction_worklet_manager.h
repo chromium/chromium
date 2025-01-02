@@ -137,6 +137,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
                const std::optional<GURL>& wasm_url,
                const std::optional<GURL>& signals_url,
                bool needs_cors_for_additional_bid,
+               std::optional<bool> send_creative_scanning_metadata,
                std::optional<uint16_t> experiment_group_id,
                const std::string& trusted_bidding_signals_slot_size_param,
                const std::optional<url::Origin>& trusted_signals_coordinator);
@@ -157,6 +158,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
     // `needs_cors_for_additional_bid` is set for buyer reporting for additional
     // bids; those need to perform a CORS check others don't.
     bool needs_cors_for_additional_bid;
+
+    std::optional<bool> send_creative_scanning_metadata;
 
     std::optional<uint16_t> experiment_group_id;
     std::string trusted_bidding_signals_slot_size_param;
@@ -329,6 +332,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const std::optional<GURL>& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
       const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
+      std::optional<bool> send_creative_scanning_metadata,
       base::OnceClosure process_assigned_callback,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,

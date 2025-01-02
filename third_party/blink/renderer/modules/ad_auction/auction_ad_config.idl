@@ -51,6 +51,8 @@ dictionary AuctionAdConfig {
   long maxTrustedScoringSignalsURLLength;
   [RuntimeEnabled=FledgeTrustedSignalsKVv2Support]
   USVString trustedScoringSignalsCoordinator;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv1CreativeScanning]
+  boolean sendCreativeScanningMetadata;
   sequence<USVString> interestGroupBuyers;
   Promise<any> auctionSignals;
   Promise<any> sellerSignals;

@@ -197,7 +197,8 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
    "sellerRealTimeReportingType": "default-local-reporting",
    "perBuyerRealTimeReportingTypes": {
       "https://buyer.test": "default-local-reporting"
-   }
+   },
+   "sendCreativeScanningMetadata": true
 }
 )";
 

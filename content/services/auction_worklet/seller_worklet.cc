@@ -156,6 +156,7 @@ bool AppendAuctionConfig(
     base::optional_ref<const GURL> decision_logic_url,
     base::optional_ref<const GURL> trusted_scoring_signals_url,
     const std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
     const std::vector<std::unique_ptr<AuctionConfigLazyFiller>>&
@@ -243,9 +244,10 @@ bool AppendAuctionConfig(
               v8_helper, v8_logger, context, component_auction.seller,
               component_auction.decision_logic_url,
               component_auction.trusted_scoring_signals_url,
-              experiment_group_id, component_auction.non_shared_params,
-              auction_config_lazy_fillers, pos + 1,
-              &component_auction_vector)) {
+              experiment_group_id,
+              component_auction.send_creative_scanning_metadata,
+              component_auction.non_shared_params, auction_config_lazy_fillers,
+              pos + 1, &component_auction_vector)) {
         return false;
       }
     }
@@ -261,6 +263,11 @@ bool AppendAuctionConfig(
   if (experiment_group_id.has_value()) {
     auction_config_dict.Set("experimentGroupId",
                             static_cast<unsigned>(experiment_group_id.value()));
+  }
+
+  if (send_creative_scanning_metadata.has_value()) {
+    auction_config_dict.Set("sendCreativeScanningMetadata",
+                            *send_creative_scanning_metadata);
   }
 
   args->push_back(std::move(auction_config_value));
@@ -436,6 +443,7 @@ SellerWorklet::SellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     mojom::TrustedSignalsPublicKeyPtr public_key,
     GetNextThreadIndexCallback get_next_thread_index_callback,
     mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
@@ -443,6 +451,7 @@ SellerWorklet::SellerWorklet(
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(decision_logic_url),
+      send_creative_scanning_metadata_(send_creative_scanning_metadata),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
                                             *trusted_scoring_signals_url))
@@ -463,12 +472,12 @@ SellerWorklet::SellerWorklet(
     debug_ids_.push_back(
         base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helpers_[i].get()));
     v8_state_.push_back(std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-        new V8State(v8_helpers_[i], debug_ids_[i],
-                    std::move(shared_storage_hosts[i]), decision_logic_url,
-                    trusted_scoring_signals_url,
-                    trusted_scoring_signals_origin_, top_window_origin,
-                    permissions_policy_state->Clone(), experiment_group_id,
-                    weak_ptr_factory_.GetWeakPtr()),
+        new V8State(
+            v8_helpers_[i], debug_ids_[i], std::move(shared_storage_hosts[i]),
+            decision_logic_url, trusted_scoring_signals_url,
+            trusted_scoring_signals_origin_, top_window_origin,
+            permissions_policy_state->Clone(), experiment_group_id,
+            send_creative_scanning_metadata, weak_ptr_factory_.GetWeakPtr()),
         base::OnTaskRunnerDeleter(v8_runners_[i])));
   }
 
@@ -835,6 +844,7 @@ SellerWorklet::V8State::V8State(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
+    std::optional<bool> send_creative_scanning_metadata,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
       debug_id_(debug_id),
@@ -845,7 +855,8 @@ SellerWorklet::V8State::V8State(
       trusted_scoring_signals_origin_(trusted_scoring_signals_origin),
       top_window_origin_(top_window_origin),
       permissions_policy_state_(std::move(permissions_policy_state)),
-      experiment_group_id_(experiment_group_id) {
+      experiment_group_id_(experiment_group_id),
+      send_creative_scanning_metadata_(send_creative_scanning_metadata) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
@@ -1055,13 +1066,13 @@ void SellerWorklet::V8State::ScoreAd(
 
   context_recycler->EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
-  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
-                           url::Origin::Create(decision_logic_url_),
-                           decision_logic_url_, trusted_scoring_signals_url_,
-                           experiment_group_id_,
-                           auction_ad_config_non_shared_params,
-                           context_recycler->auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), &v8_logger, context,
+          url::Origin::Create(decision_logic_url_), decision_logic_url_,
+          trusted_scoring_signals_url_, experiment_group_id_,
+          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          context_recycler->auction_config_lazy_fillers(),
+          /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
         /*scoring_latency=*/elapsed_timer.Elapsed(),
@@ -1641,13 +1652,13 @@ void SellerWorklet::V8State::ReportResult(
 
   context_recycler.EnsureAuctionConfigLazyFillers(
       1 + auction_ad_config_non_shared_params.component_auctions.size());
-  if (!AppendAuctionConfig(v8_helper_.get(), &v8_logger, context,
-                           url::Origin::Create(decision_logic_url_),
-                           decision_logic_url_, trusted_scoring_signals_url_,
-                           experiment_group_id_,
-                           auction_ad_config_non_shared_params,
-                           context_recycler.auction_config_lazy_fillers(),
-                           /*auction_config_lazy_filler_pos=*/0, &args)) {
+  if (!AppendAuctionConfig(
+          v8_helper_.get(), &v8_logger, context,
+          url::Origin::Create(decision_logic_url_), decision_logic_url_,
+          trusted_scoring_signals_url_, experiment_group_id_,
+          send_creative_scanning_metadata_, auction_ad_config_non_shared_params,
+          context_recycler.auction_config_lazy_fillers(),
+          /*auction_config_lazy_filler_pos=*/0, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/std::nullopt,
                                          /*report_url=*/std::nullopt,

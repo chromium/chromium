@@ -5048,6 +5048,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
       devtools_auction_id_, *config_->decision_logic_url,
       config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
       config_->non_shared_params.trusted_scoring_signals_coordinator,
+      config_->send_creative_scanning_metadata,
       base::BindOnce(&InterestGroupAuction::OnSellerProcessAssigned,
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,

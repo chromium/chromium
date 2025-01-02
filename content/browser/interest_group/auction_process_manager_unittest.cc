@@ -168,6 +168,7 @@ class TestAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_id,
+      std::optional<bool> send_creative_scanning_metadata,
       auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key,
       mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
           trusted_signals_url_allowed) override {
