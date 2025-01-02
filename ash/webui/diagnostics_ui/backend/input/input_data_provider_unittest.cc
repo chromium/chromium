@@ -904,7 +904,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   ASSERT_TRUE(future.IsReady());
 }
 
-TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboardWithoutConfig) {
+TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
 

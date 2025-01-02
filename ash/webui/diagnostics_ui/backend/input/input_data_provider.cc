@@ -587,14 +587,10 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
   const bool is_internal_keyboard =
       keyboard->connection_type == mojom::ConnectionType::kInternal;
-  // Don't add keyboard if internal keyboard is a split modifier keyboard
-  // and the config for bottom left/right is unknown.
+  // Don't add keyboard if internal keyboard is a split modifier keyboard.
   if (is_internal_keyboard &&
       IsSplitModifierKeyboard(device_info->input_device.id)) {
-    if (keyboard->bottom_left_layout == mojom::BottomLeftLayout::kUnknown ||
-        keyboard->bottom_right_layout == mojom::BottomRightLayout::kUnknown) {
-      return;
-    }
+    return;
   }
   if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
       !is_internal_keyboard) {
