@@ -462,6 +462,7 @@ public class NavigationTransitionsTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/385189006")
     public void startBackNavWithTopControlHidden() throws Throwable {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
