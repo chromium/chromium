@@ -1454,7 +1454,7 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  if (!AreWebAppsEnabled(profile) ||
+  if (!AreWebAppsUserInstallable(profile) ||
       Browser::GetCreationStatusForProfile(profile) !=
           Browser::CreationStatus::kOk ||
       !params.url.is_valid()) {
@@ -1886,7 +1886,7 @@ void OnWebAppNavigationAfterWebContentsCreation(
     // capturing wasn't enabled for the navigation.
     return;
   }
-  CHECK(AreWebAppsEnabled(params.initiating_profile));
+  CHECK(AreWebAppsUserInstallable(params.initiating_profile));
   CHECK(!(params.force_open_pwa_window && params.open_pwa_window_if_possible));
 
   std::optional<webapps::AppId> first_navigation_app_id =
