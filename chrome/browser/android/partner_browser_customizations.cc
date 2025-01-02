@@ -9,7 +9,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/partnercustomizations/jni_headers/PartnerBrowserCustomizations_jni.h"
 
-namespace chrome {
 namespace android {
 
 bool PartnerBrowserCustomizations::IsIncognitoDisabled() {
@@ -18,4 +17,3 @@ bool PartnerBrowserCustomizations::IsIncognitoDisabled() {
 }
 
 }  // namespace android
-}  // namespace chrome

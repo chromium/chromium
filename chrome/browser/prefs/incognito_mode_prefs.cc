@@ -118,7 +118,7 @@ bool IncognitoModePrefs::ArePlatformParentalControlsEnabled() {
 #if BUILDFLAG(IS_WIN)
   return GetWinParentalControls().logging_required;
 #elif BUILDFLAG(IS_ANDROID)
-  return chrome::android::PartnerBrowserCustomizations::IsIncognitoDisabled();
+  return android::PartnerBrowserCustomizations::IsIncognitoDisabled();
 #else
   return false;
 #endif
