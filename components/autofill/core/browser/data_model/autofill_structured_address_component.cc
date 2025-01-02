@@ -880,9 +880,13 @@ int AddressComponent::
             ->MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths());
   }
 
-  // Only count non-empty nodes.
-  if (!GetValue().empty())
+  // Only count non-empty nodes, unless they were user verified.
+  if (!GetValue().empty() ||
+      (base::FeatureList::IsEnabled(
+           features::kAutofillSupportPhoneticNameForJP) &&
+       GetVerificationStatus() == VerificationStatus::kUserVerified)) {
     ++result;
+  }
 
   return result;
 }

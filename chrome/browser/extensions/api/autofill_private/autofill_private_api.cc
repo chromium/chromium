@@ -240,7 +240,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     // SetInfoWithVerificationStatus here.
     profile.SetRawInfoWithVerificationStatus(
         autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
-        base::UTF8ToUTF16(field.value), kUserVerified);
+        trimmed_value, kUserVerified);
   }
   profile.FinalizeAfterImport();
 

@@ -105,13 +105,12 @@ bool NameInfo::FinalizeAfterImport() {
   // The same logic as above for the alternative name.
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    alternative_name_->MigrateLegacyStructure();
     bool result_alt = alternative_name_->CompleteFullTree();
     if (!result_alt) {
       if (alternative_name_->GetVerificationStatus() ==
               VerificationStatus::kUserVerified &&
           alternative_name_->WipeInvalidStructure()) {
-        result_alt &= alternative_name_->CompleteFullTree();
+        result_alt = alternative_name_->CompleteFullTree();
       }
       result &= result_alt;
     }

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
@@ -1111,6 +1112,30 @@ TEST_F(AutofillProfileTest, TestFinalizeAfterImportUserVerified) {
     EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
               VerificationStatus::kUserVerified);
   }
+}
+
+// Tests whether calling `FinalizeAfterImport` where a root node is user
+// verified to be empty, wipes the data from subcomponents.
+TEST_F(AutofillProfileTest, TestFinalizeAfterImportUserVerifiedEmpty) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile profile(AddressCountryCode("JP"));
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Smith",
+                                           VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
+                                           VerificationStatus::kObserved);
+  EXPECT_TRUE(profile.FinalizeAfterImport());
+  EXPECT_TRUE(profile.GetRawInfo(ALTERNATIVE_FULL_NAME).empty());
+  EXPECT_EQ(profile.GetVerificationStatus(ALTERNATIVE_FULL_NAME),
+            VerificationStatus::kFormatted);
+  EXPECT_TRUE(profile.GetRawInfo(ALTERNATIVE_FAMILY_NAME).empty());
+  EXPECT_EQ(profile.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME),
+            VerificationStatus::kNoStatus);
+  EXPECT_TRUE(profile.GetRawInfo(ALTERNATIVE_GIVEN_NAME).empty());
+  EXPECT_EQ(profile.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME),
+            VerificationStatus::kNoStatus);
 }
 
 TEST_F(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
