@@ -75,7 +75,7 @@ TEST_F(PasswordReuseManagerSigninNotifierImplTest, SignOutContentArea) {
   EXPECT_CALL(reuse_manager_, ClearGaiaPasswordHash("username2"));
   auto* identity_manager = identity_test_env()->identity_manager();
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
-      /*gaia_id=*/"secondary_account_id",
+      GaiaId("secondary_account_id"),
       /*email=*/"username2",
       /*refresh_token=*/"refresh_token",
       /*is_under_advanced_protection=*/false,

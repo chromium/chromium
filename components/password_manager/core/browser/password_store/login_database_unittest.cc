@@ -46,6 +46,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -121,8 +122,10 @@ PasswordForm GenerateExamplePasswordForm() {
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
   form.in_store = PasswordForm::Store::kProfileStore;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user1")));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user2")));
   form.sender_email = u"sender@gmail.com";
   form.sender_name = u"Cool Sender";
   form.sender_profile_image_url = GURL("http://www.sender.com/profile_image");
@@ -1210,9 +1213,9 @@ TEST_P(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
-  vec.push_back(GaiaIdHash::FromGaiaId("first"));
-  vec.push_back(GaiaIdHash::FromGaiaId("second"));
-  vec.push_back(GaiaIdHash::FromGaiaId("third"));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("first")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("second")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("third")));
 
   temp = SerializeGaiaIdHashVector(vec);
   output = DeserializeGaiaIdHashVector(temp);
@@ -1484,7 +1487,8 @@ TEST_P(LoginDatabaseTest, UpdateLogin) {
   form.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
@@ -1522,7 +1526,8 @@ TEST_P(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);

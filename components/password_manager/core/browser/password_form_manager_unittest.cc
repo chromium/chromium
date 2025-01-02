@@ -61,6 +61,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -4049,7 +4050,7 @@ TEST_P(PasswordFormManagerTest, ProvisinallySavedOnSingleUsernameForm) {
 
 TEST_P(PasswordFormManagerTest, NotMovableToAccountStoreWhenBlocked) {
   const std::string kEmail = "email@gmail.com";
-  const std::string kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
+  const GaiaId kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
 
   PasswordForm saved_match(saved_match_);
   saved_match.in_store = PasswordForm::Store::kProfileStore;
@@ -4078,7 +4079,7 @@ TEST_P(PasswordFormManagerTest, NotMovableToAccountStoreWhenBlocked) {
 
 TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
   const std::string kEmail = "email@gmail.com";
-  const std::string kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
+  const GaiaId kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
 
   PasswordForm saved_match(saved_match_);
   saved_match.in_store = PasswordForm::Store::kProfileStore;
@@ -5016,7 +5017,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, MoveCredentialsToAccountStore) {
 TEST_F(PasswordFormManagerTestWithMockedSaver,
        BlockMovingCredentialsToAccountStore) {
   const std::string kEmail = "email@gmail.com";
-  const std::string kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
+  const GaiaId kGaiaId = signin::GetTestGaiaIdForEmail(kEmail);
 
   PasswordForm saved_match(saved_match_);
   saved_match.in_store = PasswordForm::Store::kProfileStore;
