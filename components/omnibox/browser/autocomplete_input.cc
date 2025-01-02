@@ -32,8 +32,8 @@
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/url_constants.h"           // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/url_constants.h"  // nogncheck
+#endif                                         // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -64,7 +64,7 @@ void PopulateTermsPrefixedByHttpOrHttps(
   for (const auto& term : base::SplitString(text, u" ", base::TRIM_WHITESPACE,
                                             base::SPLIT_WANT_ALL)) {
     const std::string term_utf8(base::UTF16ToUTF8(term));
-    static const char* kSchemes[2] = { url::kHttpScheme, url::kHttpsScheme };
+    static const char* kSchemes[2] = {url::kHttpScheme, url::kHttpsScheme};
     for (const char* scheme : kSchemes) {
       const std::string prefix(scheme + separator);
       // Doing an ASCII comparison is okay because prefix is ASCII.
@@ -329,8 +329,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     metrics::OmniboxInputType http_type =
         Parse(http_scheme_prefix + text, desired_tld, scheme_classifier,
               &http_parts, &http_scheme, &http_canonicalized_url);
-    DCHECK_EQ(std::string(url::kHttpScheme),
-              base::UTF16ToUTF8(http_scheme));
+    DCHECK_EQ(std::string(url::kHttpScheme), base::UTF16ToUTF8(http_scheme));
 
     if ((http_type == metrics::OmniboxInputType::URL) &&
         http_parts.username.is_nonempty() &&
@@ -578,9 +577,9 @@ void AutocompleteInput::ParseForEmphasizeComponents(
                              &real_parts, nullptr, nullptr);
     if (real_parts.scheme.is_nonempty() || real_parts.host.is_nonempty()) {
       if (real_parts.scheme.is_nonempty()) {
-        *scheme = url::Component(
-            after_scheme_and_colon + real_parts.scheme.begin,
-            real_parts.scheme.len);
+        *scheme =
+            url::Component(after_scheme_and_colon + real_parts.scheme.begin,
+                           real_parts.scheme.len);
       } else {
         scheme->reset();
       }
@@ -726,6 +725,16 @@ bool AutocompleteInput::HasHTTPSScheme(const std::u16string& input) {
   return HasScheme(input, url::kHttpsScheme);
 }
 
+// static
+AutocompleteInput::FeaturedKeywordMode
+AutocompleteInput::GetFeaturedKeywordMode(const std::u16string& text) {
+  if (text == u"@")
+    return FeaturedKeywordMode::kExact;
+  if (text.starts_with(u'@'))
+    return FeaturedKeywordMode::kPrefix;
+  return FeaturedKeywordMode::kFalse;
+}
+
 void AutocompleteInput::UpdateText(const std::u16string& text,
                                    size_t cursor_position,
                                    const url::Parsed& parts) {
@@ -784,4 +793,9 @@ bool AutocompleteInput::IsZeroSuggest() const {
 
 bool AutocompleteInput::InKeywordMode() const {
   return keyword_mode_entry_method_ != metrics::OmniboxEventProto::INVALID;
+}
+
+AutocompleteInput::FeaturedKeywordMode
+AutocompleteInput::GetFeaturedKeywordMode() const {
+  return GetFeaturedKeywordMode(text_);
 }

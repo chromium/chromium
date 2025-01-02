@@ -320,10 +320,8 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
   for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     Component scheme, host;
-    AutocompleteInput::ParseForEmphasizeComponents(input_cases[i].input,
-                                                   TestSchemeClassifier(),
-                                                   &scheme,
-                                                   &host);
+    AutocompleteInput::ParseForEmphasizeComponents(
+        input_cases[i].input, TestSchemeClassifier(), &scheme, &host);
     EXPECT_EQ(input_cases[i].scheme.begin, scheme.begin);
     EXPECT_EQ(input_cases[i].scheme.len, scheme.len);
     EXPECT_EQ(input_cases[i].host.begin, host.begin);
@@ -514,5 +512,26 @@ TEST(AutocompleteInputTest, TypedURLHadHTTPSchemeTest) {
                             /*should_use_https_as_default_scheme=*/true);
     EXPECT_EQ(test_case.expected_typed_url_had_http_scheme,
               input.typed_url_had_http_scheme());
+  }
+}
+
+TEST(AutocompleteInputTest, GetFeaturedKeywordMode) {
+  struct TestData {
+    const std::u16string input;
+    AutocompleteInput::FeaturedKeywordMode expected_mode;
+  };
+
+  const TestData test_cases[] = {
+      {u"", AutocompleteInput::FeaturedKeywordMode::kFalse},
+      {u"@", AutocompleteInput::FeaturedKeywordMode::kExact},
+      {u"@x", AutocompleteInput::FeaturedKeywordMode::kPrefix},
+      {u"x@", AutocompleteInput::FeaturedKeywordMode::kFalse},
+  };
+  for (const TestData& test_case : test_cases) {
+    AutocompleteInput input(test_case.input, std::u16string::npos,
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier(),
+                            /*should_use_https_as_default_scheme=*/true);
+    EXPECT_EQ(input.GetFeaturedKeywordMode(), test_case.expected_mode);
   }
 }

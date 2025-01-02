@@ -536,10 +536,10 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
       // separated by a comma ("@work, work"). The logic below hides the one
       // that doesn't start with the "@" symbol.
       //
-      // It also handles one corner case when the user explicitely created a
-      // site search engine with keyword "work", which overrides the one with
-      // the same keyword created by policy. In that case, we want to show both
-      // the Enterprise one with keyword "@work" and the user-defined one.
+      // It also handles one corner case when the user explicitly created a site
+      // search engine with keyword "work", which overrides the one with the
+      // same keyword created by policy. In that case, we want to show both the
+      // Enterprise one with keyword "@work" and the user-defined one.
       const TemplateURL* t_url_with_at =
           GetTemplateURLForKeyword(u"@" + t_url->keyword());
       return t_url_with_at &&

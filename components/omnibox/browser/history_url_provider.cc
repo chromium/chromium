@@ -446,8 +446,10 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // likely to be looking for a starer pack scope than a URL. However,
   // URLs containing '@' before the host, such as '@history.com', area valid
   // URLs and still needs to run autocompletion.
-  if (autocomplete_input.text().starts_with('@'))
+  if (autocomplete_input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     fixup_return.second = u"@" + fixup_return.second;
+  }
 
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);

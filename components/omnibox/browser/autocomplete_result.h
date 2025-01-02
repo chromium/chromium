@@ -434,8 +434,8 @@ class AutocompleteResult {
   void MergeMatchesByProvider(ACMatches* old_matches,
                               const ACMatches& new_matches);
 
-  // Returns a tuple encompassing all attributes relevant to determining whether a match should
-  // be deduplicated with another match.
+  // Returns a tuple encompassing all attributes relevant to determining whether
+  // a match should be deduplicated with another match.
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 

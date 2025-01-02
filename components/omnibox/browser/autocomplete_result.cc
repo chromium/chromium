@@ -124,18 +124,18 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
         omnibox::kMaxZeroSuggestMatches,
         OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
         kDefaultMaxZeroSuggestMatches);
-    DCHECK(kMaxAutocompletePositionValue > field_trial_value);
 #if BUILDFLAG(IS_IOS)
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       field_trial_value =
           std::min(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
     }
 #endif
+    DCHECK(kMaxAutocompletePositionValue > field_trial_value);
     return field_trial_value;
   }
 
-  //  Otherwise, i.e. if no zero suggest specific limit has been specified or
-  //  the input is not from omnibox focus, return the general max matches limit.
+  // Otherwise, i.e. if no zero suggest specific limit has been specified or the
+  // input is not from omnibox focus, return the general max matches limit.
   size_t field_trial_value = base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kUIExperimentMaxAutocompleteMatches,
       OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam,
@@ -376,8 +376,8 @@ void AutocompleteResult::SortAndCull(
 
   MergeSuggestionGroupsMap(omnibox::BuildDefaultGroupsForInput(input));
   // Grouping requires all matches have a group ID. To keep providers 'dumb',
-  // they only assign IDs when their ID isn't obvious from the match type.
-  // Most matches will instead set IDs here to keep providers 'dumb' and the
+  // they only assign IDs when their ID isn't obvious from the match type. Most
+  // matches will instead set IDs here to keep providers 'dumb' and the
   // type->group mapping consistent between providers.
   if (use_grouping) {
     base::ranges::for_each(matches_, [&](auto& match) {
@@ -394,9 +394,8 @@ void AutocompleteResult::SortAndCull(
                   [&](const auto& match) { return match.relevance == 0; });
   }
 
-  // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled
-  // and the current input & platform are supported, delegate to the
-  // framework.
+  // If at zero suggest or `kGroupingFrameworkForNonZPS` is enabled and the
+  // current input & platform are supported, delegate to the framework.
   if (is_zero_suggest) {
     PSections sections;
     if constexpr (is_android) {
@@ -614,7 +613,7 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   // Platform rules:
   // Mobile:
   // - First position allow all types of OmniboxActionId (ACTION_IN_SUGGEST and
-  // ANSWER_ACTION are preferred over PEDAL)
+  //   ANSWER_ACTION are preferred over PEDAL)
   // - Third slot permits only PEDALs or ANSWER_ACTION.
   // - Slots 4 and beyond only permit ANSWER_ACTION.
   // - TAB_SWITCH actions are not considered because they're never attached.
