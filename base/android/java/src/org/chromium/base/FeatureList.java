@@ -62,8 +62,9 @@ public class FeatureList {
             addFieldTrialParamOverride(param.getFeatureName(), param.getName(), testValue);
         }
 
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
         @Nullable
-        Boolean getFeatureFlagOverride(String featureName) {
+        public Boolean getFeatureFlagOverride(String featureName) {
             return mFeatureFlags.get(featureName);
         }
 
@@ -202,21 +203,6 @@ public class FeatureList {
     /** Whether to pretend native isn't loaded. */
     public static boolean getDisableNativeForTesting() {
         return sDisableNativeForTesting;
-    }
-
-    /**
-     * Override feature flags for testing. Convenience method for #setTestValues() without params.
-     *
-     * <p>TODO(crbug.com/386813115): Migrate usages to #setTestFeature or #setTestValues to delete
-     * this method.
-     */
-    @VisibleForTesting
-    public static void setTestFeatures(Map<String, Boolean> testFeatures) {
-        assert testFeatures != null;
-
-        TestValues testValues = new TestValues();
-        testValues.setFeatureFlagsOverride(testFeatures);
-        setTestValues(testValues);
     }
 
     /**

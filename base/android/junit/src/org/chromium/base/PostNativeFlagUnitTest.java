@@ -44,7 +44,7 @@ public class PostNativeFlagUnitTest {
         PostNativeFlag featureB = new PostNativeFlag(BaseFlagTestRule.FEATURE_MAP, FEATURE_B);
 
         // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestFeatures(A_OFF_B_ON);
+        FeatureList.setTestValues(A_OFF_B_ON);
 
         // Assert {@link MutableFlagWithSafeDefault} uses the values from {@link ChromeFeatureList}.
         assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);

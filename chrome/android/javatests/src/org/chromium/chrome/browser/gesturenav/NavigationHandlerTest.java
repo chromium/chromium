@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -65,7 +64,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.UiAndroidFeatures;
 
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /** Tests {@link NavigationHandler} navigating back/forward using overscroll history navigation. */
@@ -490,16 +488,16 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, false));
         testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
     @DisabledTest(message = "crbug.com/1426201")
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink_withBackForwardTransition() {
-        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
         testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
     }
 

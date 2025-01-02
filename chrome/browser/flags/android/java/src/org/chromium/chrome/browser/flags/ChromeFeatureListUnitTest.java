@@ -60,21 +60,21 @@ public class ChromeFeatureListUnitTest {
 
     /**
      * In unit tests, flags may have their value specified by calling {@link
-     * FeatureList#setTestFeatures(java.util.Map)}.
+     * FeatureList#setTestFeature(String, boolean)}.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.TEST_DEFAULT_DISABLED)
-    public void testSetTestFeaturesEnabled_returnsEnabled() {
+    public void testSetTestFeatureEnabled_returnsEnabled() {
+        FeatureList.setTestFeature(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
     }
 
     /**
      * In unit tests, flags may have their value specified by calling {@link
-     * FeatureList#setTestFeatures(java.util.Map)}.
+     * FeatureList#setTestFeature(String, boolean)}.
      */
     @Test
-    @DisableFeatures(ChromeFeatureList.TEST_DEFAULT_ENABLED)
     public void testSetTestFeaturesDisabled_returnsDisabled() {
+        FeatureList.setTestFeature(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
     }
 

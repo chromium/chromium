@@ -20,15 +20,14 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.R;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-
-import java.util.Collections;
 
 /** Unit tests for {@link TextViewWithLeading}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -85,28 +84,22 @@ public class TextViewWithLeadingTest {
 
     @Test(expected = InflateException.class)
     @MediumTest
+    @EnableFeatures(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
     public void testNoLeading() {
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, true));
         inflate(R.layout.text_view_with_leading_no_leading);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
     public void testLeadingKillSwitch() {
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, false));
         inflateAndVerify(R.layout.text_view_with_leading_direct);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING)
     public void testNoLeadingKillSwitch() {
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        UiAndroidFeatures.REQUIRE_LEADING_IN_TEXT_VIEW_WITH_LEADING, false));
         inflate(R.layout.text_view_with_leading_no_leading);
     }
 }

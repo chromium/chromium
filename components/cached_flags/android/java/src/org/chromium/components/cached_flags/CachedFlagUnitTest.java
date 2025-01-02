@@ -130,7 +130,7 @@ public class CachedFlagUnitTest {
         CachedFlag featureB = new CachedFlag(mFeatureMap, FEATURE_B, true);
 
         // Force different values
-        FeatureList.setTestFeatures(A_ON_B_OFF);
+        FeatureList.setTestValues(A_ON_B_OFF);
 
         // Verify that the forced value is returned.
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);

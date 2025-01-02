@@ -33,8 +33,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-import java.util.HashMap;
-
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class WebFeedFollowIntroViewTest {
@@ -57,9 +55,6 @@ public final class WebFeedFollowIntroViewTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         mMenuButtonAnchorView = new View(mActivity);
         TrackerFactory.setTrackerForTests(mTracker);
-
-        // This empty setTestFeatures call below is needed to enable the field trial param calls.
-        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
 
         // Build the class under test.
         Runnable noOp = CallbackUtils.emptyRunnable();

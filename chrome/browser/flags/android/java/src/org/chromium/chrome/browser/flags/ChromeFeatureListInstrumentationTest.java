@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.flags;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.util.ArrayMap;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -23,8 +21,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-
-import java.util.Map;
 
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -57,11 +53,11 @@ public class ChromeFeatureListInstrumentationTest {
 
     @Test
     @MediumTest
-    public void testSetTestFeatures() {
-        Map<String, Boolean> overrides = new ArrayMap<>();
-        overrides.put(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
-        overrides.put(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
-        FeatureList.setTestFeatures(overrides);
+    public void testSetTestValues() {
+        FeatureList.TestValues overrides = new FeatureList.TestValues();
+        overrides.addFeatureFlagOverride(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
+        overrides.addFeatureFlagOverride(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
+        FeatureList.setTestValues(overrides);
 
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));

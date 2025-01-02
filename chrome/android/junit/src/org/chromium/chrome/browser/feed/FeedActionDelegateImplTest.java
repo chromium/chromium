@@ -15,8 +15,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +24,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -101,27 +100,24 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testShowSyncConsentActivity_shownWhenFlagEnabled() {
-        FeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
         mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testShowSyncConsentActivity_dontShowWhenFlagDisabled() {
-        FeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
         mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSyncConsentActivityLauncher, never())
                 .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testStartSigninFlow_shownWhenFlagEnabled() {
-        FeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO)))
                 .thenReturn(mSigninIntent);
@@ -146,9 +142,8 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testStartSigninFlow_dontShowWhenFlagDisabled() {
-        FeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
         mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
         verify(mMockSigninAndHistorySyncActivityLauncher, never())
                 .createBottomSheetSigninIntentOrShowError(
@@ -156,9 +151,8 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testShowSigninInterstitial_replaceSyncPromosWithSignInPromosEnabled() {
-        FeatureList.setTestFeatures(
-                ImmutableMap.of(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS, true));
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO)))
                 .thenReturn(mSigninIntent);
@@ -183,8 +177,8 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CORMORANT)
     public void testOpenWebFeed_enabledWhenCormorantFlagEnabled() {
-        FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, true));
         String webFeedName = "SomeFeedName";
 
         mFeedActionDelegateImpl.openWebFeed(webFeedName, SingleWebFeedEntryPoint.OTHER);
@@ -197,9 +191,9 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.CORMORANT)
     public void testOpenWebFeed_disabledWhenCormorantFlagDisabled() {
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(false);
-        FeatureList.setTestFeatures(ImmutableMap.of(ChromeFeatureList.CORMORANT, false));
         mFeedActionDelegateImpl.openWebFeed("SomeFeedName", SingleWebFeedEntryPoint.OTHER);
         verify(mActivity, never()).startActivity(any());
     }

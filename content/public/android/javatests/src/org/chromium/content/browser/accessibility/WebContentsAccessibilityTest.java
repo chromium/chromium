@@ -107,12 +107,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
@@ -123,7 +124,6 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -170,12 +170,6 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object does not have Bundle extra containing image data.";
     private static final String FOCUSING_ERROR =
             "Expected focus to be on a different node than it is.";
-
-    // ContentFeatureList maps used for various tests.
-    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_ENABLED =
-            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, true);
-    private static final Map<String, Boolean> INCLUDE_LONG_CLICK_DISABLED =
-            Map.of(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION, false);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -2028,10 +2022,9 @@ public class WebContentsAccessibilityTest {
     /** Test that ACTION_LONG_CLICK is included when experiment is running. */
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION)
     public void testNodeInfo_Actions_longClickIncluded() throws Throwable {
         setupTestWithHTML("<p id='id1'>Example</p>");
-
-        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_ENABLED);
 
         int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         mNodeInfo = createAccessibilityNodeInfo(vvId);
@@ -2043,10 +2036,9 @@ public class WebContentsAccessibilityTest {
     /** Test that ACTION_LONG_CLICK is excluded when experiment is paused. */
     @Test
     @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION)
     public void testNodeInfo_Actions_longClickExcluded() throws Throwable {
         setupTestWithHTML("<p id='id1'>Example</p>");
-
-        FeatureList.setTestFeatures(INCLUDE_LONG_CLICK_DISABLED);
 
         int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         mNodeInfo = createAccessibilityNodeInfo(vvId);
