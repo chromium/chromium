@@ -81,6 +81,8 @@
     UIKeyCommand.cr_showNextTab,
     UIKeyCommand.cr_showPreviousTab,
     UIKeyCommand.cr_select1,
+    UIKeyCommand.cr_select2,
+    UIKeyCommand.cr_select3,
     UIKeyCommand.cr_select9,
     UIKeyCommand.cr_showDownloads,
     UIKeyCommand.cr_showSettings,

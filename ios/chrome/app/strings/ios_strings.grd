@@ -6851,6 +6851,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
       </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID" desc="The title of the keyboard shortcut to go to the incognito tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Incognito tab grid
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID" desc="The title of the keyboard shortcut to go to the regular tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Regular tab grid
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID" desc="The title of the keyboard shortcut to go to the remote tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Remote tab grid
+      </message>
     </messages>
   </release>
 </grit>
