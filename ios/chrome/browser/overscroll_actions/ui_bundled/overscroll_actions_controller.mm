@@ -668,10 +668,6 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
 }
 
 - (void)setup {
-  if (self.panGestureRecognizer) {
-    return;
-  }
-
   UIPanGestureRecognizer* panGesture;
   // Workaround a bug occurring when Speak Selection is enabled.
   // See crbug.com/699655.
