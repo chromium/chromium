@@ -3964,7 +3964,7 @@
 <translation id="3755411799582650620">ನಿಮ್ಮ <ph name="PHONE_NAME" /> ಫೋನ್ ಈ <ph name="DEVICE_TYPE" /> ವನ್ನು ಸಹ ಅನ್‌ಲಾಕ್ ಮಾಡಬಹುದು.</translation>
 <translation id="375636864092143889">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಸೈಟ್‌ ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="3756485814916578707">ಬಿತ್ತರಿಸುವ ಸ್ಕ್ರೀನ್‌</translation>
-<translation id="3756578970075173856">ಪಿನ್ ಹೊಂದಿಸಿ</translation>
+<translation id="3756578970075173856">ಪಿನ್ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3756795331760037744">ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿರುವ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು Google Assistant ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="3756806135608816820">ಸೈಟ್‌ಗಳು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು ಅನುಮತಿಸುವಂತೆ ಕೇಳಬಹುದು</translation>
 <translation id="3757567010566591880">ಟೂಲ್‌ಬಾರ್‌ನಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
@@ -4746,7 +4746,7 @@
 <translation id="4300272766492248925">ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="4301671483919369635">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಈ ಪುಟಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ. ಅವರ ಜೊತೆಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}one{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}other{# ಸಂಪರ್ಕಗಳು ಲಭ್ಯವಿಲ್ಲ. ಅವರೊಂದಿಗೆ <ph name="FEATURE_NAME" /> ಅನ್ನು ಬಳಸಲು, ಅವರ Google ಖಾತೆಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಇಮೇಲ್ ವಿಳಾಸಗಳನ್ನು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ.}}</translation>
-<translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
+<translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
 <translation id="4305817255990598646">ಬದಲಿಸಿ</translation>

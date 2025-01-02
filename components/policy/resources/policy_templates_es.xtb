@@ -1194,7 +1194,7 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
 Si se habilita esta política, los eventos de mutación seguirán activándose aunque se hayan inhabilitado de forma predeterminada para los usuarios web normales. Si se inhabilita esta política o no se define, estos eventos no se podrán activar.
 Esta política es una solución temporal y se eliminará en la versión M135.</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
-<translation id="1865867000796030567">Si se habilita esta política, el valor de la clave del archivo de manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> de la aplicación de kiosco sin retardo con inicio automático se usará como prefijo de la versión de destino de actualización automática.
+<translation id="1865867000796030567">Si se habilita esta política, el valor de la clave del archivo de manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> de la aplicación de kiosco sin retardo con inicio automático se usará como prefijo de la versión seleccionada para la actualización automática.
 
 Si se inhabilita o no se define, la clave del archivo de manifiesto <ph name="REQUIRED_PLATFORM_VERSION" /> se ignorará y la actualización automática se realizará con normalidad.
 
@@ -6056,7 +6056,7 @@ Se eliminó en la versión M112.</translation>
       Si se habilita esta política, se le pedirá al usuario que seleccione un certificado de cliente cuando la política de selección automática coincida con varios certificados.
       Si se inhabilita esta política o no se establece, nunca se le pedirá al usuario que seleccione un certificado de cliente en la pantalla de inicio de sesión.
       Nota: Por lo general, no se recomienda activar esta política, ya que incluye riesgos potenciales de privacidad (si se usan certificados respaldados por TPM en todo el dispositivo) y ofrece una mala experiencia de usuario.</translation>
-<translation id="5503933085302625442">No restaurar la versión de destino del SO</translation>
+<translation id="5503933085302625442">No restaurar SO a la versión seleccionada</translation>
 <translation id="55057839818162162">Permitir búsqueda asistida mediante cámara de <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="55057971769693300">Inhabilitar el resaltado del cursor de texto</translation>
 <translation id="5508307164752647432">Habilitar la función Kerberos</translation>
@@ -8041,7 +8041,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_ALLOWED_FOR
 Si se inhabilita esta política o no se define, se aplicará el comportamiento predeterminado de bloquear dichas solicitudes.</translation>
 <translation id="6915524162137327111">Mostrar etiquetas de gestión durante 30 s</translation>
 <translation id="6919205861950516688">No permitir la función Organizador de pestañas.</translation>
-<translation id="692096803256767290">Restaurar la versión de destino del SO</translation>
+<translation id="692096803256767290">Restaurar SO a la versión seleccionada</translation>
 <translation id="6921241119085515674">Permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6921544339867564740">Permitir que los dispositivos utilicen máquinas virtuales en ChromeOS</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -10108,9 +10108,9 @@ Si se habilita la política o no se le asigna ningún valor, se impide que softw
 <translation id="8504243661032323176">Si se establece esta política, se aplica la longitud mínima definida del PIN. Los valores inferiores a 1 se redondean al mínimo de 1.
 
       Si no se establece esta política, se aplica la longitud mínima del PIN de 6 dígitos, que es el mínimo recomendado.</translation>
-<translation id="8507835864888987300">Establece una versión de destino para las actualizaciones automáticas.
+<translation id="8507835864888987300">Establece la versión seleccionada para las actualizaciones automáticas.
 
-      Especifica el prefijo de una versión de destino a la que debe actualizarse <ph name="PRODUCT_OS_NAME" />. Si el dispositivo utiliza una versión anterior al prefijo especificado, se actualizará a la versión más reciente con el prefijo establecido. Si el dispositivo ya utiliza la última versión, el resultado depende del valor de <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />. El formato del prefijo depende del componente como se indica en el siguiente ejemplo:
+      Especifica el prefijo de la versión seleccionada a la que debe actualizarse <ph name="PRODUCT_OS_NAME" />. Si el dispositivo utiliza una versión anterior al prefijo especificado, se actualizará a la versión más reciente con el prefijo establecido. Si el dispositivo ya utiliza la última versión, el resultado depende del valor de <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />. El formato del prefijo depende del componente como se indica en el siguiente ejemplo:
 
       "" (o no configurado): actualiza a la última versión disponible.
       "1412.": actualiza a cualquier versión menor de 1412 (por ejemplo, 1412.24.34 o 1412.60.2)
@@ -10121,7 +10121,7 @@ Si se habilita la política o no se le asigna ningún valor, se impide que softw
 <translation id="8508489378025029342">Habilitar los informes sobre el tiempo de actividad del dispositivo</translation>
 <translation id="8510357716574220408"><ph name="CLOUD_PRINT_NAME" /> (obsoleto)</translation>
 <translation id="8511192250554640451">Permitir que la lógica de Chrome controle la limitación de los temporizadores de JavaScript en segundo plano y que los usuarios puedan configurar esta limitación</translation>
-<translation id="8511708772548158302">Restaura el dispositivo a la versión de destino si la versión actual del SO es más reciente que la de destino. Se hará un Powerwash en el dispositivo, pero se conservarán las configuraciones de red sin certificados de todo el dispositivo y se volverá a registrar el dispositivo automáticamente.
+<translation id="8511708772548158302">Restaura el dispositivo a la versión seleccionada si la versión actual del SO es más reciente que la de destino. Se hará un Powerwash en el dispositivo, pero se conservarán las configuraciones de red sin certificados de todo el dispositivo y se volverá a registrar el dispositivo automáticamente.
 No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versiones anteriores.</translation>
 <translation id="8519264904050090490">URLs de excepción manual de usuario administrado</translation>
 <translation id="8519516251436131647">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad.
