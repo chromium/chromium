@@ -583,8 +583,10 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kSoftwareSecure);
   if (!cdm_info) {
-    NOTREACHED() << "No valid CdmInfo for " << key_system;
+    DLOG(ERROR) << "No valid CdmInfo for " << key_system;
+    return nullptr;
   }
+
   if (cdm_info->path.empty()) {
     NOTREACHED() << "CDM path for " << key_system << " is empty";
   }
