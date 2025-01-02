@@ -256,34 +256,21 @@ void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-void PixelTest::AllocateSharedBitmapMemory(
+viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     const gfx::Size& size,
-    scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    base::WritableSharedMemoryMapping& mapping,
-    gpu::SyncToken& sync_token) {
-  DCHECK(context_provider);
+    const SkBitmap& source) {
   auto* shared_image_interface = context_provider->SharedImageInterface();
   DCHECK(shared_image_interface);
   auto shared_image_mapping = shared_image_interface->CreateSharedImage(
       {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
 
-  shared_image = std::move(shared_image_mapping.shared_image);
-  mapping = std::move(shared_image_mapping.mapping);
-  sync_token = shared_image_interface->GenVerifiedSyncToken();
-  CHECK(shared_image);
-}
-
-viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
-    scoped_refptr<viz::RasterContextProvider> context_provider,
-    const gfx::Size& size,
-    const SkBitmap& source) {
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
-  base::WritableSharedMemoryMapping mapping;
-  gpu::SyncToken sync_token;
-  AllocateSharedBitmapMemory(context_provider, size, shared_image, mapping,
-                             sync_token);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      std::move(shared_image_mapping.shared_image);
+  base::WritableSharedMemoryMapping mapping =
+      std::move(shared_image_mapping.mapping);
+  gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   const size_t row_bytes = info.minRowBytes();
