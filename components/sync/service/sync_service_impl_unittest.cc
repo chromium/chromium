@@ -49,6 +49,7 @@
 #include "components/sync/test/sync_service_impl_bundle.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1272,7 +1273,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // TODO(crbug.com/40066949): Update once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
-  const std::string primary_account_gaia_id =
+  const GaiaId primary_account_gaia_id =
       identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
           .gaia;

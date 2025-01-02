@@ -100,11 +100,11 @@ class SyncToSigninMigrationTestBase {
   void RecordStateToPrefs(bool include_status_recorder = true) {
     // Populate signin prefs based on the state of the TestSyncService.
     pref_service_.SetString(prefs::kGoogleServicesAccountId,
-                            sync_service_.GetAccountInfo().gaia);
+                            sync_service_.GetAccountInfo().gaia.ToString());
     pref_service_.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                              sync_service_.HasSyncConsent());
     pref_service_.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
-                            sync_service_.GetAccountInfo().gaia);
+                            sync_service_.GetAccountInfo().gaia.ToString());
     pref_service_.SetString(prefs::kGoogleServicesLastSyncingUsername,
                             sync_service_.GetAccountInfo().email);
 
@@ -187,7 +187,8 @@ TEST_P(SyncToSigninMigrationTest, SyncActive) {
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -196,7 +197,7 @@ TEST_P(SyncToSigninMigrationTest, SyncActive) {
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -295,13 +296,14 @@ TEST_P(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -338,12 +340,12 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
     // Enabling the forced migration flag causes the min delay requirement to be
     // ignored, immediately moving the user to the signed-in state.
     EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_FALSE(
         pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
     EXPECT_EQ(pref_service_.GetString(
                   prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_EQ(pref_service_.GetString(
                   prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
               email);
@@ -354,7 +356,7 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayNotPassed) {
     // The migration should not run yet, giving the user some time to resolve
     // the error (switches::kMinDelayToMigrateSyncPaused).
     EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-              gaia_id);
+              gaia_id.ToString());
     EXPECT_TRUE(
         pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
     EXPECT_EQ(pref_service_.GetString(
@@ -403,13 +405,14 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_MinDelayPassed) {
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
   // The user should still be signed in.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   // But not syncing anymore.
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   // The fact that the user was migrated should be recorded in prefs.
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -452,11 +455,12 @@ TEST_P(SyncToSigninMigrationTest, SyncPaused_AuthErrorResolved) {
       IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
 
   // The migration should have run.
-  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId), gaia_id);
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
   EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            gaia_id);
+            gaia_id.ToString());
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
@@ -1513,7 +1517,7 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
   ASSERT_FALSE(
       pref_service_.GetString(prefs::kGoogleServicesAccountId).empty());
   ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   // Not syncing:
   ASSERT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
   ASSERT_TRUE(
@@ -1526,7 +1530,7 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
   // Marked as "migrated":
   ASSERT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   ASSERT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             sync_service_.GetAccountInfo().email);
@@ -1543,7 +1547,7 @@ TEST_P(SyncToSigninMigrationUndoTest, UndoesMigration) {
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   // The "last syncing user" prefs should also have been restored.
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
-            sync_service_.GetAccountInfo().gaia);
+            sync_service_.GetAccountInfo().gaia.ToString());
   EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
             sync_service_.GetAccountInfo().email);
   // And the "was migrated" prefs should've been cleared.

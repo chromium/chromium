@@ -37,6 +37,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,9 +101,9 @@ base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
   return temp_dir->GetPath();
 }
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   CoreAccountInfo account_info;
-  account_info.gaia = gaia_id;
+  account_info.gaia = GaiaId(gaia_id);
   return account_info;
 }
 
@@ -453,8 +454,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
       initial_data.add_user();
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
       initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia);
-  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data1->set_gaia_id(account_info_1.gaia.ToString());
+  user_data2->set_gaia_id(account_info_2.gaia.ToString());
   user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
   user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
@@ -483,7 +484,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   trusted_vault_pb::LocalTrustedVault initial_data;
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data =
       initial_data.add_user();
-  user_data->set_gaia_id(account_info.gaia);
+  user_data->set_gaia_id(account_info.gaia.ToString());
   user_data->add_vault_key()->set_key_material(
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
@@ -499,8 +500,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
-  const std::string kGaiaId1 = "user1";
-  const std::string kGaiaId2 = "user2";
+  const GaiaId kGaiaId1("user1");
+  const GaiaId kGaiaId2("user2");
   const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
   const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
@@ -540,8 +541,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       initial_data.add_user();
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
       initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia);
-  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data1->set_gaia_id(account_info_1.gaia.ToString());
+  user_data2->set_gaia_id(account_info_2.gaia.ToString());
   // Mimic |user_data1| to be affected by crbug.com/1267391 and |user_data2| to
   // be not affected.
   AssignBytesToProtoString(kKey1,
@@ -580,9 +581,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       initial_data.add_user();
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
       initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data1->set_gaia_id(account_info_1.gaia.ToString());
   user_data1->set_keys_marked_as_stale_by_consumer(true);
-  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data2->set_gaia_id(account_info_2.gaia.ToString());
   user_data2->set_keys_marked_as_stale_by_consumer(true);
   ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
 
@@ -607,7 +608,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldUpgradeToVersion3) {
   const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
       initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data1->set_gaia_id(account_info_1.gaia.ToString());
   user_data1->mutable_local_device_registration_info()->set_device_registered(
       true);
   user_data1->mutable_local_device_registration_info()
@@ -620,7 +621,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldUpgradeToVersion3) {
   const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
   trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
       initial_data.add_user();
-  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data2->set_gaia_id(account_info_2.gaia.ToString());
   user_data2->mutable_local_device_registration_info()->set_device_registered(
       true);
   user_data2->mutable_local_device_registration_info()

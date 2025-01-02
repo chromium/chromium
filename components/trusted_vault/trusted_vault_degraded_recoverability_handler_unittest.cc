@@ -19,6 +19,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,9 +29,9 @@ namespace {
 using testing::_;
 using testing::Eq;
 
-CoreAccountInfo MakeAccountInfoWithGaiaId(const GaiaId& gaia_id) {
+CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   CoreAccountInfo account_info;
-  account_info.gaia = gaia_id;
+  account_info.gaia = GaiaId(gaia_id);
   return account_info;
 }
 

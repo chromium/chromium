@@ -37,6 +37,7 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/test/fake_sync_manager.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,7 +166,8 @@ class SyncEngineImplTest : public testing::Test {
         "fakeDebugName", &mock_sync_invalidations_service_,
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(
-            &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId)),
+            &pref_service_,
+            signin::GaiaIdHash::FromGaiaId(GaiaId(kTestGaiaId))),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
         std::move(sync_task_runner));
 
@@ -194,7 +196,7 @@ class SyncEngineImplTest : public testing::Test {
 
   // Synchronously initializes the backend.
   void InitializeBackend(bool expect_success = true,
-                         const GaiaId& gaia_id = kTestGaiaId) {
+                         const GaiaId& gaia_id = GaiaId(kTestGaiaId)) {
     SyncEngine::InitParams params;
     params.host = &mock_host_;
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
@@ -610,14 +612,15 @@ TEST_F(SyncEngineImplTest, GenerateCacheGUID) {
 
 TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
   SyncTransportDataPrefs transport_data_prefs(
-      &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId));
+      &pref_service_, signin::GaiaIdHash::FromGaiaId(GaiaId(kTestGaiaId)));
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
-  transport_data_prefs.SetCurrentSyncingGaiaId(kTestGaiaId);
+  transport_data_prefs.SetCurrentSyncingGaiaId(GaiaId(kTestGaiaId));
 
   InitializeBackend();
 
-  EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetCurrentSyncingGaiaId());
+  EXPECT_EQ(GaiaId(kTestGaiaId),
+            transport_data_prefs.GetCurrentSyncingGaiaId());
   EXPECT_EQ(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
   EXPECT_EQ(kTestBirthday, transport_data_prefs.GetBirthday());
 }
@@ -652,10 +655,10 @@ TEST_F(SyncEngineImplTest, ShouldNotifyOnNewInvalidatedDataTypes) {
 
 TEST_F(SyncEngineImplTest, ShouldReturnWhetherNextPollTimePassed) {
   SyncTransportDataPrefs transport_data_prefs(
-      &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId));
+      &pref_service_, signin::GaiaIdHash::FromGaiaId(GaiaId(kTestGaiaId)));
   transport_data_prefs.SetCacheGuid(kTestCacheGuid);
   transport_data_prefs.SetBirthday(kTestBirthday);
-  transport_data_prefs.SetCurrentSyncingGaiaId(kTestGaiaId);
+  transport_data_prefs.SetCurrentSyncingGaiaId(GaiaId(kTestGaiaId));
 
   transport_data_prefs.SetLastPollTime(base::Time::Now() - base::Hours(5));
   transport_data_prefs.SetPollInterval(base::Hours(4));

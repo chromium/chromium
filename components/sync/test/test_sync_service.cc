@@ -37,8 +37,8 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
 CoreAccountInfo GetDefaultAccountInfo() {
   CoreAccountInfo account;
   account.email = "foo@bar.com";
-  account.gaia = "foo-gaia-id";
-  account.account_id = CoreAccountId::FromGaiaId(GaiaId(account.gaia));
+  account.gaia = GaiaId("foo-gaia-id");
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   return account;
 }
 
