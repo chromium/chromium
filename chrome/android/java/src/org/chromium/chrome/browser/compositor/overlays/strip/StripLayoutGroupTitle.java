@@ -367,10 +367,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
                     if (result) {
                         // Capture and register the avatar bitmap if the group data is successfully
                         // fetched.
+                        View avatarView = mSharedImageTilesCoordinator.getView();
+                        if (LocalizationUtils.isLayoutRtl()) {
+                            avatarView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                        }
                         captureSharedAvatarBitmap(
-                                mSharedImageTilesCoordinator.getView(),
-                                registerAvatarResource,
-                                updateGroupTitleBitmap);
+                                avatarView, registerAvatarResource, updateGroupTitleBitmap);
                     }
                 });
     }

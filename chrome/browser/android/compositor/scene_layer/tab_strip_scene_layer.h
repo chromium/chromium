@@ -163,9 +163,11 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean incognito,
       jboolean foreground,
       jboolean show_reorder_background,
+      jboolean show_bubble,
       jint id,
       jint tint,
       jint reorder_background_tint,
+      jint bubble_tint,
       jfloat x,
       jfloat y,
       jfloat width,
@@ -175,8 +177,6 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat corner_radius,
       jfloat bottom_indicator_width,
       jfloat bottom_indicator_height,
-      jboolean show_bubble,
-      jint bubble_tint,
       jfloat bubble_size,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 

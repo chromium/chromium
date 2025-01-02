@@ -62,6 +62,9 @@ void GroupIndicatorLayer::SetProperties(int id,
       corner_radius, corner_radius, corner_radius, corner_radius));
   group_indicator_->SetBackgroundColor(SkColor4f::FromColor(tint));
 
+  // Whether the current layout direction is right-to-left.
+  bool is_rtl = l10n_util::IsLayoutRtl();
+
   // Show title if needed.
   DecorationIconTitle* title_layer = nullptr;
   // Only pull if group id is valid.
@@ -74,10 +77,11 @@ void GroupIndicatorLayer::SetProperties(int id,
     title_layer->SetUIResourceIds();
 
     float title_y = (height - title_layer->size().height()) / 2.f;
+    float title_x = is_rtl ? title_end_padding : title_start_padding;
     title_layer->setBounds(
         gfx::Size(width - title_start_padding - title_end_padding, height));
     title_layer_ = title_layer->layer();
-    title_layer_->SetPosition(gfx::PointF(title_start_padding, title_y));
+    title_layer_->SetPosition(gfx::PointF(title_x, title_y));
 
     unsigned expected_children = 2;
     if (group_indicator_->children().size() < expected_children) {
@@ -94,9 +98,8 @@ void GroupIndicatorLayer::SetProperties(int id,
 
   // Show notification bubble if needed.
   if (show_bubble) {
-    float bubble_x = l10n_util::IsLayoutRtl()
-                         ? title_end_padding
-                         : width - title_end_padding - bubble_size;
+    float bubble_x =
+        is_rtl ? title_end_padding : width - title_end_padding - bubble_size;
     float bubble_y = (height - bubble_size) / 2.0f;
     float corner_size = bubble_size / 2.0f;
 
@@ -113,7 +116,7 @@ void GroupIndicatorLayer::SetProperties(int id,
   // Set bottom indicator properties.
   float bottom_indicator_x = x;
   float bottom_indicator_y = tab_strip_height - bottom_indicator_height;
-  if (l10n_util::IsLayoutRtl()) {
+  if (is_rtl) {
     bottom_indicator_x -= (bottom_indicator_width - width);
   }
 
@@ -137,7 +140,7 @@ void GroupIndicatorLayer::SetProperties(int id,
 
     float reorder_background_x = x;
     float reorder_background_y = reorder_background_top_margin_;
-    if (l10n_util::IsLayoutRtl()) {
+    if (is_rtl) {
       reorder_background_x -=
           (bottom_indicator_width + reorder_background_padding_end_ - width);
     } else {

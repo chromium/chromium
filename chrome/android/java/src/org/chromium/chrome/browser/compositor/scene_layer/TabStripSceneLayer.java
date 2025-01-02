@@ -297,9 +297,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.isIncognito(),
                             gt.isForegrounded(),
                             gt.shouldShowReorderBackground(),
+                            gt.shouldShowBubble(),
                             gt.getRootId(),
                             gt.getTint(),
                             gt.getReorderBackgroundTint(),
+                            gt.getBubbleTint(),
                             gt.getPaddedX() * mDpToPx,
                             gt.getPaddedY() * mDpToPx,
                             gt.getPaddedWidth() * mDpToPx,
@@ -309,8 +311,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.getCornerRadius() * mDpToPx,
                             gt.getBottomIndicatorWidth() * mDpToPx,
                             gt.getBottomIndicatorHeight() * mDpToPx,
-                            gt.shouldShowBubble(),
-                            gt.getBubbleTint(),
                             gt.getBubbleSize() * mDpToPx,
                             layerTitleCache);
         }
@@ -445,9 +445,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean incognito,
                 boolean foreground,
                 boolean showReorderBackground,
+                boolean showBubble,
                 int id,
                 int tint,
                 int reorderBackgroundTint,
+                int bubbleTint,
                 float x,
                 float y,
                 float width,
@@ -457,8 +459,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float cornerRadius,
                 float bottomIndicatorWidth,
                 float bottomIndicatorHeight,
-                boolean showBubble,
-                int bubbleTint,
                 float bubbleSize,
                 LayerTitleCache layerTitleCache);
 
