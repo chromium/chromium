@@ -21,7 +21,7 @@ namespace {
 const gfx::VectorIcon& GetCircleVectorIcon() {
   static constexpr gfx::PathElement path[] = {gfx::CommandType::CIRCLE, 24, 18,
                                               5};
-  static const gfx::VectorIconRep rep[] = {{path, 4}};
+  static const gfx::VectorIconRep rep[] = {{path}};
   static constexpr gfx::VectorIcon circle_icon = {rep, 1, "circle"};
 
   return circle_icon;
@@ -31,7 +31,7 @@ const gfx::VectorIcon& GetRectVectorIcon() {
   static constexpr gfx::PathElement path[] = {
       gfx::CommandType::LINE_TO, 0,  10, gfx::CommandType::LINE_TO, 10, 10,
       gfx::CommandType::LINE_TO, 10, 0,  gfx::CommandType::CLOSE};
-  static const gfx::VectorIconRep rep[] = {{path, 10}};
+  static const gfx::VectorIconRep rep[] = {{path}};
   static constexpr gfx::VectorIcon rect_icon = {rep, 1, "rect"};
 
   return rect_icon;

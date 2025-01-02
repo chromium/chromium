@@ -93,13 +93,6 @@ struct PathElement {
 // Describes the drawing commands for a single vector icon at a particular pixel
 // size or range of sizes.
 struct VectorIconRep {
-  VectorIconRep() = default;
-  constexpr VectorIconRep(const PathElement* path_data, size_t path_size)
-      : path(path_data, path_size) {}
-
-  VectorIconRep(const VectorIconRep&) = delete;
-  VectorIconRep& operator=(const VectorIconRep&) = delete;
-
   base::raw_span<const PathElement> path;
 };
 
