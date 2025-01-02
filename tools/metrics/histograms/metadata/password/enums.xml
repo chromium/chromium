@@ -1584,6 +1584,14 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Passkey edit button clicked"/>
 </enum>
 
+<enum name="PasswordVsOtpFormType">
+  <int value="0"
+      label="Form without password and OTP fields (e.g. single username form)"/>
+  <int value="1" label="Password form"/>
+  <int value="2" label="OTP form"/>
+  <int value="3" label="Password + OTP form"/>
+</enum>
+
 <enum name="PasswordWeaknessScore">
   <int value="0" label="Too guessable password"/>
   <int value="1" label="Very guessable password"/>

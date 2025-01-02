@@ -895,6 +895,17 @@ void ParseUsingBaseHeuristics(
   return;
 }
 
+void ReportFormTypeMetric(SignificantFields* result, bool otp_detected) {
+  PasswordVsOtpFormType type = PasswordVsOtpFormType::kNone;
+  if (result->HasPasswords()) {
+    type |= PasswordVsOtpFormType::kPassword;
+  }
+  if (otp_detected) {
+    type |= PasswordVsOtpFormType::kOtp;
+  }
+  base::UmaHistogramEnumeration("PasswordManager.ParsedFormIsOtpForm", type);
+}
+
 // Tries to parse `processed_fields` based on model `predictions'.
 // Iterate over the `processed_fields`, looking up fields in `predictions`,
 // returns true if predictions were available for all the fields in the form.
@@ -905,6 +916,8 @@ bool ParseUsingModelPredictions(
     SignificantFields* result) {
   // Verify that predictions are available for all fields.
   bool predictions_complete = true;
+
+  bool otp_detected = false;
 
   for (auto& field : processed_fields) {
     auto prediction = predictions.find(field.field->global_id());
@@ -936,6 +949,9 @@ bool ParseUsingModelPredictions(
         result->confirmation_password = field.field;
         field.is_predicted_as_password = true;
         break;
+      case autofill::ONE_TIME_CODE:
+        otp_detected = true;
+        break;
       case autofill::UNKNOWN_TYPE:
         // The field is unrelated to passwords, do not update the parsing
         // result.
@@ -959,6 +975,10 @@ bool ParseUsingModelPredictions(
 
   if (predictions_complete && result->username && !result->HasPasswords()) {
     result->is_single_username = true;
+  }
+
+  if (predictions_complete && (mode == FormDataParser::Mode::kFilling)) {
+    ReportFormTypeMetric(result, otp_detected);
   }
 
   // TODO(crbug.com/371933424): Log metrics about renderer-recognized

@@ -2448,6 +2448,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ParsedFormIsOtpForm"
+    enum="PasswordVsOtpFormType" expires_after="2025-06-25">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    For a successfully parsed form, records whether a form is an OTP form, a
+    normal multi-use password form, or a combination of both. Recorded when the
+    form is parsed for filling.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ParserDetectedOtpFieldWithRegex"
     enum="Boolean" expires_after="2025-06-08">
   <owner>kazinova@google.com</owner>

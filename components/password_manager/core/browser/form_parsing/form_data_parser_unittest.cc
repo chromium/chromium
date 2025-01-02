@@ -3731,6 +3731,36 @@ TEST_F(FormParserTest, ModelPredictions_ClearTextPasswordFields) {
   });
 }
 
+TEST_F(FormParserTest, PasswordVsOtpMetric) {
+  {
+    base::HistogramTester histogram_tester;
+    CheckTestData({{
+        .fields =
+            {
+                {.role = ElementRole::CURRENT_PASSWORD,
+                 .value = u"password",
+                 .form_control_type = FormControlType::kInputPassword,
+                 .model_predicted_type = autofill::PASSWORD},
+            },
+    }});
+    histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm",
+                                        PasswordVsOtpFormType::kPassword, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    CheckTestData({{
+        .fields =
+            {
+                {.value = u"whatever",
+                 .form_control_type = FormControlType::kInputText,
+                 .model_predicted_type = autofill::ONE_TIME_CODE},
+            },
+    }});
+    histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm",
+                                        PasswordVsOtpFormType::kOtp, 1);
+  }
+}
+
 }  // namespace
 
 }  // namespace password_manager
