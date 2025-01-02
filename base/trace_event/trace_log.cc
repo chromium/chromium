@@ -39,6 +39,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/trace_event/perfetto_proto_appender.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
@@ -93,31 +94,6 @@ void InitializeMetadataEvent(TraceEvent* trace_event,
       trace_event_internal::kNoId,         // id
       &args, TRACE_EVENT_FLAG_NONE);
 }
-
-class PerfettoProtoAppender
-    : public base::trace_event::ConvertableToTraceFormat::ProtoAppender {
- public:
-  explicit PerfettoProtoAppender(
-      perfetto::protos::pbzero::DebugAnnotation* proto)
-      : annotation_proto_(proto) {}
-  ~PerfettoProtoAppender() override = default;
-
-  // ProtoAppender implementation
-  void AddBuffer(uint8_t* begin, uint8_t* end) override {
-    ranges_.emplace_back();
-    ranges_.back().begin = begin;
-    ranges_.back().end = end;
-  }
-
-  size_t Finalize(uint32_t field_id) override {
-    return annotation_proto_->AppendScatteredBytes(field_id, ranges_.data(),
-                                                   ranges_.size());
-  }
-
- private:
-  std::vector<protozero::ContiguousMemoryRange> ranges_;
-  raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
-};
 
 void AddConvertableToTraceFormat(
     base::trace_event::ConvertableToTraceFormat* value,

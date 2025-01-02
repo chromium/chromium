@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/perfetto_proto_appender.h"
 
 namespace base {
 namespace trace_event {
@@ -119,29 +120,6 @@ void AppendValueDebugString(const TraceArguments& args,
   args.values()[idx].AppendAsJSON(args.types()[idx], out);
   *out += ")";
 }
-
-class PerfettoProtoAppender : public ConvertableToTraceFormat::ProtoAppender {
- public:
-  explicit PerfettoProtoAppender(
-      perfetto::protos::pbzero::DebugAnnotation* proto)
-      : annotation_proto_(proto) {}
-  ~PerfettoProtoAppender() override = default;
-
-  void AddBuffer(uint8_t* begin, uint8_t* end) override {
-    ranges_.emplace_back();
-    ranges_.back().begin = begin;
-    ranges_.back().end = end;
-  }
-
-  size_t Finalize(uint32_t field_id) override {
-    return annotation_proto_->AppendScatteredBytes(field_id, ranges_.data(),
-                                                   ranges_.size());
-  }
-
- private:
-  std::vector<protozero::ContiguousMemoryRange> ranges_;
-  raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
-};
 
 }  // namespace
 

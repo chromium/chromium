@@ -28,22 +28,6 @@ using TraceEvent = base::trace_event::TraceEvent;
 
 namespace tracing {
 
-PerfettoProtoAppender::PerfettoProtoAppender(DebugAnnotation* proto)
-    : annotation_proto_(proto) {}
-
-PerfettoProtoAppender::~PerfettoProtoAppender() = default;
-
-void PerfettoProtoAppender::AddBuffer(uint8_t* begin, uint8_t* end) {
-  ranges_.emplace_back();
-  ranges_.back().begin = begin;
-  ranges_.back().end = end;
-}
-
-size_t PerfettoProtoAppender::Finalize(uint32_t field_id) {
-  return annotation_proto_->AppendScatteredBytes(field_id, ranges_.data(),
-                                                 ranges_.size());
-}
-
 namespace {
 
 constexpr size_t kDefaultSliceSize = 128;
