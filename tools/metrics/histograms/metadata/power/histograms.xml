@@ -1780,6 +1780,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.SuspendJourneyResult" enum="SuspendJourneyResult"
+    expires_after="2025-12-31">
+  <owner>eizan@chromium.org</owner>
+  <owner>chromeos-power-team@google.com</owner>
+  <summary>
+    The results of suspend journeys on Chrome OS which might comprise multiple
+    suspend attempts. Samples are reported after each journey.
+  </summary>
+</histogram>
+
 <histogram name="Power.SuspendResult" enum="SuspendResult"
     expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>

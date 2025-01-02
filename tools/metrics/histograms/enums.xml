@@ -32945,6 +32945,14 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Attempted"/>
 </enum>
 
+<enum name="SuspendJourneyResult">
+  <int value="0" label="Resume"/>
+  <int value="1" label="Shutdown"/>
+  <int value="2" label="ShutdownAfterX"/>
+  <int value="3" label="LowPowerShutdown"/>
+  <int value="4" label="Reboot"/>
+</enum>
+
 <enum name="SuspendResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
