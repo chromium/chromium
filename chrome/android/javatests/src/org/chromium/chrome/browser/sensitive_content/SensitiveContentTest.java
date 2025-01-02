@@ -31,6 +31,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisableIf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -449,6 +450,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    @DisableIf.Device(DeviceFormFactor.PHONE) // crbug.com/378742136
     public void testSwipingBetweenTabsIsSensitive() {
         // Set up.
         final View contentContainer =
