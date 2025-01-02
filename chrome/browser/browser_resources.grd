@@ -195,10 +195,6 @@
       </if>
       <if expr="is_android">
         <include name="IDR_DEV_UI_LOADER_ERROR_HTML" file="resources/dev_ui/dev_ui_loader_error.html" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_HTML" file="resources\offline_pages\offline_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_CSS" file="resources\offline_pages\offline_internals.css" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals_browser_proxy.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <if expr="enable_hangout_services_extension">

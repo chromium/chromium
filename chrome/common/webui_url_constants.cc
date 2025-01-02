@@ -172,7 +172,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
 #endif
 #endif
 #if BUILDFLAG(IS_ANDROID)
-      kChromeUIOfflineInternalsHost,
       kChromeUISnippetsInternalsHost,
       kChromeUIWebApksHost,
 #endif

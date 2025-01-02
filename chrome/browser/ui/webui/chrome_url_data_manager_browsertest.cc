@@ -414,7 +414,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
     "chrome://internals/query-tiles",
-    "chrome://offline-internals",
     "chrome://snippets-internals",
     "chrome://webapks",
 #endif

@@ -8942,9 +8942,6 @@ grit("resources") {
     deps += [ "//services/resource_coordinator/public/mojom:mojom_js" ]
   }
 
-  if (is_android) {
-    deps += [ "//chrome/browser/resources/offline_pages:build_ts" ]
-  }
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/resources/chromeos/account_manager:css_wrapper_files",
