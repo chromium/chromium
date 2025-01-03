@@ -306,7 +306,13 @@ class TabSearchPageHandler
                                UnusedTabType type);
 
   void RemoveStaleTab(tabs::TabInterface* tab);
-  void RemoveDuplicateTab(tabs::TabInterface* tab, bool url_changed = false);
+
+  // Removes a tab from the duplicate tab list, along with its associated
+  // subscriptions and observations. If the duplicate list for the tab's URL
+  // contains only one remaining tab after removal, that tab is also removed,
+  // and the list is erased from the map. If the tab is not found, the method
+  // exits without performing any action.
+  void RemoveDuplicateTab(tabs::TabInterface* tab);
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();

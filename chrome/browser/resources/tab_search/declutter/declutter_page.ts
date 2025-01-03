@@ -272,9 +272,11 @@ export class DeclutterPageElement extends CrLitElement {
     this.duplicateTabDatas_ = [];
     for (const url in tabs) {
       const urlTabs = tabs[url]!;
-      if (urlTabs.length > 0) {
+      // `tabs` include all the tabs with the url. The duplicate tab count
+      // should be one less than the count of `tabs`.
+      const duplicateCount = urlTabs.length - 1;
+      if (duplicateCount > 0) {
         const tabData: TabData = this.tabDataFromTab_(urlTabs[0]!);
-        const duplicateCount = urlTabs.length - 1;
         if (duplicateCount === 1) {
           tabData.tab.title =
               loadTimeData.getStringF('duplicateItemTitleSingle', url);

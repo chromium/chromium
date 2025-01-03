@@ -427,7 +427,8 @@ void TabSearchPageHandler::ExcludeFromDuplicateTabs(const GURL& url) {
 
   tab_declutter_controller_->ExcludeFromDuplicateTabs(url.GetWithoutRef());
 
-  auto tabs = duplicate_tabs_[url.GetWithoutRef()];
+  std::vector<tabs::TabInterface*> tabs = duplicate_tabs_[url.GetWithoutRef()];
+
   for (tabs::TabInterface* tab : tabs) {
     RemoveDuplicateTab(tab);
   }
@@ -506,7 +507,7 @@ void TabSearchPageHandler::RegisterDuplicateTabDeclutterCallbacks(
         web_contents,
         base::BindRepeating(
             [](TabSearchPageHandler* handler, tabs::TabInterface* tab) {
-              handler->RemoveDuplicateTab(tab, true);
+              handler->RemoveDuplicateTab(tab);
               handler->page_->UnusedTabsChanged(handler->GetMojoUnusedTabs());
             },
             base::Unretained(this), tab));
@@ -538,41 +539,34 @@ void TabSearchPageHandler::RemoveStaleTab(tabs::TabInterface* tab) {
   inactive_tab_subscriptions_map_.erase(tab);
 }
 
-void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab,
-                                              bool url_changed) {
+void TabSearchPageHandler::RemoveDuplicateTab(tabs::TabInterface* tab) {
   CHECK(tab);
-  CHECK(duplicate_tab_subscriptions_map_.find(tab) !=
-        duplicate_tab_subscriptions_map_.end());
 
-  GURL tab_url;
+  for (auto& [duplicate_url, duplicate_tab_list] : duplicate_tabs_) {
+    auto found_it = base::ranges::find(duplicate_tab_list, tab);
+    if (found_it != duplicate_tab_list.end()) {
+      // Remove the specific tab from `duplicate_tabs_` and subscription maps.
+      duplicate_tab_list.erase(found_it);
+      duplicate_tab_subscriptions_map_.erase(tab);
+      duplicate_tab_webcontents_observers_.erase(tab);
 
-  if (url_changed) {
-    for (const auto& [url, tabs] : duplicate_tabs_) {
-      if (std::find(tabs.begin(), tabs.end(), tab) != tabs.end()) {
-        tab_url = url;
-        break;
+      // If there is only one more element remove it as having one entry is
+      // equivalent to having no duplicate items.
+      if (duplicate_tab_list.size() == 1) {
+        tabs::TabInterface* last_tab = duplicate_tab_list.front();
+        duplicate_tab_subscriptions_map_.erase(last_tab);
+        duplicate_tab_webcontents_observers_.erase(last_tab);
+        duplicate_tab_list.clear();
       }
+
+      // If the list is now empty, remove it from `duplicate_tabs_`.
+      if (duplicate_tab_list.empty()) {
+        duplicate_tabs_.erase(duplicate_url);
+      }
+
+      return;
     }
-  } else {
-    tab_url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
-    CHECK(duplicate_tabs_.find(tab_url) != duplicate_tabs_.end());
   }
-
-  CHECK(tab_url.is_valid());
-
-  auto& tabs = duplicate_tabs_[tab_url];
-  auto tab_iter = std::find(tabs.begin(), tabs.end(), tab);
-
-  CHECK(tab_iter != tabs.end());
-  tabs.erase(tab_iter);
-
-  if (tabs.empty()) {
-    duplicate_tabs_.erase(tab_url);
-  }
-
-  // Unregister the subscriptions for this TabInterface
-  duplicate_tab_subscriptions_map_.erase(tab);
-  duplicate_tab_webcontents_observers_.erase(tab);
 }
 
 void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
