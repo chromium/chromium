@@ -160,7 +160,7 @@ class DataTypeManager {
   // the regular commit process, and is NOT part of this method. Note: Only data
   // types that are enabled and support this functionality are triggered for
   // upload.
-  virtual void TriggerLocalDataMigration(
+  virtual void TriggerLocalDataMigrationForItems(
       std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>>
           items) = 0;
 

@@ -8,7 +8,7 @@
 
 namespace syncer {
 
-void DataTypeLocalDataBatchUploader::TriggerLocalDataMigration(
+void DataTypeLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
   NOTREACHED();
 }

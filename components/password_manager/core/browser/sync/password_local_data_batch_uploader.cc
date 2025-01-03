@@ -146,7 +146,7 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigration() {
   TriggerLocalDataMigrationInternal(std::nullopt);
 }
 
-void PasswordLocalDataBatchUploader::TriggerLocalDataMigration(
+void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
   TriggerLocalDataMigrationInternal(std::move(items));
 }

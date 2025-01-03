@@ -459,7 +459,7 @@ class SyncService : public KeyedService {
   // server will happen as part of the regular commit process, and is NOT part
   // of this method. Note: Only data types that are enabled and support this
   // functionality are triggered for upload.
-  virtual void TriggerLocalDataMigration(
+  virtual void TriggerLocalDataMigrationForItems(
       std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) = 0;
 
   // Requests sync service to first enable account storage for the `data_type`

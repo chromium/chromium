@@ -2286,15 +2286,16 @@ class SyncServiceImplWithBatchUploadDesktopTest : public SyncServiceImplTest {
 };
 
 TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
-       ShouldNotForwardUponTriggerLocalDataMigrationWithItemsIfSyncDisabled) {
+       ShouldNotForwardUponTriggerLocalDataMigrationForItemsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
 
-  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but sync is
-  // disabled by policy. So data should not be uploaded.
+  // DEVICE_INFO will be passed to TriggerLocalDataMigrationForItems(), but sync
+  // is disabled by policy. So data should not be uploaded.
   auto device_info_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration(testing::_))
+  EXPECT_CALL(*device_info_uploader,
+              TriggerLocalDataMigrationForItems(testing::_))
       .Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2312,19 +2313,20 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
 
   std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
       {DEVICE_INFO, {"d1", "d2"}}};
-  service()->TriggerLocalDataMigration(items);
+  service()->TriggerLocalDataMigrationForItems(items);
 }
 
 TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
-       ShouldDoNothingUponTriggerLocalDataMigrationWithItemsForSyncingUsers) {
+       ShouldDoNothingUponTriggerLocalDataMigrationForItemsForSyncingUsers) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
 
-  // DEVICE_INFO will be passed to TriggerLocalDataMigration(), but the user is
-  // syncing. So data should not be uploaded.
+  // DEVICE_INFO will be passed to TriggerLocalDataMigrationForItems(), but the
+  // user is syncing. So data should not be uploaded.
   auto device_info_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*device_info_uploader, TriggerLocalDataMigration(testing::_))
+  EXPECT_CALL(*device_info_uploader,
+              TriggerLocalDataMigrationForItems(testing::_))
       .Times(0);
 
   std::vector<FakeControllerInitParams> params;
@@ -2337,7 +2339,7 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
 
   std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items{
       {DEVICE_INFO, {"d1", "d2"}}};
-  service()->TriggerLocalDataMigration(items);
+  service()->TriggerLocalDataMigrationForItems(items);
 }
 
 TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
@@ -2350,7 +2352,7 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
   // and the user is not syncing. So data should be uploaded.
   auto password_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*password_uploader, TriggerLocalDataMigration(items));
+  EXPECT_CALL(*password_uploader, TriggerLocalDataMigrationForItems(items));
 
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true,
@@ -2373,7 +2375,7 @@ TEST_F(
   // and the user is not syncing. So data should be uploaded.
   auto password_uploader =
       std::make_unique<MockDataTypeLocalDataBatchUploader>();
-  EXPECT_CALL(*password_uploader, TriggerLocalDataMigration(items));
+  EXPECT_CALL(*password_uploader, TriggerLocalDataMigrationForItems(items));
 
   std::vector<FakeControllerInitParams> params;
   params.emplace_back(PASSWORDS, /*enable_transport_mode=*/true,

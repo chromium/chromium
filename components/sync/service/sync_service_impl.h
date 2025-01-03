@@ -160,7 +160,7 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
-  void TriggerLocalDataMigration(
+  void TriggerLocalDataMigrationForItems(
       std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)
       override;
   void SelectTypeAndMigrateLocalDataItemsWhenActive(

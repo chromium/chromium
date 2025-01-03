@@ -2319,7 +2319,7 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
   return data_type_manager_->TriggerLocalDataMigration(types);
 }
 
-void SyncServiceImpl::TriggerLocalDataMigration(
+void SyncServiceImpl::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {
   CHECK(switches::IsBatchUploadDesktopEnabled());
 
@@ -2334,7 +2334,8 @@ void SyncServiceImpl::TriggerLocalDataMigration(
     return;
   }
 
-  return data_type_manager_->TriggerLocalDataMigration(std::move(items));
+  return data_type_manager_->TriggerLocalDataMigrationForItems(
+      std::move(items));
 }
 
 void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(

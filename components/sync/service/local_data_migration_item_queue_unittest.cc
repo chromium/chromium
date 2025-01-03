@@ -55,7 +55,8 @@ class LocalDataMigrationItemQueueTest : public testing::Test {
 };
 
 TEST_F(LocalDataMigrationItemQueueTest, MoveWithSyncServiceActive) {
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(1);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(1);
 
   queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(PASSWORDS,
                                                                   ids());
@@ -66,13 +67,14 @@ TEST_F(LocalDataMigrationItemQueueTest, MoveAfterSyncServiceActivates) {
       SyncService::TransportState::CONFIGURING);
 
   {
-    EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item()))
+    EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
         .Times(0);
     queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(PASSWORDS,
                                                                     ids());
   }
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(1);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(1);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }
@@ -81,15 +83,15 @@ TEST_F(LocalDataMigrationItemQueueTest, MoveAfterDataTypeActivates) {
   sync_service()->SetFailedDataTypes({PASSWORDS});
 
   {
-    std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
-        empty_items;
-    EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(empty_items))
+    EXPECT_CALL(*data_type_manager(),
+                TriggerLocalDataMigrationForItems(testing::IsEmpty()))
         .Times(1);
     queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(PASSWORDS,
                                                                     ids());
   }
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(1);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(1);
   sync_service()->SetFailedDataTypes({});
   sync_service()->FireStateChanged();
 }
@@ -105,7 +107,8 @@ TEST_F(LocalDataMigrationItemQueueTest, MoveMultipleItems) {
   queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(
       DataType::CONTACT_INFO, items[CONTACT_INFO]);
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(items)).Times(1);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(items))
+      .Times(1);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }
@@ -121,8 +124,10 @@ TEST_F(LocalDataMigrationItemQueueTest, MoveItemsOfOnlyActiveDataType) {
   queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(
       DataType::CONTACT_INFO, address_item[CONTACT_INFO]);
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(address_item))
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
+  EXPECT_CALL(*data_type_manager(),
+              TriggerLocalDataMigrationForItems(address_item))
       .Times(1);
   sync_service()->SetFailedDataTypes({PASSWORDS});
   sync_service()->FireStateChanged();
@@ -137,7 +142,8 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveNonPreferredType) {
   queue()->TriggerLocalDataMigrationForItemsWhenTypeBecomesActive(PASSWORDS,
                                                                   ids());
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
   sync_service()->GetUserSettings()->SetSelectedType(
       UserSelectableType::kPasswords, true);
   sync_service()->FireStateChanged();
@@ -154,7 +160,8 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterTimeLimitExceeded) {
 
   clock.Advance(base::Hours(1));
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }
@@ -166,7 +173,8 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterSyncServiceDisabled) {
                                                                   ids());
   sync_service()->SetSignedOut();
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }
@@ -179,7 +187,8 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterSyncServicePaused) {
                                                                   ids());
   sync_service()->SetPersistentAuthError();
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }
@@ -192,7 +201,8 @@ TEST_F(LocalDataMigrationItemQueueTest, DoNotMoveAfterConsentToSync) {
                                                                   ids());
   sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
 
-  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigration(item())).Times(0);
+  EXPECT_CALL(*data_type_manager(), TriggerLocalDataMigrationForItems(item()))
+      .Times(0);
   sync_service()->SetMaxTransportState(SyncService::TransportState::ACTIVE);
   sync_service()->FireStateChanged();
 }

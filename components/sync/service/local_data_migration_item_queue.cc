@@ -152,7 +152,7 @@ void LocalDataMigrationItemQueue::OnStateChanged(SyncService* sync_service) {
   // single data item move operation from the sign in promo. This is different
   // from batch upload, so we shouldn't record the batch upload histogram in
   // that case.
-  data_type_manager_->TriggerLocalDataMigration(
+  data_type_manager_->TriggerLocalDataMigrationForItems(
       MoveItemsOfActiveDataTypesToVector(items_,
                                          sync_service->GetActiveDataTypes()));
 }

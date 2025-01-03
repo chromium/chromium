@@ -212,7 +212,7 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest, MigrateWithProfilesIds) {
               IsEmpty());
 
   // Request migration for 2 of the 3 profiles.
-  uploader().TriggerLocalDataMigration(
+  uploader().TriggerLocalDataMigrationForItems(
       {first_profile.guid(), second_profile.guid()});
 
   // Third profile remains as a local profile.
@@ -242,7 +242,7 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
                   AutofillProfile::RecordType::kAccount),
               IsEmpty());
 
-  uploader().TriggerLocalDataMigration(
+  uploader().TriggerLocalDataMigrationForItems(
       {complete_profile.guid(), incomplete_profile.guid()});
 
   // Only `complete_profile` migrated, `incomplete_profile` remains.
@@ -275,7 +275,7 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
                   AutofillProfile::RecordType::kAccount),
               IsEmpty());
 
-  uploader().TriggerLocalDataMigration(
+  uploader().TriggerLocalDataMigrationForItems(
       {eligible_profile.guid(), ineligible_profile.guid()});
 
   // Only `eligible_profile` migrated, `ineligible_profile` remains.
@@ -304,7 +304,7 @@ TEST_F(ContactInfoLocalDataBatchUploaderTest,
               IsEmpty());
 
   // Request migration for `first_profile` and some fake_id.
-  uploader().TriggerLocalDataMigration(
+  uploader().TriggerLocalDataMigrationForItems(
       {first_profile.guid(), std::string("fake_id")});
 
   // Only `first_profile` migrated.

@@ -151,7 +151,7 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(void, TriggerLocalDataMigration, (DataTypeSet types), (override));
   MOCK_METHOD(
       void,
-      TriggerLocalDataMigration,
+      TriggerLocalDataMigrationForItems,
       ((std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)),
       (override));
   MOCK_METHOD(void,

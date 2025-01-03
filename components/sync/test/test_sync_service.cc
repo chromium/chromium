@@ -430,7 +430,7 @@ void TestSyncService::GetLocalDataDescriptions(
 
 void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
 
-void TestSyncService::TriggerLocalDataMigration(
+void TestSyncService::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {}
 
 void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
