@@ -7,14 +7,19 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 class OutlookCalendarPageHandler
@@ -26,6 +31,8 @@ class OutlookCalendarPageHandler
       Profile* profile);
   ~OutlookCalendarPageHandler() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   // ntp::calendar::mojom::OutlookCalendarPageHandler
   void GetEvents(GetEventsCallback callback) override;
 
@@ -35,7 +42,9 @@ class OutlookCalendarPageHandler
                       std::unique_ptr<std::string> response_body);
   void OnJsonParsed(GetEventsCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
+
   mojo::Receiver<ntp::calendar::mojom::OutlookCalendarPageHandler> handler_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<OutlookCalendarPageHandler> weak_factory_{this};

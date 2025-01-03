@@ -11,10 +11,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
+#include "chrome/common/pref_names.h"
 #include "components/search/ntp_features.h"
 #include "net/base/mime_util.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -115,11 +119,19 @@ std::string GetFileName(std::string full_name, std::string extension) {
 
 }  // namespace
 
+// static
+void OutlookCalendarPageHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kNtpOutlookCalendarRetryAfterTime,
+                             base::Time());
+}
+
 OutlookCalendarPageHandler::OutlookCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
         handler,
     Profile* profile)
     : handler_(this, std::move(handler)),
+      pref_service_(profile->GetPrefs()),
       url_loader_factory_(profile->GetURLLoaderFactory()) {}
 
 OutlookCalendarPageHandler::~OutlookCalendarPageHandler() = default;
@@ -137,6 +149,17 @@ void OutlookCalendarPageHandler::GetEvents(GetEventsCallback callback) {
 }
 
 void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
+  // Do not attempt to get calendar events when a throttling error must be
+  // waited out.
+  base::Time retry_after_time =
+      pref_service_->GetTime(prefs::kNtpOutlookCalendarRetryAfterTime);
+  if (retry_after_time != base::Time() &&
+      base::Time::Now() < retry_after_time) {
+    std::move(callback).Run(
+        std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
   resource_request->url = GURL(kRequestUrl);
@@ -160,9 +183,19 @@ void OutlookCalendarPageHandler::MakeRequest(GetEventsCallback callback) {
 void OutlookCalendarPageHandler::OnJsonReceived(
     GetEventsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  // TODO(376516070): Attempt to retrieve "Retry-After" header for throttling
-  // errors.
   const int net_error = url_loader_->NetError();
+
+  // Check for throttling errors.
+  auto* response_info = url_loader_->ResponseInfo();
+  if (net_error != net::OK && response_info && response_info->headers) {
+    int64_t wait_time =
+        response_info->headers->GetInt64HeaderValue("Retry-After");
+    if (wait_time != -1) {
+      pref_service_->SetTime(prefs::kNtpOutlookCalendarRetryAfterTime,
+                             base::Time::Now() + base::Seconds(wait_time));
+    }
+  }
+
   url_loader_.reset();
 
   if (net_error == net::OK && response_body) {

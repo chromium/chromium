@@ -12,11 +12,14 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/calendar_fake_data_helper.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -56,14 +59,14 @@ class OutlookCalendarPageHandlerTest : public testing::Test {
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  protected:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-
- private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(OutlookCalendarPageHandlerTest, GetFakeEvents) {
@@ -606,4 +609,73 @@ TEST_F(OutlookCalendarPageHandlerTest, AttachmentCreation) {
     EXPECT_EQ(attachment->resource_url,
               GURL(kBaseAttachmentResourceUrl + id_paths[i]));
   }
+}
+
+// Verifies that a "Retry-After" header is parsed and the earliest next retry
+// is persisted in prefs.
+TEST_F(OutlookCalendarPageHandlerTest, HandleThrottlingError) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  EXPECT_EQ(
+      profile_->GetPrefs()->GetTime(prefs::kNtpOutlookCalendarRetryAfterTime),
+      base::Time());
+
+  handler->GetEvents(future.GetCallback());
+
+  auto head = network::CreateURLResponseHead(net::HTTP_TOO_MANY_REQUESTS);
+  head->mime_type = "application/json";
+  head->headers->AddHeader("Retry-After", "10");
+  network::URLLoaderCompletionStatus status;
+  std::string response = R"({
+    "error": {
+      "code": "TooManyRequests",
+      "innerError": {
+        "code": "429",
+        "date": "2024-12-02T12:51:51",
+        "message": "Please retry after",
+        "request-id": "123-456-789-123-abcdefg",
+        "status": "429"
+      },
+      "message": "Please retry again later."
+    }})";
+
+  test_url_loader_factory_.AddResponse(GURL(kRequestUrl), std::move(head),
+                                       response, status);
+
+  EXPECT_EQ(future.Get().size(), 0u);
+
+  EXPECT_EQ(
+      profile_->GetPrefs()->GetTime(prefs::kNtpOutlookCalendarRetryAfterTime),
+      base::Time::Now() + base::Seconds(10));
+}
+
+// Verifies that requests aren't made if there is a retry timeout that should be
+// waited out.
+TEST_F(OutlookCalendarPageHandlerTest, MakeRequestAfterRetryTimeout) {
+  std::unique_ptr<OutlookCalendarPageHandler> handler = CreateHandler();
+  base::test::TestFuture<std::vector<ntp::calendar::mojom::CalendarEventPtr>>
+      future;
+
+  profile_->GetPrefs()->SetTime(prefs::kNtpOutlookCalendarRetryAfterTime,
+                                base::Time::Now() + base::Seconds(10));
+
+  handler->GetEvents(future.GetCallback());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(future.Get().size(), 0u);
+
+  future.Clear();
+  handler.reset();
+
+  task_environment_.FastForwardBy(base::Seconds(15));
+  handler = CreateHandler();
+
+  handler->GetEvents(future.GetCallback());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kRequestUrl, *calendar::calendar_fake_data_helper::GetFakeJsonResponse());
+
+  EXPECT_EQ(future.Get().size(), 3u);
 }
