@@ -11,8 +11,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -160,8 +160,7 @@ bool SharingIconView::IsTriggerableEvent(const ui::Event& event) {
 }
 
 const gfx::VectorIcon& SharingIconView::GetVectorIconBadge() const {
-  return should_show_error_ ? vector_icons::kBlockedBadgeIcon
-                            : gfx::VectorIcon::EmptyIcon();
+  return should_show_error_ ? vector_icons::kBlockedBadgeIcon : gfx::kNoneIcon;
 }
 
 void SharingIconView::OnExecuting(
@@ -174,8 +173,7 @@ views::BubbleDialogDelegate* SharingIconView::GetBubble() const {
 
 const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
   auto* controller = GetController();
-  return controller ? controller->GetVectorIcon()
-                    : gfx::VectorIcon::EmptyIcon();
+  return controller ? controller->GetVectorIcon() : gfx::kNoneIcon;
 }
 
 void SharingIconView::SetAccessibleIsIgnoredIfNeeded() {

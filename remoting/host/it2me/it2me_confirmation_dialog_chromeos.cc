@@ -18,6 +18,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -67,7 +68,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   const gfx::VectorIcon& GetIcon() const {
     switch (style_) {
       case DialogStyle::kConsumer:
-        return gfx::VectorIcon::EmptyIcon();
+        return gfx::kNoneIcon;
       case DialogStyle::kEnterprise:
         return chromeos::kEnterpriseIcon;
     }

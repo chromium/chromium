@@ -60,7 +60,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
@@ -501,7 +501,7 @@ bool ScalableIphDelegateImpl::ShowNotification(
             notification_image_id.value());
   }
 
-  const gfx::VectorIcon* icon = &gfx::VectorIcon::EmptyIcon();
+  const gfx::VectorIcon* icon = &gfx::kNoneIcon;
   if (params.icon == ScalableIphDelegate::NotificationIcon::kRedeem) {
     icon = &chromeos::kRedeemIcon;
   }

@@ -369,7 +369,7 @@ void GetIconFromType(ContentSettingsType type,
                      bool blocked,
                      raw_ptr<const gfx::VectorIcon>* icon,
                      raw_ptr<const gfx::VectorIcon>* badge) {
-  *badge = &gfx::VectorIcon::EmptyIcon();
+  *badge = &gfx::kNoneIcon;
   GetIconChromeRefresh(type, blocked, icon);
 }
 
@@ -509,7 +509,7 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
   icon_ = &kOpenInNewOffChromeRefreshIcon;
-  icon_badge_ = &gfx::VectorIcon::EmptyIcon();
+  icon_badge_ = &gfx::kNoneIcon;
 }
 
 // Generic blocked content settings --------------------------------------------
@@ -1222,8 +1222,8 @@ int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
 ContentSettingImageModel::ContentSettingImageModel(
     ImageType image_type,
     bool image_type_should_notify_accessibility)
-    : icon_(&gfx::VectorIcon::EmptyIcon()),
-      icon_badge_(&gfx::VectorIcon::EmptyIcon()),
+    : icon_(&gfx::kNoneIcon),
+      icon_badge_(&gfx::kNoneIcon),
       image_type_(image_type),
       image_type_should_notify_accessibility_(
           image_type_should_notify_accessibility) {}

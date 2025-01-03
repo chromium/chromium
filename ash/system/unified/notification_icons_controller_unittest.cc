@@ -18,7 +18,6 @@
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -57,8 +56,8 @@ class NotificationIconsControllerTest : public AshTestBase {
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
                 NotificationCatalogName::kTestCatalogName),
-            rich_notification_data, nullptr /* delegate */,
-            gfx::VectorIcon::EmptyIcon(), warning_level));
+            rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),
+            warning_level));
     notification_id_++;
 
     return id;

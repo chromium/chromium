@@ -12,7 +12,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
@@ -77,8 +77,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestText, SystemToastView::ButtonType::kNone,
       /*button_text=*/std::u16string(),
-      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
-      /*button_callback=*/base::DoNothing(),
+      /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/base::DoNothing(),
       /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -107,8 +106,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIconAndTextButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestText, SystemToastView::ButtonType::kTextButton,
       /*button_text=*/kTestButtonText,
-      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
-      /*button_callback=*/base::DoNothing(),
+      /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/base::DoNothing(),
       /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -127,8 +125,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestLongText, SystemToastView::ButtonType::kNone,
       /*button_text=*/std::u16string(),
-      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
-      /*button_callback=*/base::DoNothing(),
+      /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/base::DoNothing(),
       /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -148,8 +145,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndTextButton) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(
       /*text=*/kTestLongText, SystemToastView::ButtonType::kTextButton,
       /*button_text=*/kTestButtonText,
-      /*button_icon=*/&gfx::VectorIcon::EmptyIcon(),
-      /*button_callback=*/base::DoNothing(),
+      /*button_icon=*/&gfx::kNoneIcon, /*button_callback=*/base::DoNothing(),
       /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

@@ -22,7 +22,6 @@
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
@@ -214,7 +213,7 @@ void PageActionIconView::ExecuteCommand(ExecuteSource source) {
 }
 
 const gfx::VectorIcon& PageActionIconView::GetVectorIconBadge() const {
-  return gfx::VectorIcon::EmptyIcon();
+  return gfx::kNoneIcon;
 }
 
 ui::ImageModel PageActionIconView::GetSizedIconImage(int size) const {

@@ -10,6 +10,10 @@
 
 namespace ash {
 
+namespace {
+const gfx::VectorIcon kEmptyIcon;
+}  // namespace
+
 TestNearbyShareDelegate::TestNearbyShareDelegate() = default;
 
 TestNearbyShareDelegate::~TestNearbyShareDelegate() = default;
@@ -49,7 +53,7 @@ void TestNearbyShareDelegate::DisableHighVisibility() {
 void TestNearbyShareDelegate::ShowNearbyShareSettings() const {}
 
 const gfx::VectorIcon& TestNearbyShareDelegate::GetIcon(bool on_icon) const {
-  return gfx::VectorIcon::EmptyIcon();
+  return kEmptyIcon;
 }
 
 std::u16string TestNearbyShareDelegate::GetPlaceholderFeatureName() const {

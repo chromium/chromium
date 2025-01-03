@@ -14,7 +14,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -55,7 +54,7 @@ void GnubbyNotification::CreateNotification() {
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&GnubbyNotification::DismissNotification,
                               weak_ptr_factory_.GetWeakPtr())),
-      gfx::VectorIcon::EmptyIcon(), colorType);
+      gfx::VectorIcon(), colorType);
 }
 
 void GnubbyNotification::ShowNotification() {

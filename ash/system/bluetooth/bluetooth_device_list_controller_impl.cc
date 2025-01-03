@@ -9,7 +9,7 @@
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -132,7 +132,7 @@ BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
     size_t index) {
   if (!sub_header) {
     sub_header = bluetooth_detailed_view_->AddDeviceListSubHeader(
-        gfx::VectorIcon::EmptyIcon(), text_id);
+        gfx::kNoneIcon, text_id);
   }
   bluetooth_detailed_view_->device_list()->ReorderChildView(sub_header, index);
   return sub_header;

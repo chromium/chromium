@@ -20,6 +20,7 @@
 #else
 #include "components/permissions/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -166,14 +167,14 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kStorageAccessOffIcon;
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): use a dedicated icon
-      return gfx::VectorIcon::EmptyIcon();
+      return gfx::kNoneIcon;
     case RequestType::kKeyboardLock:
       return vector_icons::kKeyboardLockOffIcon;
     case RequestType::kPointerLock:
       return vector_icons::kPointerLockOffIcon;
     case RequestType::kWebAppInstallation:
       // TODO(crbug.com/333795265): provide a dedicated icon.
-      return gfx::VectorIcon::EmptyIcon();
+      return gfx::kNoneIcon;
     default:
       NOTREACHED();
   }

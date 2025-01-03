@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -385,7 +386,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (body_icon && (body_icon != &gfx::VectorIcon::EmptyIcon())) {
+  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
     icon_view_ = top_text_container->AddChildViewAt(
         views::Builder<views::ImageView>()
             .SetAccessibleName(params.body_icon_alt_text)
