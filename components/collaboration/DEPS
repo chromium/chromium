@@ -6,4 +6,5 @@ include_rules = [
   "+components/saved_tab_groups/test_support",
   "+components/signin/public/identity_manager",
   "+components/sync",
+  "+google_apis/gaia/gaia_id.h",
 ]

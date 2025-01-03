@@ -15,6 +15,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +70,7 @@ TEST_F(CollaborationServiceImplTest, ConstructionAndEmptyServiceCheck) {
 TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
   GroupData group_data = GroupData();
   GroupMember group_member = GroupMember();
-  group_member.gaia_id = kUserGaia;
+  group_member.gaia_id = GaiaId(kUserGaia);
   group_member.role = MemberRole::kOwner;
   group_data.members.push_back(group_member);
 
@@ -91,7 +92,7 @@ TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
   identity_test_env_.MakeAccountAvailable(
       kUserEmail,
       {.primary_account_consent_level = signin::ConsentLevel::kSignin,
-       .gaia_id = kUserGaia});
+       .gaia_id = GaiaId(kUserGaia)});
   EXPECT_EQ(service_->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
 }
 

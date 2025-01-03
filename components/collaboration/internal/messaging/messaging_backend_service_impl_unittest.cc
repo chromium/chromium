@@ -429,7 +429,7 @@ TEST_F(MessagingBackendServiceImplTest,
   VerifyGenericMessageData(message, group_id.value(),
                            collaboration_pb::COLLABORATION_MEMBER_ADDED,
                            DirtyType::kMessageOnly, time.ToTimeT());
-  EXPECT_EQ(member1.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ(member1.gaia_id, GaiaId(message.affected_user_gaia_id()));
   EXPECT_EQ("Live Given Name 1",
             message.collaboration_data().affected_user_name());
 
@@ -442,7 +442,7 @@ TEST_F(MessagingBackendServiceImplTest,
   VerifyGenericMessageData(message, group_id.value(),
                            collaboration_pb::COLLABORATION_MEMBER_ADDED,
                            DirtyType::kMessageOnly, time.ToTimeT());
-  EXPECT_EQ(member1.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ(member1.gaia_id, GaiaId(message.affected_user_gaia_id()));
   EXPECT_EQ("Provided Given Name 1",
             message.collaboration_data().affected_user_name());
 
@@ -456,7 +456,7 @@ TEST_F(MessagingBackendServiceImplTest,
   VerifyGenericMessageData(message, group_id.value(),
                            collaboration_pb::COLLABORATION_MEMBER_ADDED,
                            DirtyType::kMessageOnly, time.ToTimeT());
-  EXPECT_EQ(member2.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ(member2.gaia_id, GaiaId(message.affected_user_gaia_id()));
   EXPECT_EQ("Live Display Name 2",
             message.collaboration_data().affected_user_name());
 
@@ -469,7 +469,7 @@ TEST_F(MessagingBackendServiceImplTest,
   VerifyGenericMessageData(message, group_id.value(),
                            collaboration_pb::COLLABORATION_MEMBER_ADDED,
                            DirtyType::kMessageOnly, time.ToTimeT());
-  EXPECT_EQ(member2.gaia_id, message.affected_user_gaia_id());
+  EXPECT_EQ(member2.gaia_id, GaiaId(message.affected_user_gaia_id()));
   EXPECT_EQ("Provided Display Name 2",
             message.collaboration_data().affected_user_name());
 }
@@ -629,25 +629,25 @@ TEST_F(MessagingBackendServiceImplTest, TestStoringTabGroupEvents) {
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_ADDED, DirtyType::kNone,
                            now.ToTimeT());
-  EXPECT_EQ(gaia1, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia1, GaiaId(message.triggering_user_gaia_id()));
 
   tg_notifier_observer_->OnTabGroupRemoved(tab_group);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_REMOVED,
                            DirtyType::kNone, now.ToTimeT());
-  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
   tg_notifier_observer_->OnTabGroupNameUpdated(tab_group);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_NAME_UPDATED,
                            DirtyType::kNone, now.ToTimeT());
-  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 
   tg_notifier_observer_->OnTabGroupColorUpdated(tab_group);
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_GROUP_COLOR_UPDATED,
                            DirtyType::kNone, now.ToTimeT());
-  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
 }
 
 TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabGroupEvents) {
@@ -814,7 +814,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_ADDED, DirtyType::kDotAndChip,
                            now.ToTimeT());
-  EXPECT_EQ(gaia1, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia1, GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab1->saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab1->saved_group_guid().AsLowercaseString(),
@@ -862,7 +862,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_UPDATED,
                            DirtyType::kDotAndChip, now.ToTimeT());
-  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab2->saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab2->saved_group_guid().AsLowercaseString(),
@@ -913,7 +913,7 @@ TEST_F(MessagingBackendServiceImplTest, TestReceivingTabEvents) {
   VerifyGenericMessageData(message, collaboration_group_id.value(),
                            collaboration_pb::TAB_REMOVED, DirtyType::kNone,
                            now.ToTimeT());
-  EXPECT_EQ(gaia2, message.triggering_user_gaia_id());
+  EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
   EXPECT_EQ(tab3.saved_tab_guid().AsLowercaseString(),
             message.tab_data().sync_tab_id());
   EXPECT_EQ(tab3.saved_group_guid().AsLowercaseString(),

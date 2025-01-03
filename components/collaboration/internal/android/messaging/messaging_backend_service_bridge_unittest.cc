@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -204,9 +205,9 @@ InstantMessage CreateInstantMessage() {
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
   // GroupMember has its own conversion utils, so only check a single field.
   message.attribution.affected_user = data_sharing::GroupMember();
-  message.attribution.affected_user->gaia_id = "affected";
+  message.attribution.affected_user->gaia_id = GaiaId("affected");
   message.attribution.triggering_user = data_sharing::GroupMember();
-  message.attribution.triggering_user->gaia_id = "triggering";
+  message.attribution.triggering_user->gaia_id = GaiaId("triggering");
 
   // TabGroupMessageMetadata.
   message.attribution.tab_group_metadata = TabGroupMessageMetadata();

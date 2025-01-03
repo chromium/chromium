@@ -340,7 +340,7 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
 TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
   data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
 
-  const GaiaId gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
   const std::string display_name = "Invitee Display Name";
   const std::string email = "invitee@mail.com";
   const MemberRole role = MemberRole::kInvitee;
