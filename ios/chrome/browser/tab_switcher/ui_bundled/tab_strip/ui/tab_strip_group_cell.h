@@ -30,6 +30,9 @@
 // Whether the cell is that of a collapsed group. Default value is NO.
 @property(nonatomic, assign) BOOL collapsed;
 
+// Whether this cell has a notification dot.
+@property(nonatomic, assign) BOOL hasNotificationDot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_STRIP_UI_TAB_STRIP_GROUP_CELL_H_

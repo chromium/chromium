@@ -773,6 +773,15 @@ class TabStripLayout: UICollectionViewFlowLayout {
       ]).width ?? 0
     width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin
     width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalPadding
+    if let groupItemIdentifier = TabStripItemIdentifier.groupIdentifier(tabGroupItem),
+      let indexPath = dataSource?.indexPath(for: groupItemIdentifier),
+      let groupCell = collectionView?.cellForItem(at: indexPath) as? TabStripGroupCell
+    {
+      width += groupCell.hasNotificationDot ? TabStripConstants.GroupItem.notificationDotSize : 0
+      width +=
+        groupCell.hasNotificationDot
+        ? TabStripConstants.GroupItem.titleContainerHorizontalMargin : 0
+    }
     width = min(width, TabStripConstants.GroupItem.maxCellWidth)
     return CGSize(width: width, height: TabStripConstants.GroupItem.height)
   }

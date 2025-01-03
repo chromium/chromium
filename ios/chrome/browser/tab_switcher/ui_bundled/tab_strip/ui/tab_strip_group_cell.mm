@@ -27,7 +27,10 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   FadeTruncatingLabel* _titleLabel;
   UIView* _titleContainer;
   TabStripGroupStrokeView* _groupStrokeView;
+  UIView* _notificationDotView;
   NSLayoutConstraint* _titleContainerHeightConstraint;
+  NSLayoutConstraint* _titleLabelTrailingConstraint;
+  NSLayoutConstraint* _notificationDotViewTrailingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -65,6 +68,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   self.delegate = nil;
   self.titleContainerBackgroundColor = nil;
   self.collapsed = NO;
+  self.hasNotificationDot = NO;
 }
 
 - (void)applyLayoutAttributes:
@@ -100,6 +104,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
 - (void)setTitleTextColor:(UIColor*)titleTextColor {
   _titleTextColor = titleTextColor;
   _titleLabel.textColor = titleTextColor;
+  _notificationDotView.backgroundColor = _titleTextColor;
 }
 
 - (void)setGroupStrokeColor:(UIColor*)color {
@@ -143,6 +148,20 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   }
 }
 
+- (void)setHasNotificationDot:(BOOL)hasNotificationDot {
+  if (_hasNotificationDot == hasNotificationDot) {
+    return;
+  }
+
+  _hasNotificationDot = hasNotificationDot;
+
+  if (hasNotificationDot) {
+    [self showNotificationDotView];
+  } else {
+    [self hideNotificationDotView];
+  }
+}
+
 #pragma mark - View creation helpers
 
 // Returns a new title label.
@@ -152,6 +171,7 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
+  titleLabel.textAlignment = NSTextAlignmentCenter;
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired - 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -198,11 +218,15 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
       NSDirectionalEdgeInsetsMake(
           0, TabStripGroupItemConstants.titleContainerHorizontalMargin, 0,
           TabStripGroupItemConstants.titleContainerHorizontalMargin));
-  [_titleContainer.centerYAnchor
-      constraintEqualToAnchor:contentView.centerYAnchor
-                     constant:kTitleContainerCenterYOffset]
-      .active = YES;
-  AddSameCenterConstraints(_titleLabel, _titleContainer);
+
+  // The width of each cell is calculated in TabStripLayout.
+  // The margin and padding at both edges and the title of a group is taken
+  // account into the width of each cell.
+  _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
+      constraintEqualToAnchor:_titleContainer.trailingAnchor
+                     constant:-TabStripGroupItemConstants
+                                   .titleContainerHorizontalPadding];
+
   NSLayoutConstraint* titleLabelMaxWidthConstraint = [_titleLabel.widthAnchor
       constraintLessThanOrEqualToConstant:TabStripGroupItemConstants
                                               .maxTitleWidth];
@@ -230,6 +254,17 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
     groupStrokeViewTitleContainerConstraint,
     [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+
+    [_titleContainer.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor
+                       constant:kTitleContainerCenterYOffset],
+    [_titleLabel.centerYAnchor
+        constraintEqualToAnchor:_titleContainer.centerYAnchor],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_titleContainer.leadingAnchor
+                       constant:TabStripGroupItemConstants
+                                    .titleContainerHorizontalPadding],
+    _titleLabelTrailingConstraint,
   ]];
 }
 
@@ -322,6 +357,64 @@ constexpr double kTitleContainerFadeAnimationSeconds = 0.25;
   _titleContainer.accessibilityValue = l10n_util::GetNSString(
       self.collapsed ? IDS_IOS_TAB_STRIP_GROUP_CELL_COLLAPSED_VOICE_OVER_VALUE
                      : IDS_IOS_TAB_STRIP_GROUP_CELL_EXPANDED_VOICE_OVER_VALUE);
+}
+
+// Shows the notification dow view. Adds the view to the cell if there is none
+// yet.
+- (void)showNotificationDotView {
+  // Disable the center position of title label to avoid the conflict with the
+  // constraint for the notification dot view.
+  _titleLabelTrailingConstraint.active = NO;
+
+  if (_notificationDotView) {
+    // Enable the constraint for the notification dot view.
+    CHECK(_notificationDotViewTrailingConstraint);
+    _notificationDotViewTrailingConstraint.active = YES;
+
+    _notificationDotView.hidden = NO;
+    return;
+  }
+
+  _notificationDotView = [[UIView alloc] init];
+  _notificationDotView.backgroundColor = _titleTextColor;
+  _notificationDotView.translatesAutoresizingMaskIntoConstraints = NO;
+  _notificationDotView.layer.cornerRadius =
+      TabStripGroupItemConstants.notificationDotSize / 2;
+  [_titleContainer addSubview:_notificationDotView];
+
+  _notificationDotViewTrailingConstraint = [_notificationDotView.trailingAnchor
+      constraintEqualToAnchor:_titleContainer.trailingAnchor
+                     constant:-TabStripGroupItemConstants
+                                   .titleContainerHorizontalPadding];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_notificationDotView.widthAnchor
+        constraintEqualToConstant:TabStripGroupItemConstants
+                                      .notificationDotSize],
+    [_notificationDotView.heightAnchor
+        constraintEqualToAnchor:_notificationDotView.widthAnchor],
+    // Position the notification dot at right end of the cell.
+    [_notificationDotView.centerYAnchor
+        constraintEqualToAnchor:_titleContainer.centerYAnchor],
+    [_notificationDotView.leadingAnchor
+        constraintEqualToAnchor:_titleLabel.trailingAnchor
+                       constant:TabStripGroupItemConstants
+                                    .titleContainerHorizontalMargin],
+    _notificationDotViewTrailingConstraint,
+  ]];
+}
+
+// Hides the notification dot view in the cell and adjusts the constraints.
+- (void)hideNotificationDotView {
+  _notificationDotView.hidden = YES;
+
+  // Disable the constraint for the notification dot view to avoid the conflict
+  // with the constraint for the title label.
+  _notificationDotViewTrailingConstraint.active = NO;
+
+  // Enable the constraint for the title label to place it in the center of the
+  // container view.
+  _titleLabelTrailingConstraint.active = YES;
 }
 
 @end
