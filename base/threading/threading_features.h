@@ -26,10 +26,6 @@ extern const BASE_EXPORT FeatureParam<double>
 extern const BASE_EXPORT Feature kUserInteractiveCompositingMac;
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_EXPORT BASE_DECLARE_FEATURE(kAboveNormalCompositingBrowserWin);
-#endif
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);
 
 }  // namespace base

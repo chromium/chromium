@@ -18,8 +18,6 @@ BASE_EXPORT void AssertMemoryPriority(HANDLE thread, int memory_priority);
 
 }  // namespace internal
 
-BASE_EXPORT void InitializePlatformThreadFeatures();
-
 }  // namespace base
 
 #endif  // BASE_THREADING_PLATFORM_THREAD_WIN_H_

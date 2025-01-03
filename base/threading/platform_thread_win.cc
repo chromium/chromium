@@ -24,7 +24,6 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/threading_features.h"
 #include "base/time/time_override.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -37,15 +36,7 @@
 
 namespace base {
 
-BASE_FEATURE(kAboveNormalCompositingBrowserWin,
-             "AboveNormalCompositingBrowserWin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
-
-// Flag used to map Compositing ThreadType |THREAD_PRIORITY_ABOVE_NORMAL| on the
-// UI thread for |kAboveNormalCompositingBrowserWin| Feature.
-std::atomic<bool> g_above_normal_compositing_browser{true};
 
 // These values are sometimes returned by ::GetThreadPriority().
 constexpr int kWinDisplayPriority1 = 5;
@@ -368,15 +359,6 @@ namespace {
 
 void SetCurrentThreadPriority(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  if (thread_type == ThreadType::kDisplayCritical &&
-      pump_type_hint == MessagePumpType::UI &&
-      !g_above_normal_compositing_browser) {
-    // Ignore kDisplayCritical thread type for UI thread as Windows has a
-    // priority boost mechanism. See
-    // https://docs.microsoft.com/en-us/windows/win32/procthread/priority-boosts
-    return;
-  }
-
   PlatformThreadHandle::Handle thread_handle =
       PlatformThread::CurrentHandle().platform_handle();
 
@@ -549,12 +531,6 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   }
 
   NOTREACHED() << "::GetThreadPriority returned " << priority << ".";
-}
-
-void InitializePlatformThreadFeatures() {
-  g_above_normal_compositing_browser.store(
-      FeatureList::IsEnabled(kAboveNormalCompositingBrowserWin),
-      std::memory_order_relaxed);
 }
 
 // static
