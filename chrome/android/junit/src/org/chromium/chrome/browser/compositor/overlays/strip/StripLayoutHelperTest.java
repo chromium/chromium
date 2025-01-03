@@ -1729,9 +1729,6 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "New tab button should be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull(
-                "Should not set an interacting tab when pressing down on new tab button.",
-                mStripLayoutHelper.getInteractingTabForTesting());
         assertFalse(
                 "Should not start reorder mode when pressing down on new tab button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
@@ -1859,9 +1856,9 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
-        assertNull(
-                "Should not set an interacting tab when pressing down to stop scrolling.",
-                mStripLayoutHelper.getInteractingTabForTesting());
+        assertFalse(
+                "Should not start reorder mode when pressing down down on strip to stop scroll.",
+                mStripLayoutHelper.getInReorderModeForTesting());
         assertTrue(
                 "Scroller should be force finished after pressing down on strip.",
                 mStripLayoutHelper.getScrollerForTesting().isFinished());
