@@ -160,11 +160,12 @@ public class FullscreenManagerTestUtils {
             float dragEndY = dragStartY - browserControlsStateProvider.getTopControlsHeight();
 
             long downTime = SystemClock.uptimeMillis();
-            TouchCommon.performDrag(
+            // Avoid fling so that the next drag has the chance to start with a non-moving content.
+            TouchCommon.performDragNoFling(
                     testRule.getActivity(), dragX, dragX, dragStartY, dragEndY, 100, downTime);
 
             try {
-                contentMovedCallback.waitForCallback(0, 1, 1, TimeUnit.SECONDS);
+                contentMovedCallback.waitForCallback(0, 1, 500, TimeUnit.MILLISECONDS);
                 scrollBrowserControls(testRule, false);
                 if (showControls) {
                     scrollBrowserControls(testRule, true);
