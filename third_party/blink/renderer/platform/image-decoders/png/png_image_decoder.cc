@@ -311,7 +311,8 @@ static inline void ReadHDRMetadata(
   for (size_t chunk_index = 0; chunk_index < num_unknown_chunks;
        chunk_index++) {
     const auto& chunk = unknown_chunks[chunk_index];
-    if (strcmp(reinterpret_cast<const char*>(chunk.name), "cLLi") == 0) {
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "cLLi") == 0 ||
+        strcmp(reinterpret_cast<const char*>(chunk.name), "cLLI") == 0) {
       if (chunk.size != 8) {
         continue;
       }
@@ -324,7 +325,8 @@ static inline void ReadHDRMetadata(
       clli.emplace(max_cll_times_10000 / 10000, max_fall_times_10000 / 10000);
       continue;
     }
-    if (strcmp(reinterpret_cast<const char*>(chunk.name), "mDCv") == 0) {
+    if (strcmp(reinterpret_cast<const char*>(chunk.name), "mDCv") == 0 ||
+        strcmp(reinterpret_cast<const char*>(chunk.name), "mDCV") == 0) {
       if (chunk.size != 24) {
         continue;
       }
