@@ -2393,6 +2393,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="58" label="Coral Saved Groups Limit Max"/>
   <int value="59" label="Scanner Action Success"/>
   <int value="60" label="Scanner Action Failure"/>
+  <int value="61" label="Apps Can Access Camera"/>
+  <int value="62" label="Apps Can't Access Camera"/>
+  <int value="63" label="Can't Turn On Camera Access Remotely"/>
 </enum>
 
 <enum name="TogglePickerAction">

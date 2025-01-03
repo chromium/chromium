@@ -2834,6 +2834,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_DESK_16_MINI_VIEW_TITLE" desc="The label of the sixteenth virtual desk thumbnail.">
         Desk 16
       </message>
+      <message name="IDS_ASH_CAMERA_NOW_ALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now enabled.">
+        Apps can access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_NOW_DISALLOWED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, and camera access is now disabled.">
+        Apps can't access camera
+      </message>
+      <message name="IDS_ASH_CAMERA_ACCESS_DISABLED" desc="The toast message that appears when the shortcut to toggle camera access is invoked, but camera access cannot be enabled because there is currently an admin remote desktop session active.">
+        Can't turn on camera access remotely
+      </message>
       <message name="IDS_ASH_DESKS_MAX_NUM_REACHED" desc="Message shown to users when they attempt to add a new virtual desk when the maximum number of desks has been reached.">
         Maximum number of desks reached.
       </message>
@@ -4250,6 +4259,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_RESIZE_PIP_WINDOW" desc="Label for accelerator action - Resize the picture-in-picture window.">
         Switch between the maximum or current size of the picture-in-picture window
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED" desc="Label for accelerator action - Toggle whether the camera access setting is enabled.">
+        Turn on/off camera access
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Move focus to previous pane.">
         Move focus to previous pane

@@ -191,6 +191,7 @@ chromium-metrics-reviews@google.com.
   <int value="137" label="ResizePipWindow"/>
   <int value="138" label="ToggleGeminiApp"/>
   <int value="139" label="ToggleDoNotDisturb"/>
+  <int value="140" label="ToggleCameraAllowed"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>

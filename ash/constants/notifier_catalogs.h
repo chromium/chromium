@@ -330,7 +330,10 @@ enum class ToastCatalogName {
   kCoralSavedGroupLimitMax = 58,
   kScannerActionSuccess = 59,
   kScannerActionFailure = 60,
-  kMaxValue = kScannerActionFailure
+  kCameraNowAllowed = 61,
+  kCameraNowDisallowed = 62,
+  kCameraForceDisabled = 63,
+  kMaxValue = kCameraForceDisabled
 };
 
 }  // namespace ash

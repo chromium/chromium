@@ -152,6 +152,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TilingWindowResizeUp"/>
   <variant name="ToggleAppList"/>
   <variant name="ToggleCalendar"/>
+  <variant name="ToggleCameraAllowed"/>
   <variant name="ToggleCapsLock"/>
   <variant name="ToggleClipboardHistory"/>
   <variant name="ToggleDictation"/>

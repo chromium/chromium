@@ -571,6 +571,14 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             mojom::AcceleratorSubcategory::kGeneralControls, /*locked=*/false,
             mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleCameraAllowed,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleCameraAllowed,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kOpenFileManager,
         AcceleratorLayoutDetails(
             AcceleratorAction::kOpenFileManager,

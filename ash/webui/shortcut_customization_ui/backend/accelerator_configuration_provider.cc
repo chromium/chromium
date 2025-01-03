@@ -459,6 +459,8 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !features::IsAppLaunchShortcutEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
+    case kToggleCameraAllowed:
+      return !features::IsToggleCameraShortcutEnabled();
   }
 
   return false;
