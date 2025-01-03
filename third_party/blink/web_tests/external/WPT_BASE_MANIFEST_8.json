@@ -391290,10 +391290,6 @@
         "999383c76960e327d40c079d70e4ced7f0dcefc6",
         []
        ],
-       "style_type_svg-expected.txt": [
-        "647b76e94cf894189bcdb43031e61e09ccddccce",
-        []
-       ],
        "support": {
         "css-red.txt": [
          "9ef04cbd12daf19dd8810cae8844bd22f3264926",
@@ -400649,7 +400645,7 @@
     ]
    },
    "lint.ignore": [
-    "7dea1c5e395552e3c9c3b79e8d43ea573370c337",
+    "759ef41ca2bc2f3595dc33d70b6b75c5cda7b798",
     []
    ],
    "loading": {
@@ -416225,6 +416221,10 @@
      "d6c496179c062a42f44fadb1908f611056a83114",
      []
     ],
+    "get-trusted-types-compliant-attribute-value-expected.txt": [
+     "4428f99d8fc990b78876af10d3b5d4eee771e555",
+     []
+    ],
     "idlharness.window-expected.txt": [
      "9d36f476f0a42e895f5845aba7dd5098bb32ac08",
      []
@@ -416261,7 +416261,7 @@
       []
      ],
      "DOMWindowTimers-setTimeout-setInterval.js": [
-      "7c72dc3e60abd889463840b7baf961bf7bbb530a",
+      "e03329cdce03fe2f809f8b4274841da4c899f96c",
       []
      ],
      "HTMLScriptElement-internal-slot-support.html": [
@@ -416296,12 +416296,24 @@
       "af6596b29a8080e5cd8d688d0d6933caf49a2090",
       []
      ],
+     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval-worker.js": [
+      "456780247f2c329ddd20ebffe5f7b441e5451b28",
+      []
+     ],
+     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval-worker.js.headers": [
+      "604e765da46d85fe8ab85d3097fe7c2cbe00a930",
+      []
+     ],
+     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.js": [
+      "f1218e1915a7966eac9caad003c5e01052f007a8",
+      []
+     ],
      "frame-without-trusted-types.html": [
       "25cf073e79fa48f4311c3729f0b39d9be2a64e7c",
       []
      ],
      "helper.sub.js": [
-      "dcde42a167341587b732cad1efd08c4c72582f7c",
+      "b680256b7a260655a1d90a63ea624725f23b43c3",
       []
      ],
      "namespaces.js": [
@@ -420229,6 +420241,14 @@
     ],
     "utils.js": [
      "f09334677a6a42385949c262a163066d41f750d9",
+     []
+    ],
+    "video-decoder-no-size-in-configure.https.any.worker_vp9_p0-expected.txt": [
+     "1ee6b2591af810edf3c06eb8ac41483806fc9458",
+     []
+    ],
+    "video-decoder-no-size-in-configure.https.any_vp9_p0-expected.txt": [
+     "1ee6b2591af810edf3c06eb8ac41483806fc9458",
      []
     ],
     "video-decoder.crossOriginIsolated.https.any.js.headers": [
@@ -703206,7 +703226,7 @@
      ]
     ],
     "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.html": [
-     "2f8a99a94294f4d1808b92aca9dfbcf3b52b6091",
+     "d80e34e782359d9fcec905ede481bb20024613d0",
      [
       null,
       {}
@@ -703227,7 +703247,7 @@
      ]
     ],
     "block-string-assignment-to-Element-insertAdjacentHTML.html": [
-     "af1f982e5a1fa562be28f33783fa076467b389b0",
+     "f2e89f0dc9f7a6bbe8b3e179c3940fbea6ad6a69",
      [
       null,
       {}
@@ -703269,7 +703289,7 @@
      ]
     ],
     "block-string-assignment-to-Range-createContextualFragment.html": [
-     "79111204934e689d2ce56fbb010cc3b261537c6b",
+     "55566589deadc94e62eff817bbefbb90c7574fb7",
      [
       null,
       {}
@@ -703417,6 +703437,13 @@
     ],
     "eval-with-permissive-csp.html": [
      "b3dc352017675a2634aa96ac1fdea01b55ce9243",
+     [
+      null,
+      {}
+     ]
+    ],
+    "get-trusted-types-compliant-attribute-value.html": [
+     "1f9a373cc87021a1279abb0661b683ed1016c351",
      [
       null,
       {}
@@ -728785,6 +728812,359 @@
         [
          "global",
          "window,dedicatedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "video-decoder-no-size-in-configure.https.any.js": [
+     "3481b465f9eb431ce3dc799f4f1e625fbe3d7c0c",
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.html?h264_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.html?h264_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.worker.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.worker.html?h264_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.worker.html?h264_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.worker.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-decoder-no-size-in-configure.https.any.worker.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
         ]
        ]
       }

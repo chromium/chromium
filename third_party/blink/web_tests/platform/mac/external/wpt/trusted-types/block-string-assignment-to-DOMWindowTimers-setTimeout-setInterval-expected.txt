@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] DedicatedWorkerGlobalScope.setTimeout and DedicatedWorkerGlobalScope.setInterval pass the correct sink to the default policy
+  assert_equals: expected "DedicatedWorkerGlobalScope setTimeout" but got "WorkerGlobalScope setTimeout"
+[FAIL] SharedWorkerGlobalScope.setTimeout and SharedWorkerGlobalScope.setInterval pass the correct sink to the default policy
+  assert_equals: expected "SharedWorkerGlobalScope setTimeout" but got "WorkerGlobalScope setTimeout"
+Harness: the test ran to completion.
