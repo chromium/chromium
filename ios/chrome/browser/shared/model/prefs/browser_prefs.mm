@@ -211,22 +211,6 @@ void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
-// Helper function migrating the preference `pref_name` of type "NSString" from
-// `defaults` to `pref_service`.
-void MigrateNSStringPreferenceFromUserDefaults(std::string_view pref_name,
-                                               PrefService* pref_service,
-                                               NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSString* value =
-      base::apple::ObjCCast<NSString>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-
-  pref_service->SetString(pref_name.data(), base::SysNSStringToUTF8(value));
-  [defaults removeObjectForKey:key];
-}
-
 // Helper function migrating the preference `pref_name` of type "NSDate" from
 // `defaults` to `pref_service`.
 void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
@@ -1081,17 +1065,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
 
-  // Added 01/2024.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  MigrateNSStringPreferenceFromUserDefaults(kIOSChromeNextVersionKey, prefs,
-                                            defaults);
-  // Added 01/2024.
-  MigrateNSStringPreferenceFromUserDefaults(kIOSChromeUpgradeURLKey, prefs,
-                                            defaults);
-
-  // Added 01/2024.
-  MigrateNSDatePreferenceFromUserDefaults(kLastInfobarDisplayTimeKey, prefs,
-                                          defaults);
 
   // Added 01/2024.
   prefs->ClearPref(kAppStoreRatingActiveDaysInPastWeekKey);
