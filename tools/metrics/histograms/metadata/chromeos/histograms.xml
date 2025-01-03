@@ -370,8 +370,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.ConcurrentAccess" enum="Boolean"
-    expires_after="2025-02-10">
-  <owner>dorahkim@google.com</owner>
+    expires_after="2025-06-22">
+  <owner>wtlee@google.com</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records when attempting to access a camera, whether Ash and Lacros are
@@ -839,8 +839,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Camera.ModuleID" enum="PopularCamPeriphModuleID"
-    expires_after="2025-02-10">
-  <owner>dorahkim@google.com</owner>
+    expires_after="2025-06-22">
+  <owner>wtlee@google.com</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records a camera's module id in a format of integer when a camera is open.
@@ -851,7 +851,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.Camera.OpenDeviceClientType"
     enum="ChromeOSCameraClientType" expires_after="2025-06-22">
-  <owner>dorahkim@chromium.org</owner>
+  <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records which client type (e.g., Chrome, Android) is opening a camera

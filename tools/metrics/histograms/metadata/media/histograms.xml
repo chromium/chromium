@@ -6278,7 +6278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StreamShared" enum="Boolean"
-    expires_after="2025-02-09">
+    expires_after="2025-06-22">
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-camera-app-eng@google.com</owner>
   <summary>
