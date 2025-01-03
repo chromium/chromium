@@ -154,6 +154,12 @@ message ConnectionParameter {
 
 message DeviceInfo {
   string device_id = 1;
+
+  FeatureSupport feature_support = 2;
+}
+
+message FeatureSupport {
+  bool view_screen = 1;
 }
 
 message StudentDeviceActivity {
