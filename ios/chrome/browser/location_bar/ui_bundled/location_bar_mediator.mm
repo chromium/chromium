@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
@@ -168,6 +169,13 @@
       visibleURL = webState->GetVisibleURL();
     }
   }
+
+  if (!base::FeatureList::IsEnabled(
+          kLensOverlayEnableLocationBarEntrypointOnSRP) &&
+      google_util::IsGoogleSearchUrl(visibleURL)) {
+    return NO;
+  }
+
   return !IsURLNewTabPage(visibleURL) && !lens::IsLensMWebResult(visibleURL);
 }
 

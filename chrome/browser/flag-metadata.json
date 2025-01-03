@@ -5772,6 +5772,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "lens-overlay-enable-location-bar-entrypoint-on-srp",
+    "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "lens-overlay-enable-same-tab-navigation",
     "owners": ["christianxu@google.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 135
