@@ -140,7 +140,7 @@ class InvalidationServiceImplTest : public testing::Test {
         session_client_impl_.get());
     invalidation_service_impl_ = std::make_unique<InvalidationServiceImpl>(
         &fake_gcm_driver_, mock_instance_id_driver_.get(),
-        AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
+        AccountId::FromUserEmailGaiaId(kTestEmail, GaiaId(kGaiaId)),
         boca_session_manager_.get(), session_client_impl_.get());
   }
 
@@ -181,7 +181,7 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {
   task_environment_.FastForwardBy(
       base::Minutes(kTokenValidationPeriodMinutesDefault));
 
-  EXPECT_EQ(kGaiaId, request->gaia_id());
+  EXPECT_EQ(GaiaId(kGaiaId), request->gaia_id());
   EXPECT_EQ(token, request->token());
 }
 

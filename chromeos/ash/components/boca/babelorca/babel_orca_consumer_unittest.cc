@@ -30,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -101,7 +102,7 @@ class BabelOrcaConsumerTest : public testing::Test {
 
     consumer_ = std::make_unique<BabelOrcaConsumer>(
         url_loader_factory_.GetSafeWeakWrapper(),
-        identity_test_env_.identity_manager(), kGaiaId,
+        identity_test_env_.identity_manager(), GaiaId(kGaiaId),
         std::move(caption_controller), &token_manager_,
         request_data_provider_.get(),
         base::BindLambdaForTesting(

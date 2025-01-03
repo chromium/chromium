@@ -27,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -113,7 +114,7 @@ class BocaSessionManagerTestBase : public testing::Test {
   void SetUp() override {
     // Sign in test user.
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestGaiaId));
     const std::string username_hash =
         user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
@@ -206,7 +207,7 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
         {ash::features::kBoca},
         /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestGaiaId));
     // Start with active session to trigger in-session polling.
     auto session_1 = std::make_unique<::boca::Session>();
     session_1->set_session_state(::boca::Session::ACTIVE);
@@ -753,7 +754,7 @@ TEST_F(BocaSessionManagerTest, DoNotPollSessionWhenUserNotActive) {
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
 
   // Sign in different user.
-  auto account_id = AccountId::FromUserEmailGaiaId("another", "user");
+  auto account_id = AccountId::FromUserEmailGaiaId("another", GaiaId("user"));
   const std::string username_hash =
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
   fake_user_manager().Reset(std::make_unique<user_manager::FakeUserManager>());
@@ -797,7 +798,7 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             EXPECT_EQ(kInitialSessionId, request->session_id());
-            EXPECT_EQ(kTestGaiaId, request->gaia_id());
+            EXPECT_EQ(GaiaId(kTestGaiaId), request->gaia_id());
             EXPECT_EQ(kDeviceId, request->device_id());
             request->callback().Run(true);
           })));
@@ -820,7 +821,7 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             EXPECT_EQ(kInitialSessionId, request->session_id());
-            EXPECT_EQ(kTestGaiaId, request->gaia_id());
+            EXPECT_EQ(GaiaId(kTestGaiaId), request->gaia_id());
             EXPECT_EQ(BocaSessionManager::kDummyDeviceId, request->device_id());
             request->callback().Run(true);
           })));
@@ -1365,7 +1366,7 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
          {ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.name,
           "0"}});
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestGaiaId));
     EXPECT_CALL(*session_client_impl(), GetSession(_))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token
@@ -1404,7 +1405,7 @@ class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
          {ash::features::kBocaInSessionPeriodicJobIntervalInSeconds.name,
           "10s"}});
     auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestGaiaId));
     EXPECT_CALL(*session_client_impl(), GetSession(_))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
           // The first fetch at construction time will fail due to refresh token

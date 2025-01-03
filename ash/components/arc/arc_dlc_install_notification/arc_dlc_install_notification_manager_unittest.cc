@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/strings/grit/components_strings.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -40,7 +41,8 @@ class ArcDlcInstallNotificationManagerTest : public testing::Test {
   ~ArcDlcInstallNotificationManagerTest() override = default;
 
   void SetUp() override {
-    auto account_id = AccountId::FromUserEmailGaiaId("example.com", "123123");
+    auto account_id =
+        AccountId::FromUserEmailGaiaId("example.com", GaiaId("123123"));
     auto delegate = std::make_unique<FakeArcDlcInstallNotificationDelegate>();
     delegate_ = delegate.get();
     manager_ = std::make_unique<ArcDlcInstallNotificationManager>(

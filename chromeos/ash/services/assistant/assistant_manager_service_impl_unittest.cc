@@ -34,6 +34,7 @@
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
@@ -198,8 +199,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void Start() {
-    assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
-                                       /*enable_hotword=*/false);
+    assistant_manager_service()->Start(
+        UserInfo(GaiaId("<user-id>"), "<access-token>"),
+        /*enable_hotword=*/false);
   }
 
   // Start Libassistant, and wait until it is running.
@@ -411,12 +413,13 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldPassUserInfoToAssistantManagerWhenStarting) {
-  assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
-                                     /*enable_hotword=*/false);
+  assistant_manager_service()->Start(
+      UserInfo(GaiaId("<user-id>"), "<access-token>"),
+      /*enable_hotword=*/false);
 
   WaitForState(AssistantManagerService::STARTED);
 
-  EXPECT_EQ("<user-id>", mojom_service_controller().gaia_id());
+  EXPECT_EQ(GaiaId("<user-id>"), mojom_service_controller().gaia_id());
   EXPECT_EQ("<access-token>", mojom_service_controller().access_token());
 }
 
@@ -427,10 +430,10 @@ TEST_F(AssistantManagerServiceImplTest,
   WaitForState(AssistantManagerService::STARTED);
 
   assistant_manager_service()->SetUser(
-      UserInfo("<new-user-id>", "<new-access-token>"));
+      UserInfo(GaiaId("<new-user-id>"), "<new-access-token>"));
   RunUntilIdle();
 
-  EXPECT_EQ("<new-user-id>", mojom_service_controller().gaia_id());
+  EXPECT_EQ(GaiaId("<new-user-id>"), mojom_service_controller().gaia_id());
   EXPECT_EQ("<new-access-token>", mojom_service_controller().access_token());
 }
 
@@ -443,18 +446,20 @@ TEST_F(AssistantManagerServiceImplTest,
   assistant_manager_service()->SetUser(std::nullopt);
   RunUntilIdle();
 
-  EXPECT_EQ(kNoValue, mojom_service_controller().gaia_id());
+  EXPECT_EQ(GaiaId(kNoValue), mojom_service_controller().gaia_id());
   EXPECT_EQ(kNoValue, mojom_service_controller().access_token());
 }
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotCrashWhenSettingUserInfoBeforeStartIsFinished) {
   EXPECT_STATE(AssistantManagerService::STOPPED);
-  assistant_manager_service()->SetUser(UserInfo("<user-id>", "<access-token>"));
+  assistant_manager_service()->SetUser(
+      UserInfo(GaiaId("<user-id>"), "<access-token>"));
 
   Start();
   EXPECT_STATE(AssistantManagerService::STARTING);
-  assistant_manager_service()->SetUser(UserInfo("<user-id>", "<access-token>"));
+  assistant_manager_service()->SetUser(
+      UserInfo(GaiaId("<user-id>"), "<access-token>"));
 }
 
 TEST_F(AssistantManagerServiceImplTest,
@@ -649,7 +654,7 @@ TEST_F(AssistantManagerServiceImplTest,
 TEST_F(AssistantManagerServiceImplTest,
        ShouldSendGaiaIdDuringSpeakerIdEnrollment) {
   NiceMock<SpeakerIdEnrollmentClientMock> client_mock;
-  fake_service_context()->set_primary_account_gaia_id("gaia user id");
+  fake_service_context()->set_primary_account_gaia_id(GaiaId("gaia user id"));
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
