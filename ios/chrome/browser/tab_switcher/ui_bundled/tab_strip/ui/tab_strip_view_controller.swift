@@ -561,6 +561,7 @@ class TabStripViewController: UIViewController,
       cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
         index: indexPath.item)
       cell.item = item
+      cell.hasBlueDot = itemData?.hasNotificationDot == true
       if UIAccessibility.isVoiceOverRunning {
         cell.tabIndex = self.tabIndices[itemIdentifier] ?? 0
         let snapshot = self.dataSource.snapshot(for: .tabs)
@@ -605,6 +606,7 @@ class TabStripViewController: UIViewController,
       cell.collapsed = item.collapsed
       cell.delegate = self
       cell.groupStrokeColor = itemData?.groupStrokeColor
+      cell.hasNotificationDot = itemData?.hasNotificationDot == true && item.collapsed
       cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
     }

@@ -14,6 +14,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -106,10 +107,13 @@
   BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  self.mediator =
-      [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController
-                             tabGroupSyncService:tabGroupSyncService
-                                     browserList:browserList];
+  self.mediator = [[TabStripMediator alloc]
+         initWithConsumer:self.tabStripViewController
+      tabGroupSyncService:tabGroupSyncService
+              browserList:browserList
+         messagingService:collaboration::messaging::
+                              MessagingBackendServiceFactory::GetForProfile(
+                                  profile)];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.profile = profile;
   self.mediator.browser = self.browser;
