@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/accelerators/command.h"
 
 namespace ui {
 
@@ -22,6 +23,10 @@ class GlobalAcceleratorListener {
    public:
     // Called when your global accelerator is struck.
     virtual void OnKeyPressed(const ui::Accelerator& accelerator) = 0;
+    // Called when a command should be executed
+    // directly.
+    virtual void ExecuteCommand(const std::string& accelerator_group_id,
+                                const std::string& command_id) = 0;
   };
 
   GlobalAcceleratorListener(const GlobalAcceleratorListener&) = delete;
@@ -59,6 +64,12 @@ class GlobalAcceleratorListener {
   // calling `RegisterAccelerator`.
   virtual void StopListeningForAccelerator(
       const ui::Accelerator& accelerator) = 0;
+
+  // Called when a group of commands are registered.
+  virtual void OnCommandsChanged(const std::string& accelerator_group_id,
+                                 const std::string& profile_id,
+                                 const CommandMap& commands,
+                                 Observer* observer) {}
 
  protected:
   GlobalAcceleratorListener();

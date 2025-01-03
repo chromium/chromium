@@ -97,7 +97,7 @@ class ExtensionsGlobalShortcutListenerTest : public testing::Test {
   std::unique_ptr<BaseGlobalShortcutListenerForTesting> ui_listener_;
   std::unique_ptr<TestObserver> observer_ = nullptr;
   // A UI environment is required since GlobalShortcutListener (base class of
-  // GlobalShortcutListenerLinux) CHECKs that it's running on a UI thread.
+  // GlobalAcceleratorListenerLinux) CHECKs that it's running on a UI thread.
   content::BrowserTaskEnvironment task_environment_;
 };
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/global_shortcut_listener_linux.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_linux.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
@@ -13,7 +13,6 @@
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
-#include "extensions/common/command.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -25,7 +24,7 @@ using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Return;
 
-namespace extensions {
+namespace ui {
 
 namespace {
 
@@ -44,12 +43,12 @@ MATCHER_P2(MatchMethod, interface, member, "") {
 
 using DbusShortcuts = DbusArray<DbusStruct<DbusString, DbusDictionary>>;
 
-class MockObserver final : public GlobalShortcutListener::Observer {
+class MockObserver final : public GlobalAcceleratorListener::Observer {
  public:
   virtual ~MockObserver() = default;
 
   void OnKeyPressed(const ui::Accelerator& accelerator) override {
-    // GlobalShortcutListenerLinux uses ExecuteCommand() instead.
+    // GlobalAcceleratorListenerLinux uses ExecuteCommand() instead.
     NOTREACHED();
   }
 
@@ -58,9 +57,9 @@ class MockObserver final : public GlobalShortcutListener::Observer {
                     const std::string& command_name));
 };
 
-TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
+TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
   // A UI environment is required since GlobalShortcutListener (base class of
-  // GlobalShortcutListenerLinux) CHECKs that it's running on a UI thread.
+  // GlobalAcceleratorListenerLinux) CHECKs that it's running on a UI thread.
   content::BrowserTaskEnvironment task_environment;
 
   auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
@@ -70,8 +69,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
 
   auto mock_global_shortcuts_proxy =
       base::MakeRefCounted<dbus::MockObjectProxy>(
-          mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
-          dbus::ObjectPath(GlobalShortcutListenerLinux::kPortalObjectPath));
+          mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
+          dbus::ObjectPath(GlobalAcceleratorListenerLinux::kPortalObjectPath));
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       mock_bus.get(), "org.freedesktop.systemd1",
@@ -97,8 +96,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
   EXPECT_CALL(
       *mock_bus,
       GetObjectProxy(
-          GlobalShortcutListenerLinux::kPortalServiceName,
-          dbus::ObjectPath(GlobalShortcutListenerLinux::kPortalObjectPath)))
+          GlobalAcceleratorListenerLinux::kPortalServiceName,
+          dbus::ObjectPath(GlobalAcceleratorListenerLinux::kPortalObjectPath)))
       .WillRepeatedly(Return(mock_global_shortcuts_proxy.get()));
 
   EXPECT_CALL(*mock_bus, GetConnectionName()).WillRepeatedly(Return(kBusName));
@@ -125,7 +124,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
         EXPECT_EQ(service_name,
-                  GlobalShortcutListenerLinux::kPortalServiceName);
+                  GlobalAcceleratorListenerLinux::kPortalServiceName);
 
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
@@ -135,10 +134,10 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
 
   // Activated signal
   dbus::ObjectProxy::SignalCallback activated_callback;
-  EXPECT_CALL(
-      *mock_global_shortcuts_proxy,
-      DoConnectToSignal(GlobalShortcutListenerLinux::kGlobalShortcutsInterface,
-                        GlobalShortcutListenerLinux::kSignalActivated, _, _))
+  EXPECT_CALL(*mock_global_shortcuts_proxy,
+              DoConnectToSignal(
+                  GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                  GlobalAcceleratorListenerLinux::kSignalActivated, _, _))
       .WillOnce(Invoke(
           [&](const std::string& interface_name, const std::string& signal_name,
               dbus::ObjectProxy::SignalCallback signal_callback,
@@ -152,7 +151,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
           }));
 
   auto global_shortcut_listener =
-      std::make_unique<GlobalShortcutListenerLinux>(mock_bus);
+      std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus);
   auto observer = std::make_unique<MockObserver>();
 
   // These object proxies have unique generated names, so are initialized when
@@ -167,7 +166,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
           const dbus::ObjectPath& object_path) -> dbus::ObjectProxy* {
     // The first call in the sequence is for the session proxy.
     session_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
-        mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
+        mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
         object_path);
     return session_proxy.get();
   };
@@ -177,7 +176,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
           const dbus::ObjectPath& object_path) -> dbus::ObjectProxy* {
     // CreateSession
     create_session_request_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
-        mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
+        mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
         object_path);
     EXPECT_CALL(*create_session_request_proxy, DoConnectToSignal(_, _, _, _))
         .WillOnce(Invoke(
@@ -208,7 +207,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
           const dbus::ObjectPath& object_path) -> dbus::ObjectProxy* {
     // ListShortcuts
     list_shortcuts_request_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
-        mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
+        mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
         object_path);
     EXPECT_CALL(*list_shortcuts_request_proxy, DoConnectToSignal(_, _, _, _))
         .WillOnce(Invoke(
@@ -237,7 +236,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
           const dbus::ObjectPath& object_path) -> dbus::ObjectProxy* {
     // BindShortcuts
     bind_shortcuts_request_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
-        mock_bus.get(), GlobalShortcutListenerLinux::kPortalServiceName,
+        mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
         object_path);
     EXPECT_CALL(*bind_shortcuts_request_proxy, DoConnectToSignal(_, _, _, _))
         .WillOnce(Invoke(
@@ -262,7 +261,7 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
 
   EXPECT_CALL(
       *mock_bus,
-      GetObjectProxy(GlobalShortcutListenerLinux::kPortalServiceName, _))
+      GetObjectProxy(GlobalAcceleratorListenerLinux::kPortalServiceName, _))
       .WillOnce(Invoke(get_object_proxy_session))
       .WillOnce(Invoke(get_object_proxy_create_session))
       .WillOnce(Invoke(get_object_proxy_list_shortcuts))
@@ -272,8 +271,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
   EXPECT_CALL(
       *mock_global_shortcuts_proxy,
       DoCallMethod(
-          MatchMethod(GlobalShortcutListenerLinux::kGlobalShortcutsInterface,
-                      GlobalShortcutListenerLinux::kMethodCreateSession),
+          MatchMethod(GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                      GlobalAcceleratorListenerLinux::kMethodCreateSession),
           _, _))
       .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
                            dbus::ObjectProxy::ResponseCallback* callback) {
@@ -297,8 +296,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
   EXPECT_CALL(
       *mock_global_shortcuts_proxy,
       DoCallMethod(
-          MatchMethod(GlobalShortcutListenerLinux::kGlobalShortcutsInterface,
-                      GlobalShortcutListenerLinux::kMethodListShortcuts),
+          MatchMethod(GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                      GlobalAcceleratorListenerLinux::kMethodListShortcuts),
           _, _))
       .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
                            dbus::ObjectProxy::ResponseCallback* callback) {
@@ -318,8 +317,8 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
   EXPECT_CALL(
       *mock_global_shortcuts_proxy,
       DoCallMethod(
-          MatchMethod(GlobalShortcutListenerLinux::kGlobalShortcutsInterface,
-                      GlobalShortcutListenerLinux::kMethodBindShortcuts),
+          MatchMethod(GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                      GlobalAcceleratorListenerLinux::kMethodBindShortcuts),
           _, _))
       .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
                            dbus::ObjectProxy::ResponseCallback* callback) {
@@ -338,18 +337,18 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
       }));
 
   ui::CommandMap commands;
-  commands[kCommandName] = Command(kCommandName, kShortcutDescription,
-                                   Command::AcceleratorToString(ui::Accelerator(
-                                       ui::VKEY_A, ui::EF_CONTROL_DOWN)),
-                                   /*global=*/true);
+  commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,
+                                       /*global=*/true);
+  commands[kCommandName].set_accelerator(
+      ui::Accelerator(ui::VKEY_A, ui::EF_CONTROL_DOWN));
 
   global_shortcut_listener->OnCommandsChanged(kExtensionId, kProfileId,
                                               commands, observer.get());
 
   // Simulate the Activated signal
   EXPECT_CALL(*observer, ExecuteCommand(kExtensionId, kCommandName));
-  dbus::Signal signal(GlobalShortcutListenerLinux::kGlobalShortcutsInterface,
-                      GlobalShortcutListenerLinux::kSignalActivated);
+  dbus::Signal signal(GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                      GlobalAcceleratorListenerLinux::kSignalActivated);
   dbus::MessageWriter writer(&signal);
   writer.AppendObjectPath(session_proxy->object_path());
   writer.AppendString(kCommandName);
@@ -357,13 +356,14 @@ TEST(GlobalShortcutListenerLinuxTest, OnCommandsChanged) {
   activated_callback.Run(&signal);
 
   // Cleanup
-  EXPECT_CALL(*session_proxy,
-              DoCallMethod(
-                  MatchMethod(GlobalShortcutListenerLinux::kSessionInterface,
-                              GlobalShortcutListenerLinux::kMethodCloseSession),
-                  _, _));
+  EXPECT_CALL(
+      *session_proxy,
+      DoCallMethod(
+          MatchMethod(GlobalAcceleratorListenerLinux::kSessionInterface,
+                      GlobalAcceleratorListenerLinux::kMethodCloseSession),
+          _, _));
   EXPECT_CALL(*mock_bus, ShutdownAndBlock());
   global_shortcut_listener.reset();
 }
 
-}  // namespace extensions
+}  // namespace ui

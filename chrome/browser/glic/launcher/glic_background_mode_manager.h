@@ -39,6 +39,8 @@ class GlicBackgroundModeManager
 
   // ui::GlobalAcceleratorListener::Observer
   void OnKeyPressed(const ui::Accelerator& accelerator) override;
+  void ExecuteCommand(const std::string& accelerator_group_id,
+                      const std::string& command_id) override;
 
   ui::Accelerator RegisteredHotkeyForTesting() {
     return actual_registered_hotkey_;

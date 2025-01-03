@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/global_shortcut_listener_linux.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener_linux.h"
 
 #include <algorithm>
 #include <string>
@@ -14,7 +14,6 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
@@ -27,14 +26,14 @@
 #include "ui/base/accelerators/command.h"
 #include "ui/base/linux/xdg_shortcut.h"
 
-namespace extensions {
+namespace ui {
 
 using DbusShortcut = DbusStruct<DbusString, DbusDictionary>;
 using DbusShortcuts = DbusArray<DbusShortcut>;
 
-GlobalShortcutListenerLinux::GlobalShortcutListenerLinux(
+GlobalAcceleratorListenerLinux::GlobalAcceleratorListenerLinux(
     scoped_refptr<dbus::Bus> bus)
-    : GlobalShortcutListener(nullptr), bus_(std::move(bus)) {
+    : bus_(std::move(bus)) {
   if (!bus_) {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SESSION;
@@ -47,18 +46,18 @@ GlobalShortcutListenerLinux::GlobalShortcutListenerLinux(
 
   global_shortcuts_proxy_->ConnectToSignal(
       kGlobalShortcutsInterface, kSignalActivated,
-      base::BindRepeating(&GlobalShortcutListenerLinux::OnActivatedSignal,
+      base::BindRepeating(&GlobalAcceleratorListenerLinux::OnActivatedSignal,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&GlobalShortcutListenerLinux::OnSignalConnected,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnSignalConnected,
                      weak_ptr_factory_.GetWeakPtr()));
 
   dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
       bus_.get(),
-      base::BindOnce(&GlobalShortcutListenerLinux::OnSystemdUnitStarted,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnSystemdUnitStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-GlobalShortcutListenerLinux::~GlobalShortcutListenerLinux() {
+GlobalAcceleratorListenerLinux::~GlobalAcceleratorListenerLinux() {
   // Normally GlobalShortcutListener outlives the browser process, so this
   // destructor won't normally get called. It's okay for the sessions not to be
   // closed explicitly, but this destructor is left here for testing purposes,
@@ -75,16 +74,16 @@ GlobalShortcutListenerLinux::~GlobalShortcutListenerLinux() {
       FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
-void GlobalShortcutListenerLinux::OnSystemdUnitStarted(
+void GlobalAcceleratorListenerLinux::OnSystemdUnitStarted(
     dbus_xdg::SystemdUnitStatus) {
   // Intentionally ignoring the status.
   dbus_utils::CheckForServiceAndStart(
       bus_.get(), kPortalServiceName,
-      base::BindOnce(&GlobalShortcutListenerLinux::OnServiceStarted,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnServiceStarted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void GlobalShortcutListenerLinux::OnServiceStarted(
+void GlobalAcceleratorListenerLinux::OnServiceStarted(
     std::optional<bool> service_started) {
   service_started_ = service_started.value_or(false);
 
@@ -98,7 +97,7 @@ void GlobalShortcutListenerLinux::OnServiceStarted(
   }
 }
 
-void GlobalShortcutListenerLinux::CreateSession(SessionMapPair& pair) {
+void GlobalAcceleratorListenerLinux::CreateSession(SessionMapPair& pair) {
   CHECK(!bus_->GetConnectionName().empty());
 
   const SessionKey& session_key = pair.first;
@@ -116,11 +115,27 @@ void GlobalShortcutListenerLinux::CreateSession(SessionMapPair& pair) {
       bus_, global_shortcuts_proxy_, kGlobalShortcutsInterface,
       kMethodCreateSession, DbusParameters(),
       MakeDbusDictionary("session_handle_token", DbusString(session_token)),
-      base::BindOnce(&GlobalShortcutListenerLinux::OnCreateSession,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnCreateSession,
                      weak_ptr_factory_.GetWeakPtr(), session_key));
 }
 
-void GlobalShortcutListenerLinux::UnregisterAccelerators(Observer* observer) {
+void GlobalAcceleratorListenerLinux::StartListening() {}
+
+void GlobalAcceleratorListenerLinux::StopListening() {}
+
+bool GlobalAcceleratorListenerLinux::StartListeningForAccelerator(
+    const ui::Accelerator& accelerator) {
+  // Shortcut registration is now handled in OnCommandsChanged()
+  return false;
+}
+
+void GlobalAcceleratorListenerLinux::StopListeningForAccelerator(
+    const ui::Accelerator& accelerator) {
+  // Shortcut unregistration is now handled per extension
+}
+
+void GlobalAcceleratorListenerLinux::UnregisterAccelerators(
+    Observer* observer) {
   std::vector<SessionKey> remove;
   for (const auto& [key, context] : session_map_) {
     if (context->observer == observer) {
@@ -132,11 +147,11 @@ void GlobalShortcutListenerLinux::UnregisterAccelerators(Observer* observer) {
   }
 }
 
-bool GlobalShortcutListenerLinux::IsRegistrationHandledExternally() const {
+bool GlobalAcceleratorListenerLinux::IsRegistrationHandledExternally() const {
   return true;
 }
 
-void GlobalShortcutListenerLinux::OnCommandsChanged(
+void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     const std::string& accelerator_group_id,
     const std::string& profile_id,
     const ui::CommandMap& commands,
@@ -158,8 +173,9 @@ void GlobalShortcutListenerLinux::OnCommandsChanged(
       dbus::MethodCall method_call(kSessionInterface, kMethodCloseSession);
       session_context.session_proxy->CallMethod(
           &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-          base::BindOnce(&GlobalShortcutListenerLinux::RecreateSessionOnClosed,
-                         weak_ptr_factory_.GetWeakPtr(), session_key));
+          base::BindOnce(
+              &GlobalAcceleratorListenerLinux::RecreateSessionOnClosed,
+              weak_ptr_factory_.GetWeakPtr(), session_key));
     }
     return;
   }
@@ -172,7 +188,7 @@ void GlobalShortcutListenerLinux::OnCommandsChanged(
   }
 }
 
-void GlobalShortcutListenerLinux::OnCreateSession(
+void GlobalAcceleratorListenerLinux::OnCreateSession(
     const SessionKey& session_key,
     base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
@@ -207,11 +223,11 @@ void GlobalShortcutListenerLinux::OnCreateSession(
       kMethodListShortcuts,
       DbusObjectPath(session_context->session_proxy->object_path()),
       DbusDictionary(),
-      base::BindOnce(&GlobalShortcutListenerLinux::OnListShortcuts,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnListShortcuts,
                      weak_ptr_factory_.GetWeakPtr(), session_key));
 }
 
-void GlobalShortcutListenerLinux::OnListShortcuts(
+void GlobalAcceleratorListenerLinux::OnListShortcuts(
     const SessionKey& session_key,
     base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
@@ -253,7 +269,7 @@ void GlobalShortcutListenerLinux::OnListShortcuts(
   }
 }
 
-void GlobalShortcutListenerLinux::BindShortcuts(
+void GlobalAcceleratorListenerLinux::BindShortcuts(
     SessionContext& session_context) {
   dbus::MethodCall method_call(kGlobalShortcutsInterface, kMethodBindShortcuts);
   dbus::MessageWriter writer(&method_call);
@@ -283,12 +299,12 @@ void GlobalShortcutListenerLinux::BindShortcuts(
           DbusObjectPath(session_context.session_proxy->object_path()),
           std::move(shortcuts), std::move(empty_parent_window)),
       DbusDictionary(),
-      base::BindOnce(&GlobalShortcutListenerLinux::OnBindShortcuts,
+      base::BindOnce(&GlobalAcceleratorListenerLinux::OnBindShortcuts,
                      weak_ptr_factory_.GetWeakPtr()));
   session_context.bind_shortcuts_called = true;
 }
 
-void GlobalShortcutListenerLinux::OnBindShortcuts(
+void GlobalAcceleratorListenerLinux::OnBindShortcuts(
     base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
   if (!results.has_value()) {
     LOG(ERROR) << "Failed to call BindShortcuts (error code "
@@ -300,7 +316,7 @@ void GlobalShortcutListenerLinux::OnBindShortcuts(
   // the bound shortcuts, but it's currently not needed.
 }
 
-void GlobalShortcutListenerLinux::RecreateSessionOnClosed(
+void GlobalAcceleratorListenerLinux::RecreateSessionOnClosed(
     const SessionKey& session_key,
     dbus::Response* response) {
   auto session_it = session_map_.find(session_key);
@@ -310,7 +326,7 @@ void GlobalShortcutListenerLinux::RecreateSessionOnClosed(
   CreateSession(*session_it);
 }
 
-void GlobalShortcutListenerLinux::OnActivatedSignal(dbus::Signal* signal) {
+void GlobalAcceleratorListenerLinux::OnActivatedSignal(dbus::Signal* signal) {
   dbus::MessageReader reader(signal);
   dbus::ObjectPath session_handle;
   std::string shortcut_id;
@@ -332,7 +348,7 @@ void GlobalShortcutListenerLinux::OnActivatedSignal(dbus::Signal* signal) {
   }
 }
 
-void GlobalShortcutListenerLinux::OnSignalConnected(
+void GlobalAcceleratorListenerLinux::OnSignalConnected(
     const std::string& interface_name,
     const std::string& signal_name,
     bool success) {
@@ -342,23 +358,23 @@ void GlobalShortcutListenerLinux::OnSignalConnected(
   }
 }
 
-std::string GlobalShortcutListenerLinux::SessionKey::GetTokenKey() const {
+std::string GlobalAcceleratorListenerLinux::SessionKey::GetTokenKey() const {
   return kSessionTokenPrefix +
          base::HexEncode(
              crypto::SHA256HashString(accelerator_group_id + profile_id))
              .substr(0, 32);
 }
 
-GlobalShortcutListenerLinux::SessionContext::SessionContext(
+GlobalAcceleratorListenerLinux::SessionContext::SessionContext(
     Observer* observer,
     const ui::CommandMap& commands)
     : observer(observer), commands(commands) {}
 
-GlobalShortcutListenerLinux::SessionContext::~SessionContext() {
+GlobalAcceleratorListenerLinux::SessionContext::~SessionContext() {
   if (session_proxy) {
     bus->RemoveObjectProxy(kPortalServiceName, session_proxy->object_path(),
                            base::DoNothing());
   }
 }
 
-}  // namespace extensions
+}  // namespace ui

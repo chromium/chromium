@@ -55,6 +55,12 @@ void GlicBackgroundModeManager::OnKeyPressed(
   controller_->Show();
 }
 
+void GlicBackgroundModeManager::ExecuteCommand(
+    const std::string& accelerator_group_id,
+    const std::string& command_id) {
+  // TODO(crbug.com/385194502): Handle Linux.
+}
+
 void GlicBackgroundModeManager::EnterBackgroundMode() {
   if (!keep_alive_) {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(

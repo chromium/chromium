@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_LINUX_H_
-#define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_LINUX_H_
+#ifndef UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_LINUX_H_
+#define UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_LINUX_H_
 
 #include <memory>
 #include <optional>
@@ -13,34 +13,36 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/object_proxy.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace dbus_xdg {
 class Request;
 enum class SystemdUnitStatus;
 }  // namespace dbus_xdg
 
-namespace extensions {
+namespace ui {
 
 // Linux-specific implementation of the GlobalShortcutListener class that
 // listens for global shortcuts using the org.freedesktop.portal.GlobalShortcuts
 // interface.
-class GlobalShortcutListenerLinux : public GlobalShortcutListener {
+class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
-  explicit GlobalShortcutListenerLinux(scoped_refptr<dbus::Bus> bus);
+  explicit GlobalAcceleratorListenerLinux(scoped_refptr<dbus::Bus> bus);
 
-  GlobalShortcutListenerLinux(const GlobalShortcutListenerLinux&) = delete;
-  GlobalShortcutListenerLinux& operator=(const GlobalShortcutListenerLinux&) =
+  GlobalAcceleratorListenerLinux(const GlobalAcceleratorListenerLinux&) =
       delete;
+  GlobalAcceleratorListenerLinux& operator=(
+      const GlobalAcceleratorListenerLinux&) = delete;
 
-  ~GlobalShortcutListenerLinux() override;
+  ~GlobalAcceleratorListenerLinux() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(GlobalShortcutListenerLinuxTest, OnCommandsChanged);
+  FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
+                           OnCommandsChanged);
 
   // These are exposed in the header for testing.
   static constexpr char kPortalServiceName[] = "org.freedesktop.portal.Desktop";
@@ -85,9 +87,14 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
       base::flat_map<SessionKey, std::unique_ptr<SessionContext>>;
   using SessionMapPair = std::pair<SessionKey, std::unique_ptr<SessionContext>>;
 
-  // GlobalShortcutListener:
-  void UnregisterAccelerators(Observer* observer) override;
-  bool IsRegistrationHandledExternally() const override;
+  // GlobalAcceleratorListener:
+  void StartListening() override;
+  void StopListening() override;
+  bool StartListeningForAccelerator(
+      const ui::Accelerator& accelerator) override;
+  void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
+  void UnregisterAccelerators(Observer* observer);
+  bool IsRegistrationHandledExternally() const;
   void OnCommandsChanged(const std::string& accelerator_group_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
@@ -131,9 +138,9 @@ class GlobalShortcutListenerLinux : public GlobalShortcutListener {
   // One session per extension.
   base::flat_map<SessionKey, std::unique_ptr<SessionContext>> session_map_;
 
-  base::WeakPtrFactory<GlobalShortcutListenerLinux> weak_ptr_factory_{this};
+  base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};
 };
 
-}  // namespace extensions
+}  // namespace ui
 
-#endif  // CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_LINUX_H_
+#endif  // UI_BASE_ACCELERATORS_GLOBAL_ACCELERATOR_LISTENER_GLOBAL_ACCELERATOR_LISTENER_LINUX_H_

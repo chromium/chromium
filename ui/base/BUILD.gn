@@ -1298,6 +1298,16 @@ test("ui_base_unittests") {
   if (is_linux) {
     sources += [ "linux/xdg_shortcut_unittest.cc" ]
   }
+
+  if (is_linux && use_dbus) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_linux_unittest.cc" ]
+    deps += [
+      "//components/dbus",
+      "//content/test:test_support",
+      "//dbus:test_support",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
+  }
 }
 
 if (is_mac) {

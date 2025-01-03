@@ -1366,13 +1366,6 @@ source_set("extensions") {
     if (is_linux) {
       sources +=
           [ "api/image_writer_private/removable_storage_provider_linux.cc" ]
-      if (use_dbus) {
-        sources += [
-          "global_shortcut_listener_linux.cc",
-          "global_shortcut_listener_linux.h",
-        ]
-        deps += [ "//components/dbus" ]
-      }
     }
 
     if (is_linux || is_chromeos) {

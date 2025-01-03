@@ -18,22 +18,9 @@
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-#include "base/feature_list.h"
-#include "chrome/browser/extensions/global_shortcut_listener_linux.h"
-#endif
-
 using content::BrowserThread;
 
 namespace extensions {
-
-namespace {
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-BASE_FEATURE(kGlobalShortcutsPortal,
-             "GlobalShortcutsPortal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-}  // namespace
 
 // static
 GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
@@ -46,13 +33,6 @@ GlobalShortcutListener* GlobalShortcutListener::GetInstance() {
     return instance;
   }
 
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-  if (base::FeatureList::IsEnabled(kGlobalShortcutsPortal)) {
-    static GlobalShortcutListenerLinux* const linux_instance =
-        new GlobalShortcutListenerLinux(nullptr);
-    return linux_instance;
-  }
-#endif
   return nullptr;
 }
 

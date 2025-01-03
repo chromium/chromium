@@ -26,17 +26,12 @@ namespace extensions {
 // applies only to extensions.
 class GlobalShortcutListener {
  public:
-  class Observer : public ui::GlobalAcceleratorListener::Observer {
-   public:
-    // Called when a command should be executed directly.
-    virtual void ExecuteCommand(const std::string& accelerator_group_id,
-                                const std::string& command_id) = 0;
-  };
+  using Observer = ui::GlobalAcceleratorListener::Observer;
 
   GlobalShortcutListener(const GlobalShortcutListener&) = delete;
   GlobalShortcutListener& operator=(const GlobalShortcutListener&) = delete;
 
-  virtual ~GlobalShortcutListener();
+  ~GlobalShortcutListener();
 
   // The instance may be nullptr.
   static GlobalShortcutListener* GetInstance();
@@ -59,7 +54,7 @@ class GlobalShortcutListener {
 
   // Stop listening for all accelerators of the given |observer|, does nothing
   // if shortcut handling is suspended.
-  virtual void UnregisterAccelerators(Observer* observer);
+  void UnregisterAccelerators(Observer* observer);
 
   // Suspend/Resume global shortcut handling. Note that when suspending,
   // RegisterAccelerator/UnregisterAccelerator/UnregisterAccelerators are not
@@ -71,13 +66,13 @@ class GlobalShortcutListener {
 
   // Returns true if shortcut registration is managed by the desktop. False
   // indicates registration is managed by us.
-  virtual bool IsRegistrationHandledExternally() const;
+  bool IsRegistrationHandledExternally() const;
 
   // Called when an extension's commands are registered.
-  virtual void OnCommandsChanged(const std::string& accelerator_group_id,
-                                 const std::string& profile_id,
-                                 const ui::CommandMap& commands,
-                                 Observer* observer);
+  void OnCommandsChanged(const std::string& accelerator_group_id,
+                         const std::string& profile_id,
+                         const ui::CommandMap& commands,
+                         Observer* observer);
 
  protected:
   explicit GlobalShortcutListener(
