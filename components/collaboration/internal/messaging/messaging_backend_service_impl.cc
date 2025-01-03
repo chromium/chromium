@@ -913,14 +913,18 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
         GetDisplayNameForUserInGroup(collaboration_group_id, *gaia_id,
                                      std::nullopt, message);
     if (user_name_for_display) {
+      // TODO(crbug.com/380517719): Compare GaiaId with current user in this
+      // profile.
+      bool is_self = false;
+      std::u16string user_to_show =
+          is_self ? l10n_util::GetStringUTF16(
+                        IDS_DATA_SHARING_RECENT_ACTIVITY_USER_SELF)
+                  : base::UTF8ToUTF16(*user_name_for_display);
+
       item.title_text = l10n_util::GetStringFUTF16(
-          GetTitleStringRes(item.collaboration_event),
-          base::UTF8ToUTF16(*user_name_for_display));
+          GetTitleStringRes(item.collaboration_event), user_to_show);
     }
   }
-
-  // TODO(crbug.com/380517719): Compare GaiaId with current user in this
-  // profile.
 
   // By default, we use an empty description. This is special cased below.
   item.description_text = u"";

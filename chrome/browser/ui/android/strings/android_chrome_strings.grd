@@ -6929,9 +6929,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the recent activity bottom sheet has closed.">
         Recent activity bottom sheet closed
       </message>
-      <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_DESCRIPTION_FULL" desc="The description text on a recent activity bottom sheet row that has two halfs: an URL or email or group name on first half, and a relative time duration on the second half.">
-        <ph name="DESCRIPTION_FIRST_HALF">%1$s<ex>google.com</ex></ph> \u2022 <ph name="TIMESTMAP">%2$s<ex>8h ago</ex></ph>
-      </message>
 
       <!-- Interstitial shown prior to making digital identity request to wallet -->
       <message name="IDS_DIGITAL_IDENTITY_INTERSTITIAL_DIALOG_TITLE" translateable="false">
