@@ -631,7 +631,6 @@ BASE_DECLARE_FEATURE(kNotificationCenterController);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationExpansionAnimation);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kNotificationImageDrag);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationScrollBar);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationsInContextMenu);
@@ -1230,7 +1229,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationCenterControllerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsNotificationExperimentalShortTimeoutsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationImageDragEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationScrollBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsInContextMenuEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNssDbClientCertsRollbackEnabled();

@@ -1663,9 +1663,6 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
   // AshNotificationViewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kNotificationImageDrag, true}});
-
     AshNotificationViewTestBase::SetUp();
     notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
 

@@ -10183,8 +10183,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GifRecording",
-                        "NotificationImageDrag"
+                        "GifRecording"
                     ]
                 }
             ]

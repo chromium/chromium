@@ -6620,12 +6620,6 @@ const char kEcheSWAProcessAndroidAccessibilityTreeDescription[] =
     "Allows CrOS to process the Android accessibility tree information of the "
     "currently streaming app.";
 
-const char kEnableNotificationImageDragName[] =
-    "Enable notification image drag";
-const char kEnableNotificationImageDragDescription[] =
-    "Enable users to drag the image shown on the notification and drop it to "
-    "directly paste or share";
-
 const char kEnableOAuthIppName[] =
     "Enable OAuth when printing via the IPP protocol";
 const char kEnableOAuthIppDescription[] =
