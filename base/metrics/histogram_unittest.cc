@@ -116,7 +116,6 @@ class HistogramTest : public testing::TestWithParam<bool> {
   const bool use_persistent_histogram_allocator_;
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-  std::unique_ptr<char[]> allocator_memory_;
   raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
 };
 

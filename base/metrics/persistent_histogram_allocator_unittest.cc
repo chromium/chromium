@@ -9,6 +9,7 @@
 
 #include "base/metrics/persistent_histogram_allocator.h"
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -671,14 +672,13 @@ TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
   // Open and read the file in order to verify that |kHistogramName| was written
   // to it even after being moved.
   base::File file(new_temp_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  std::unique_ptr<char[]> data = std::make_unique<char[]>(temp_size);
-  EXPECT_EQ(file.Read(/*offset=*/0, data.get(), temp_size),
-            static_cast<int>(temp_size));
+  base::HeapArray<char> data = base::HeapArray<char>::Uninit(temp_size);
+  EXPECT_TRUE(file.ReadAndCheck(/*offset=*/0, as_writable_byte_span(data)));
 
   // Create an allocator and iterator using the file's data.
   PersistentHistogramAllocator new_file_allocator(
       std::make_unique<PersistentMemoryAllocator>(
-          data.get(), temp_size, 0, 0, "",
+          data.data(), temp_size, 0, 0, "",
           PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator it(&new_file_allocator);
 
