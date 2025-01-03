@@ -1434,12 +1434,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mNativeInitialized
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)) {
             ChildProcessLauncherHelper.setIgnoreMainFrameVisibilityForImportance();
-            if (isTopResumedActivity) {
-                TabImportanceManager.setImportance(
-                        getTabModelSelector().getCurrentTab(), ChildProcessImportance.IMPORTANT);
-            } else {
-                TabImportanceManager.setImportance(
-                        getTabModelSelector().getCurrentTab(), ChildProcessImportance.MODERATE);
+            Tab currentTab = getTabModelSelector().getCurrentTab();
+            if (currentTab != null) {
+                if (isTopResumedActivity) {
+                    TabImportanceManager.setImportance(
+                            currentTab, ChildProcessImportance.IMPORTANT);
+                } else {
+                    TabImportanceManager.setImportance(currentTab, ChildProcessImportance.MODERATE);
+                }
             }
         }
         super.onTopResumedActivityChanged(isTopResumedActivity);
