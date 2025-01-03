@@ -635,11 +635,6 @@ const char kIOSSharedHighlightingAmpName[] = "Shared Highlighting on AMP pages";
 const char kIOSSharedHighlightingAmpDescription[] =
     "Enables the Create Link option on AMP pages.";
 
-const char kIOSSharedHighlightingV2Name[] = "Text Fragments UI improvements";
-const char kIOSSharedHighlightingV2Description[] =
-    "Enables improvements to text fragments UI, including a menu for removing "
-    "or resharing a highlight.";
-
 const char kIOSSoftLockName[] = "Soft Lock on iOS";
 const char kIOSSoftLockDescription[] = "Enables experimental Soft Lock on iOS.";
 

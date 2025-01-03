@@ -5425,11 +5425,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "ios-shared-highlighting-v2",
-    "owners": ["tmartino@chromium.org", "cheickcisse@google.com"],
-    "expiry_milestone": 109
-  },
-  {
     "name": "ios-soft-lock",
     "owners": [
       "rubindl@chromium.org",

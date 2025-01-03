@@ -24,9 +24,6 @@ BASE_DECLARE_FEATURE(kSharedHighlightingAmp);
 // Enables the new SharedHighlightingManager refactoring.
 BASE_DECLARE_FEATURE(kSharedHighlightingManager);
 
-// Feature flag that enable Shared Highlighting V2 in iOS.
-BASE_DECLARE_FEATURE(kIOSSharedHighlightingV2);
-
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 

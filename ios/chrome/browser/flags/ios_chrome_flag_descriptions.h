@@ -541,11 +541,6 @@ extern const char kIOSSharedHighlightingColorChangeDescription[];
 extern const char kIOSSharedHighlightingAmpName[];
 extern const char kIOSSharedHighlightingAmpDescription[];
 
-// Title and description for the flag to enable browser-layer improvements to
-// the text fragments UI.
-extern const char kIOSSharedHighlightingV2Name[];
-extern const char kIOSSharedHighlightingV2Description[];
-
 // Title and description for the flag to enable the Incognito Soft Lock.
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
