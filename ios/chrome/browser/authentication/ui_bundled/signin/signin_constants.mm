@@ -49,3 +49,6 @@ const char* const kUMASSORecallPromoAction = "SSORecallPromo.PromoAction";
 const char* const kUMASSORecallAccountsAvailable =
     "SSORecallPromo.AccountsAvailable";
 const char* const kUMASSORecallPromoSeenCount = "SSORecallPromo.PromoSeenCount";
+
+NSString* const kManagedProfileLearnMoreURL =
+    @"internal://managed-profile-creation-learn-more";

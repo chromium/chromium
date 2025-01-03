@@ -153,4 +153,7 @@ extern const char* const kUMASSORecallPromoSeenCount;
 inline constexpr base::TimeDelta kMinorModeRestrictionsFetchDeadline =
     base::Milliseconds(500);
 
+// URL to the learn more screen about managed profiles.
+extern NSString* const kManagedProfileLearnMoreURL;
+
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_CONSTANTS_H_

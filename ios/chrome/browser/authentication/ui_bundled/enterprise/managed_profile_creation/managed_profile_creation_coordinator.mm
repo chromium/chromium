@@ -9,8 +9,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/browsing_data_migration_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_view_controller.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -18,6 +20,7 @@
 
 @interface ManagedProfileCreationCoordinator () <
     ManagedProfileCreationViewControllerDelegate,
+    LearnMoreCoordinatorDelegate,
     UINavigationControllerDelegate>
 @end
 
@@ -32,6 +35,7 @@
   UINavigationController* _navigationController;
   ManagedProfileCreationMediator* _mediator;
   BrowsingDataMigrationViewController* _browsingDataMigrationViewController;
+  LearnMoreCoordinator* _learnMoreCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -80,6 +84,7 @@
 
 - (void)stop {
   [self dismissViewControllerAnimated:YES];
+  [self stopLearnMoreCoordinator];
   [super stop];
 }
 
@@ -100,6 +105,15 @@
   [self.delegate managedProfileCreationCoordinator:self
                                          didAccept:NO
                           keepBrowsingDataSeparate:NO];
+}
+
+- (void)didTapURLInDisclaimer:(NSURL*)URL {
+  if ([URL.absoluteString isEqualToString:kManagedProfileLearnMoreURL]) {
+    [self showLearnMorePage];
+  } else {
+    NOTREACHED() << std::string("Unknown URL ")
+                 << base::SysNSStringToUTF8(URL.absoluteString);
+  }
 }
 
 #pragma mark - ManagedProfileCreationViewControllerDelegate
@@ -130,6 +144,14 @@
   }
 }
 
+#pragma mark - LearnMoreCoordinatorDelegate
+
+- (void)removeLearnMoreCoordinator:(LearnMoreCoordinator*)coordinator {
+  DCHECK(_learnMoreCoordinator);
+  DCHECK_EQ(_learnMoreCoordinator, coordinator);
+  [self stopLearnMoreCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)dismissViewControllerAnimated:(BOOL)animated {
@@ -142,6 +164,23 @@
   _viewController = nil;
   [_navigationController dismissViewControllerAnimated:animated completion:nil];
   _navigationController = nil;
+}
+
+- (void)showLearnMorePage {
+  DCHECK(!_learnMoreCoordinator);
+  _learnMoreCoordinator =
+      [[LearnMoreCoordinator alloc] initWithBaseViewController:_viewController
+                                                       browser:self.browser
+                                                     userEmail:_userEmail
+                                                  hostedDomain:_hostedDomain];
+  _learnMoreCoordinator.delegate = self;
+  [_learnMoreCoordinator start];
+}
+
+- (void)stopLearnMoreCoordinator {
+  [_learnMoreCoordinator stop];
+  _learnMoreCoordinator.delegate = nil;
+  _learnMoreCoordinator = nil;
 }
 
 @end

@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -91,6 +92,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER,
       base::SysNSStringToUTF16(_userEmail),
       base::SysNSStringToUTF16(_hostedDomain));
+  self.disclaimerURLs = @[ [NSURL URLWithString:kManagedProfileLearnMoreURL] ];
 
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
