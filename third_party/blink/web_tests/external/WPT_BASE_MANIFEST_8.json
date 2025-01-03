@@ -262523,6 +262523,19 @@
        {}
       ]
      ],
+     "orthogonal-containing-block-height-changes.html": [
+      "bfa2d7065f790bad0903a92e6ccc77e757a6e95b",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/orthogonal-containing-block-height-changes-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "orthogonal-root-resize-icb-001.html": [
       "5e7ff7aef51344e8fa6fafed85318da33a33397b",
       [
@@ -333263,12 +333276,24 @@
        "7a7d639bf56bc1a90a7fc51dc33d934dec6d25b8",
        []
       ],
+      "font-size-adjust-valid-expected.txt": [
+       "6ee62c449dbc1db7e66b8d8279b7941a0c1aec56",
+       []
+      ],
       "font-stretch-alias-expected.txt": [
        "464d8f2612500b9579cc1a4e2b2f911e7000df5b",
        []
       ],
+      "font-stretch-valid-expected.txt": [
+       "f9cbe94ff8da4d46b4bb58253d77465f2718b914",
+       []
+      ],
       "font-style-computed-expected.txt": [
-       "f9b86aa10436607a66d6f572276008ba7e18b617",
+       "c700aa891b5bf630dc0e42189352b60582cce34b",
+       []
+      ],
+      "font-style-valid-expected.txt": [
+       "c7d93284fca6cfec6e21a2a7d3fcf57ac4bc623c",
        []
       ],
       "font-synthesis-computed-expected.txt": [
@@ -333281,6 +333306,14 @@
       ],
       "font-synthesis-valid-expected.txt": [
        "b6b27cee770e179d55475682ff6e41d3664e6be2",
+       []
+      ],
+      "font-weight-computed-expected.txt": [
+       "a3d29edae8bd26bb23bdb0a75f9590942638bad1",
+       []
+      ],
+      "font-weight-valid-expected.txt": [
+       "ea11eae3618abd6972dd294963fb1edfb4d7adef",
        []
       ]
      },
@@ -364192,6 +364225,10 @@
      ],
      "ortho-htb-alongside-vrl-floats-014-ref.xht": [
       "28f0e333282a714715f8e593ac810ff3704d029e",
+      []
+     ],
+     "orthogonal-containing-block-height-changes-ref.html": [
+      "b7d32e4dc27ba972345f6dc9be81b4079ed54574",
       []
      ],
      "overconstrained-rel-pos-ltr-left-right-vlr-005-ref.xht": [
@@ -416501,6 +416538,10 @@
     ],
     "WEB_FEATURES.yml": [
      "6ea31f1ef8d3838b3b9d84f6dac839b22083ee20",
+     []
+    ],
+    "block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval-expected.txt": [
+     "278967b2138dba63046eb9ae71ffb702f826fd2e",
      []
     ],
     "block-string-assignment-to-Document-write-expected.txt": [
@@ -481326,7 +481367,7 @@
        ]
       ],
       "font-style-interpolation.html": [
-       "4666025d545860405b62a2571a0b74e3a2a06d8a",
+       "452b5215ec48a9aa82b490e8f14957ba8c9758fa",
        [
         null,
         {}
@@ -481810,7 +481851,7 @@
        ]
       ],
       "font-size-adjust-computed.html": [
-       "9dbfb09e67ed850ee4e9d7ef3bb2044e908826b3",
+       "f463d2f6526ea7dd342d65a61e668eb1f39fbfc2",
        [
         null,
         {}
@@ -481824,7 +481865,7 @@
        ]
       ],
       "font-size-adjust-valid.html": [
-       "cb3c367c6f7b333667159f29b6c946f382012bd7",
+       "35f71ca9f73313384706c83759138f8d6a9fd247",
        [
         null,
         {}
@@ -481859,28 +481900,28 @@
        ]
       ],
       "font-stretch-computed.html": [
-       "9d1136ef693356facaa62678ea0fa555503bc82f",
+       "42e1989b1ae1bfa7c3d2378024eaf79279049a03",
        [
         null,
         {}
        ]
       ],
       "font-stretch-invalid.html": [
-       "9ff8fa5dcf8b60af5fe7d4a83bd0d0bcf227544c",
+       "0f7f7c88975e792af5a6bcf6dc1e19eae5d69f66",
        [
         null,
         {}
        ]
       ],
       "font-stretch-valid.html": [
-       "38452c2699e625cef71d93273535f9002ae2c566",
+       "90cde6031332b5f6964d6a3ad26a4eead3e86880",
        [
         null,
         {}
        ]
       ],
       "font-style-computed.html": [
-       "46074c42198361818d8e28c36a9416e5748d766a",
+       "fde74150080da9545faa6c1a30eb15111ac4fd23",
        [
         null,
         {}
@@ -481894,7 +481935,7 @@
        ]
       ],
       "font-style-valid.html": [
-       "b61864478ba29a82854fe1924832ead4dc199747",
+       "e26733aaddd7cd50e5efb06faaab9b7b55c62cbe",
        [
         null,
         {}
@@ -482167,7 +482208,7 @@
        ]
       ],
       "font-weight-computed.html": [
-       "08208e5dd493a42bfdd1b9c0277ca49c151a9937",
+       "cad1f7a6796c640dabb900637cdc746c86cdb2a8",
        [
         null,
         {}
@@ -482181,7 +482222,7 @@
        ]
       ],
       "font-weight-valid.html": [
-       "090729287b265ab3992a44867a622be595b5e7e9",
+       "2601a132e1405e0a4f7e22cefb156c0900f28172",
        [
         null,
         {}
@@ -682281,49 +682322,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "web-locks-pa-worklet-batch-update.tentative.https.window.js": [
-     "5e6d5fdbc78d7a9d7e171274b22bf6ab30e1adf1",
-     [
-      "shared-storage/web-locks-pa-worklet-batch-update.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/resources/testdriver.js"
-        ],
-        [
-         "script",
-         "/resources/testdriver-vendor.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "/fledge/tentative/resources/fledge-util.sub.js"
-        ],
-        [
-         "script",
-         "/common/subset-tests.js"
-        ],
-        [
-         "script",
-         "/shared-storage/resources/util.js"
-        ],
-        [
-         "script",
-         "/fenced-frame/resources/utils.js"
-        ],
-        [
-         "timeout",
-         "long"
-        ]
-       ],
-       "timeout": "long"
-      }
      ]
     ],
     "web-locks-pa-worklet-modifier-method.tentative.https.window.js": [

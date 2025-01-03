@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property font-weight value 'calc(0)'
+  assert_equals: expected "1" but got "0"
+[FAIL] Property font-weight value 'calc(-100)'
+  assert_equals: expected "1" but got "0"
+[FAIL] Property font-weight value 'calc(100 + (sign(20cqw - 10px) * 5))'
+  assert_equals: expected "95" but got "105"
+Harness: the test ran to completion.
