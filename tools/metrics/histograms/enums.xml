@@ -10952,6 +10952,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5233" label="InjectionMitigatedContextSubFrame"/>
   <int value="5234" label="InjectionMitigatedContextMainFrame"/>
   <int value="5235" label="CanvasTextDirectionConflict"/>
+  <int value="5236" label="CanvasTextDirectionGet"/>
+  <int value="5237" label="CanvasTextDirectionGetInherit"/>
+  <int value="5238" label="CanvasTextDirectionSet"/>
+  <int value="5239" label="CanvasTextDirectionSetInherit"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

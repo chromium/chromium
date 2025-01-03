@@ -3415,11 +3415,17 @@ OffscreenCanvas* BaseRenderingContext2D::HostAsOffscreenCanvas() const {
 String BaseRenderingContext2D::direction() const {
   HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
   const CanvasRenderingContext2DState& state = GetState();
-  if (state.GetDirection() ==
-          CanvasRenderingContext2DState::kDirectionInherit &&
-      canvas) {
+  bool value_is_inherit =
+      state.GetDirection() == CanvasRenderingContext2DState::kDirectionInherit;
+  if (value_is_inherit && canvas) {
     canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
+  }
+  UseCounter::Count(GetTopExecutionContext(),
+                    WebFeature::kCanvasTextDirectionGet);
+  if (value_is_inherit) {
+    UseCounter::Count(GetTopExecutionContext(),
+                      WebFeature::kCanvasTextDirectionGetInherit);
   }
   return ToTextDirection(state.GetDirection(), canvas) == TextDirection::kRtl
              ? kRtlDirectionString
@@ -3428,7 +3434,11 @@ String BaseRenderingContext2D::direction() const {
 
 void BaseRenderingContext2D::setDirection(const String& direction_string) {
   CanvasRenderingContext2DState::Direction direction;
+  UseCounter::Count(GetTopExecutionContext(),
+                    WebFeature::kCanvasTextDirectionSet);
   if (direction_string == kInheritDirectionString) {
+    UseCounter::Count(GetTopExecutionContext(),
+                      WebFeature::kCanvasTextDirectionSetInherit);
     direction = CanvasRenderingContext2DState::kDirectionInherit;
   } else if (direction_string == kRtlDirectionString) {
     direction = CanvasRenderingContext2DState::kDirectionRTL;
