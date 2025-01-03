@@ -840,9 +840,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   CHECK(client_si);
   return ExternalCanvasResource::Create(
       client_si, out_resource.sync_token(),
-      viz::TransferableResource::ResourceSource::kDrawingBuffer,
-      out_resource.hdr_metadata, std::move(out_release_callback),
-      context_provider_->GetWeakPtr(),
+      viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
+      std::move(out_release_callback), context_provider_->GetWeakPtr(),
       /*resource_provider=*/nullptr);
 }
 
