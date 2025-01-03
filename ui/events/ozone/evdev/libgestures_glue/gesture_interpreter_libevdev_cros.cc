@@ -258,8 +258,8 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosEvent(Evdev* evdev,
   hwstate.rel_hwheel = evstate->rel_hwheel;
 
   if (received_mouse_input_) {
-    received_mouse_input_.Run(evstate->rel_x);
-    received_mouse_input_.Run(evstate->rel_y);
+    received_mouse_input_.Run(evstate->rel_x, timestamp);
+    received_mouse_input_.Run(evstate->rel_y, timestamp);
   }
 
   // Touch.
@@ -641,12 +641,12 @@ void GestureInterpreterLibevdevCros::DispatchMouseButton(unsigned int button,
 }
 
 void GestureInterpreterLibevdevCros::SetReceivedValidKeyboardInputCallback(
-    base::RepeatingCallback<void(uint64_t)> callback) {
+    base::RepeatingCallback<void(uint64_t, double)> callback) {
   received_keyboard_input_ = std::move(callback);
 }
 
 void GestureInterpreterLibevdevCros::SetReceivedValidMouseInputCallback(
-    base::RepeatingCallback<void(int)> callback) {
+    base::RepeatingCallback<void(int, double)> callback) {
   received_mouse_input_ = std::move(callback);
 }
 
@@ -686,7 +686,7 @@ void GestureInterpreterLibevdevCros::DispatchChangedKeys(
       // which will update the dispatched list of keyboards with this new
       // information.
       if (received_keyboard_input_) {
-        received_keyboard_input_.Run(key);
+        received_keyboard_input_.Run(key, timestamp);
       }
 
       // Dispatch key press or release to keyboard.

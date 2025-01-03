@@ -11,6 +11,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/events/ozone/evdev/microphone_mute_key_metrics.h"
 #endif
+
+using testing::_;
+using testing::DoubleNear;
 
 namespace ui {
 
@@ -152,6 +156,10 @@ member class=ui::InputDevice id=1
  product_id=323B
  version=0100
 )";
+
+#if BUILDFLAG(IS_CHROMEOS)
+const double kThreshold = 0.2f;
+#endif
 
 // Test fixture.
 class EventConverterEvdevImplTest : public testing::Test {
@@ -1008,6 +1016,36 @@ TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest, KeyboardHasKeys) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
+       ShouldInvokeValidInputCallbackForInternalKeyboard) {
+  // Setup device to be jinlon internal keyboard.
+  ui::EventDeviceInfo devinfo;
+  CapabilitiesToDeviceInfo(ui::kJinlonKeyboard, &devinfo);
+  SetUpDevice(devinfo);
+
+  ui::MockEventConverterEvdevImpl* dev = device();
+  base::MockCallback<ui::EventConverterEvdev::ReceivedValidInputCallback>
+      keyboard_used;
+  EXPECT_CALL(keyboard_used, Run(_, DoubleNear(620.170, kThreshold)));
+
+  static_cast<ui::EventConverterEvdev*>(dev)->SetReceivedValidInputCallback(
+      keyboard_used.Get());
+
+  struct input_event mock_kernel_queue[] = {
+      {{620, 170000}, EV_MSC, MSC_SCAN, 0x70004},
+      {{620, 170000}, EV_KEY, KEY_A, 1},
+      {{620, 170000}, EV_SYN, SYN_REPORT, 0},
+
+      {{620, 170010}, EV_MSC, MSC_SCAN, 0x70004},
+      {{620, 170010}, EV_KEY, KEY_A, 0},
+      {{620, 170010}, EV_SYN, SYN_REPORT, 0},
+  };
+  SetTestNowSeconds(621);
+
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
+  ASSERT_EQ(2u, size());
+}
+
 TEST_F(DeferDeviceSetUpEventConverterEvdevImplTest,
        MicrophoneMuteTogglingPhoneMuteScanCode) {
   SetUpDevice(ui::EventDeviceInfo());

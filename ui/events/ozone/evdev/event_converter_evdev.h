@@ -44,7 +44,8 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
       base::RepeatingCallback<void(const InProgressStylusState**)>;
 
   using ReceivedValidInputCallback =
-      base::RepeatingCallback<void(const EventConverterEvdev* converter)>;
+      base::RepeatingCallback<void(const EventConverterEvdev* converter,
+                                   const double input_timestamp_in_seconds)>;
 
   EventConverterEvdev(int fd,
                       const base::FilePath& path,

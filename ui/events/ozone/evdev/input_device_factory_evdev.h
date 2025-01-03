@@ -134,7 +134,12 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Method used as callback to update device lists when a valid input event is
   // received on a device that is flagged as an imposter.
-  void UpdateDevicesOnImposterOverride(const EventConverterEvdev* converter);
+  void UpdateDevicesOnImposterOverride(const EventConverterEvdev* converter,
+                                       const double input_timestamp_in_seconds);
+  // Method used as callback when a valid key press on the internal keyboard is
+  // detected.
+  void NotifyInternalKeyboardUsed(const EventConverterEvdev* converter,
+                                  const double input_timestamp_in_seconds);
 
   void SetMousePropertiesPerDevice();
   void SetTouchpadPropertiesPerDevice();
