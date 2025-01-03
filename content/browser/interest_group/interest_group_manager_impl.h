@@ -544,6 +544,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   }
 
  private:
+  friend class InterestGroupManagerImplTestPeer;
+
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
   friend class InterestGroupUpdateManager;

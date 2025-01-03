@@ -1898,6 +1898,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.SelectableBuyerAndSellerReportingIdsSize"
+    units="reporting_ids" expires_after="2025-05-11">
+  <owner>orrb@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of selectableBuyerAndSellerReportingIds on each ad. This is
+    recorded once per ad for each ad in an interest group at the point at which
+    that interest group is joined, and once per ad for each ad in an interest
+    group that updates its ads as part of an interest group update. This metric
+    records the size of the selectableBuyerAndSellerReportingIds field on each
+    ad, even if selectableBuyerAndSellerReportingIds is empty (size=0), but not
+    if the selectableBuyerAndSellerReportingIds field is omitted.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime"
     units="ms" expires_after="2025-06-22">
   <owner>behamilton@google.com</owner>
