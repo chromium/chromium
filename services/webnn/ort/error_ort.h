@@ -13,18 +13,6 @@
 
 namespace webnn::ort {
 
-#define ORT_ABORT_ON_ERROR(expr)                                     \
-  do {                                                               \
-    const OrtApi* ort_api_local = GetOrtApi();                       \
-    OrtStatus* onnx_status = (expr);                                 \
-    if (onnx_status != NULL) {                                       \
-      const char* msg = ort_api_local->GetErrorMessage(onnx_status); \
-      fprintf(stderr, "%s\n", msg);                                  \
-      ort_api_local->ReleaseStatus(onnx_status);                     \
-      abort();                                                       \
-    }                                                                \
-  } while (0);
-
 #define CHECK_STATUS(expr)                                           \
   do {                                                               \
     const OrtApi* ort_api_local = GetOrtApi();                       \

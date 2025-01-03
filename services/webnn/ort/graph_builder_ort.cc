@@ -58,11 +58,25 @@ constexpr char kOpTypeCast[] = "Cast";
 constexpr char kOpTypeClamp[] = "Clip";
 constexpr char kOpTypeConv2d[] = "Conv";
 constexpr char kOpTypeGemm[] = "Gemm";
-
+constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeMatMul[] = "MatMul";
+
+// Pooling operations
 constexpr char kOpTypeAveragePool2d[] = "AveragePool";
 constexpr char kOpTypeMaxPool2d[] = "MaxPool";
 constexpr char kOpTypeLpPool2d[] = "LpPool";
+
+// Reduction operations
+constexpr char kOpTypeReduceL1[] = "ReduceL1";
+constexpr char kOpTypeReduceL2[] = "ReduceL2";
+constexpr char kOpTypeReduceLogSum[] = "ReduceLogSum";
+constexpr char kOpTypeReduceLogSumExp[] = "ReduceLogSumExp";
+constexpr char kOpTypeReduceMax[] = "ReduceMax";
+constexpr char kOpTypeReduceMean[] = "ReduceMean";
+constexpr char kOpTypeReduceMin[] = "ReduceMin";
+constexpr char kOpTypeReduceProd[] = "ReduceProd";
+constexpr char kOpTypeReduceSum[] = "ReduceSum";
+constexpr char kOpTypeReduceSumSquare[] = "ReduceSumSquare";
 
 constexpr char kOpTypeRelu[] = "Relu";
 constexpr char kOpTypeReshape[] = "Reshape";
@@ -95,6 +109,39 @@ std::string GetInsertedOperandName(uint64_t operand_id) {
 std::string GetNodeName(std::string_view label) {
   static int64_t index = 0;
   return base::JoinString({label, base::NumberToString(index++)}, "_");
+}
+
+std::string MapReduceKindToOrtOpType(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return kOpTypeReduceL1;
+    case mojom::Reduce::Kind::kL2:
+      return kOpTypeReduceL2;
+    case mojom::Reduce::Kind::kLogSum:
+      return kOpTypeReduceLogSum;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return kOpTypeReduceLogSumExp;
+    case mojom::Reduce::Kind::kMax:
+      return kOpTypeReduceMax;
+    case mojom::Reduce::Kind::kMean:
+      return kOpTypeReduceMean;
+    case mojom::Reduce::Kind::kMin:
+      return kOpTypeReduceMin;
+    case mojom::Reduce::Kind::kProduct:
+      return kOpTypeReduceProd;
+    case mojom::Reduce::Kind::kSum:
+      return kOpTypeReduceSum;
+    case mojom::Reduce::Kind::kSumSquare:
+      return kOpTypeReduceSumSquare;
+  }
+}
+
+std::vector<uint16_t> ConvertFloat32ToFloat16(base::span<const float> data) {
+  std::vector<uint16_t> data_fp16(data.size());
+  for (size_t i = 0; i < data.size(); ++i) {
+    data_fp16[i] = fp16_ieee_from_fp32_value(data[i]);
+  }
+  return data_fp16;
 }
 
 }  // namespace
@@ -190,7 +237,7 @@ std::string GraphBuilderOrt::GetOperandName(uint64_t operand_id) {
   }
 }
 
-uint64_t GraphBuilderOrt::NewInitializerAsRawData(
+std::string GraphBuilderOrt::CreateInitializerAsRawData(
     base::span<const uint32_t> shape,
     base::span<const uint8_t> data,
     OperandDataType data_type) {
@@ -203,7 +250,8 @@ uint64_t GraphBuilderOrt::NewInitializerAsRawData(
   CHECK(result_->id_to_operand_info
             .try_emplace(next_operand_id_, std::move(operand_info))
             .second);
-  return next_operand_id_++;
+  next_operand_id_++;
+  return name;
 }
 
 void GraphBuilderOrt::AddInput(uint64_t input_id) {
@@ -236,7 +284,7 @@ void GraphBuilderOrt::AddOutput(uint64_t output_id) {
             .second);
 }
 
-void GraphBuilderOrt::AddInitializer(uint64_t constant_id) {
+void GraphBuilderOrt::AddInitializerAsExternalData(uint64_t constant_id) {
   const WebNNConstantOperand& operand = *constant_operands_.at(constant_id);
   std::string name = GetOperandName(constant_id);
 
@@ -457,12 +505,13 @@ void GraphBuilderOrt::AddClampOperation(const mojom::Clamp& clamp) {
           << "[WebNN] Clamp only supports float32 and float16 data type.";
   }
 
-  uint64_t min_id = NewInitializerAsRawData(
+  // Verified that we can also use external data here.
+  // TODO(https://github.com/shiyi9801/chromium/issues/52): Determine whether to
+  // use raw data or external data, which one is better?
+  const std::string min_name = CreateInitializerAsRawData(
       /*shape=*/{}, min_value, input_data_type);
-  const std::string min_name = GetInsertedOperandName(min_id);
-  uint64_t max_id = NewInitializerAsRawData(
+  const std::string max_name = CreateInitializerAsRawData(
       /*shape=*/{}, max_value, input_data_type);
-  const std::string max_name = GetInsertedOperandName(max_id);
 
   std::array<const char*, 3> input_names = {input_name.c_str(),
                                             min_name.c_str(), max_name.c_str()};
@@ -558,6 +607,112 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
                          attributes);
 }
 
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddInstanceNormalizationOperation(
+    const mojom::InstanceNormalization& instance_normalization) {
+  const OperandDataType input_data_type =
+      GetOperand(instance_normalization.output_operand_id)
+          .descriptor.data_type();
+
+  const std::string input_name =
+      GetOperandName(instance_normalization.input_operand_id);
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  const std::vector<uint32_t>& input_shape =
+      GetOperand(instance_normalization.input_operand_id).descriptor.shape();
+  // TODO(crbug.com/387312212): Support NHWC layout
+  if (instance_normalization.layout ==
+      mojom::InputOperandLayout::kChannelsLast) {
+    return NewNotSupportedError(
+        "[WebNN] Currently InstanceNormalization only supports NCHW layout.");
+  }
+  CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNchw);
+  uint32_t input_channel = input_shape[1];
+  std::vector<uint32_t> constant_dims = {input_channel};
+
+  std::string scale_name, bias_name;
+  // ONNX requires scale and bias inputs. And they must be uploaded as raw data,
+  // otherwise there will be runtime error.
+  if (instance_normalization.scale_operand_id) {
+    scale_name =
+        GetOperandName(instance_normalization.scale_operand_id.value());
+    input_names.push_back(scale_name.c_str());
+  } else {
+    std::vector<float> scale_data(input_channel, 1.0f);
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::vector<uint16_t> scale_data_fp16 =
+            ConvertFloat32ToFloat16(scale_data);
+        scale_name = CreateInitializerAsRawData(
+            constant_dims,
+            base::span(reinterpret_cast<const uint8_t*>(scale_data_fp16.data()),
+                       sizeof(uint16_t) * scale_data_fp16.size()),
+            input_data_type);
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        scale_name = CreateInitializerAsRawData(
+            constant_dims,
+            base::span(reinterpret_cast<const uint8_t*>(scale_data.data()),
+                       sizeof(float) * scale_data.size()),
+            input_data_type);
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] InstanceNormalization only supports float32 "
+                        "and float16 data type.";
+    }
+
+    input_names.push_back(scale_name.c_str());
+  }
+
+  if (instance_normalization.bias_operand_id) {
+    bias_name = GetOperandName(instance_normalization.bias_operand_id.value());
+    input_names.push_back(bias_name.c_str());
+  } else {
+    std::vector<float> bias_data(input_channel, 0.0f);
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::vector<uint16_t> bias_data_fp16 =
+            ConvertFloat32ToFloat16(bias_data);
+        bias_name = CreateInitializerAsRawData(
+            constant_dims,
+            base::span(reinterpret_cast<const uint8_t*>(bias_data_fp16.data()),
+                       sizeof(uint16_t) * bias_data_fp16.size()),
+            input_data_type);
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        bias_name = CreateInitializerAsRawData(
+            constant_dims,
+            base::span(reinterpret_cast<const uint8_t*>(bias_data.data()),
+                       sizeof(float) * bias_data.size()),
+            input_data_type);
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] InstanceNormalization only supports float32 "
+                        "and float16 data type.";
+    }
+
+    input_names.push_back(bias_name.c_str());
+  }
+
+  ScopedOrtOpAttrPtr attr_epsilon;
+  model_builder_.CreateAttribute(attr_epsilon, /*name=*/"epsilon",
+                                 instance_normalization.epsilon);
+  std::array<OrtOpAttr*, 1> attributes = {attr_epsilon};
+
+  const std::string node_name = GetNodeName(instance_normalization.label);
+  const std::string output_name =
+      GetOperandName(instance_normalization.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  model_builder_.AddNode(kOpTypeInstanceNormalization, node_name, input_names,
+                         output_names, attributes);
+
+  return base::ok();
+}
+
 void GraphBuilderOrt::AddLogicalNotOperation(
     const mojom::ElementWiseUnary& logical_not) {}
 
@@ -610,17 +765,9 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
       GetOperand(pool2d.input_operand_id).descriptor.shape();
   const std::vector<uint32_t>& output_shape =
       GetOperand(pool2d.output_operand_id).descriptor.shape();
-  uint32_t input_height, output_height;
-  switch (context_properties_.input_operand_layout) {
-    case InputOperandLayout::kNhwc:
-      input_height = input_shape[1];
-      output_height = output_shape[1];
-      break;
-    case InputOperandLayout::kNchw:
-      input_height = input_shape[2];
-      output_height = output_shape[2];
-      break;
-  }
+
+  CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNchw);
+  uint32_t input_height = input_shape[2], output_height = output_shape[2];
   const auto float_output_height = CalculateConv2dOutputSize(
       input_height, pool2d.window_dimensions->height,
       pool2d.padding->beginning->height, pool2d.padding->ending->height,
@@ -673,6 +820,49 @@ void GraphBuilderOrt::AddPool2dOperation(const mojom::Pool2d& pool2d) {
                          attributes);
 }
 
+// TODO(https://github.com/shiyi9801/chromium/issues/53): 'reduceSumSquare
+// float32 1D tensor with empty axes' test case fails
+void GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
+  const std::string input_name = GetOperandName(reduce.input_operand_id);
+  std::vector<const char*> input_names = {input_name.c_str()};
+
+  std::vector<int64_t> axes(reduce.axes.begin(), reduce.axes.end());
+  std::string axes_name;
+  if (!axes.empty()) {
+    // axes is an operand with data type int64, not an attribute.
+    std::vector<uint32_t> axes_dims = {
+        base::checked_cast<uint32_t>(axes.size())};
+    axes_name = CreateInitializerAsRawData(
+        axes_dims,
+        base::span(reinterpret_cast<const uint8_t*>(axes.data()),
+                   sizeof(int64_t) * axes.size()),
+        OperandDataType::kInt64);
+    input_names.push_back(axes_name.c_str());
+  }
+
+  ScopedOrtOpAttrPtr attr_keepdims;
+  int64_t keepdims = reduce.keep_dimensions ? 1 : 0;
+  model_builder_.CreateAttribute(attr_keepdims, /*name=*/"keepdims", keepdims);
+
+  ScopedOrtOpAttrPtr attr_noop_with_empty_axes;
+  // According to
+  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce, if
+  // axes is empty, the operation is a noop, no dimensions are reduced.
+  int64_t noop_with_empty_axes = 1;
+  model_builder_.CreateAttribute(attr_noop_with_empty_axes,
+                                 /*name=*/"noop_with_empty_axes",
+                                 noop_with_empty_axes);
+
+  const std::string node_name = GetNodeName(reduce.label);
+  const std::string output_name = GetOperandName(reduce.output_operand_id);
+  std::array<const char*, 1> output_names = {output_name.c_str()};
+  std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
+  std::array<OrtOpAttr*, 2> attributes = {attr_keepdims,
+                                          attr_noop_with_empty_axes};
+  model_builder_.AddNode(reduce_op_type, node_name, input_names, output_names,
+                         attributes);
+}
+
 void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   const std::string node_name = GetNodeName(reshape.label);
   const std::string input_name = GetOperandName(reshape.input_operand_id);
@@ -688,12 +878,11 @@ void GraphBuilderOrt::AddReshapeOperation(const mojom::Reshape& reshape) {
   base::ranges::transform(
       output_shape, std::back_inserter(shape_values),
       [](uint32_t dim) { return static_cast<int64_t>(dim); });
-  uint64_t shape_id = NewInitializerAsRawData(
+  const std::string shape_name = CreateInitializerAsRawData(
       shape_dims,
       base::span(reinterpret_cast<const uint8_t*>(shape_values.data()),
                  sizeof(int64_t) * shape_values.size()),
       OperandDataType::kInt64);
-  const std::string shape_name = GetInsertedOperandName(shape_id);
 
   std::array<const char*, 2> input_names = {input_name.c_str(),
                                             shape_name.c_str()};
@@ -784,7 +973,7 @@ GraphBuilderOrt::BuildModel() {
 
   // Add initializers.
   for (const auto& [constant_id, _] : constant_operands_) {
-    AddInitializer(constant_id);
+    AddInitializerAsExternalData(constant_id);
   }
 
   // TODO: Implement all operations.
@@ -811,12 +1000,21 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kInstanceNormalization: {
+        RETURN_IF_ERROR(AddInstanceNormalizationOperation(
+            *operation->get_instance_normalization()));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         AddMatMulOperation(*operation->get_matmul());
         break;
       }
       case mojom::Operation::Tag::kPool2d: {
         AddPool2dOperation(*operation->get_pool2d());
+        break;
+      }
+      case mojom::Operation::Tag::kReduce: {
+        AddReduceOperation(*operation->get_reduce());
         break;
       }
       case mojom::Operation::Tag::kRelu: {
@@ -855,7 +1053,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kHardSigmoid:
       case mojom::Operation::Tag::kHardSwish:
       case mojom::Operation::Tag::kLayerNormalization:
-      case mojom::Operation::Tag::kInstanceNormalization:
       case mojom::Operation::Tag::kLeakyRelu:
       case mojom::Operation::Tag::kLinear:
       case mojom::Operation::Tag::kLstm:
@@ -863,7 +1060,6 @@ GraphBuilderOrt::BuildModel() {
       case mojom::Operation::Tag::kPad:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kReduce:
       case mojom::Operation::Tag::kResample2d:
       case mojom::Operation::Tag::kReverse:
       case mojom::Operation::Tag::kScatterElements:
