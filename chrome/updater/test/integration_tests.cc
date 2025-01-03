@@ -1582,7 +1582,7 @@ TEST_F(IntegrationTest, SetTagRoundTrip) {
 
 TEST_F(IntegrationTest, InstallId) {
   ScopedServer test_server(test_commands_);
-  constexpr std::string kAppId("test");
+  const std::string kAppId("test");
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
@@ -1610,7 +1610,7 @@ TEST_P(IntegrationSansInstallIdTest, Test) {
   }
 
   ScopedServer test_server(test_commands_);
-  constexpr std::string kAppId("test");
+  const std::string kAppId("test");
 
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
