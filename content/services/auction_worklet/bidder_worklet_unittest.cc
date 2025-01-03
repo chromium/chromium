@@ -551,6 +551,8 @@ class BidderWorkletTest : public testing::Test {
                 blink::PrintableAdCurrency(bids_[i]->bid_currency));
       EXPECT_EQ(expected_bid->ad_descriptor.url, bids_[i]->ad_descriptor.url);
       EXPECT_EQ(expected_bid->ad_descriptor.size, bids_[i]->ad_descriptor.size);
+      EXPECT_EQ(expected_bid->aggregate_win_signals,
+                bids_[i]->aggregate_win_signals);
       if (!expected_bid->ad_component_descriptors) {
         EXPECT_FALSE(bids_[i]->ad_component_descriptors);
       } else {
@@ -2498,7 +2500,7 @@ TEST_F(PrivateModelTrainingEnabledTest, GenerateBidAggregateWinSignals) {
           /*modeling_signals=*/
           std::nullopt,
           /*aggregate_win_signals=*/
-          R"({"test_array":[1,2,3],"test_number":1.0,"test_string":"hello"})",
+          R"({"test_array":[1,2,3],"test_number":1,"test_string":"hello"})",
           base::TimeDelta()));
 }
 
@@ -2526,7 +2528,7 @@ class PrivateModelTrainingDisabledTest : public BidderWorkletTest {
 };
 
 TEST_F(PrivateModelTrainingDisabledTest,
-       GenerateBidModelingSignalsNotAffected) {
+       GenerateBidAggregateWinSignalsNotAffected) {
   const std::string kGenerateBidBody =
       R"({bid:1, render:"https://response.test/",
          aggregateWinSignals: {
