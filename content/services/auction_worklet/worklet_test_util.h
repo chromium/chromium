@@ -99,27 +99,6 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
     bool operator==(const Request& rhs) const;
   };
 
-  struct BatchRequest {
-    BatchRequest(
-        std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-            methods_with_options,
-        const std::optional<std::string>& with_lock,
-        mojom::AuctionWorkletFunction source_auction_worklet_function);
-    ~BatchRequest();
-
-    BatchRequest(const BatchRequest& other);
-    BatchRequest& operator=(const BatchRequest& other) = delete;
-    BatchRequest(BatchRequest&& other);
-    BatchRequest& operator=(BatchRequest&& other);
-
-    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-        methods_with_options;
-    std::optional<std::string> with_lock;
-    mojom::AuctionWorkletFunction source_auction_worklet_function;
-
-    bool operator==(const BatchRequest& rhs) const;
-  };
-
   TestAuctionSharedStorageHost();
 
   ~TestAuctionSharedStorageHost() override;
@@ -130,26 +109,15 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
           method_with_options,
       auction_worklet::mojom::AuctionWorkletFunction
           source_auction_worklet_function) override;
-  void SharedStorageBatchUpdate(
-      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-          methods_with_options,
-      const std::optional<std::string>& with_lock,
-      auction_worklet::mojom::AuctionWorkletFunction
-          source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;
-  }
-
-  const std::vector<BatchRequest>& observed_batch_requests() const {
-    return observed_batch_requests_;
   }
 
   void ClearObservedRequests();
 
  private:
   std::vector<Request> observed_requests_;
-  std::vector<BatchRequest> observed_batch_requests_;
 };
 
 class TestAuctionNetworkEventsHandler

@@ -39,7 +39,6 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   static void Append(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Delete(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Clear(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void BatchUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   static void SetMethodConstructor(
       const v8::FunctionCallbackInfo<v8::Value>& args);

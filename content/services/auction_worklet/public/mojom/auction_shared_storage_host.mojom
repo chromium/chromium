@@ -22,13 +22,4 @@ interface AuctionSharedStorageHost {
   SharedStorageUpdate(
     network.mojom.SharedStorageModifierMethodWithOptions method_with_options,
     AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle each modifier method within `methods_with_options`. If `with_lock`
-  // is provided, the methods within the batch will be executed with a lock
-  // acquired on the resource with name `with_lock`. `with_lock` shouldn't start
-  // with '-'.
-  SharedStorageBatchUpdate(
-    array<network.mojom.SharedStorageModifierMethodWithOptions> methods_with_options,
-    string? with_lock,
-    AuctionWorkletFunction source_auction_worklet_function);
 };

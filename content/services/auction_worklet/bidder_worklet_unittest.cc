@@ -11184,7 +11184,14 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest, ModifierMethodTypeHierarchy) {
           /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{});
 
   v8_helpers_[0]->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(
@@ -11225,7 +11232,12 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_bids=*/nullptr,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
-        {method_and_error.second});
+        {method_and_error.second},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 }
 
@@ -11252,7 +11264,12 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:5 Uncaught TypeError: The \"shared-storage\" "
-         "Permissions Policy denied the method on sharedStorage."});
+         "Permissions Policy denied the method on sharedStorage."},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 }
 
@@ -11288,7 +11305,12 @@ TEST_F(
         /*expected_bids=*/nullptr,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
-        {method_and_error.second});
+        {method_and_error.second},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 }
 
@@ -11312,7 +11334,12 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:5 Uncaught TypeError: The shared storage method "
-         "object constructor cannot be called as a function."});
+         "object constructor cannot be called as a function."},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 }
 
@@ -11342,7 +11369,14 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*ad_component_descriptors=*/std::nullopt,
             /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
   }
 
   v8_helpers_[0]->v8_runner()->PostTask(
@@ -11377,252 +11411,12 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
       /*expected_bids=*/nullptr,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
-      {"https://url.test/:6 Uncaught Error 123."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_NoArguments) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate();
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: sharedStorage.batchUpdate(): "
-       "at least 1 argument(s) are required."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_MethodsNotAnObject) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate(123);
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: sharedStorage.batchUpdate(): "
-       "Trouble converting argument 'methods' to a Sequence."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_MethodsNotASequence) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate({});
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: sharedStorage.batchUpdate(): "
-       "Trouble converting argument 'methods' to a Sequence."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_ErrorIteratingOverMethods) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          let o = {};
-          o[Symbol.iterator] = {};
-
-          sharedStorage.batchUpdate(o);
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:9 Uncaught TypeError: sharedStorage.batchUpdate(): "
-       "Trouble iterating over argument 'methods'."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_MethodsSequenceElementInvalidType) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate([123]);
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: Failed to convert value to "
-       "'SharedStorageModifierMethod'."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_MethodsSequenceElementUserDefinedType) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-
-          class SharedStorageClearMethod {
-            constructor() {}
-          }
-
-          sharedStorage.batchUpdate([new SharedStorageClearMethod()]);
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:11 Uncaught TypeError: Failed to convert value to "
-       "'SharedStorageModifierMethod'."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_ReservedLockName) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate([], {withLock: '-abc'});
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: sharedStorage.batchUpdate(): "
-       "Lock name cannot start with '-'."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_PermissionsPolicyError) {
-  permissions_policy_state_ = mojom::AuctionWorkletPermissionsPolicyState::New(
-      /*private_aggregation_allowed=*/true,
-      /*shared_storage_allowed=*/false);
-
-  // Skip setting up `shared_storage_hosts_`, to be consistent with the
-  // permissions policy's enabled status. This matches production behavior.
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate([]);
-        )"),
-      /*expected_bids=*/nullptr,
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/:6 Uncaught TypeError: The \"shared-storage\" "
-       "Permissions Policy denied the method on sharedStorage."});
-}
-
-TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
-       SharedStorageBatchUpdate_Success) {
-  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
-
-  mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
-      &test_shared_storage_host);
-  shared_storage_hosts_[0] = receiver.BindNewPipeAndPassRemote();
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateGenerateBidScript(
-          R"({ad: "ad", bid:1, render:"https://response.test/" })",
-          /*extra_code=*/R"(
-          sharedStorage.batchUpdate([]);
-
-          sharedStorage.batchUpdate([], {withLock: 'lock1'});
-
-          sharedStorage.batchUpdate([
-              new SharedStorageSetMethod('a', 'b'),
-              new SharedStorageAppendMethod('c', 'd'),
-              new SharedStorageDeleteMethod('e'),
-              new SharedStorageClearMethod({withLock: 'lock2'})
-            ], {withLock: 'lock3'});
-        )"),
-      /*expected_bids=*/
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt,
-          /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
-
-  // Make sure the shared storage mojom methods are invoked as they use a
-  // dedicated pipe.
-  task_environment_.RunUntilIdle();
-
-  using BatchRequest =
-      auction_worklet::TestAuctionSharedStorageHost::BatchRequest;
-
-  std::vector<content::MethodWithOptionsPtr> batch_methods1;
-  std::vector<content::MethodWithOptionsPtr> batch_methods2;
-  std::vector<content::MethodWithOptionsPtr> batch_methods3;
-  batch_methods3.push_back(MojomSetMethod(/*key=*/u"a",
-                                          /*value=*/u"b",
-                                          /*ignore_if_present=*/false));
-  batch_methods3.push_back(MojomAppendMethod(/*key=*/u"c",
-                                             /*value=*/u"d"));
-  batch_methods3.push_back(MojomDeleteMethod(/*key=*/u"e"));
-  batch_methods3.push_back(MojomClearMethod(/*with_lock=*/"lock2"));
-
-  EXPECT_THAT(
-      test_shared_storage_host.observed_batch_requests(),
-      testing::ElementsAre(
-          BatchRequest(std::move(batch_methods1),
-                       /*with_lock=*/std::nullopt,
-                       mojom::AuctionWorkletFunction::kBidderGenerateBid),
-          BatchRequest(std::move(batch_methods2),
-                       /*with_lock=*/"lock1",
-                       mojom::AuctionWorkletFunction::kBidderGenerateBid),
-          BatchRequest(std::move(batch_methods3),
-                       /*with_lock=*/"lock3",
-                       mojom::AuctionWorkletFunction::kBidderGenerateBid)));
-
-  v8_helpers_[0]->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<AuctionV8Helper> v8_helper) {
-                       v8_helper->isolate()->RequestGarbageCollectionForTesting(
-                           v8::Isolate::kFullGarbageCollection);
-                     },
-                     v8_helpers_[0]));
-  task_environment_.RunUntilIdle();
+      {"https://url.test/:6 Uncaught Error 123."},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_set_priority=*/std::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{});
 }
 
 TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
@@ -11654,7 +11448,14 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*ad_component_descriptors=*/std::nullopt,
             /*modeling_signals=*/std::nullopt,
-            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()));
+            /*aggregate_win_signals=*/std::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
 
     // Make sure the shared storage mojom methods are invoked as they use a
     // dedicated pipe.
@@ -11702,7 +11503,12 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:6 Uncaught TypeError: The \"shared-storage\" "
-         "Permissions Policy denied the method on sharedStorage."});
+         "Permissions Policy denied the method on sharedStorage."},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
 
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(

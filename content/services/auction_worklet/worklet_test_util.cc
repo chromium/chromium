@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
-#include "content/public/test/shared_storage_test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/base/net_errors.h"
@@ -168,33 +167,6 @@ TestAuctionSharedStorageHost::Request::operator=(Request&& other) = default;
 bool TestAuctionSharedStorageHost::Request::operator==(
     const Request& rhs) const = default;
 
-TestAuctionSharedStorageHost::BatchRequest::BatchRequest(
-    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-        methods_with_options,
-    const std::optional<std::string>& with_lock,
-    mojom::AuctionWorkletFunction source_auction_worklet_function)
-    : methods_with_options(std::move(methods_with_options)),
-      with_lock(with_lock),
-      source_auction_worklet_function(source_auction_worklet_function) {}
-
-TestAuctionSharedStorageHost::BatchRequest::~BatchRequest() = default;
-
-TestAuctionSharedStorageHost::BatchRequest::BatchRequest(
-    const BatchRequest& other)
-    : methods_with_options(
-          content::CloneSharedStorageMethods(other.methods_with_options)),
-      with_lock(other.with_lock),
-      source_auction_worklet_function(other.source_auction_worklet_function) {}
-
-TestAuctionSharedStorageHost::BatchRequest::BatchRequest(BatchRequest&& other) =
-    default;
-TestAuctionSharedStorageHost::BatchRequest&
-TestAuctionSharedStorageHost::BatchRequest::operator=(BatchRequest&& other) =
-    default;
-
-bool TestAuctionSharedStorageHost::BatchRequest::operator==(
-    const BatchRequest& rhs) const = default;
-
 TestAuctionSharedStorageHost::TestAuctionSharedStorageHost() = default;
 
 TestAuctionSharedStorageHost::~TestAuctionSharedStorageHost() = default;
@@ -206,17 +178,6 @@ void TestAuctionSharedStorageHost::SharedStorageUpdate(
         source_auction_worklet_function) {
   observed_requests_.emplace_back(
       Request(std::move(method_with_options), source_auction_worklet_function));
-}
-
-void TestAuctionSharedStorageHost::SharedStorageBatchUpdate(
-    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-        methods_with_options,
-    const std::optional<std::string>& with_lock,
-    auction_worklet::mojom::AuctionWorkletFunction
-        source_auction_worklet_function) {
-  observed_batch_requests_.emplace_back(
-      BatchRequest(std::move(methods_with_options), with_lock,
-                   source_auction_worklet_function));
 }
 
 void TestAuctionSharedStorageHost::ClearObservedRequests() {

@@ -43,12 +43,6 @@ class CONTENT_EXPORT AuctionSharedStorageHost
           method_with_options,
       auction_worklet::mojom::AuctionWorkletFunction
           source_auction_worklet_function) override;
-  void SharedStorageBatchUpdate(
-      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
-          methods_with_options,
-      const std::optional<std::string>& with_lock,
-      auction_worklet::mojom::AuctionWorkletFunction
-          source_auction_worklet_function) override;
 
  private:
   struct ReceiverContext;
