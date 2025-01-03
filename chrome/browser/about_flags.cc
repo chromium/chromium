@@ -2007,6 +2007,25 @@ const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
      std::size(kNtpSafeBrowsingModuleFastCooldown), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpSharepointModuleTrendingInsights[] = {
+    {"NtpSharepointModuleDataParam", "trending-insights"}};
+const FeatureEntry::FeatureParam kNtpSharepointModuleNonInsights[] = {
+    {"NtpSharepointModuleDataParam", "non-insights"}};
+const FeatureEntry::FeatureParam kNtpSharepointModuleTrendingFakeData[] = {
+    {"NtpSharepointModuleDataParam", "fake-trending"}};
+const FeatureEntry::FeatureParam kNtpSharepointModuleNonInsightsFakeData[] = {
+    {"NtpSharepointModuleDataParam", "fake-non-insights"}};
+
+const FeatureEntry::FeatureVariation kNtpSharepointModuleVariations[] = {
+    {"- Trending", kNtpSharepointModuleTrendingInsights,
+     std::size(kNtpSharepointModuleTrendingInsights), nullptr},
+    {"- Recently Used and Shared", kNtpSharepointModuleNonInsights,
+     std::size(kNtpSharepointModuleNonInsights), nullptr},
+    {"- Fake Trending Data", kNtpSharepointModuleTrendingFakeData,
+     std::size(kNtpSharepointModuleTrendingFakeData), nullptr},
+    {"- Fake Recently Used and Shared", kNtpSharepointModuleNonInsightsFakeData,
+     std::size(kNtpSharepointModuleNonInsightsFakeData), nullptr}};
+
 const FeatureEntry::FeatureParam kNtpMostRelevantTabResumptionModuleFakeData[] =
     {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam, "Fake Data"}};
 const FeatureEntry::FeatureParam
@@ -7037,7 +7056,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpSharepointModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSharepointModule,
+                                    kNtpSharepointModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-wallpaper-search-button",
      flag_descriptions::kNtpWallpaperSearchButtonName,

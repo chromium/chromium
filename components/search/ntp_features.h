@@ -60,6 +60,12 @@ BASE_DECLARE_FEATURE(kNtpFeedModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
+enum class NtpSharepointModuleDataType {
+  kTrendingInsights,
+  kNonInsights,
+  kTrendingInsightsFakeData,
+  kNonInsightsFakeData,
+};
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpMostRelevantTabResumptionModule);
@@ -185,6 +191,9 @@ extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
 // Parameter determining the impression limit for the NTP mobile promo. The
 // promo will not be shown again after the impression limit is reached.
 extern const base::FeatureParam<int> kNtpMobilePromoImpressionLimit;
+// Parameter determining the type of data to render.
+extern const base::FeatureParam<NtpSharepointModuleDataType>
+    kNtpSharepointModuleDataParam;
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

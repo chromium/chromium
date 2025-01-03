@@ -383,6 +383,21 @@ const base::FeatureParam<int> kNtpMobilePromoImpressionLimit(
     "kNtpMobilePromoImpressionLimit",
     10);
 
+const base::FeatureParam<NtpSharepointModuleDataType>::Option
+    kNtpSharepointModuleDataTypeOptions[] = {
+        {NtpSharepointModuleDataType::kTrendingInsights, "trending-insights"},
+        {NtpSharepointModuleDataType::kNonInsights, "non-insights"},
+        {NtpSharepointModuleDataType::kTrendingInsightsFakeData,
+         "fake-trending"},
+        {NtpSharepointModuleDataType::kNonInsightsFakeData,
+         "fake-non-insights"}};
+
+const base::FeatureParam<NtpSharepointModuleDataType>
+    kNtpSharepointModuleDataParam{
+        &ntp_features::kNtpSharepointModule, "NtpSharepointModuleDataParam",
+        NtpSharepointModuleDataType::kTrendingInsights,
+        &kNtpSharepointModuleDataTypeOptions};
+
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
       kNtpModulesLoadTimeoutMilliseconds,
