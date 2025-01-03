@@ -468,13 +468,12 @@ public class IntentUtils {
     /**
      * Determines whether this app is the only possible handler for this Intent.
      *
-     * @param context Any context for this app.
      * @param intent The intent to check.
      * @return True if the intent targets this app.
      */
-    public static boolean intentTargetsSelf(Context context, Intent intent) {
+    public static boolean intentTargetsSelf(Intent intent) {
         boolean hasPackage = !TextUtils.isEmpty(intent.getPackage());
-        String appPackage = context.getPackageName();
+        String appPackage = BuildInfo.getInstance().hostPackageName;
         boolean matchesPackage = hasPackage && appPackage.equals(intent.getPackage());
         ComponentName componentName = intent.getComponent();
         boolean matchesComponent =
@@ -527,8 +526,7 @@ public class IntentUtils {
     public static void addTrustedIntentExtras(Intent intent) {
         // It is crucial that we never leak the authentication token to other packages, because
         // then the other package could be used to impersonate us/do things as us.
-        boolean toSelf =
-                IntentUtils.intentTargetsSelf(ContextUtils.getApplicationContext(), intent);
+        boolean toSelf = IntentUtils.intentTargetsSelf(intent);
         assert toSelf;
         // For security reasons we have to check the asserted condition anyways.
         if (!toSelf) return;

@@ -655,7 +655,7 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void openChromeBrowser(@Nullable OmniboxLoadUrlParams params) {
-        Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
+        Intent intent = SearchActivityUtils.createIntentForStartActivity(params);
         if (intent == null) return;
 
         if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {

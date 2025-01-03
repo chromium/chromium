@@ -13,6 +13,7 @@ import android.os.Build;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -82,21 +83,21 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
      * or components may be enabled that provide alternative handlers for this intent before it gets
      * fired.
      *
-     * @param intent            Intent that will be fired.
-     * @param matchDefaultOnly  See {@link PackageManager#MATCH_DEFAULT_ONLY}.
-     * @return                  True if Chrome will definitely handle the intent, false otherwise.
+     * @param intent Intent that will be fired.
+     * @param matchDefaultOnly See {@link PackageManager#MATCH_DEFAULT_ONLY}.
+     * @return True if Chrome will definitely handle the intent, false otherwise.
      */
     public static boolean willChromeHandleIntent(Intent intent, boolean matchDefaultOnly) {
-        Context context = ContextUtils.getApplicationContext();
         // Early-out if the intent targets Chrome.
-        if (IntentUtils.intentTargetsSelf(context, intent)) return true;
+        if (IntentUtils.intentTargetsSelf(intent)) return true;
 
         // Fall back to the more expensive querying of Android when the intent doesn't target
         // Chrome.
         ResolveInfo info =
                 PackageManagerUtils.resolveActivity(
                         intent, matchDefaultOnly ? PackageManager.MATCH_DEFAULT_ONLY : 0);
-        return info != null && info.activityInfo.packageName.equals(context.getPackageName());
+        return info != null
+                && info.activityInfo.packageName.equals(BuildInfo.getInstance().hostPackageName);
     }
 
     @Override
