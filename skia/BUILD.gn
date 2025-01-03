@@ -396,12 +396,16 @@ component("skia") {
     sources += skia_xml_sources
     sources += skia_codec_xmp
     sources += skia_codec_jpeg_xmp
+    sources += [
+      "//third_party/skia/src/svg/SkSVGCanvas.cpp",
+      "//third_party/skia/src/svg/SkSVGDevice.cpp",
+    ]
     deps += [ "//third_party/expat" ]
     defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
+  } else {
+    # Remove unused util sources.
+    sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
   }
-
-  # Remove unused util sources.
-  sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
   if (is_win) {
     libs = [ "fontsub.lib" ]
