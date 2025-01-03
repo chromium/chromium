@@ -55,4 +55,5 @@
   --cr-searchbox-font-size: 14px;
   --cr-searchbox-icon-size-in-searchbox: 24px;
   --cr-searchbox-results-search-icon-size: 20px;
+  --cr-searchbox-shadow: 0 1px 3px 0 var(--color-searchbox-shadow);
 }

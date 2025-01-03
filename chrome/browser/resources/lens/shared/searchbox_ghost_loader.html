@@ -14,7 +14,7 @@
   content: '';
   position: relative;
   height: 1px;
-  background-color: #DADCE0;
+  background-color: var(--color-searchbox-dropdown-divider);
   top: 0;
   width: calc(var(--cr-searchbox-min-width) - 24px);
   display: block;
@@ -31,6 +31,10 @@
   padding-top: 4px;
 }
 
+#loadingState.status-container {
+  padding-inline-start: 16px;
+}
+
 .loader-text {
   position: absolute;
   padding-inline-start: 40px;
@@ -38,6 +42,10 @@
   font-weight: var(--cr-searchbox-match-font-weight);
   font-size: 14px;
   width: 234px;
+}
+
+#loadingState.loader-text {
+  padding-inline-start: 36px;
 }
 
 #hint-text1 {
