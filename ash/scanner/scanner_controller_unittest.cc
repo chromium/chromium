@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
-#include "ash/public/cpp/scanner/scanner_system_state.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_action_view_model.h"
@@ -21,6 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -60,25 +60,24 @@ class ScannerControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
 };
 
-TEST_F(ScannerControllerTest, CanStartSessionIfSystemStateEnabled) {
+TEST_F(ScannerControllerTest, CanStartSessionIfFeatureChecksPass) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-          GetSystemState)
-      .WillByDefault(Return(
-          ScannerSystemState(ScannerStatus::kEnabled, /*failed_checks=*/{})));
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{}));
 
   EXPECT_TRUE(scanner_controller->CanStartSession());
   EXPECT_TRUE(scanner_controller->StartNewSession());
 }
 
-TEST_F(ScannerControllerTest, CanNotStartSessionIfSystemStateBlocked) {
+TEST_F(ScannerControllerTest, CanNotStartSessionIfFeatureChecksFail) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   ON_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
-          GetSystemState)
-      .WillByDefault(Return(
-          ScannerSystemState(ScannerStatus::kBlocked, /*failed_checks=*/{})));
+          CheckFeatureAccess)
+      .WillByDefault(Return(specialized_features::FeatureAccessFailureSet{
+          specialized_features::FeatureAccessFailure::kDisabledInSettings}));
 
   EXPECT_FALSE(scanner_controller->CanStartSession());
   EXPECT_FALSE(scanner_controller->StartNewSession());

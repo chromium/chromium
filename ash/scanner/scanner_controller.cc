@@ -112,8 +112,7 @@ bool ScannerController::CanStartSession() {
     return false;
   }
 
-  return profile_scoped_delegate->GetSystemState().status ==
-         ScannerStatus::kEnabled;
+  return profile_scoped_delegate->CheckFeatureAccess().empty();
 }
 
 ScannerSession* ScannerController::StartNewSession() {

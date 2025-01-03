@@ -5395,6 +5395,7 @@ static_library("test_support") {
     "//ash",
     "//ash/webui/annotator:test_support",
     "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/specialized_features",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//dbus",
