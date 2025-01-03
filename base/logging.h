@@ -594,11 +594,8 @@ constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
 // above.
 class BASE_EXPORT LogMessage {
  public:
-  // Used for LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
 
-  // Used for CHECK().  Implied severity = LOGGING_FATAL.
-  LogMessage(const char* file, int line, const char* condition);
   LogMessage(const LogMessage&) = delete;
   LogMessage& operator=(const LogMessage&) = delete;
   virtual ~LogMessage();
