@@ -2707,11 +2707,11 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-inline/text-box-trim/text-box-trim-on-button.html [ Failure ]
-external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
-[ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
-virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
+crbug.com/386860172 external/wpt/css/css-inline/text-box-trim/text-box-trim-on-button.html [ Failure ]
+crbug.com/386713385 external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
+crbug.com/385918146 [ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
+crbug.com/385918146 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
+crbug.com/386713385 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
 crbug.com/385993738 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]
 crbug.com/386128935 [ Mac14 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/address.wast.js.html [ Crash ]
