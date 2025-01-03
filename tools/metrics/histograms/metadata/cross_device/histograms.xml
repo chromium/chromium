@@ -2373,12 +2373,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.Toggle" enum="SmartLockToggle"
-    expires_after="2025-02-10">
+    expires_after="2026-01-02">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Emitted whenever Smart Lock is enabled/disabled in Settings using any of the
-    three toggles. Indicates which toggle was used and whether Smart Lock was
+    two toggles. Indicates which toggle was used and whether Smart Lock was
     enabled or disabled.
   </summary>
 </histogram>
