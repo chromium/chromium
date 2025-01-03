@@ -16,53 +16,6 @@ typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
 typedef std::map<HistogramBase::Sample, HistogramBase::Count> SampleToCountMap;
-typedef SampleMapIterator<const SampleToCountMap,
-                         SampleToCountMap::const_iterator>
-    NonExtractingSampleMapIterator;
-
-template <>
-NonExtractingSampleMapIterator::~SampleMapIterator() = default;
-
-// Get() for an iterator of a SampleMap.
-template <>
-void NonExtractingSampleMapIterator::Get(Sample* min,
-                                         int64_t* max,
-                                         Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We do not have to do the following atomically -- if the caller needs thread
-  // safety, they should use a lock. And since this is in local memory, if a
-  // lock is used, we know the value would not be concurrently modified by a
-  // different process (in contrast to PersistentSampleMap, where the value in
-  // shared memory may be modified concurrently by a subprocess).
-  *count = iter_->second;
-}
-
-typedef SampleMapIterator<SampleToCountMap, SampleToCountMap::iterator>
-    ExtractingSampleMapIterator;
-
-template <>
-ExtractingSampleMapIterator::~SampleMapIterator() {
-  // Ensure that the user has consumed all the samples in order to ensure no
-  // samples are lost.
-  DCHECK(Done());
-}
-
-// Get() for an extracting iterator of a SampleMap.
-template <>
-void ExtractingSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We do not have to do the following atomically -- if the caller needs thread
-  // safety, they should use a lock. And since this is in local memory, if a
-  // lock is used, we know the value would not be concurrently modified by a
-  // different process (in contrast to PersistentSampleMap, where the value in
-  // shared memory may be modified concurrently by a subprocess).
-  *count = iter_->second;
-  iter_->second = 0;
-}
 
 SampleMap::SampleMap() : SampleMap(0) {}
 
@@ -98,11 +51,13 @@ Count SampleMap::TotalCount() const {
 }
 
 std::unique_ptr<SampleCountIterator> SampleMap::Iterator() const {
-  return std::make_unique<NonExtractingSampleMapIterator>(sample_counts_);
+  return std::make_unique<SampleMapIterator<SampleToCountMap, false>>(
+      sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> SampleMap::ExtractingIterator() {
-  return std::make_unique<ExtractingSampleMapIterator>(sample_counts_);
+  return std::make_unique<SampleMapIterator<SampleToCountMap, true>>(
+      sample_counts_);
 }
 
 bool SampleMap::IsDefinitelyEmpty() const {
