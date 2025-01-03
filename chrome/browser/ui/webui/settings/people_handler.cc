@@ -592,17 +592,20 @@ base::Value PeopleHandler::GetProfileAvatar() {
     return base::Value();
   }
 
-  profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = false};
-
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_->GetPath());
 
+  if (!entry) {
+    // This may happen if the profile is being deleted.
+    return base::Value();
+  }
+
   return base::Value(webui::GetBitmapDataUrl(
       entry
           ->GetAvatarIcon(profiles::kAvatarIconSize,
-                          /*use_high_res_file=*/true, icon_params)
+                          /*use_high_res_file=*/true, {.has_padding = false})
           .AsBitmap()));
 }
 
