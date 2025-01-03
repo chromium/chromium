@@ -136,7 +136,7 @@ class ASH_PUBLIC_EXPORT PaginationModel : public views::AnimationDelegateViews {
   void StartTransitionAnimation(const Transition& transition);
   void ResetTransitionAnimation();
 
-  // gfx::AnimationDelegate overrides:
+  // views::AnimationDelegateViews overrides:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
