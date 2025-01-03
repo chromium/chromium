@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/android/openxr_depth_sensor_android.h"
 
 #include <array>
@@ -479,15 +474,25 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
     return nullptr;
   }
 
-  XrDepthViewANDROID depth_view = acquire_result.views[GetDepthViewIndex(eye)];
+  auto depth_views = base::span(acquire_result.views);
+  XrDepthViewANDROID depth_view = depth_views[GetDepthViewIndex(eye)];
+
   size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
   auto* depth_image_ptr =
       base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
           ? depth_image.smoothDepthImage
           : depth_image.rawDepthImage;
-  base::span<const float> depth_image_span =
-      base::span(depth_image_ptr + pixel_offset, num_pixels);
 
+  // SAFETY: `num_pixels` is calculated above using checked multiplication
+  // based on the resolution that the Depth API was created with
+  // (`depth_camera_resolution_`). Per specification, the depth API returns a
+  // single array of two images (one for each eye), starting at the pointer for
+  // that data.
+  UNSAFE_BUFFERS(base::span<const float> full_depth_image_span =
+                     base::span(depth_image_ptr, 2 * num_pixels));
+
+  base::span<const float> depth_image_span =
+      full_depth_image_span.subspan(pixel_offset, num_pixels);
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
   mojo_base::BigBuffer pixels(buffer_size);
   switch (depth_config_->depth_data_format) {

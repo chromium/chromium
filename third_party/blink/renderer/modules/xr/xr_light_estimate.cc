@@ -17,7 +17,7 @@ XRLightEstimate::XRLightEstimate(
   DCHECK_EQ(spherical_harmonics.coefficients.size(), 9u);
 
   sh_coefficients_ = NotShared(DOMFloat32Array::Create(UNSAFE_TODO(
-      base::span(spherical_harmonics.coefficients.data()->components,
+      base::span(spherical_harmonics.coefficients.data()->components.data(),
                  spherical_harmonics.coefficients.size() *
                      device::RgbTupleF32::kNumComponents))));
 
