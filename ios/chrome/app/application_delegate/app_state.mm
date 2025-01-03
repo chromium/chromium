@@ -166,8 +166,14 @@ BOOL ApplicationIsInBackground() {
 
   AppInitStage previousInitStage = _initStage;
   [_observers appState:self willTransitionToInitStage:newInitStage];
-  _initStage = newInitStage;
+  [self updateInitStage:newInitStage];
   [_observers appState:self didTransitionFromInitStage:previousInitStage];
+}
+
+// Side-effect free setter, exposed in the +Testing category. Outside of tests,
+// this should only be called from the -setInitStage: implementation above.
+- (void)updateInitStage:(AppInitStage)initStage {
+  _initStage = initStage;
 }
 
 - (BOOL)portraitOnly {

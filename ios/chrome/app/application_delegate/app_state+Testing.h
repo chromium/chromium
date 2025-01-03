@@ -15,6 +15,10 @@
 
 - (void)completeUIInitialization;
 
+// Updates the value of `initStage` without any of the associated checks or
+// logic.
+- (void)updateInitStage:(AppInitStage)initStage;
+
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_APP_STATE_TESTING_H_

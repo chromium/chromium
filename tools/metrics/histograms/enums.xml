@@ -14517,6 +14517,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Cold"/>
   <int value="2" label="Warm"/>
+  <int value="3" label="ColdPreBrowserObjects"/>
 </enum>
 
 <enum name="LcppHintStatus">

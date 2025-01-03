@@ -52,7 +52,8 @@ enum class LaunchTypeForBackgroundRefreshActions {
   kUnknown = 0,
   kLaunchTypeCold = 1,
   kLaunchTypeWarm = 2,
-  kMaxValue = kLaunchTypeWarm,
+  kLaunchTypePreBrowserObjects = 3,
+  kMaxValue = kLaunchTypePreBrowserObjects,
 };
 
 #endif  // IOS_CHROME_APP_BACKGROUND_REFRESH_BACKGROUND_REFRESH_METRICS_H_
