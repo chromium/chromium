@@ -211,14 +211,14 @@ class MODULES_EXPORT AudioContext final
   // Returns whether the autoplay requirements are fulfilled.
   bool AreAutoplayRequirementsFulfilled() const;
 
-  // If possible, allows autoplay for the AudioContext and marke it as allowed
-  // by the given type.
+  // If possible, allows autoplay for the AudioContext and mark it as allowed by
+  // the given type.
   void MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType);
 
   // Returns whether the AudioContext is allowed to start rendering. It takes in
-  // a boolean parameter to indicate whether it should be silent or send a
-  // warning message to the console about the requirement of user gesture.
-  bool IsAllowedToStart(bool silent) const;
+  // a boolean parameter to indicate whether it should suppress warnings or send
+  // warning messages to the console about the requirement of user gesture.
+  bool IsAllowedToStart(bool should_suppress_warning = false) const;
 
   // Record the current autoplay metrics.
   void RecordAutoplayMetrics();
@@ -232,8 +232,8 @@ class MODULES_EXPORT AudioContext final
   // available for the potential GC.
   void StopRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
-  // Called when suspending the context to stop reundering audio, but don't
-  // clean up handlers because we expect to be resuming where we left off.
+  // Called when suspending the context to stop rendering audio, but don't clean
+  // up handlers because we expect to be resuming where we left off.
   void SuspendRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void DidClose();

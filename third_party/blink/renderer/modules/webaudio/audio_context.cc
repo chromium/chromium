@@ -230,7 +230,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   // requiring it for symmetry with OfflineAudioContext.
   audio_context->MaybeAllowAutoplayWithUnlockType(
       AutoplayUnlockType::kContextConstructor);
-  if (audio_context->IsAllowedToStart(/*silent=*/true)) {
+  if (audio_context->IsAllowedToStart(/*should_suppress_warning=*/true)) {
     audio_context->StartRendering();
     audio_context->SetContextState(V8AudioContextState::Enum::kRunning);
   }
@@ -460,7 +460,7 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
   // Restart the destination node to pull on the audio graph.
   if (destination()) {
     MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType::kContextResume);
-    if (IsAllowedToStart(/*silent=*/false)) {
+    if (IsAllowedToStart()) {
       // Do not set the state to running here.  We wait for the
       // destination to start to set the state.
       StartRendering();
@@ -734,7 +734,7 @@ void AudioContext::NotifySourceNodeStart() {
   MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType::kSourceNodeStart);
 
   if (ContextState() == V8AudioContextState::Enum::kSuspended &&
-      !suspended_by_user_ && IsAllowedToStart(/*silent=*/false)) {
+      !suspended_by_user_ && IsAllowedToStart()) {
     StartRendering();
     SetContextState(V8AudioContextState::Enum::kRunning);
   }
@@ -777,7 +777,7 @@ void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
   autoplay_unlock_type_ = type;
 }
 
-bool AudioContext::IsAllowedToStart(bool silent) const {
+bool AudioContext::IsAllowedToStart(bool should_suppress_warning) const {
   if (blocked_by_prerendering_) {
     // In prerendering, the AudioContext will not start rendering. See:
     // https://wicg.github.io/nav-speculation/prerendering.html#web-audio-patch
@@ -797,7 +797,7 @@ bool AudioContext::IsAllowedToStart(bool silent) const {
     case AutoplayPolicy::Type::kUserGestureRequired:
       DCHECK(window->GetFrame());
       DCHECK(window->GetFrame()->IsCrossOriginToOutermostMainFrame());
-      if (!silent) {
+      if (!should_suppress_warning) {
         window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
@@ -806,7 +806,7 @@ bool AudioContext::IsAllowedToStart(bool silent) const {
       }
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      if (!silent) {
+      if (!should_suppress_warning) {
         window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
