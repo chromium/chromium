@@ -285,12 +285,6 @@ BASE_DECLARE_FEATURE(kShowWarningsForSuspiciousNotifications);
 extern const base::FeatureParam<int>
     kShowWarningsForSuspiciousNotificationsScoreThreshold;
 
-// Status of the SimplifiedUrlDisplay experiments. This does not control the
-// individual experiments, those are controlled by their own feature flags.
-// The feature is only set by Finch so that we can differentiate between
-// default and control groups of the experiment.
-BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
-
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 

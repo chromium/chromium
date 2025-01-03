@@ -309,10 +309,6 @@ constexpr base::FeatureParam<int>
         "ShowWarningsForSuspiciousNotificationsScoreThreshold",
         /*default_value=*/100};
 
-BASE_FEATURE(kSimplifiedUrlDisplay,
-             "SimplifiedUrlDisplay",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -361,7 +357,6 @@ base::Value::List GetFeatureStatusList() {
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
       &kShowWarningsForSuspiciousNotifications,
-      &kSimplifiedUrlDisplay,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,
       &kVisualFeaturesSizes,
