@@ -2470,6 +2470,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.Parsing.PasswordField.IsMasked" enum="Boolean"
+    expires_after="2025-07-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Reports whether the field predicted as password field in a parsed form is
+    masked (has HTML type &quot;password&quot;) or not. Recorded once per form
+    when the form is parsed for filling, and the form contains a field with
+    PASSWORD type prediction.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Reports whether any of the fields predicted to be unrelated to password
+    flows is masked (has HTML type &quot;password&quot;) or not. Recorded once
+    per form when the form is parsed for filling, and the form contains fields
+    with UNKNOWN_TYPE prediction.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasskeyRetrievalWaitDuration" units="ms"
     expires_after="2025-06-30">
   <owner>kenrb@chromium.org</owner>

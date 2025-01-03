@@ -918,6 +918,8 @@ bool ParseUsingModelPredictions(
   bool predictions_complete = true;
 
   bool otp_detected = false;
+  std::optional<bool> password_field_is_masked;
+  std::optional<bool> unrelated_fields_contain_masked_fields;
 
   for (auto& field : processed_fields) {
     auto prediction = predictions.find(field.field->global_id());
@@ -931,9 +933,8 @@ bool ParseUsingModelPredictions(
         result->username = field.field;
         break;
       case autofill::PASSWORD:
+        password_field_is_masked = field.is_password;
         if (!field.is_password) {
-          // TODO(crbug.com/371933424): Log metrics about cleartext fields that
-          // the model predicted as password fields.
           break;
         }
         result->password = field.field;
@@ -953,6 +954,9 @@ bool ParseUsingModelPredictions(
         otp_detected = true;
         break;
       case autofill::UNKNOWN_TYPE:
+        unrelated_fields_contain_masked_fields =
+            unrelated_fields_contain_masked_fields.value_or(false) ||
+            field.is_password;
         // The field is unrelated to passwords, do not update the parsing
         // result.
         break;
@@ -979,10 +983,19 @@ bool ParseUsingModelPredictions(
 
   if (predictions_complete && (mode == FormDataParser::Mode::kFilling)) {
     ReportFormTypeMetric(result, otp_detected);
-  }
 
-  // TODO(crbug.com/371933424): Log metrics about renderer-recognized
-  // credential forms the model predicted to be unrelated to passwords.
+    if (password_field_is_masked.has_value()) {
+      base::UmaHistogramBoolean(
+          "PasswordManager.Parsing.PasswordField.IsMasked",
+          password_field_is_masked.value());
+    }
+
+    if (unrelated_fields_contain_masked_fields.has_value()) {
+      base::UmaHistogramBoolean(
+          "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked",
+          unrelated_fields_contain_masked_fields.value());
+    }
+  }
 
   return predictions_complete;
 }
