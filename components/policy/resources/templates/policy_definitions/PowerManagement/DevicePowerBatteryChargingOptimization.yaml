@@ -2,19 +2,15 @@ caption: Battery Charging Optimization
 desc: |-
   Battery health can be affected by factors like frequent full charges and extended charging durations. This policy provides three options to optimize charging behavior and mitigate these factors, ultimately prolonging battery lifespan.
 
-  Setting the policy to Standard, the battery charges normally to 100%. This disables adaptive and limited charging.
+  Setting the policy to 1 - Standard or leaving it unset, the battery charges normally to 100%. This disables adaptive and limited charging.
 
-  Setting the policy to Adaptive, the device learns your charging habits and delays charging to 100% until necessary. This helps prolong battery health.
+  Setting the policy to 2 - Adaptive, the device learns your charging habits and delays charging to 100% until necessary. This helps prolong battery health.
 
-  Setting the policy to Limited, the battery charges only to around 80% to maximize its lifespan.
+  Setting the policy to 3 - Limited, the battery charges only to around 80% to maximize its lifespan.
 
-  Leaving this policy unset applies the Standard option (where supported).
+  This policy overrides <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME">DevicePowerAdaptiveChargingEnabled</ph>.
 
-  The DevicePowerBatteryChargingOptimization policy overrides the DevicePowerAdaptiveChargingEnabled policy.
-
-  DevicePowerAdaptiveChargingEnabled controls adaptive charging if DevicePowerBatteryChargingOptimization is unset.
-
-  The DevicePowerBatteryChargingOptimization and DevicePowerAdaptiveChargingEnabled policies always take precedence over user settings.
+  The <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME">DevicePowerBatteryChargingOptimization</ph> and <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME">DevicePowerAdaptiveChargingEnabled</ph> polices always take precedence over user settings.
 
 device_only: true
 example_value: 1
