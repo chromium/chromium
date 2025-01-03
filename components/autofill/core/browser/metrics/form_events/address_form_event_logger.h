@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
@@ -51,10 +52,21 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   void OnDidUndoAutofill();
 
-  void OnDidShownAutofillOnTyping(FieldGlobalId field_global_id);
+  // `field_global_id` is the id of the field where at least one
+  // `SuggestionType::kAddressEntryOnTyping` suggestion was shown.
+  // `field_types_used` specifies the `FieldType` used to build each suggestion.
+  void OnDidShownAutofillOnTyping(FieldGlobalId field_global_id,
+                                  FieldTypeSet field_types_used);
 
-  void OnDidAcceptAutofillOnTyping(FieldGlobalId field_global_id,
-                                   const std::u16string& value);
+  // `field_global_id` is the id of the field where a
+  // `SuggestionType::kAddressEntryOnTyping` was accepted. `value` is the the
+  // literal string used to fill the field.
+  // `field_type_used_to_build_suggestion` is the autofill `FieldType` from
+  // which `value` was derived from.
+  void OnDidAcceptAutofillOnTyping(
+      FieldGlobalId field_global_id,
+      const std::u16string& value,
+      FieldType field_type_used_to_build_suggestion);
   void LogAutofillAddressOnTypingCorrectnessMetrics(const FormStructure& form);
 
  protected:
@@ -85,8 +97,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   // suggestion.
   DenseSet<AutofillProfileRecordTypeCategory> profile_categories_filled_;
   // Defines fields where `SuggestionType::kAddressEntryOnTyping`
-  // suggestions were shown.
-  std::set<FieldGlobalId> fields_where_autofill_on_typing_was_shown_;
+  // suggestions were shown. `FieldTypeSet` is used to emit acceptance metrics
+  // per `FieldType` used when building the suggestion shown.
+  std::map<FieldGlobalId, FieldTypeSet>
+      fields_where_autofill_on_typing_was_shown_;
   // For fields where `SuggestionType::kAddressEntryOnTyping` suggestions were
   // accepted, stored the filled value. This is used later
   // for correctness metrics emission.

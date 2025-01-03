@@ -84,11 +84,6 @@ class FormEventLoggerBase {
   FormInteractionsUkmLogger::FormEventSet GetFormEvents(
       FormGlobalId form_global_id);
 
-  static int
-  GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
-      FieldType field_type,
-      bool suggestion_accepted);
-
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
   }

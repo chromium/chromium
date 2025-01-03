@@ -284,8 +284,12 @@ class TestAutofillClientTemplate : public T {
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> options) override {}
 
+  void SetAutofillSuggestions(std::vector<Suggestion> suggestions) {
+    suggestions_ = std::move(suggestions);
+  }
+
   base::span<const Suggestion> GetAutofillSuggestions() const override {
-    return {};
+    return suggestions_;
   }
 
   void PinAutofillSuggestions() override {}
@@ -593,6 +597,8 @@ class TestAutofillClientTemplate : public T {
   std::vector<AutofillProfile> test_addresses_;
 
   std::vector<std::string> migration_card_selection_;
+
+  std::vector<Suggestion> suggestions_;
 
   // A mock translate driver which provides the language state.
   translate::testing::MockTranslateDriver mock_translate_driver_;

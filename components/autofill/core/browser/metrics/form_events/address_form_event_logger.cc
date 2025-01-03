@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -52,13 +53,20 @@ AddressFormEventLogger::AddressFormEventLogger(BrowserAutofillManager* owner)
     : FormEventLoggerBase("Address", owner) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() {
-  // Once a `SuggestionType::kAutofillAddressOntyping` suggestion
+  // Once a `SuggestionType::kAutofillAddressOnTyping` suggestion
   // is accepted, we remove it from
   // `fields_where_autofill_on_typing_was_shown_`. Therefore for the remaining
   // fields, log that they were not accepted
-  for (const auto& _ : fields_where_autofill_on_typing_was_shown_) {
+  for (const auto& [field_global_id, field_types_used] :
+       fields_where_autofill_on_typing_was_shown_) {
     base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
                               false);
+    for (FieldType field_type : field_types_used) {
+      base::UmaHistogramSparse(
+          "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
+          GetBucketForAcceptanceMetricsGroupedByFieldType(
+              field_type, /*suggestion_accepted=*/false));
+    }
   }
 }
 
@@ -104,17 +112,33 @@ void AddressFormEventLogger::OnDidUndoAutofill() {
 }
 
 void AddressFormEventLogger::OnDidShownAutofillOnTyping(
-    FieldGlobalId field_global_id) {
-  fields_where_autofill_on_typing_was_shown_.insert(field_global_id);
+    FieldGlobalId field_global_id,
+    FieldTypeSet field_types_used) {
+  if (fields_where_autofill_on_typing_was_shown_.contains(field_global_id)) {
+    fields_where_autofill_on_typing_was_shown_[field_global_id].insert_all(
+        field_types_used);
+  } else {
+    fields_where_autofill_on_typing_was_shown_[field_global_id] =
+        field_types_used;
+  }
 }
 
 void AddressFormEventLogger::OnDidAcceptAutofillOnTyping(
     FieldGlobalId field_global_id,
-    const std::u16string& value) {
+    const std::u16string& value,
+    FieldType field_type_used_to_build_suggestion) {
   CHECK(fields_where_autofill_on_typing_was_shown_.contains(field_global_id));
   autofill_on_typing_value_used_[field_global_id] = value;
   base::UmaHistogramBoolean("Autofill.AddressSuggestionOnTypingAcceptance",
                             true);
+  for (FieldType field_type :
+       fields_where_autofill_on_typing_was_shown_[field_global_id]) {
+    base::UmaHistogramSparse(
+        "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType",
+        GetBucketForAcceptanceMetricsGroupedByFieldType(
+            field_type, /*suggestion_accepted=*/field_type ==
+                            field_type_used_to_build_suggestion));
+  }
   fields_where_autofill_on_typing_was_shown_.erase(field_global_id);
 }
 

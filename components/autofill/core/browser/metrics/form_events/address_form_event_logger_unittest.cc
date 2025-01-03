@@ -242,6 +242,20 @@ class AutofillAddressOnTypingMetricsTest : public AutofillMetricsBaseTest,
 
   void SetUp() override { SetUpHelper(); }
   void TearDown() override { TearDownHelper(); }
+
+  // Builds a vectors of `SuggestionType::kAddressEntryOnTyping` suggestions.
+  // `field_types_used` is used to set the
+  // `Suggestion::field_by_field_filling_type_used` property for each output
+  // suggestion.
+  std::vector<Suggestion> BuildAutofillOnTypingSuggestions(
+      FieldTypeSet field_types_used) {
+    std::vector<Suggestion> suggestions;
+    for (FieldType field_type : field_types_used) {
+      suggestions.emplace_back(SuggestionType::kAddressEntryOnTyping);
+      suggestions.back().field_by_field_filling_type_used = field_type;
+    }
+    return suggestions;
+  }
 };
 
 TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
@@ -249,15 +263,18 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   FormData form = test::GetFormData({.fields = {{}, {}, {}}});
   // Simulate that the autofill manager has seen this form on page load.
   SeeForm(form);
-  // See, accept and do not correct the first suggestion.
   static constexpr DenseSet<SuggestionType> kShownSuggestionTypes = {
       SuggestionType::kAddressEntryOnTyping, SuggestionType::kSeparator,
       SuggestionType::kManageAddress};
+
+  // See, accept and do not correct the first suggestion.
+  autofill_client().SetAutofillSuggestions(
+      BuildAutofillOnTypingSuggestions({NAME_FULL}));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[0].global_id());
   const std::u16string filled_value = u"Jon snow";
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
-      form.fields()[0].global_id(), filled_value);
+      form.fields()[0].global_id(), filled_value, NAME_FULL);
   std::vector<FormFieldData> form_fields = form.ExtractFields();
   // Note that the first field value has the same as the one from the first
   // suggestion.
@@ -265,14 +282,18 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   form.set_fields(std::move(form_fields));
 
   // Only see second suggestion.
+  autofill_client().SetAutofillSuggestions(
+      BuildAutofillOnTypingSuggestions({NAME_FIRST}));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[1].global_id());
 
   // See, accept and edit the third suggestion.
+  autofill_client().SetAutofillSuggestions(
+      BuildAutofillOnTypingSuggestions({NAME_FULL}));
   autofill_manager().DidShowSuggestions(kShownSuggestionTypes, form,
                                         form.fields()[2].global_id());
   autofill_manager().OnDidFillAddressOnTypingSuggestion(
-      form.fields()[2].global_id(), filled_value);
+      form.fields()[2].global_id(), filled_value, NAME_FULL);
   form_fields = form.ExtractFields();
   // Set the third field value as something different from what was autofilled,
   // simulating a correction.
@@ -284,6 +305,15 @@ TEST_F(AutofillAddressOnTypingMetricsTest, EmitMetrics) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.AddressSuggestionOnTypingAcceptance"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType"),
+      BucketsAre(base::Bucket(GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                  NAME_FIRST, /*suggestion_accepted=*/false),
+                              1),
+                 base::Bucket(GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                  NAME_FULL, /*suggestion_accepted=*/true),
+                              2)));
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "Autofill.EditedAutofilledFieldAtSubmission.AddressOnTyping"),
               BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));

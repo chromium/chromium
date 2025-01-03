@@ -95,6 +95,18 @@ DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
 bool ShouldLogAutofillSuggestionShown(
     AutofillSuggestionTriggerSource trigger_source);
 
+// This function encodes the integer value of a `FieldType` and the
+// boolean value of `suggestion_accepted` into a 14 bit integer.
+// The lower 2 bits are used to encode the filling acceptance and the higher 12
+// bits are used to encode the field type. This integer is used to determine
+// which bucket of metrics such as
+// "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
+// should be emitted.
+// Even though `suggestion_accepted` could be encoded in only 1 bit, 2 bits are
+// used to leave room for possible other future values.
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_

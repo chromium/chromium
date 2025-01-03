@@ -890,6 +890,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                     suggestion.payload)) {
         FillAddressFieldByFieldFillingSuggestion(*profile, suggestion,
                                                  metadata);
+        // TODO(crbug.com/381994105): Consider deleting this metric in favor or
+        // Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType.
         base::UmaHistogramEnumeration(
             "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
             suggestion.field_by_field_filling_type_used.value(),
@@ -1149,8 +1151,9 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
           profile, query_form_.global_id(), query_field_.global_id(),
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
     } else if (suggestion.type == SuggestionType::kAddressEntryOnTyping) {
-      manager_->OnDidFillAddressOnTypingSuggestion(query_field_.global_id(),
-                                                   filling_value);
+      manager_->OnDidFillAddressOnTypingSuggestion(
+          query_field_.global_id(), filling_value,
+          *suggestion.field_by_field_filling_type_used);
     }
   }
 }

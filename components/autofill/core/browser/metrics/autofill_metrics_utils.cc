@@ -209,4 +209,11 @@ bool ShouldLogAutofillSuggestionShown(
   }
 }
 
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted) {
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
+                "Autofill::FieldType value needs more than 12 bits.");
+
+  return (field_type << 2) | suggestion_accepted;
+}
 }  // namespace autofill::autofill_metrics

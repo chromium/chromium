@@ -82,24 +82,6 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
   return false;
 }
 
-// This function encodes the integer value of a `FieldType` and the
-// boolean value of `suggestion_accepted` into a 14 bit integer.
-// The lower 2 bits are used to encode the filling acceptance and the higher 12
-// bits are used to encode the field type. This integer is used to determine
-// which bucket of the
-// "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType" metric
-// should be emitted.
-// Even though `suggestion_accepted` could be encoded in only 1 bit, 2 bits are
-// used to leave room for possible other future values.
-int GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-    FieldType field_type,
-    bool suggestion_accepted) {
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
-                "Autofill::FieldType value needs more than 12 bits.");
-
-  return (field_type << 2) | suggestion_accepted;
-}
-
 }  // namespace
 
 FormEventLoggerBase::FormEventLoggerBase(std::string form_type_name,
@@ -470,16 +452,14 @@ void FormEventLoggerBase::RecordFillingAcceptance(LogBuffer& logs) const {
   static constexpr char acceptance_by_focused_field_type_histogram[] =
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType";
   for (auto field_type : field_types_with_shown_suggestions_) {
-    base::UmaHistogramSparse(
-        acceptance_by_focused_field_type_histogram,
-        GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-            field_type, /*suggestion_accepted=*/false));
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/false));
   }
   for (auto field_type : field_types_with_accepted_suggestions_) {
-    base::UmaHistogramSparse(
-        acceptance_by_focused_field_type_histogram,
-        GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-            field_type, /*suggestion_accepted=*/true));
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/true));
   }
 }
 
@@ -609,15 +589,6 @@ FormEventLoggerBase::GetParsedAndFieldByFieldFormTypes() const {
   DenseSet<FormTypeNameForLogging> all_form_types = parsed_form_types_;
   all_form_types.insert_all(field_by_field_filled_form_types_);
   return all_form_types;
-}
-
-// static
-int FormEventLoggerBase::
-    GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetricForTesting(
-        FieldType field_type,
-        bool suggestion_accepted) {
-  return GetBucketForFillingAcceptanceGroupedByFocusedFilledTypeMetric(
-      field_type, suggestion_accepted);
 }
 
 }  // namespace autofill::autofill_metrics

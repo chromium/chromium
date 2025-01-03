@@ -1719,9 +1719,10 @@ void BrowserAutofillManager::OnDidFillAddressFormFillingSuggestion(
 
 void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
     const FieldGlobalId& field_id,
-    const std::u16string& value) {
-  metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(field_id,
-                                                                  value);
+    const std::u16string& value,
+    FieldType field_type_used_to_build_suggestion) {
+  metrics_->address_form_event_logger.OnDidAcceptAutofillOnTyping(
+      field_id, value, field_type_used_to_build_suggestion);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1942,7 +1943,15 @@ void BrowserAutofillManager::DidShowSuggestions(
                                     SuggestionType::kSeparator,
                                     SuggestionType::kManageAddress})
               .contains_all(shown_suggestion_types));
-    metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(field_id);
+    FieldTypeSet field_types_used;
+    for (const Suggestion& suggestion : client().GetAutofillSuggestions()) {
+      if (suggestion.type != SuggestionType::kAddressEntryOnTyping) {
+        continue;
+      }
+      field_types_used.insert(*suggestion.field_by_field_filling_type_used);
+    }
+    metrics_->address_form_event_logger.OnDidShownAutofillOnTyping(
+        field_id, field_types_used);
     return;
   }
 
