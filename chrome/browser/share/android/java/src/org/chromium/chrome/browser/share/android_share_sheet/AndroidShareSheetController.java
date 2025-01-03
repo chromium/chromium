@@ -253,7 +253,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
 
     private static void preparePreviewFavicon(
             Context context, Profile profile, String pageUrl, Callback<Uri> onUriReady) {
-        int size = context.getResources().getDimensionPixelSize(R.dimen.share_preview_favicon_size);
+        int size = ShareHelper.getTextPreviewImageSizePx(context.getResources());
         FaviconHelper faviconHelper = new FaviconHelper();
         faviconHelper.getLocalFaviconImageForURL(
                 profile,

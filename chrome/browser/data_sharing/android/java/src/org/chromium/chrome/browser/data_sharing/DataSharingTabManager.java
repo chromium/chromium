@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -640,8 +641,7 @@ public class DataSharingTabManager {
     private void showShareSheet(GroupData groupData, Callback<Boolean> onShareSheetShown) {
         mDataSharingTabGroupsDelegate.getPreviewBitmap(
                 groupData.groupToken.collaborationId,
-                // TODO(386833405): Expose dimen.share_preview_favicon_size.
-                80,
+                ShareHelper.getTextPreviewImageSizePx(mResources),
                 (preview) -> {
                     showShareSheetWithPreview(groupData, preview, onShareSheetShown);
                 });
