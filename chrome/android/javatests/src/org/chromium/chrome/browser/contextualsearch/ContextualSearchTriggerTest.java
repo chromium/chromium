@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -246,12 +246,10 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyShort() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
                 ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
-                "100");
-        FeatureList.setTestValues(testValues);
+                100);
         Assert.assertFalse(mContextualSearchManager.isSuppressed());
     }
 
@@ -261,12 +259,10 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
     public void testIsSuppressedOnViewHeight_ridiculouslyTall() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
                 ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
-                "500000");
-        FeatureList.setTestValues(testValues);
+                500000);
         Assert.assertTrue(mContextualSearchManager.isSuppressed());
     }
 

@@ -21,7 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -118,21 +118,12 @@ public class DefaultBrowserPromoImpressionCounterTest {
 
     @Test
     public void testFeatureParams() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID,
-                DefaultBrowserPromoImpressionCounter.MAX_PROMO_COUNT_PARAM,
-                "5");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID,
-                DefaultBrowserPromoImpressionCounter.PROMO_TIME_INTERVAL_DAYS_PARAM,
-                "6");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID,
-                DefaultBrowserPromoImpressionCounter.PROMO_SESSION_INTERVAL_PARAM,
-                "5");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID)
+                .param(DefaultBrowserPromoImpressionCounter.MAX_PROMO_COUNT_PARAM, 5)
+                .param(DefaultBrowserPromoImpressionCounter.PROMO_TIME_INTERVAL_DAYS_PARAM, 6)
+                .param(DefaultBrowserPromoImpressionCounter.PROMO_SESSION_INTERVAL_PARAM, 5)
+                .apply();
 
         when(mCounter.getPromoCount()).thenReturn(4);
         when(mCounter.getLastPromoSessionCount()).thenReturn(20);

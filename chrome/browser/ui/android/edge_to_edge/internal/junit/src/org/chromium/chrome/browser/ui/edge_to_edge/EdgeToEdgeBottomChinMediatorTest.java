@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -381,10 +381,9 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     private void enableDispatchYOffset() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
-        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
+                .param("disable_bottom_controls_stacker_y_offset", false)
+                .apply();
     }
 }

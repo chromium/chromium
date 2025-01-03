@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import androidx.annotation.CheckResult;
 import androidx.annotation.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
@@ -45,6 +46,7 @@ public class FeatureOverrides {
         }
 
         /** Enable a feature flag. */
+        @CheckResult
         public Builder enable(String featureName) {
             addFeatureFlagOverride(featureName, true);
             mLastFeatureName = featureName;
@@ -52,28 +54,40 @@ public class FeatureOverrides {
         }
 
         /** Disable a feature flag. */
+        @CheckResult
         public Builder disable(String featureName) {
             addFeatureFlagOverride(featureName, false);
             mLastFeatureName = null;
             return this;
         }
 
+        /** Enable or disable a feature flag. */
+        @CheckResult
+        public Builder flag(String featureName, boolean value) {
+            addFeatureFlagOverride(featureName, value);
+            return this;
+        }
+
         /** Override a boolean param for the last feature flag enabled. */
+        @CheckResult
         public Builder param(String paramName, boolean value) {
             return param(getLastFeatureName(), paramName, String.valueOf(value));
         }
 
         /** Override an int param for the last feature flag enabled. */
+        @CheckResult
         public Builder param(String paramName, int value) {
             return param(getLastFeatureName(), paramName, String.valueOf(value));
         }
 
         /** Override a double param for the last feature flag enabled. */
+        @CheckResult
         public Builder param(String paramName, double value) {
             return param(getLastFeatureName(), paramName, String.valueOf(value));
         }
 
         /** Override a String param for the last feature flag enabled. */
+        @CheckResult
         public Builder param(String paramName, String value) {
             return param(getLastFeatureName(), paramName, value);
         }
@@ -87,21 +101,25 @@ public class FeatureOverrides {
         }
 
         /** Override a boolean param. */
+        @CheckResult
         public Builder param(String featureName, String paramName, boolean value) {
             return param(featureName, paramName, String.valueOf(value));
         }
 
         /** Override an int param. */
+        @CheckResult
         public Builder param(String featureName, String paramName, int value) {
             return param(featureName, paramName, String.valueOf(value));
         }
 
         /** Override a double param. */
+        @CheckResult
         public Builder param(String featureName, String paramName, double value) {
             return param(featureName, paramName, String.valueOf(value));
         }
 
         /** Override a String param. */
+        @CheckResult
         public Builder param(String featureName, String paramName, String value) {
             addFieldTrialParamOverride(featureName, paramName, value);
             return this;
@@ -112,6 +130,7 @@ public class FeatureOverrides {
     private FeatureOverrides() {}
 
     /** Create a Builder for overriding feature flags and field trial parameters. */
+    @CheckResult
     public static FeatureOverrides.Builder newBuilder() {
         return new FeatureOverrides.Builder();
     }
@@ -129,6 +148,21 @@ public class FeatureOverrides {
     /** Override a feature flag for testing. */
     public static void overrideFlag(String featureName, boolean testValue) {
         FeatureList.setTestFeature(featureName, testValue);
+    }
+
+    /** Override a boolean feature param for testing. */
+    public static void overrideParam(String featureName, String paramName, boolean testValue) {
+        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
+    }
+
+    /** Override an int feature param for testing. */
+    public static void overrideParam(String featureName, String paramName, int testValue) {
+        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
+    }
+
+    /** Override a double feature param for testing. */
+    public static void overrideParam(String featureName, String paramName, double testValue) {
+        FeatureList.setTestFeatureParam(featureName, paramName, String.valueOf(testValue));
     }
 
     /** Override a feature param for testing. */

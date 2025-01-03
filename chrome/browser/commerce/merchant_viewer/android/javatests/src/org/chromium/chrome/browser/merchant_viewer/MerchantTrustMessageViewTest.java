@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -203,23 +204,23 @@ public class MerchantTrustMessageViewTest {
         // TODO: Remove use of setDisableNativeForTesting(), probably needed due to isInitialized()
         // in MerchantViewerConfig.
         FeatureList.setDisableNativeForTesting(true);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM,
-                useRatingBar);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_GOOGLE_ICON_PARAM,
-                useGoogleIcon);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM,
-                titleUi);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM,
-                descriptionUi);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .param(
+                        ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM,
+                        useRatingBar)
+                .param(
+                        ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_GOOGLE_ICON_PARAM,
+                        useGoogleIcon)
+                .param(
+                        ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM,
+                        titleUi)
+                .param(
+                        ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM,
+                        descriptionUi)
+                .apply();
     }
 }

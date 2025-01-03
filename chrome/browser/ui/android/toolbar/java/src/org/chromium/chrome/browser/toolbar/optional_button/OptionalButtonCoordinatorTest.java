@@ -37,8 +37,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -303,12 +302,10 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsRemovedWhenNotInVariant() {
         AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
                 AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
                 "action_chip",
-                "false");
-        FeatureList.setTestValues(testValues);
+                false);
 
         Drawable iconDrawable = mock(Drawable.class);
         OnClickListener clickListener = view -> {};
@@ -341,12 +338,10 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsRemovedByFeatureEngagement() {
         AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
                 AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
                 "action_chip",
-                "true");
-        FeatureList.setTestValues(testValues);
+                true);
 
         doReturn(true).when(mMockTracker).isInitialized();
         doReturn(false)
@@ -384,12 +379,10 @@ public class OptionalButtonCoordinatorTest {
     public void testUpdateButton_actionChipResourceIdGetsKeptByFeatureEngagement() {
         AdaptiveToolbarFeatures.setIsDynamicActionForTesting(
                 AdaptiveToolbarButtonVariant.TEST_BUTTON, true);
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 AdaptiveToolbarFeatures.CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME,
                 "action_chip",
-                "true");
-        FeatureList.setTestValues(testValues);
+                true);
 
         doReturn(true).when(mMockTracker).isInitialized();
         doReturn(true)

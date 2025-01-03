@@ -32,7 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -258,20 +258,17 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsObserverTitleWasSet() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE_PARAM,
-                "false");
-        FeatureList.setTestValues(testValues);
+                false);
         mWebContentsObserverCaptor.getValue().titleWasSet(DUMMY_SHEET_TITLE);
         assertEquals(null, mToolbarModel.get(BottomSheetToolbarProperties.TITLE));
 
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE_PARAM,
-                "true");
-        FeatureList.setTestValues(testValues);
+                true);
         mWebContentsObserverCaptor.getValue().titleWasSet(DUMMY_SHEET_TITLE);
         assertEquals(DUMMY_SHEET_TITLE, mToolbarModel.get(BottomSheetToolbarProperties.TITLE));
     }

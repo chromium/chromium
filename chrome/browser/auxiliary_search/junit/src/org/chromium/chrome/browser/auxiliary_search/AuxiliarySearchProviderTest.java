@@ -38,8 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchBookmarkGroup;
@@ -289,12 +288,10 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void configuredTabsAgeCannotBeZero() {
-        var config = new TestValues();
-        config.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_APP_INTEGRATION,
                 AuxiliarySearchProvider.TAB_AGE_HOURS_PARAM,
-                "0");
-        FeatureList.setTestValues(config);
+                0);
         // Recreate provider to update the finch parameter.
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);
@@ -308,12 +305,10 @@ public class AuxiliarySearchProviderTest {
     @Test
     @SmallTest
     public void configuredTabsAge() {
-        var config = new TestValues();
-        config.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_APP_INTEGRATION,
                 AuxiliarySearchProvider.TAB_AGE_HOURS_PARAM,
-                "10");
-        FeatureList.setTestValues(config);
+                10);
         // Recreate provider to update the finch parameter.
         mAuxiliarySearchProvider =
                 new AuxiliarySearchProvider(mContext, mProfile, mTabModelSelector);

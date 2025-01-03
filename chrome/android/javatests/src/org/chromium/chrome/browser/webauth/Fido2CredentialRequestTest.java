@@ -45,7 +45,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -2400,8 +2399,6 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     @DisabledTest(message = "crbug.com/347310677")
     public void testGetAssertion_conditionalUiHybrid_success() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(testValues);
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
         mMockBrowserBridge.setExpectedCredentialDetailsList(
                 Arrays.asList(Fido2ApiTestHelper.getCredentialDetails()));

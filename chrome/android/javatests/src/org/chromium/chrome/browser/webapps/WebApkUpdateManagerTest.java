@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -153,7 +153,6 @@ public class WebApkUpdateManagerTest {
     private ChromeActivity mActivity;
     private Tab mTab;
     private EmbeddedTestServer mTestServer;
-    private FeatureList.TestValues mTestValues;
 
     private List<Integer> mLastUpdateReasons;
     private String mUpdateRequestPath;
@@ -310,9 +309,6 @@ public class WebApkUpdateManagerTest {
         mTab = mActivity.getActivityTab();
         mTestServer = mActivityTestRule.getTestServer();
 
-        mTestValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(mTestValues);
-
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
         WebappRegistry.getInstance().register(WEBAPK_ID, callback);
         callback.waitForCallback(0);
@@ -405,8 +401,7 @@ public class WebApkUpdateManagerTest {
     }
 
     private void enableUpdateDialogForIcon(boolean enabled) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_ICON, enabled);
-        FeatureList.setTestValues(mTestValues);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_ICON, enabled);
     }
 
     /**

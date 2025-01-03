@@ -47,7 +47,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -132,14 +132,11 @@ public class HomeModulesCoordinatorUnitTest {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         HomeModulesRankingHelperJni.setInstanceForTesting(mHomeModulesRankingHelperJniMock);
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER)
+                .enable(ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER)
+                .enable(ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2)
+                .apply();
     }
 
     @After

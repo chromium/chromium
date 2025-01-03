@@ -53,8 +53,7 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -844,13 +843,10 @@ public class PageInfoSharingControllerUnitTest {
     @Test
     public void testOpenLearnMoreLink() {
         String testLearnMoreUrl = "https://google.com/learn_more";
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CHROME_SHARE_PAGE_INFO, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CHROME_SHARE_PAGE_INFO,
-                PageSummarySharingRequest.LEARN_MORE_URL_PARAM,
-                testLearnMoreUrl);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)
+                .param(PageSummarySharingRequest.LEARN_MORE_URL_PARAM, testLearnMoreUrl)
+                .apply();
 
         ArgumentCaptor<BottomSheetContent> sheetContentCaptor =
                 ArgumentCaptor.forClass(BottomSheetContent.class);

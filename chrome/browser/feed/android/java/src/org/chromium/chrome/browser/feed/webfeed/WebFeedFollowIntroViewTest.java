@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -70,9 +69,6 @@ public final class WebFeedFollowIntroViewTest {
     @Test
     @SmallTest
     public void showIphTest() {
-        FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(baseTestValues);
-
         mWebFeedFollowIntroView.showIph(
                 mHelper, CallbackUtils.emptyRunnable(), CallbackUtils.emptyRunnable());
         verify(mHelper, times(1)).requestShowIph(any());

@@ -35,7 +35,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -84,9 +84,6 @@ public class PartnerCustomizationsUmaUnitTest {
     private static final Supplier<HomepageCharacterizationHelper> HELPER_FOR_PARTNER_NON_NTP =
             HomepageCharacterizationHelperStub::nonNtpHelper;
 
-    private TestValues mEnabledTestValues;
-    private TestValues mDisabledTestValues;
-
     private PartnerCustomizationsUma mPartnerCustomizationsUma;
 
     private boolean mDidCall;
@@ -94,12 +91,6 @@ public class PartnerCustomizationsUmaUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mEnabledTestValues = new TestValues();
-        mEnabledTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA, true);
-        mDisabledTestValues = new TestValues();
-        mDisabledTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA, false);
         PartnerCustomizationsUma.resetStaticsForTesting();
         mPartnerCustomizationsUma = new PartnerCustomizationsUma();
     }
@@ -154,7 +145,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         NativeInitObserver observer = captureObserverFromLifecycleMock();
-        FeatureList.setTestValues(mEnabledTestValues);
+        FeatureOverrides.enable(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA);
         Assert.assertFalse(
                 "Expected onFinishNativeInitializationOrEnabled to not have called the Runnable!",
                 mDidCall);
@@ -172,7 +163,7 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onFinishNativeInitializationOrEnabled(
                 mActivityLifecycleDispatcherMock, () -> mDidCall = true);
         NativeInitObserver observer = captureObserverFromLifecycleMock();
-        FeatureList.setTestValues(mDisabledTestValues);
+        FeatureOverrides.disable(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA);
         Assert.assertFalse(
                 "Expected onFinishNativeInitializationOrEnabled to not have called the Runnable!",
                 mDidCall);
@@ -517,7 +508,7 @@ public class PartnerCustomizationsUmaUnitTest {
      */
     private NativeInitObserver captureObserverFromLifecycleMockForEnabledFeature() {
         // We'll need to be enabled to go past the native init.
-        FeatureList.setTestValues(mEnabledTestValues);
+        FeatureOverrides.enable(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA);
         return captureObserverFromLifecycleMock();
     }
 

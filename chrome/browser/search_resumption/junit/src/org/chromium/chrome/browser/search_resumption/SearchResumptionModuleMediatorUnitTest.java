@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -297,13 +297,10 @@ public class SearchResumptionModuleMediatorUnitTest {
                     .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
         }
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
-                SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
-                String.valueOf(useNewServiceEnabled));
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
+                .param(SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM, useNewServiceEnabled)
+                .apply();
     }
 
     private void initSuggestions() {

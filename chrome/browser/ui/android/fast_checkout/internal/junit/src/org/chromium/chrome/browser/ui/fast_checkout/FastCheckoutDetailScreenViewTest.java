@@ -43,7 +43,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -127,10 +127,7 @@ public class FastCheckoutDetailScreenViewTest {
 
     @Before
     public void setUp() {
-        FeatureList.TestValues featureTestValues = new FeatureList.TestValues();
-        featureTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.setTestValues(featureTestValues);
+        FeatureOverrides.disable(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES);
 
         mActivityScenarioRule
                 .getScenario()
