@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/download/download_item_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"
 #include "components/strings/grit/components_strings.h"

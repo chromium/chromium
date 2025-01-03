@@ -4227,6 +4227,7 @@ static_library("browser") {
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/toolbar/cast:impl",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui:webui_util",
@@ -4355,6 +4356,9 @@ static_library("browser") {
 
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
+
+      # TODO(crbug/com/387527798): Remove circular dependencies.
+      "//chrome/browser/ui/views/download",
 
       # TODO(crbug.com/359593415): //c/b/ui/apps/chrome_app_delegate.cc includes
       # - //c/b/app_mode/app_mode_utils.h,
