@@ -18,6 +18,8 @@ import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {FakeInSessionAuth} from '../fake_in_session_auth.js';
+
 import {createFakePageContentData, HOST_DEVICE, TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 suite('<settings-multidevice-page>', () => {
@@ -162,7 +164,9 @@ suite('<settings-multidevice-page>', () => {
     }));
     flush();
 
-    if (authRequired) {
+    // The password prompt dialog should only be triggered when
+    // isAuthPanelEnabled is false.
+    if (authRequired && !loadTimeData.getBoolean('isAuthPanelEnabled')) {
       assertTrue(multidevicePage.get('showPasswordPromptDialog_'));
       const prompt = multidevicePage.shadowRoot!.querySelector(
           '#multidevicePasswordPrompt');
@@ -245,6 +249,9 @@ suite('<settings-multidevice-page>', () => {
     document.body.appendChild(multidevicePage);
     flush();
     await browserProxy.whenCalled('getPageContentData');
+
+    multidevicePage.set(
+        'fakeInSessionAuthForTesting_', new FakeInSessionAuth());
   }
 
   setup(async () => {
