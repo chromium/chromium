@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -204,6 +205,28 @@ const Vector<AtomicString> ConvertFontFamilyToVector(const CSSValue* value) {
     families[i] = family_value->Value();
   }
   return families;
+}
+
+bool DocumentHasComplexSafeAreaConstraint(Document& document) {
+  Node* root = document.documentElement();
+  Node* current = root;
+  while (current) {
+    if (auto* element = DynamicTo<Element>(current)) {
+      if (const ComputedStyle* style =
+              ComputedStyle::NullifyEnsured(element->GetComputedStyle())) {
+        if (style->ReferencesSafeAreaInsetBottom() &&
+            !style->IsBottomRelativeToSafeAreaInset()) {
+          return true;
+        }
+      } else {
+        current =
+            LayoutTreeBuilderTraversal::NextSkippingChildren(*element, root);
+        continue;
+      }
+    }
+    current = LayoutTreeBuilderTraversal::Next(*current, root);
+  }
+  return false;
 }
 
 }  // namespace
@@ -821,6 +844,10 @@ void StyleEngine::UpdateCounters(const Element& element,
   if (layout_object) {
     context.LeaveObject(*layout_object);
   }
+}
+
+void StyleEngine::SetNeedsToUpdateComplexSafeAreaConstraints() {
+  needs_to_update_complex_safe_area_constraints_ = true;
 }
 
 void StyleEngine::ShadowRootInsertedToDocument(ShadowRoot& shadow_root) {
@@ -3153,6 +3180,18 @@ void StyleEngine::InvalidateEnvDependentStylesIfNeeded() {
   MarkElementsForRecalc(GetDocument(), reason, [](const ComputedStyle& style) {
     return style.HasEnv();
   });
+}
+
+bool StyleEngine::HasComplexSafaAreaConstraints() {
+  DCHECK(RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled());
+  if (needs_to_update_complex_safe_area_constraints_) {
+    has_complex_safe_area_constraints_ =
+        DocumentHasComplexSafeAreaConstraint(GetDocument());
+    if (!has_complex_safe_area_constraints_) {
+      needs_to_update_complex_safe_area_constraints_ = false;
+    }
+  }
+  return has_complex_safe_area_constraints_;
 }
 
 void StyleEngine::NodeWillBeRemoved(Node& node) {

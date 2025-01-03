@@ -45,6 +45,7 @@ class CONTENT_EXPORT SafeAreaInsetsHost
 
   // blink::mojom::DisplayCutoutHost interface.
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value) final;
+  void NotifyComplexSafeAreaConstraintChanged(bool value) final;
 
   // Called by WebContents when various events occur.
   virtual void DidAcquireFullscreen(RenderFrameHost* rfh) = 0;

@@ -142,6 +142,30 @@ void ViewportData::UpdateViewportDescription() {
   }
 }
 
+void ViewportData::SetHasComplexSafaAreaConstraint(bool value) {
+  if (has_complex_safe_area_constraint_ == value || !document_->GetFrame()) {
+    return;
+  }
+
+  if (AssociatedInterfaceProvider* provider =
+          document_->GetFrame()
+              ->Client()
+              ->GetRemoteNavigationAssociatedInterfaces()) {
+    // Bind the mojo interface.
+    if (!display_cutout_host_.is_bound()) {
+      provider->GetInterface(
+          display_cutout_host_.BindNewEndpointAndPassReceiver(
+              provider->GetTaskRunner()));
+      DCHECK(display_cutout_host_.is_bound());
+    }
+
+    // Even though we bind the mojo interface above there still may be cases
+    // where this will fail (e.g. unit tests).
+    display_cutout_host_->NotifyComplexSafeAreaConstraintChanged(value);
+    has_complex_safe_area_constraint_ = value;
+  }
+}
+
 void ViewportData::SetExpandIntoDisplayCutout(bool expand) {
   if (force_expand_display_cutout_ == expand)
     return;

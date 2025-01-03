@@ -478,6 +478,9 @@ class CORE_EXPORT StyleCascade {
   // See comments on IsBottomRelativeToSafeAreaInset in
   // computed_style_extra_fields.json5.
   void ApplyIsBottomRelativeToSafeAreaInset();
+  // See comments on ReferencesSafeAreaInsetBottom in
+  // computed_style_extra_fields.json5.
+  void ApplyReferencesSafeAreaInsetBottom();
 
   // Declarations originating from @position-try rules are treated as
   // revert-layer if we're not out-of-flow positioned. Since such declarations

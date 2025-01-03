@@ -31,6 +31,8 @@ class ViewportData final : public GarbageCollected<ViewportData> {
 
   void UpdateViewportDescription();
 
+  void SetHasComplexSafaAreaConstraint(bool value);
+
   // When true this will force a kCover viewport fit value which will result in
   // the document expanding into the display cutout area.
   CORE_EXPORT void SetExpandIntoDisplayCutout(bool expand);
@@ -59,6 +61,9 @@ class ViewportData final : public GarbageCollected<ViewportData> {
   // Stores the current value viewport-fit value.
   mojom::ViewportFit viewport_fit_ = blink::mojom::ViewportFit::kAuto;
   bool force_expand_display_cutout_ = false;
+
+  // Stores the current complex safe area constraint value.
+  std::optional<bool> has_complex_safe_area_constraint_;
 
   HeapMojoAssociatedRemote<mojom::blink::DisplayCutoutHost>
       display_cutout_host_;

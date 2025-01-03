@@ -4421,6 +4421,16 @@
       status: "stable",
       depends_on: ["WebUSB"],
     },
+    // If enabled, notify the associated DisplayCutoutHost of changes in
+    // complex safe area constraint usage on the page.
+    // Only Android may make use of this feature currently.
+    {
+      name: "UpdateComplexSafaAreaConstraints",
+      status: {
+        "Android": "stable",
+        "default": "",
+      }
+    },
     // Fix for https://crbug.com/41329214.
     {
       name: "UpdateSelectionOnNodeInsertion",
