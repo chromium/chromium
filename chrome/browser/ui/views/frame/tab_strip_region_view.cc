@@ -144,16 +144,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_search_container->SetProperty(views::kCrossAxisAlignmentKey,
                                         views::LayoutAlignment::kCenter);
     }
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-      product_specifications_button =
-          std::make_unique<ProductSpecificationsButton>(
-              tab_strip_->controller(), browser->GetTabStripModel(),
-              browser->GetFeatures()
-                  .product_specifications_entry_point_controller(),
-              render_tab_search_before_tab_strip_, this);
-      product_specifications_button->SetProperty(
-          views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
-    }
+
     if (features::IsTabstripComboButtonEnabled()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
           tab_strip_->controller(), this,
@@ -163,6 +154,15 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       tab_strip_action_container->SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
+    } else if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+      product_specifications_button =
+          std::make_unique<ProductSpecificationsButton>(
+              tab_strip_->controller(), browser->GetTabStripModel(),
+              browser->GetFeatures()
+                  .product_specifications_entry_point_controller(),
+              render_tab_search_before_tab_strip_, this);
+      product_specifications_button->SetProperty(
+          views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
     }
   }
 
@@ -375,6 +375,14 @@ glic::GlicButton* TabStripRegionView::GetGlicButton() {
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
   return nullptr;
+}
+
+ProductSpecificationsButton*
+TabStripRegionView::GetProductSpecificationsButton() {
+  if (tab_strip_action_container_) {
+    return tab_strip_action_container_->GetProductSpecificationsButton();
+  }
+  return product_specifications_button_;
 }
 
 TabSearchContainer* TabStripRegionView::GetTabSearchContainer() {

@@ -69,9 +69,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
     return tab_strip_combo_button_;
   }
 
-  ProductSpecificationsButton* product_specifications_button() {
-    return product_specifications_button_;
-  }
+  ProductSpecificationsButton* GetProductSpecificationsButton();
 
   glic::GlicButton* GetGlicButton();
 

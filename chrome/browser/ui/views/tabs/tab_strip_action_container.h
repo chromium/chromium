@@ -20,6 +20,7 @@
 namespace glic {
 class GlicButton;
 }
+class ProductSpecificationsButton;
 
 class TabStripActionContainer : public views::View,
                                 public TabDeclutterObserver,
@@ -95,6 +96,9 @@ class TabStripActionContainer : public views::View,
   glic::GlicButton* GetGlicButton() { return glic_button_; }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+  ProductSpecificationsButton* GetProductSpecificationsButton() {
+    return product_specifications_button_;
+  }
   // TabOrganizationObserver
   void OnToggleActionUIState(const Browser* browser, bool should_show) override;
 
@@ -151,6 +155,9 @@ class TabStripActionContainer : public views::View,
       TabStripController* tab_strip_controller);
   void SetupButtonProperties(TabStripNudgeButton* button);
 
+  // TODO(crbug.com/387356481) make ProductSpecificationsButton a subclass of
+  // TabStripNudgeButton
+  raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;

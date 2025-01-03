@@ -83,7 +83,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   ProductSpecificationsButton* product_specifications_button() {
     return browser_view()
         ->tab_strip_region_view()
-        ->product_specifications_button();
+        ->GetProductSpecificationsButton();
   }
 
   MockProductSpecificationsEntryPointController* controller() {

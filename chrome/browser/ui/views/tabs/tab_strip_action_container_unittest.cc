@@ -7,15 +7,19 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -33,14 +37,26 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
 
     return profile_.get();
   }
-
+  void Setup() {
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
+    params.type = Browser::TYPE_NORMAL;
+    params.window = browser_window_.get();
+    browser_ = std::unique_ptr<Browser>(Browser::Create(params));
+  }
   void ShouldUseOtrProfile(bool use_otr_profile) {
     use_otr_profile_ = use_otr_profile;
+  }
+
+  BrowserWindowInterface* GetBrowserWindowInterface() override {
+    return browser_.get();
   }
 
  private:
   bool use_otr_profile_ = false;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+  std::unique_ptr<Browser> browser_;
 };
 
 class TabStripActionContainerTest : public ChromeViewsTestBase {
@@ -66,6 +82,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
   void BuildGlicContainer(bool use_otr_profile) {
     controller_ = std::make_unique<FakeGlicTabStripController>();
+    controller_->Setup();
     controller_->ShouldUseOtrProfile(use_otr_profile);
 
     tab_strip_ = std::make_unique<TabStrip>(std::move(controller_));
@@ -130,5 +147,29 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
 #if BUILDFLAG(ENABLE_GLIC)
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
             tab_strip_action_container_->children()[2]);
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {features::kGlic, features::kTabstripComboButton,
+       commerce::kProductSpecifications},
+      {});
+
+  BuildGlicContainer(/*use_otr_profile=*/false);
+
+  ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
+            tab_strip_action_container_->children()[0]);
+
+  ASSERT_EQ(tab_strip_action_container_->auto_tab_group_button(),
+            tab_strip_action_container_->children()[1]);
+
+  ASSERT_EQ(tab_strip_action_container_->GetProductSpecificationsButton(),
+            tab_strip_action_container_->children()[2]);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+            tab_strip_action_container_->children()[3]);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }

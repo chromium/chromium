@@ -18,10 +18,12 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
@@ -215,6 +217,22 @@ TabStripActionContainer::TabStripActionContainer(
   SetupButtonProperties(auto_tab_group_button_);
 
   browser_ = tab_strip_controller->GetBrowser();
+  BrowserWindowInterface* browser_window_interface =
+      tab_strip_controller->GetBrowserWindowInterface();
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
+    product_specifications_button =
+        std::make_unique<ProductSpecificationsButton>(
+            tab_strip_controller, browser_window_interface->GetTabStripModel(),
+            browser_window_interface->GetFeatures()
+                .product_specifications_entry_point_controller(),
+            /*render_tab_search_before_tab_strip_*/ false, this);
+    product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                               views::LayoutAlignment::kCenter);
+
+    product_specifications_button_ =
+        AddChildView(std::move(product_specifications_button));
+  }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (GlicEnabling::IsEnabledForProfile(tab_strip_controller->GetProfile())) {
