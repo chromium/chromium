@@ -27,7 +27,18 @@ PageActionContainerView::PageActionContainerView(
 
   // Ensure that the same spacing that applies to the children is applied
   // between the PageActionIconContainerView and this container.
-  SetInsideBorderInsets(gfx::Insets().set_right(kPageActionBetweenIconSpacing));
+  // Add the right spacing only when there is at least one item
+  // to add to the container.
+  //
+  // TODO(crbug.com/384969003): After the page actions migration, this right
+  // spacing will no longer be needed.
+  //
+  // TODO(crbug.com/387364993): Ensure that the right spacing at the end is
+  // removed when no element is visible.
+  if (!action_items.empty()) {
+    SetInsideBorderInsets(
+        gfx::Insets().set_right(kPageActionBetweenIconSpacing));
+  }
 
   for (actions::ActionItem* action_item : action_items) {
     PageActionView* view = AddChildView(
