@@ -304,6 +304,12 @@
   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
       Sign in to get your passwords and more on all your devices
   </message>
+  <message name="IDS_SETTINGS_ERROR_PASSWORDS_USER_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header the settings page.">
+  To use and save passwords in your Google Account, verify it's you
+  </message>
+  <message name="IDS_SETTINGS_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_ERROR_DESCRIPTION" desc="Error description of a sync error header of desktop settings page that prompts the user to add recovery options.">
+  To make sure you can always use the passwords in your Google Account, verify it's you
+  </message>
 
   <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">
