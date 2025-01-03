@@ -159,8 +159,9 @@ views::View* GetAnchorViewForBrowser(Browser* browser) {
 #endif
   if (!IsBrowserFullscreen(browser) || browser_view->IsToolbarVisible() ||
       browser_view->immersive_mode_controller()->IsRevealed()) {
-    return browser_view->toolbar_button_provider()->GetAnchorView(
-        PageActionIconType::kZoom);
+    // TODO(crbug.com/376284060): An action ID should be created and used here
+    // when Zoom is migrated to the new page actions framework.
+    return browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
   }
   return nullptr;
 }

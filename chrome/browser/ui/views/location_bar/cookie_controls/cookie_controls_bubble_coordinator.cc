@@ -30,9 +30,10 @@ void CookieControlsBubbleCoordinator::ShowBubble(
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  // TODO(crbug.com/376283777): An action ID should be created and used here
+  // when Cookie Controls is migrated to the new page actions framework.
   views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAnchorView(
-          PageActionIconType::kCookieControls);
+      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
 
   auto bubble_view = std::make_unique<CookieControlsBubbleViewImpl>(
       anchor_view, web_contents,

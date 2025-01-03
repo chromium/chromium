@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -52,49 +53,25 @@ namespace autofill {
 
 namespace {
 
-template <class ViewType, class ControllerType>
-AutofillBubbleBase* ShowAddressProfileBubble(
-    ToolbarButtonProvider* toolbar_button_provider_,
-    content::WebContents* web_contents,
-    std::unique_ptr<ControllerType> controller,
-    bool is_user_gesture) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kAutofillAddress);
-  ViewType* bubble =
-      new ViewType(std::move(controller), anchor_view, web_contents);
-  DCHECK(bubble);
-  if (!views::Button::AsButton(anchor_view)) {
-    PageActionIconView* icon_view =
-        toolbar_button_provider_->GetPageActionIconView(
-            PageActionIconType::kAutofillAddress);
-    DCHECK(icon_view);
-    bubble->SetHighlightedButton(icon_view);
-  }
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ShowForReason(is_user_gesture
-                            ? LocationBarBubbleDelegateView::USER_GESTURE
-                            : LocationBarBubbleDelegateView::AUTOMATIC);
-  return bubble;
-}
-
-template <typename View, typename Controller>
+template <typename View, typename... Args>
   requires(std::derived_from<View, AutofillLocationBarBubble>)
 View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
+                 std::optional<actions::ActionId> action_id,
                  PageActionIconType page_action_icon_type,
-                 content::WebContents* web_contents,
-                 Controller* controller,
-                 bool is_user_gesture) {
-  views::View* anchor_view =
-      toolbar_button_provider->GetAnchorView(page_action_icon_type);
-  auto bubble = std::make_unique<View>(anchor_view, web_contents, controller);
+                 bool is_user_gesture,
+                 Args&&... args) {
+  views::View* const anchor_view =
+      toolbar_button_provider->GetAnchorView(action_id);
+  auto bubble =
+      std::make_unique<View>(anchor_view, std::forward<Args>(args)...);
   if (!views::Button::AsButton(anchor_view)) {
     PageActionIconView* icon_view =
         toolbar_button_provider->GetPageActionIconView(page_action_icon_type);
-    DCHECK(icon_view);
+    CHECK(icon_view);
     bubble->SetHighlightedButton(icon_view);
   }
 
-  View* bubble_ptr = bubble.get();
+  View* const bubble_ptr = bubble.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   const LocationBarBubbleDelegateView::DisplayReason display_reason =
       is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
@@ -107,6 +84,17 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
     bubble_ptr->ShowForReason(display_reason);
   }
   return bubble_ptr;
+}
+
+template <typename View, typename... Args>
+  requires std::derived_from<View, AutofillLocationBarBubble>
+View* ShowAddressProfileBubble(ToolbarButtonProvider* toolbar_button_provider,
+                               bool is_user_gesture,
+                               Args&&... args) {
+  return ShowBubble<View>(toolbar_button_provider,
+                          kActionShowAddressesBubbleOrPage,
+                          PageActionIconType::kAutofillAddress, is_user_gesture,
+                          std::forward<Args>(args)...);
 }
 
 }  // namespace
@@ -128,12 +116,14 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::UPLOAD_IN_PROGRESS:
       return ShowBubble<SaveCardOfferBubbleViews>(
-          toolbar_button_provider_, PageActionIconType::kSaveCard, web_contents,
-          controller, is_user_gesture);
+          toolbar_button_provider_, kActionShowPaymentsBubbleOrPage,
+          PageActionIconType::kSaveCard, is_user_gesture, web_contents,
+          controller);
     case BubbleType::MANAGE_CARDS:
       return ShowBubble<SaveCardManageCardsBubbleViews>(
-          toolbar_button_provider_, PageActionIconType::kSaveCard, web_contents,
-          controller, is_user_gesture);
+          toolbar_button_provider_, kActionShowPaymentsBubbleOrPage,
+          PageActionIconType::kSaveCard, is_user_gesture, web_contents,
+          controller);
     case BubbleType::UPLOAD_COMPLETED:
     case BubbleType::INACTIVE:
       break;
@@ -151,12 +141,14 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
     case IbanBubbleType::kUploadSave:
     case IbanBubbleType::kUploadInProgress:
       return ShowBubble<SaveIbanBubbleView>(
-          toolbar_button_provider_, PageActionIconType::kSaveIban, web_contents,
-          controller, is_user_gesture);
+          toolbar_button_provider_, kActionShowPaymentsBubbleOrPage,
+          PageActionIconType::kSaveIban, is_user_gesture, web_contents,
+          controller);
     case IbanBubbleType::kManageSavedIban:
       return ShowBubble<ManageSavedIbanBubbleView>(
-          toolbar_button_provider_, PageActionIconType::kSaveIban, web_contents,
-          controller, is_user_gesture);
+          toolbar_button_provider_, kActionShowPaymentsBubbleOrPage,
+          PageActionIconType::kSaveIban, is_user_gesture, web_contents,
+          controller);
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
       break;
@@ -168,18 +160,24 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller,
     bool is_user_gesture) {
+  // TODO(crbug.com/376284016): An action ID should be created and used here
+  // when Local Card Migration is migrated to the new page actions framework.
   return ShowBubble<LocalCardMigrationBubbleViews>(
-      toolbar_button_provider_, PageActionIconType::kLocalCardMigration,
-      web_contents, controller, is_user_gesture);
+      toolbar_button_provider_, std::nullopt,
+      PageActionIconType::kLocalCardMigration, is_user_gesture, web_contents,
+      controller);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller,
     bool is_user_gesture) {
+  // TODO(crbug.com/376283803): An action ID should be created and used here
+  // when Payments Offer is migrated to the new page actions framework.
   return ShowBubble<OfferNotificationBubbleViews>(
-      toolbar_button_provider_, PageActionIconType::kPaymentsOfferNotification,
-      web_contents, controller, is_user_gesture);
+      toolbar_button_provider_, std::nullopt,
+      PageActionIconType::kPaymentsOfferNotification, is_user_gesture,
+      web_contents, controller);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
@@ -187,24 +185,23 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     std::unique_ptr<SaveAddressBubbleController> controller,
     bool is_user_gesture) {
   return ShowAddressProfileBubble<SaveAddressProfileView>(
-      toolbar_button_provider_, web_contents, std::move(controller),
-      is_user_gesture);
+      toolbar_button_provider_, is_user_gesture, std::move(controller),
+      web_contents);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
     content::WebContents* web_contents,
     base::OnceCallback<void(content::WebContents*)> move_address_callback) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kAutofillAddress);
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(kActionShowAddressesBubbleOrPage);
   AddressSignInPromoView* bubble = new AddressSignInPromoView(
       anchor_view, web_contents, std::move(move_address_callback));
-  DCHECK(bubble);
   if (!views::Button::AsButton(anchor_view)) {
     PageActionIconView* icon_view =
         toolbar_button_provider_->GetPageActionIconView(
             PageActionIconType::kAutofillAddress);
-    DCHECK(icon_view);
+    CHECK(icon_view);
     bubble->SetHighlightedButton(icon_view);
   }
 
@@ -218,8 +215,9 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAutofillAiDataBubble(
     content::WebContents* web_contents,
     autofill_ai::SaveAutofillAiDataController* controller) {
   return ShowBubble<autofill_ai::SaveAutofillAiDataBubbleView>(
-      toolbar_button_provider_, PageActionIconType::kAutofillAddress,
-      web_contents, controller, /*is_user_gesture=*/false);
+      toolbar_button_provider_, kActionShowAddressesBubbleOrPage,
+      PageActionIconType::kAutofillAddress, /*is_user_gesture=*/false,
+      web_contents, controller);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
@@ -227,25 +225,30 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     std::unique_ptr<UpdateAddressBubbleController> controller,
     bool is_user_gesture) {
   return ShowAddressProfileBubble<UpdateAddressProfileView>(
-      toolbar_button_provider_, web_contents, std::move(controller),
-      is_user_gesture);
+      toolbar_button_provider_, is_user_gesture, std::move(controller),
+      web_contents);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowFilledCardInformationBubble(
     content::WebContents* web_contents,
     FilledCardInformationBubbleController* controller,
     bool is_user_gesture) {
+  // TODO(crbug.com/376284059): An action ID should be created and used here
+  // when this page action is migrated to the new page actions framework.
   return ShowBubble<FilledCardInformationBubbleViews>(
-      toolbar_button_provider_, PageActionIconType::kFilledCardInformation,
-      web_contents, controller, is_user_gesture);
+      toolbar_button_provider_, std::nullopt,
+      PageActionIconType::kFilledCardInformation, is_user_gesture, web_contents,
+      controller);
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
     content::WebContents* web_contents,
     VirtualCardEnrollBubbleController* controller,
     bool is_user_gesture) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kVirtualCardEnroll);
+  // TODO(crbug.com/376283926): An action ID should be created and used here
+  // when Virtual Card Enroll is migrated to the new page actions framework.
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(std::nullopt);
   VirtualCardEnrollBubbleViews* bubble =
       new VirtualCardEnrollBubbleViews(anchor_view, web_contents, controller);
 
@@ -277,8 +280,10 @@ AutofillBubbleBase*
 AutofillBubbleHandlerImpl::ShowVirtualCardEnrollConfirmationBubble(
     content::WebContents* web_contents,
     VirtualCardEnrollBubbleController* controller) {
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kVirtualCardEnroll);
+  // TODO(crbug.com/376283926): An action ID should be created and used here
+  // when Virtual Card Enroll is migrated to the new page actions framework.
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(std::nullopt);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
@@ -300,8 +305,10 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kMandatoryReauth);
   DCHECK(icon_view);
-  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
-      PageActionIconType::kMandatoryReauth);
+  // TODO(crbug.com/376283953): An action ID should be created and used here
+  // when Mandatory Reauth is migrated to the new page actions framework.
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(std::nullopt);
 
   switch (bubble_type) {
     case MandatoryReauthBubbleType::kOptIn: {
@@ -333,7 +340,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller) {
   views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
+      toolbar_button_provider_->GetAnchorView(kActionShowPaymentsBubbleOrPage);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =
@@ -350,7 +357,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanConfirmationBubble(
     content::WebContents* web_contents,
     IbanBubbleController* controller) {
   views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
+      toolbar_button_provider_->GetAnchorView(kActionShowPaymentsBubbleOrPage);
   base::OnceCallback<void(PaymentsUiClosedReason)> callback =
       controller->GetOnBubbleClosedCallback();
   PageActionIconView* icon_view =

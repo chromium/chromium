@@ -1191,20 +1191,15 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
 }
 
 views::View* ToolbarView::GetAnchorView(
-    std::optional<PageActionIconType> type) {
-  if (features::IsToolbarPinningEnabled()) {
-    if (pinned_toolbar_actions_container_ && type.has_value()) {
-      PageActionIconView* icon_view = GetPageActionIconView(type.value());
-      const std::optional<actions::ActionId> action_id =
-          icon_view ? icon_view->action_id() : std::nullopt;
-      if (action_id.has_value() &&
-          pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
-              action_id.value())) {
-        return pinned_toolbar_actions_container_->GetButtonFor(
-            action_id.value());
-      }
-    }
+    std::optional<actions::ActionId> action_id) {
+  if (features::IsToolbarPinningEnabled() &&
+      pinned_toolbar_actions_container_ && action_id.has_value() &&
+      pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
+          action_id.value())) {
+    return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
   }
+  // TODO(crbug.com/386362832): Consider whether we should try anchoring to
+  // the corresponding PageActionView, if any, instead of the location bar.
   return location_bar_;
 }
 

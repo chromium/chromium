@@ -68,7 +68,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   ToolbarButtonProvider* button_provider =
       browser_view->toolbar_button_provider();
   views::View* anchor_view =
-      button_provider->GetAnchorView(PageActionIconType::kManagePasswords);
+      button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage);
 
   PasswordBubbleViewBase* bubble =
       CreateBubble(web_contents, anchor_view, reason);

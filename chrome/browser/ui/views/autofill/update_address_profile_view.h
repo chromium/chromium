@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/update_address_bubble_controller.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -26,13 +27,15 @@ namespace autofill {
 // Shown after a user submits a form with an address profile that's slightly
 // different from an address profile previously saved.
 class UpdateAddressProfileView : public AddressBubbleBaseView {
+  METADATA_HEADER(UpdateAddressProfileView, AddressBubbleBaseView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);
 
   UpdateAddressProfileView(
-      std::unique_ptr<UpdateAddressBubbleController> controller,
       views::View* anchor_view,
+      std::unique_ptr<UpdateAddressBubbleController> controller,
       content::WebContents* web_contents);
 
   UpdateAddressProfileView(const UpdateAddressProfileView&) = delete;

@@ -330,9 +330,11 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
     return base::Contains(writable_files, path);
   });
 
+  // TODO(crbug.com/376282751): An action ID should be created and used here
+  // when File System Access is migrated to the new page actions framework.
   bubble_ = new FileSystemAccessUsageBubbleView(
-      button_provider->GetAnchorView(PageActionIconType::kFileSystemAccess),
-      web_contents, origin, std::move(usage));
+      button_provider->GetAnchorView(std::nullopt), web_contents, origin,
+      std::move(usage));
 
   bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
       PageActionIconType::kFileSystemAccess));

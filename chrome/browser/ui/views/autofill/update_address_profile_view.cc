@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -164,8 +165,8 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
-    std::unique_ptr<UpdateAddressBubbleController> controller,
     views::View* anchor_view,
+    std::unique_ptr<UpdateAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
@@ -316,6 +317,9 @@ void UpdateAddressProfileView::Hide() {
 
   controller_ = nullptr;
 }
+
+BEGIN_METADATA(UpdateAddressProfileView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UpdateAddressProfileView,

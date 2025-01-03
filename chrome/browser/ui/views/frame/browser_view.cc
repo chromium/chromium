@@ -64,6 +64,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -3074,8 +3075,7 @@ void BrowserView::MaybeShowIOSPasswordPromoBubble(
 // generic promo launch.
 void BrowserView::ShowIOSPasswordPromoBubble() {
   IOSPromoPasswordBubble::ShowBubble(
-      toolbar_button_provider_->GetAnchorView(
-          PageActionIconType::kManagePasswords),
+      toolbar_button_provider_->GetAnchorView(kActionShowPasswordsBubbleOrPage),
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kManagePasswords),
       browser_.get());
@@ -3096,15 +3096,7 @@ BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,
   }
 
   views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled()) {
-    if (PinnedToolbarActionsContainer* container =
-            toolbar()->pinned_toolbar_actions_container();
-        container &&
-        container->IsActionPinnedOrPoppedOut(kActionQrCodeGenerator)) {
-      anchor_view = container->GetButtonFor(kActionQrCodeGenerator);
-    }
-  }
+      toolbar_button_provider()->GetAnchorView(kActionQrCodeGenerator);
 
   auto* bubble = new qrcode_generator::QRCodeGeneratorBubble(
       anchor_view, contents->GetWeakPtr(), std::move(on_closing),
@@ -3119,8 +3111,8 @@ sharing_hub::ScreenshotCapturedBubble*
 BrowserView::ShowScreenshotCapturedBubble(content::WebContents* contents,
                                           const gfx::Image& image) {
   auto* bubble = new sharing_hub::ScreenshotCapturedBubble(
-      toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
-      contents, image, browser_->profile());
+      toolbar_button_provider()->GetAnchorView(std::nullopt), contents, image,
+      browser_->profile());
 
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
@@ -3133,10 +3125,9 @@ SharingDialog* BrowserView::ShowSharingDialog(
   // TODO(crbug.com/40220302): Remove this altogether. This used to
   // be hardcoded to anchor off the shared clipboard bubble, but that bubble is
   // now gone altogether.
-  auto* dialog_view =
-      new SharingDialogView(toolbar_button_provider()->GetAnchorView(
-                                PageActionIconType::kClickToCall),
-                            web_contents, std::move(data));
+  auto* dialog_view = new SharingDialogView(
+      toolbar_button_provider()->GetAnchorView(std::nullopt), web_contents,
+      std::move(data));
 
   views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
 
@@ -3147,15 +3138,7 @@ send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* web_contents) {
   views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled()) {
-    if (PinnedToolbarActionsContainer* container =
-            toolbar()->pinned_toolbar_actions_container();
-        container &&
-        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
-      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
-    }
-  }
+      toolbar_button_provider()->GetAnchorView(kActionSendTabToSelf);
   auto* bubble = new send_tab_to_self::SendTabToSelfDevicePickerBubbleView(
       anchor_view, web_contents);
 
@@ -3170,15 +3153,7 @@ send_tab_to_self::SendTabToSelfBubbleView*
 BrowserView::ShowSendTabToSelfPromoBubble(content::WebContents* web_contents,
                                           bool show_signin_button) {
   views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(std::nullopt);
-  if (features::IsToolbarPinningEnabled()) {
-    if (PinnedToolbarActionsContainer* container =
-            toolbar()->pinned_toolbar_actions_container();
-        container &&
-        container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf)) {
-      anchor_view = container->GetButtonFor(kActionSendTabToSelf);
-    }
-  }
+      toolbar_button_provider()->GetAnchorView(kActionSendTabToSelf);
   auto* bubble = new send_tab_to_self::SendTabToSelfPromoBubbleView(
       anchor_view, web_contents, show_signin_button);
 
@@ -3210,8 +3185,7 @@ void BrowserView::ToggleMultitaskMenu() const {
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
     share::ShareAttempt attempt) {
   auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
-      toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
-      attempt,
+      toolbar_button_provider()->GetAnchorView(std::nullopt), attempt,
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           attempt.web_contents.get()));
   PageActionIconView* icon_view =
@@ -3255,7 +3229,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
       toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kTranslate);
   views::View* anchor_view =
-      toolbar_button_provider()->GetAnchorView(PageActionIconType::kTranslate);
+      toolbar_button_provider()->GetAnchorView(kActionShowTranslate);
   if (features::IsToolbarPinningEnabled() &&
       views::Button::AsButton(anchor_view)) {
     translate_icon = views::Button::AsButton(anchor_view);
@@ -3280,11 +3254,11 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->SetTranslateEnabled(true);
 
   TranslateBubbleController::GetOrCreate(GetActiveWebContents())
-      ->StartPartialTranslate(toolbar_button_provider()->GetAnchorView(
-                                  PageActionIconType::kTranslate),
-                              toolbar_button_provider()->GetPageActionIconView(
-                                  PageActionIconType::kTranslate),
-                              source_language, target_language, text_selection);
+      ->StartPartialTranslate(
+          toolbar_button_provider()->GetAnchorView(kActionShowTranslate),
+          toolbar_button_provider()->GetPageActionIconView(
+              PageActionIconType::kTranslate),
+          source_language, target_language, text_selection);
 }
 
 void BrowserView::ShowOneClickSigninConfirmation(

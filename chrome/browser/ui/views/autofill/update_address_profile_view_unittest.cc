@@ -117,8 +117,8 @@ void UpdateAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetOriginalProfile())
       .WillByDefault(testing::ReturnRef(original_profile()));
 
-  view_ = new UpdateAddressProfileView(std::move(mock_controller_unique),
-                                       anchor_widget_->GetContentsView(),
+  view_ = new UpdateAddressProfileView(anchor_widget_->GetContentsView(),
+                                       std::move(mock_controller_unique),
                                        test_web_contents_.get());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
