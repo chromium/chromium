@@ -15,6 +15,7 @@ import {installMock} from '../../../test_support.js';
 
 suite('DriveModuleV2', () => {
   let handler: TestMock<DriveSuggestionHandlerRemote>;
+  const iconUrl = 'https://example.com/application/vnd.google-apps.spreadsheet';
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -29,42 +30,42 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited last week',
               title: 'Foo',
               id: '123',
-              mimeType: 'application/vnd.google-apps.spreadsheet',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://foo.com'},
             },
             {
               justificationText: 'Edited yesterday',
               title: 'Bar',
               id: '132',
-              mimeType: 'application/vnd.google-apps.document',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://bar.com'},
             },
             {
               justificationText: 'Created today',
               title: 'Baz',
               id: '213',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://baz.com'},
             },
             {
               justificationText: 'Created yesterday',
               title: 'Qux',
               id: '231',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://qux.com'},
             },
             {
               justificationText: 'Edited last week',
               title: 'FooBar',
               id: '312',
-              mimeType: 'application/vnd.google-apps.spreadsheet',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://foo.com'},
             },
             {
               justificationText: 'Edited yesterday',
               title: 'BazQux',
               id: '321',
-              mimeType: 'application/vnd.google-apps.document',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://bar.com'},
             },
           ],
@@ -100,7 +101,7 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          mimeType: 'application/vnd.google-apps.presentation',
+          iconUrl: {url: iconUrl},
           itemUrl: {url: 'https://abc.com'},
         },
       ],
@@ -134,7 +135,7 @@ suite('DriveModuleV2', () => {
               justificationText: 'Edited yesterday',
               title: 'Abc',
               id: '012',
-              mimeType: 'application/vnd.google-apps.presentation',
+              iconUrl: {url: iconUrl},
               itemUrl: {url: 'https://abc.com'},
             },
           ],
@@ -167,7 +168,7 @@ suite('DriveModuleV2', () => {
           justificationText: '',
           title: '',
           id: '',
-          mimeType: '',
+          iconUrl: {url: ''},
           itemUrl: {url: ''},
         },
       ],
@@ -209,7 +210,7 @@ suite('DriveModuleV2', () => {
           justificationText: 'Edited yesterday',
           title: 'Abc',
           id: '012',
-          mimeType: 'application/vnd.google-apps.presentation',
+          iconUrl: {url: iconUrl},
           itemUrl: {url: 'https://abc.com'},
         },
       ],
