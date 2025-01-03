@@ -736,10 +736,10 @@ TEST_F(TestWithBrowserView, LoadingAnimationNotRenderedWhenWindowHidden) {
   browser_view()->frame()->Show();
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
 
   browser_view()->frame()->Hide();
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
-  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
 }
