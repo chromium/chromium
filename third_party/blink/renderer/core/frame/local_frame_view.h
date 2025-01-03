@@ -158,6 +158,20 @@ class CORE_EXPORT LocalFrameView final
     virtual void DidFinishLayout() {}
   };
 
+  // Enables forcing lifecycle updates for throttled frames.
+  class CORE_EXPORT DisallowThrottlingScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DisallowThrottlingScope(const LocalFrameView& frame_view);
+    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
+    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
+    ~DisallowThrottlingScope() = default;
+
+   private:
+    base::AutoReset<bool> value_;
+  };
+
   explicit LocalFrameView(LocalFrame&);
   LocalFrameView(LocalFrame&, const gfx::Size& initial_size);
   ~LocalFrameView() override;
@@ -871,19 +885,6 @@ class CORE_EXPORT LocalFrameView final
     AllowThrottlingScope(const AllowThrottlingScope&) = delete;
     AllowThrottlingScope& operator=(const AllowThrottlingScope&) = delete;
     ~AllowThrottlingScope() = default;
-
-   private:
-    base::AutoReset<bool> value_;
-  };
-
-  class DisallowThrottlingScope {
-    STACK_ALLOCATED();
-
-   public:
-    explicit DisallowThrottlingScope(const LocalFrameView& frame_view);
-    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
-    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
-    ~DisallowThrottlingScope() = default;
 
    private:
     base::AutoReset<bool> value_;

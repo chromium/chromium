@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -421,6 +422,30 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentSync()
   auto& document = *frame->GetDocument();
   mojom::blink::AIPageContentPtr page_content =
       mojom::blink::AIPageContent::New();
+
+  // Disallow throttling so content from offscreen frames is updated.
+  LocalFrameView::DisallowThrottlingScope disallow_throttling(*document.View());
+
+  // Force activatable locks so content which is accessible via find-in-page is
+  // styled/laid out and included when walking the tree below.
+  //
+  // TODO(crbug.com/387355768): Consider limiting the lock to nodes with
+  // activation reason of FindInPage.
+  std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+      forced_activatable_locks;
+  forced_activatable_locks.emplace_back(
+      document.GetDisplayLockDocumentState().GetScopedForceActivatableLocks());
+  document.View()->ForAllChildLocalFrameViews([&](LocalFrameView& frame_view) {
+    if (!frame_view.GetFrame().GetDocument()) {
+      return;
+    }
+
+    forced_activatable_locks.emplace_back(
+        frame_view.GetFrame()
+            .GetDocument()
+            ->GetDisplayLockDocumentState()
+            .GetScopedForceActivatableLocks());
+  });
 
   document.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kUnknown);

@@ -193,6 +193,17 @@ class AIPageContentAgentTest : public testing::Test {
     return table_cell;
   }
 
+  void CheckAlmostEquals(const gfx::Point& actual, const gfx::Point& expected) {
+    // Allow 1px difference for rounding.
+    const int kTolerance = 1;
+    EXPECT_LE(abs(actual.x() - expected.x()), kTolerance)
+        << "actual : " << actual.ToString()
+        << ", expected: " << expected.ToString();
+    EXPECT_LE(abs(actual.y() - expected.y()), kTolerance)
+        << "actual : " << actual.ToString()
+        << ", expected: " << expected.ToString();
+  }
+
  protected:
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
@@ -1307,6 +1318,211 @@ TEST_F(AIPageContentAgentTest, TableWithAnonymousCells) {
 
   EXPECT_EQ(inner_table_cell.children_nodes.size(), 1u);
   CheckTextNode(*inner_table_cell.children_nodes[0], "BEFORE");
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityHidden) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    div {"
+      "      content-visibility: hidden"
+      "    }"
+      "  </style>"
+      "  <div>text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_TRUE(root.children_nodes.empty());
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #foo {"
+      "      position: relative;"
+      "      top: 8000px;"
+      "      content-visibility: auto"
+      "    }"
+      "  </style>"
+      "  <div id=foo><div>far text</div></div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& text_node = *root.children_nodes[0];
+  CheckTextNode(text_node, "far text");
+
+  const auto& attributes = *text_node.content_attributes;
+  EXPECT_EQ(attributes.dom_node_ids.size(), 1u);
+  EXPECT_TRUE(attributes.common_ancestor_dom_node_id.has_value());
+
+  EXPECT_TRUE(attributes.geometry);
+  EXPECT_FALSE(attributes.geometry->outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(attributes.geometry->visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, HiddenUntilFound) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      margin: 0; font-size: 100px;"
+      "    }"
+      "  </style>"
+      "  <header hidden=until-found>hidden text</header><div>visible text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& hidden_container = *root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRole(hidden_container,
+                     mojom::blink::AIPageContentAnnotatedRole::kHeader);
+  EXPECT_EQ(hidden_container.children_nodes.size(), 1u);
+
+  // The hidden container continues to have an empty layout size even when
+  // display locks are forced.
+  ASSERT_TRUE(hidden_container.content_attributes->geometry);
+  const auto& hidden_container_geometry =
+      *hidden_container.content_attributes->geometry;
+  EXPECT_TRUE(hidden_container_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(hidden_container_geometry.visible_bounding_box.IsEmpty());
+
+  const auto& hidden_text_node = *hidden_container.children_nodes[0];
+  CheckTextNode(hidden_text_node, "hidden text");
+  ASSERT_TRUE(hidden_text_node.content_attributes->geometry);
+  const auto& hidden_text_geometry =
+      *hidden_text_node.content_attributes->geometry;
+  CheckAlmostEquals(hidden_text_geometry.outer_bounding_box.origin(),
+                    gfx::Point(0, 0));
+  EXPECT_FALSE(hidden_text_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(hidden_text_geometry.visible_bounding_box.IsEmpty());
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "visible text");
+  EXPECT_TRUE(visible_text_node.content_attributes->geometry);
+  const auto& visible_text_geometry =
+      *visible_text_node.content_attributes->geometry;
+  CheckAlmostEquals(visible_text_geometry.outer_bounding_box.origin(),
+                    gfx::Point(0, 0));
+  EXPECT_FALSE(visible_text_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_EQ(visible_text_geometry.outer_bounding_box,
+            visible_text_geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, HiddenUntilFoundInsideIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      margin: 0;"
+      "      font-size: 100px;"
+      "    }"
+      "  </style>"
+      "  <iframe srcdoc='<div hidden=until-found>hidden "
+      "text</div>'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe_node = *root.children_nodes[0];
+  EXPECT_EQ(iframe_node.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_EQ(iframe_node.children_nodes.size(), 1u);
+  const auto& iframe_root = *iframe_node.children_nodes[0];
+
+  const auto& hidden_text_node = *iframe_root.children_nodes[0];
+  CheckTextNode(hidden_text_node, "hidden text");
+  ASSERT_TRUE(hidden_text_node.content_attributes->geometry);
+  const auto& hidden_text_geometry =
+      *hidden_text_node.content_attributes->geometry;
+  EXPECT_FALSE(hidden_text_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(hidden_text_geometry.visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    body {"
+      "      margin: 0;"
+      "      font-size: 100px;"
+      "    }"
+      "  </style>"
+      "  <iframe hidden=until-found srcdoc='<div>hidden "
+      "text</div>'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = agent->GetAIPageContentSync();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe_node = *root.children_nodes[0];
+  EXPECT_EQ(iframe_node.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_EQ(iframe_node.children_nodes.size(), 1u);
+  const auto& iframe_root = *iframe_node.children_nodes[0];
+
+  const auto& hidden_text_node = *iframe_root.children_nodes[0];
+  CheckTextNode(hidden_text_node, "hidden text");
+  ASSERT_TRUE(hidden_text_node.content_attributes->geometry);
+  const auto& hidden_text_geometry =
+      *hidden_text_node.content_attributes->geometry;
+  EXPECT_FALSE(hidden_text_geometry.outer_bounding_box.IsEmpty());
+  EXPECT_TRUE(hidden_text_geometry.visible_bounding_box.IsEmpty());
 }
 
 }  // namespace
