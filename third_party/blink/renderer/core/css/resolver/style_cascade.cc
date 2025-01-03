@@ -1645,15 +1645,18 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
-  AtomicString attribute_name = ConsumeVariableName(stream);
+  AtomicString local_name = ConsumeVariableName(stream);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();
   }
   DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
 
-  const String& attribute_value =
-      state_.GetUltimateOriginatingElementOrSelf().getAttribute(attribute_name);
+  Element& element = state_.GetUltimateOriginatingElementOrSelf();
+
+  // TODO(crbug.com/387281256): Support namespaces.
+  const String& attribute_value = element.getAttributeNS(
+      /*namespace_uri=*/g_null_atom, element.LowercaseIfNecessary(local_name));
 
   const CSSValue* substitution_value =
       attribute_value.IsNull() ? nullptr
