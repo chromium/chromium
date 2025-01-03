@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsCompat.Type;
 
 import org.chromium.components.browser_ui.edge_to_edge.BaseSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.R;
@@ -91,24 +92,29 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
-        Insets statusBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+        Insets statusBarInsets = windowInsets.getInsets(Type.statusBars());
         mView.setStatusBarInsets(statusBarInsets);
 
-        Insets navBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
         mView.setNavigationBarInsets(navBarInsets);
+
+        Insets cutout = windowInsets.getInsets(Type.displayCutout());
+        mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
+        mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
 
         // Currently the EdgeToEdgeLayout cannot color the caption bar, but it should add padding if
         // necessary to account for the captionBar insets (e.g. on some OEMs).
         // See https://crbug.com/377620837
-        Insets overallInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+        Insets overallInsets = windowInsets.getInsets(Type.systemBars() + Type.displayCutout());
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
         // Consume the insets since the root view already adjusted their paddings.
         return new WindowInsetsCompat.Builder(windowInsets)
-                .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
-                .setInsets(WindowInsetsCompat.Type.captionBar(), Insets.NONE)
+                .setInsets(Type.statusBars(), Insets.NONE)
+                .setInsets(Type.navigationBars(), Insets.NONE)
+                .setInsets(Type.captionBar(), Insets.NONE)
+                .setInsets(Type.displayCutout(), Insets.NONE)
                 .build();
     }
 
