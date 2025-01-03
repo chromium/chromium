@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -206,6 +207,21 @@ TEST_F(AddressFormattingTest,
   EXPECT_THAT(GetProfileDifferenceForUi(profile1, profile2, "en-US"),
               ElementsAre(ProfileValueDifference{NAME_FULL, u"John H. Doe",
                                                  u"John Doe"}));
+}
+
+TEST_F(AddressFormattingTest,
+       GetEnvelopeStyleAddressHasDiffereceInUiWhenAlternativeFullnameDiffers) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.SetInfo(ALTERNATIVE_FULL_NAME, u"", "ja-JP");
+
+  AutofillProfile profile2 = profile1;
+  profile2.SetInfo(ALTERNATIVE_FULL_NAME, u"やまもと あおい", "ja-JP");
+
+  EXPECT_THAT(GetProfileDifferenceForUi(profile1, profile2, "ja-JP"),
+              ElementsAre(ProfileValueDifference{ALTERNATIVE_FULL_NAME, u"",
+                                                 u"やまもと あおい"}));
 }
 
 TEST_F(AddressFormattingTest,

@@ -39,6 +39,7 @@ constexpr int kValuesLabelWidth = 190;
 const gfx::VectorIcon& GetVectorIconForType(FieldType type) {
   switch (type) {
     case NAME_FULL:
+    case ALTERNATIVE_FULL_NAME:
       return kAccountCircleIcon;
     case ADDRESS_HOME_ADDRESS:
       return vector_icons::kLocationOnIcon;
