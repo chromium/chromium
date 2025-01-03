@@ -624,26 +624,11 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 #endif
   }
 
-  // Populate the output mailbox and callback.
+  // Populate the output SharedImage and callback.
   {
     if (client_si) {
       *client_si = color_buffer_for_mailbox->shared_image;
     }
-
-    *out_resource = viz::TransferableResource::MakeGpu(
-        color_buffer_for_mailbox->shared_image,
-        color_buffer_for_mailbox->shared_image->GetTextureTarget(),
-        color_buffer_for_mailbox->produce_sync_token,
-        color_buffer_for_mailbox->shared_image->size(),
-        color_buffer_for_mailbox->shared_image->format(),
-        color_buffer_for_mailbox->shared_image->usage().Has(
-            gpu::SHARED_IMAGE_USAGE_SCANOUT),
-        viz::TransferableResource::ResourceSource::kDrawingBuffer);
-    out_resource->color_space =
-        color_buffer_for_mailbox->shared_image->color_space();
-    out_resource->hdr_metadata = hdr_metadata_;
-    out_resource->origin =
-        color_buffer_for_mailbox->shared_image->surface_origin();
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running).
@@ -660,6 +645,21 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
   if (preserve_drawing_buffer_ == kDiscard) {
     SetBufferClearNeeded(true);
   }
+
+  // Populate the output TransferableResource.
+  *out_resource = viz::TransferableResource::MakeGpu(
+      front_color_buffer_->shared_image,
+      front_color_buffer_->shared_image->GetTextureTarget(),
+      front_color_buffer_->produce_sync_token,
+      front_color_buffer_->shared_image->size(),
+      front_color_buffer_->shared_image->format(),
+      front_color_buffer_->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT),
+      viz::TransferableResource::ResourceSource::kDrawingBuffer);
+  out_resource->color_space = front_color_buffer_->shared_image->color_space();
+  out_resource->hdr_metadata = hdr_metadata_;
+  out_resource->origin = front_color_buffer_->shared_image->surface_origin();
+
   return true;
 }
 
