@@ -2,6 +2,10 @@
 <grit-part>
 
 <if expr="is_android">
+  <message name="IDS_FACILITATED_PAYMENTS_GOOGLE_PAY" desc="Name of the Google product that stores user addresses and payment accounts. It should not be translated." formatter_data="android_java">
+    Google Pay
+  </message>
+
   <!--Ewallet and Pix payment method settings pages-->
   <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used. 'eWallet' is a payment system that should not be translated." formatter_data="android_java">
     Pay with eWallet

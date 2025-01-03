@@ -19,7 +19,9 @@ found in the LICENSE file.
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
         app:srcCompat="@drawable/google_pay"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="yes"
+        android:contentDescription="@string/facilitated_payments_google_pay"
+        android:focusable="true" />
 
     <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
