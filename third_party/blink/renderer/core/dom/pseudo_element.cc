@@ -417,7 +417,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   context.counters_context.EnterObject(*layout_object);
 
   // This is to ensure that bypassing the CanHaveGeneratedChildren() check in
-  // LayoutTreeBuilderForElement::ShouldCreateLayoutObject() does not result in
+  // LayoutTreeBuilderForElement::CreateLayoutObject() does not result in
   // the backdrop pseudo element's layout object becoming the child of a layout
   // object that doesn't allow children.
   DCHECK(layout_object->Parent());
