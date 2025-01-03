@@ -4619,7 +4619,6 @@ enum WebFeature {
   kInjectionMitigatedContextSubFrame = 5233,
   kInjectionMitigatedContextMainFrame = 5234,
   kCanvasTextDirectionConflict = 5235,
-  kTopicsAPIImg = 5236,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

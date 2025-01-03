@@ -4297,14 +4297,6 @@
       public: true,
       status: "stable",
     },
-    {
-      // This feature allows calling the Topics API via an image
-      // attribute.
-      name: "TopicsImgAPI",
-      base_feature: "none",
-      public: true,
-      status: "experimental",
-    },
     // This is a killswitch for the behavior where popover.showPopover() and
     // dialog.showModal() throw DOM exceptions if the document isn't active.
     // This landed in M132, and can be removed in M134.

@@ -692,7 +692,6 @@ html element img
     property alt
     property attributionSrc
     property border
-    property browsingTopics
     property complete
     property crossOrigin
     property currentSrc

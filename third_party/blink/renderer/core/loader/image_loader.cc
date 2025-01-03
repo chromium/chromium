@@ -507,14 +507,6 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
           !SecurityOrigin::Create(url)->IsOpaque();
       resource_request.SetSharedStorageWritableOptedIn(
           shared_storage_writable_opted_in);
-      if (GetElement()->FastHasAttribute(html_names::kBrowsingtopicsAttr) &&
-          RuntimeEnabledFeatures::TopicsAPIEnabled(
-              GetElement()->GetExecutionContext()) &&
-          GetElement()->GetExecutionContext()->IsSecureContext()) {
-        resource_request.SetBrowsingTopics(true);
-        UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIImg);
-        UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIAll);
-      }
     }
 
     bool page_is_being_dismissed =

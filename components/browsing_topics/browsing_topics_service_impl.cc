@@ -270,14 +270,7 @@ enum class BrowsingTopicsApiActionType {
   // <iframe src=[url] browsingtopics> request.
   kObserveViaIframeAttributeApi = 5,
 
-  // Get topics via <img src=[url] browsingtopics>.
-  kGetViaImgAttributeApi = 6,
-
-  // Observe topics via the "Sec-Browsing-Topics: ?1" response header for the
-  // <img src=[url] browsingtopics> request.
-  kObserveViaImgAttributeApi = 7,
-
-  kMaxValue = kObserveViaImgAttributeApi,
+  kMaxValue = kObserveViaIframeAttributeApi,
 };
 
 void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
@@ -317,24 +310,6 @@ void RecordBrowsingTopicsApiActionTypeMetrics(ApiCallerSource caller_source,
     base::UmaHistogramEnumeration(
         kBrowsingTopicsApiActionTypeHistogramId,
         BrowsingTopicsApiActionType::kObserveViaIframeAttributeApi);
-
-    return;
-  }
-
-  if (caller_source == ApiCallerSource::kImgAttribute) {
-    if (get_topics) {
-      DCHECK(!observe);
-
-      base::UmaHistogramEnumeration(
-          kBrowsingTopicsApiActionTypeHistogramId,
-          BrowsingTopicsApiActionType::kGetViaImgAttributeApi);
-      return;
-    }
-
-    DCHECK(observe);
-    base::UmaHistogramEnumeration(
-        kBrowsingTopicsApiActionTypeHistogramId,
-        BrowsingTopicsApiActionType::kObserveViaImgAttributeApi);
 
     return;
   }

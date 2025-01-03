@@ -140,12 +140,6 @@ Resource* PreloadRequest::Start(Document* document) {
     UseCounter::Count(document, WebFeature::kSharedStorageAPI_Image_Attribute);
   }
 
-  bool browsing_topics =
-      browsing_topics_eligible_ && RuntimeEnabledFeatures::TopicsAPIEnabled() &&
-      document->domWindow()->IsSecureContext() &&
-      !document->domWindow()->GetSecurityOrigin()->IsOpaque();
-  resource_request.SetBrowsingTopics(browsing_topics);
-
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);

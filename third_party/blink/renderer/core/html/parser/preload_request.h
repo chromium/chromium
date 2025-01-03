@@ -159,14 +159,6 @@ class CORE_EXPORT PreloadRequest {
     shared_storage_writable_opted_in_ = opted_in;
   }
 
-  // Set whether the preload request is eligible for the Browsing Topics API.
-  //
-  // See https://github.com/patcg-individual-drafts/topics/blob/main/README.md
-  // for the latest version of the Topics API explainer.
-  void SetBrowsingTopicsEligible(bool flag) {
-    browsing_topics_eligible_ = flag;
-  }
-
   bool IsPotentiallyLCPElement() const { return is_potentially_lcp_element_; }
 
   bool IsPotentiallyLCPInfluencer() const {
@@ -225,7 +217,6 @@ class CORE_EXPORT PreloadRequest {
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
   bool shared_storage_writable_opted_in_ = false;
-  bool browsing_topics_eligible_ = false;
 };
 
 typedef Vector<std::unique_ptr<PreloadRequest>> PreloadRequestStream;

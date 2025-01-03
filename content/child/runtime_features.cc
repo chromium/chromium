@@ -395,9 +395,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"TopicsDocumentAPI",
            raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {"TopicsImgAPI", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"TopicsImgAPI", raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
           {"TouchTextEditingRedesign",
            raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
@@ -586,7 +583,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kBrowsingTopics.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsAPI(false);
     WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
-    WebRuntimeFeatures::EnableTopicsImgAPI(false);
   } else {
     if (!base::FeatureList::IsEnabled(
             blink::features::kBrowsingTopicsDocumentAPI)) {
