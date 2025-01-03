@@ -1558,6 +1558,10 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"signOutOfChrome", IDS_PROFILE_MENU_SIGN_OUT},
       {"accountAwareSigninButtonLabel",
        IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL},
+      {"accountAwareRowTitle",
+       IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE},
+      {"accountAwareRowSubtitle",
+       IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

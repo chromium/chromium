@@ -256,6 +256,15 @@ export class SettingsSyncAccountControlElement extends
         email;
   }
 
+  // Determines whether the subtitle should show account specific information or
+  // not. This matters because showing account specific information needs to be
+  // trimmed using ellipsis for potentially long texts, whereas fixed
+  // information needs to be fully displayed regardless of the length.
+  private shouldShowSubtitleWithAccountInfoText_() {
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
+  }
+
   private getAccountAwareSigninButtonLabel_(
       accountAwareSigninButtonLabel: string, givenName: string): string {
     return loadTimeData.substituteString(
@@ -324,7 +333,12 @@ export class SettingsSyncAccountControlElement extends
   private getAvatarRowTitle_(
       accountName: string, syncErrorLabel: string,
       syncPasswordsOnlyErrorLabel: string, authErrorLabel: string,
-      disabledLabel: string): string {
+      disabledLabel: string, webOnlySignedInAccountRowTitle: string): string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return webOnlySignedInAccountRowTitle;
+    }
+
     if (this.syncStatus.disabled) {
       return disabledLabel;
     }
