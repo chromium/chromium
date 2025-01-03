@@ -480,6 +480,30 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     @Override
+    public boolean shouldUpdateOffsetsWhenConstraintsChange() {
+        // With BCIV enabled, scrolls will not update the offsets in the browser's property models
+        // anymore. The browser compositor frame will always show the controls in their fully
+        // visible state. When the controls become locked, their offset tags will be removed, which
+        // means the offset tag values won't be applied anymore, which means the controls will be
+        // drawn at their fully visible positions. If the controls were not at their fully visible
+        // positions before their offset tags were removed, then we need to update the property
+        // models with the correct offsets to avoid visible jumps.
+        // More specifically, there are two cases where this happens when the controls become locked
+        // after being scrolled off screen:
+        // - If we transition to a HIDDEN state, then the renderer sees the controls are already not
+        // visible, so it will not notify the browser to hide them. So the browser needs to update
+        // the offsets to hide the controls.
+        // - If we transition to a SHOWN state, the browser also needs to update the offsets,
+        // otherwise the animation to show the controls will start with a frame where the controls
+        // are fully visible.
+        @BrowserControlsState
+        int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
+        return (constraints == BrowserControlsState.HIDDEN
+                        || constraints == BrowserControlsState.SHOWN)
+                && getContentOffset() == getTopControlsMinHeight();
+    }
+
+    @Override
     public int getContentOffset() {
         return mRendererTopContentOffset;
     }

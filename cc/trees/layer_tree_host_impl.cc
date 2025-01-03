@@ -2653,6 +2653,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
   metadata.has_transparent_background =
       frame->render_passes.back()->has_transparent_background;
+  metadata.has_offset_tag = browser_controls_offset_manager_->HasOffsetTag();
 #endif
 
   bool allocate_new_local_surface_id = false;
@@ -2698,21 +2699,44 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         last_draw_render_frame_metadata_->has_transparent_background !=
             metadata.has_transparent_background;
 
-    if (!features::IsBrowserControlsInVizEnabled()) {
+    if (features::IsBrowserControlsInVizEnabled()) {
+      // When the browser controls become locked, the browser will update the
+      // offset tags, and also update the controls' offsets if they don't match
+      // the current renderer scroll position. These updates result in a new
+      // renderer frame, but sometimes it gets drawn before the browser frame
+      // with the updated offsets arrives, which causes the controls to jump, so
+      // we need a new surface id here to sync the updates.
+      allocate_new_local_surface_id |=
+          (last_draw_render_frame_metadata_->has_offset_tag &&
+           !metadata.has_offset_tag);
+
+      // If BCIV is enabled but there's no offset tags, it means the controls
+      // aren't scrollable, and any movement of the controls is the result of
+      // the browser updating their offsets and submitting a new browser frame.
+      // We need a new surface id in this case, as this is identical to the
+      // situation without BCIV.
+      if (!browser_controls_offset_manager_->HasOffsetTag()) {
+        allocate_new_local_surface_id |=
+            last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+                metadata.top_controls_shown_ratio ||
+            last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+                metadata.bottom_controls_shown_ratio;
+      } else if (!features::IsBcivBottomControlsEnabled()) {
+        // When AndroidBrowserControlsInViz is enabled, don't always use
+        // bottom_controls_shown_ratio to determine if surface sync is needed,
+        // because it changes even when there are no bottom controls.
+        bool bottom_controls_exist =
+            metadata.bottom_controls_height != 0 ||
+            last_draw_render_frame_metadata_->bottom_controls_height != 0;
+        allocate_new_local_surface_id |=
+            bottom_controls_exist &&
+            last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+                metadata.bottom_controls_shown_ratio;
+      }
+    } else {
       allocate_new_local_surface_id |=
           last_draw_render_frame_metadata_->top_controls_shown_ratio !=
               metadata.top_controls_shown_ratio ||
-          last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-              metadata.bottom_controls_shown_ratio;
-    } else if (!features::IsBcivBottomControlsEnabled()) {
-      // When AndroidBrowserControlsInViz is enabled, don't always use
-      // bottom_controls_shown_ratio to determine if surface sync is needed,
-      // because it changes even when there are no bottom controls.
-      bool bottom_controls_exist =
-          metadata.bottom_controls_height != 0 ||
-          last_draw_render_frame_metadata_->bottom_controls_height != 0;
-      allocate_new_local_surface_id |=
-          bottom_controls_exist &&
           last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
               metadata.bottom_controls_shown_ratio;
     }
