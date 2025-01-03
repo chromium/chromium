@@ -116,14 +116,9 @@ constexpr char kOtherDomainHint[] = "other_domain@corp.com";
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
-constexpr char kAccountLabelNoMatchMessage[] =
-    "Accounts were received, but none matched the label.";
-
-constexpr char kLoginHintNoMatchMessage[] =
-    "Accounts were received, but none matched the loginHint.";
-
-constexpr char kDomainHintNoMatchMessage[] =
-    "Accounts were received, but none matched the domainHint.";
+constexpr char kFilterNoMatchMessage[] =
+    "Accounts were received, but none matched the login hint, domain hint, "
+    "and/or account labels provided.";
 
 static const std::vector<std::string> kDomainHintVector = {kDomainHint};
 static const std::vector<std::string> kLabelVector = {"label"};
@@ -5373,7 +5368,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kAccountLabelNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5467,7 +5462,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5538,7 +5533,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kLoginHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5611,7 +5606,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kDomainHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5635,7 +5630,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kDomainHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -5663,7 +5658,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kDomainHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   RunAuthTest(parameters, expectations, kConfigurationValid);
@@ -5758,7 +5753,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kAccountsListEmpty,
-      {kDomainHintNoMatchMessage},
+      {kFilterNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;

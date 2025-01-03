@@ -469,7 +469,7 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
 // login to an account. These accounts are shown greyed out.
 BASE_FEATURE(kFedCmShowFilteredAccounts,
              "FedCmShowFilteredAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
