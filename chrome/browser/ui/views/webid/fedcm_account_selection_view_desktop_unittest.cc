@@ -24,6 +24,8 @@
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "url/gurl.h"
 
+namespace webid {
+
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using TokenError = content::IdentityCredentialTokenError;
@@ -2615,3 +2617,5 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
   CheckForSampleAndReset(
       FedCmAccountSelectionView::DisclosureDialogResult::kDestroy);
 }
+
+}  // namespace webid

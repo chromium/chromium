@@ -21,6 +21,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 
+namespace webid {
+
 // TODO(https://crbug.com/378939142): This is a misuse of DialogBrowserTest.
 // DialogBrowserTest exists to test the visual properties of dialogs. Instead
 // use FedCmBrowserTest below.
@@ -461,3 +463,5 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
     Reset();
   }
 }
+
+}  // namespace webid

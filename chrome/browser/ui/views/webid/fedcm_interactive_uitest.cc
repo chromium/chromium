@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 
+namespace webid {
 namespace {
 
 class FedCmCUJTest : public InteractiveBrowserTest {
@@ -95,3 +96,4 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
 }
 
 }  // namespace
+}  // namespace webid

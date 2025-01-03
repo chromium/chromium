@@ -17,16 +17,13 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
-class AccountSelectionViewBase;
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
+
+namespace webid {
+
+class AccountSelectionViewBase;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
@@ -595,5 +592,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_

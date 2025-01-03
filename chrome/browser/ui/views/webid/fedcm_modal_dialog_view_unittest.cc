@@ -12,6 +12,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
 
+namespace webid {
 class FedCmModalDialogView;
 
 namespace {
@@ -324,3 +325,5 @@ TEST_F(FedCmModalDialogViewTest, UseOtherAccountPopupInteractionMetric) {
   CheckForSampleAndReset(FedCmModalDialogView::PopupInteraction::
                              kLosesFocusAndPopupWindowDestroyed);
 }
+
+}  // namespace webid

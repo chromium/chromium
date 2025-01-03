@@ -29,18 +29,15 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
-using DismissReason = content::IdentityRequestDialogController::DismissReason;
-using SheetType = AccountSelectionView::SheetType;
-
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
   // TODO(crbug.com/348673144): Decide whether to keep circle cropping IDP
   // icons.
   return (rp_mode == blink::mojom::RpMode::kActive
-              ? fedcm::kModalIdpIconSize
-              : fedcm::kBubbleIdpIconSize) /
-         FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
+              ? webid::kModalIdpIconSize
+              : webid::kBubbleIdpIconSize) /
+         webid::FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
@@ -52,6 +49,11 @@ int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
       ui::GetScaleForMaxSupportedResourceScaleFactor();
   return round(GetBrandIconMinimumSize(rp_mode) * max_supported_scale);
 }
+
+namespace webid {
+
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
+using SheetType = AccountSelectionView::SheetType;
 
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
@@ -822,9 +824,9 @@ bool FedCmAccountSelectionView::CanFitInWebContents() {
   // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
   // to the bubble widget.
   return preferred_bubble_size.width() <
-             (web_contents_size.width() - fedcm::kRightMargin) &&
+             (web_contents_size.width() - kRightMargin) &&
          preferred_bubble_size.height() <
-             (web_contents_size.height() - fedcm::kTopMargin);
+             (web_contents_size.height() - kTopMargin);
 }
 
 void FedCmAccountSelectionView::UpdateDialogPosition() {
@@ -1247,3 +1249,5 @@ void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
 }
+
+}  // namespace webid

@@ -252,7 +252,7 @@ bool IdentityDialogController::TrySetAccountView() {
                   BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return false;
   }
-  account_view_ = std::make_unique<FedCmAccountSelectionView>(this, tab);
+  account_view_ = std::make_unique<webid::FedCmAccountSelectionView>(this, tab);
 #endif
   return true;
 }

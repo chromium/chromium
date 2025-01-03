@@ -45,6 +45,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
+namespace webid {
+
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
@@ -451,7 +453,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
     EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -485,7 +487,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
               expected_subtitle);
     ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
     EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void SetUp() override {
@@ -1476,3 +1478,5 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
   CheckUseOtherAccount(accounts, index);
 }
+
+}  //  namespace webid

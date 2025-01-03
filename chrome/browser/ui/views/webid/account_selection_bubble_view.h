@@ -17,17 +17,14 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
 namespace views {
 class Checkbox;
 class ImageButton;
 class Label;
 class MdTextButton;
 }  // namespace views
+
+namespace webid {
 
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
@@ -175,5 +172,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionBubbleView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_

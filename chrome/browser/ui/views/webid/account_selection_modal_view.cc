@@ -64,6 +64,8 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
+namespace webid {
+
 // The size of the spacing used between most children elements.
 constexpr int kBetweenChildSpacing = 4;
 // The size of the vertical padding for most elements in the dialog.
@@ -158,7 +160,7 @@ AccountSelectionModalView::AccountSelectionModalView(
       kBetweenChildSpacing));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  title_ = webid::GetTitle(rp_for_display_, idp_title, rp_context);
+  title_ = GetTitle(rp_for_display_, idp_title, rp_context);
   SetTitle(title_);
 
   header_view_ = AddChildView(CreateHeader());
@@ -181,10 +183,10 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
   std::unique_ptr<views::View> placeholder_account_icon =
       std::make_unique<views::View>();
   placeholder_account_icon->SetPreferredSize(
-      gfx::Size(fedcm::kModalAvatarSize, fedcm::kModalAvatarSize));
+      gfx::Size(kModalAvatarSize, kModalAvatarSize));
   placeholder_account_icon->SizeToPreferredSize();
-  placeholder_account_icon->SetBackground(views::CreateRoundedRectBackground(
-      kPlaceholderColor, fedcm::kModalAvatarSize));
+  placeholder_account_icon->SetBackground(
+      views::CreateRoundedRectBackground(kPlaceholderColor, kModalAvatarSize));
 
   constexpr int kPlaceholderAccountRowPadding = 16;
   auto row = std::make_unique<views::View>();
@@ -192,8 +194,8 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(
           /*vertical=*/kPlaceholderAccountRowPadding,
-          /*horizontal=*/kDialogMargin + fedcm::kModalHorizontalSpacing),
-      /*between_child_spacing=*/fedcm::kModalHorizontalSpacing));
+          /*horizontal=*/kDialogMargin + kModalHorizontalSpacing),
+      /*between_child_spacing=*/kModalHorizontalSpacing));
   row->AddChildView(std::move(placeholder_account_icon));
 
   constexpr int kPlaceholderVerticalSpacing = 2;
@@ -398,7 +400,7 @@ void AccountSelectionModalView::ShowAccounts(
     ConfigureBrandImageView(idp_brand_icon_, idp_brand_icon_url);
   } else {
     idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kWebidGlobeIcon, ui::kColorIconSecondary, fedcm::kModalIdpIconSize));
+        kWebidGlobeIcon, ui::kColorIconSecondary, kModalIdpIconSize));
   }
   idp_brand_icon_->SetVisible(/*visible=*/true);
 
@@ -447,8 +449,8 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // This might change if we choose to integrate auto re-authn with button mode.
   CHECK(owner_->GetDialogWidget());
 
-  webid::SendAccessibilityEvent(
-      GetWidget(), l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+  SendAccessibilityEvent(GetWidget(),
+                         l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
   // Disable account chooser.
   CHECK(account_chooser_);
@@ -633,7 +635,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
         CreateDisclosureLabel(*account->identity_provider);
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        /*top=*/fedcm::kVerticalSpacing, /*left=*/0, /*bottom=*/0,
+        /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0,
         /*right=*/0)));
     // Announce immediately if the view is showing.
     if (GetWidget()->IsVisible()) {
@@ -725,7 +727,7 @@ AccountSelectionModalView::CreateSpinnerIconView() {
   std::unique_ptr<views::Throbber> header_icon_spinner =
       std::make_unique<views::Throbber>();
   header_icon_spinner->SetPreferredSize(
-      gfx::Size(fedcm::kModalIconSpinnerSize, fedcm::kModalIconSpinnerSize));
+      gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
   header_icon_spinner->SizeToPreferredSize();
   header_icon_spinner->Start();
   header_icon_spinner_ =
@@ -747,10 +749,10 @@ AccountSelectionModalView::CreateIdpIconView() {
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          fedcm::kModalIdpIconSize, /*should_circle_crop=*/true,
+          kModalIdpIconSize, /*should_circle_crop=*/true,
           /*background_color=*/std::nullopt, on_image_set);
   idp_brand_icon_image_view->SetImageSize(
-      gfx::Size(fedcm::kModalIdpIconSize, fedcm::kModalIdpIconSize));
+      gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/false);
 
   // Put IDP icon into a BoxLayout container so that it can be stacked on top of
@@ -778,29 +780,29 @@ AccountSelectionModalView::CreateCombinedIconsView() {
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          fedcm::kModalCombinedIconSize, /*should_circle_crop=*/true,
+          kModalCombinedIconSize, /*should_circle_crop=*/true,
           /*background_color=*/std::nullopt, on_image_set);
   combined_icons_idp_brand_icon_ = idp_brand_icon_image_view.get();
   idp_brand_icon_image_view->SetImageSize(
-      gfx::Size(fedcm::kModalCombinedIconSize, fedcm::kModalCombinedIconSize));
+      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/true);
 
   // Create arrow icon image view.
   std::unique_ptr<views::ImageView> arrow_icon_image_view =
       std::make_unique<views::ImageView>();
   arrow_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      kWebidArrowIcon, ui::kColorIconSecondary, fedcm::kModalCombinedIconSize));
+      kWebidArrowIcon, ui::kColorIconSecondary, kModalCombinedIconSize));
 
   // Create RP brand icon image view.
   std::unique_ptr<BrandIconImageView> rp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          fedcm::kModalCombinedIconSize, /*should_circle_crop=*/true,
+          kModalCombinedIconSize, /*should_circle_crop=*/true,
           /*background_color=*/std::nullopt, on_image_set);
   combined_icons_rp_brand_icon_ = rp_brand_icon_image_view.get();
   rp_brand_icon_image_view->SetImageSize(
-      gfx::Size(fedcm::kModalCombinedIconSize, fedcm::kModalCombinedIconSize));
+      gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
   rp_brand_icon_image_view->SetVisible(/*visible=*/true);
 
   // Put IDP icon, arrow icon and RP icon into a BoxLayout container, in that
@@ -824,8 +826,8 @@ void AccountSelectionModalView::ReplaceButtonWithSpinner(
     ui::ColorId button_color) {
   std::unique_ptr<views::Throbber> button_spinner =
       std::make_unique<views::Throbber>();
-  button_spinner->SetPreferredSize(gfx::Size(fedcm::kModalButtonSpinnerSize,
-                                             fedcm::kModalButtonSpinnerSize));
+  button_spinner->SetPreferredSize(
+      gfx::Size(kModalButtonSpinnerSize, kModalButtonSpinnerSize));
   button_spinner->SizeToPreferredSize();
   button_spinner->SetColorId(spinner_color);
   button_spinner->Start();
@@ -927,3 +929,5 @@ void AccountSelectionModalView::MaybeRemoveCombinedIconsView() {
 
 BEGIN_METADATA(AccountSelectionModalView)
 END_METADATA
+
+}  // namespace webid

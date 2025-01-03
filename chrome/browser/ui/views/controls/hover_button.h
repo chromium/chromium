@@ -23,6 +23,10 @@ FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
 
+namespace webid {
+class AccountSelectionViewTestBase;
+}
+
 namespace ui {
 class ImageModel;
 }
@@ -124,7 +128,7 @@ class HoverButton : public views::LabelButton {
                            SetTitleLabel);
   FRIEND_TEST_ALL_PREFIXES(media_router::CastDialogSinkButtonTest,
                            SetStatusLabel);
-  friend class AccountSelectionViewTestBase;
+  friend class webid::AccountSelectionViewTestBase;
   friend class HoverButtonTest;
   friend class PageInfoBubbleViewBrowserTest;
 

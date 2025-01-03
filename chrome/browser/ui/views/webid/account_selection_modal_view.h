@@ -26,6 +26,8 @@ namespace views {
 class BoxLayoutView;
 }  // namespace views
 
+namespace webid {
+
 // This view is used for the "active" flow for fedCM. This is only ever shown as
 // a result of user action (e.g. clicking a button).
 class AccountSelectionModalView : public views::DialogDelegateView,
@@ -230,5 +232,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionModalView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_MODAL_VIEW_H_

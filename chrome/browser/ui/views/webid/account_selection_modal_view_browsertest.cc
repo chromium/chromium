@@ -31,6 +31,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace webid {
 namespace {
 class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
@@ -204,8 +205,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(spinner->GetVisible());
 
     // Check spinner is of the correct size.
-    EXPECT_EQ(spinner->size(), gfx::Size(fedcm::kModalIconSpinnerSize,
-                                         fedcm::kModalIconSpinnerSize));
+    EXPECT_EQ(spinner->size(),
+              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
 
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
@@ -227,7 +228,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
       // Check icon image is of the correct size.
       EXPECT_EQ(idp_icon_image->size(),
-                gfx::Size(fedcm::kModalIdpIconSize, fedcm::kModalIdpIconSize));
+                gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
     }
 
     // The combined icons container is present only when we expect it to be
@@ -250,8 +251,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // icons.
       for (const auto& icon : combined_icons_container_children) {
         EXPECT_TRUE(icon->GetVisible());
-        EXPECT_EQ(icon->size(), gfx::Size(fedcm::kModalCombinedIconSize,
-                                          fedcm::kModalCombinedIconSize));
+        EXPECT_EQ(icon->size(),
+                  gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
       }
     }
 
@@ -986,3 +987,5 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        OneDisabledAccountAndOneEnabledAccount) {
   TestEnabledAndDisabled();
 }
+
+}  //  namespace webid

@@ -26,9 +26,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 
-class FedCmAccountSelectionView;
+namespace webid {
 
-namespace fedcm {
+class FedCmAccountSelectionView;
 
 // The radius used for the corner of the "Continue as" button.
 inline constexpr int kButtonRadius = 16;
@@ -88,7 +88,6 @@ inline constexpr int kModalIconSpinnerSize = 28;
 inline constexpr int kModalButtonSpinnerSize = 20;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
-}  // namespace fedcm
 
 class BrandIconImageView : public views::ImageView {
   METADATA_HEADER(BrandIconImageView, views::ImageView)
@@ -321,5 +320,7 @@ class AccountSelectionViewBase {
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionViewBase> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_VIEW_BASE_H_
