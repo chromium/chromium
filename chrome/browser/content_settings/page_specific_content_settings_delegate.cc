@@ -42,9 +42,8 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -74,12 +73,8 @@ void IndicatorUsageHistogramHelper(content::WebContents* web_contents,
                                    permissions::RequestTypeForUma request_type,
                                    bool is_capturing) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser) {
-    return;
-  }
   tabs::TabInterface* tab_model =
-      browser->tab_strip_model()->GetTabForWebContents(web_contents);
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab_model) {
     return;
   }
