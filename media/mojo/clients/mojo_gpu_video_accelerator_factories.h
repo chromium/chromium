@@ -22,10 +22,6 @@
 #include "media/mojo/clients/mojo_codec_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include <fuchsia/mediacodec/cpp/fidl.h>
-#endif
-
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
