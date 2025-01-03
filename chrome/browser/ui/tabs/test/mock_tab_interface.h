@@ -74,6 +74,14 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetGroup,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldAcceptMouseEventsWhileWindowInactive,
+              (),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>,
+              AcceptMouseEventsWhileWindowInactive,
+              (),
+              (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };
 

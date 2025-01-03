@@ -31,6 +31,13 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
+// See documentation for ShouldAcceptMouseEventsWhileWindowInactive.
+class ScopedAcceptMouseEventsWhileWindowInactive {
+ public:
+  ScopedAcceptMouseEventsWhileWindowInactive() = default;
+  virtual ~ScopedAcceptMouseEventsWhileWindowInactive() = default;
+};
+
 // This is the public interface for tabs in a desktop browser. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
 // dependencies this interface should not depend on anything else in //chrome.
@@ -188,6 +195,14 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Returns the id of the tab group this tab belongs to, or nullopt if the tab
   // is not grouped.
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
+
+  // On macOS, tabs do not accept mouse events if the window is not active, even
+  // if it's a child window that is active. Calling this method overrides that
+  // behavior until the unique_ptr is destroyed. This is only relevant if the
+  // tab is in the foreground.
+  virtual bool ShouldAcceptMouseEventsWhileWindowInactive() const = 0;
+  virtual std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+  AcceptMouseEventsWhileWindowInactive() = 0;
 };
 
 using TabHandle = TabInterface::Handle;

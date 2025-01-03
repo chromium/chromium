@@ -22,6 +22,16 @@ namespace {
 
 class FedCmCUJTest : public InteractiveBrowserTest {
  public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
   auto OpenAccounts(blink::mojom::RpMode mode) {
     return Do([this, mode]() {
       delegate_ = std::make_unique<FakeDelegate>(
@@ -93,6 +103,36 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), ShowTabModalUI(),
       WaitForHide(kFedCmAccountChooserDialogAccountElementId), HideTabModalUI(),
       WaitForShow(kFedCmAccountChooserDialogAccountElementId), );
+}
+
+// TODO(https://crbug.com/387473078): Fix this on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OneClickOutsideBubble DISABLED_OneClickOutsideBubble
+#else
+#define MAYBE_OneClickOutsideBubble OneClickOutsideBubble
+#endif
+// When the bubble view is showing, a single click outside the bubble should be
+// received by the website.
+IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_OneClickOutsideBubble) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  // chrome/test/data/button.html
+  const GURL url = embedded_test_server()->GetURL("/button.html");
+  const DeepQuery kPathToButton{
+      "button",
+  };
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      OpenAccountsBubble(),
+      WaitForShow(kFedCmAccountChooserDialogAccountElementId),
+      MoveMouseTo(kActiveTab, kPathToButton),
+      CheckJsResult(
+          kActiveTab,
+          "() => document.getElementById('text').style.display == 'none'"),
+      ClickMouse(),
+      CheckJsResult(
+          kActiveTab,
+          "() => document.getElementById('text').style.display == 'block'"), );
 }
 
 }  // namespace

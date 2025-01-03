@@ -104,27 +104,9 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
         tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+  } else {
+    tab_accept_mouse_events_ = tab_->AcceptMouseEventsWhileWindowInactive();
   }
-  // An active widget would steal the focus when displayed, this would lead
-  // to some unexpected consequences. e.g.
-  //   1. links/buttons from the web contents area would require two clicks,
-  //   one to focus on the content area and one to focus on the clickable
-  //   2. user typing will be interrupted because the widget that's not
-  //   gated by user gesture would take the focus
-  // TODO(crbug.com/41482141): figure out how to address this issue without
-  // causing additional problems such as obscuring other browser UIs.
-  // This temporarily resolves the Mac-only two-clicks issue by giving the focus
-  // back. For users who have turned on screen readers, until we figure out how
-  // to handle the FedCM stealing focus issue, it's better to keep it focused
-  // because otherwise it's hard for them to understand or interact with the
-  // FedCM UI.
-#if BUILDFLAG(IS_MAC)
-  // `parent()` may return nullptr in tests.
-  if (!accessibility_state_utils::IsScreenReaderEnabled() &&
-      GetDialogWidget()->parent()) {
-    GetDialogWidget()->parent()->Activate();
-  }
-#endif  // IS_MAC
 
   if (accounts_widget_shown_callback_) {
     std::move(accounts_widget_shown_callback_).Run();
@@ -1055,6 +1037,7 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
   scoped_ignore_input_events_.reset();
+  tab_accept_mouse_events_.reset();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.

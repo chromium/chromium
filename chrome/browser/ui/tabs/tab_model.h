@@ -143,6 +143,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   tabs::TabFeatures* GetTabFeatures() override;
   bool IsPinned() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
+  bool ShouldAcceptMouseEventsWhileWindowInactive() const override;
+  std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+  AcceptMouseEventsWhileWindowInactive() override;
   void Close() override;
 
  private:
@@ -165,8 +168,19 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
    private:
     // Owns this. Some consumers may hold this beyond the lifetime of the tab.
-    // This is because legacy code often clears state in WebContentsDestroyed(),
-    // which occurs during or after TabModel destruction.
+    base::WeakPtr<TabModel> tab_;
+  };
+
+  // Whether the tab should accept mouse events while in the foreground, but the
+  // window is inactive.
+  class ScopedAcceptMouseEventsWhileWindowInactiveImpl
+      : public ScopedAcceptMouseEventsWhileWindowInactive {
+   public:
+    explicit ScopedAcceptMouseEventsWhileWindowInactiveImpl(TabModel* tab);
+    ~ScopedAcceptMouseEventsWhileWindowInactiveImpl() override;
+
+   private:
+    // Owns this. Some consumers may hold this beyond the lifetime of the tab.
     base::WeakPtr<TabModel> tab_;
   };
 
@@ -233,6 +247,11 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
+
+  // Whether to accept input events when the tab is in the foreground and the
+  // window is inactive. This is a reference count for
+  // number of instances of ScopedAcceptMouseEventsWhileWindowInactiveImpl.
+  int accept_input_when_window_inactive_ = 0;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

@@ -580,6 +580,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // showing.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+  // Allows the tab to receive mouse events even when the window is inactive
+  // (because the bubble window is active). This is if and only if the bubble
+  // widget is showing.
+  std::unique_ptr<tabs::ScopedAcceptMouseEventsWhileWindowInactive>
+      tab_accept_mouse_events_;
 
   // Widget that owns the view.
   std::unique_ptr<views::Widget> dialog_widget_;

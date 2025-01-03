@@ -254,6 +254,15 @@ std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
   return group_;
 }
 
+bool TabModel::ShouldAcceptMouseEventsWhileWindowInactive() const {
+  return accept_input_when_window_inactive_ > 0;
+}
+
+std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+TabModel::AcceptMouseEventsWhileWindowInactive() {
+  return std::make_unique<ScopedAcceptMouseEventsWhileWindowInactiveImpl>(this);
+}
+
 void TabModel::Close() {
   auto* window_interface = GetBrowserWindowInterface();
   auto* tab_strip = window_interface->GetTabStripModel();
@@ -294,6 +303,19 @@ TabModel::ScopedTabModalUIImpl::~ScopedTabModalUIImpl() {
   if (tab_) {
     tab_->showing_modal_ui_ = false;
     tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
+  }
+}
+
+TabModel::ScopedAcceptMouseEventsWhileWindowInactiveImpl::
+    ScopedAcceptMouseEventsWhileWindowInactiveImpl(TabModel* tab)
+    : tab_(tab->weak_factory_.GetWeakPtr()) {
+  ++tab_->accept_input_when_window_inactive_;
+}
+
+TabModel::ScopedAcceptMouseEventsWhileWindowInactiveImpl::
+    ~ScopedAcceptMouseEventsWhileWindowInactiveImpl() {
+  if (tab_) {
+    --tab_->accept_input_when_window_inactive_;
   }
 }
 
