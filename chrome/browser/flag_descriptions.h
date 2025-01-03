@@ -301,6 +301,9 @@ extern const char kImageDescriptionsAlternateRoutingDescription[];
 extern const char kImprovedSigninUIOnDesktopName[];
 extern const char kImprovedSigninUIOnDesktopDescription[];
 
+extern const char kImprovedSettingsUIOnDesktopName[];
+extern const char kImprovedSettingsUIOnDesktopDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillDeprecateAccessibilityApiName[];
 extern const char kAutofillDeprecateAccessibilityApiDescription[];

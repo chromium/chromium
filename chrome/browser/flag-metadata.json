@@ -5148,6 +5148,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "improved-settings-ui-on-desktop",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "improved-signin-ui-on-desktop",
     "owners": [
       "uno-desktop@google.com",

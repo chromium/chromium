@@ -19203,6 +19203,7 @@ from previous Chrome versions.
   <int value="-498740735" label="ArcUsbHost:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
   <int value="-498412005" label="EnableDrDc:disabled"/>
+  <int value="-498084007" label="ImprovedSettingsUIOnDesktop:disabled"/>
   <int value="-497986393" label="HoldingSpacePredictability:disabled"/>
   <int value="-497571337" label="SkipUndecryptablePasswords:enabled"/>
   <int value="-496989565"
@@ -20471,6 +20472,7 @@ from previous Chrome versions.
   <int value="11924259"
       label="AutofillEnableUpdateVirtualCardEnrollment:enabled"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
+  <int value="12423208" label="ImprovedSettingsUIOnDesktop:enabled"/>
   <int value="13976438" label="ReduceTransferSizeUpdatedIPC:disabled"/>
   <int value="14817184" label="FilesSearchV2:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
