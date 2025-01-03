@@ -4353,6 +4353,11 @@
     "expiry_milestone": 128
   },
   {
+    "name": "extension-disable-unsupported-developer-mode-extensions",
+    "owners": [ "richche@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "extension-manifest-v2-deprecation-disabled",
     "owners": [ "emiliapaz@chromium.org" ],
     "expiry_milestone": 133

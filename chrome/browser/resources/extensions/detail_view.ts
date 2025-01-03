@@ -587,6 +587,15 @@ export class ExtensionsDetailViewElement extends
     return !this.showSafetyCheck_ && !!this.data.blocklistText;
   }
 
+  /**
+   * Shows only one text if both unsupported developer extension and safety
+   * check texts are present. Safety check text takes precedence.
+   */
+  protected shouldShowUnsupportedDeveloperExtensionText_(): boolean {
+    return !this.showSafetyCheck_ &&
+        this.data.disableReasons.unsupportedDeveloperExtension;
+  }
+
   protected showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }

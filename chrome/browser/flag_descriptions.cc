@@ -1886,6 +1886,11 @@ const char kCWSInfoFastCheckDescription[] =
     "When enabled, Chrome checks and fetches metadata for installed extensions "
     "more frequently.";
 
+const char kExtensionDisableUnsupportedDeveloperName[] =
+    "Extension Disable Unsupported Developer";
+const char kExtensionDisableUnsupportedDeveloperDescription[] =
+    "When enabled, disable unpacked extensions if developer mode is off.";
+
 const char kExtensionTelemetryForEnterpriseName[] =
     "Extension Telemetry for Enterprise";
 const char kExtensionTelemetryForEnterpriseDescription[] =

@@ -193,11 +193,9 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         </div>
         <div class="cr-row continuation warning"
             id="unsupported-developer-extension-warning"
-            ?hidden="${!this.data.disableReasons.
-              unsupportedDeveloperExtension}">
+            ?hidden="${!this.shouldShowUnsupportedDeveloperExtensionText_()}">
           <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
-          <!-- TODO(crbug.com/362756477) Replace after string is finalized. -->
-          <span>This extension is only supported in developer mode.</span>
+          <span>$i18n{itemUnsupportedDeveloperModeDetails}</span>
         </div>
       </div>` : ''}
     ${this.showAllowlistWarning_() ? html`

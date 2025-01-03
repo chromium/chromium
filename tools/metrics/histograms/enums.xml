@@ -23647,6 +23647,7 @@ from previous Chrome versions.
   <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
   <int value="1283455082" label="DeskProfiles:disabled"/>
+  <int value="1283642596" label="ExtensionDisableUnsupportedDeveloper:enabled"/>
   <int value="1283672117" label="RequestDesktopSiteWindowSetting:enabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
@@ -24345,6 +24346,8 @@ from previous Chrome versions.
   <int value="1548680958" label="PdfCr23:disabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
+  <int value="1550025902"
+      label="ExtensionDisableUnsupportedDeveloper:disabled"/>
   <int value="1550193978" label="PulseaudioLoopbackForCast:enabled"/>
   <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
   <int value="1551743170"

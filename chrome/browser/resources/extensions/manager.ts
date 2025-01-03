@@ -25,6 +25,7 @@ import './toolbar.js';
 import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -87,7 +88,8 @@ export interface ExtensionsManagerElement {
 
 // TODO(crbug.com/40270029): Always show a top shadow for the DETAILS, ERRORS and
 // SITE_PERMISSIONS_ALL_SITES pages.
-const ExtensionsManagerElementBase = CrContainerShadowMixinLit(CrLitElement);
+const ExtensionsManagerElementBase =
+    I18nMixinLit(CrContainerShadowMixinLit(CrLitElement));
 
 export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
   static get is() {
@@ -346,10 +348,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
                 eventData.event_type, eventData.extensionInfo) &&
             !toastManager.isToastOpen) {
           toastManager.duration = TOAST_DURATION_MS;
-          // TODO(crbug.com/362756477): Replace temporary string with disable
-          // unsupported developer string once ready.
-          toastManager.show(
-              'Developer Mode Off. Some extensions are disabled.');
+          toastManager.show(this.i18n('itemUnsupportedDeveloperModeToast'));
         }
         break;
       case EventType.UNINSTALLED:

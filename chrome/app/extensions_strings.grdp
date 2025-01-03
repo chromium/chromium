@@ -79,6 +79,15 @@
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
   </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE" desc="Text shown in the extension card for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS" desc="Text shown in the details extension view for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, but only if you trust the extension. It may contain experimental features and hasn't been reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST" desc="Text displayed in a toast popup message when extensions are disabled due to unsupported developer mode.">
+    Developer Mode Off. Some extensions were disabled.
+  </message>
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
   </message>

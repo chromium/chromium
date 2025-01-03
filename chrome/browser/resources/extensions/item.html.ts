@@ -86,8 +86,7 @@ export function getHtml(this: ItemElement) {
               class="cr-secondary-text"
               ?hidden="${!this.data.disableReasons.
             unsupportedDeveloperExtension}">
-            <!--TODO(crbug.com/362756477) Replace after string is finalized.-->
-            <span>This extension is only supported in developer mode.</span>
+            $i18n{itemUnsupportedDeveloperMode}
           </span>
         </div>` : ''}
       ${this.showMv2DeprecationWarning_() ? html`
