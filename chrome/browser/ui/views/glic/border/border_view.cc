@@ -50,20 +50,14 @@ BorderView::~BorderView() = default;
 
 void BorderView::OnPaint(gfx::Canvas* canvas) {
   // TODO(baranerf): Modify this to a variable width when adding animation.
-  //
-  // Note: |           |           |
-  //       |<-- 5px -->|<-- 5px -->|
-  //       |  outside  |  visible  |
-  //
-  // So only half of the width are inside the visible viewport.
-  constexpr static int kBorderWidth = 10;
+  constexpr static int kBorderWidth = 5;
 
   views::View::OnPaint(canvas);
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setColor(GetColorProvider()->GetColor(ui::kColorSysPrimary));
   flags.setStrokeWidth(kBorderWidth);
-  canvas->DrawRect(gfx::RectF(GetContentsBounds()), flags);
+  canvas->DrawRect(GetContentsBounds(), flags);
 }
 
 void BorderView::OnChildViewAdded(views::View* observed_view,
