@@ -7448,7 +7448,7 @@ Robolectric tests do not need a @Batch or @DoNotBatch annotations.
         results.append(
             output_api.PresubmitPromptWarning(
                 """
-Robolectric tests should use either @RunWith(BaseRobolectricTestRule.class) (or
+Robolectric tests should use either @RunWith(BaseRobolectricTestRunner.class) (or
 a subclass of it), or use "@Rule BaseRobolectricTestRule".
 """, wrong_robolectric_test_runner_errors))
 
