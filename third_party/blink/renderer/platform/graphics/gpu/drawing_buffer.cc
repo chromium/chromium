@@ -424,8 +424,19 @@ bool DrawingBuffer::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
-  return PrepareTransferableResourceInternal(
-      /*client_si=*/nullptr, out_resource, out_release_callback);
+
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
+      kContentsResolvedIfNeeded) {
+    return false;
+  }
+
+  if (!IsUsingGpuCompositing()) {
+    return FinishPrepareTransferableResourceSoftware(out_resource,
+                                                     out_release_callback);
+  }
+
+  return FinishPrepareTransferableResourceGpu(
+      out_resource, /*client_si=*/nullptr, out_release_callback);
 }
 
 DrawingBuffer::CheckForDestructionResult
@@ -460,24 +471,6 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
   ResolveIfNeeded(discardBehavior);
 
   return kContentsResolvedIfNeeded;
-}
-
-bool DrawingBuffer::PrepareTransferableResourceInternal(
-    scoped_refptr<gpu::ClientSharedImage>* client_si,
-    viz::TransferableResource* out_resource,
-    viz::ReleaseCallback* out_release_callback) {
-  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
-      kContentsResolvedIfNeeded) {
-    return false;
-  }
-
-  if (!IsUsingGpuCompositing()) {
-    return FinishPrepareTransferableResourceSoftware(out_resource,
-                                                     out_release_callback);
-  }
-
-  return FinishPrepareTransferableResourceGpu(out_resource, client_si,
-                                              out_release_callback);
 }
 
 scoped_refptr<StaticBitmapImage>
