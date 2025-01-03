@@ -43,4 +43,8 @@
     // Note that WebGPUSubgroupsFeatures is implied by WebGPUExperimentalFeatures.
     [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long minSubgroupSize;
     [RuntimeEnabled=WebGPUSubgroupsFeatures] readonly attribute unsigned long maxSubgroupSize;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInFragmentStage;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageTexturesInFragmentStage;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageBuffersInVertexStage;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute unsigned long maxStorageTexturesInVertexStage;
 };

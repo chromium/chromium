@@ -1010,7 +1010,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter maxSampledTexturesPerShaderStage
 [Worker]     getter maxSamplersPerShaderStage
 [Worker]     getter maxStorageBufferBindingSize
+[Worker]     getter maxStorageBuffersInFragmentStage
+[Worker]     getter maxStorageBuffersInVertexStage
 [Worker]     getter maxStorageBuffersPerShaderStage
+[Worker]     getter maxStorageTexturesInFragmentStage
+[Worker]     getter maxStorageTexturesInVertexStage
 [Worker]     getter maxStorageTexturesPerShaderStage
 [Worker]     getter maxSubgroupSize
 [Worker]     getter maxTextureArrayLayers

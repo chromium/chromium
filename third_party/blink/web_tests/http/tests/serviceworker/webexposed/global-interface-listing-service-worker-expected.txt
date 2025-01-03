@@ -997,7 +997,11 @@ interface GPUSupportedLimits
     getter maxSampledTexturesPerShaderStage
     getter maxSamplersPerShaderStage
     getter maxStorageBufferBindingSize
+    getter maxStorageBuffersInFragmentStage
+    getter maxStorageBuffersInVertexStage
     getter maxStorageBuffersPerShaderStage
+    getter maxStorageTexturesInFragmentStage
+    getter maxStorageTexturesInVertexStage
     getter maxStorageTexturesPerShaderStage
     getter maxSubgroupSize
     getter maxTextureArrayLayers
