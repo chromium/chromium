@@ -169,6 +169,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // to query.
   void NotifyCampaignsLoaded();
 
+  // Record impression events if the campaign is a control campaigns.
+  void MaybeRecordImpressionForControl(const Campaign* campaign) const;
+
   // Register synthetic trial for growth. It will not work if campaign is
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;

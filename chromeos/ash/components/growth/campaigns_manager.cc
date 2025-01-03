@@ -59,6 +59,8 @@ inline constexpr char kGrowthStudyName[] = "CrOSGrowthStudy";
 // will be unique for different groups.
 inline constexpr char kGrowthGroupName[] = "CampaignId";
 
+inline constexpr char kPayloadPath[] = "payload";
+
 std::optional<base::Value::Dict> ParseCampaignsFile(
     const std::string& campaigns_data) {
   std::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
@@ -219,6 +221,7 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   RecordGetCampaignBySlot(slot);
   LogCampaignInSystemLog(match_result, slot);
   RegisterTrialForCampaign(match_result);
+  MaybeRecordImpressionForControl(match_result);
   return match_result;
 }
 
@@ -542,6 +545,33 @@ std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
   }
 
   return std::nullopt;
+}
+
+void CampaignsManager::MaybeRecordImpressionForControl(
+    const Campaign* campaign) const {
+  if (!campaign) {
+    return;
+  }
+
+  const auto* payload = campaign->FindDict(kPayloadPath);
+  if (payload->empty()) {
+    // Record impression for campaign that has empty payload which is usually
+    // counterfactual control campaign.
+    // This is needed to avoid imbalance between experiment group and
+    // counterfactual control group that caused by impression cap.
+    std::optional<int> campaign_id = growth::GetCampaignId(campaign);
+    if (!campaign_id) {
+      // TODO(crbug.com/308684443): Add error metrics in a second CL.
+      CAMPAIGNS_LOG(ERROR) << "Growth campaign id not found";
+      return;
+    }
+
+    CAMPAIGNS_LOG(DEBUG) << "Record impression events for counterfactual "
+                         << "campaign: " << campaign_id.value();
+
+    client_->RecordImpressionEvents(campaign_id.value(),
+                                    GetCampaignGroupId(campaign));
+  }
 }
 
 void CampaignsManager::RegisterTrialForCampaign(

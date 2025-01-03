@@ -716,9 +716,12 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
-// TODO(b/302360652): After user prefs targeting is implemented, add test to
-// verify that campaign with user prefs related targeting is not selected when
-// user prefs are not available.
+// TODO(crbug.com/302360652): After user prefs targeting is implemented, add
+// test to verify that campaign with user prefs related targeting is not
+// selected when user prefs are not available.
+
+// TODO(crbug.com/387356471): Add tests for verifying impression events are
+// recorded for counterfactual control campaigns.
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
   base::HistogramTester histogram_tester;
