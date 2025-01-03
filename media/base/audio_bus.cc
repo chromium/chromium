@@ -349,11 +349,9 @@ void AudioBus::CopyAndClipTo(AudioBus* dest) const {
   DCHECK(!is_bitstream_format_);
   CHECK_EQ(channels(), dest->channels());
   CHECK_LE(frames(), dest->frames());
-  for (int i = 0; i < channels(); ++i) {
-    float* dest_ptr = dest->channel(i);
-    const float* source_ptr = channel(i);
-    for (int j = 0; j < frames(); ++j)
-      dest_ptr[j] = Float32SampleTypeTraits::FromFloat(source_ptr[j]);
+  for (int ch = 0; ch < channels(); ++ch) {
+    std::ranges::transform(channel_span(ch), dest->channel_span(ch).begin(),
+                           Float32SampleTypeTraits::FromFloat);
   }
 }
 
@@ -363,23 +361,25 @@ void AudioBus::CopyPartialFramesTo(int source_start_frame,
                                    AudioBus* dest) const {
   DCHECK(!is_bitstream_format_);
   CHECK_EQ(channels(), dest->channels());
-  CHECK_LE(source_start_frame + frame_count, frames());
-  CHECK_LE(dest_start_frame + frame_count, dest->frames());
+
+  const size_t source_offset = base::checked_cast<size_t>(source_start_frame);
+  const size_t dest_offset = base::checked_cast<size_t>(dest_start_frame);
+  const size_t count = base::checked_cast<size_t>(frame_count);
 
   // Since we don't know if the other AudioBus is wrapped or not (and we don't
   // want to care), just copy using the public channel() accessors.
   for (int i = 0; i < channels(); ++i) {
-    memcpy(dest->channel(i) + dest_start_frame,
-           channel(i) + source_start_frame,
-           sizeof(*channel(i)) * frame_count);
+    ConstChannel src_span = channel_span(i).subspan(source_offset, count);
+    dest->channel_span(i).subspan(dest_offset, count).copy_from(src_span);
   }
 }
 
 void AudioBus::Scale(float volume) {
   DCHECK(!is_bitstream_format_);
   if (volume > 0 && volume != 1) {
-    for (int i = 0; i < channels(); ++i)
-      vector_math::FMUL(channel(i), volume, frames(), channel(i));
+    for (auto channel : channel_data_) {
+      vector_math::FMUL(channel.data(), volume, frames(), channel.data());
+    }
   } else if (volume == 0) {
     Zero();
   }

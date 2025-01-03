@@ -355,7 +355,7 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
     AudioBus* dest) {
   const int channels = dest->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    float* channel_data = dest->channel(ch);
+    AudioBus::Channel channel_data = dest->channel_span(ch);
     for (int target_frame_index = write_offset_in_frames,
              read_pos_in_source = ch;
          target_frame_index < write_offset_in_frames + num_frames_to_write;
@@ -377,7 +377,7 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
     typename TargetSampleTypeTraits::ValueType* dest_buffer) {
   const int channels = source->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    const float* channel_data = source->channel(ch);
+    AudioBus::ConstChannel channel_data = source->channel_span(ch);
     for (int source_frame_index = read_offset_in_frames, write_pos_in_dest = ch;
          source_frame_index < read_offset_in_frames + num_frames_to_read;
          ++source_frame_index, write_pos_in_dest += channels) {
