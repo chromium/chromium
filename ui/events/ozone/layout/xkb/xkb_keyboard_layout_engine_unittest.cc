@@ -848,6 +848,7 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
 #if BUILDFLAG(IS_CHROMEOS)
       {{DomCode::ACCESSIBILITY, EF_NONE}, VKEY_ACCESSIBILITY},
       {{DomCode::DO_NOT_DISTURB, EF_NONE}, VKEY_DO_NOT_DISTURB},
+      {{DomCode::CAMERA_ACCESS_TOGGLE, EF_NONE}, VKEY_CAMERA_ACCESS_TOGGLE},
       // Verify on ChromeOS PRINT maps to VKEY_PRINT not VKEY_SNAPSHOT.
       {{DomCode::PRINT, EF_NONE, XKB_KEY_Print}, VKEY_PRINT},
       // On ChromeOS XKB_KEY_3270_PrintScreen is used for PRINT_SCREEN.
