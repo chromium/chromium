@@ -159,7 +159,7 @@ void FindMenuItemsForCommandAux(
     std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
   for (size_t i = 0; i < menu->GetItemCount(); ++i) {
     if (menu->GetCommandIdAt(i) == command) {
-      menu_items->push_back({menu, i});
+      menu_items->emplace_back(menu, i);
     }
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
       FindMenuItemsForCommandAux(menu->GetSubmenuModelAt(i), command,

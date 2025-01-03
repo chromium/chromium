@@ -331,8 +331,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
  public:
   TestPrintPreviewHandler(std::unique_ptr<PrinterHandler> printer_handler,
                           content::WebContents* initiator)
-      : bad_messages_(0),
-        test_printer_handler_(std::move(printer_handler)),
+      : test_printer_handler_(std::move(printer_handler)),
         initiator_(initiator) {}
   TestPrintPreviewHandler(const TestPrintPreviewHandler&) = delete;
   TestPrintPreviewHandler& operator=(const TestPrintPreviewHandler&) = delete;
@@ -359,7 +358,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages() { return bad_messages_; }
 
  private:
-  int bad_messages_;
+  int bad_messages_ = 0;
   base::flat_set<mojom::PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
   const raw_ptr<content::WebContents, DanglingUntriaged> initiator_;

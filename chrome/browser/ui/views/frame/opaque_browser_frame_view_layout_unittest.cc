@@ -42,7 +42,7 @@ const int kCaptionButtonHeight = 18;
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  TestLayoutDelegate() : show_caption_buttons_(true), maximized_(false) {}
+  TestLayoutDelegate() {}
 
   TestLayoutDelegate(const TestLayoutDelegate&) = delete;
   TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;
@@ -96,8 +96,8 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
 
  private:
   std::u16string window_title_;
-  bool show_caption_buttons_;
-  bool maximized_;
+  bool show_caption_buttons_ = true;
+  bool maximized_ = false;
 };
 
 }  // namespace

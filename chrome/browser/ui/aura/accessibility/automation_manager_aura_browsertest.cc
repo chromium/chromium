@@ -117,8 +117,8 @@ class AutomationEventWaiter
   }
 
   bool WasNodeIdFocused(int node_id) {
-    for (size_t i = 0; i < focused_node_ids_.size(); i++) {
-      if (node_id == focused_node_ids_[i]) {
+    for (int focused_node_id : focused_node_ids_) {
+      if (node_id == focused_node_id) {
         return true;
       }
     }
@@ -235,9 +235,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
     tree->SerializeNode(web_hosts[0], &node_data);
     EXPECT_EQ(ax::mojom::Role::kWebView, node_data.role);
   } else {
-    for (size_t i = 0; i < web_hosts.size(); i++) {
+    for (auto& web_host : web_hosts) {
       ui::AXNodeData node_data;
-      tree->SerializeNode(web_hosts[i], &node_data);
+      tree->SerializeNode(web_host, &node_data);
     }
   }
 }

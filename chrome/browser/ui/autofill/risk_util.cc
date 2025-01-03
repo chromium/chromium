@@ -36,9 +36,7 @@
 #include "ui/base/base_window.h"
 #endif
 
-namespace autofill {
-
-namespace risk_util {
+namespace autofill::risk_util {
 
 namespace {
 
@@ -111,6 +109,4 @@ void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
                        base::BindOnce(PassRiskData, std::move(callback)));
 }
 
-}  // namespace risk_util
-
-}  // namespace autofill
+}  // namespace autofill::risk_util

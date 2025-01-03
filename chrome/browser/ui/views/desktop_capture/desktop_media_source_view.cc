@@ -94,11 +94,11 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     // Unselect all other sources.
     Views neighbours;
     parent()->GetViewsInGroup(GetGroup(), &neighbours);
-    for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
-      if (*i != this) {
-        DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
+    for (auto& neighbour : neighbours) {
+      if (neighbour != this) {
+        DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
         DesktopMediaSourceView* source_view =
-            static_cast<DesktopMediaSourceView*>(*i);
+            static_cast<DesktopMediaSourceView*>(neighbour);
         source_view->SetSelected(false);
       }
     }
@@ -145,10 +145,10 @@ views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
     return nullptr;
   }
 
-  for (auto i(neighbours.begin()); i != neighbours.end(); ++i) {
-    DCHECK(views::IsViewClass<DesktopMediaSourceView>(*i));
+  for (auto& neighbour : neighbours) {
+    DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
     DesktopMediaSourceView* source_view =
-        static_cast<DesktopMediaSourceView*>(*i);
+        static_cast<DesktopMediaSourceView*>(neighbour);
     if (source_view->selected_) {
       return source_view;
     }

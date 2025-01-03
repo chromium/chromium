@@ -111,8 +111,7 @@ ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
   };
   // clang-format on
 
-  for (size_t i = 0; i < std::size(kFontFamilyMap); ++i) {
-    const char* pref_name = kFontFamilyMap[i];
+  for (const char* const pref_name : kFontFamilyMap) {
     if (fonts_with_defaults.find(pref_name) == fonts_with_defaults.end()) {
       // We haven't already set a default value for this font preference, so set
       // an empty string as the default.
@@ -215,8 +214,6 @@ const FontDefault kFontDefaults[] = {
      IDS_FIXED_FONT_FAMILY_TRADITIONAL_HAN},
 #endif
 };
-
-const size_t kFontDefaultsLength = std::size(kFontDefaults);
 
 // Returns the script of the font pref |pref_name|.  For example, suppose
 // |pref_name| is "webkit.webprefs.fonts.serif.Hant".  Since the script code for
@@ -407,9 +404,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
   // Register font prefs that have defaults.
   std::set<std::string> fonts_with_defaults;
   UScriptCode browser_script = GetScriptOfBrowserLocale(locale);
-  for (size_t i = 0; i < kFontDefaultsLength; ++i) {
-    FontDefault pref = kFontDefaults[i];
-
+  for (FontDefault pref : kFontDefaults) {
 #if BUILDFLAG(IS_WIN)
     if (pref.pref_name == prefs::kWebKitFixedFontFamily) {
       if (ShouldUseAlternateDefaultFixedFont(

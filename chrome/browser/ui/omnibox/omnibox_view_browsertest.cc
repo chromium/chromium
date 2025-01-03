@@ -308,10 +308,9 @@ class OmniboxViewTest : public InProcessBrowserTest {
     // Remove built-in template urls, like google.com, bing.com etc., as they
     // may appear as autocomplete suggests and interfere with our tests.
     TemplateURLService::TemplateURLVector urls = model->GetTemplateURLs();
-    for (TemplateURLService::TemplateURLVector::const_iterator i = urls.begin();
-         i != urls.end(); ++i) {
-      if ((*i)->prepopulate_id() != 0) {
-        model->Remove(*i);
+    for (const auto& url : urls) {
+      if (url->prepopulate_id() != 0) {
+        model->Remove(url);
       }
     }
   }
@@ -360,8 +359,8 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void SetupHostResolver() {
-    for (size_t i = 0; i < std::size(kBlockedHostnames); ++i) {
-      host_resolver()->AddSimulatedFailure(kBlockedHostnames[i]);
+    for (auto* kBlockedHostname : kBlockedHostnames) {
+      host_resolver()->AddSimulatedFailure(kBlockedHostname);
     }
   }
 

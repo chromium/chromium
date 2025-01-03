@@ -44,7 +44,7 @@ class TabGroupSyncServiceProxyUnitTest
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  ~TabGroupSyncServiceProxyUnitTest() = default;
+  ~TabGroupSyncServiceProxyUnitTest() override = default;
   TabGroupSyncServiceProxyUnitTest(const TabGroupSyncServiceProxyUnitTest&) =
       delete;
   TabGroupSyncServiceProxyUnitTest& operator=(

@@ -174,7 +174,7 @@ std::vector<MediaSinkWithCastModes> QueryResultManager::GetSinksWithCastModes()
   }
   for (const auto& sink : all_sinks_) {
     if (!base::Contains(sinks_with_sources_, sink.id())) {
-      sinks.push_back(MediaSinkWithCastModes(sink));
+      sinks.emplace_back(sink);
     }
   }
 

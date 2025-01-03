@@ -463,15 +463,15 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
   const base::Value& items = args[1];
   const base::Value::List& list = items.GetList();
   items_to_remove.reserve(list.size());
-  for (size_t i = 0; i < list.size(); ++i) {
+  for (const auto& i : list) {
     // Each argument is a dictionary with properties "url" and "timestamps".
-    if (!list[i].is_dict()) {
+    if (!i.is_dict()) {
       NOTREACHED() << "Unable to extract arguments";
     }
 
-    const std::string* url_ptr = list[i].GetDict().FindString("url");
+    const std::string* url_ptr = i.GetDict().FindString("url");
     const base::Value::List* timestamps_ptr =
-        list[i].GetDict().FindList("timestamps");
+        i.GetDict().FindList("timestamps");
     if (!url_ptr || !timestamps_ptr) {
       NOTREACHED() << "Unable to extract arguments";
     }

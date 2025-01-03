@@ -134,7 +134,7 @@ struct SyncConfigInfo {
   SyncConfigInfo();
   ~SyncConfigInfo();
 
-  bool sync_everything;
+  bool sync_everything = false;
   syncer::UserSelectableTypeSet selected_types;
 };
 
@@ -142,7 +142,7 @@ bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
+SyncConfigInfo::SyncConfigInfo() {}
 
 SyncConfigInfo::~SyncConfigInfo() = default;
 

@@ -319,8 +319,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindInPageFormsTextAreas) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  for (size_t i = 0; i < urls.size(); ++i) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[i]));
+  for (const auto& url : urls) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(1,
               FindInPageASCII(web_contents, "cat", kFwd, kIgnoreCase, nullptr));
     EXPECT_EQ(0,

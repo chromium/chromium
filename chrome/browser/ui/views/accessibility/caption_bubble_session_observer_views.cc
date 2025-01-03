@@ -16,8 +16,7 @@ namespace captions {
 
 CaptionBubbleSessionObserverViews::CaptionBubbleSessionObserverViews(
     content::WebContents* web_contents)
-    : CaptionBubbleSessionObserver(),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
       web_contents_id_(web_contents->GetBrowserContext()->UniqueId()) {}
 
 CaptionBubbleSessionObserverViews::~CaptionBubbleSessionObserverViews() =

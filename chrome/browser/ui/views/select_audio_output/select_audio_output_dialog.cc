@@ -88,7 +88,7 @@ void SelectAudioOutputDialog::OnDeviceSelected(
   GetWidget()->Close();
 }
 
-SelectAudioOutputDialog::~SelectAudioOutputDialog() {}
+SelectAudioOutputDialog::~SelectAudioOutputDialog() = default;
 
 void SelectAudioOutputDialog::OnCancel() {
   OnDeviceSelected(

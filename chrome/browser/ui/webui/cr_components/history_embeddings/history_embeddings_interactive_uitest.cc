@@ -50,7 +50,7 @@ class HistoryEmbeddingsInteractiveTest
           return HistoryEmbeddingsServiceFactory::
               BuildServiceInstanceForBrowserContextForTesting(
                   context, std::make_unique<history_embeddings::MockEmbedder>(),
-                  /*answerer=*/nullptr, /*intent_classfier=*/nullptr);
+                  /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
 
     InteractiveBrowserTest::SetUpOnMainThread();

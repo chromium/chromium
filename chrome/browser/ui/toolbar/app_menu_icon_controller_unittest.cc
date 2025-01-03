@@ -79,12 +79,12 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
  protected:
   AppMenuIconControllerTest()
 #if BUILDFLAG(IS_WIN)
-      : install_details_(false, GetParam())
+      : install_details_(false, GetParam()){}
+#else
+      = default;
 #endif
-  {
-  }
 
-  AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
+        AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
   AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
       delete;
 

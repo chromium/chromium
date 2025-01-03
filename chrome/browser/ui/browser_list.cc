@@ -170,9 +170,8 @@ void BrowserList::CloseAllBrowsersWithProfile(Profile* profile) {
     }
   }
 
-  for (BrowserVector::const_iterator it = browsers_to_close.begin();
-       it != browsers_to_close.end(); ++it) {
-    (*it)->window()->Close();
+  for (const auto& it : browsers_to_close) {
+    it->window()->Close();
   }
 }
 

@@ -59,8 +59,7 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
 
-namespace web_app {
-namespace startup {
+namespace web_app::startup {
 
 namespace {
 
@@ -450,5 +449,4 @@ void SetBrowserShutdownCompleteCallbackForTesting(base::OnceClosure callback) {
   GetBrowserShutdownCompleteCallback() = std::move(callback);
 }
 
-}  // namespace startup
-}  // namespace web_app
+}  // namespace web_app::startup

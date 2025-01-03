@@ -130,7 +130,7 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
   SetNotifyEnterExitOnChild(true);
 }
 
-TabStripComboButton::~TabStripComboButton() {}
+TabStripComboButton::~TabStripComboButton() = default;
 
 void TabStripComboButton::OnNewTabButtonStateChanged() {
   if (new_tab_button_->GetState() == views::Button::STATE_PRESSED) {

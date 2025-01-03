@@ -69,8 +69,7 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
       : WebContentsObserver(contents),
         contents_(contents),
         did_start_observer_(contents),
-        url_(contents->GetURL()),
-        num_reloads_(0) {}
+        url_(contents->GetURL()) {}
 
   void DidStartNavigation(content::NavigationHandle* navigation) override {
     if (navigation->GetReloadType() == content::ReloadType::NONE) {
@@ -103,7 +102,7 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
   content::DidStartNavigationObserver did_start_observer_;
   const raw_ref<const GURL> url_;
   GURL current_url_;
-  int num_reloads_;
+  int num_reloads_ = 0;
 };
 
 TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {

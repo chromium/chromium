@@ -60,7 +60,7 @@ ntp_tiles::NTPTileImpression MakeNTPTileImpression(int index,
 std::vector<base::Bucket> FillImpressions(int numImpressions, int count) {
   std::vector<base::Bucket> impressions;
   for (int i = 0; i < numImpressions; ++i) {
-    impressions.push_back(Bucket(i, count));
+    impressions.emplace_back(i, count);
   }
   return impressions;
 }

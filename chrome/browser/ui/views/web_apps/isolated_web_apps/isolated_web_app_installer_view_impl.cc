@@ -109,10 +109,9 @@ ui::ImageModel CreateImageModelFromBundleMetadata(
 // functions that need a string, but want to accept either ids or raw strings.
 class ToU16String {
  public:
-  // NOLINTNEXTLINE(runtime/explicit)
+  // NOLINTNEXTLINE
   ToU16String(int string_id) : string_(l10n_util::GetStringUTF16(string_id)) {}
-
-  // NOLINTNEXTLINE(runtime/explicit)
+  // NOLINTNEXTLINE
   ToU16String(const std::u16string& string) : string_(string) {}
 
   const std::u16string& get() const { return string_; }

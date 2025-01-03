@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -54,9 +55,8 @@ base::flat_map<ui::ElementIdentifier, int> CalculateFlexOrder(
 
   // Loop in reverse order to ensure the first element gets the largest flex
   // order and overflows the first.
-  for (auto it = elements_in_overflow_order.rbegin();
-       it != elements_in_overflow_order.rend(); ++it) {
-    id_to_order_map[*it] = element_flex_order_start++;
+  for (auto it : base::Reversed(elements_in_overflow_order)) {
+    id_to_order_map[it] = element_flex_order_start++;
   }
 
   return id_to_order_map;

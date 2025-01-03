@@ -66,12 +66,12 @@ class SharingDialogViewTest : public TestWithBrowserView {
   std::vector<SharingTargetDeviceInfo> CreateDevices(int count) {
     std::vector<SharingTargetDeviceInfo> devices;
     for (int i = 0; i < count; ++i) {
-      devices.push_back(SharingTargetDeviceInfo(
-          "guid_" + base::NumberToString(i), "name_" + base::NumberToString(i),
-          SharingDevicePlatform::kUnknown,
-          /*pulse_interval=*/base::TimeDelta(),
-          syncer::DeviceInfo::FormFactor::kUnknown,
-          /*last_updated_timestamp=*/base::Time()));
+      devices.emplace_back("guid_" + base::NumberToString(i),
+                           "name_" + base::NumberToString(i),
+                           SharingDevicePlatform::kUnknown,
+                           /*pulse_interval=*/base::TimeDelta(),
+                           syncer::DeviceInfo::FormFactor::kUnknown,
+                           /*last_updated_timestamp=*/base::Time());
     }
     return devices;
   }

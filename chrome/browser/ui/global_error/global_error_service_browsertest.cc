@@ -22,7 +22,7 @@ namespace {
 // An error that has a bubble view.
 class BubbleViewError final : public GlobalErrorWithStandardBubble {
  public:
-  BubbleViewError() : bubble_view_close_count_(0) {}
+  BubbleViewError() {}
 
   BubbleViewError(const BubbleViewError&) = delete;
   BubbleViewError& operator=(const BubbleViewError&) = delete;
@@ -58,7 +58,7 @@ class BubbleViewError final : public GlobalErrorWithStandardBubble {
   }
 
  private:
-  int bubble_view_close_count_;
+  int bubble_view_close_count_ = 0;
   base::WeakPtrFactory<BubbleViewError> weak_ptr_factory_{this};
 };
 

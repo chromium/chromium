@@ -101,7 +101,7 @@ void ChromeUrlsHandler::GetUrls(GetUrlsCallback callback) {
       chrome_urls::mojom::ChromeUrlsData::New());
   result->webui_urls = std::move(webui_urls);
   for (base::cstring_view url : chrome::ChromeDebugURLs()) {
-    result->command_urls.push_back(GURL(url));
+    result->command_urls.emplace_back(url);
   }
 
   PrefService* local_state = g_browser_process->local_state();

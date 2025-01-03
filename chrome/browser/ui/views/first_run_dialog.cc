@@ -70,7 +70,7 @@ void FirstRunDialog::Show(base::RepeatingClosure learn_more_callback,
                           base::RepeatingClosure quit_runloop) {
   FirstRunDialog* dialog = new FirstRunDialog(std::move(learn_more_callback),
                                               std::move(quit_runloop));
-  views::DialogDelegate::CreateDialogWidget(dialog, NULL, NULL)->Show();
+  views::DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr)->Show();
 }
 
 FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,

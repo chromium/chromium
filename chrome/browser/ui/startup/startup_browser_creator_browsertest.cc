@@ -317,7 +317,7 @@ class OpenURLsPopupObserver : public BrowserListObserver {
 // explicit profile given.
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   std::vector<GURL> urls;
-  urls.push_back(GURL("http://localhost"));
+  urls.emplace_back("http://localhost");
 
   // Note that in our testing we do not ever query the BrowserList for the "last
   // active" browser. That's because the browsers are set as "active" by
@@ -2952,7 +2952,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
   protocol_handler.protocol = "web+test";
   apps::FileHandler file_handler;
   file_handler.action = GURL(std::string(kStartUrl) + "/file_handler");
-  file_handler.accept.push_back({});
+  file_handler.accept.emplace_back();
   file_handler.accept.back().mime_type = "text/plain";
   file_handler.accept.back().file_extensions = {".txt"};
   webapps::AppId app_id =

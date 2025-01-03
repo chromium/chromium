@@ -55,7 +55,7 @@ ExtensionPopup* g_last_popup_for_testing = nullptr;
 // for this object's lifetime.
 class ExtensionPopup::ScopedDevToolsAgentHostObservation {
  public:
-  ScopedDevToolsAgentHostObservation(
+  explicit ScopedDevToolsAgentHostObservation(
       content::DevToolsAgentHostObserver* observer)
       : observer_(observer) {
     content::DevToolsAgentHost::AddObserver(observer_);

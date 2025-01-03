@@ -680,7 +680,8 @@ class DesktopMediaPickerViewsSystemAudioTest
  public:
   DesktopMediaPickerViewsSystemAudioTest()
       : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*PreferCurrentTab=*/false, /*NewOrder=*/false)) {}
+            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/false)) {
+  }
   ~DesktopMediaPickerViewsSystemAudioTest() override = default;
 
   void MaybeCreatePickerViews() override {
@@ -942,7 +943,7 @@ class DesktopMediaPickerDoubleClickTest
  public:
   DesktopMediaPickerDoubleClickTest()
       : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*PreferCurrentTab=*/false, /*NewOrder=*/true)) {}
+            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/true)) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(

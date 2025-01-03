@@ -43,9 +43,7 @@ namespace {
 class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
  public:
   explicit TestBackForwardMenuDelegate(base::OnceClosure quit_closure)
-      : was_icon_changed_called_(false),
-        was_menu_model_changed_called_(false),
-        quit_closure_(std::move(quit_closure)) {}
+      : quit_closure_(std::move(quit_closure)) {}
 
   TestBackForwardMenuDelegate(const TestBackForwardMenuDelegate&) = delete;
   TestBackForwardMenuDelegate& operator=(const TestBackForwardMenuDelegate&) =
@@ -67,8 +65,8 @@ class TestBackForwardMenuDelegate : public ui::MenuModelDelegate {
   }
 
  private:
-  bool was_icon_changed_called_;
-  bool was_menu_model_changed_called_;
+  bool was_icon_changed_called_ = false;
+  bool was_menu_model_changed_called_ = false;
   base::OnceClosure quit_closure_;
 };
 

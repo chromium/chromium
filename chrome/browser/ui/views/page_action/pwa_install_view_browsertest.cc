@@ -337,9 +337,9 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     std::vector<base::Bucket> expected_buckets;
     if (expected_count > 0) {
-      expected_buckets.push_back(
-          {static_cast<int>(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON),
-           expected_count});
+      expected_buckets.emplace_back(
+          static_cast<int>(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON),
+          expected_count);
     }
     EXPECT_EQ(histogram_tester.GetAllSamples("Webapp.Install.InstallBounce"),
               expected_buckets);

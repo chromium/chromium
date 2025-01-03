@@ -107,12 +107,11 @@ class CrashesDOMHandler : public WebUIMessageHandler {
   void HandleRequestSingleCrashUpload(const base::Value::List& args);
 
   scoped_refptr<UploadList> upload_list_;
-  bool list_available_;
-  bool first_load_;
+  bool list_available_ = false;
+  bool first_load_ = true;
 };
 
-CrashesDOMHandler::CrashesDOMHandler()
-    : list_available_(false), first_load_(true) {
+CrashesDOMHandler::CrashesDOMHandler() {
   upload_list_ = CreateCrashUploadList();
 }
 

@@ -277,11 +277,9 @@ class BrowserCommandControllerFullscreenTest;
 class FullscreenTestBrowserWindow : public TestBrowserWindow,
                                     ExclusiveAccessContext {
  public:
-  FullscreenTestBrowserWindow(
+  explicit FullscreenTestBrowserWindow(
       BrowserCommandControllerFullscreenTest* test_browser)
-      : fullscreen_(false),
-        toolbar_showing_(false),
-        test_browser_(test_browser) {}
+      : test_browser_(test_browser) {}
 
   FullscreenTestBrowserWindow(const FullscreenTestBrowserWindow&) = delete;
   FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
@@ -317,8 +315,8 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   void set_toolbar_showing(bool showing) { toolbar_showing_ = showing; }
 
  private:
-  bool fullscreen_;
-  bool toolbar_showing_;
+  bool fullscreen_ = false;
+  bool toolbar_showing_ = false;
   raw_ptr<BrowserCommandControllerFullscreenTest> test_browser_;
 };
 
@@ -408,13 +406,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
       blink::WebInputEvent::Type::kUndefined, 0,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Defaults for a tabbed browser.
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_tab);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_tab);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_tab);
+                  command.command_id, key_event),
+              command.reserved_in_tab);
   }
 
   // Simulate going fullscreen.
@@ -425,13 +423,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   // By default, in fullscreen mode, the toolbar should be hidden; and all
   // platforms behave similarly.
   EXPECT_FALSE(window()->IsToolbarShowing());
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_fullscreen);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_fullscreen);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_fullscreen);
+                  command.command_id, key_event),
+              command.reserved_in_fullscreen);
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -459,13 +457,13 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   browser()->command_controller()->FullscreenStateChanged();
 
-  for (size_t i = 0; i < std::size(commands); i++) {
-    SCOPED_TRACE(commands[i].command_id);
-    EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
-              commands[i].enabled_in_tab);
+  for (auto& command : commands) {
+    SCOPED_TRACE(command.command_id);
+    EXPECT_EQ(chrome::IsCommandEnabled(browser(), command.command_id),
+              command.enabled_in_tab);
     EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
-                  commands[i].command_id, key_event),
-              commands[i].reserved_in_tab);
+                  command.command_id, key_event),
+              command.reserved_in_tab);
   }
 
   // Guest Profiles disallow some options.

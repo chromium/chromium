@@ -99,8 +99,7 @@ AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(
     std::unique_ptr<AutocompleteMatch> match,
     const GURL& destination_url,
     const GURL& original_url)
-    : infobars::InfoBarDelegate(),
-      profile_(profile),
+    : profile_(profile),
       text_(text),
       match_(std::move(match)),
       destination_url_(destination_url),

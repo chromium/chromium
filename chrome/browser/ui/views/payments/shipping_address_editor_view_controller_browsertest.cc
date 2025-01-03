@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressEditorScreen();
   // Complete the async fetch of region data.
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair(kAnyStateCode, kAnyState));
+  regions.emplace_back(kAnyStateCode, kAnyState);
   test_region_data_loader_.SendAsynchronousData(regions);
 
   SetCommonFields();
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(false);
   OpenShippingAddressEditorScreen();
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("1a", "region1a"));
+  regions1.emplace_back("1a", "region1a");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   SetCommonFields();
@@ -384,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   bool use_regions1 = true;
   std::vector<std::pair<std::string, std::string>> regions2;
-  regions2.push_back(std::make_pair("2a", "region2a"));
-  regions2.push_back(std::make_pair("2b", "region2b"));
+  regions2.emplace_back("2a", "region2a");
+  regions2.emplace_back("2b", "region2b");
   std::set<autofill::FieldType> unset_types;
   for (size_t country_index = 10; country_index < num_countries;
        country_index += num_countries / 10) {
@@ -697,8 +697,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions1);
   OpenShippingAddressEditorScreen();
 
@@ -761,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AK", "Alaska"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AK", "Alaska");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
@@ -910,8 +910,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
   // Expect that the country is set correctly.
   EXPECT_EQ(u"United States", GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY));
@@ -980,8 +980,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   // Expect that the default country was selected.
@@ -1027,8 +1027,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   // Expect that the default country was selected.
@@ -1061,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
@@ -1125,8 +1125,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   // Send the region data.
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions);
 
   // Expect that the default country was selected.
@@ -1157,8 +1157,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
@@ -1186,8 +1186,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 

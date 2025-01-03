@@ -306,8 +306,8 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
                   bool is_default,
                   bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-    caps->papers.emplace_back(PrinterSemanticCapsAndDefaults::Paper{
-        "bar", "vendor", gfx::Size(600, 600), gfx::Rect(0, 0, 600, 600)});
+    caps->papers.emplace_back("bar", "vendor", gfx::Size(600, 600),
+                              gfx::Rect(0, 0, 600, 600));
     auto basic_info = std::make_unique<PrinterBasicInfo>(
         id, display_name, description,
         /*printer_status=*/0, is_default, PrinterBasicInfoOptions{});

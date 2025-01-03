@@ -697,6 +697,7 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
   return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
-      g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,
+      g_browser_process->GetApplicationLocale(),
+      /*already_sent_remote_request=*/false,
       /*is_main_frame=*/true);
 }

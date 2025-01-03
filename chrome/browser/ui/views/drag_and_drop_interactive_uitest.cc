@@ -328,9 +328,7 @@ class DragStartWaiter : public aura::client::DragDropClient {
   // Starts monitoring |web_contents| for a start of a drag-and-drop.
   explicit DragStartWaiter(content::WebContents* web_contents)
       : web_contents_(web_contents),
-        message_loop_runner_(new content::MessageLoopRunner),
-        suppress_passing_of_start_drag_further_(false),
-        drag_started_(false) {
+        message_loop_runner_(new content::MessageLoopRunner) {
     DCHECK(web_contents_);
 
     // Intercept calls to the old DragDropClient.
@@ -476,10 +474,10 @@ class DragStartWaiter : public aura::client::DragDropClient {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   raw_ptr<aura::client::DragDropClient> old_client_;
   base::OnceClosure callback_to_run_inside_drag_and_drop_message_loop_;
-  bool suppress_passing_of_start_drag_further_;
+  bool suppress_passing_of_start_drag_further_ = false;
 
   // Data captured during the first intercepted StartDragAndDrop call.
-  bool drag_started_;
+  bool drag_started_ = false;
   std::optional<url::Origin> source_origin_;
   std::string text_;
   std::string html_;
@@ -809,13 +807,13 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
                          const std::string& filename) {
     AssertTestPageIsLoaded();
     base::StringPairs replacement_text;
-    replacement_text.push_back(
-        std::make_pair("REPLACE_WITH_HOST_AND_PORT",
-                       base::StringPrintf("%s:%d", image_origin.c_str(),
-                                          https_test_server()->port())));
-    replacement_text.push_back(std::make_pair(
+    replacement_text.emplace_back(
+        "REPLACE_WITH_HOST_AND_PORT",
+        base::StringPrintf("%s:%d", image_origin.c_str(),
+                           https_test_server()->port()));
+    replacement_text.emplace_back(
         "REPLACE_WITH_CROSSORIGIN",
-        std::string(image_crossorigin_attr ? "crossorigin" : "")));
+        std::string(image_crossorigin_attr ? "crossorigin" : ""));
     std::string path = net::test_server::GetFilePathWithReplacements(
         filename, replacement_text);
     return NavigateNamedFrame("left", frame_origin, path);
@@ -1267,8 +1265,8 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
       base::FilePath(), base::FilePath().AppendASCII("title1.html"));
   base::FilePath dragged_file_2 = ui_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("title2.html"));
-  file_infos.push_back(ui::FileInfo(dragged_file_1, dragged_file_1.BaseName()));
-  file_infos.push_back(ui::FileInfo(dragged_file_2, dragged_file_2.BaseName()));
+  file_infos.emplace_back(dragged_file_1, dragged_file_1.BaseName());
+  file_infos.emplace_back(dragged_file_2, dragged_file_2.BaseName());
   ASSERT_TRUE(SimulateDragEnterToRightFrame(file_infos));
 
   const int expected_new_tab_count = 2;

@@ -50,7 +50,7 @@ class InfoBarAndroid;
 
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
-  PopupOpenerTabHelperTest() : ChromeRenderViewHostTestHarness() {}
+  PopupOpenerTabHelperTest() {}
 
   PopupOpenerTabHelperTest(const PopupOpenerTabHelperTest&) = delete;
   PopupOpenerTabHelperTest& operator=(const PopupOpenerTabHelperTest&) = delete;

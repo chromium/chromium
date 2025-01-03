@@ -346,7 +346,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
 
 struct ParentPermissionDialogView::Params {
   Params();
-  explicit Params(const Params& params);
+  Params(const Params& params);
   ~Params();
 
   // The icon to be displayed. Usage depends on whether extension is set.
@@ -877,7 +877,7 @@ class ParentPermissionDialogImpl : public ParentPermissionDialog,
                                    public ParentPermissionDialogView::Observer {
  public:
   // Constructor for a generic ParentPermissionDialogImpl
-  ParentPermissionDialogImpl(
+  explicit ParentPermissionDialogImpl(
       std::unique_ptr<ParentPermissionDialogView::Params> params);
 
   ~ParentPermissionDialogImpl() override;

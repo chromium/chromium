@@ -225,7 +225,7 @@ void DeprecatedAppsDialogView::InitDialog() {
 
   // Set up the table view.
   std::vector<ui::TableColumn> columns;
-  columns.emplace_back(ui::TableColumn());
+  columns.emplace_back();
 
   auto table = std::make_unique<views::TableView>(
       deprecated_apps_table_model_.get(), columns,

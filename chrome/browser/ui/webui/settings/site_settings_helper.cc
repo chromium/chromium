@@ -495,9 +495,9 @@ constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
 }  // namespace
 
 bool HasRegisteredGroupName(ContentSettingsType type) {
-  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
-    if (type == kContentSettingsTypeGroupNames[i].type &&
-        kContentSettingsTypeGroupNames[i].name) {
+  for (auto kContentSettingsTypeGroupName : kContentSettingsTypeGroupNames) {
+    if (type == kContentSettingsTypeGroupName.type &&
+        kContentSettingsTypeGroupName.name) {
       return true;
     }
   }

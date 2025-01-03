@@ -398,14 +398,13 @@ void ShippingAddressEditorViewController::UpdateCountries(
     model = &local_model;
   }
 
-  for (size_t i = 0; i < model->countries().size(); ++i) {
-    autofill::AutofillCountry* country(model->countries()[i].get());
+  for (const auto& i : model->countries()) {
+    autofill::AutofillCountry* country(i.get());
     if (country) {
-      countries_.push_back(
-          std::make_pair(country->country_code(), country->name()));
+      countries_.emplace_back(country->country_code(), country->name());
     } else {
       // Separator, kept to make sure the size of the vector stays the same.
-      countries_.push_back(std::make_pair("", u""));
+      countries_.emplace_back("", u"");
     }
   }
   // If there is a profile to edit, make sure to use its country for the initial

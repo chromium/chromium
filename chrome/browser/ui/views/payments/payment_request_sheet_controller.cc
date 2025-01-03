@@ -36,9 +36,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 
-namespace payments {
-
-namespace internal {
+namespace payments::internal {
 
 // This class is the actual sheet that gets pushed on the view_stack_. It
 // implements views::FocusTraversable to trap focus within its hierarchy. This
@@ -268,9 +266,7 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
 BEGIN_METADATA(PaymentRequestBackArrowButton)
 END_METADATA
 
-}  // namespace internal
-
-}  // namespace payments
+}  // namespace payments::internal
 
 DEFINE_VIEW_BUILDER(, payments::internal::SheetView)
 

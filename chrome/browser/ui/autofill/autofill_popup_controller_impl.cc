@@ -82,8 +82,7 @@ SuggestionFiltrationResult FilterSuggestions(
   SuggestionFiltrationResult result;
 
   std::u16string filter_lowercased = base::i18n::ToLower(*filter);
-  for (size_t i = 0; i < suggestions.size(); ++i) {
-    const Suggestion& suggestion = suggestions[i];
+  for (const Suggestion& suggestion : suggestions) {
     if (suggestion.filtration_policy ==
         Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
       continue;

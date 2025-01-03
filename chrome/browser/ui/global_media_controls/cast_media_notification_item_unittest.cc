@@ -71,7 +71,7 @@ class MockBitmapFetcher : public BitmapFetcher {
 
 class MockSessionController : public CastMediaSessionController {
  public:
-  MockSessionController(
+  explicit MockSessionController(
       mojo::Remote<media_router::mojom::MediaController> remote)
       : CastMediaSessionController(std::move(remote)) {}
 

@@ -42,8 +42,7 @@ class TestWebUIContentsWrapper : public WebUIContentsWrapper {
 };
 }  // namespace
 
-namespace views {
-namespace test {
+namespace views::test {
 
 class WebUIBubbleDialogViewTest : public ChromeViewsTestBase,
                                   public testing::WithParamInterface<bool> {
@@ -241,5 +240,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "DraggableRegionsDisabled";
                          });
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

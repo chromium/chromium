@@ -70,8 +70,7 @@ namespace {
 // Error class has a menu item.
 class MenuError : public GlobalError {
  public:
-  explicit MenuError(int command_id)
-      : command_id_(command_id), execute_count_(0) {}
+  explicit MenuError(int command_id) : command_id_(command_id) {}
 
   MenuError(const MenuError&) = delete;
   MenuError& operator=(const MenuError&) = delete;
@@ -90,7 +89,7 @@ class MenuError : public GlobalError {
 
  private:
   int command_id_;
-  int execute_count_;
+  int execute_count_ = 0;
 };
 
 class FakeIconDelegate : public AppMenuIconController::Delegate {
@@ -155,10 +154,7 @@ class TestAppMenuModel : public AppMenuModel {
   TestAppMenuModel(ui::AcceleratorProvider* provider,
                    Browser* browser,
                    AppMenuIconController* app_menu_icon_controller)
-      : AppMenuModel(provider, browser, app_menu_icon_controller),
-        execute_count_(0),
-        checked_count_(0),
-        enable_count_(0) {}
+      : AppMenuModel(provider, browser, app_menu_icon_controller) {}
 
   // Testing overrides to ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override {
@@ -178,20 +174,20 @@ class TestAppMenuModel : public AppMenuModel {
     ++execute_count_;
   }
 
-  int execute_count_;
-  mutable int checked_count_;
-  mutable int enable_count_;
+  int execute_count_ = 0;
+  mutable int checked_count_ = 0;
+  mutable int enable_count_ = 0;
 };
 
 class TestLogMetricsAppMenuModel : public AppMenuModel {
  public:
   TestLogMetricsAppMenuModel(ui::AcceleratorProvider* provider,
                              Browser* browser)
-      : AppMenuModel(provider, browser), log_metrics_count_(0) {}
+      : AppMenuModel(provider, browser) {}
 
   void LogMenuAction(AppMenuAction action_id) override { log_metrics_count_++; }
 
-  int log_metrics_count_;
+  int log_metrics_count_ = 0;
 };
 
 TEST_F(AppMenuModelTest, Basics) {

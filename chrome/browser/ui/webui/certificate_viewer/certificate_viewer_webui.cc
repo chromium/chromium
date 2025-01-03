@@ -517,7 +517,7 @@ CertificateViewerDialogHandler::CertificateViewerDialogHandler(
       cert_metadata_(std::move(cert_metadata)),
       modifications_callback_(std::move(modifications_callback)) {}
 
-CertificateViewerDialogHandler::~CertificateViewerDialogHandler() {}
+CertificateViewerDialogHandler::~CertificateViewerDialogHandler() = default;
 
 void CertificateViewerDialogHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

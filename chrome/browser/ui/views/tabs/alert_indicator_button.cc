@@ -56,15 +56,13 @@ std::unique_ptr<gfx::MultiAnimation> CreateTabRecordingIndicatorAnimation() {
   gfx::MultiAnimation::Parts parts;
   for (size_t i = 0; i < kFadeInFadeOutCycles; ++i) {
     // Fade-in:
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeInDuration,
-                                              gfx::Tween::EASE_IN));
+    parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
     // Fade-out (from 1 to 0):
-    parts.push_back(gfx::MultiAnimation::Part(kIndicatorFadeOutDuration,
-                                              gfx::Tween::EASE_IN, 1.0, 0.0));
+    parts.emplace_back(kIndicatorFadeOutDuration, gfx::Tween::EASE_IN, 1.0,
+                       0.0);
   }
   // Finish by fading in to show the indicator.
-  parts.push_back(
-      gfx::MultiAnimation::Part(kIndicatorFadeInDuration, gfx::Tween::EASE_IN));
+  parts.emplace_back(kIndicatorFadeInDuration, gfx::Tween::EASE_IN);
 
   auto animation =
       std::make_unique<gfx::MultiAnimation>(parts, kIndicatorFrameInterval);
@@ -356,11 +354,11 @@ AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
                      kIndicatorFadeOutDuration);
 
     fadeout_animation_duration_for_testing_ = delay;
-    parts.push_back(gfx::MultiAnimation::Part(delay, gfx::Tween::EASE_IN));
+    parts.emplace_back(delay, gfx::Tween::EASE_IN);
   } else {
-    parts.push_back(gfx::MultiAnimation::Part(
+    parts.emplace_back(
         is_for_fade_in ? kIndicatorFadeInDuration : kIndicatorFadeOutDuration,
-        gfx::Tween::EASE_IN));
+        gfx::Tween::EASE_IN);
   }
 
   auto animation =

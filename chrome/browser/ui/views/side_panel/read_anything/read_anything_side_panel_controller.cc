@@ -196,7 +196,7 @@ void ReadAnythingSidePanelController::TabWillDetach(
   }
   if (coordinator->IsSidePanelEntryShowing(
           SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    coordinator->Close(/*suppress_animation=*/true);
+    coordinator->Close(/*suppress_animations=*/true);
   }
 }
 

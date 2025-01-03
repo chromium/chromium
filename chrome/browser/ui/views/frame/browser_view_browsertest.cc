@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
 
 class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
  public:
-  BookmarkBarViewObserverImpl() : change_count_(0) {}
+  BookmarkBarViewObserverImpl() {}
 
   BookmarkBarViewObserverImpl(const BookmarkBarViewObserverImpl&) = delete;
   BookmarkBarViewObserverImpl& operator=(const BookmarkBarViewObserverImpl&) =

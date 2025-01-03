@@ -58,7 +58,7 @@ constexpr char kTopFrameEtldPlusOne[] = "rp-example.com";
 
 class FakeTabInterface : public tabs::MockTabInterface {
  public:
-  virtual ~FakeTabInterface() = default;
+  ~FakeTabInterface() override = default;
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }

@@ -60,23 +60,23 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
   }
 
   if (spec()->request_payer_name()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::NAME_FULL,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS),
-        EditorField::LengthHint::HINT_SHORT, /*required=*/true));
+        EditorField::LengthHint::HINT_SHORT, /*required=*/true);
   }
   if (spec()->request_payer_phone()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::PHONE_HOME_WHOLE_NUMBER,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS),
         EditorField::LengthHint::HINT_SHORT, /*required=*/true,
-        EditorField::ControlType::TEXTFIELD_NUMBER));
+        EditorField::ControlType::TEXTFIELD_NUMBER);
   }
   if (spec()->request_payer_email()) {
-    fields.push_back(EditorField(
+    fields.emplace_back(
         autofill::EMAIL_ADDRESS,
         l10n_util::GetStringUTF16(IDS_PAYMENTS_EMAIL_FIELD_IN_CONTACT_DETAILS),
-        EditorField::LengthHint::HINT_SHORT, /*required=*/true));
+        EditorField::LengthHint::HINT_SHORT, /*required=*/true);
   }
   return fields;
 }

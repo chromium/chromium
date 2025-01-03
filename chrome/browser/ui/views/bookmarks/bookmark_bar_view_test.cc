@@ -158,7 +158,7 @@ class DialogWaiter : public aura::EnvObserver, public views::WidgetObserver {
 // Waits for a dialog to terminate.
 class DialogCloseWaiter : public views::WidgetObserver {
  public:
-  explicit DialogCloseWaiter(views::Widget* dialog) : dialog_closed_(false) {
+  explicit DialogCloseWaiter(views::Widget* dialog) {
     dialog->AddObserver(this);
   }
 
@@ -188,15 +188,14 @@ class DialogCloseWaiter : public views::WidgetObserver {
     }
   }
 
-  bool dialog_closed_;
+  bool dialog_closed_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
 // Waits for a views::Widget to receive a Tab key.
 class TabKeyWaiter : public ui::EventHandler {
  public:
-  explicit TabKeyWaiter(views::Widget* widget)
-      : widget_(widget), received_tab_(false) {
+  explicit TabKeyWaiter(views::Widget* widget) : widget_(widget) {
     widget_->GetNativeWindow()->AddPreTargetHandler(this);
   }
 
@@ -229,7 +228,7 @@ class TabKeyWaiter : public ui::EventHandler {
   }
 
   raw_ptr<views::Widget> widget_;
-  bool received_tab_;
+  bool received_tab_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
@@ -1522,8 +1521,7 @@ VIEW_TEST(BookmarkBarViewTest14, MAYBE_ContextMenus2)
 class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
  public:
   BookmarkBarViewTest15()
-      : deleted_menu_id_(0),
-        observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
+      : observer_(CreateEventTask(this, &BookmarkBarViewTest15::Step3)) {}
 
  protected:
   void DoTestOnMessageLoop() override {
@@ -1574,7 +1572,7 @@ class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
     Done();
   }
 
-  int deleted_menu_id_;
+  int deleted_menu_id_ = 0;
   BookmarkContextMenuNotificationObserver observer_;
 };
 

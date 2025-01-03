@@ -70,8 +70,7 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 
 class OpenMenuListener : public views::ContextMenuController {
  public:
-  explicit OpenMenuListener(views::View* view)
-      : view_(view), opened_menu_(false) {
+  explicit OpenMenuListener(views::View* view) : view_(view) {
     view_->set_context_menu_controller(this);
   }
   OpenMenuListener(const OpenMenuListener&) = delete;
@@ -90,7 +89,7 @@ class OpenMenuListener : public views::ContextMenuController {
  private:
   raw_ptr<views::View> view_;
 
-  bool opened_menu_;
+  bool opened_menu_ = false;
 };
 
 }  // namespace

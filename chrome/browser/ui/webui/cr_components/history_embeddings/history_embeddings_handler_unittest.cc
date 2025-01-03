@@ -69,7 +69,7 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
       BuildServiceInstanceForBrowserContextForTesting(
           browser_context, std::make_unique<history_embeddings::MockEmbedder>(),
           /*answerer=*/nullptr,
-          /*intent_classfier=*/nullptr);
+          /*intent_classifier=*/nullptr);
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(

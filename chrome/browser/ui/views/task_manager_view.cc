@@ -605,8 +605,8 @@ void TaskManagerView::Init() {
   // Create the table columns.
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const auto& col_data = kColumns[i];
-    columns_.push_back(ui::TableColumn(col_data.id, col_data.align,
-                                       col_data.width, col_data.percent));
+    columns_.emplace_back(col_data.id, col_data.align, col_data.width,
+                          col_data.percent);
     columns_.back().sortable = col_data.sortable;
     columns_.back().initial_sort_is_ascending =
         col_data.initial_sort_is_ascending;

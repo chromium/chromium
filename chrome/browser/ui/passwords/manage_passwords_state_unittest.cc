@@ -195,7 +195,7 @@ void ManagePasswordsStateTest::TestAllUpdates() {
   // Remove and Add form.
   list[0] = PasswordStoreChange(PasswordStoreChange::REMOVE, form);
   form.username_value = u"user15";
-  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
+  list.emplace_back(PasswordStoreChange::ADD, form);
   EXPECT_CALL(mock_client_, UpdateFormManagers()).Times(0);
   passwords_data().ProcessLoginsChanged(list);
   EXPECT_EQ(state, passwords_data().state());
@@ -237,7 +237,7 @@ void ManagePasswordsStateTest::TestBlocklistedUpdates() {
   blocked_form.blocked_by_user = true;
   blocked_form.url = origin.GetURL();
   PasswordStoreChangeList list;
-  list.push_back(PasswordStoreChange(PasswordStoreChange::ADD, blocked_form));
+  list.emplace_back(PasswordStoreChange::ADD, blocked_form);
   passwords_data().ProcessLoginsChanged(list);
   EXPECT_EQ(forms, GetRawPointers(passwords_data().GetCurrentForms()));
   EXPECT_EQ(state, passwords_data().state());

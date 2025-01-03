@@ -307,8 +307,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP.
     int candidate_edge_size =
         static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
-    candidate_sizes.push_back(
-        gfx::Size(candidate_edge_size, candidate_edge_size));
+    candidate_sizes.emplace_back(candidate_edge_size, candidate_edge_size);
   }
   std::vector<size_t> selected_indices;
   SelectFaviconFrameIndices(candidate_sizes, desired_sizes_in_pixel,

@@ -337,7 +337,7 @@ void MediaRouterUI::RemoveIssue(const Issue::Id& issue_id) {
 void MediaRouterUI::LogMediaSinkStatus() {
   std::vector<std::string> sink_ids;
   for (const auto& sink : GetEnabledSinks()) {
-    sink_ids.push_back(std::string(log_util::TruncateId(sink.sink.id())));
+    sink_ids.emplace_back(log_util::TruncateId(sink.sink.id()));
   }
 
   logger_->LogInfo(

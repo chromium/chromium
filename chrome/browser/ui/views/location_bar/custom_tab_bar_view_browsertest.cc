@@ -156,7 +156,7 @@ class UrlHidingInterstitialPage
 class UrlHidingWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit UrlHidingWebContentsObserver(content::WebContents* contents)
-      : content::WebContentsObserver(contents), install_interstitial_(true) {}
+      : content::WebContentsObserver(contents) {}
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     if (!install_interstitial_) {
@@ -172,7 +172,7 @@ class UrlHidingWebContentsObserver : public content::WebContentsObserver {
   void StopBlocking() { install_interstitial_ = false; }
 
  private:
-  bool install_interstitial_;
+  bool install_interstitial_ = true;
 };
 
 }  // namespace

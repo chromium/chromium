@@ -198,15 +198,14 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   CHECK(!is_kiosk_app_mode ||
         zoom::ZoomController::FromWebContents(web_view()->GetWebContents()));
 
-  for (auto iter = accelerator_table.begin(); iter != accelerator_table.end();
-       ++iter) {
+  for (const auto& iter : accelerator_table) {
     if (is_kiosk_app_mode &&
-        !IsCommandAllowedInAppMode(iter->second, /* is_popup */ false)) {
+        !IsCommandAllowedInAppMode(iter.second, /* is_popup */ false)) {
       continue;
     }
 
     focus_manager->RegisterAccelerator(
-        iter->first, ui::AcceleratorManager::kNormalPriority, this);
+        iter.first, ui::AcceleratorManager::kNormalPriority, this);
   }
 }
 

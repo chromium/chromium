@@ -278,9 +278,8 @@ void UnloadController::CancelWindowClose() {
   // case some of this code might not have an effect, but it's still useful to,
   // for example, call the notification(s).
   tabs_needing_before_unload_fired_.clear();
-  for (auto it = tabs_needing_unload_fired_.begin();
-       it != tabs_needing_unload_fired_.end(); ++it) {
-    DevToolsWindow::OnPageCloseCanceled(*it);
+  for (const auto& it : tabs_needing_unload_fired_) {
+    DevToolsWindow::OnPageCloseCanceled(it);
   }
   tabs_needing_unload_fired_.clear();
   if (is_calling_before_unload_handlers()) {
