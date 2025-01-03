@@ -944,7 +944,7 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   CHECK(options.hasConfigURL());
   if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
       options.configURL() == "any") {
-    mojo_options->config->use_registered_config_urls = true;
+    mojo_options->config->from_idp_registration_api = true;
     // We only set the `type` if `configURL` is 'any'.
     if (options.hasType()) {
       mojo_options->config->type = options.type();

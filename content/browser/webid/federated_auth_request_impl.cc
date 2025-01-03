@@ -588,14 +588,15 @@ FederatedAuthRequestImpl::MaybeAddRegisteredProviders(
   std::reverse(registered_config_urls.begin(), registered_config_urls.end());
 
   for (auto& provider : providers) {
-    if (!provider->config->use_registered_config_urls) {
+    if (!provider->config->from_idp_registration_api) {
       result.emplace_back(provider->Clone());
       continue;
     }
 
     for (auto& configURL : registered_config_urls) {
       blink::mojom::IdentityProviderRequestOptionsPtr idp = provider->Clone();
-      idp->config->use_registered_config_urls = false;
+      // Keep `from_idp_registration_api` so it is clear this is a registered
+      // provider.
       idp->config->config_url = configURL;
       result.emplace_back(std::move(idp));
     }

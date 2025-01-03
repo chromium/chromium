@@ -74,9 +74,8 @@ struct IdentityProviderConfig {
   // Explicitly references a specific provider by a Config URL.
   url.mojom.Url config_url;
 
-  // Indirectly references providers that have been registered in the past
-  // rather than directly.
-  bool use_registered_config_urls;
+  // Whether this config comes from the IDP registration API.
+  bool from_idp_registration_api;
 
   // When using registered IDPs, this contains the type of IDP requested.
   string? type;

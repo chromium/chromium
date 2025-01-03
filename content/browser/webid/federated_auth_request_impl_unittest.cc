@@ -1626,9 +1626,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return federated_auth_request_impl_->MaybeAddRegisteredProviders(providers);
   }
 
-  blink::mojom::IdentityProviderRequestOptionsPtr NewNamedIdP(
-      GURL config_url,
-      std::string client_id) {
+  blink::mojom::IdentityProviderRequestOptionsPtr
+  NewNamedIdP(GURL config_url, std::string client_id, bool is_registered) {
     blink::mojom::IdentityProviderRequestOptionsPtr options =
         blink::mojom::IdentityProviderRequestOptions::New();
     blink::mojom::IdentityProviderConfigPtr config =
@@ -1636,6 +1635,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     config->config_url = config_url;
     config->client_id = client_id;
     options->config = std::move(config);
+    options->config->from_idp_registration_api = is_registered;
     return options;
   }
 
@@ -1643,7 +1643,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       std::string client_id) {
     blink::mojom::IdentityProviderConfigPtr config =
         blink::mojom::IdentityProviderConfig::New();
-    config->use_registered_config_urls = true;
+    config->from_idp_registration_api = true;
     config->client_id = client_id;
     blink::mojom::IdentityProviderRequestOptionsPtr options =
         blink::mojom::IdentityProviderRequestOptions::New();
@@ -6915,14 +6915,16 @@ TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersEmptyList) {
 // Test that no registered IdP with only named providers requested.
 TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersNamed) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
-  providers.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+  providers.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
+                                     /*is_registered=*/false));
 
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> result =
       MaybeAddRegisteredProviders(providers);
 
   // Expects the vector to be the same.
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> expected;
-  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
+                                    /*is_registered=*/false));
 
   EXPECT_EQ(expected, result);
 }
@@ -6943,7 +6945,8 @@ TEST_F(FederatedAuthRequestImplTest, MaybeAddRegisteredProvidersAdded) {
 
   // Expects that the registered IdP gets replaced by a named IdP.
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> expected;
-  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
+                                    /*is_registered=*/true));
 
   EXPECT_EQ(expected, result);
 }
@@ -6966,8 +6969,10 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Expects that the registered IdP gets replaced by a named IdP.
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> expected;
-  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
-  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
+                                    /*is_registered=*/true));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp.example"), kClientId,
+                                    /*is_registered=*/true));
 
   EXPECT_EQ(expected, result);
 }
@@ -6989,8 +6994,10 @@ TEST_F(FederatedAuthRequestImplTest,
       MaybeAddRegisteredProviders(providers);
 
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> expected;
-  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
-  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId,
+                                    /*is_registered=*/true));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId,
+                                    /*is_registered=*/true));
 
   EXPECT_EQ(expected, result);
 }
@@ -6999,9 +7006,11 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        MaybeAddRegisteredProvidersInsertedInline) {
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> providers;
-  providers.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
+  providers.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId,
+                                     /*is_registered=*/false));
   providers.emplace_back(NewRegisteredIdP(kClientId));
-  providers.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
+  providers.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId,
+                                     /*is_registered=*/false));
 
   std::vector<GURL> registry;
   registry.emplace_back("https://idp-registered1.example");
@@ -7015,12 +7024,14 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Expects that the registered IdP gets replaced by a named IdP.
   std::vector<blink::mojom::IdentityProviderRequestOptionsPtr> expected;
-  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId));
-  expected.emplace_back(
-      NewNamedIdP(GURL("https://idp-registered2.example"), kClientId));
-  expected.emplace_back(
-      NewNamedIdP(GURL("https://idp-registered1.example"), kClientId));
-  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp1.example"), kClientId,
+                                    /*is_registered=*/false));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp-registered2.example"),
+                                    kClientId, /*is_registered=*/true));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp-registered1.example"),
+                                    kClientId, /*is_registered=*/true));
+  expected.emplace_back(NewNamedIdP(GURL("https://idp2.example"), kClientId,
+                                    /*is_registered=*/false));
 
   EXPECT_EQ(expected, result);
 }
