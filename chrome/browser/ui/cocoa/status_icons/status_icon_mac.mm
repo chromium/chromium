@@ -119,6 +119,11 @@ void StatusIconMac::SetOpenMenuWithSecondaryClick(
       sendActionOn:(NSEventMaskLeftMouseDown | NSEventMaskRightMouseUp)];
 }
 
+void StatusIconMac::OnMenuStateChanged() {
+  // Recreate menu to reflect changes to the menu model.
+  CreateMenu(menu_model_, tool_tip_);
+}
+
 bool StatusIconMac::HasStatusIconMenu() {
   return open_menu_with_secondary_click_ ? menu_model_ : menu_ != nil;
 }
@@ -137,6 +142,11 @@ void StatusIconMac::UpdatePlatformContextMenu(StatusIconMenuModel* model) {
     menu_model_ = model;
   } else {
     SetToolTip(nil);
+    if (model != menu_model_) {
+      observation_.Reset();
+      observation_.Observe(model);
+      menu_model_ = model;
+    }
     CreateMenu(model, tool_tip_);
   }
 }
