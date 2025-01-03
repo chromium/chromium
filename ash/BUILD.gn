@@ -2050,8 +2050,6 @@ component("ash") {
     "system/mahi/mahi_ui_update.h",
     "system/mahi/mahi_utils.cc",
     "system/mahi/mahi_utils.h",
-    "system/mahi/mahi_widget_delegate.cc",
-    "system/mahi/mahi_widget_delegate.h",
     "system/mahi/refresh_banner_view.cc",
     "system/mahi/refresh_banner_view.h",
     "system/mahi/summary_outlines_elucidation_section.cc",
