@@ -783,9 +783,12 @@
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -7712,8 +7715,7 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-// TODO(b/352728209): Add Android-specific hook for Data Controls.
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
       source, metadata, data, std::move(callback));
 #else

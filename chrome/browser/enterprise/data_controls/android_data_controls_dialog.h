@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/enterprise/data_controls/core/browser/data_controls_dialog.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/models/dialog_model.h"
 
 namespace data_controls {
 
@@ -31,8 +32,13 @@ class AndroidDataControlsDialog : public DataControlsDialog,
                             content::WebContents* web_contents,
                             base::OnceCallback<void(bool bypassed)> callback);
 
-  // Return the title and label for the dialog corresponding to the action that
-  // triggered it.
+  // TODO (crbug.com/385163723) Replace with
+  // DataControlsDialog::OnDialogButtonClicked
+  void OnButtonClicked(bool bypassed);
+
+  // Creates the dialog model corresponding to the action that triggered the
+  // data controls.
+  std::unique_ptr<ui::DialogModel> CreateDialogModel();
   std::u16string GetDialogTitle() const;
   std::u16string GetDialogLabel() const;
 

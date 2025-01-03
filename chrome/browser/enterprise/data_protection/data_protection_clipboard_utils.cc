@@ -37,6 +37,12 @@
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_factory.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/data_controls/android_data_controls_dialog.h"
+#include "chrome/browser/enterprise/data_controls/android_data_controls_dialog_factory.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_data_protection {
 
 namespace {
@@ -194,7 +200,7 @@ void PasteIfAllowedByContentAnalysis(
 
 data_controls::DataControlsDialogFactory* GetDialogFactory() {
 #if BUILDFLAG(IS_ANDROID)
-  return nullptr;
+  return data_controls::AndroidDataControlsDialogFactory::GetInstance();
 #else
   return data_controls::DesktopDataControlsDialogFactory::GetInstance();
 #endif
@@ -506,6 +512,14 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsAndroid)) {
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
@@ -515,6 +529,8 @@ void IsClipboardCopyAllowedByPolicy(
   DCHECK(source.browser_context());
 
 #if !BUILDFLAG(IS_ANDROID)
+  // IsUrlAllowedToCopy checks a deprecated CopyPreventionSettings that isn't
+  // applicable on Clank.
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
