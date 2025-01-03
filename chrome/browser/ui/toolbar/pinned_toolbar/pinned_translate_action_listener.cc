@@ -17,7 +17,7 @@ PinnedTranslateActionListener::PinnedTranslateActionListener(
     : tab_(tab) {
   AddTranslationObserver(tab_->GetContents());
 
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&PinnedTranslateActionListener::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
 
@@ -26,7 +26,7 @@ PinnedTranslateActionListener::PinnedTranslateActionListener(
           &PinnedTranslateActionListener::OnTabWillDiscardContents,
           weak_factory_.GetWeakPtr())));
 
-  if (tab_->IsInForeground()) {
+  if (tab_->IsActivated()) {
     UpdateTranslateIndicator();
   }
 }
@@ -47,7 +47,7 @@ void PinnedTranslateActionListener::OnTabWillDiscardContents(
 void PinnedTranslateActionListener::OnIsPageTranslatedChanged(
     content::WebContents* source) {
   CHECK_EQ(tab_->GetContents(), source);
-  if (tab_->IsInForeground()) {
+  if (tab_->IsActivated()) {
     UpdateTranslateIndicator();
   }
 }

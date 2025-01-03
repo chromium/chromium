@@ -69,24 +69,39 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual base::CallbackListSubscription RegisterWillDiscardContents(
       WillDiscardContentsCallback callback) = 0;
 
-  // Whether the tab is in the foreground. When a tab is in the foreground, this
-  // class guarantees that GetContents() will return a non-nullptr WebContents,
-  // and this WebContents will not change. If a tab is dragged out of a window
-  // (creating a new window), it will briefly enter the background, and then
-  // re-enter the foreground. To see if this is happened, check the
-  // BrowserWindowInterface's session id.
-  virtual bool IsInForeground() const = 0;
+  // Whether the tab is the Active Tab in its browser window (see
+  // TabStripModel's SelectionModel's active index for more details about the
+  // active state). When a tab is in the foreground, this class guarantees that
+  // GetContents() will return a non-nullptr WebContents, and this WebContents
+  // will not change. If a tab is dragged out of a window (creating a new
+  // window), it will briefly be deactivated, and then reactivate. To see if
+  // this is happened, check the BrowserWindowInterface's session id.
+  virtual bool IsActivated() const = 0;
 
-  // Register for these two callbacks to detect changes to IsInForeground().
-  using DidEnterForegroundCallback =
-      base::RepeatingCallback<void(TabInterface*)>;
-  virtual base::CallbackListSubscription RegisterDidEnterForeground(
-      DidEnterForegroundCallback callback) = 0;
+  // Register for these two callbacks to detect changes to IsActivated().
+  using DidActivateCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidActivate(
+      DidActivateCallback callback) = 0;
 
-  using WillEnterBackgroundCallback =
-      base::RepeatingCallback<void(TabInterface*)>;
-  virtual base::CallbackListSubscription RegisterWillEnterBackground(
-      WillEnterBackgroundCallback callback) = 0;
+  using WillDeactivateCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterWillDeactivate(
+      WillDeactivateCallback callback) = 0;
+
+  // ONLY USE THIS IF YOURE FEATURE NEEDS MORE SPECIFICITY THAN IsActivated().
+  // Whether the tab is visible in the contents area of the browser window.
+  // This will directly match the attached state until there are features that
+  // provide multiple visible tabs per window. This state is not related to
+  // widget visibility or occlusion of the window.
+  virtual bool IsVisible() const = 0;
+
+  // Register for these two callbacks to detect changes to IsVisible().
+  using DidBecomeVisibleCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidBecomeVisible(
+      DidBecomeVisibleCallback callback) = 0;
+
+  using WillBecomeHiddenCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterWillBecomeHidden(
+      WillBecomeHiddenCallback callback) = 0;
 
   // Register for this callback to detect when a tab will be detached from a
   // window.

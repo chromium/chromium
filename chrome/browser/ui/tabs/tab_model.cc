@@ -89,8 +89,14 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
 
   // Being detached is equivalent to being in the background. So after
   // detachment, if the tab is in the foreground, we must send a notification.
-  if (IsInForeground()) {
+  if (IsActivated()) {
     did_enter_foreground_callback_list_.Notify(this);
+  }
+
+  // Being detached is equivalent to being in the background. So after
+  // detachment, if the tab is in the foreground, we must send a notification.
+  if (IsVisible()) {
+    did_become_visible_callback_list_.Notify(this);
   }
 }
 
@@ -146,6 +152,7 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
 
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
   will_enter_background_callback_list_.Notify(this);
+  will_become_hidden_callback_list_.Notify(this);
 }
 
 void TabModel::WillDetach(base::PassKey<TabStripModel>,
@@ -166,18 +173,32 @@ base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
   return will_discard_contents_callback_list_.Add(std::move(callback));
 }
 
-bool TabModel::IsInForeground() const {
+bool TabModel::IsActivated() const {
   return GetModelForTabInterface()->GetActiveTab() == this;
 }
 
-base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
-    TabInterface::DidEnterForegroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterDidActivate(
+    TabInterface::DidActivateCallback callback) {
   return did_enter_foreground_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
-    TabInterface::WillEnterBackgroundCallback callback) {
+base::CallbackListSubscription TabModel::RegisterWillDeactivate(
+    TabInterface::WillDeactivateCallback callback) {
   return will_enter_background_callback_list_.Add(std::move(callback));
+}
+
+bool TabModel::IsVisible() const {
+  return GetModelForTabInterface()->GetActiveTab() == this;
+}
+
+base::CallbackListSubscription TabModel::RegisterDidBecomeVisible(
+    TabInterface::DidBecomeVisibleCallback callback) {
+  return did_become_visible_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterWillBecomeHidden(
+    TabInterface::WillBecomeHiddenCallback callback) {
+  return will_become_hidden_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription TabModel::RegisterWillDetach(
@@ -252,6 +273,7 @@ void TabModel::OnTabStripModelChanged(
 
   if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
+    did_become_visible_callback_list_.Notify(this);
     return;
   }
 }

@@ -87,10 +87,10 @@ TabDialogManager::TabDialogManager(TabInterface* tab_interface)
     : content::WebContentsObserver(tab_interface->GetContents()),
       tab_interface_(tab_interface) {
   tab_did_enter_foreground_subscription_ =
-      tab_interface_->RegisterDidEnterForeground(base::BindRepeating(
+      tab_interface_->RegisterDidActivate(base::BindRepeating(
           &TabDialogManager::TabDidEnterForeground, base::Unretained(this)));
   tab_will_enter_background_subscription_ =
-      tab_interface_->RegisterWillEnterBackground(base::BindRepeating(
+      tab_interface_->RegisterWillDeactivate(base::BindRepeating(
           &TabDialogManager::TabWillEnterBackground, base::Unretained(this)));
   tab_will_detach_subscription_ =
       tab_interface_->RegisterWillDetach(base::BindRepeating(
@@ -121,7 +121,7 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
           constrained_window::kConstrainedWindowWidgetIdentifier));
   scoped_ignore_input_events_ =
       tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
-  if (tab_interface_->IsInForeground()) {
+  if (tab_interface_->IsActivated()) {
     widget_->Show();
   }
 }

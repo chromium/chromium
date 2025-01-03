@@ -186,13 +186,14 @@ class FakeTabInterface : public tabs::MockTabInterface {
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
-  void SetIsInForeground(bool foreground) { is_in_foreground_ = foreground; }
-  bool IsInForeground() const override { return is_in_foreground_; }
+
+  void SetIsActivated(bool active) { is_activated = active; }
+  bool IsActivated() const override { return is_activated; }
   bool CanShowModalUI() const override { return true; }
 
  private:
   raw_ptr<content::WebContents> contents_;
-  bool is_in_foreground_ = true;
+  bool is_activated = true;
 };
 
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
@@ -511,11 +512,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   void TabWillEnterBackground(TestFedCmAccountSelectionView* view) {
     view->TabWillEnterBackground(tab_interface_.get());
-    tab_interface_->SetIsInForeground(false);
+    tab_interface_->SetIsActivated(false);
   }
 
   void TabForegrounded(TestFedCmAccountSelectionView* view) {
-    tab_interface_->SetIsInForeground(true);
+    tab_interface_->SetIsActivated(true);
     view->TabForegrounded(tab_interface_.get());
   }
 

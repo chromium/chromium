@@ -12,7 +12,7 @@ namespace tabs {
 DisconnectFileChooserOnBackgroundController::
     DisconnectFileChooserOnBackgroundController(TabInterface& tab)
     : will_enter_background_subscription_(
-          tab.RegisterWillEnterBackground(base::BindRepeating(
+          tab.RegisterWillBecomeHidden(base::BindRepeating(
               &DisconnectFileChooserOnBackgroundController::WillEnterBackground,
               base::Unretained(this)))) {}
 
