@@ -882,7 +882,7 @@
     "META": {"sizes": {"includes": [200],}},
     "includes": [6480],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/demo_mode_app_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
    "includes": [6500],
   },

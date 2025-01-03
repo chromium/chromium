@@ -70,13 +70,6 @@ ash_generated_grit("files_internals_resources") {
   deps = [ "//ash/webui/files_internals:build_grd" ]
 }
 
-# Resources used by chrome-untrusted://demo-mode-app
-ash_generated_grit("demo_mode_app_resources") {
-  source =
-      "$root_gen_dir/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd"
-  deps = [ "//ash/webui/demo_mode_app_ui:build_grd" ]
-}
-
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
 # that do not come from the app bundle (below).
 grit("help_app_resources") {

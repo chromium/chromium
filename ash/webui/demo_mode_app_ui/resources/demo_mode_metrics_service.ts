@@ -4,98 +4,95 @@
 
 /**
  * The page/pillar name for the pages in the Highlights app.
- * @enum {string}
  */
-export const Page = {
-  HOME: 'Home',
-  EASY: 'Easy',
-  FAST: 'Fast',
-  POWERFUL: 'Powerful',
-  SECURE: 'Secure',
-  DISPLAY: 'Display',
-  KEYBOARD: 'Keyboard',
-  GRAPHICS: 'Graphics',
-  GAME: 'Game',
-  PERIPHERALS: 'Peripherals',
-  PERFORMANCE: 'Performance',
-  APPS: 'Apps',
-  CHROMEOS: 'ChromeOS',
+export enum Page {
+  HOME = 'Home',
+  EASY = 'Easy',
+  FAST = 'Fast',
+  POWERFUL = 'Powerful',
+  SECURE = 'Secure',
+  DISPLAY = 'Display',
+  KEYBOARD = 'Keyboard',
+  GRAPHICS = 'Graphics',
+  GAME = 'Game',
+  PERIPHERALS = 'Peripherals',
+  PERFORMANCE = 'Performance',
+  APPS = 'Apps',
+  CHROMEOS = 'ChromeOS',
 
   // New in 2024 Cycle 1 refresh
   // CBX:
-  GOOGLE_AI: 'GoogleAI',
-  EASY_TO_USE: 'EasyToUse',
+  GOOGLE_AI = 'GoogleAI',
+  EASY_TO_USE = 'EasyToUse',
   // CB (Shared with CBX: Performance, Apps):
-  GOOGLE_BUILT_IN: 'GoogleBuiltIn',
-};
+  GOOGLE_BUILT_IN = 'GoogleBuiltIn',
+}
 
 /**
  * The name for the details pages in the Highlights app.
- * @enum {string}
  */
-export const DetailsPage = {
+export enum DetailsPage {
   // 2023 CBX first released:
-  ADOBE: 'Adobe',
-  BATTERY: 'Battery',
-  COMPARISON: 'Comparison',
-  DISPLAY_ENTERTAINMENT: 'DisplayEntertainment',
-  DISPLAY_PERFORMANCE: 'DisplayPerformance',
-  ENTERTAINMENT_APPS: 'EntertainmentApps',
-  GOOGLE_APPS: 'GoogleApps',
-  LUMAFUSION: 'LumaFusion',
-  MESSAGING: 'Messaging',
-  MOBILE_GAMING: 'MobileGaming',
-  MS_365_APPS: 'MS365Apps',
-  MS_OFFICE: 'MSOffice',
-  NEARBY_SHARE: 'NearbyShare',
-  OFFLINE_MODE: 'OfflineMode',
-  PC_CONSOLE_GAMING: 'PCConsoleGaming',
-  PHOTOS: 'Photos',
-  PROCESSOR: 'Processor',
-  STORAGE: 'Storage',
-  SWITCHING: 'Switching',
-  VIDEO_CALL: 'VideoCall',
+  ADOBE = 'Adobe',
+  BATTERY = 'Battery',
+  COMPARISON = 'Comparison',
+  DISPLAY_ENTERTAINMENT = 'DisplayEntertainment',
+  DISPLAY_PERFORMANCE = 'DisplayPerformance',
+  ENTERTAINMENT_APPS = 'EntertainmentApps',
+  GOOGLE_APPS = 'GoogleApps',
+  LUMAFUSION = 'LumaFusion',
+  MESSAGING = 'Messaging',
+  MOBILE_GAMING = 'MobileGaming',
+  MS_365_APPS = 'MS365Apps',
+  MS_OFFICE = 'MSOffice',
+  NEARBY_SHARE = 'NearbyShare',
+  OFFLINE_MODE = 'OfflineMode',
+  PC_CONSOLE_GAMING = 'PCConsoleGaming',
+  PHOTOS = 'Photos',
+  PROCESSOR = 'Processor',
+  STORAGE = 'Storage',
+  SWITCHING = 'Switching',
+  VIDEO_CALL = 'VideoCall',
 
   // New in 2024 Cycle 1 refresh
   // CBX:
-  BUILT_IN_SECURITY:'BuiltInSecurity',
-  WEBCAM: 'Webcam',
-  GAME_DASH_BOARD: 'GameDashboard',
-  GEMINI_FOR_ALL:'GeminiForAll',
-  HELP_ME_WRITE: 'HelpMeWrite',
-  GEMINI_FOR_WORK_SPACE: 'GeminiForWorkSpace',
-  AI_BACKGROUND: 'AIBackground',
-  AI_PREMIUM_PLAN: 'AIPremiumPlan',
+  BUILT_IN_SECURITY = 'BuiltInSecurity',
+  WEBCAM = 'Webcam',
+  GAME_DASH_BOARD = 'GameDashboard',
+  GEMINI_FOR_ALL = 'GeminiForAll',
+  HELP_ME_WRITE = 'HelpMeWrite',
+  GEMINI_FOR_WORK_SPACE = 'GeminiForWorkSpace',
+  AI_BACKGROUND = 'AIBackground',
+  AI_PREMIUM_PLAN = 'AIPremiumPlan',
 
   // CB, note that detail page for generic was not recorded before 2024 C1:
-  FAST_BOOT: 'FastBoot',
-  AUTO_UPDATE: 'AutoUpdate',
-  EASY_SETUP:'EasySetup',
-  LAUNCHER_SEARCH:'LauncherSearch',
-  GOOGLE_TOOLS_BUILT_IN:'GoogleToolsBuiltIn',
-  TITAN_C2:'TitanC2',
-  CREATIVITY:'Creativity',
-  ENTERTAINMENT:'Entertainment',
-  PRODUCTIVITY:'Productivity',
-  PLAY_STORE:'PlayStore',
+  FAST_BOOT = 'FastBoot',
+  AUTO_UPDATE = 'AutoUpdate',
+  EASY_SETUP = 'EasySetup',
+  LAUNCHER_SEARCH = 'LauncherSearch',
+  GOOGLE_TOOLS_BUILT_IN = 'GoogleToolsBuiltIn',
+  TITAN_C2 = 'TitanC2',
+  CREATIVITY = 'Creativity',
+  ENTERTAINMENT = 'Entertainment',
+  PRODUCTIVITY = 'Productivity',
+  PLAY_STORE = 'PlayStore',
 
   // Enum shared between CB & CBX are: BATTERY, GOOGLE_APPS, NEARBY_SHARE,
   // MESSAGING, BUILT_IN_SECURITY,MS_365_APPS, SWITCHING, COMPARISON
 
   // New in 2024 Cycle 2 refresh
   // CBX:
-  HELP_ME_READ: 'HelpMeRead',
-  LIVE_TRANSLATE: 'LiveTranslate',
-};
+  HELP_ME_READ = 'HelpMeRead',
+  LIVE_TRANSLATE = 'LiveTranslate',
+}
 
 /**
  * The buttons in each pillar page of the Highlights app.
- * @enum {string}
  */
-export const PillarButton = {
-  NEXT: 'Next',
-  PREVIOUS: 'Previous',
-};
+export enum PillarButton {
+  NEXT = 'Next',
+  PREVIOUS = 'Previous',
+}
 
 /**
  * Errors in the Highlights app.
@@ -104,20 +101,18 @@ export const PillarButton = {
  *
  * These values are persisted to logs, so entries should not be renumbered and
  * numeric values should never be reused.
- *
- * @enum {number}
  */
-const DemoModeHighlightsError = {
-  ATTRACTION_LOOP_TIMESTAMP_INVALID: 0,
-  PAGE_VIEW_DURATION_INVALID: 1,
-  DETAILS_PAGE_VIEW_DURATION_INVALID: 2,
-};
+enum DemoModeHighlightsError {
+  ATTRACTION_LOOP_TIMESTAMP_INVALID = 0,
+  PAGE_VIEW_DURATION_INVALID = 1,
+  DETAILS_PAGE_VIEW_DURATION_INVALID = 2,
+}
 
 /**
  * A map between the Page in this js file and DemoModeHighlightsAction enum in
  * the UMA enums.xml.
  */
-const FirstInteractionActionMap = new Map([
+const FirstInteractionActionMap: Map<string, number> = new Map([
   [Page.HOME, 0],
   [Page.EASY, 1],
   [Page.FAST, 2],
@@ -147,9 +142,7 @@ const FirstInteractionActionMap = new Map([
  * Chromium, without first consulting the Demo Mode team.
  */
 class DemoMetricsService {
-  constructor() {
-    this.firstInteractionRecorded = false;
-  }
+  firstInteractionRecorded: boolean = false;
 
   // Record the action that the user breaks the current Attract Loop.
   recordAttractLoopBreak() {
@@ -160,9 +153,8 @@ class DemoMetricsService {
   /**
    * Record the timestamp (i.e. milliseconds from the beginning of the Attract
    * Loop video) at which the user broke the Attract Loop.
-   * @param timestampInMilliseconds
    */
-  recordAttractLoopBreakTimestamp(timestampInMilliseconds) {
+  recordAttractLoopBreakTimestamp(timestampInMilliseconds: number) {
     if (isNaN(timestampInMilliseconds)) {
       this.recordError_(
           DemoModeHighlightsError.ATTRACTION_LOOP_TIMESTAMP_INVALID);
@@ -176,23 +168,21 @@ class DemoMetricsService {
 
   /**
    * Record the first action of current user.
-   * @param {Page} action
    */
-  recordFirstInteraction(action) {
+  recordFirstInteraction(action: Page) {
     if (!this.firstInteractionRecorded) {
       chrome.metricsPrivateIndividualApis.recordEnumerationValue(
           'DemoMode.Highlights.FirstInteraction',
-          FirstInteractionActionMap.get(action),
-          FirstInteractionActionMap.get('MAX_VALUE'));
+          FirstInteractionActionMap.get(action)!,
+          FirstInteractionActionMap.get('MAX_VALUE')!);
       this.firstInteractionRecorded = true;
     }
   }
 
   /**
    * Record the button clicks in home page of the current user.
-   * @param {Page} page
    */
-  recordHomePageButtonClick(page) {
+  recordHomePageButtonClick(page: Page) {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_Highlights_HomePage_Click_' + page + 'Button');
     this.recordFirstInteraction(page);
@@ -200,9 +190,8 @@ class DemoMetricsService {
 
   /**
    * Record the button clicks in home page of the current user.
-   * @param {Page} page
    */
-  recordNavbarButtonClick(page) {
+  recordNavbarButtonClick(page: Page) {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_Highlights_Navbar_Click_' + page + 'Button');
     this.recordFirstInteraction(page);
@@ -210,19 +199,16 @@ class DemoMetricsService {
 
   /**
    * Record the button click in pillar pages of the current user.
-   * @param {PillarButton} pillarButton
    */
-  recordPillarPageButtonClick(pillarButton) {
+  recordPillarPageButtonClick(pillarButton: PillarButton) {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_Highlights_PillarPage_Click_' + pillarButton + 'Button');
   }
 
   /**
    * Record the duration of the user staying on the page.
-   * @param {Page} page
-   * @param {number} durationInMilliseconds
    */
-  recordPageViewDuration(page, durationInMilliseconds) {
+  recordPageViewDuration(page: Page, durationInMilliseconds: number) {
     if (!durationInMilliseconds) {
       this.recordError_(DemoModeHighlightsError.PAGE_VIEW_DURATION_INVALID);
       return;
@@ -234,18 +220,17 @@ class DemoMetricsService {
 
   /**
    * Record the details page clicked by the current user
-   * @param {DetailsPage} detailsPage
    */
-  recordDetailsPageClicked(detailsPage) {
+  recordDetailsPageClicked(detailsPage: DetailsPage) {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_Highlights_DetailsPage_Clicked_' + detailsPage + 'Button');
   }
 
   /**
    * Record the duration of the user staying on a details page
-   * @param {DetailsPage} detailsPage
    */
-  recordDetailsPageViewDuration(detailsPage, durationInMilliseconds) {
+  recordDetailsPageViewDuration(
+      detailsPage: DetailsPage, durationInMilliseconds?: number) {
     if (!durationInMilliseconds) {
       this.recordError_(
           DemoModeHighlightsError.DETAILS_PAGE_VIEW_DURATION_INVALID);
@@ -258,10 +243,8 @@ class DemoMetricsService {
 
   /**
    * Record error in highlight app.
-   * @param {DemoModeHighlightsError} error
-   * @private
    */
-  recordError_(error) {
+  private recordError_(error: DemoModeHighlightsError) {
     const maxValue = Object.keys(DemoModeHighlightsError).length;
     chrome.metricsPrivateIndividualApis.recordEnumerationValue(
         'DemoMode.Highlights.Error', error, maxValue);
