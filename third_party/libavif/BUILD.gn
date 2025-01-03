@@ -38,6 +38,7 @@ libavif_decoder_sources = [
   "src/src/io.c",
   "src/src/mem.c",
   "src/src/obu.c",
+  "src/src/properties.c",
   "src/src/rawdata.c",
   "src/src/read.c",
   "src/src/reformat.c",
