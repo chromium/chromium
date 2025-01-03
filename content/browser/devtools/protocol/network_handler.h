@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/browser/devtools/protocol/protocol.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
@@ -336,6 +337,11 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
 
+  DispatchResponse SetCookieControls(
+      bool enable_third_party_cookie_restriction,
+      bool disable_third_party_cookie_metadata,
+      bool disable_third_party_cookie_heuristics) override;
+
   // Protocol builders.
   static String BuildPrivateNetworkRequestPolicy(
       network::mojom::PrivateNetworkRequestPolicy policy);
@@ -380,7 +386,11 @@ class NetworkHandler : public DevToolsDomainHandler,
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartition> storage_partition_;
   raw_ptr<RenderFrameHostImpl> host_;
-  bool enabled_;
+  bool enabled_ = false;
+  bool enable_third_party_cookie_restriction_ = false;
+  bool disable_third_party_cookie_metadata_ = false;
+  bool disable_third_party_cookie_heuristics_ = false;
+
 #if BUILDFLAG(ENABLE_REPORTING)
   mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
