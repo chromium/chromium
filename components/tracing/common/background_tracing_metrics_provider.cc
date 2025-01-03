@@ -79,11 +79,12 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
              base::OnceCallback<void(bool)> done_callback,
              metrics::ChromeUserMetricsExtension* uma_proto,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::optional<std::string> compressed_trace,
-             std::optional<std::string> serialized_system_profile) {
-            if (!compressed_trace ||
+             std::optional<std::string> compressed_trace_content,
+             std::optional<std::string> serialized_system_profile,
+             base::OnceClosure upload_complete) {
+            if (!compressed_trace_content ||
                 !std::move(provide_embedder_metrics)
-                     .Run(uma_proto, std::move(*compressed_trace))) {
+                     .Run(uma_proto, std::move(*compressed_trace_content))) {
               task_runner->PostTask(
                   FROM_HERE, base::BindOnce(std::move(done_callback), false));
               return;
@@ -100,6 +101,7 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
                 {base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                 std::move(serialize_log_callback)
+                    .Then(std::move(upload_complete))
                     .Then(base::BindPostTask(
                         task_runner,
                         base::BindOnce(std::move(done_callback), true))));

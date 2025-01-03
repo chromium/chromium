@@ -1004,13 +1004,14 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   std::string compressed_trace;
   base::RunLoop run_loop;
   BackgroundTracingManager::GetInstance().GetTraceToUpload(
-      base::BindLambdaForTesting(
-          [&](std::optional<std::string> trace_content,
-              std::optional<std::string> system_profile) {
-            ASSERT_TRUE(trace_content);
-            compressed_trace = std::move(*trace_content);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](std::optional<std::string> trace_content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
+        ASSERT_TRUE(trace_content);
+        compressed_trace = std::move(*trace_content);
+        std::move(upload_complete).Run();
+        run_loop.Quit();
+      }));
   run_loop.Run();
 
   std::string serialized_trace;
