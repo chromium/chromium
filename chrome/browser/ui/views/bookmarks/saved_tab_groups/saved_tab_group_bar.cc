@@ -63,9 +63,6 @@
 namespace tab_groups {
 namespace {
 
-// The maximum number of buttons (excluding the overflow menu button) that can
-// appear in the SavedTabGroupBar.
-constexpr int kMaxVisibleButtons = 4;
 // The amount of padding between elements listed in the overflow menu.
 const int kOverflowMenuButtonPadding = 8;
 // The padding at the top and bottom of the bar used to center all displayed
@@ -196,8 +193,7 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    bool animations_enabled = true)
     : tab_group_service_(tab_group_service),
       browser_(browser),
-      animations_enabled_(animations_enabled),
-      ui_update_enabled_(IsTabGroupsSaveUIUpdateEnabled()) {
+      animations_enabled_(animations_enabled) {
   DCHECK(browser_);
   DCHECK(tab_group_service);
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
@@ -253,7 +249,6 @@ SavedTabGroupBar::~SavedTabGroupBar() {
 }
 
 void SavedTabGroupBar::ShowEverythingMenu() {
-  CHECK(ui_update_enabled_);
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_EverythingButtonPressed"));
   if (everything_menu_ && everything_menu_->IsShowing()) {
@@ -410,20 +405,6 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
   drag_data_->SetLocation(gfx::Point(mirrored_x, event.location().y()));
   UpdateDropIndex();
 
-  // Since v2 do not support dragging tab group into overflow menu, we only need
-  // to show the menu for v1;
-  if (!ui_update_enabled_) {
-    const bool dragging_over_button =
-        overflow_button_->GetVisible() &&
-        mirrored_x >= overflow_button_->bounds().x();
-    const bool would_drop_into_overflow =
-        GetDropIndex() >= static_cast<size_t>(GetNumberOfVisibleGroups());
-
-    if (dragging_over_button || would_drop_into_overflow) {
-      MaybeShowOverflowMenu();
-    }
-  }
-
   return ui::DragDropTypes::DRAG_MOVE;
 }
 
@@ -512,13 +493,11 @@ void SavedTabGroupBar::Layout(PassKey) {
   const int overflow_button_width =
       overflow_button_->GetPreferredSize().width() + kBetweenElementSpacing;
 
-  if (ui_update_enabled_) {
-    if (stg_bar_width == 0) {
-      return;
-    } else {
-      CHECK(stg_bar_width >= overflow_button_width);
-      should_show_overflow = true;
-    }
+  if (stg_bar_width == 0) {
+    return;
+  } else {
+    CHECK(stg_bar_width >= overflow_button_width);
+    should_show_overflow = true;
   }
 
   const int last_visible_button_index = CalculateLastVisibleButtonIndexForWidth(
@@ -527,10 +506,7 @@ void SavedTabGroupBar::Layout(PassKey) {
   UpdateOverflowMenu();
 }
 
-int SavedTabGroupBar::V2CalculatePreferredWidthRestrictedBy(
-    int max_width) const {
-  DCHECK(ui_update_enabled_);
-
+int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
   // For V2, the preferred width of Saved tab groups bar depends on the number
   // of pinned tab groups (pinned state is WIP) in bookmark bar (plus Everything
   // button);
@@ -554,41 +530,6 @@ int SavedTabGroupBar::V2CalculatePreferredWidthRestrictedBy(
   return width;
 }
 
-int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
-  if (ui_update_enabled_) {
-    return V2CalculatePreferredWidthRestrictedBy(max_width);
-  }
-
-  // Early return if the only button is the overflow button. It should be
-  // invisible in this case. Happens when saved tab groups is enabled and no
-  // groups are saved yet.
-  if (overflow_button_ == children()[0]) {
-    return 0;
-  }
-
-  // Denotes whether or not the overflow button should be shown. This is true
-  // when there are strictly greater than kMaxVisibleButtons buttons OR when the
-  // kMaxVisibleButtons buttons do not fit in the space provided.
-  const bool should_show_overflow = ShouldShowOverflowButtonForWidth(max_width);
-  const int overflow_button_width =
-      kBetweenElementSpacing + overflow_button_->GetPreferredSize().width();
-
-  // Reserve space for the overflow button.
-  if (should_show_overflow) {
-    max_width -= overflow_button_width;
-  }
-
-  const int last_visible_button_index =
-      CalculateLastVisibleButtonIndexForWidth(max_width);
-
-  int width = should_show_overflow ? overflow_button_width : 0;
-  for (int i = 0; i <= last_visible_button_index; ++i) {
-    width += children()[i]->GetPreferredSize().width() + kBetweenElementSpacing;
-  }
-
-  return width;
-}
-
 bool SavedTabGroupBar::IsOverflowButtonVisible() {
   return overflow_button_ && overflow_button_->GetVisible();
 }
@@ -596,7 +537,7 @@ bool SavedTabGroupBar::IsOverflowButtonVisible() {
 void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
                                          int index) {
   // Do not add unpinned tab group for v2.
-  if (ui_update_enabled_ && !group.is_pinned()) {
+  if (!group.is_pinned()) {
     return;
   }
 
@@ -639,13 +580,13 @@ void SavedTabGroupBar::UpsertSavedTabGroupButton(const base::Uuid& guid) {
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
 
   bool currently_has_a_button = button != nullptr;
-  bool should_have_a_button = (!ui_update_enabled_ || group->is_pinned()) &&
-                              !group->saved_tabs().empty();
+  bool should_have_a_button =
+      group->is_pinned() && !group->saved_tabs().empty();
 
   if (currently_has_a_button && should_have_a_button) {
     button->UpdateButtonData(group.value());
   } else if (!currently_has_a_button && should_have_a_button) {
-    AddTabGroupButton(group.value(), ui_update_enabled_ ? 0 : index.value());
+    AddTabGroupButton(group.value(), 0);
   } else if (currently_has_a_button && !should_have_a_button) {
     RemoveChildViewT(button);
   }
@@ -747,9 +688,7 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
 std::unique_ptr<SavedTabGroupOverflowButton>
 SavedTabGroupBar::CreateOverflowButton() {
   return std::make_unique<SavedTabGroupOverflowButton>(base::BindRepeating(
-      ui_update_enabled_ ? &SavedTabGroupBar::ShowEverythingMenu
-                         : &SavedTabGroupBar::MaybeShowOverflowMenu,
-      base::Unretained(this)));
+      &SavedTabGroupBar::ShowEverythingMenu, base::Unretained(this)));
 }
 
 void SavedTabGroupBar::MaybeShowOverflowMenu() {
@@ -870,11 +809,7 @@ bool SavedTabGroupBar::ShouldShowOverflowButtonForWidth(int max_width) const {
 
 int SavedTabGroupBar::CalculateLastVisibleButtonIndexForWidth(
     int max_width) const {
-  // kMaxVisibleButtons does not apply to v2.
-  const int buttons_to_consider =
-      ui_update_enabled_
-          ? children().size() - 1
-          : std::min(children().size() - 1, size_t(kMaxVisibleButtons));
+  const int buttons_to_consider = children().size() - 1;
   int current_width = 0;
 
   // Returns an invalid index when no button is visible.

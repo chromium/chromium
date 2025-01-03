@@ -154,15 +154,6 @@ void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
 
-  // In V1, give a default position to groups if it is not already set.
-  // In V2, do nothing because unpinned saved tab groups don't have position
-  // set.
-  // Shared tab groups don't support positions.
-  if (!IsTabGroupsSaveUIUpdateEnabled() && !saved_group.is_shared_tab_group() &&
-      !saved_group.position().has_value()) {
-    saved_group.SetPosition(Count());
-  }
-
   stats::RecordEmptyGroupsMetricsOnGroupAddedLocally(saved_group, is_loaded_);
 
   InsertGroupImpl(std::move(saved_group));
@@ -761,7 +752,6 @@ void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
 }
 
 void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
-  CHECK(IsTabGroupsSaveUIUpdateEnabled());
   constexpr size_t kMaxNumberOfGroupToPin = 4;
   // Pin the first 4 saved tab groups from V1.
   for (size_t i = 0;
@@ -845,7 +835,6 @@ void SavedTabGroupModel::UpdateVisualDataImpl(
 }
 
 void SavedTabGroupModel::TogglePinState(base::Uuid id) {
-  CHECK(IsTabGroupsSaveUIUpdateEnabled());
   if (!Contains(id)) {
     return;
   }

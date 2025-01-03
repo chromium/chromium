@@ -1878,8 +1878,7 @@ void AppMenuModel::Build() {
                            kBookmarksMenuItem);
   }
 
-  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-      browser_->profile()->IsRegularProfile()) {
+  if (browser_->profile()->IsRegularProfile()) {
     auto saved_tab_groups_model = std::make_unique<ui::SimpleMenuModel>(this);
     sub_menus_.push_back(std::move(saved_tab_groups_model));
     AddSubMenuWithStringIdAndVectorIcon(

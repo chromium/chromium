@@ -74,12 +74,8 @@ std::optional<std::string> GetCacheGuidFromSpecifics(
 
 std::optional<size_t> GroupPositionFromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specifics) {
-  // In v1 we always set tab group position even if the proto is not set, which
-  // gives a default position of 0. In v2 we leave the position unset if the
-  // proto is not set for unpinned tab groups.
-  if (!IsTabGroupsSaveUIUpdateEnabled()) {
-    return specifics.group().position();
-  }
+  // We leave the position unset if the proto is not set for unpinned tab
+  // groups.
   if (specifics.group().has_pinned_position()) {
     return specifics.group().pinned_position();
   }
@@ -227,11 +223,7 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
   }
 
   if (group.position().has_value()) {
-    if (IsTabGroupsSaveUIUpdateEnabled()) {
-      pb_group->set_pinned_position(group.position().value());
-    } else {
-      pb_group->set_position(group.position().value());
-    }
+    pb_group->set_pinned_position(group.position().value());
   }
 
   if (AreLocalIdsPersisted()) {

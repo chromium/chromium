@@ -588,8 +588,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "showHoverCardImagesOption",
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
-  html_source->AddBoolean("tabGroupsSaveUIUpdateEnabled",
-                          tab_groups::IsTabGroupsSaveUIUpdateEnabled());
   html_source->AddBoolean("showTabSearchPositionSettings",
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",

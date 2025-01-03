@@ -95,10 +95,6 @@ bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
 
-bool IsTabGroupsSaveUIUpdateEnabled() {
-  return true;
-}
-
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
 }

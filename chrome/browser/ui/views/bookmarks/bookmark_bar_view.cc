@@ -789,7 +789,6 @@ void BookmarkBarView::Layout(PassKey) {
     // height of `saved_tab_group_bar_`).
     saved_tab_group_bar_->overflow_button()->SetPreferredSize(
         gfx::Size(button_height, button_height));
-    if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
       // Calculate the save tab group width without any restriction.
       int saved_tab_group_max_width =
           saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(INT_MAX);
@@ -816,9 +815,6 @@ void BookmarkBarView::Layout(PassKey) {
               saved_tab_group_max_width, estimate_bookmark_buttons_width,
               max_x - x -
                   saved_tab_groups_separator_view_->GetPreferredSize().width());
-    } else {
-      saved_tab_groups_bar_available_width = max_x - x;
-    }
 
     saved_tab_group_bar_width =
         saved_tab_group_bar_->CalculatePreferredWidthRestrictedBy(

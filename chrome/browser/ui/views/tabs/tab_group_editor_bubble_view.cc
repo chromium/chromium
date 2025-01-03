@@ -617,8 +617,7 @@ bool TabGroupEditorBubbleView::CanSaveGroups() const {
 }
 
 bool TabGroupEditorBubbleView::CanShareGroups() const {
-  return CanSaveGroups() && tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-         tab_groups::IsTabGroupsSaveV2Enabled() &&
+  return CanSaveGroups() && tab_groups::IsTabGroupsSaveV2Enabled() &&
          base::FeatureList::IsEnabled(
              data_sharing::features::kDataSharingFeature);
 }

@@ -392,7 +392,7 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
   SetColor(color);
   if (position.has_value()) {
     SetPosition(position.value());
-  } else if (IsTabGroupsSaveUIUpdateEnabled()) {
+  } else {
     SetPinned(false);
   }
 

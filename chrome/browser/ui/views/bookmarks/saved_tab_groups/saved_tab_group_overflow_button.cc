@@ -29,7 +29,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-static constexpr int kDefaultIconSize = 16;
 static constexpr int kUIUpdateIconSize = 20;
 }  // namespace
 
@@ -39,13 +38,10 @@ SavedTabGroupOverflowButton::SavedTabGroupOverflowButton(
     PressedCallback callback)
     : views::MenuButton(std::move(callback)) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
-  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IsTabGroupsSaveUIUpdateEnabled() ? IDS_ACCNAME_TAB_GROUPS_EVERYTHING
-                                       : IDS_ACCNAME_SAVED_TAB_GROUPS_CHEVRON));
-  SetTooltipText(l10n_util::GetStringUTF16(
-      IsTabGroupsSaveUIUpdateEnabled()
-          ? IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP
-          : IDS_SAVED_TAB_GROUPS_OVERFLOW_BUTTON_TOOLTIP));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_GROUPS_EVERYTHING));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUPS_EVERYTHING_BUTTON_TOOLTIP));
   SetFlipCanvasOnPaintForRTLUI(true);
   ConfigureInkDropForToolbar(this);
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -68,10 +64,8 @@ void SavedTabGroupOverflowButton::OnThemeChanged() {
   views::MenuButton::OnThemeChanged();
 
   ui::ColorProvider* color_provider = GetColorProvider();
-  bool is_ui_update = IsTabGroupsSaveUIUpdateEnabled();
-  const gfx::VectorIcon& icon = is_ui_update ? kSavedTabGroupBarEverythingIcon
-                                             : kBookmarkbarOverflowRefreshIcon;
-  const int icon_size = is_ui_update ? kUIUpdateIconSize : kDefaultIconSize;
+  const gfx::VectorIcon& icon = kSavedTabGroupBarEverythingIcon;
+  const int icon_size = kUIUpdateIconSize;
   SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(

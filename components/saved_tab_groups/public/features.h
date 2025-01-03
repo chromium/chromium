@@ -37,8 +37,6 @@ BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 extern bool IsTabGroupsSaveV2Enabled();
 
-extern bool IsTabGroupsSaveUIUpdateEnabled();
-
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
 extern bool IsTabGroupsDeferringRemoteNavigations();

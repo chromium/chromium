@@ -336,17 +336,17 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   const base::Uuid sync_id_2 = AddGroupFromLocal();
   const base::Uuid sync_id_3 = AddGroupFromLocal();
 
-    ASSERT_THAT(GetButtonGUIDs(),
-                testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
-    service()->UpdateGroupPosition(sync_id_2, std::nullopt, 2);
-    EXPECT_THAT(GetButtonGUIDs(),
-                testing::ElementsAre(sync_id_3, sync_id_1, sync_id_2));
-    service()->UpdateGroupPosition(sync_id_2, std::nullopt, 0);
-    EXPECT_THAT(GetButtonGUIDs(),
-                testing::ElementsAre(sync_id_2, sync_id_3, sync_id_1));
-    service()->UpdateGroupPosition(sync_id_2, std::nullopt, 1);
-    EXPECT_THAT(GetButtonGUIDs(),
-                testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
+  ASSERT_THAT(GetButtonGUIDs(),
+              testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
+  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 2);
+  EXPECT_THAT(GetButtonGUIDs(),
+              testing::ElementsAre(sync_id_3, sync_id_1, sync_id_2));
+  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 0);
+  EXPECT_THAT(GetButtonGUIDs(),
+              testing::ElementsAre(sync_id_2, sync_id_3, sync_id_1));
+  service()->UpdateGroupPosition(sync_id_2, std::nullopt, 1);
+  EXPECT_THAT(GetButtonGUIDs(),
+              testing::ElementsAre(sync_id_3, sync_id_2, sync_id_1));
 }
 
 // Verify add pinned tab group will add a button.
