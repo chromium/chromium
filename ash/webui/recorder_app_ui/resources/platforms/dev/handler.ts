@@ -371,6 +371,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     () => devSettings.value.canCaptureSystemAudioWithLoopback,
   );
 
+  private readonly forceLanguageSelection = computed(
+    () => devSettings.value.forceLanguageSelection,
+  );
+
   override async init(): Promise<void> {
     document.body.appendChild(this.errorView);
     settingsInit();
@@ -399,6 +403,10 @@ export class PlatformHandler extends PlatformHandlerBase {
   }
 
   override isMultipleLanguageAvailable(): boolean {
+    if (this.forceLanguageSelection.value) {
+      return true;
+    }
+
     let count = 0;
     for (const state of this.sodaStates.values()) {
       if (state.value.kind !== 'unavailable') {
@@ -485,6 +493,12 @@ export class PlatformHandler extends PlatformHandlerBase {
         s.canCaptureSystemAudioWithLoopback = target.selected;
       });
     }
+    function handleForceLanguageSelectionChange(ev: Event) {
+      const target = assertInstanceof(ev.target, CrosSwitch);
+      devSettings.mutate((s) => {
+        s.forceLanguageSelection = target.selected;
+      });
+    }
     // TODO(pihsun): Move the dev toggle to a separate component, so we don't
     // need to inline the styles.
     const labelStyle = {
@@ -538,6 +552,20 @@ export class PlatformHandler extends PlatformHandlerBase {
           >
           </cros-switch>
           Toggle can capture system audio via getDisplayMedia
+        </label>
+      </div>
+      <div class="section">
+        <label style=${styleMap(labelStyle)}>
+          <!--
+            TODO(hsuanling): cros-switch doesn't automatically makes clicking
+            the surrounding label toggles the switch, unlike md-switch.
+          -->
+          <cros-switch
+            @change=${handleForceLanguageSelectionChange}
+            .selected=${this.forceLanguageSelection.value}
+          >
+          </cros-switch>
+          Toggle can force language selection display
         </label>
       </div>
     `;
