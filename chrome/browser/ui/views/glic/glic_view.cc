@@ -44,6 +44,9 @@ views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.remove_standard_frame = true;
+#if BUILDFLAG(IS_WIN)
+  params.dont_show_in_taskbar = true;
+#endif
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.bounds = initial_bounds;
 

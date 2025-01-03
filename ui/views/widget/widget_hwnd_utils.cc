@@ -126,6 +126,11 @@ void CalculateWindowStylesFromInitParams(
     case Widget::InitParams::TYPE_TOOLTIP:
     case Widget::InitParams::TYPE_WINDOW_FRAMELESS:
       *style |= WS_POPUP;
+#if BUILDFLAG(IS_WIN)
+      if (params.dont_show_in_taskbar) {
+        *ex_style |= WS_EX_TOOLWINDOW;
+      }
+#endif  // BUILDFLAG(IS_WIN)
       break;
     default:
       NOTREACHED();

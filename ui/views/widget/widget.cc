@@ -523,7 +523,10 @@ void Widget::Init(InitParams params) {
   // set based on the display.
   should_set_initial_bounds = !params.display_id.has_value();
 #endif
-
+#if BUILDFLAG(IS_WIN)
+  // These are mutually exclusive.
+  CHECK(!(params.force_show_in_taskbar && params.dont_show_in_taskbar));
+#endif  // BUILDFLAG(IS_WIN)
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU) {
     is_mouse_button_pressed_ = native_widget_->IsMouseButtonDown();
