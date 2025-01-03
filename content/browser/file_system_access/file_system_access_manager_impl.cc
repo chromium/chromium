@@ -836,9 +836,7 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't perform sensitive entry access checks on D&D files.
-  if (!permission_context_ || file_type == HandleType::kFile ||
-      !base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDragAndDropCheckBlocklist)) {
+  if (!permission_context_ || file_type == HandleType::kFile) {
     DidVerifySensitiveDirectoryAccessForDataTransfer(
         binding_context, path_info, url, file_type,
         std::move(token_resolved_callback), SensitiveEntryResult::kAllowed);

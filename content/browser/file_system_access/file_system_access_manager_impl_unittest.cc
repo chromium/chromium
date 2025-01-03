@@ -302,18 +302,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         dir_path_info, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
-    if (base::FeatureList::IsEnabled(
-            features::kFileSystemAccessDragAndDropCheckBlocklist)) {
-      EXPECT_CALL(
-          permission_context_,
-          ConfirmSensitiveEntryAccess_(
-              kTestStorageKey.origin(), dir_path_info,
-              FileSystemAccessPermissionContext::HandleType::kDirectory,
-              FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
-              kFrameId, testing::_))
-          .WillOnce(RunOnceCallback<5>(FileSystemAccessPermissionContext::
-                                           SensitiveEntryResult::kAllowed));
-    }
+    EXPECT_CALL(permission_context_,
+                ConfirmSensitiveEntryAccess_(
+                    kTestStorageKey.origin(), dir_path_info,
+                    FileSystemAccessPermissionContext::HandleType::kDirectory,
+                    FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
+                    kFrameId, testing::_))
+        .WillOnce(RunOnceCallback<5>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
     // Expect permission requests when the token is sent to be redeemed.
     EXPECT_CALL(
@@ -1376,11 +1372,6 @@ TEST_F(FileSystemAccessManagerImplTest,
 
 TEST_F(FileSystemAccessManagerImplTest,
        GetEntryFromDataTransferToken_File_NoSensitiveAccessCheck) {
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDragAndDropCheckBlocklist)) {
-    return;
-  }
-
   PathInfo file_info(dir_.GetPath().AppendASCII("mr_file"));
   const std::string file_contents = "Deleted code is debugged code.";
   ASSERT_TRUE(base::WriteFile(file_info.path, file_contents));
@@ -1432,11 +1423,6 @@ TEST_F(FileSystemAccessManagerImplTest,
 
 TEST_F(FileSystemAccessManagerImplTest,
        GetEntryFromDataTransferToken_Directory_SensitivePath) {
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDragAndDropCheckBlocklist)) {
-    return;
-  }
-
   const PathInfo kDirPathInfo(dir_.GetPath().AppendASCII("mr_directory"));
   ASSERT_TRUE(base::CreateDirectory(kDirPathInfo.path));
 
