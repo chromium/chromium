@@ -37,7 +37,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.LineItemBreakdownSection;
@@ -1198,13 +1197,7 @@ public class PaymentRequestUi
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         if (identityManager == null) return null;
-        @ConsentLevel
-        int consentLevel =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? ConsentLevel.SIGNIN
-                        : ConsentLevel.SYNC;
-        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(consentLevel);
+        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return CoreAccountInfo.getEmailFrom(info);
     }
 

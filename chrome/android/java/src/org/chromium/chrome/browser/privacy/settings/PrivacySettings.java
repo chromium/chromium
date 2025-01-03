@@ -290,36 +290,18 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                         ManageSyncSettings.createArguments(false));
                     }
                 };
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            if (IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                    == null) {
-                // User is signed out, show the string with one link to "Google Services".
-                return SpanApplier.applySpans(
-                        getString(
-                                R.string.privacy_chrome_data_and_google_services_signed_out_footer),
-                        new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
-            }
-            // Otherwise, show the string with both links to account settings and "Google Services".
-            return SpanApplier.applySpans(
-                    getString(R.string.privacy_chrome_data_and_google_services_footer),
-                    new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
-                    new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
-        }
         if (IdentityServicesProvider.get()
                         .getIdentityManager(getProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                 == null) {
-            // Sync is off, show the string with one link to "Google Services".
+            // User is signed out, show the string with one link to "Google Services".
             return SpanApplier.applySpans(
-                    getString(R.string.privacy_sync_and_services_link_sync_off),
+                    getString(R.string.privacy_chrome_data_and_google_services_signed_out_footer),
                     new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
         }
-        // Otherwise, show the string with both links to "Sync" and "Google Services".
+        // Otherwise, show the string with both links to account settings and "Google Services".
         return SpanApplier.applySpans(
-                getString(R.string.privacy_sync_and_services_link_sync_on),
+                getString(R.string.privacy_chrome_data_and_google_services_footer),
                 new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
                 new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
     }

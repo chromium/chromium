@@ -420,12 +420,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PRIVACY_SYNC_AND_SERVICES_LINK_LEGACY" desc="The text for Privacy preferences that is shown after all preference rows.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Sync and Google services<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PRIVACY_SYNC_AND_SERVICES_LINK_SYNC_ON" desc="The text for Privacy preferences that is shown after all preference rows. This version of the text is shown if Sync has been turned on.">
-        For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Sync<ph name="END_LINK1">&lt;/link1&gt;</ph> and <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>Google services<ph name="END_LINK2">&lt;/link2&gt;</ph>
-      </message>
-      <message name="IDS_PRIVACY_SYNC_AND_SERVICES_LINK_SYNC_OFF" desc="The text for Privacy preferences that is shown after all preference rows. This version of the text is shown if Sync hasn't been turned on.">
-        For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google services<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_PRIVACY_CHROME_DATA_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Account Settings and Google Services settings.">
         You can <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>manage what Chrome data is saved<ph name="END_LINK1">&lt;/link1&gt;</ph> in your Google Account.
 
@@ -3709,9 +3703,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_DEVICE_LOCK_DESCRIPTION" desc="Text description explaining that a profile lock is required for automotive devices to protect data privacy.">
         To protect your sensitive content in the car, you must create a car profile lock.  You can do this with a pin, code, or password.
-      </message>
-      <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_DESCRIPTION" desc="Text description explaining to users who have already set an existing lock that a profile lock is required for automotive devices to protect data privacy. 'Sync' is short for synchronization.">
-        Your profile lock keeps your info secure in the car, including synced passwords, payments and more.
       </message>
       <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_DESCRIPTION_FOR_SIGNIN" desc="Text description explaining to users who have already set an existing lock that a profile lock is required for automotive devices to protect data privacy. ">
         Your profile lock keeps your info secure in the car, including passwords, payments, and more saved in your Google Account.
