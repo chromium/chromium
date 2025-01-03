@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -143,7 +142,6 @@ public class AccountPickerBottomSheetCoordinator {
      * flow.
      */
     public void onAccountAdded(@NonNull String accountEmail) {
-        assert SigninUtils.shouldShowNewSigninFlow();
         mAccountPickerBottomSheetMediator.onAccountAdded(accountEmail);
     }
 

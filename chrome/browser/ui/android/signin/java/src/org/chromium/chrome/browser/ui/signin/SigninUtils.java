@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.components.signin.AccountUtils;
 
@@ -117,15 +116,6 @@ public final class SigninUtils {
                 R.string.signin_account_label_for_non_selected_account,
                 profileData.getFullName(),
                 profileData.getAccountEmail());
-    }
-
-    /**
-     * Returns whether the new sign-in flow should be shown instead of the usual one (sign-in and
-     * enable sync for instance) for an sign-in access point eligible to the new flow.
-     */
-    public static boolean shouldShowNewSigninFlow() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
     }
 
     public static View wrapInDialogWhenLargeLayout(View promoContentView) {
