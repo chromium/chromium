@@ -42,7 +42,8 @@ void SafeAreaInsetsHost::NotifyViewportFitChanged(
 }
 
 void SafeAreaInsetsHost::NotifyComplexSafeAreaConstraintChanged(bool value) {
-  // TODO(crbug.com/385215539): Handle UI changes based on this signal.
+  ComplexSafeAreaConstraintChangedForFrame(receivers_.GetCurrentTargetFrame(),
+                                           value);
 }
 
 void SafeAreaInsetsHost::SendSafeAreaToFrame(RenderFrameHost* rfh,

@@ -106,8 +106,9 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 void SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
     RenderFrameHost* rfh,
     bool has_constraint) {
-  DCHECK(rfh);
-  web_contents_impl_->NotifySafeAreaConstraintChanged(has_constraint);
+  if (rfh == ActiveRenderFrameHost()) {
+    web_contents_impl_->NotifySafeAreaConstraintChanged(has_constraint);
+  }
 }
 
 void SafeAreaInsetsHostImpl::MaybeActiveRenderFrameHostChanged() {
