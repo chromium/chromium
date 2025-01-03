@@ -93,11 +93,9 @@ class BackgroundImageView : public views::ImageView {
     CHECK(web_contents_);
     const bool is_dark_mode = color_utils::IsDark(
         web_contents_->GetColorProvider().GetColor(ui::kColorDialogBackground));
-    gfx::ImageSkia* background =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            is_dark_mode ? IDR_WEBID_MODAL_ICON_BACKGROUND_DARK
-                         : IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT);
-    SetImage(*background);
+    SetImage(ui::ImageModel::FromResourceId(
+        is_dark_mode ? IDR_WEBID_MODAL_ICON_BACKGROUND_DARK
+                     : IDR_WEBID_MODAL_ICON_BACKGROUND_LIGHT));
   }
 
   void OnThemeChanged() override {

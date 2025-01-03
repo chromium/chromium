@@ -748,11 +748,9 @@ void ToolbarController::ShowStatusIndicator() {
           ui::VectorIconModel vector_icon_model =
               pinned_icon_image.GetVectorIcon();
 
-          menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-              *vector_icon_model.vector_icon(),
-              ui::SimpleMenuModel::kDefaultIconSize,
-              menu_item->icon_view()->GetColorProvider()->GetColor(
-                  kColorToolbarActionItemEngaged)));
+          menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+              *vector_icon_model.vector_icon(), kColorToolbarActionItemEngaged,
+              ui::SimpleMenuModel::kDefaultIconSize));
         }
         status_indicator->Show();
       }
@@ -802,11 +800,9 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
     if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
       ui::VectorIconModel vector_icon_model = pinned_icon_image.GetVectorIcon();
 
-      menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-          *vector_icon_model.vector_icon(),
-          ui::SimpleMenuModel::kDefaultIconSize,
-          menu_item->icon_view()->GetColorProvider()->GetColor(
-              kColorToolbarActionItemEngaged)));
+      menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), kColorToolbarActionItemEngaged,
+          ui::SimpleMenuModel::kDefaultIconSize));
     }
     status_indicator->Show();
   } else {
@@ -814,11 +810,9 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
     if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
       ui::VectorIconModel vector_icon_model = pinned_icon_image.GetVectorIcon();
 
-      menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-          *vector_icon_model.vector_icon(),
-          ui::SimpleMenuModel::kDefaultIconSize,
-          menu_item->icon_view()->GetColorProvider()->GetColor(
-              vector_icon_model.color_id())));
+      menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), vector_icon_model.color_id(),
+          ui::SimpleMenuModel::kDefaultIconSize));
     }
     status_indicator->Hide();
   }

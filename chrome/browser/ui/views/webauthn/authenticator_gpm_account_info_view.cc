@@ -38,7 +38,8 @@ AuthenticatorGpmAccountInfoView::AuthenticatorGpmAccountInfoView(
   layout->set_between_child_spacing(kBetweenChildSpacing);
 
   auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(sheet_model->GetGpmAccountImage().AsImageSkia());
+  image_view->SetImage(
+      ui::ImageModel::FromImage(sheet_model->GetGpmAccountImage()));
   AddChildView(std::move(image_view));
 
   auto label_column = std::make_unique<views::BoxLayoutView>();
