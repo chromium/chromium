@@ -1006,7 +1006,7 @@
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
     "args": ["--enable-features=WebBluetoothNewPermissionsBackend"],
     "owners": ["web-bluetooth@google.com"],
-    "expires": "Jan 1, 2025"
+    "expires": "Jan 1, 2026"
   },
   {
     "prefix": "trust-tokens",
