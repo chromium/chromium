@@ -50,7 +50,7 @@ class MockCanvas : public SkCanvas {
     auto operator<=>(const DrawRRectCall& other) const {
       SkRect rect = rrect.rect();
       SkRect other_rect = other.rrect.rect();
-      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <
+      return std::tie(rect.fLeft, rect.fTop, rect.fRight, rect.fBottom) <=>
              std::tie(other_rect.fLeft, other_rect.fTop, other_rect.fRight,
                       other_rect.fBottom);
     }
