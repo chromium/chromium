@@ -106,6 +106,8 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
       gesture_property_provider_(new GesturePropertyProvider),
 #endif
       dispatcher_(std::move(dispatcher)),
+      keyboard_used_palm_suppression_enabled_(
+          base::FeatureList::IsEnabled(kEnableKeyboardUsedPalmSuppression)),
       imposter_checker_(new ImposterCheckerEvdev()),
       input_device_opener_(std::move(input_device_opener)),
       input_controller_(input_controller) {
@@ -182,7 +184,8 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
     }
 
     // Register notification callback for internal keyboards.
-    if ((converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL) &&
+    if (keyboard_used_palm_suppression_enabled_ &&
+        (converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL) &&
         converter->HasKeyboard()) {
       converter->SetReceivedValidInputCallback(base::BindRepeating(
           &InputDeviceFactoryEvdev::NotifyInternalKeyboardUsed,
@@ -747,6 +750,9 @@ void InputDeviceFactoryEvdev::UpdateDevicesOnImposterOverride(
 void InputDeviceFactoryEvdev::NotifyInternalKeyboardUsed(
     const EventConverterEvdev* converter,
     const double input_timestamp_in_seconds) {
+  if (!keyboard_used_palm_suppression_enabled_) {
+    return;
+  }
 #if defined(USE_EVDEV_GESTURES)
   // Find the internal touchpad and set the keyboard touched properties.
   for (const auto& [path, device] : converters_) {

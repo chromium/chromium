@@ -11785,6 +11785,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kClientSideDetectionBrandAndIntentForScamDetection)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-keyboard-used-palm-suppression",
+     flag_descriptions::kEnableKeyboardUsedPalmSuppressionName,
+     flag_descriptions::kEnableKeyboardUsedPalmSuppressionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kEnableKeyboardUsedPalmSuppression)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

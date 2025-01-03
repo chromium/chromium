@@ -209,6 +209,9 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // Whether touch palm suppression is enabled.
   bool palm_suppression_enabled_ = false;
 
+  // Cache the keyboard-used-palm-suppression feature flag.
+  bool keyboard_used_palm_suppression_enabled_ = false;
+
   // Device settings. These primarily affect libgestures behavior.
   InputDeviceSettingsEvdev input_device_settings_;
 

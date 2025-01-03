@@ -12835,6 +12835,21 @@
             ]
         }
     ],
+    "KeyboardUsedPalmSuppression": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableKeyboardUsedPalmSuppression"
+                    ]
+                }
+            ]
+        }
+    ],
     "KidsProfilePhase2": [
         {
             "platforms": [

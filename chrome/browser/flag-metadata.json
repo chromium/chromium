@@ -3314,6 +3314,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-keyboard-used-palm-suppression",
+    "owners": [ "hbarnor@chromium.org", "chromeos-tango@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-lacros-in-chrome-kiosk",
     "owners": ["bfranz@chromium.org", "chromeos-kiosk-eng@google.com"],
     "expiry_milestone": 140

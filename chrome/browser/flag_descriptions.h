@@ -3778,6 +3778,9 @@ extern const char kEnableFakeMouseHeuristicDescription[];
 extern const char kEnableHeatmapPalmDetectionName[];
 extern const char kEnableHeatmapPalmDetectionDescription[];
 
+extern const char kEnableKeyboardUsedPalmSuppressionName[];
+extern const char kEnableKeyboardUsedPalmSuppressionDescription[];
+
 extern const char kEnableNeuralStylusPalmRejectionName[];
 extern const char kEnableNeuralStylusPalmRejectionDescription[];
 

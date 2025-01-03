@@ -6489,6 +6489,11 @@ const char kEnableKeyboardRewriterFixName[] = "Use new Keyboard Rewriter.";
 const char kEnableKeyboardRewriterFixDescription[] =
     "Enable new Keyboard Rewriter.";
 
+const char kEnableKeyboardUsedPalmSuppressionName[] =
+    "Use keyboard based palm suppression.";
+const char kEnableKeyboardUsedPalmSuppressionDescription[] =
+    "Enable keyboard usage based palm suppression.";
+
 const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
 const char kEnableNeuralPalmAdaptiveHoldDescription[] =
     "Enable adaptive hold in palm rejection.  Not compatible with all devices.";
