@@ -12,11 +12,11 @@ indexeddb_test(
         var blob = new Blob(['mulder', 'scully'], {type: type});
         assert_equals(blob.type, type, 'Blob type should match constructor option');
 
-        var tx = db.transaction('store', 'readwrite', {durability: 'relaxed'});
+        var tx = db.transaction('store', 'readwrite');
         tx.objectStore('store').put(blob, 'key');
 
         tx.oncomplete = t.step_func(function() {
-          var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
+          var tx = db.transaction('store', 'readonly');
           tx.objectStore('store').get('key').onsuccess =
               t.step_func(function(e) {
                 var result = e.target.result;
