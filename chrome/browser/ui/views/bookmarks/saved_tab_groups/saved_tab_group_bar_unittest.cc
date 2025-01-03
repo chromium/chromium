@@ -279,24 +279,24 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
 TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   AddTabToBrowser(browser(), TabStripModel::kNoTab);
   {  // Remove the group and expect no buttons except the overflow menu.
-    const base::Uuid sync_id =
-        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-            CreateNewGroupInBrowser()));
+    tab_groups::LocalTabGroupID local_id = CreateNewGroupInBrowser();
+    const base::Uuid sync_id = EnforceGroupSaved(
+        SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
 
     EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 
-    service()->RemoveGroup(sync_id);
+    service()->RemoveGroup(local_id);
     EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
   }
 
   {  // Remove the group and expect no buttons except the overflow menu.
-    const base::Uuid sync_id =
-        EnforceGroupSaved(SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
-            CreateNewGroupInBrowser()));
+    tab_groups::LocalTabGroupID local_id = CreateNewGroupInBrowser();
+    const base::Uuid sync_id = EnforceGroupSaved(
+        SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
 
     EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 
-    service()->RemoveGroup(sync_id);
+    service()->RemoveGroup(local_id);
     EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
   }
 

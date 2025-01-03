@@ -184,11 +184,12 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
         }
 
         if (group->local_group_id().has_value()) {
+          tab_group_service->RemoveGroup(group->local_group_id().value());
           SavedTabGroupUtils::RemoveGroupFromTabstrip(
               nullptr, group->local_group_id().value());
+        } else {
+          tab_group_service->RemoveGroup(group->saved_guid());
         }
-
-        tab_group_service->RemoveGroup(group->saved_guid());
       },
       browser, saved_group_guid);
 

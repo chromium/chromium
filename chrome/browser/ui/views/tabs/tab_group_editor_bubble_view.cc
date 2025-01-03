@@ -837,8 +837,9 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
               kDeleteGroup);
     }
   } else {
+    CHECK(saved_group->local_group_id().has_value());
+    tab_group_service->RemoveGroup(saved_group->local_group_id().value());
     DeleteGroupFromTabstrip();
-    tab_group_service->RemoveGroup(saved_group->saved_guid());
   }
   GetWidget()->Close();
 }

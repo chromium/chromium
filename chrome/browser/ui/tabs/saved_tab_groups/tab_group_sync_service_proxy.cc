@@ -55,7 +55,7 @@ void TabGroupSyncServiceProxy::RemoveGroup(const LocalTabGroupID& local_id) {
 }
 
 void TabGroupSyncServiceProxy::RemoveGroup(const base::Uuid& sync_id) {
-  service_->model()->RemovedFromSync(sync_id);
+  service_->model()->RemovedLocally(sync_id);
 }
 
 void TabGroupSyncServiceProxy::UpdateVisualData(
