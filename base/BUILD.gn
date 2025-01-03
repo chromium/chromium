@@ -465,6 +465,7 @@ component("base") {
     "metrics/record_histogram_checker.h",
     "metrics/sample_map.cc",
     "metrics/sample_map.h",
+    "metrics/sample_map_iterator.h",
     "metrics/sample_vector.cc",
     "metrics/sample_vector.h",
     "metrics/single_sample_metrics.cc",
