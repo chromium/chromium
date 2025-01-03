@@ -217,11 +217,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add(
-            "disable-features="
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK
-                    + ","
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
@@ -419,8 +415,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void resetNeedsRestriction(boolean value) throws Exception {
-        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-                && !AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
             // Nothing we need to do if the feature is disabled.
             return;
         }

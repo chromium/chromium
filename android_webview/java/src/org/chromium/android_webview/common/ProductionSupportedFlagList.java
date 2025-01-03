@@ -681,10 +681,6 @@ public final class ProductionSupportedFlagList {
                 "Enable auto granting storage access API requests. This will be done "
                         + "if a relationship is detected between the app and the website."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
-                "Enable detection of the loading of mature sites on "
-                        + "WebViews running on supervised user accounts"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK,
                 "Enable blocking the loading of mature sites on "
                         + "WebViews running on supervised user accounts"),
