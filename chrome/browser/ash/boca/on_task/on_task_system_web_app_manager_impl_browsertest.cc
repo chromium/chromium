@@ -46,11 +46,13 @@ constexpr char kTestUrl[] = "https://www.test.com";
 class LockedSessionWindowTrackerMock : public LockedSessionWindowTracker {
  public:
   explicit LockedSessionWindowTrackerMock(Profile* profile)
-      : LockedSessionWindowTracker(std::make_unique<OnTaskBlocklist>(
-            std::make_unique<policy::URLBlocklistManager>(
-                profile->GetPrefs(),
-                policy::policy_prefs::kUrlBlocklist,
-                policy::policy_prefs::kUrlAllowlist))) {}
+      : LockedSessionWindowTracker(
+            std::make_unique<OnTaskBlocklist>(
+                std::make_unique<policy::URLBlocklistManager>(
+                    profile->GetPrefs(),
+                    policy::policy_prefs::kUrlBlocklist,
+                    policy::policy_prefs::kUrlAllowlist)),
+            profile) {}
   ~LockedSessionWindowTrackerMock() override = default;
 
   MOCK_METHOD(void,
@@ -292,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
   // Verify that the tab is cleaned up after window prep.
   system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
-      boca_app_browser->session_id());
+      boca_app_browser->session_id(), /*close_bundle_content=*/true);
   EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(
       boca_app_browser->window()->GetNativeWindow());
@@ -301,6 +303,30 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
   EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
+                       PreparingSystemWebAppWindowAndPreservingContent) {
+  // Launch Boca app for testing purposes.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 1);
+
+  // Create tab so we can verify it does not get cleaned up after window prep.
+  system_web_app_manager.CreateBackgroundTabWithUrl(
+      boca_app_browser->session_id(), GURL(kTestUrl),
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  ASSERT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
+
+  // Verify that the tab is not destroyed after window prep.
+  system_web_app_manager.PrepareSystemWebAppWindowForOnTask(
+      boca_app_browser->session_id(), /*close_bundle_content=*/false);
+  EXPECT_TRUE(boca_app_browser->IsLockedForOnTask());
+  EXPECT_EQ(boca_app_browser->tab_strip_model()->count(), 2);
 }
 
 }  // namespace

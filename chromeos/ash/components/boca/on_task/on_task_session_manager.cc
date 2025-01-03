@@ -67,7 +67,8 @@ void OnTaskSessionManager::OnSessionStarted(
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
     // Prepare the pre-existing Boca SWA instance for OnTask.
-    system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
+    system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
+        window_id, /*close_bundle_content=*/true);
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, {&active_tab_tracker_, this});
   } else {
@@ -218,12 +219,22 @@ void OnTaskSessionManager::OnAppReloaded() {
     return;
   }
 
+  // Prepare the SWA for OnTask without closing bundle content outside an active
+  // session. This is needed to prevent the window tracker from filtering out
+  // and closing the app instance.
+  system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
+      window_id, /*close_bundle_content=*/false);
+
   // Only restore tabs and set up window tracker if there is an active session.
   // This ensures we do not inadvertently block URLs.
   if (!active_session_id_.has_value()) {
     return;
   }
-  system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(window_id);
+
+  // Prepare the SWA for OnTask and close bundle content. This is to de-dupe
+  // content and ensure that they are set up for locked mode.
+  system_web_app_manager_->PrepareSystemWebAppWindowForOnTask(
+      window_id, /*close_bundle_content=*/true);
   system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
       window_id, {&active_tab_tracker_, this});
 

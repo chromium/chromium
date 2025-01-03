@@ -83,7 +83,7 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
   MOCK_METHOD(void,
               PrepareSystemWebAppWindowForOnTask,
-              (SessionID window_id),
+              (SessionID window_id, bool close_bundle_content),
               (override));
   MOCK_METHOD(SessionID, GetActiveTabID, (), (override));
   MOCK_METHOD(void, SwitchToTab, (SessionID tab_id), (override));
@@ -218,7 +218,8 @@ TEST_F(OnTaskSessionManagerTest,
       session_manager_->active_tab_tracker(), session_manager_.get()};
   Sequence s;
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
+              PrepareSystemWebAppWindowForOnTask(kWindowId,
+                                                 /*close_bundle_content=*/true))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(
@@ -687,7 +688,7 @@ TEST_F(OnTaskSessionManagerTest, OnAppReloadWithNoActiveWindow) {
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
       .WillOnce(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(_))
+              PrepareSystemWebAppWindowForOnTask(_, _))
       .Times(0);
   session_manager_->OnAppReloaded();
 }
@@ -719,8 +720,8 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(AtLeast(1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
-      .Times(1)
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(AtLeast(1))
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(
@@ -768,8 +769,8 @@ TEST_F(OnTaskSessionManagerTest, LockWindowOnAppReload) {
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(AtLeast(1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              PrepareSystemWebAppWindowForOnTask(kWindowId))
-      .Times(1)
+              PrepareSystemWebAppWindowForOnTask(kWindowId, _))
+      .Times(AtLeast(1))
       .InSequence(s);
   EXPECT_CALL(*system_web_app_manager_ptr_, SetPinStateForSystemWebAppWindow(
                                                 /*pinned=*/true, kWindowId))

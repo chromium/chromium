@@ -93,9 +93,9 @@ class FakeOnTaskNotificationsManagerDelegate
 // browser test, right now it's very hard to tell when does tab strip update
 // happens.
 class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
- public:
+ protected:
   void SetUp() override {
-    // TODO(crbug.com/36741761):Change this to reguar mock when remigrated to
+    // TODO(crbug.com/36741761): Change this to regular mock when remigrated to
     // browser test.
     ON_CALL(boca_window_observer_, OnActiveTabChanged(_))
         .WillByDefault(Return());
@@ -125,7 +125,7 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
           auto on_task_blocklist = std::make_unique<OnTaskBlocklist>(
               std::move(url_blocklist_manager));
           return std::make_unique<LockedSessionWindowTracker>(
-              std::move(on_task_blocklist));
+              std::move(on_task_blocklist), context);
         }));
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return (LockedSessionWindowTrackerFactory::GetForBrowserContext(
@@ -141,6 +141,7 @@ class OnTaskLockedSessionWindowTrackerTest : public BrowserWithTestWindowTest {
             ash::boca::OnTaskNotificationsManager::CreateForTest(
                 std::move(fake_notifications_delegate)));
   }
+
   void TearDown() override {
     task_environment()->RunUntilIdle();
 
@@ -676,6 +677,11 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest,
        NewBrowserWindowsDontOpenDuringLockedFullscreen) {
+  // Set up relevant features for browser instance observation.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
@@ -717,6 +723,11 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
 }
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserPopupIsRegistered) {
+  // Set up relevant features for browser instance observation.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
@@ -732,6 +743,11 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserPopupIsRegistered) {
 }
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, BrowserClose) {
+  // Set up relevant features for browser instance observation.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kBoca, ash::features::kBocaConsumer},
+      /*disabled_features=*/{});
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
       LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
