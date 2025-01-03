@@ -152,6 +152,7 @@ dependencies {
     androidTestCompile 'androidx.benchmark:benchmark-macro:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-macro-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-android:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.compose.ui:ui-test-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.compose.ui:ui-test-manifest:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.core:core-animation-testing:{{androidx_dependency_version}}'
