@@ -2707,6 +2707,11 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-inline/text-box-trim/text-box-trim-on-button.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
+[ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
+[ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
+virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-content-height-with-dynamic-change.html [ Failure ]
 crbug.com/385993738 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]
 crbug.com/386128935 [ Mac14 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/address.wast.js.html [ Crash ]
@@ -2964,8 +2969,10 @@ crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabi
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-path.https.html [ Skip Timeout ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query-nosw.https.html [ Skip Timeout ]
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query.https.html [ Skip Timeout ]
+crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac14 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
+crbug.com/371233767 [ Win11 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-canTrickleIceCandidates.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
 crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/back-forward-cache-with-closed-webrtc-connection.https.window.html [ Timeout ]
@@ -8042,6 +8049,7 @@ crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-getStats.https.ht
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
+crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/356930166 [ Mac15 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Timeout ]
 crbug.com/356930166 [ Mac14 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
@@ -8103,6 +8111,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCRtpSender-replaceTrac
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
+crbug.com/356930166 [ Win11 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Timeout ]
 crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ Timeout ]
 

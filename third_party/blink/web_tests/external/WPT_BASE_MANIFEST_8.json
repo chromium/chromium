@@ -104999,12 +104999,25 @@
       ]
      ],
      "contain-layout-baseline-005.html": [
-      "fb706cbf0300eb09dd6daaf3a6e91417e40ad1b8",
+      "61d17a08f7b3d31c672dbce1d4f38aaa465cfc89",
       [
        null,
        [
         [
          "/css/css-contain/reference/contain-layout-baseline-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-layout-baseline-006.html": [
+      "68e02948b3cc4ea9538184b5a22335f5f0cd68d1",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-layout-baseline-006-ref.html",
          "=="
         ]
        ],
@@ -116275,6 +116288,19 @@
        {}
       ]
      ],
+     "empty-flex-box-and-margin-collapsing.html": [
+      "e2c6ecc5a69327fc45657378bc193219d1595eee",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/empty-flex-box-and-margin-collapsing-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fieldset-as-item-dynamic.html": [
       "814b228e3650a65b742ae9c0f2fd6e9fc5b2a4cd",
       [
@@ -117517,6 +117543,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "flex-item-content-is-min-width-max-content.html": [
+      "961c4b47b304bb4d011727e45e44d5c8d6dbc12c",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flex-item-content-is-min-width-max-content-ref.html",
          "=="
         ]
        ],
@@ -150104,6 +150143,19 @@
         {}
        ]
       ],
+      "text-box-trim-on-button.html": [
+       "6172e319a3282822f53b65232596f8deef775a1f",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-on-button-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-pseudo-before-after-001.html": [
        "2bec4fd5d1aa6616287e92219357779896b207ff",
        [
@@ -166877,6 +166929,19 @@
        {}
       ]
      ],
+     "clipped-scroller-add-content.html": [
+      "d7f2eb1c919e3bf48a045cb73cd632821b1fa5b2",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/clipped-scroller-add-content-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "column-scroll-marker-001.html": [
       "5e25c7ce7dd9bf8bff2457d8f30ba679a9de0f69",
       [
@@ -167133,6 +167198,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "incremental-scroll-002.html": [
+      "ee43074badfd3f1eaa3bb4ae66d9444748d73511",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/incremental-scroll-002-ref.html",
          "=="
         ]
        ],
@@ -168122,6 +168200,19 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-auto-with-ruby-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-content-height-with-dynamic-change.html": [
+       "0b157f86d315c8da7ba348d595b0fcc59f714280",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-dynamic-001-ref.html",
           "=="
          ]
         ],
@@ -172527,6 +172618,19 @@
      ]
     },
     "css-position": {
+     "absolute-pos-box-inside-fixed-pos-box-with-changing-height.html": [
+      "bb907d8f10816253f2548ef3ab40078f5218bd35",
+      [
+       null,
+       [
+        [
+         "/css/css-position/absolute-pos-box-inside-fixed-pos-box-with-changing-height-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-inherit-rendered.html": [
       "98dfe748ed5f7430610a93b93f40056183e85c5b",
       [
@@ -172534,6 +172638,19 @@
        [
         [
          "/css/css-position/backdrop-inherit-rendered-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-axis-constraint-changes-for-out-of-flow-box.html": [
+      "50c86f779a631b3e833e107823a6855a84d01f2b",
+      [
+       null,
+       [
+        [
+         "/css/css-position/block-axis-constraint-changes-for-out-of-flow-box-ref.html",
          "=="
         ]
        ],
@@ -184032,7 +184149,7 @@
          ]
         ],
         "shape-outside-circle-034.html": [
-         "60fac07dd57a7f72a46b64fc28da53a9fce1de18",
+         "51e23b346151eb6ec6212c49f74df347a8d819d9",
          [
           null,
           [
@@ -184041,7 +184158,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               3
+              ],
+              [
+               0,
+               4
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-035.html": [
@@ -184287,7 +184420,7 @@
          ]
         ],
         "shape-outside-circle-049.html": [
-         "d9c5c9ff8508aeb4dc8111e1c98d2df6bd41c64a",
+         "9e094dad5a387c334b3d100d365b63fbd1af37eb",
          [
           null,
           [
@@ -184296,7 +184429,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               3
+              ],
+              [
+               0,
+               3
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-050.html": [
@@ -184329,7 +184478,7 @@
          ]
         ],
         "shape-outside-circle-051.html": [
-         "ebb46d5a266cff0a40441099bed3dbc3a6145e68",
+         "41b147ce162dfc1114bb1f17609b51a79e904cab",
          [
           null,
           [
@@ -184338,7 +184487,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               3
+              ],
+              [
+               0,
+               3
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-052.html": [
@@ -184397,7 +184562,7 @@
          ]
         ],
         "shape-outside-circle-055.html": [
-         "6e159ecd2d966d90d2f9447a7b69e6a930b81821",
+         "e9306544a491050128f5e129c4371cb611391523",
          [
           null,
           [
@@ -184406,7 +184571,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               3
+              ],
+              [
+               0,
+               3
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-circle-056.html": [
@@ -184662,7 +184843,7 @@
          ]
         ],
         "shape-outside-ellipse-034.html": [
-         "bedebc9ca30738f2ea1f80b4cd2ec2718ea6a70e",
+         "5cfaa58ea7fd5ac7644c844e645638e98eded85e",
          [
           null,
           [
@@ -184671,7 +184852,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               3
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-035.html": [
@@ -184882,7 +185079,7 @@
          ]
         ],
         "shape-outside-ellipse-046.html": [
-         "f8ff1ae6416d368cd284722ca5cf33ea54b47065",
+         "ec1198d453469a4db6df29401e9cdc63798e4aa2",
          [
           null,
           [
@@ -184891,11 +185088,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               5
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-047.html": [
-         "3a019cf68d9988ee06f78363927008001686273d",
+         "9e0994ebd7744c0fac6b67a7554680b613276281",
          [
           null,
           [
@@ -184904,11 +185117,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               5
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-048.html": [
-         "5a6cc90e256d3b1a05e637457f24a7506dda5015",
+         "d32bcd9874435346a03f2077f4c1e8e7760505d6",
          [
           null,
           [
@@ -184917,11 +185146,27 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               5
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-049.html": [
-         "bdb98d9c8edc1d960a1a998081aa7561d83cbea4",
+         "19c2ce1e42cbbb8242b1ab07fe690ca36246cb2d",
          [
           null,
           [
@@ -184930,7 +185175,23 @@
             "=="
            ]
           ],
-          {}
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               5
+              ],
+              [
+               0,
+               2
+              ]
+             ]
+            ]
+           ]
+          }
          ]
         ],
         "shape-outside-ellipse-050.html": [
@@ -213956,6 +214217,19 @@
        [
         [
          "/css/css-text-decor/reference/text-decoration-thickness-single-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-thickness-single2.html": [
+      "a7c6b2d53035bfae25d5f14a8b79f1ae06db187d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-thickness-single2-notref.html",
          "!="
         ]
        ],
@@ -327184,6 +327458,10 @@
       "6ee9f4fb8f2111609c7573f199ab7958cfd9eb5a",
       []
      ],
+     "contain-layout-baseline-006-ref.html": [
+      "f4a45859d9670a8105a22af31cb774ef7fdeb112",
+      []
+     ],
      "contain-layout-dynamic-004-ref.html": [
       "40923d836ca0ad31a97de0776ccfe2f5e1051041",
       []
@@ -329804,6 +330082,10 @@
       "58b34c43feec25b962ecb906665bcaac7aee1dc2",
       []
      ],
+     "empty-flex-box-and-margin-collapsing-ref.html": [
+      "a80999d9bd9b450e37917391246910d5b5a1a71a",
+      []
+     ],
      "fieldset-as-item-overflow-ref.html": [
       "94e64dd1b829f68a935679ee6c26659437b730a7",
       []
@@ -329850,6 +330132,10 @@
      ],
      "flex-grow-001-ref.xht": [
       "2b0f294c3441f1cf25a6678b9ce0748258582ea1",
+      []
+     ],
+     "flex-item-content-is-min-width-max-content-ref.html": [
+      "090e9a79aa1bda10e61925bc46b8399694ef5256",
       []
      ],
      "flex-item-position-relative-001-ref.html": [
@@ -343307,6 +343593,10 @@
        "d30eaa9aa28e4bf203bd6af4a1a136365f9cf329",
        []
       ],
+      "text-box-trim-on-button-ref.html": [
+       "86d644e546f450affbfe09a72d70b2ada15ff91c",
+       []
+      ],
       "text-box-trim-pseudo-before-after-001-ref.html": [
        "fdcefba9f9f510a8141e5bf4a3dea7f9056d643e",
        []
@@ -343897,8 +344187,16 @@
        "a32d01c1d222eca1ba1fabb22d10a63cccd79096",
        []
       ],
+      "counter-increment-valid-expected.txt": [
+       "f3822e96ffbf99f1e2f961206b610362bdaf8a6e",
+       []
+      ],
       "counter-reset-valid-expected.txt": [
-       "610350b8434b679cc1541e19fa191ce151bc5129",
+       "ad2651eb503efce5f058e0ec4707e48d019ee97a",
+       []
+      ],
+      "counter-set-valid-expected.txt": [
+       "ea67cfaeef1c15b4fba5440ac47427ff6cdadf45",
        []
       ],
       "list-style-computed.sub-expected.txt": [
@@ -346180,6 +346478,10 @@
       "09081e25039a2a07c6dd798fc68ff7b8a07bc333",
       []
      ],
+     "clipped-scroller-add-content-ref.html": [
+      "d9edfb1f8555a23159c3a7cc842a287f7385f942",
+      []
+     ],
      "column-scroll-marker-001-ref.html": [
       "c534c324ed250266605d8297e6c3fee7f2af991c",
       []
@@ -346212,6 +346514,10 @@
       "ebd2d860cec74ba0d535637934aca8dadf90571d",
       []
      ],
+     "incremental-scroll-002-ref.html": [
+      "ea6f5575278c86e9ad0dc63ad9ef31fc77b25538",
+      []
+     ],
      "incremental-scroll-ref.html": [
       "131e54ec2913621bd0cd6e3adf8e22e03b129d8a",
       []
@@ -346221,6 +346527,10 @@
       []
      ],
      "line-clamp": {
+      "line-clamp-content-height-with-dynamic-change-ref.html": [
+       "2b33ab558c9f496cc35d72bbc1621c97538b2d57",
+       []
+      ],
       "reference": {
        "line-clamp-010-ref.html": [
         "46ca731c5446db88ba4e5fc8a3d6b8b43c4fc056",
@@ -346483,7 +346793,7 @@
         []
        ],
        "webkit-line-clamp-025-ref.html": [
-        "c33a6b5033890c8a27d5de58a801a80a3083b554",
+        "bac253d1937c7410b454ddae025748b688f2b2f3",
         []
        ],
        "webkit-line-clamp-026-ref.html": [
@@ -348326,8 +348636,16 @@
       "38ad6be67d76b736803ad22d117a6c01060a4169",
       []
      ],
+     "absolute-pos-box-inside-fixed-pos-box-with-changing-height-ref.html": [
+      "b42bf53a923d351f4702db63213870da9e572b5d",
+      []
+     ],
      "backdrop-inherit-rendered-ref.html": [
       "6343f8d1410ae90dba9be945504478ac00207b0f",
+      []
+     ],
+     "block-axis-constraint-changes-for-out-of-flow-box-ref.html": [
+      "91a67c2fec5102d19a0e9e62552bf6615131816b",
       []
      ],
      "containing-block-change-button-ref.html": [
@@ -357331,6 +357649,10 @@
       ],
       "text-decoration-thickness-single-notref.html": [
        "108034f02af294f0badc1a252e0bc40c2a779748",
+       []
+      ],
+      "text-decoration-thickness-single2-notref.html": [
+       "cb10e29fbbb23edd3b279b1792cefde67dcb4906",
        []
       ],
       "text-decoration-thickness-vertical-green-rect-ref.html": [
@@ -486768,7 +487090,7 @@
        ]
       ],
       "counter-increment-valid.html": [
-       "277269000a21118a530f97ca5c2cb1061258933c",
+       "c77fd74ac769f0fcbf742cc8700f937f48723725",
        [
         null,
         {}
@@ -486789,7 +487111,7 @@
        ]
       ],
       "counter-reset-valid.html": [
-       "2e6b37d0fcf2c2bb05676ab58a5a55126e99f274",
+       "b74ce160c7cd2fe0ce786763a25577c1db5e1632",
        [
         null,
         {}
@@ -486810,7 +487132,7 @@
        ]
       ],
       "counter-set-valid.html": [
-       "3a4a16af92690ae1cc462b707c2e059146c0fcc7",
+       "96cb71e398c683c33d2fa7af762d1fd1780eb3f8",
        [
         null,
         {}
@@ -622235,6 +622557,16 @@
           {}
          ]
         ],
+        "select-dialog-mode-focus.tentative.html": [
+         "b335db07fbcaa4098852bf8ba15abcaf1795bbfd",
+         [
+          null,
+          {
+           "testdriver": true,
+           "timeout": "long"
+          }
+         ]
+        ],
         "select-disabled.tentative.html": [
          "04ccb2bedafec5fc47f5d716b3083c2f3047e308",
          [
@@ -681949,6 +682281,49 @@
      [
       null,
       {}
+     ]
+    ],
+    "web-locks-pa-worklet-batch-update.tentative.https.window.js": [
+     "5e6d5fdbc78d7a9d7e171274b22bf6ab30e1adf1",
+     [
+      "shared-storage/web-locks-pa-worklet-batch-update.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/fledge/tentative/resources/fledge-util.sub.js"
+        ],
+        [
+         "script",
+         "/common/subset-tests.js"
+        ],
+        [
+         "script",
+         "/shared-storage/resources/util.js"
+        ],
+        [
+         "script",
+         "/fenced-frame/resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
      ]
     ],
     "web-locks-pa-worklet-modifier-method.tentative.https.window.js": [
