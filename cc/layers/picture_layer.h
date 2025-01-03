@@ -50,6 +50,9 @@ class CC_EXPORT PictureLayer : public Layer {
 
   ContentLayerClient* client() { return client_; }
 
+  // Forces an update of recording source even without invalidation.
+  void SetForceUpdateRecordingSource();
+
   RecordingSource& GetRecordingSourceForTesting() {
     return recording_source_.Write(*this);
   }

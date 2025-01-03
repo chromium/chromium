@@ -59,6 +59,8 @@ class PLATFORM_EXPORT ContentLayerClientImpl
   scoped_refptr<cc::PictureLayer> cc_picture_layer_;
   scoped_refptr<cc::DisplayItemList> cc_display_item_list_;
   Member<RasterInvalidator> raster_invalidator_;
+  // Used during UpdateCcPictureLayer().
+  bool only_empty_invalidations_ = false;
 
   String debug_name_;
 #if EXPENSIVE_DCHECKS_ARE_ON()

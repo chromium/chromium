@@ -127,6 +127,7 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   }
 
   DCHECK_EQ(old_layer_bounds, cc_picture_layer_->bounds());
+  only_empty_invalidations_ = false;
   raster_invalidator_->Generate(paint_chunks, layer_offset, layer_bounds,
                                 layer_state);
 
@@ -152,18 +153,38 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   // If nothing changed in the layer, keep the original display item list.
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
   // invalidation when only layer_bounds changes.
-  if (cc_display_item_list_ && layer_bounds == old_layer_bounds &&
+  bool may_be_unchanged =
+      cc_display_item_list_ && layer_bounds == old_layer_bounds &&
       cc_picture_layer_->draws_content() == pending_layer.DrawsContent() &&
-      !raster_under_invalidation_params) {
+      !raster_under_invalidation_params;
+  if (may_be_unchanged) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds);
-    return;
+    if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+        // See InvalidateRect().
+        !only_empty_invalidations_) {
+      return;
+    }
   }
 
+  bool had_raster_inducing_scroll = HasRasterInducingScroll();
+  auto previous_display_list = std::move(cc_display_item_list_);
   cc_display_item_list_ = base::MakeRefCounted<cc::DisplayItemList>();
   PaintChunksToCcLayer::ConvertInto(
       paint_chunks, layer_state, layer_offset,
       base::OptionalToPtr(raster_under_invalidation_params),
       *cc_display_item_list_);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    if ((had_raster_inducing_scroll || HasRasterInducingScroll()) &&
+        only_empty_invalidations_) {
+      // See InvalidateRect().
+      cc_picture_layer_->SetForceUpdateRecordingSource();
+    } else if (may_be_unchanged) {
+      // Still use the original display item list to save memory.
+      cc_display_item_list_ = std::move(previous_display_list);
+      return;
+    }
+  }
 
   // DrawingShouldFillScrollingContentsLayer() depends on this.
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
@@ -200,6 +221,21 @@ bool ContentLayerClientImpl::HasRasterInducingScroll() const {
 }
 
 void ContentLayerClientImpl::InvalidateRect(const gfx::Rect& rect) {
+  if (rect.IsEmpty()) {
+    // In RasterInducingScroll, even the visual rect is empty, paint operations
+    // about DrawScrollingContentsOp may change in the following cases:
+    // - the existence of a raster-inducing scroller changes while the scroller
+    //   doesn't have any visual rendering for now;
+    // - a scrolling content out of the scrollport of a raster-inducing
+    //   scroller changes.
+    // Set a flag so that UpdateCcPictureLayer can force update of the layer to
+    // ensure the recording source is up to date.
+    if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+      only_empty_invalidations_ = true;
+    }
+    return;
+  }
+  only_empty_invalidations_ = false;
   cc_display_item_list_ = nullptr;
   cc_picture_layer_->SetNeedsDisplayRect(rect);
 }
