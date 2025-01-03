@@ -97,6 +97,12 @@ interface InlinePlayingItemInfo {
 export class RecordingFileList extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --container-padding-horizontal: 32px;
+
+      @container style(--small-viewport: 1) {
+        --container-padding-horizontal: 24px;
+      }
+
       background-color: var(--cros-sys-app_base_shaded);
       border-radius: 16px;
       display: flex;
@@ -110,8 +116,12 @@ export class RecordingFileList extends ReactiveLitElement {
       box-sizing: border-box;
       display: flex;
       flex-flow: row;
-      height: 80px;
-      padding: 20px 16px 8px 32px;
+      padding: 20px 16px 8px var(--container-padding-horizontal);
+
+      @container style(--small-viewport: 1) {
+        padding: 12px 12px 0 var(--container-padding-horizontal);
+      }
+
 
       & > h1 {
         flex: 1;
@@ -136,7 +146,7 @@ export class RecordingFileList extends ReactiveLitElement {
     .section-heading {
       color: var(--cros-sys-on_surface);
       font: var(--cros-title-1-font);
-      margin: 16px 32px 0;
+      margin: 16px var(--container-padding-horizontal) 0;
     }
 
     .illustration-container {

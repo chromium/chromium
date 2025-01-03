@@ -122,6 +122,10 @@ export class RecordPage extends ReactiveLitElement {
       display: flex;
       flex-flow: row;
       padding: 8px;
+
+      @container style(--small-viewport: 1) {
+        padding: 2px;
+      }
     }
 
     #title {
@@ -277,7 +281,7 @@ export class RecordPage extends ReactiveLitElement {
       align-items: center;
       display: flex;
       flex-flow: row;
-      gap: 24px;
+      gap: 28px;
     }
 
     #pause-button {
