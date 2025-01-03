@@ -33,7 +33,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/skia_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -256,24 +255,12 @@ int RendererMain(MainFunctionParams parameters) {
     // It also needs to be registered before the process has multiple threads,
     // which may race with application of the sandbox.
     SandboxedProcessThreadTypeHandler::Create();
-
-    // Change the main thread type. On Linux and ChromeOS this needs to be
-    // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
-    // avoid child threads inheriting the main thread settings.
-    if (base::FeatureList::IsEnabled(
-            features::kMainThreadCompositingPriority)) {
-      base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kDisplayCritical);
-    }
-#else
-    if (base::FeatureList::IsEnabled(
-            features::kMainThreadCompositingPriority)) {
-      base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kDisplayCritical);
-    } else {
-      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
-    }
 #endif
+    // Consider CrRendererMain a display critical thread. While some Javascript
+    // running on the main thread might not be, experiments demonstrated that
+    // overall this improves user-perceived performance.
+    base::PlatformThread::SetCurrentThreadType(
+        base::ThreadType::kDisplayCritical);
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
     // It's not a memory leak since RenderThread has the same lifetime

@@ -525,9 +525,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MetricsFeatures.METRICS_LOG_TRIMMING, "Controls trimming for metrics logs."),
         Flag.baseFeature(
-                ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
-                "When enabled runs the main thread at compositing priority."),
-        Flag.baseFeature(
                 ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,
                 "When enabled, reduces SubresourceResponseStarted IPC by sending"
                         + "subresource notifications only if the user has allowed"

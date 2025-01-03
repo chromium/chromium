@@ -610,11 +610,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
 #endif
 );
 
-// Uses ThreadType::kDisplayCritical for the main thread
-BASE_FEATURE(kMainThreadCompositingPriority,
-             "MainThreadCompositingPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
 // legacy IPC channel, as well as the granularity of AgentSchedulingGroup

@@ -990,12 +990,6 @@ const char kDoubleBufferCompositingDescription[] =
     "Latency should be reduced in some cases. On the other hand, more skipped "
     "frames are expected.";
 
-const char kMainThreadCompositingPriorityName[] =
-    "Main thread runs as compositing";
-const char kMainThreadCompositingPriorityDescription[] =
-    "Runs the main thread at compositing priority since it responds to input "
-    "and is on the critical path.";
-
 const char kMediaSessionEnterPictureInPictureName[] =
     "Media Session enterpictureinpicture action";
 const char kMediaSessionEnterPictureInPictureDescription[] =

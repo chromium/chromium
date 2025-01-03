@@ -262,9 +262,6 @@ extern const char kCrabbyAvifDescription[];
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
-extern const char kMainThreadCompositingPriorityName[];
-extern const char kMainThreadCompositingPriorityDescription[];
-
 extern const char kMediaSessionEnterPictureInPictureName[];
 extern const char kMediaSessionEnterPictureInPictureDescription[];
 
