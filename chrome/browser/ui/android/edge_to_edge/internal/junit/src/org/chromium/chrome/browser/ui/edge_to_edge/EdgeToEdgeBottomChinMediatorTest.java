@@ -125,9 +125,17 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         mMediator.onNavigationBarColorChanged(Color.BLUE);
         assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
+        assertEquals(
+                "The cached color should have been updated to blue.",
+                Color.BLUE,
+                mMediator.getNavigationBarColorForTesting());
 
         mMediator.onNavigationBarColorChanged(Color.RED);
         assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
+        assertEquals(
+                "The cached color should have been updated to red.",
+                Color.RED,
+                mMediator.getNavigationBarColorForTesting());
 
         // scroll view offscreen
         mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);
@@ -151,6 +159,10 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         mMediator.onNavigationBarDividerChanged(Color.WHITE);
         assertEquals(
+                "The cached divider color should have been updated to WHITE.",
+                Color.WHITE,
+                mMediator.getDividerColorForTesting());
+        assertEquals(
                 "The divider color should have been updated to WHITE.",
                 Color.WHITE,
                 mModel.get(DIVIDER_COLOR));
@@ -160,6 +172,10 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 "The divider color should have been updated to TRANSPARENT.",
                 Color.TRANSPARENT,
                 mModel.get(DIVIDER_COLOR));
+        assertEquals(
+                "The cached divider color should have been updated to TRANSPARENT.",
+                Color.TRANSPARENT,
+                mMediator.getDividerColorForTesting());
 
         // scroll view offscreen
         mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT), false);

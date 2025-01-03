@@ -203,8 +203,8 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onNavigationBarColorChanged(int color) {
+        mNavigationBarColor = color;
         if (!isVisible()) {
-            mNavigationBarColor = color;
             return;
         }
 
@@ -214,8 +214,8 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
+        mDividerColor = dividerColor;
         if (!isVisible()) {
-            mDividerColor = dividerColor;
             return;
         }
 
@@ -297,5 +297,13 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void clearOffsetTag() {
         mModel.set(OFFSET_TAG, null);
+    }
+
+    public int getDividerColorForTesting() {
+        return mDividerColor;
+    }
+
+    public int getNavigationBarColorForTesting() {
+        return mNavigationBarColor;
     }
 }
