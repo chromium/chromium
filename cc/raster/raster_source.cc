@@ -123,8 +123,7 @@ void RasterSource::PlaybackToCanvas(
 void RasterSource::PlaybackDisplayListToCanvas(
     SkCanvas* raster_canvas,
     const PlaybackSettings& settings) const {
-  // TODO(enne): Temporary CHECK debugging for http://crbug.com/823835
-  CHECK(display_list_.get());
+  CHECK(display_list_);
   int repeat_count = std::max(1, slow_down_raster_scale_factor_for_debug_);
   PlaybackParams params(settings.image_provider, SkM44());
   params.raster_inducing_scroll_offsets =
@@ -138,7 +137,7 @@ bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,
                                              SkColor4f* color,
                                              int max_ops_to_analyze) const {
   TRACE_EVENT0("cc", "RasterSource::PerformSolidColorAnalysis");
-
+  CHECK(display_list_);
   layer_rect.Intersect(gfx::Rect(size_));
   layer_rect = gfx::ScaleToRoundedRect(layer_rect, recording_scale_factor_);
   return display_list_->GetColorIfSolidInRect(layer_rect, color,
