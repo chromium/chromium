@@ -217,7 +217,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration,AttributionScopes"],
     "owners": ["linnan@chromium.org"],
-    "expires": "Jan 2, 2025"
+    "expires": "Jul 2, 2025"
   },
   {
     "prefix": "attribution-reporting-attribution-scopes",
@@ -226,7 +226,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=AttributionScopes"],
     "owners": ["tquintanilla@chromium.org"],
-    "expires": "Jan 2, 2025"
+    "expires": "Jul 2, 2025"
   },
   {
     "prefix": "attribution-reporting-debug-mode",
@@ -237,7 +237,7 @@
     "args": ["--attribution-reporting-debug-mode",
              "--enable-features=AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting",
              "--enable-blink-features=FencedFramesDefaultMode"],
-    "expires": "Jan 2, 2025"
+    "expires": "Jul 2, 2025"
   },
   {
     "prefix": "attribution-reporting-aggregatable-debug",
