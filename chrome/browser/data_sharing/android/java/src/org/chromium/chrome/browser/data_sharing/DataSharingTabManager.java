@@ -53,6 +53,7 @@ import org.chromium.components.data_sharing.configs.DataSharingStringConfig;
 import org.chromium.components.data_sharing.configs.DataSharingUiConfig;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
@@ -472,18 +473,17 @@ public class DataSharingTabManager {
         mDataSharingService.getUiDelegate().updateRuntimeData(sessionId, runtimeConfig);
     }
 
-    //     private List<TabPreview> convertToTabsPreviewList(
-    //             List<SavedTabGroupTab> savedTabs, int maxTabs) {
-    //         int tabsCount = Math.min(maxTabs, savedTabs.size());
-    //         List<TabPreview> preview = new ArrayList<>();
-    //         for (int i = 0; i < tabsCount; ++i) {
-    //             // displayUrl field is not used in the create or manage UI where local tab group
-    // is
-    //             // available.
-    //             preview.add(new TabPreview(savedTabs.get(i).url, /* displayUrl= */ ""));
-    //         }
-    //         return preview;
-    //     }
+    private List<TabPreview> convertToTabsPreviewList(
+            List<SavedTabGroupTab> savedTabs, int maxTabs) {
+        int tabsCount = Math.min(maxTabs, savedTabs.size());
+        List<TabPreview> preview = new ArrayList<>();
+        for (int i = 0; i < tabsCount; ++i) {
+            // displayUrl field is not used in the create or manage UI where local tab group is
+            // available.
+            preview.add(new TabPreview(savedTabs.get(i).url, /* displayUrl= */ ""));
+        }
+        return preview;
+    }
 
     private void showInvitationFailureDialog() {
         @Nullable ModalDialogManager modalDialogManager = mWindowAndroid.getModalDialogManager();
@@ -626,16 +626,15 @@ public class DataSharingTabManager {
                     }
                 };
 
-        // TODO (ritikagup@) : Uncomment this, after necessary changes are merged.
-        // String sessionId =
-        uiDelegate.showCreateFlow(
-                new DataSharingCreateUiConfig.Builder()
+        String sessionId =
+                uiDelegate.showCreateFlow(
+                    new DataSharingCreateUiConfig.Builder()
                         .setCommonConfig(
                                 getCommonConfig(activity, tabGroupDisplayName, stringConfig))
                         .setCreateCallback(createCallback)
                         .build());
-        // fetchFavicons(
-        //     activity, sessionId, convertToTabsPreviewList(existingGroup.savedTabs, 4));
+        fetchFavicons(
+             activity, sessionId, convertToTabsPreviewList(existingGroup.savedTabs, 4));
     }
 
     private void showShareSheet(GroupData groupData, Callback<Boolean> onShareSheetShown) {
