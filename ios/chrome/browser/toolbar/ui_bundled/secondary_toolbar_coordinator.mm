@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_view_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 
 @interface SecondaryToolbarCoordinator ()
 @property(nonatomic, strong) SecondaryToolbarViewController* viewController;

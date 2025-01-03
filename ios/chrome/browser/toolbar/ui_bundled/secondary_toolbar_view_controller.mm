@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -18,8 +20,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_view.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface SecondaryToolbarViewController ()

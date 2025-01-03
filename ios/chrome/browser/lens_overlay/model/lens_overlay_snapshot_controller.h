@@ -11,8 +11,8 @@
 #import "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller_delegate.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
 class SnapshotTabHelper;
 class FullscreenController;

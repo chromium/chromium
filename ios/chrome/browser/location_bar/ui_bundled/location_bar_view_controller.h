@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @class LayoutGuideCenter;
 @protocol ActivityServiceCommands;

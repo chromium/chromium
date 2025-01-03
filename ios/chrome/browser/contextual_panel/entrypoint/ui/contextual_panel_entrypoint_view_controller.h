@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @protocol ContextualPanelEntrypointMutator;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
