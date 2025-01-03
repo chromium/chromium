@@ -18,7 +18,11 @@ import org.chromium.build.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Provides shared capabilities for feature flag support. */
+/**
+ * Provides shared capabilities for feature flag support.
+ *
+ * <p>TODO(crbug.com/345483590): Move all override logic and TestValues to FeatureOverrides.
+ */
 @NullMarked
 @JNINamespace("base::android")
 public class FeatureList {
@@ -208,9 +212,10 @@ public class FeatureList {
     /**
      * Adds overrides to feature flags and field trial parameters in addition to existing ones.
      *
-     * <p>An alias for #mergeTestValues(testValues, replace=true).
+     * @deprecated use {@link FeatureOverrides#apply()}
      */
     @VisibleForTesting
+    @Deprecated
     public static void setTestValues(TestValues testValues) {
         assert testValues != null;
         mergeTestValues(testValues, /* replace= */ true);
@@ -224,8 +229,11 @@ public class FeatureList {
      *
      * <p>@Features annotations and @CommandLineFlags --enable/disable-features are affected by
      * this.
+     *
+     * @deprecated use {@link FeatureOverrides#removeAllIncludingAnnotations()}
      */
     @VisibleForTesting
+    @Deprecated
     public static void removeAllTestOverrides() {
         overwriteTestValues(null);
     }
@@ -244,12 +252,16 @@ public class FeatureList {
     /**
      * Adds overrides to feature flags and field trial parameters in addition to existing ones.
      *
-     * <p>TODO(crbug.com/386813115): Migrate test class usages to #setTestValues to make this
-     * private.
+     * <p>TODO(crbug.com/386813115): Migrate test class usages to {@link
+     * FeatureOverrides.Builder#apply()} or {@link FeatureOverrides.Builder#applyWithoutOverwrite()}
+     * and make this private.
      *
+     * @deprecated use {@link FeatureOverrides.Builder#apply()} or {@link
+     *     FeatureOverrides.Builder#applyWithoutOverwrite()}
      * @param testValuesToMerge the TestValues to merge into existing ones
-     * @param replace if true, replaces existing values (e.g. from @EnableFeatures annotations)
+     * @param replace if true, replaces existing overrides; otherwise preserve them
      */
+    @Deprecated
     public static void mergeTestValues(TestValues testValuesToMerge, boolean replace) {
         TestValues newTestValues = new TestValues();
         if (sTestFeatures != null) {
@@ -259,14 +271,26 @@ public class FeatureList {
         overwriteTestValues(newTestValues);
     }
 
-    /** Override a feature flag with a test value. */
+    /**
+     * Override a feature flag with a test value.
+     *
+     * @deprecated use {@link FeatureOverrides#enable(String)}, {@link
+     *     FeatureOverrides#disable(String)}, or {@link FeatureOverrides#overrideFlag(String,
+     *     boolean)}
+     */
+    @Deprecated
     public static void setTestFeature(String featureName, boolean testValue) {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(featureName, testValue);
         mergeTestValues(testValues, /* replace= */ true);
     }
 
-    /** Override a feature param with a test value. */
+    /**
+     * Override a feature param with a test value.
+     *
+     * @deprecated use {@link FeatureOverrides#overrideParam(String, String, String)}
+     */
+    @Deprecated
     public static void setTestFeatureParam(String featureName, String paramName, String testValue) {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(featureName, paramName, testValue);

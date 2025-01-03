@@ -30,7 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,14 +87,13 @@ public class TabGroupSyncUtilsUnitTest {
     @Test
     public void testStaleGroupsNotAddedToSync() {
         // Override the finch param to 90 days.
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
-                TabGroupSyncUtils
-                        .PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
-                String.valueOf(90));
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+                .param(
+                        TabGroupSyncUtils
+                                .PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
+                        90)
+                .apply();
 
         long now = System.currentTimeMillis();
 

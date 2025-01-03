@@ -4430,6 +4430,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/EventLog.java",
       "android/java/src/org/chromium/base/FeatureList.java",
       "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/FeatureOverrides.java",
       "android/java/src/org/chromium/base/FeatureParam.java",
       "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
