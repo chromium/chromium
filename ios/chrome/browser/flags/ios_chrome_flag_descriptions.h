@@ -866,10 +866,6 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kPasswordSharingName[];
 extern const char kPasswordSharingDescription[];
 
-// Title and description for the flag to enable post profile switch actions.
-extern const char kPostProfileSwitchActionsName[];
-extern const char kPostProfileSwitchActionsDescription[];
-
 // Title and description for the flag to enable the Price Tracking Notification
 // Promo card.
 extern const char kPriceTrackingPromoName[];

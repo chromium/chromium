@@ -1147,10 +1147,6 @@ BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostProfileSwitchActions,
-             "PostProfileSwitchActions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kChromeStartupParametersAsync,
              "ChromeStartupParametersAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);

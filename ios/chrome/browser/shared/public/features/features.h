@@ -942,9 +942,6 @@ bool IsManagedProfileCreationUpdatedScreenEnabled();
 // Feature to control resyncing the omaha ping timer on foregrounding.
 BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
 
-// Feature to support post-profile switch actions support.
-BASE_DECLARE_FEATURE(kPostProfileSwitchActions);
-
 // Feature flag to use the async version of the chrome startup method.
 BASE_DECLARE_FEATURE(kChromeStartupParametersAsync);
 

@@ -5343,11 +5343,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "ios-post-profile-switch-actions",
-    "owners": [ "fedegermi@google.com", "marq@chromium.org"],
-    "expiry_milestone": 136
-  },
-  {
     "name": "ios-price-tracking-notification-promo-card",
     "owners": [
       "davidjm@google.com",

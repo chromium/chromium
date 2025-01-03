@@ -977,11 +977,6 @@ const char kPasswordSharingName[] = "Enables password sharing";
 const char kPasswordSharingDescription[] =
     "Enables password sharing between members of the same family.";
 
-const char kPostProfileSwitchActionsName[] =
-    "Enables post profile switch actions";
-const char kPostProfileSwitchActionsDescription[] =
-    "Enables post profile switch actions for all sign-in entry points.";
-
 const char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 const char kPriceTrackingPromoDescription[] =
