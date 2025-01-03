@@ -147,9 +147,9 @@ ChromiumPixelFormat CameraBufferFactory::ResolveStreamBufferFormat(
     return kUnsupportedFormat;
   }
   for (const auto& f : cr_formats) {
-    auto buffer = CreateGpuMemoryBuffer(
+    auto shared_image = CreateSharedImage(
         gfx::Size(kDummyBufferWidth, kDummyBufferHeight), f.gfx_format, usage);
-    if (buffer) {
+    if (shared_image) {
       resolved_format_usages_[key] = f;
       return f;
     }
