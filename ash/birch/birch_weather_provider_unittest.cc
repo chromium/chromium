@@ -519,5 +519,26 @@ TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 }
 
+TEST_F(BirchWeatherProviderTest, WeatherManagedUser) {
+  auto* birch_model = Shell::Get()->birch_model();
+  BirchWeatherProvider provider(birch_model);
+
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+
+  // Add and switch to a managed user account.
+  const AccountId& account_id = AccountId::FromUserEmail("primary@test");
+  TestSessionControllerClient* const session = GetSessionControllerClient();
+  session->AddUserSession("primary@test", user_manager::UserType::kRegular,
+                          /*provide_pref_service=*/false,
+                          /*is_new_profile=*/true, std::string(),
+                          /*is_account_managed=*/true);
+  session->SwitchActiveUser(account_id);
+
+  // Weather should not be fetched when the active account is managed.
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
 }  // namespace
 }  // namespace ash
