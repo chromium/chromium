@@ -85,24 +85,28 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
       const uint32_t value) {
     auto* shared_image_interface =
         child_context_provider_->SharedImageInterface();
-    auto shared_image_mapping = shared_image_interface->CreateSharedImage(
-        {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-         "DisplayResourceProviderSoftwareTest"});
+    auto shared_image =
+        shared_image_interface->CreateSharedImageForSoftwareCompositor(
+            {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+             "DisplayResourceProviderSoftwareTest"});
+    auto mapping = shared_image->Map();
 
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
     base::span<uint32_t> span =
-        shared_image_mapping.mapping.GetMemoryAsSpan<uint32_t>(size.GetArea());
+        UNSAFE_BUFFERS(base::span(ptr, static_cast<uint32_t>(size.GetArea())));
+
     std::fill(span.begin(), span.end(), value);
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
-        shared_image_mapping.shared_image,
-        shared_image_interface->GenVerifiedSyncToken(), size,
+        shared_image, shared_image_interface->GenVerifiedSyncToken(), size,
         SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
 
-    auto callback = base::BindOnce(
-        &MockReleaseCallback::Released, base::Unretained(&release_callback),
-        std::move(shared_image_mapping.shared_image));
+    auto callback = base::BindOnce(&MockReleaseCallback::Released,
+                                   base::Unretained(&release_callback),
+                                   std::move(shared_image));
 
     return child_resource_provider_->ImportResource(
         std::move(transferable_resource), std::move(callback));
