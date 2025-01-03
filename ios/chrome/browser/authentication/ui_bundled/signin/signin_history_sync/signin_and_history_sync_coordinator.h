@@ -17,11 +17,16 @@ enum class PromoAction : int;
 // sign-in and then the history sync is displayed.
 @interface SignInAndHistorySyncCoordinator : SigninCoordinator
 
+// Init the coordinator with its base `viewController`, the `browser`, from
+// which `accessPoint` the sign in flow was initialized, using which
+// `promoAction` (when relevant) and whether an `optionalHistorySync` (even if
+// it is NO, it might still be skipped if the user previously approved it).
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
+           optionalHistorySync:(BOOL)optionalHistorySync
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

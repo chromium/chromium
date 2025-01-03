@@ -168,7 +168,11 @@ class PrefRegistrySyncable;
                                                                  AccessPoint)
                                                                 accessPoint;
 
-// Returns a coordinator to display the sign-in view then the history opt-in.
+// Returns a coordinator to display the sign-in view then the history opt-in
+// with  with its base `viewController`, the `browser`, from which `accessPoint`
+// the sign in flow was initialized, using which `promoAction` (when relevant),
+// when `optionalHistorySync` is YES, the history sync opt in will be presented
+// if the user hasn't already approved it.
 + (instancetype)
     sheetSigninAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -178,7 +182,9 @@ class PrefRegistrySyncable;
                                                                    accessPoint
                                                    promoAction:(signin_metrics::
                                                                     PromoAction)
-                                                                   promoAction;
+                                                                   promoAction
+                                           optionalHistorySync:
+                                               (BOOL)optionalHistorySync;
 
 // Returns a coordinator to switch account.
 + (instancetype)accountMenuCoordinatorWithBaseViewController:

@@ -188,13 +188,16 @@ using signin_metrics::PromoAction;
                                                    accessPoint:(signin_metrics::
                                                                     AccessPoint)
                                                                    accessPoint
-                                                   promoAction:(PromoAction)
-                                                                   promoAction {
+                                                   promoAction:
+                                                       (PromoAction)promoAction
+                                           optionalHistorySync:
+                                               (BOOL)optionalHistorySync {
   return [[SignInAndHistorySyncCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
                      accessPoint:accessPoint
-                     promoAction:promoAction];
+                     promoAction:promoAction
+             optionalHistorySync:optionalHistorySync];
 }
 
 + (instancetype)accountMenuCoordinatorWithBaseViewController:

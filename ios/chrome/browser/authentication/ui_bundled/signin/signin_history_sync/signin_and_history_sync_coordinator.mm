@@ -55,17 +55,21 @@ enum class SignInHistorySyncStep {
   signin_metrics::PromoAction _promoAction;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
+  // Whether the history opt in should be optional.
+  BOOL _optionalHistorySync;
 }
 
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                   promoAction:(signin_metrics::PromoAction)promoAction {
+                   promoAction:(signin_metrics::PromoAction)promoAction
+           optionalHistorySync:(BOOL)optionalHistorySync {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                accessPoint:accessPoint];
   if (self) {
+    _optionalHistorySync = optionalHistorySync;
     _promoAction = promoAction;
     _currentStep = SignInHistorySyncStep::kStart;
   }
@@ -198,7 +202,7 @@ enum class SignInHistorySyncStep {
     case SignInHistorySyncStep::kHistorySync: {
       if (history_sync::GetSkipReason(_syncService, _authenticationService,
                                       self.browser->GetProfile()->GetPrefs(),
-                                      YES) !=
+                                      _optionalHistorySync) !=
           history_sync::HistorySyncSkipReason::kNone) {
         [self
             presentNextStepWithPreviousResult:SigninCoordinatorResultDisabled];
@@ -210,7 +214,7 @@ enum class SignInHistorySyncStep {
                                    browser:self.browser
                              showUserEmail:NO
                          signOutIfDeclined:NO
-                                isOptional:YES
+                                isOptional:_optionalHistorySync
                                accessPoint:self.accessPoint];
         coordinator.delegate = self;
         return coordinator;

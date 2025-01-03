@@ -23,6 +23,7 @@
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _completion = [completion copy];
+    _optionalHistorySync = YES;
   }
   return self;
 }

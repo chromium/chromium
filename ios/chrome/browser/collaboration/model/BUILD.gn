@@ -21,6 +21,7 @@ source_set("collaboration_delegate") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
     "//url",
   ]
 }
@@ -59,6 +60,7 @@ source_set("unit_tests") {
     "//components/collaboration/public",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/test_support",
+    "//components/sync:test_support",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/share_kit/model:factory",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public/test",

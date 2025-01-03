@@ -1889,8 +1889,10 @@ using UserFeedbackDataCallback =
                                                          accessPoint:
                                                              command.accessPoint
                                                          promoAction:
-                                                             command
-                                                                 .promoAction];
+                                                             command.promoAction
+                                                 optionalHistorySync:
+                                                     command
+                                                         .optionalHistorySync];
       break;
     case AuthenticationOperation::kHistorySync:
       self.signinCoordinator = [SigninCoordinator

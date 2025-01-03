@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/weak_ptr.h"
 #import "components/collaboration/public/collaboration_controller_delegate.h"
 
 @class AlertCoordinator;
 class Browser;
 class ShareKitService;
+typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
+@protocol SystemIdentity;
 
 namespace collaboration {
 
@@ -47,11 +50,19 @@ class IOSCollaborationControllerDelegate
   void PromoteCurrentScreen() override;
 
  private:
+  // Called when the authentication ui flow is complete.
+  void OnAuthenticationComplete(ResultCallback result,
+                                SigninCoordinatorResult sign_in_result,
+                                id<SystemIdentity> completion_info);
+
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<Browser> browser_;
   __weak UIViewController* base_view_controller_;
   NSString* session_id_ = nil;
   AlertCoordinator* alert_coordinator_ = nil;
+
+  base::WeakPtrFactory<IOSCollaborationControllerDelegate> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace collaboration

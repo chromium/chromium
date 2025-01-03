@@ -11,6 +11,9 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
@@ -27,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -99,7 +103,9 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
 
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  auto completion_block = base::CallbackToBlock(std::move(result));
+  auto completion_block = base::CallbackToBlock(base::BindOnce(
+      &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
+      weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:operation
@@ -108,16 +114,9 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
                             ACCESS_POINT_COLLABORATION_TAB_GROUP
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult sign_in_result,
-                          id<SystemIdentity> completion_info) {
-               bool completion_result =
-                   sign_in_result == SigninCoordinatorResultSuccess;
-               CollaborationControllerDelegate::Outcome outcome =
-                   completion_result
-                       ? CollaborationControllerDelegate::Outcome::kSuccess
-                       : CollaborationControllerDelegate::Outcome::kFailure;
-               completion_block(outcome);
-             }];
+             completion:completion_block];
+
+  command.optionalHistorySync = NO;
 
   [application_handler showSignin:command
                baseViewController:base_view_controller_];
@@ -257,6 +256,30 @@ void IOSCollaborationControllerDelegate::PromoteTabGroup(
 
 void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
   // TODO(crbug.com/377306986): Implement this.
+}
+
+void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
+    ResultCallback result,
+    SigninCoordinatorResult sign_in_result,
+    id<SystemIdentity> completion_info) {
+  if (sign_in_result != SigninCoordinatorResultSuccess) {
+    std::move(result).Run(CollaborationControllerDelegate::Outcome::kFailure);
+    return;
+  }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(browser_->GetProfile());
+  syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
+
+  bool sync_opted_in = user_settings->GetSelectedTypes().HasAll(
+      {syncer::UserSelectableType::kHistory,
+       syncer::UserSelectableType::kTabs});
+
+  CollaborationControllerDelegate::Outcome outcome =
+      sync_opted_in ? CollaborationControllerDelegate::Outcome::kSuccess
+                    : CollaborationControllerDelegate::Outcome::kFailure;
+
+  std::move(result).Run(outcome);
 }
 
 }  // namespace collaboration

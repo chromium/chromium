@@ -80,6 +80,10 @@ enum class AuthenticationOperation {
 // Default value: NO.
 @property(nonatomic, assign) BOOL skipIfUINotAvailable;
 
+// Whether the history opt in sync should always be shown when the user hasn't
+// approved it before. Default: YES
+@property(nonatomic, assign) BOOL optionalHistorySync;
+
 // The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)
     SigninCoordinatorCompletionCallback completion;
