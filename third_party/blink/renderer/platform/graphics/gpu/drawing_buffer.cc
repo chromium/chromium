@@ -828,21 +828,22 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   ScopedStateRestorer scoped_state_restorer(this);
   TRACE_EVENT0("blink", "DrawingBuffer::ExportCanvasResource");
 
+  if (CheckForDestructionAndChangeAndResolveIfNeeded(kDiscardAllowed) !=
+      kContentsResolvedIfNeeded) {
+    return nullptr;
+  }
+
   CHECK(IsUsingGpuCompositing());
   viz::TransferableResource out_resource;
   viz::ReleaseCallback out_release_callback;
   scoped_refptr<gpu::ClientSharedImage> client_si;
-  if (!PrepareTransferableResourceInternal(&client_si, &out_resource,
-                                           &out_release_callback)) {
+  if (!FinishPrepareTransferableResourceGpu(&out_resource, &client_si,
+                                            &out_release_callback)) {
     return nullptr;
   }
 
-  // If PrepareTransferableResourceInternal() succeeded, the ClientSI must be
-  // valid:
-  // * This function only called when IsGpuCompositingEnabled() meaning that
-  //   FinishPrepareTransferableResourceGpu() will have been invoked
-  // * FinishPrepareTransferableResourceGpu() always populates `client_si` if it
-  //   returns true
+  // FinishPrepareTransferableResourceGpu() always populates `client_si` if it
+  // returns true.
   CHECK(client_si);
   return ExternalCanvasResource::Create(
       client_si, out_resource.sync_token(),
