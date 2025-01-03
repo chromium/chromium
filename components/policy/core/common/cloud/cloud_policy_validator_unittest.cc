@@ -111,9 +111,11 @@ class CloudPolicyValidatorTest : public testing::Test {
     // Run validation and check the result.
     EXPECT_CALL(*this, ValidationCompletion(validator.get()))
         .WillOnce(check_action);
-
-    validator->RunValidation();
-    ValidationCompletion(validator.get());
+    UserCloudPolicyValidator::StartValidation(
+        std::move(validator),
+        base::BindOnce(&CloudPolicyValidatorTest::ValidationCompletion,
+                       base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(this);
   }
 

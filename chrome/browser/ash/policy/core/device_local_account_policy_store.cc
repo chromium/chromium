@@ -201,12 +201,13 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
   if (validate_in_background) {
     device_settings_service_->GetOwnershipStatusAsync(base::BindOnce(
         &DeviceLocalAccountPolicyStore::Validate, weak_factory_.GetWeakPtr(),
-        valid_timestamp_required, std::move(policy), std::move(callback)));
+        valid_timestamp_required, std::move(policy), std::move(callback),
+        validate_in_background));
   } else {
     ash::DeviceSettingsService::OwnershipStatus ownership_status =
         device_settings_service_->GetOwnershipStatus();
     Validate(valid_timestamp_required, std::move(policy), std::move(callback),
-             ownership_status);
+             validate_in_background, ownership_status);
   }
 }
 
@@ -214,6 +215,7 @@ void DeviceLocalAccountPolicyStore::Validate(
     bool valid_timestamp_required,
     std::unique_ptr<em::PolicyFetchResponse> policy_response,
     ValidateCompletionCallback callback,
+    bool validate_in_background,
     ash::DeviceSettingsService::OwnershipStatus ownership_status) {
   DCHECK_NE(ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown,
             ownership_status);
@@ -259,10 +261,16 @@ void DeviceLocalAccountPolicyStore::Validate(
   validator->ValidatePayload();
   validator->ValidateSignature(key->as_string());
 
-  validator->RunValidation();
-  std::move(callback).Run(
-      /*signature_validation_public_key=*/key->as_string(),
-      /*validator=*/validator.get());
+  if (validate_in_background) {
+    UserCloudPolicyValidator::StartValidation(
+        std::move(validator),
+        base::BindOnce(std::move(callback), key->as_string()));
+  } else {
+    validator->RunValidation();
+    std::move(callback).Run(
+        /*signature_validation_public_key=*/key->as_string(),
+        /*validator=*/validator.get());
+  }
 }
 
 }  // namespace policy
