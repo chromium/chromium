@@ -1762,6 +1762,18 @@ test("css_parser_fuzzer") {
   fuzztests = [ "CssParser.ParseSheetFuzzer" ]
 }
 
+test("inspector_ghost_rules_fuzzer") {
+  sources = [ "inspector/inspector_ghost_rules_fuzzer.cc" ]
+  deps = [
+    ":core",
+    ":testing",
+    ":unit_test_support",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  fuzztests = [ "InspectorGhostRules.PopulateFuzzer" ]
+}
+
 proto_library("css_proto") {
   sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
   proto_out_dir = "third_party/blink/renderer/core/css/parser"
