@@ -25,6 +25,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
@@ -324,21 +325,23 @@ public class BuildInfo {
                 }
             }
 
-            PackageInfo pi = assumeNonNull(PackageUtils.getPackageInfo(appInstalledPackageName, 0));
-            ApplicationInfo appInfo = pi.applicationInfo;
+            ApplicationInfo appInfo = appContext.getApplicationInfo();
             hostPackageName = sdkQualifiedName;
             hostPackageLabel = nullToEmpty(pm.getApplicationLabel(appInfo));
-            hostVersionCode = packageVersionCode(pi);
 
             if (sBrowserPackageInfo != null) {
+                PackageInfo pi =
+                        assumeNonNull(PackageUtils.getPackageInfo(appInstalledPackageName, 0));
+                hostVersionCode = packageVersionCode(pi);
                 packageName = sBrowserPackageInfo.packageName;
                 versionName = nullToEmpty(sBrowserPackageInfo.versionName);
                 mBrowserApplicationInfo = sBrowserPackageInfo.applicationInfo;
                 sBrowserPackageInfo = null;
             } else {
                 packageName = appContextPackageName;
-                versionName = nullToEmpty(pi.versionName);
-                mBrowserApplicationInfo = appContext.getApplicationInfo();
+                hostVersionCode = BuildConfig.VERSION_CODE;
+                versionName = VersionInfo.getProductVersion();
+                mBrowserApplicationInfo = appInfo;
             }
         }
 
