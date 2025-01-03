@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 
-import {fixupConfigRules, fixupPluginRules} from '@eslint/compat';
 import {FlatCompat} from '@eslint/eslintrc';
-import js from '@eslint/js';
+import eslint from '@eslint/js';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import _import from 'eslint-plugin-import';
-import mocha from 'eslint-plugin-mocha';
-import promise from 'eslint-plugin-promise';
+import importPlugin from 'eslint-plugin-import';
+import mochaPlugin from 'eslint-plugin-mocha';
+import eslintPrettierPluginRecommended from 'eslint-plugin-prettier/recommended';
+import promisePlugin from 'eslint-plugin-promise';
 import globals from 'globals';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
+  baseDirectory: import.meta.dirname,
+  recommendedConfig: eslint.configs.recommended,
+  allConfig: eslint.configs.all,
 });
 
 /**
@@ -61,22 +57,18 @@ export default [
       'src/protocol-parser/generated/',
     ],
   },
-  ...fixupConfigRules(
-    compat.extends(
-      'eslint:recommended',
-      'plugin:import/typescript',
-      'plugin:mocha/recommended',
-      'plugin:prettier/recommended',
-      'plugin:promise/recommended',
-    ),
-  ),
+  eslint.configs.recommended,
+  eslintPrettierPluginRecommended,
+  importPlugin.flatConfigs.typescript,
+  mochaPlugin.configs.flat.recommended,
+  promisePlugin.configs['flat/recommended'],
   {
     name: 'JavaScript rules',
 
     plugins: {
-      import: fixupPluginRules(_import),
-      mocha: fixupPluginRules(mocha),
-      promise: fixupPluginRules(promise),
+      import: importPlugin,
+      mocha: mochaPlugin,
+      promise: promisePlugin,
     },
 
     languageOptions: {
