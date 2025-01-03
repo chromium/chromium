@@ -3238,14 +3238,14 @@
         }
         return size;
     }
-    function getTiming(timing) {
+    function getTiming(timing, offset = 0) {
         if (!timing) {
             return 0;
         }
-        if (timing < 0) {
+        if (timing <= 0 || timing + offset <= 0) {
             return 0;
         }
-        return timing;
+        return timing + offset;
     }
 
     /**
@@ -5025,7 +5025,8 @@
                 delete deepSerializedValue['weakLocalObjectReference'];
             }
             if (deepSerializedValue.type === 'node' &&
-                Object.hasOwn(deepSerializedValue?.value, 'frameId')) {
+                deepSerializedValue.value &&
+                Object.hasOwn(deepSerializedValue.value, 'frameId')) {
                 // `frameId` is not needed in BiDi as it is not yet specified.
                 delete deepSerializedValue.value['frameId'];
             }
@@ -8634,24 +8635,36 @@
             return authChallenges;
         }
         get #timings() {
+            // The timing in the CDP events are provided relative to the event's baseline.
+            // However, the baseline can be different for different events, and the events have to
+            // be normalized throughout resource events. Normalize events timestamps  by the
+            // request.
+            // TODO: Verify this is correct.
+            const responseTimeOffset = getTiming(getTiming(this.#response.info?.timing?.requestTime) -
+                getTiming(this.#request.info?.timestamp));
             return {
                 // TODO: Verify this is correct
-                timeOrigin: getTiming(this.#response.info?.timing?.requestTime),
-                requestTime: getTiming(this.#response.info?.timing?.requestTime),
+                timeOrigin: Math.round(getTiming(this.#request.info?.wallTime) * 1000),
+                // Timing baseline.
+                // TODO: Verify this is correct.
+                requestTime: 0,
+                // TODO: set if redirect detected.
                 redirectStart: 0,
+                // TODO: set if redirect detected.
                 redirectEnd: 0,
                 // TODO: Verify this is correct
                 // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=145
-                fetchStart: getTiming(this.#response.info?.timing?.requestTime),
-                dnsStart: getTiming(this.#response.info?.timing?.dnsStart),
-                dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd),
-                connectStart: getTiming(this.#response.info?.timing?.connectStart),
-                connectEnd: getTiming(this.#response.info?.timing?.connectEnd),
-                tlsStart: getTiming(this.#response.info?.timing?.sslStart),
-                requestStart: getTiming(this.#response.info?.timing?.sendStart),
+                fetchStart: getTiming(this.#response.info?.timing?.workerFetchStart, responseTimeOffset),
+                // fetchStart: 0,
+                dnsStart: getTiming(this.#response.info?.timing?.dnsStart, responseTimeOffset),
+                dnsEnd: getTiming(this.#response.info?.timing?.dnsEnd, responseTimeOffset),
+                connectStart: getTiming(this.#response.info?.timing?.connectStart, responseTimeOffset),
+                connectEnd: getTiming(this.#response.info?.timing?.connectEnd, responseTimeOffset),
+                tlsStart: getTiming(this.#response.info?.timing?.sslStart, responseTimeOffset),
+                requestStart: getTiming(this.#response.info?.timing?.sendStart, responseTimeOffset),
                 // https://source.chromium.org/chromium/chromium/src/+/main:net/base/load_timing_info.h;l=196
-                responseStart: getTiming(this.#response.info?.timing?.receiveHeadersStart),
-                responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd),
+                responseStart: getTiming(this.#response.info?.timing?.receiveHeadersStart, responseTimeOffset),
+                responseEnd: getTiming(this.#response.info?.timing?.receiveHeadersEnd, responseTimeOffset),
             };
         }
         #phaseChanged() {
@@ -15258,7 +15271,24 @@
         Session.UserPromptHandlerTypeSchema = z.lazy(() => z.enum(['accept', 'dismiss', 'ignore']));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
+        Session.SubscriptionSchema = z.lazy(() => z.string());
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
         Session.SubscriptionRequestSchema = z.lazy(() => z.object({
+            events: z.array(z.string()).min(1),
+            contexts: z
+                .array(BrowsingContext$1.BrowsingContextSchema)
+                .min(1)
+                .optional(),
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.UnsubscribeByIdRequestSchema = z.lazy(() => z.object({
+            subscriptions: z.array(Session.SubscriptionSchema).min(1),
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
+        Session.UnsubscribeByAttributesRequestSchema = z.lazy(() => z.object({
             events: z.array(z.string()).min(1),
             contexts: z
                 .array(BrowsingContext$1.BrowsingContextSchema)
@@ -15320,9 +15350,17 @@
         }));
     })(Session$1 || (Session$1 = {}));
     (function (Session) {
+        Session.SubscriptionRequestResultSchema = z.lazy(() => z.object({
+            subscription: Session.SubscriptionSchema,
+        }));
+    })(Session$1 || (Session$1 = {}));
+    (function (Session) {
         Session.UnsubscribeSchema = z.lazy(() => z.object({
             method: z.literal('session.unsubscribe'),
-            params: Session.SubscriptionRequestSchema,
+            params: z.union([
+                Session.UnsubscribeByAttributesRequestSchema,
+                Session.UnsubscribeByIdRequestSchema,
+            ]),
         }));
     })(Session$1 || (Session$1 = {}));
     const BrowserCommandSchema = z.lazy(() => z.union([
