@@ -210,8 +210,9 @@ void StyleResolverState::LoadPendingResources() {
       StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
   }
-  if (StyleBuilder().Display() == EDisplay::kNone &&
-      !GetElement().LayoutObjectIsNeeded(style_builder_->GetDisplayStyle())) {
+  if (StyleBuilder().Display() == EDisplay::kNone && GetStyledElement() &&
+      !GetStyledElement()->LayoutObjectIsNeeded(
+          style_builder_->GetDisplayStyle())) {
     // Don't load resources for display:none elements unless we are animating
     // display. If we are animating display, we might otherwise have ended up
     // caching a base style with pending images.
