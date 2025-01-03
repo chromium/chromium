@@ -4434,6 +4434,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4087328411748538168">Mostra a la dreta</translation>
 <translation id="4089235344645910861">La configuració s'ha desat i ha començat la sincronització.</translation>
+<translation id="4089743381329341712">Les aplicacions seleccionades s'instal·laran després de la configuració. Troba altres recomanacions més endavant a l'aplicació Aplicacions i jocs.</translation>
 <translation id="4089817585533500276">Maj+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Activa l'accés verificat</translation>
 <translation id="4092709865241032354">Per ajudar el gestor de contrasenyes de Google a desar la teva informació d'inici de sessió, afegeix el teu nom d'usuari per a aquest lloc web</translation>
