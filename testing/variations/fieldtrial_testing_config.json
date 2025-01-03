@@ -23330,6 +23330,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillRemovePaymentsButterDropdown",
+                        "ImprovedSigninUIOnDesktop",
                         "OutlineSilhouetteIcon"
                     ]
                 }

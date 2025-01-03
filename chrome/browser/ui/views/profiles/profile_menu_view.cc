@@ -865,6 +865,13 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                   vector_icons::kBusinessChromeRefreshIcon, ui::kColorIcon);
   }
 
+  if (web_app::AppBrowserController::IsWebApp(browser())) {
+    if (!primary_account_info.email.empty()) {
+      params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+    }
+    return params;
+  }
+
   // Sync error, including "paused".
   if (error.has_value()) {
     params.subtitle = GetAvatarSyncErrorDescription(
