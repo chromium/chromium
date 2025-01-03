@@ -22,7 +22,7 @@ using bookmarks::TestBookmarkClient;
 // OnComboboxModelChanged() is invoked.
 class TestComboboxModelObserver : public ui::ComboboxModelObserver {
  public:
-  TestComboboxModelObserver() {}
+  TestComboboxModelObserver() = default;
 
   TestComboboxModelObserver(const TestComboboxModelObserver&) = delete;
   TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =

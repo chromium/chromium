@@ -22,7 +22,7 @@ namespace {
 // An error that has a bubble view.
 class BubbleViewError final : public GlobalErrorWithStandardBubble {
  public:
-  BubbleViewError() {}
+  BubbleViewError() = default;
 
   BubbleViewError(const BubbleViewError&) = delete;
   BubbleViewError& operator=(const BubbleViewError&) = delete;

@@ -994,7 +994,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start a capture in the normal-mode capture.
   CreateUIsAndStartSharing(main_browser, /*capturing_tab=*/0,
-                           /*captured_tab=*/1);
+                           /*captured_tab_first=*/1);
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start a capture in the normal-mode capture.
   CreateUIsAndStartSharing(main_browser, /*capturing_tab=*/0,
-                           /*captured_tab=*/1);
+                           /*captured_tab_first=*/1);
 
   // Create a guest-mode browser.
   Browser* const guest_browser = CreateGuestBrowser();
@@ -1050,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
-                           /*captured_tab=*/1);
+                           /*captured_tab_first=*/1);
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
-                           /*captured_tab=*/1);
+                           /*captured_tab_first=*/1);
 
   // Create a normal-mode browser.
   Browser* const main_browser = CreateBrowser(browser()->profile());
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
 
   // Start a capture in the guest-mode browser.
   CreateUIsAndStartSharing(guest_browser, /*capturing_tab=*/0,
-                           /*captured_tab=*/1);
+                           /*captured_tab_first=*/1);
 
   // Sanity - existing tabs have an infobar.
   ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 1u);

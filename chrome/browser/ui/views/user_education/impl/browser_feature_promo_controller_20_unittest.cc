@@ -1124,7 +1124,7 @@ TEST_F(BrowserFeaturePromoController20Test,
   EXPECT_TRUE(promo_handle);
   FeaturePromoHandle promo_handle2(std::move(promo_handle));
   EXPECT_TRUE(promo_handle2);
-  EXPECT_FALSE(promo_handle);
+  EXPECT_FALSE(promo_handle);  // NOLINT
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   promo_handle2.Release();
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
@@ -1147,7 +1147,7 @@ TEST_F(BrowserFeaturePromoController20Test,
   FeaturePromoHandle promo_handle2;
   promo_handle2 = std::move(promo_handle);
   EXPECT_TRUE(promo_handle2);
-  EXPECT_FALSE(promo_handle);
+  EXPECT_FALSE(promo_handle);  // NOLINT
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   promo_handle2.Release();
   EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);

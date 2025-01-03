@@ -69,13 +69,14 @@ class FakeReceiverDelegate final : public PresentationReceiverWindowDelegate {
 };
 
 class PresentationReceiverWindowViewBrowserTest : public InProcessBrowserTest {
- protected:
-  PresentationReceiverWindowViewBrowserTest() = default;
-
+ public:
   PresentationReceiverWindowViewBrowserTest(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
   PresentationReceiverWindowViewBrowserTest& operator=(
       const PresentationReceiverWindowViewBrowserTest&) = delete;
+
+ protected:
+  PresentationReceiverWindowViewBrowserTest() = default;
 
   PresentationReceiverWindowView* CreateReceiverWindowView(
       PresentationReceiverWindowDelegate* delegate,

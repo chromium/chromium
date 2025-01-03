@@ -814,12 +814,10 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
+  using BrowserWindow::CreateTabSearchBubble;
   void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kSearch,
-      tab_search::mojom::TabOrganizationFeature organization_feature =
-          tab_search::mojom::TabOrganizationFeature::kNone) override;
-  // Closes the tab search bubble if open for the given browser instance.
+      tab_search::mojom::TabSearchSection section,
+      tab_search::mojom::TabOrganizationFeature organization_feature) override;
   void CloseTabSearchBubble() override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

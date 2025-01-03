@@ -69,7 +69,7 @@ class SaveAddressProfileTest : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
-        /*options=*/{},
+        /*is_migration_to_account=*/{},
         base::BindOnce(&SaveAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -160,7 +160,7 @@ class UpdateAddressProfileTest : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
-        /*options=*/{},
+        /*is_migration_to_account=*/{},
         base::BindOnce(&UpdateAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -201,7 +201,7 @@ class UpdateAccountAddressProfileTest : public UpdateAddressProfileTest {
         .set_record_type(AutofillProfile::RecordType::kAccount);
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
-        /*options=*/{},
+        /*is_migration_to_account=*/{},
         base::BindOnce(&UpdateAccountAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }

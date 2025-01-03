@@ -76,6 +76,11 @@ bool operator==(const AppMenuIconController::TypeAndSeverity& a,
 // builds, there does not appear to be an easy way to run the test as if it were
 // a different channel.
 class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
+ public:
+  AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
+  AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
+      delete;
+
  protected:
   AppMenuIconControllerTest()
 #if BUILDFLAG(IS_WIN)
@@ -83,10 +88,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 #else
       = default;
 #endif
-
-        AppMenuIconControllerTest(const AppMenuIconControllerTest&) = delete;
-  AppMenuIconControllerTest& operator=(const AppMenuIconControllerTest&) =
-      delete;
 
   UpgradeDetector* upgrade_detector() { return &upgrade_detector_; }
   Profile* profile() { return &profile_; }

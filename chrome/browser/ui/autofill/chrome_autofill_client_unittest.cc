@@ -144,7 +144,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
     auto save_card_bubble_controller =
         std::make_unique<MockSaveCardBubbleController>(web_contents());
-    web_contents()->SetUserData(save_card_bubble_controller->UserDataKey(),
+    const auto* user_data_key = save_card_bubble_controller->UserDataKey();
+    web_contents()->SetUserData(user_data_key,
                                 std::move(save_card_bubble_controller));
 #endif
   }
@@ -231,7 +232,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnMainFrame) {
                                      {AutofillManagerEvent::kFormsSeen});
     autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                                  /*removed_forms=*/{});
-    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
   }
 
   const auto expected = PasswordFormClassification{
@@ -288,7 +289,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
                                              /*removed_forms=*/{});
     child_driver->renderer_events().FormsSeen(/*updated_forms=*/{child_form},
                                               /*removed_forms=*/{});
-    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/2));
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/2));
   }
 
   // The form fields in the main frame do not form a valid password form.

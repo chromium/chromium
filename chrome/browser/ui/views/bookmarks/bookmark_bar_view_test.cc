@@ -165,10 +165,9 @@ class DialogCloseWaiter : public views::WidgetObserver {
   DialogCloseWaiter(const DialogCloseWaiter&) = delete;
   DialogCloseWaiter& operator=(const DialogCloseWaiter&) = delete;
 
-  ~DialogCloseWaiter() override {
-    // It is not necessary to remove |this| from the dialog's observer, since
-    // the dialog is destroyed before this waiter.
-  }
+  // It is not necessary to remove |this| from the dialog's observer, since the
+  // dialog is destroyed before this waiter.
+  ~DialogCloseWaiter() override = default;
 
   void WaitForDialogClose() {
     if (dialog_closed_) {

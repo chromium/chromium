@@ -179,8 +179,7 @@ class LensOverlayQueryController {
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
       const std::vector<std::string>& cors_exempt_headers,
-      const UploadProgressCallback upload_progress_callback =
-          base::NullCallback());
+      const UploadProgressCallback upload_progress_callback);
 
   // Sends a latency Gen204 ping if enabled, calculating the latency duration
   // from the start time ticks and base::TimeTicks::Now().

@@ -134,7 +134,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   // Assert thumbs up button callback is run when clicked.
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kThumbsUpClicked)));
   // In test env we have to manually set the bounds when a view becomes visible.
@@ -152,7 +152,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   // Assert thumbs down button callback is run when clicked.
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kThumbsDownClicked)));
   generator().MoveMouseTo(
@@ -190,7 +190,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest, LearnMoreClickTriggersCallback) {
 
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kLearnMoreClicked)));
 

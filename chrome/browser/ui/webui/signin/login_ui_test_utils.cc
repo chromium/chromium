@@ -54,7 +54,7 @@ const char kGetPasswordFieldFromDiceSigninPage[] =
 // success or failure notification is fired.
 class SignInObserver : public signin::IdentityManager::Observer {
  public:
-  SignInObserver() {}
+  SignInObserver() = default;
 
   // Returns whether a GoogleSigninSucceeded event has happened.
   bool DidSignIn() { return signed_in_; }

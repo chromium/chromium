@@ -538,10 +538,7 @@ IN_PROC_BROWSER_TEST_P(
   UpdateSyncStatus(/*sync_enabled=*/true);
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/true,
-                  /*is_passkey_from_another_device_available=*/GetParam()));
+              OnlyPasswordsFallbackAdded(false, true, GetParam()));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -550,10 +547,7 @@ IN_PROC_BROWSER_TEST_P(
   UpdateSyncStatus(/*sync_enabled=*/false);
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_available=*/GetParam()));
+              OnlyPasswordsFallbackAdded(false, false, GetParam()));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -583,11 +577,7 @@ IN_PROC_BROWSER_TEST_P(
                               blink::mojom::FormControlType::kInputText));
 
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/false,
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_available=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(false, false, false));
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordManualFallbackTest,
@@ -801,11 +791,8 @@ IN_PROC_BROWSER_TEST_P(
   AddPasswordToStore();
 
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/true,
-                  /*is_passkey_from_another_device_available=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
+                                has_autofillable_credentials(), true, false));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -815,11 +802,8 @@ IN_PROC_BROWSER_TEST_P(
   AddPasswordToStore();
 
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_available=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
+                                has_autofillable_credentials(), false, false));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -835,11 +819,8 @@ IN_PROC_BROWSER_TEST_P(
                               blink::mojom::FormControlType::kInputText));
 
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              OnlyPasswordsFallbackAdded(
-                  /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled_for_current_field=*/false,
-                  /*is_passkey_from_another_device_available=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
+                                has_autofillable_credentials(), false, false));
 }
 
 INSTANTIATE_TEST_SUITE_P(

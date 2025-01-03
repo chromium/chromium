@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/file_info.h"
 
 namespace {
@@ -140,6 +141,11 @@ void HandleOnPerformingDrop(
     content::WebContents* web_contents,
     content::DropData drop_data,
     content::WebContentsViewDelegate::DropCompletionCallback callback) {
+  CHECK(callback);
+  absl::Cleanup cleanup = [&] {
+    std::move(callback).Run(std::move(drop_data));
+  };
+
   enterprise_connectors::ContentAnalysisDelegate::Data data;
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -152,13 +158,11 @@ void HandleOnPerformingDrop(
     // If the enterprise policy is not enabled, make sure that the renderer
     // never forces a default action.
     drop_data.document_is_handling_drag = true;
-    std::move(callback).Run(std::move(drop_data));
     return;
   }
 
   // If the page will not handle the drop, no need to perform content analysis.
   if (!drop_data.document_is_handling_drag) {
-    std::move(callback).Run(std::move(drop_data));
     return;
   }
 
@@ -180,6 +184,7 @@ void HandleOnPerformingDrop(
       base::DoNothing();
   if (data.settings.block_until_verdict ==
       enterprise_connectors::BlockUntilVerdict::kBlock) {
+    std::move(cleanup).Cancel();
     scan_callback = std::move(callback);
   }
 
@@ -199,9 +204,5 @@ void HandleOnPerformingDrop(
     files_scan_data_raw->ExpandPaths(base::BindOnce(
         &HandleDropScanData::ScanData, handle_drop_scan_data->GetWeakPtr(),
         std::move(files_scan_data)));
-  }
-
-  if (!callback.is_null()) {
-    std::move(callback).Run(std::move(drop_data));
   }
 }

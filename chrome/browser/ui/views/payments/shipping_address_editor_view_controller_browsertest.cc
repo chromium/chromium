@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   EXPECT_EQ(kNameFull, GetEditorTextfieldValue(autofill::NAME_FULL));
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(true);
   OpenShippingAddressSectionScreen();
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   views::Textfield* textfield =
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
   regions1.emplace_back("AL", "Alabama");
@@ -977,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
   regions1.emplace_back("AL", "Alabama");
@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
   regions1.emplace_back("AL", "Alabama");
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the default country was selected.
@@ -1120,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Send the region data.
@@ -1163,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
@@ -1192,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
@@ -1212,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   ClickOnBackArrow();
@@ -1377,7 +1377,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,
                                DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED});
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   ASSERT_TRUE(WaitForObservedEvent());
 

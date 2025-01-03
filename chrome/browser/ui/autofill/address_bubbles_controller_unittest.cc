@@ -58,7 +58,7 @@ TEST_F(AddressBubblesControllerTest, DialogAcceptedInvokesCallback) {
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -72,7 +72,7 @@ TEST_F(AddressBubblesControllerTest, DialogCancelledInvokesCallback) {
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
@@ -89,7 +89,7 @@ TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // There is only now tab open, so the active web contents, are the
@@ -117,7 +117,7 @@ TEST_F(AddressBubblesControllerTest, BubbleShouldBeVisibleByDefault) {
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
   // Bubble is visible and active
@@ -134,7 +134,7 @@ TEST_F(AddressBubblesControllerTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
   // Second prompt should be auto declined.
@@ -144,7 +144,7 @@ TEST_F(AddressBubblesControllerTest,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 }
 
 // This is testing that when a second prompt comes while another prompt is in
@@ -157,7 +157,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
   controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
@@ -165,7 +165,7 @@ TEST_F(AddressBubblesControllerTest,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 }
 

@@ -1782,7 +1782,7 @@ TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
 
   CreatePeopleHandler();
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 
@@ -1796,7 +1796,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   EXPECT_DEATH(SimulateSignout(args), ".*");
 }
 #endif  // DCHECK_IS_ON()
@@ -1815,7 +1815,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
 
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -1838,7 +1838,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(web_contents()->GetVisibleURL(),
@@ -1866,7 +1866,7 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
   EXPECT_TRUE(chrome::FindBrowserWithTab(web_ui()->GetWebContents()));
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -1900,7 +1900,7 @@ TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
   CreatePeopleHandler();
 
   base::Value::List args;
-  args.Append(/*delete_profile=*/false);
+  args.Append(/*value=*/false);
   SimulateSignout(args);
   EXPECT_EQ(web_contents()->GetVisibleURL(),
             GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL()));

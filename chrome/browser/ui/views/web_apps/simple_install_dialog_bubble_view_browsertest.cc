@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                                       ->GetBrowserContext())
           ->GetPrefs();
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 
   EXPECT_EQ(GetIntWebAppPref(pref_service, app_id,
                              kIphPrefNames.not_accepted_count_name)
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url();
   webapps::AppId app_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
+      GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
   PrefService* pref_service =
       Profile::FromBrowserContext(browser()
                                       ->tab_strip_model()

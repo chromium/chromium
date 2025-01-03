@@ -178,13 +178,13 @@ void PriceTrackingHandler::GetShoppingCollectionBookmarkFolderId(
 void PriceTrackingHandler::GetParentBookmarkFolderNameForCurrentUrl(
     GetParentBookmarkFolderNameForCurrentUrlCallback callback) {
   auto current_url = GetCurrentTabUrl();
-  if (!current_url.has_value()) {
+  if (current_url.has_value()) {
+    std::move(callback).Run(
+        commerce::GetBookmarkParentName(bookmark_model_, current_url.value())
+            .value_or(std::u16string()));
+  } else {
     std::move(callback).Run(std::u16string());
   }
-
-  std::move(callback).Run(
-      commerce::GetBookmarkParentName(bookmark_model_, current_url.value())
-          .value_or(std::u16string()));
 }
 
 void PriceTrackingHandler::ShowBookmarkEditorForCurrentUrl() {

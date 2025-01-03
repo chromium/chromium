@@ -990,7 +990,7 @@ void ChromePaymentsAutofillClient::SetAutofillMessageControllerForTesting(
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
   if (!web_contents()) {
-    return nullptr;
+    return std::u16string();
   }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

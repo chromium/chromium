@@ -193,7 +193,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/12345,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
 
   // Never show the prompt if max prompt count is zero.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
@@ -203,7 +203,7 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
 
   // If max prompt count is 1, only show the prompt if declined count is unset.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
@@ -213,11 +213,11 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/1,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
 
   // Show if the declined count is less than the max prompt count.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
@@ -227,11 +227,11 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/4,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/5,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
@@ -246,11 +246,11 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1),
       /*declined_count=*/1,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/1,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
 
   // If the user has declined the prompt multiple times, the next reprompt
   // duration should be multiplied by the reprompt multiplier for each
@@ -264,22 +264,22 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(2),
       /*declined_count=*/2,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(2) + base::Microseconds(1),
       /*declined_count=*/2,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
 
   // After the prompt has been declined a third time, only show the prompt
   // (1 day) * (2^2) = 4 days after it was last declined.
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(4),
       /*declined_count=*/3,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(4) + base::Microseconds(1),
       /*declined_count=*/3,
-      /*expected=*/true);
+      /*expect_infobar_exists=*/true);
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, PromptHiddenWhenFeatureParamDisabled) {
@@ -292,7 +292,7 @@ TEST_F(DefaultBrowserPromptManagerTest, PromptHiddenWhenFeatureParamDisabled) {
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
-      /*expected=*/false);
+      /*expect_infobar_exists=*/false);
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, AppMenuFeatureParamFalse) {

@@ -163,7 +163,7 @@ void HatsServiceDesktop::DelayedSurveyTask::Launch() {
     hats_service_->LaunchSurveyForWebContents(
         trigger_, web_contents(), product_specific_bits_data_,
         product_specific_string_data_, std::move(success_callback_),
-        std::move(failure_callback_), supplied_trigger_id_);
+        std::move(failure_callback_), supplied_trigger_id_, SurveyOptions());
     hats_service_->RemoveTask(*this);
   }
 }
@@ -257,12 +257,15 @@ bool HatsServiceDesktop::LaunchDelayedSurvey(
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
+  void (HatsServiceDesktop::*launch_survey)(
+      const std::string&, base::OnceClosure, base::OnceClosure,
+      const SurveyBitsData&, const SurveyStringData&) =
+      &HatsServiceDesktop::LaunchSurvey;
   return base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&HatsServiceDesktop::LaunchSurvey,
-                     weak_ptr_factory_.GetWeakPtr(), trigger, base::DoNothing(),
-                     base::DoNothing(), product_specific_bits_data,
-                     product_specific_string_data),
+      base::BindOnce(launch_survey, weak_ptr_factory_.GetWeakPtr(), trigger,
+                     base::DoNothing(), base::DoNothing(),
+                     product_specific_bits_data, product_specific_string_data),
       base::Milliseconds(timeout_ms));
 }
 

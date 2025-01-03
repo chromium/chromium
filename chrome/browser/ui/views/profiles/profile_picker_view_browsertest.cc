@@ -2234,7 +2234,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
 
   AccountInfo child_account_info =
       FinishDiceSignIn(child_profile, "child@gmail.com", "child",
-                       kNoHostedDomainFound, /*is_supervised=*/true);
+                       kNoHostedDomainFound, /*is_supervised_profile=*/true);
   ASSERT_TRUE(child_profile);
 
   OpenProfilePicker();

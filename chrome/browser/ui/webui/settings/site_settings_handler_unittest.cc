@@ -2048,11 +2048,11 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   GURL start_url("http://abc.example.com/path");
-  RegisterWebApp(
-      profile(),
-      MakeApp(web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url),
-              apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
-              apps::InstallReason::kSync));
+  RegisterWebApp(profile(),
+                 MakeApp(web_app::GenerateAppId(
+                             /*manifest_id_path=*/std::nullopt, start_url),
+                         apps::AppType::kWeb, start_url.spec(),
+                         apps::Readiness::kReady, apps::InstallReason::kSync));
 
   SetupModel();
 
@@ -6641,7 +6641,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
   handler()->ServicePendingRequests();
 
   ValidateUsageInfo(
-      /*expected_usage_host=*/iwa_url, /*expected_usage_string=*/"1,000 B",
+      /*expected_usage_origin=*/iwa_url, /*expected_usage_string=*/"1,000 B",
       /*expected_cookie_string=*/"",
       /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
 }

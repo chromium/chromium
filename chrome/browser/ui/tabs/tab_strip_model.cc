@@ -2578,8 +2578,8 @@ void TabStripModel::AddToNewGroupImpl(
 
   DCHECK([&]() {
     for (int i = 0; i < GetTabCount(); ++i) {
-      tabs::TabInterface* tab = GetTabAtIndex(i);
-      if (tab->GetGroup().has_value() && tab->GetGroup().value() == new_group) {
+      const tabs::TabInterface* const tab = GetTabAtIndex(i);
+      if (tab->GetGroup() == new_group) {
         return false;
       }
     }
@@ -3168,7 +3168,7 @@ void TabStripModel::FixOpeners(int index) {
   // themselves.
   DCHECK([&]() {
     for (int i = 0; i < GetTabCount(); ++i) {
-      tabs::TabModel* tab = GetTabModelAtIndex(i);
+      const tabs::TabModel* const tab = GetTabModelAtIndex(i);
       if (tab->opener() == old_tab || tab->opener() == tab) {
         return false;
       }

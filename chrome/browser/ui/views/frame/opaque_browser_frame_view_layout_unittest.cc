@@ -42,7 +42,7 @@ const int kCaptionButtonHeight = 18;
 
 class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
  public:
-  TestLayoutDelegate() {}
+  TestLayoutDelegate() = default;
 
   TestLayoutDelegate(const TestLayoutDelegate&) = delete;
   TestLayoutDelegate& operator=(const TestLayoutDelegate&) = delete;

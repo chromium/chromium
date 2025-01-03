@@ -95,6 +95,11 @@ class ScopedSetMetricsConsent {
 };
 
 class HatsServiceBrowserTestBase : public policy::PolicyTest {
+ public:
+  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
+  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
+      delete;
+
  protected:
   explicit HatsServiceBrowserTestBase(
       std::vector<base::test::FeatureRefAndParams> enabled_features)
@@ -103,11 +108,6 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
   }
 
   HatsServiceBrowserTestBase() = default;
-
-  HatsServiceBrowserTestBase(const HatsServiceBrowserTestBase&) = delete;
-  HatsServiceBrowserTestBase& operator=(const HatsServiceBrowserTestBase&) =
-      delete;
-
   ~HatsServiceBrowserTestBase() override = default;
 
   Profile* profile() { return chrome_test_utils::GetProfile(this); }

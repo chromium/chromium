@@ -1634,7 +1634,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (controlling_app_id) {
     client_mode_and_browser = GetEffectiveClientModeAndBrowserForCapturing(
         *profile, *controlling_app_id, source_contents_app_id,
-        /*ignore_browser_tabs=*/false,
+        /*ignore_browser_tabs_for_standalone_apps=*/false,
         /*navigate_params_requested_browser=*/params.browser);
     debug_data.Set(
         "effective_client_mode",

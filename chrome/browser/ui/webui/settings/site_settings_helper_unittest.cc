@@ -941,8 +941,8 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*chooser_exception_details=*/exception_details,
         /*profile=*/nullptr);
     ExpectValidChooserExceptionObject(
-        exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, chooser_object);
+        exception, /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(
@@ -998,10 +998,10 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
         /*chooser_type=*/kUsbChooserGroupName,
         /*chooser_exception_details=*/exception_details,
         /*profile=*/nullptr);
-    ExpectValidChooserExceptionObject(exception,
-                                      /*chooser_type=*/kUsbChooserGroupName,
-                                      /*display_name=*/kObjectName,
-                                      chooser_object);
+    ExpectValidChooserExceptionObject(
+        exception,
+        /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     // The set sorts the sites by origin, but the CreateChooserExceptionObject
     // method sorts the sites further by the source. Therefore, policy granted
@@ -1599,8 +1599,8 @@ TEST_F(SiteSettingsHelperIsolatedWebAppTest,
         /*chooser_exception_details=*/exception_details,
         /*profile=*/profile());
     ExpectValidChooserExceptionObject(
-        exception, /*chooser_type=*/kUsbChooserGroupName,
-        /*display_name=*/kObjectName, chooser_object);
+        exception, /*expected_chooser_type=*/kUsbChooserGroupName,
+        /*expected_display_name=*/kObjectName, chooser_object);
 
     const auto& sites_list = exception.Find(kSites)->GetList();
     ExpectValidSiteExceptionObject(

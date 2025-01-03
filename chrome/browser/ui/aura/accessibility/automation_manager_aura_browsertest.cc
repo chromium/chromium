@@ -171,10 +171,10 @@ class AutomationEventWaiter
       const ui::AXTreeID& tree_id,
       const ui::AXScrollChange& details) override {}
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
-  void DispatchActionResult(
-      const ui::AXActionData& data,
-      bool result,
-      content::BrowserContext* browser_context = nullptr) override {}
+  void DispatchActionResult(const ui::AXActionData& data,
+                            bool result,
+                            content::BrowserContext* browser_context) override {
+  }
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
       const std::optional<gfx::Rect>& rect) override {}

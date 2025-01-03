@@ -1851,7 +1851,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the local save bubble. Ensures that clicking the [X] button
@@ -1893,7 +1893,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the upload save bubble. Ensures that clicking the [X] button
@@ -1942,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;
@@ -2009,7 +2009,7 @@ IN_PROC_BROWSER_TEST_F(
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;

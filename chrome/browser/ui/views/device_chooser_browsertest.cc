@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(UsbChooserBrowserTest, InvokeUi_WithDevicesModal) {
 // page or extension.
 class BluetoothChooserBrowserTest : public DialogBrowserTest {
  public:
-  BluetoothChooserBrowserTest() {}
+  BluetoothChooserBrowserTest() = default;
 
   BluetoothChooserBrowserTest(const BluetoothChooserBrowserTest&) = delete;
   BluetoothChooserBrowserTest& operator=(const BluetoothChooserBrowserTest&) =

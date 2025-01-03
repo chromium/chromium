@@ -709,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, BlobUrlLocation) {
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
 
-  content::TestNavigationObserver nav_observer(web_contents,
-                                               /*number_of_navigations=*/1);
+  content::TestNavigationObserver nav_observer(
+      web_contents,
+      /*expected_number_of_navigations=*/1);
   std::string script =
       "window.open("
       "    URL.createObjectURL("

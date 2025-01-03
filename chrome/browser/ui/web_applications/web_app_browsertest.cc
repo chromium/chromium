@@ -2239,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
   auto* app = provider->registrar_unsafe().GetAppById(app_id);
 
   EXPECT_EQ(web_app::GenerateAppId(
-                /*manifest_id=*/std::nullopt,
+                /*manifest_id_path=*/std::nullopt,
                 provider->registrar_unsafe().GetAppStartUrl(app_id)),
             app_id);
   EXPECT_EQ(app->start_url(), app->manifest_id());
@@ -2256,9 +2256,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
   auto* app = provider->registrar_unsafe().GetAppById(app_id);
 
   EXPECT_EQ(web_app::GenerateAppIdFromManifestId(app->manifest_id()), app_id);
-  EXPECT_NE(
-      web_app::GenerateAppId(/*manifest_id=*/std::nullopt, app->start_url()),
-      app_id);
+  EXPECT_NE(web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt,
+                                   app->start_url()),
+            app_id);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

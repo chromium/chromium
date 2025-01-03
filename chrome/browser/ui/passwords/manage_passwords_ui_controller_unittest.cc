@@ -1219,23 +1219,28 @@ TEST_F(ManagePasswordsUIControllerTest, ConfirmationStatePasswordAutofilled) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenBubbleTwice) {
-  // Open the autosignin bubble.
-  std::vector<std::unique_ptr<PasswordForm>> local_credentials;
-  local_credentials.emplace_back(new PasswordForm(test_local_form()));
-  controller()->OnAutoSignin(std::move(local_credentials),
-                             url::Origin::Create(test_local_form().url));
+  {
+    // Open the autosignin bubble.
+    std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+    local_credentials.emplace_back(new PasswordForm(test_local_form()));
+    controller()->OnAutoSignin(std::move(local_credentials),
+                               url::Origin::Create(test_local_form().url));
+  }
   EXPECT_EQ(password_manager::ui::AUTO_SIGNIN_STATE, controller()->GetState());
   // The delegate used by the bubble for communicating with the controller.
   base::WeakPtr<PasswordsModelDelegate> proxy_delegate =
       controller()->GetModelDelegateProxy();
 
-  // Open the bubble again.
-  local_credentials.emplace_back(new PasswordForm(test_local_form()));
-  controller()->OnAutoSignin(std::move(local_credentials),
-                             url::Origin::Create(test_local_form().url));
+  {
+    // Open the bubble again.
+    std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+    local_credentials.emplace_back(new PasswordForm(test_local_form()));
+    controller()->OnAutoSignin(std::move(local_credentials),
+                               url::Origin::Create(test_local_form().url));
+  }
   EXPECT_EQ(password_manager::ui::AUTO_SIGNIN_STATE, controller()->GetState());
-  // Check the delegate is destroyed. Thus, the first bubble has no way to mess
-  // up with the controller's state.
+  // Check the delegate is destroyed. Thus, the first bubble has no way to
+  // mess up with the controller's state.
   EXPECT_FALSE(proxy_delegate);
 }
 

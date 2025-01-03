@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Change the name.
   SetEditorTextfieldValue(u"Bob the second", autofill::CREDIT_CARD_NAME_FULL);
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Billing address combobox must be disabled since there are no saved address.
   views::View* billing_address_combobox = dialog_view()->GetViewByID(

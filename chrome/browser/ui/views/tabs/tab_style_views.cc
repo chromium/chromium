@@ -106,7 +106,7 @@ class TabStyleViewsImpl : public TabStyleViews {
   // tab. Only active tabs may have a stroke, and not in all cases. If there
   // is no stroke, returns 0. If |should_paint_as_active| is true, the tab is
   // treated as an active tab regardless of its true current state.
-  virtual int GetStrokeThickness(bool should_paint_as_active = false) const;
+  virtual int GetStrokeThickness(bool should_paint_as_active) const;
 
   virtual bool ShouldPaintTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
@@ -483,7 +483,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 }
 
 gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
-  const int stroke_thickness = GetStrokeThickness();
+  const int stroke_thickness = GetStrokeThickness(false);
   gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
   return gfx::Insets::TLBR(
              stroke_thickness, 0,
@@ -667,7 +667,7 @@ TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
       original_bounds.x(), original_bounds.y(), original_bounds.width(),
       original_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness());
+      ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness(false));
   const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
   gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);

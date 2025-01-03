@@ -662,6 +662,7 @@ void UserEducationInternalsPageHandlerImpl::ClearFeaturePromoData(
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
   if (!tracker || !tracker->IsInitialized()) {
     std::move(callback).Run(std::string("Feature Engagement not ready."));
+    return;
   }
 
   auto* const storage_service = GetStorageService(profile_);

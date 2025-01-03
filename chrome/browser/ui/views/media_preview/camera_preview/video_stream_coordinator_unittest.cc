@@ -138,27 +138,27 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
       kErrorFakeDeviceIntentionallyEmittingErrorEvent;  // any random error.
   SendAndWaitForError(error);
   histogram_tester_.ExpectUniqueSample(kCapturedErrors,
-                                       /*bucket_index=*/error, 1);
+                                       /*sample=*/error, 1);
 
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
 
   histogram_tester_.ExpectUniqueSample(kVideoDelay,
-                                       /*bucket_min_value=*/50, 1);
+                                       /*sample=*/50, 1);
 
   // The selected pixel height is 720, so it will be logged in the 675 bucket.
   histogram_tester_.ExpectUniqueSample(kPixelHeight,
-                                       /*bucket_min_value=*/675, 1);
+                                       /*sample=*/675, 1);
   histogram_tester_.ExpectUniqueSample(kExpectedFPS,
-                                       /*bucket_min_value=*/30, 1);
+                                       /*sample=*/30, 1);
   histogram_tester_.ExpectUniqueSample(kActualFPS,
-                                       /*bucket_min_value=*/18, 1);
+                                       /*sample=*/18, 1);
   histogram_tester_.ExpectUniqueSample(kRenderedPercent,
-                                       /*bucket_min_value=*/50, 1);
+                                       /*sample=*/50, 1);
 
   coordinator_.reset();
   histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
-                                       /*bucket_min_value=*/750, 1);
+                                       /*sample=*/750, 1);
   histogram_tester_.ExpectTotalCount(kTimeToActionWithoutPreview, 0);
 }
 
@@ -181,7 +181,7 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
       kVideoCaptureControllerUnsupportedPixelFormat;  // any random error.
   SendAndWaitForError(error);
   histogram_tester_.ExpectUniqueSample(kCapturedErrors,
-                                       /*bucket_index=*/error, 1);
+                                       /*sample=*/error, 1);
 
   fake_video_source_.SendError(error);
   coordinator_->Stop();
@@ -194,18 +194,18 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
 
   // The selected pixel height is 720, so it will be logged in the 675 bucket.
   histogram_tester_.ExpectUniqueSample(kPixelHeight,
-                                       /*bucket_min_value=*/675, 1);
+                                       /*sample=*/675, 1);
   histogram_tester_.ExpectUniqueSample(kExpectedFPS,
-                                       /*bucket_min_value=*/30, 1);
+                                       /*sample=*/30, 1);
 
   histogram_tester_.ExpectTotalCount(kActualFPS, 0);
   histogram_tester_.ExpectTotalCount(kRenderedPercent, 0);
 
   coordinator_.reset();
   histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
-                                       /*bucket_min_value=*/0, 1);
+                                       /*sample=*/0, 1);
   histogram_tester_.ExpectUniqueSample(kTimeToActionWithoutPreview,
-                                       /*bucket_min_value=*/125, 1);
+                                       /*sample=*/125, 1);
 }
 
 TEST_F(VideoStreamCoordinatorTest,

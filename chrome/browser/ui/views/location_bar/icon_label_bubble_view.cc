@@ -504,7 +504,7 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
     // Subclasses override `ShouldShowLabelAfterAnimation` for custom behavior.
     // Default behavior is when we do not show separator, the label should
     // collapse.
-    ResetSlideAnimation(/*show_label=*/ShouldShowLabelAfterAnimation());
+    ResetSlideAnimation(/*show=*/ShouldShowLabelAfterAnimation());
     PreferredSizeChanged();
   }
 

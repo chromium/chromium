@@ -62,12 +62,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
-                  base::OnceClosure navigation_finished_closure =
-                      base::OnceClosure()) override;
+                  base::OnceClosure navigation_finished_closure) override;
   void ShowScreenInPickerContents(
       const GURL& url,
-      base::OnceClosure navigation_finished_closure =
-          base::OnceClosure()) override;
+      base::OnceClosure navigation_finished_closure) override;
   bool ShouldUseDarkColors() const override;
   content::WebContents* GetPickerContents() const override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()

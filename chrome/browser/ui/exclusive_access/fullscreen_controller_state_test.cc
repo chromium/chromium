@@ -123,10 +123,10 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
 
   // Verify that transition_table_ has been completely defined.
   for (auto& source : transition_table_) {
-    for (int event = 0; event < NUM_EVENTS; ++event) {
-      EXPECT_NE(source[event], STATE_INVALID);
-      EXPECT_GE(source[event], 0);
-      EXPECT_LT(source[event], NUM_STATES);
+    for (auto& state : source) {
+      EXPECT_NE(state, STATE_INVALID);
+      EXPECT_GE(state, 0);
+      EXPECT_LT(state, NUM_STATES);
     }
   }
 

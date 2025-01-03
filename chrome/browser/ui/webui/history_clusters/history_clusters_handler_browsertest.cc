@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   visit2->normalized_url = GURL("https://bar");
   visits.push_back(std::move(visit2));
 
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
   ASSERT_EQ(3, tab_strip_model->GetTabCount());
 
   ASSERT_EQ(tab_strip_model->GetTabGroupForTab(1).value(),
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   }
 
   // Verify that we open 32 at maximum. Including the NTP, that's 33 total.
-  handler_->OpenVisitUrlsInTabGroup(std::move(visits));
+  handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
   ASSERT_EQ(33, tab_strip_model->GetTabCount());
 }
 

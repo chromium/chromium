@@ -1126,7 +1126,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
 class RelaunchNotificationControllerPlatformImplTest
     : public TestWithBrowserView {
  protected:
-  RelaunchNotificationControllerPlatformImplTest() {}
+  RelaunchNotificationControllerPlatformImplTest() = default;
 
   void SetUp() override {
     TestWithBrowserView::SetUp();

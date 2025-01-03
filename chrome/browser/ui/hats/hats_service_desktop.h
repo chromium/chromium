@@ -117,40 +117,44 @@ class HatsServiceDesktop : public HatsService {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  using HatsService::LaunchSurvey;
   void LaunchSurvey(
       const std::string& trigger,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {}) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data) override;
 
+  using HatsService::LaunchSurveyForWebContents;
   void LaunchSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
-      const SurveyOptions& survey_options = SurveyOptions()) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::optional<std::string>& supplied_trigger_id,
+      const SurveyOptions& survey_options) override;
 
+  using HatsService::LaunchDelayedSurvey;
   bool LaunchDelayedSurvey(
       const std::string& trigger,
       int timeout_ms,
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {}) override;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data) override;
 
+  using HatsService::LaunchDelayedSurveyForWebContents;
   bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
       int timeout_ms,
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {},
-      NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
-      const SurveyOptions& survey_options = SurveyOptions()) override;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data,
+      NavigationBehaviour navigation_behaviour,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::optional<std::string>& supplied_trigger_id,
+      const SurveyOptions& survey_options) override;
 
   void SetSurveyMetadataForTesting(const HatsService::SurveyMetadata& metadata);
   void GetSurveyMetadataForTesting(HatsService::SurveyMetadata* metadata) const;

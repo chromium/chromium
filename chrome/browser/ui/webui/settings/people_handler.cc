@@ -142,7 +142,7 @@ bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo() {}
+SyncConfigInfo::SyncConfigInfo() = default;
 
 SyncConfigInfo::~SyncConfigInfo() = default;
 

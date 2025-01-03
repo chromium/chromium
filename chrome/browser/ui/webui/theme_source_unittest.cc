@@ -26,7 +26,7 @@
 
 class WebUISourcesTest : public testing::Test {
  public:
-  WebUISourcesTest() {}
+  WebUISourcesTest() = default;
 
   TestingProfile* profile() const { return profile_.get(); }
   ThemeSource* theme_source() const { return theme_source_.get(); }

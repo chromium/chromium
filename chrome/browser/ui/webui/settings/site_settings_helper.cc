@@ -1112,12 +1112,12 @@ void GetExceptionsForContentType(ContentSettingsType type,
     for (const auto& secondary_setting : one_settings) {
       const SiteExceptionInfo& site_exception_info = secondary_setting.second;
       const auto& [secondary_pattern, is_incognito] = secondary_setting.first;
-      this_provider_exceptions.push_back(GetExceptionForPage(
-          type, profile, primary_pattern, secondary_pattern,
-          std::move(display_name), site_exception_info.content_setting,
-          ProviderTypeToSiteSettingsSource(source),
-          site_exception_info.expiration, is_incognito,
-          site_exception_info.is_embargoed));
+      this_provider_exceptions.push_back(
+          GetExceptionForPage(type, profile, primary_pattern, secondary_pattern,
+                              display_name, site_exception_info.content_setting,
+                              ProviderTypeToSiteSettingsSource(source),
+                              site_exception_info.expiration, is_incognito,
+                              site_exception_info.is_embargoed));
     }
   }
 

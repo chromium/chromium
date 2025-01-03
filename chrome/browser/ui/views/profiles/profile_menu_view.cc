@@ -657,8 +657,8 @@ void ProfileMenuView::BuildGuestIdentity() {
 
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
-      /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
+      /*profile_background_color=*/SK_ColorTRANSPARENT,
+      /*edit_button_params=*/std::nullopt, profiles::GetGuestAvatar(),
       ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
       &kGuestMenuArtIcon);
 

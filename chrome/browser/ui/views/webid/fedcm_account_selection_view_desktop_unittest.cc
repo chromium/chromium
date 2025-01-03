@@ -51,7 +51,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
                                  /*rp_for_display=*/std::u16string()) {
     // This matches behavior of the production code, which implicitly passes
     // ownership of the view to the widget via DialogDelegate superclass.
-    SetOwnedByWidget(/*owned=*/true);
+    SetOwnedByWidget(/*delete_self=*/true);
   }
   enum class SheetType {
     kAccountPicker,

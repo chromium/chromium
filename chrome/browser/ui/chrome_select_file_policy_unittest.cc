@@ -31,7 +31,7 @@ namespace {
 
 class FileSelectionUser : public ui::SelectFileDialog::Listener {
  public:
-  FileSelectionUser() {}
+  FileSelectionUser() = default;
 
   ~FileSelectionUser() override {
     if (select_file_dialog_.get()) {

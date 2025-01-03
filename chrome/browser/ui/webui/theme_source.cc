@@ -249,12 +249,12 @@ void ThemeSource::SendThemeImage(
   std::optional<std::vector<uint8_t>> result =
       gfx::PNGCodec::EncodeBGRASkBitmap(rep.GetBitmap(),
                                         /*discard_transparency=*/false);
-  if (!result) {
+  if (result) {
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
+  } else {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
   }
-
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
 }
 
 void ThemeSource::SendColorsCss(

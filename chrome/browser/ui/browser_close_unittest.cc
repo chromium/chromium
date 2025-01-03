@@ -28,7 +28,7 @@
 
 class TestingDownloadCoreService : public DownloadCoreService {
  public:
-  TestingDownloadCoreService() {}
+  TestingDownloadCoreService() = default;
 
   TestingDownloadCoreService(const TestingDownloadCoreService&) = delete;
   TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =

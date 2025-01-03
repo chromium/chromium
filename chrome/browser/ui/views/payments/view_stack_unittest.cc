@@ -15,7 +15,7 @@ class TestStackView : public views::View {
  public:
   class Observer {
    public:
-    Observer() {}
+    Observer() = default;
 
     void OnViewBeingDeleted() { view_deleted_ = true; }
 
