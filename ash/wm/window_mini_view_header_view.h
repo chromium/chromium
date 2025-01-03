@@ -16,7 +16,6 @@ class Window;
 }  // namespace aura
 
 namespace views {
-class FlexLayoutView;
 class ImageView;
 class Label;
 }  // namespace views
@@ -32,22 +31,13 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   METADATA_HEADER(WindowMiniViewHeaderView, views::BoxLayoutView)
 
  public:
-  // Flex layout priorities for the `icon_label_view()`. The enums are listed
-  // in highest to lowest priority (high priority has the least flexibility to
-  // grow/shrink is more likely to get its preferred size).
-  enum IconLabelFlexPriorities {
-    kIconOrCloseButton = 1,
-    kTitleLabel,
-    kLeftoverSpace
-  };
-
   explicit WindowMiniViewHeaderView(WindowMiniView* window_mini_view);
   WindowMiniViewHeaderView(const WindowMiniViewHeaderView&) = delete;
   WindowMiniViewHeaderView& operator=(const WindowMiniViewHeaderView&) = delete;
   ~WindowMiniViewHeaderView() override;
 
   views::Label* title_label() { return title_label_; }
-  views::FlexLayoutView* icon_label_view() { return icon_label_view_; }
+  views::View* icon_label_view() { return icon_label_view_; }
 
   void UpdateIconView(aura::Window* window);
   void UpdateTitleLabel(aura::Window* window);
@@ -76,7 +66,7 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
 
   // A view that wraps up the icon and title label. Owned by the views
   // hierarchy.
-  raw_ptr<views::FlexLayoutView> icon_label_view_;
+  raw_ptr<views::BoxLayoutView> icon_label_view_;
 
   // Views for the icon and title. Owned by the views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;

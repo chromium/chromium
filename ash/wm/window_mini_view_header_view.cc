@@ -22,8 +22,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -65,13 +63,23 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetIsFastRoundedCorner(true);
 
-  icon_label_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  icon_label_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
-  icon_label_view_->SetInteriorMargin(kHeaderInsets);
-  icon_label_view_->SetDefault(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, kHeaderPaddingDp, 0, kHeaderPaddingDp));
-  icon_label_view_->SetCollapseMargins(true);
+  // Box layout should accomplish the following:
+  // +------+-------+-------------------------------------------------+--------+
+  // | icon | label |               leftover space                    | close  |
+  // |      |       |                                                 | button |
+  // +------+-------+-------------------------------------------------+--------+
+  // * Note the close button may not be present in some corner cases, so it's
+  //   created outside of `WindowMiniViewHeaderView`.
+  // 1) The icon and close button get their preferred sizes.
+  // 2) If the label's preferred size fits between the icon and close button,
+  //    blank space is added between the label and close button until the close
+  //    button is right aligned.
+  // 3) If the label's preferred size doesn't fit between the icon and close
+  //    button, it gets shrunk until it fits (leftover space above is zero).
+  icon_label_view_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+  icon_label_view_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  icon_label_view_->SetInsideBorderInsets(kHeaderInsets);
+  icon_label_view_->SetBetweenChildSpacing(kHeaderPaddingDp);
 
   title_label_ = icon_label_view_->AddChildView(std::make_unique<views::Label>(
       GetWindowTitle(window_mini_view_->source_window())));
@@ -83,31 +91,7 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   title_label_->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
-
-  views::View* leftover_space =
-      icon_label_view_->AddChildView(std::make_unique<views::View>());
-
-  // Flex layout should accomplish the following:
-  // +------+-------+-------------------------------------------------+--------+
-  // | icon | label |               leftover space                    | close  |
-  // |      |       |                                                 | button |
-  // +------+-------+-------------------------------------------------+--------+
-  // 1) The icon and close button get their preferred sizes.
-  // 2) If the label's preferred size fits between the icon and close button,
-  //    blank space is added between the label and close button until the close
-  //    button is right aligned.
-  // 3) If the label's preferred size doesn't fit between the icon and close
-  //    button, it gets shrunk until it fits (leftover space above is zero).
-  title_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum)
-          .WithOrder(IconLabelFlexPriorities::kTitleLabel));
-  leftover_space->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
-          .WithOrder(IconLabelFlexPriorities::kLeftoverSpace)
-          .WithWeight(1));
+  icon_label_view_->SetFlexForView(title_label_, 1);
 
   RefreshHeaderViewRoundedCorners();
 
@@ -135,9 +119,6 @@ void WindowMiniViewHeaderView::UpdateIconView(aura::Window* window) {
         std::make_unique<views::ImageView>(), 0);
     icon_view_->SetPaintToLayer();
     icon_view_->layer()->SetFillsBoundsOpaquely(false);
-    icon_view_->SetProperty(views::kFlexBehaviorKey,
-                            views::FlexSpecification().WithOrder(
-                                IconLabelFlexPriorities::kIconOrCloseButton));
   }
 
   icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
