@@ -332,6 +332,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kBarPropToolbar, WebDXFeature::kBarProp},
           {WebFeature::kDocumentBeforeUnloadRegistered,
            WebDXFeature::kBeforeUnload},
+          {WebFeature::kLayoutShiftExplicitlyRequested,
+           WebDXFeature::kLayoutInstability},
       }};
 
   return *kMap;

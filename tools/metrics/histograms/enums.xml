@@ -34331,6 +34331,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="274" label="BarProp"/>
   <int value="275" label="BeforeUnload"/>
   <int value="276" label="BfcacheBlockingReasons"/>
+  <int value="277" label="LayoutInstability"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
