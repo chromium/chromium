@@ -37,10 +37,11 @@ void BorderView::CancelAllAnimationsForProfile(Profile* profile) {
       continue;
     }
     CHECK(browser->GetBrowserView().contents_web_view());
-    browser->GetBrowserView()
-        .contents_web_view()
-        ->glic_border()
-        ->CancelAnimation();
+    // Border is null if the feature is disabled for `profile`.
+    if (auto* border =
+            browser->GetBrowserView().contents_web_view()->glic_border()) {
+      border->CancelAnimation();
+    }
   }
 }
 
@@ -97,6 +98,7 @@ void BorderView::StartAnimation() {
   SetBoundsRect(parent()->bounds());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  SetVisible(true);
 }
 
 void BorderView::CancelAnimation() {
@@ -107,6 +109,7 @@ void BorderView::CancelAnimation() {
   // `DestroyLayer()` schedules another paint to repaint the affected area by
   // the destroyed layer.
   DestroyLayer();
+  SetVisible(false);
 }
 
 void BorderView::MakeTopMostChild(views::View* parent_view,

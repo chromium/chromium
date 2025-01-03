@@ -29,7 +29,7 @@ class BorderView : public views::View,
 
  public:
   // Helper function to find the `BorderView` for `web_contents`. Returns null
-  // if there isn't a browser / browser view for `web_contents`.
+  // if there isn't a browser view for `web_contents`.
   static BorderView* FindBorderForWebContents(
       const content::WebContents* web_contents);
 

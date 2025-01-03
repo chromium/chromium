@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -17,8 +19,24 @@
 namespace glic {
 
 namespace {
-using BorderViewBrowserTest = InProcessBrowserTest;
-}
+class BorderViewBrowserTest : public InProcessBrowserTest {
+ public:
+  BorderViewBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*disabled_features=*/{});
+  }
+  ~BorderViewBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kGlicGuestURL,
+                                    url::kAboutBlankURL);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+}  // namespace
 
 // Exercise that, the border is resized correctly whenever the browser's size
 // changes.
@@ -28,6 +46,7 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
   // the glic UI is toggled.
   auto* border =
       browser()->window()->AsBrowserView()->contents_web_view()->glic_border();
+  ASSERT_TRUE(border);
   border->StartAnimation();
   auto* contents_web_view = browser()->GetBrowserView().contents_web_view();
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
@@ -50,9 +69,42 @@ IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, BorderResize) {
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 }
 
+// Regression test for https://crbug.com/387458471: The border shouldn't be
+// visible before StartAnimation is called, and shouldn't be visible after
+// CancelAnimation is called.
+IN_PROC_BROWSER_TEST_F(BorderViewBrowserTest, Visibility) {
+  auto* border =
+      browser()->window()->AsBrowserView()->contents_web_view()->glic_border();
+  ASSERT_TRUE(border);
+  EXPECT_FALSE(border->GetVisible());
+  border->StartAnimation();
+  EXPECT_TRUE(border->GetVisible());
+  border->CancelAnimation();
+  EXPECT_FALSE(border->GetVisible());
+}
+
+namespace {
+class BorderViewFeatureDisabledBrowserTest : public BorderViewBrowserTest {
+ public:
+  BorderViewFeatureDisabledBrowserTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(features::kGlic);
+  }
+  ~BorderViewFeatureDisabledBrowserTest() override = default;
+};
+}  // namespace
+
+// Regression test for https://crbug.com/387458471: The border is not
+// initialized if the feature is disabled.
+IN_PROC_BROWSER_TEST_F(BorderViewFeatureDisabledBrowserTest, NoBorder) {
+  auto* border =
+      browser()->window()->AsBrowserView()->contents_web_view()->glic_border();
+  EXPECT_FALSE(border);
+}
+
 namespace {
 
-class BorderViewZOrderBrowserTest : public InProcessBrowserTest,
+class BorderViewZOrderBrowserTest : public BorderViewBrowserTest,
                                     public ::testing::WithParamInterface<bool> {
  public:
   BorderViewZOrderBrowserTest() = default;

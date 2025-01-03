@@ -22,6 +22,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/glic/border/border_view.h"
 #endif
 
@@ -32,22 +34,33 @@ ContentsWebView::ContentsWebView(content::BrowserContext* browser_context)
     : views::WebView(browser_context), status_bubble_(nullptr) {
   SetProperty(views::kElementIdentifierKey, kContentsWebViewElementId);
 #if BUILDFLAG(ENABLE_GLIC)
-  glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
-  // Become the contents web view's observer immediately to make sure
-  // `glic_border_` is always the z-topmost child.
-  AddObserver(glic_border_);
-  // `glic_border_` should never receive input events.
-  glic_border_->SetCanProcessEventsWithinSubtree(false);
+  // `IsEnabledForProfile` returns true if the feature is explicitly enabled by
+  // flags.
+  if (GlicEnabling::IsEnabledForProfile(
+          Profile::FromBrowserContext(browser_context))) {
+    glic_border_ = AddChildView(std::make_unique<glic::BorderView>());
+    // https://crbug.com/387458471: By default the border view is visible,
+    // meaning it will paint during the initial layout of the browser UI,
+    // causing a flash of the border.
+    glic_border_->SetVisible(false);
+    // Become the contents web view's observer immediately to make sure
+    // `glic_border_` is always the z-topmost child.
+    AddObserver(glic_border_);
+    // `glic_border_` should never receive input events.
+    glic_border_->SetCanProcessEventsWithinSubtree(false);
+  }
 #endif
 }
 
 ContentsWebView::~ContentsWebView() {
 #if BUILDFLAG(ENABLE_GLIC)
-  glic::BorderView* glic_border = glic_border_;
-  glic_border_ = nullptr;
-  CHECK_EQ(glic_border->parent(), this);
-  CHECK(HasObserver(glic_border));
-  RemoveObserver(glic_border);
+  if (glic_border_) {
+    glic::BorderView* glic_border = glic_border_;
+    glic_border_ = nullptr;
+    CHECK_EQ(glic_border->parent(), this);
+    CHECK(HasObserver(glic_border));
+    RemoveObserver(glic_border);
+  }
 #endif
 }
 

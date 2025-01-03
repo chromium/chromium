@@ -82,9 +82,9 @@ class ContentsWebView : public views::WebView,
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 
 #if BUILDFLAG(ENABLE_GLIC)
-  // Always non-null, except during the View tree destruction. It draws a border
-  // around the web contents area, and is always the z-topmost child View of
-  // `this`.
+  // Only non-null if glic is enabled by flags or by Profile policies. Also null
+  // during the View tree destruction. It draws a border around the web contents
+  // area, and is always the z-topmost child View of `this`.
   raw_ptr<glic::BorderView> glic_border_ = nullptr;
 #endif
 };
