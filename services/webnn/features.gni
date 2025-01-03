@@ -14,4 +14,7 @@ declare_args() {
 
   # Enable logging of TFLite profiling information on MLGraph destruction.
   webnn_enable_tflite_profiler = false
+
+  # Enable the experimental ONNX Runtime backend on Windows.
+  webnn_use_ort = is_win
 }

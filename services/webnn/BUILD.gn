@@ -15,6 +15,7 @@ buildflag_header("buildflags") {
     "WEBNN_USE_TFLITE=$webnn_use_tflite",
     "WEBNN_USE_CHROME_ML_API=$webnn_use_chrome_ml_api",
     "WEBNN_ENABLE_TFLITE_PROFILER=$webnn_enable_tflite_profiler",
+    "WEBNN_USE_ORT=$webnn_use_ort",
   ]
 }
 
@@ -80,32 +81,10 @@ component("webnn_service") {
       "dml/tensor_impl_dml.h",
       "dml/utils.cc",
       "dml/utils.h",
-      "ort/allocator_ort.cc",
-      "ort/allocator_ort.h",
-      "ort/buffer_content_ort.cc",
-      "ort/buffer_content_ort.h",
-      "ort/context_impl_ort.cc",
-      "ort/context_impl_ort.h",
-      "ort/error_ort.h",
-      "ort/graph_builder_ort.cc",
-      "ort/graph_builder_ort.h",
-      "ort/graph_impl_ort.cc",
-      "ort/graph_impl_ort.h",
-      "ort/ort_model_builder.cc",
-      "ort/ort_model_builder.h",
-      "ort/platform_functions_ort.cc",
-      "ort/platform_functions_ort.h",
-      "ort/scoped_ort_types.cc",
-      "ort/scoped_ort_types.h",
-      "ort/tensor_impl_ort.cc",
-      "ort/tensor_impl_ort.h",
-      "ort/utils_ort.cc",
-      "ort/utils_ort.h",
     ]
     deps += [
       "//third_party/fp16",
       "//third_party/microsoft_dxheaders:dxguids",
-      "//third_party/onnxruntime_headers",
       "//ui/gl",
       "//ui/gl/init",
     ]
@@ -174,7 +153,34 @@ component("webnn_service") {
     }
   }
 
-  if (is_mac || webnn_use_tflite) {
+  if (webnn_use_ort) {
+    sources += [
+      "ort/allocator_ort.cc",
+      "ort/allocator_ort.h",
+      "ort/buffer_content_ort.cc",
+      "ort/buffer_content_ort.h",
+      "ort/context_impl_ort.cc",
+      "ort/context_impl_ort.h",
+      "ort/error_ort.h",
+      "ort/graph_builder_ort.cc",
+      "ort/graph_builder_ort.h",
+      "ort/graph_impl_ort.cc",
+      "ort/graph_impl_ort.h",
+      "ort/ort_model_builder.cc",
+      "ort/ort_model_builder.h",
+      "ort/platform_functions_ort.cc",
+      "ort/platform_functions_ort.h",
+      "ort/scoped_ort_types.cc",
+      "ort/scoped_ort_types.h",
+      "ort/tensor_impl_ort.cc",
+      "ort/tensor_impl_ort.h",
+      "ort/utils_ort.cc",
+      "ort/utils_ort.h",
+    ]
+    deps += [ "//third_party/onnxruntime_headers" ]
+  }
+
+  if (is_mac || webnn_use_tflite || webnn_use_ort) {
     sources += [
       "queueable_resource_state.h",
       "queueable_resource_state_base.cc",

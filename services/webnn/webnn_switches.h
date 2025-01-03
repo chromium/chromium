@@ -26,6 +26,10 @@ inline constexpr char kWebNNCoreMlDumpModel[] = "webnn-coreml-dump-model";
 inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
+#if BUILDFLAG(WEBNN_USE_ORT)
+inline constexpr char kWebNNUseOrt[] = "webnn-use-ort";
+#endif  // BUILDFLAG(WEBNN_USE_ORT)
+
 }  // namespace switches
 
 #endif  // SERVICES_WEBNN_WEBNN_SWITCHES_H_

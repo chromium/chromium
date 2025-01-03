@@ -328,6 +328,9 @@ static const char* const kSwitchNames[] = {
 #if BUILDFLAG(WEBNN_USE_TFLITE)
     switches::kWebNNTfliteDumpModel,
 #endif
+#if BUILDFLAG(WEBNN_USE_ORT)
+    switches::kWebNNUseOrt,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

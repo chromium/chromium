@@ -22,7 +22,6 @@
 #include "services/webnn/resource_task.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/providers/dml/dml_provider_factory.h"
 
 namespace webnn::ort {
 
@@ -109,27 +108,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(
       session_options, GraphOptimizationLevel::ORT_ENABLE_BASIC));
 
-  if (context_options->device == mojom::CreateContextOptions::Device::kGpu ||
-      context_options->device == mojom::CreateContextOptions::Device::kNpu) {
-    const OrtDmlApi* ort_dml_api;
-    CHECK_STATUS(ort_api->GetExecutionProviderApi(
-        "DML", 10, reinterpret_cast<const void**>(&ort_dml_api)));
-
-    OrtDmlDeviceOptions options;
-    if (context_options->device == mojom::CreateContextOptions::Device::kGpu) {
-      options = {OrtDmlPerformancePreference::HighPerformance,
-                 OrtDmlDeviceFilter::Gpu};
-    } else {
-      options = {OrtDmlPerformancePreference::MinimumPower,
-                 OrtDmlDeviceFilter::Gpu};
-      // NPU is available only when ENABLE_NPU_ADAPTER_ENUMERATION
-      // options = {OrtDmlPerformancePreference::MinimumPower,
-      // OrtDmlDeviceFilter::Npu};
-    }
-
-    ort_dml_api->SessionOptionsAppendExecutionProvider_DML2(session_options,
-                                                            &options);
-  }
+  // TODO: Append OpenVINO EP for GPU and NPU devices.
 
   OrtSession* session;
   const OrtEnv* env = allocator->env();

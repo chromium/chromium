@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -28,8 +29,11 @@
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/utils.h"
+#if BUILDFLAG(WEBNN_USE_ORT)
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/webnn_switches.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -236,9 +240,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
   RecordDeviceType(options->device);
 
-#if BUILDFLAG(IS_WIN)
-  if (options->power_preference ==
-          mojom::CreateContextOptions::PowerPreference::kLowPower) {
+#if BUILDFLAG(WEBNN_USE_ORT)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNUseOrt)) {
     auto* platform_functions = ort::PlatformFunctions::GetInstance();
     if (!platform_functions) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
@@ -258,7 +262,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     context_impl =
         new ort::ContextImplOrt(std::move(receiver), this, std::move(options),
                                 std::move(allocator_ort));
-  } else if (ShouldCreateDmlContext(*options)) {
+  }
+#endif  // BUILDFLAG(WEBNN_USE_ORT)
+
+#if BUILDFLAG(IS_WIN)
+  if (!context_impl && ShouldCreateDmlContext(*options)) {
     DCHECK(gpu_feature_info_.IsInitialized());
     if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=
         gpu::kGpuFeatureStatusEnabled) {
