@@ -40,6 +40,7 @@ content::ClipboardPasteData MakeClipboardPasteData(
   return clipboard_paste_data;
 }
 
+// TODO(crbug.com/387484337): Set up equivalent browser tests for Clank.
 // Tests for functions and classes declared in data_protection_clipboard_utils.h
 // For browser tests that test data protection integration with Chrome's
 // clipboard logic, see clipboard_browsertests.cc

@@ -163,6 +163,9 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
             "image");
 }
 
+// The DataTransferPolicyController is not relevant / supported by Clank, and
+// is thus disabled.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_Allowed) {
   PolicyControllerTest policy_controller;
@@ -210,6 +213,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   EXPECT_FALSE(future.Get());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataProtectionPaste_NoDestinationWebContents) {
@@ -714,6 +718,31 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   content::ClipboardPasteData same_tab_data;
   ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
   EXPECT_TRUE(same_tab_data.empty());
+}
+
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       PasteAction_DataControlsDisabledOnAndroid) {
+  DisableDataControls();
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "destinations": {
+                      "urls": ["destination.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  // Without a controller set up, the paste should be allowed through.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteIfAllowedByPolicy(
+      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto paste_data = future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

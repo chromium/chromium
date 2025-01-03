@@ -348,6 +348,7 @@ void PasteIfAllowedByDataControls(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void OnDlpRulesCheckDone(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -367,6 +368,7 @@ void OnDlpRulesCheckDone(
                                std::move(clipboard_paste_data),
                                std::move(callback));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void IsCopyToOSClipboardRestricted(
     const content::ClipboardEndpoint& source,
@@ -476,6 +478,24 @@ void PasteIfAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if (SkipDataControlOrContentAnalysisChecks(destination)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  } else if (base::FeatureList::IsEnabled(
+                 data_controls::kEnableClipboardDataControlsAndroid)) {
+    // Call PasteIfAllowedByDataControls directly as
+    // DataTransferPolicyController::PasteIfAllowed contains logic that isn't
+    // relevant to Clank.
+    PasteIfAllowedByDataControls(source, destination, metadata,
+                                 std::move(clipboard_paste_data),
+                                 std::move(callback));
+    return;
+  } else {
+    std::move(callback).Run(std::move(clipboard_paste_data));
+    return;
+  }
+#else
   if (ui::DataTransferPolicyController::HasInstance()) {
     absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
     if (clipboard_paste_data.file_paths.empty()) {
@@ -505,6 +525,7 @@ void PasteIfAllowedByPolicy(
   OnDlpRulesCheckDone(source, destination, metadata,
                       std::move(clipboard_paste_data), std::move(callback),
                       /*allowed=*/true);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void IsClipboardCopyAllowedByPolicy(

@@ -35,7 +35,13 @@ AndroidDataControlsDialog::CreateDialogModel() {
 
   switch (type_) {
     case Type::kClipboardPasteBlock:
-      // Paste flow not yet implemented.
+      // TODO (crbug.com/385163723): Remove callbacks for copy/paste block
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params().SetLabel(
+              l10n_util::GetStringUTF16(IDS_OK)));
       break;
 
     case Type::kClipboardCopyBlock:
@@ -54,7 +60,18 @@ AndroidDataControlsDialog::CreateDialogModel() {
       // the user.
 
     case Type::kClipboardPasteWarn:
-      // Paste flow not yet implemented.
+      dialog_builder.AddCancelButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/true),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_DATA_CONTROLS_PASTE_WARN_CONTINUE_BUTTON)));
+      dialog_builder.AddOkButton(
+          base::BindOnce(&AndroidDataControlsDialog::OnButtonClicked,
+                         base::Unretained(this),
+                         /*bypassed=*/false),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringUTF16(
+              IDS_DATA_CONTROLS_PASTE_WARN_CANCEL_BUTTON)));
       break;
 
     case Type::kClipboardCopyWarn:
