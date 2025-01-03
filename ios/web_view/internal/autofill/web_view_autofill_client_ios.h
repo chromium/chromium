@@ -40,6 +40,38 @@ class IOSWebViewPaymentsAutofillClient;
 }  // namespace payments
 
 // WebView implementation of AutofillClient.
+//
+// The argument why it satisfies the AutofillClientIOS contract is lengthy.
+//
+// Firstly, observe that
+// - WebState is an instance variable of CWVWebView and
+// - WebViewAutofillClientIOS is indirectly an implicitly-`strong` property of
+//   CWVWebView.
+//
+// There are multiple ways of destruction of CWVWebView.
+//
+// - Case 1: CWVWebView's `shutDown` is called before `dealloc`.
+//   Then ~WebStateImpl() first notifies WebStateDestroyed(), which leads to
+//   potentially two calls of AutofillDriverIOSFactory::WebStateDestroyed()
+//   (whose relative ordering isn't obvious):
+//   (a) AutofillDriverIOSFactory is notified directly, and
+//   (b) CWVAutofillController is notified, which calls
+//       ~WebViewAutofillClientIOS(), which in turn calls
+//       AutofillDriverIOSFactory::WebStateDestroyed().
+//   Since AutofillDriverIOSFactory::WebStateDestroyed() removes itself as
+//   observer, (a) cannot happen after (b). So either only (b) happens or (a)
+//   happens before (b).
+//   At the time of (b), all members of WebViewAutofillClientIOS are still alive
+//   and web_state() is valid, so the AutofillClientIOS contract is satisfied.
+//
+// - Case 2: CWVWebView's `dealloc` is called without `shutDown`.
+//   Then ~WebViewAutofillClientIOS() may be called before, during, or after
+//   ~WebStateImpl().
+//   If it is called during or after ~WebStateImpl(), the argument from Case 1
+//   applies.
+//   If it is called before ~WebStateImpl(), then ~WebViewAutofillClientIOS()
+//   calls AutofillDriverIOSFactory::WebStateDestroyed(), so the
+//   AutofillClientIOS contract is satisfied.
 class WebViewAutofillClientIOS : public AutofillClientIOS {
  public:
   static std::unique_ptr<WebViewAutofillClientIOS> Create(

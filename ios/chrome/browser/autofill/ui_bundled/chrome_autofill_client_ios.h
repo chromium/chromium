@@ -50,6 +50,13 @@ class LogRouter;
 enum class SuggestionType;
 
 // Chrome iOS implementation of AutofillClient.
+//
+// Satisfies the AutofillClientIOS contract for the following reason.
+// ChromeAutofillClientIOS is owned by web::WebStateUserData, so
+// - first ~WebStateImpl() notifies web::WebStateObserver::WebStateDestroyed()
+// - then ~WebStateImpl() invalidates weak_ptr(), and
+// - then ~SupportsUserData() destroys WebStateUserData and thus
+//   ChromeAutofillClientIOS.
 class ChromeAutofillClientIOS : public AutofillClientIOS {
  public:
   ChromeAutofillClientIOS(

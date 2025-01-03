@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_H_
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "ios/web/public/web_state.h"
@@ -14,9 +14,16 @@ namespace autofill {
 
 // Common base class for all AutofillClients on iOS.
 //
-// There must be at most one instance per web::WebState. Generally,
-// AutofillClientIOS should be owned (perhaps indirectly) by a
-// web::WebStateUserData object.
+// There must be at most one instance per web::WebState. Unfortunately, the
+// production-code destruction order is complicated and embedder-specific.
+//
+// Therefore, the contract of AutofillClientIOS is as follows:
+// - web_state() must be non-null throughout the lifetime of AutofillClientIOS
+//   except perhaps during destruction.
+// - AutofillDriverIOSFactory::WebStateDestroyed() must be called at least once
+//   and only while the AutofillClientIOS is fully functional (i.e., before any
+//   of its or a derived class's members have been destroyed and before
+//   web_state() has become null).
 class AutofillClientIOS : public AutofillClient {
  public:
   // A function pointer rather than a base::RepeatingCallback to facilitate
@@ -44,7 +51,7 @@ class AutofillClientIOS : public AutofillClient {
   // is WebStateUserData. Therefore, all ChromeAutofillClientIOS instances pass
   // a pointer to the function calls AutofillTabHelper::FromWebContents() and
   // then returns the AutofillTabHelper's AutofillClientIOS.
-  // Similarly for WebAutofillClientIOS and other implementations.
+  // Similarly for WebViewAutofillClientIOS and other implementations.
   AutofillClientIOS(FromWebStateImpl from_web_state_impl,
                     web::WebState* web_state,
                     id<AutofillDriverIOSBridge> bridge);
@@ -52,6 +59,8 @@ class AutofillClientIOS : public AutofillClient {
   AutofillClientIOS& operator=(const AutofillClientIOS&) = delete;
   ~AutofillClientIOS() override;
 
+  // Non-null throughout the lifetime of the AutofillClientIOS except perhaps
+  // its destructor.
   web::WebState* web_state() const { return web_state_.get(); }
 
   // Intentionally final to allow it to be called during construction (in
@@ -59,12 +68,7 @@ class AutofillClientIOS : public AutofillClient {
   AutofillDriverIOSFactory& GetAutofillDriverFactory() final;
 
  private:
-  // Currently, this dangles at the time of ~AutofillClientIOS() because
-  // ~WebState() has already run at the time.
-  // TODO(crbug.com/380442588): Change to WeakPtr and define the contract. Also
-  // explain how and why the destruction order works in production code in
-  // Chrome and WebView.
-  raw_ptr<web::WebState> web_state_;
+  base::WeakPtr<web::WebState> web_state_;
 
   AutofillDriverIOSFactory autofill_driver_factory_;
 };

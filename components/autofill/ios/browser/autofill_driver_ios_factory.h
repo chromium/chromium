@@ -24,6 +24,7 @@ class WebState;
 
 namespace autofill {
 
+class AutofillClientIOS;
 class AutofillDriverIOS;
 
 // Creates one AutofillDriverIOS per web::WebState and manages its lifecycle
@@ -61,8 +62,7 @@ class AutofillDriverIOSFactory final
                                       LifecycleState new_state) final;
   };
 
-  AutofillDriverIOSFactory(web::WebState* web_state,
-                           AutofillClient* client,
+  AutofillDriverIOSFactory(AutofillClientIOS* client,
                            id<AutofillDriverIOSBridge> bridge);
 
   ~AutofillDriverIOSFactory() override;
@@ -76,9 +76,7 @@ class AutofillDriverIOSFactory final
  private:
   friend class AutofillDriverIOSFactoryTestApi;
 
-  void TearDown();
-
-  //  web::WebStateObserver:
+  // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // web::WebFramesManager::Observer:
@@ -88,11 +86,15 @@ class AutofillDriverIOSFactory final
                                  const std::string& frame_id) override;
 
   web::WebFramesManager& GetWebFramesManager();
+  web::WebState* web_state();
 
-  raw_ptr<AutofillClient> client_ = nullptr;
-  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ref<AutofillClientIOS> client_;
   AutofillDriverRouter router_;
   id<AutofillDriverIOSBridge> bridge_ = nil;
+
+  // Indicates whether WebStateDestroyed() has been fired already to prevent
+  // that subsequent DriverForFrame() calls create new drivers.
+  bool web_state_destroyed_ = false;
 
   // Owns the drivers. Drivers are created lazily in DriverForFrame() and
   // destroyed in WebFrameBecameUnavailable(). An entry with a null driver

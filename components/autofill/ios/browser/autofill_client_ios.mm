@@ -32,7 +32,8 @@ AutofillClientIOS* AutofillClientIOS::FromWebState(web::WebState* web_state) {
 AutofillClientIOS::AutofillClientIOS(FromWebStateImpl from_web_state_impl,
                                      web::WebState* web_state,
                                      id<AutofillDriverIOSBridge> bridge)
-    : web_state_(web_state), autofill_driver_factory_(web_state, this, bridge) {
+    : web_state_(web_state->GetWeakPtr()),
+      autofill_driver_factory_(this, bridge) {
   CHECK(from_web_state_impl);
   GetFromWebStateImpls().insert(from_web_state_impl);
 }

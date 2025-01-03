@@ -32,18 +32,13 @@ class WithFakedFromWebState : public T {
   }
 
   ~WithFakedFromWebState() override {
-    // In production code, the destruction order of WebState and WebState is
-    // complicated and counterintuitive, but guarantees that WebStateDestroyed()
-    // is fired before AutofillClientIOS is destroyed.
-    //
-    // This is important so that all AutofillDriverIOS (and their
-    // AutofillManagers) are destroyed *before* the AutofillClient is destroyed.
-    //
-    // The following line approximates the production code's behavior and
-    // guarantees that all AutofillDriverIOS are destroyed before the destructor
-    // of `T` is called.
-    static_cast<web::WebStateObserver&>(T::GetAutofillDriverFactory())
-        .WebStateDestroyed(AutofillClientIOS::web_state());
+    if (AutofillClientIOS::web_state()) {
+      // The AutofillClientIOS contract requires a call of
+      // AutofillDriverIOSFactory::WebStateDestroyed() before any members of the
+      // client are destroyed.
+      static_cast<web::WebStateObserver&>(T::GetAutofillDriverFactory())
+          .WebStateDestroyed(AutofillClientIOS::web_state());
+    }
     RemoveFromFakeWebStateRegistry(this);
   }
 };
