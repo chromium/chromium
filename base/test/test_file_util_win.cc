@@ -15,9 +15,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
@@ -80,11 +83,9 @@ bool RestorePermissionInfo(const FilePath& path, void* info, size_t length) {
   return rc == ERROR_SUCCESS;
 }
 
-std::unique_ptr<wchar_t[]> ToCStr(const std::basic_string<wchar_t>& str) {
-  size_t size = str.size() + 1;
-  std::unique_ptr<wchar_t[]> ptr = std::make_unique<wchar_t[]>(size);
-  wcsncpy(ptr.get(), str.c_str(), size);
-  return ptr;
+base::HeapArray<wchar_t> ToCStr(wcstring_view str) {
+  return base::HeapArray<wchar_t>::CopiedFrom(
+      span_with_nul_from_cstring_view(str));
 }
 
 }  // namespace
@@ -151,19 +152,19 @@ bool DenyFilePermission(const FilePath& path, DWORD permission) {
   PACL old_dacl;
   PSECURITY_DESCRIPTOR security_descriptor;
 
-  std::unique_ptr<TCHAR[]> path_ptr = ToCStr(path.value().c_str());
+  base::HeapArray<TCHAR> path_ptr = ToCStr(path.value());
   if (GetNamedSecurityInfo(
-          path_ptr.get(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr,
+          path_ptr.data(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr,
           nullptr, &old_dacl, nullptr, &security_descriptor) != ERROR_SUCCESS) {
     return false;
   }
 
-  std::unique_ptr<TCHAR[]> current_user = ToCStr(std::wstring(L"CURRENT_USER"));
+  base::HeapArray<TCHAR> current_user = ToCStr(L"CURRENT_USER");
   EXPLICIT_ACCESS new_access = {permission,
                                 DENY_ACCESS,
                                 0,
                                 {nullptr, NO_MULTIPLE_TRUSTEE, TRUSTEE_IS_NAME,
-                                 TRUSTEE_IS_USER, current_user.get()}};
+                                 TRUSTEE_IS_USER, current_user.data()}};
 
   PACL new_dacl;
   if (SetEntriesInAcl(1, &new_access, old_dacl, &new_dacl) != ERROR_SUCCESS) {
@@ -171,7 +172,7 @@ bool DenyFilePermission(const FilePath& path, DWORD permission) {
     return false;
   }
 
-  DWORD rc = SetNamedSecurityInfo(path_ptr.get(), SE_FILE_OBJECT,
+  DWORD rc = SetNamedSecurityInfo(path_ptr.data(), SE_FILE_OBJECT,
                                   DACL_SECURITY_INFORMATION, nullptr, nullptr,
                                   new_dacl, nullptr);
   LocalFree(security_descriptor);
