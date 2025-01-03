@@ -7167,7 +7167,8 @@ ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
     const ComputedStyle* scroll_marker_style =
         scroll_marker->CustomStyleForLayoutObject(
             StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
-    if (!scroll_marker_style) {
+    if (!PseudoElementLayoutObjectIsNeeded(kPseudoIdScrollMarker,
+                                           scroll_marker_style, this)) {
       scroll_marker->Dispose();
       return column_pseudo_element;
     }
