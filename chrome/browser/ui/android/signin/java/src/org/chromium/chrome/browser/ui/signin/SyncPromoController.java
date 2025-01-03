@@ -256,14 +256,8 @@ public class SyncPromoController {
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED;
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                    mTitleStringId = R.string.signin_promo_title_bookmarks;
-                    mDescriptionStringId = R.string.signin_promo_description_bookmarks;
-                } else {
-                    mTitleStringId = R.string.sync_promo_title_bookmarks;
-                    mDescriptionStringId = R.string.sync_promo_description_bookmarks;
-                }
+                mTitleStringId = R.string.signin_promo_title_bookmarks;
+                mDescriptionStringId = R.string.signin_promo_description_bookmarks;
                 mShouldSuppressSecondaryButton = false;
                 mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.

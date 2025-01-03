@@ -32,8 +32,10 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDelegate;
@@ -107,6 +109,7 @@ public class BookmarkManagerCoordinator
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
+    private final Context mContext;
     private final ViewGroup mMainView;
     private final SelectableListLayout<BookmarkId> mSelectableListLayout;
     private final RecyclerView mRecyclerView;
@@ -143,6 +146,7 @@ public class BookmarkManagerCoordinator
             Profile profile,
             BookmarkUiPrefs bookmarkUiPrefs,
             @Nullable Runnable bookmarkOpenedCallback) {
+        mContext = context;
         mProfile = profile;
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(
@@ -265,7 +269,8 @@ public class BookmarkManagerCoordinator
                                     context,
                                     mProfile,
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    mMediator::onPromoVisibilityChange));
+                                    mMediator::onPromoVisibilityChange,
+                                    this::openSettings));
             dragReorderableRecyclerViewAdapter.registerType(
                     ViewType.PERSONALIZED_SIGNIN_PROMO,
                     mSigninPromoCoordinator::buildPromoView,
@@ -521,5 +526,13 @@ public class BookmarkManagerCoordinator
 
     public BookmarkUiPrefs getBookmarkUiPrefsForTesting() {
         return mBookmarkUiPrefs;
+    }
+
+    private void openSettings() {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        mContext,
+                        ManageSyncSettings.class,
+                        ManageSyncSettings.createArguments(false));
     }
 }

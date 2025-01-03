@@ -26,23 +26,23 @@ final class SigninPromoProperties {
             ON_DISMISS_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_dismiss_button_clicked");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<>("title_text");
+    static final PropertyModel.WritableObjectPropertyKey<String> TITLE_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("title_text");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> DESCRIPTION_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<>("description_text");
+    static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("description_text");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<>("primary_button_text");
+    static final PropertyModel.WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("primary_button_text");
 
-    static final PropertyModel.ReadableObjectPropertyKey<String> SECONDARY_BUTTON_TEXT =
-            new PropertyModel.ReadableObjectPropertyKey<>("secondary_button_text");
+    static final PropertyModel.WritableObjectPropertyKey<String> SECONDARY_BUTTON_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("secondary_button_text");
 
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_HIDE_SECONDARY_BUTTON =
             new PropertyModel.WritableBooleanPropertyKey("should_suppress_secondary_button");
 
-    static final PropertyModel.ReadableBooleanPropertyKey SHOULD_HIDE_DISMISS_BUTTON =
-            new PropertyModel.ReadableBooleanPropertyKey("should_hide_dismiss_button");
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_HIDE_DISMISS_BUTTON =
+            new PropertyModel.WritableBooleanPropertyKey("should_hide_dismiss_button");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
