@@ -793,14 +793,20 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     ContentSuggestionsModuleType moduleType =
         (ContentSuggestionsModuleType)[moduleNumber intValue];
     switch (moduleType) {
-      case ContentSuggestionsModuleType::kMostVisited:
-        if (_mostVisitedTilesMediator.mostVisitedConfig.inMagicStack &&
-            [_mostVisitedTilesMediator.mostVisitedConfig
-                    .mostVisitedItems count] > 0) {
+      case ContentSuggestionsModuleType::kMostVisited: {
+        BOOL shouldShowMostVisitedTileInMagicStack =
+            _mostVisitedTilesMediator.mostVisitedConfig.inMagicStack;
+        BOOL isMostVisitedTileVisible = _prefService->GetBoolean(
+            prefs::kHomeCustomizationMostVisitedEnabled);
+        BOOL hasMostVisitedItems = [_mostVisitedTilesMediator.mostVisitedConfig
+                                           .mostVisitedItems count] > 0;
+        if (shouldShowMostVisitedTileInMagicStack && isMostVisitedTileVisible &&
+            hasMostVisitedItems) {
           [magicStackOrder
               addObject:_mostVisitedTilesMediator.mostVisitedConfig];
         }
         break;
+      }
       case ContentSuggestionsModuleType::kTabResumption:
         if (![self shouldShowTabResumption]) {
           break;
