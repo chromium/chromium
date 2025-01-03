@@ -48,3 +48,4 @@ This is a testharness.js-based test.
 [FAIL] Web Animations: property <scale> from [calc(sign(20rem - 20px) * 100)] to [calc(progress(10rem, 20px, 100px) * 180)] at (2) should be [260]
   assert_true: 'to' value should be supported expected true got false
 Harness: the test ran to completion.
+

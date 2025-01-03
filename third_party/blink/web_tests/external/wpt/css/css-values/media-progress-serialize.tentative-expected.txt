@@ -26,3 +26,4 @@ This is a testharness.js-based test.
 [FAIL] 'calc(1px * media-progress(height, abs(11em - 10rem), 110px / 10))' as a computed value should serialize as '590px'.
   assert_equals: 'calc(1px * media-progress(height, abs(11em - 10rem), 110px / 10))' and '590px' should serialize the same in computed values. expected "590px" but got "784px"
 Harness: the test ran to completion.
+

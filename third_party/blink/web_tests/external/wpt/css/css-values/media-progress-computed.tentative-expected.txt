@@ -16,3 +16,4 @@ This is a testharness.js-based test.
 [FAIL] media-progress() as angle
   assert_not_equals: calc(media-progress(width, 0px, 1px) * 1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 Harness: the test ran to completion.
+

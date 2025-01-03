@@ -40,3 +40,4 @@ This is a testharness.js-based test.
 [FAIL] rotate3d(progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), calc(progress(11em, 1rem, 11em) * 2deg)) should be used-value-equivalent to rotate3d(2, 2, 2, 2deg)
   assert_not_equals: rotate3d(progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), progress(21em, 1rem, 11em), calc(progress(11em, 1rem, 11em) * 2deg)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 Harness: the test ran to completion.
+

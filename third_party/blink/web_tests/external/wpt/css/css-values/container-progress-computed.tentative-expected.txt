@@ -32,3 +32,4 @@ This is a testharness.js-based test.
 [FAIL] calc(container-progress(width of my-container-2, 0px, 1px) * 1deg) should be used-value-equivalent to 5051deg
   assert_not_equals: calc(container-progress(width of my-container-2, 0px, 1px) * 1deg) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
 Harness: the test ran to completion.
+

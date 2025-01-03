@@ -28,3 +28,4 @@ This is a testharness.js-based test.
 [FAIL] .test 14
   assert_equals: \n<video width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></video>\nheight expected 100 but got 20
 Harness: the test ran to completion.
+

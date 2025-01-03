@@ -30,3 +30,4 @@ This is a testharness.js-based test.
 [FAIL] Property color value 'hwb(from oklch(1 0.399 336.3) h w b)'
   Colors do not match.\nActual:   color(srgb 1.59328 0.358736 1.38664)\nExpected: color(srgb 1.59331 0.35856 1.38647).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 0.35856 +/- 0.0001, expected 0.35856 but got 0.358736
 Harness: the test ran to completion.
+
