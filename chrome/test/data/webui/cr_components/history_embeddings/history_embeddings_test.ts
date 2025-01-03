@@ -916,7 +916,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       }
 
       const favicons = element.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.result-item .favicon');
+          '.result-url-and-favicon  .favicon');
       assertEquals(2, favicons.length);
       assertEquals(
           getFaviconForPageURL(mockResults[0]!.url.url, true),
