@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module arc.mojom;
 
@@ -11,6 +11,28 @@ module arc.mojom;
 enum AudioSwitch {
   SW_HEADPHONE_INSERT = 0x02,
   SW_MICROPHONE_INSERT = 0x04
+};
+
+// Use same values as chromeos/ash/components/audio/audio_device.h
+[Extensible]
+enum AudioDeviceType {
+  HEADPHONE,
+  MIC,
+  USB,
+  BLUETOOTH,
+  BLUETOOTH_NB_MIC,
+  HDMI,
+  INTERNAL_SPEAKER,
+  INTERNAL_MIC,
+  FRONT_MIC,
+  REAR_MIC,
+  KEYBOARD_MIC,
+  HOTWORD,
+  LINEOUT,
+  POST_MIX_LOOPBACK,
+  POST_DSP_LOOPBACK,
+  ALSA_LOOPBACK,
+  [Default] OTHER
 };
 
 // Next method ID:2
@@ -25,7 +47,7 @@ interface AudioHost {
 };
 
 // Deprecated method IDs: 1
-// Next method ID: 4
+// Next method ID: 6
 interface AudioInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=4] Init@3(pending_remote<AudioHost> host_remote) => ();
@@ -39,4 +61,10 @@ interface AudioInstance {
   // volume ranges from 0 to 100.
   // muted == true if audio is muted.
   [MinVersion=2] NotifyVolumeState@2(uint32 volume, bool muted);
+
+  // Notify whether the spatial audio is currently enabled or not.
+  [MinVersion=5] NotifySpatialAudioState@4(bool enabled);
+
+  // Notify the active audio output device information.
+  [MinVersion=5] NotifyOutputDeviceInfo@5(AudioDeviceType device_type);
 };

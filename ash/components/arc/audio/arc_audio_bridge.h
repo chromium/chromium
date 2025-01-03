@@ -53,9 +53,13 @@ class ArcAudioBridge : public KeyedService,
   void OnAudioNodesChanged() override;
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
+  void OnSpatialAudioStateChanged() override;
 
   void SendSwitchState(bool headphone_inserted, bool microphone_inserted);
   void SendVolumeState();
+  void SendAudioNodesState();
+  void SendSpatialAudioState();
+  void SendOutputDeviceType(ash::AudioDeviceType device_type);
 
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
