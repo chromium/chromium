@@ -452,17 +452,17 @@ void CheckSqliteLoggedResultCodeForTesting() {
   //
   // This number is also stated at
   // https://www.sqlite.org/rescode.html#primary_result_code_list
-  static constexpr int kPrimaryResultCodes = 31;
+  static constexpr size_t kPrimaryResultCodes = 31;
 
   // Number of #defines in https://www.sqlite.org/c3ref/c_abort_rollback.html
   //
   // This number is also stated at
   // https://www.sqlite.org/rescode.html#extended_result_code_list
-  static constexpr int kExtendedResultCodes = 74;
+  static constexpr size_t kExtendedResultCodes = 74;
 
-  DCHECK_EQ(std::size(kResultCodeMapping),
-            size_t{kPrimaryResultCodes + kExtendedResultCodes})
-      << "Mapping table has incorrect number of entries";
+  static_assert(std::size(kResultCodeMapping) ==
+                    kPrimaryResultCodes + kExtendedResultCodes,
+                "Mapping table has incorrect number of entries");
 }
 
 }  // namespace sql
