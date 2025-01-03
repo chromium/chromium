@@ -90,7 +90,7 @@ public final class PrivacySandboxDialogTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .setRevision(2)
                     .setDescription("Changed feature flag behavior for button equalization")
                     .build();
