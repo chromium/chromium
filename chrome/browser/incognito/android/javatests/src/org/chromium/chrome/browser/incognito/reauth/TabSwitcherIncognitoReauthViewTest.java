@@ -67,7 +67,7 @@ public class TabSwitcherIncognitoReauthViewTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
-                    .setRevision(5)
+                    .setRevision(6)
                     .build();
 
     @Before

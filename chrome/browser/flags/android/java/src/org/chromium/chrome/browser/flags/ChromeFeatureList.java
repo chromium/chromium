@@ -770,7 +770,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupCreationDialogAndroid =
             newCachedFlag(TAB_GROUP_CREATION_DIALOG_ANDROID, true);
     public static final CachedFlag sTabGroupPaneAndroid =
-            newCachedFlag(TAB_GROUP_PANE_ANDROID, false);
+            newCachedFlag(
+                    TAB_GROUP_PANE_ANDROID,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(
                     TAB_RESUMPTION_MODULE_ANDROID,

@@ -320,6 +320,7 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PANE_ANDROID)
     public void testCloseButtonDescription() {
         String expectedDescription = "Close New tab tab";
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
