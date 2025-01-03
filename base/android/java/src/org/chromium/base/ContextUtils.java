@@ -250,7 +250,7 @@ public class ContextUtils {
             Context context,
             @Nullable BroadcastReceiver receiver,
             IntentFilter filter,
-            String permission) {
+            @Nullable String permission) {
         return registerBroadcastReceiver(
                 context, receiver, filter, permission, /* scheduler= */ null, RECEIVER_EXPORTED);
     }
@@ -302,7 +302,7 @@ public class ContextUtils {
             Context context,
             @Nullable BroadcastReceiver receiver,
             IntentFilter filter,
-            Handler scheduler) {
+            @Nullable Handler scheduler) {
         return registerBroadcastReceiver(
                 context,
                 receiver,

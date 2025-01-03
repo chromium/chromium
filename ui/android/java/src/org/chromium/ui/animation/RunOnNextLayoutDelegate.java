@@ -7,6 +7,7 @@ package org.chromium.ui.animation;
 import android.view.View;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ import java.util.List;
  * }
  * </pre>
  */
+@NullMarked
 public class RunOnNextLayoutDelegate implements RunOnNextLayout {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final View mView;

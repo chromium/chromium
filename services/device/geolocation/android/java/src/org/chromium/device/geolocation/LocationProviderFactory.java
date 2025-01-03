@@ -10,11 +10,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Factory to create a LocationProvider to allow us to inject a mock for tests. */
 @JNINamespace("device")
+@NullMarked
 public class LocationProviderFactory {
-    private static LocationProvider sProviderImpl;
+    private static @Nullable LocationProvider sProviderImpl;
     private static boolean sUseGmsCoreLocationProvider;
 
     private LocationProviderFactory() {}

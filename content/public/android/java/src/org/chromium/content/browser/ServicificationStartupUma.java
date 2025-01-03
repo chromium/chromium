@@ -7,6 +7,7 @@ package org.chromium.content.browser;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,6 +16,7 @@ import java.lang.annotation.RetentionPolicy;
  * A singleton class to record metrics about how Chrome is launched, either as full browser or
  * minimal browser.
  */
+@NullMarked
 public class ServicificationStartupUma {
     // This enum is used to back UMA histograms, and should therefore be treated as append-only.
     @IntDef({
