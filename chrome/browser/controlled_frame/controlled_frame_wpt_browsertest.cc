@@ -27,11 +27,11 @@ namespace controlled_frame {
 
 namespace {
 
-// TODO(crbug.com/386380410): Re-enable event_handlers.window.js, once it no
-// longer times out.
 const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "camera.window.js",
                                         "client_hints_user_agent.window.js",
+                                        "frame_event_handlers_part_1.window.js",
+                                        "frame_event_handlers_part_2.window.js",
                                         "geolocation.window.js",
                                         "new_window.window.js",
                                         "no_callback.window.js",
