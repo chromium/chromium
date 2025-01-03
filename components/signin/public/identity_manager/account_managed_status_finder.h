@@ -40,6 +40,10 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // This enum is also used in Java.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.identitymanager
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AccountManagedStatusFinderOutcome
+  //
   // LINT.IfChange(AccountManagedStatusFinderOutcome)
   enum class Outcome {
     // Check isn't complete yet.
@@ -89,6 +93,12 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Implementation for JNI methods.
+  void DestroyNativeObject(JNIEnv* env);
+  jint GetOutcomeFromNativeObject(JNIEnv* env) const;
+#endif
 
  private:
   void OnTimeoutReached();
