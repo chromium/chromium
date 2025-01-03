@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
   EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
 
   {
@@ -403,12 +403,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
   EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
-  EXPECT_FALSE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_FALSE(browser()->tab_strip_model()->TabsNeedLoadingUI());
 }
 
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an

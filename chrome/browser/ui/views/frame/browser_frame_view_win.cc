@@ -447,7 +447,7 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   }
 
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab && current_tab->IsLoading();
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel BrowserFrameViewWin::GetFaviconForTabIconView() {

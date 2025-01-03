@@ -1663,7 +1663,7 @@ void BrowserView::UpdateDevTools() {
 
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   const bool should_animate =
-      is_visible && browser_->tab_strip_model()->TabsAreLoading();
+      is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();
 
   if (should_animate == loading_animation_timer_.IsRunning()) {
     // Early return if the loading animation state doesn't change.

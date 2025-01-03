@@ -728,10 +728,10 @@ void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   CloseTabs({GetWebContentsAt(index)}, close_types);
 }
 
-bool TabStripModel::TabsAreLoading() const {
+bool TabStripModel::TabsNeedLoadingUI() const {
   for (int i = 0; i < GetTabCount(); i++) {
     const tabs::TabInterface* const tab = GetTabAtIndex(i);
-    if (tab->GetContents()->IsLoading()) {
+    if (tab->GetContents()->ShouldShowLoadingUI()) {
       return true;
     }
   }

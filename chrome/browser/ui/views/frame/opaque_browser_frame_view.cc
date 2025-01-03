@@ -442,7 +442,7 @@ bool OpaqueBrowserFrameView::ShouldTabIconViewAnimate() const {
   // TabIconView we host is initialized, so we need to null check the selected
   // WebContents because in this condition there is not yet a selected tab.
   WebContents* current_tab = browser_view()->GetActiveWebContents();
-  return current_tab ? current_tab->IsLoading() : false;
+  return current_tab && current_tab->ShouldShowLoadingUI();
 }
 
 ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
