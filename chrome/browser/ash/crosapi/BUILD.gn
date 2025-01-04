@@ -481,8 +481,6 @@ static_library("crosapi") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install:implementation",
     "//chrome/browser/ash/apps",
-    "//chrome/browser/ash/drive",
-    "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
