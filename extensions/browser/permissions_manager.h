@@ -403,7 +403,11 @@ class PermissionsManager : public KeyedService {
   // The associated browser context.
   const raw_ptr<content::BrowserContext> browser_context_;
 
-  const raw_ptr<ExtensionPrefs> extension_prefs_;
+  // `extension_prefs_` is left dangling in tests.
+  // In unit tests, ExtensionPrefs is created and destroyed in a different flow
+  // from normal (TestExtensionPrefs).
+  // TODO(crbug.com/387322067): Fix the dangling pointer in tests.
+  const raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;
   UserPermissionsSettings user_permissions_;
 
   // Helpers that store and manage the site access requests per tab.

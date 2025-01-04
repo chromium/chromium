@@ -7,9 +7,11 @@
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,8 +30,12 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -903,4 +909,98 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
   }
 }
 
+class UnscopedOmniboxApiTest : public OmniboxApiTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kExperimentalOmniboxLabs};
+};
+
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+                       UnscopedExtensionsUpdatedOnLoadAndUnload) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "permissions" : [ "omnibox.directInput" ]
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"()");
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  TemplateURLService* turl_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  const ExtensionId& extension_id = extension->id();
+
+  // The permission is grnated when loading an unpacked extension, so the
+  // extension id should be added to the list of unscoped extensions.
+  EXPECT_TRUE(
+      turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
+
+  // The extension id should be removed from the list of extension ids when the
+  // extension is unloaded.
+  UnloadExtension(extension_id);
+  EXPECT_FALSE(
+      turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
+}
+
+IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+                       RuntimePermissionChangesUpdateUnscopedExtensionsList) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "optional_permissions" : [ "omnibox.directInput" ]
+         })";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"()");
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  TemplateURLService* turl_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  const ExtensionId& extension_id = extension->id();
+
+  // The permission is not granted, so the extension id should not be added to
+  // the list of unscoped mode extensions (i.e. extensions that do not requuire
+  // keyword mode).
+  EXPECT_FALSE(
+      turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
+
+  // When the permission is granted, the list should now contain the extension
+  // id.
+  APIPermissionSet api_permissions;
+  api_permissions.insert(mojom::APIPermissionID::kOmniboxDirectInput);
+  permissions_test_util::GrantOptionalPermissionsAndWaitForCompletion(
+      profile(), *extension,
+      PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
+                    URLPatternSet(), URLPatternSet()));
+  EXPECT_TRUE(
+      turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
+
+  // If the permission is revoked again, the extension id should be removed from
+  // the list.
+  permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
+      profile(), *extension,
+      PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
+                    URLPatternSet(), URLPatternSet()),
+      PermissionsUpdater::RemoveType::REMOVE_SOFT);
+  EXPECT_FALSE(
+      turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         UnscopedOmniboxApiTest,
+                         testing::Values(ContextType::kServiceWorker));
 }  // namespace extensions

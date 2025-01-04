@@ -216,10 +216,13 @@ OmniboxAPI::OmniboxAPI(content::BrowserContext* context)
 
   // Use monochrome icons for Omnibox icons.
   omnibox_icon_manager_.set_monochrome(true);
+
+  permissions_manager_observation_.Observe(PermissionsManager::Get(profile_));
 }
 
 void OmniboxAPI::Shutdown() {
   template_url_subscription_ = {};
+  permissions_manager_observation_.Reset();
 }
 
 OmniboxAPI::~OmniboxAPI() = default;
@@ -271,6 +274,24 @@ void OmniboxAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
   }
 }
 
+void OmniboxAPI::OnExtensionPermissionsUpdated(
+    const Extension& extension,
+    const PermissionSet& permissions,
+    PermissionsManager::UpdateReason reason) {
+  if (!permissions.HasAPIPermission(
+          mojom::APIPermissionID::kOmniboxDirectInput)) {
+    return;
+  }
+
+  if (reason == PermissionsManager::UpdateReason::kAdded &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kExperimentalOmniboxLabs)) {
+    url_service_->AddToUnscopedModeExtensionIds(extension.id());
+  } else if (reason == PermissionsManager::UpdateReason::kRemoved) {
+    url_service_->RemoveFromUnscopedModeExtensionIdsIfPresent(extension.id());
+  }
+}
+
 gfx::Image OmniboxAPI::GetOmniboxIcon(const ExtensionId& extension_id) {
   return omnibox_icon_manager_.GetIcon(extension_id);
 }
@@ -293,6 +314,7 @@ void BrowserContextKeyedAPIFactory<OmniboxAPI>::DeclareFactoryDependencies() {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+  DependsOn(PermissionsManager::GetFactory());
 }
 
 OmniboxSendSuggestionsFunction::OmniboxSendSuggestionsFunction() = default;
