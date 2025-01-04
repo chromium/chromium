@@ -52,38 +52,7 @@ constexpr std::u16string kBulletPoint = u"\u2022";
 
 // Gets the string for the activity line to describe an event.
 std::u16string GetActivityText(ActivityLogItem item) {
-  auto name = item.user_is_self
-                  ? l10n_util::GetStringUTF16(IDS_DATA_SHARING_YOU)
-                  : base::UTF8ToUTF16(item.user_display_name);
-  int message_id;
-
-  switch (item.collaboration_event) {
-    case CollaborationEvent::TAB_UPDATED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_TAB;
-      break;
-    case CollaborationEvent::TAB_REMOVED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_REMOVED_TAB;
-      break;
-    case CollaborationEvent::TAB_ADDED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_TAB;
-      break;
-    case CollaborationEvent::COLLABORATION_MEMBER_ADDED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_JOINED_GROUP;
-      break;
-    case CollaborationEvent::COLLABORATION_MEMBER_REMOVED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_LEFT_GROUP;
-      break;
-    case CollaborationEvent::TAB_GROUP_NAME_UPDATED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_NAME;
-      break;
-    case CollaborationEvent::TAB_GROUP_COLOR_UPDATED:
-      message_id = IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_COLOR;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  return l10n_util::GetStringFUTF16(message_id, name);
+  return item.title_text;
 }
 
 // Returns the correct user that should be used for a given log item.
@@ -112,49 +81,18 @@ data_sharing::GroupMember GetRelevantUserForActivity(ActivityLogItem item) {
   return user.value();
 }
 
-// Enum used to show the correct selector variant of the string template.
-enum class TimeDimension {
-  kMinutes = 0,
-  kHours = 1,
-  kDays = 2,
-  kMaxValue = kDays,
-};
-
-// Gets the string representation of the given time delta. Time is
-// binned into minutes, hours, or days.
-std::u16string GetElapsedTimeText(base::TimeDelta time_delta) {
-  TimeDimension dimension;
-  int number;
-  if (time_delta < base::Hours(1)) {
-    dimension = TimeDimension::kMinutes;
-    number = time_delta.InMinutes();
-  } else if (time_delta < base::Days(1)) {
-    dimension = TimeDimension::kHours;
-    number = time_delta.InHours();
-  } else {
-    dimension = TimeDimension::kDays;
-    number = time_delta.InDays();
-  }
-  return base::i18n::MessageFormatter::FormatWithNumberedArgs(
-      l10n_util::GetStringFUTF16(
-          IDS_DATA_SHARING_RECENT_ACTIVITY_TIME,
-          base::UTF8ToUTF16(base::NumberToString(number))),
-      static_cast<int>(dimension));
-}
-
 // Gets the string for the metadata line to describe an event.
 std::u16string GetMetadataText(ActivityLogItem item) {
-  if (item.description == u"") {
+  if (item.description_text == u"") {
     // If there is no description, the line simply contains elapsed time
     // since the action.
-    return GetElapsedTimeText(item.time_delta);
+    return item.time_delta_text;
   } else {
     // The metadata line contains the item's description, a bullet point,
     // and the elapsed time since the action, separated by spaces.
     std::u16string_view separator = u" ";
     return base::JoinString(
-        {item.description, kBulletPoint, GetElapsedTimeText(item.time_delta)},
-        separator);
+        {item.description_text, kBulletPoint, item.time_delta_text}, separator);
   }
 }
 

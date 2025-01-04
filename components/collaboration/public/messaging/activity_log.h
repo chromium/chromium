@@ -61,32 +61,6 @@ struct ActivityLogItem {
   // the event happened.
   std::u16string time_delta_text;
 
-  // Deprecated.
-  // Display name to be shown in the title line.
-  // This is the triggering user for tab and tab group related events.
-  // This is the affected user for membership changes (added/removed user).
-  // This the `data_sharing::GroupMember::given_name`.
-  std::string user_display_name;
-
-  // Deprecated.
-  // Whether the user associated with the activity log item is the current
-  // signed in user themselves.
-  bool user_is_self = false;
-
-  // Deprecated.
-  // Description text to be shown on first half of the description line. This
-  // will be concatenated with the `time_delta` text. Can be empty string for
-  // certain type of events in which case only `time_delta` is to be shown
-  // without concatenation character.
-  std::u16string description;
-
-  // Deprecated.
-  // The time duration  that has passed since the action happened. Used for
-  // generating the relative duration text that will be appended to the
-  // description. If the description is empty, the entire description line will
-  // contain only the relative duration without the concatenation character.
-  base::TimeDelta time_delta;
-
   // Whether the favicon should be shown for this row. Only tab related updates
   // show a favicon.
   bool show_favicon = false;

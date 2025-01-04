@@ -157,6 +157,11 @@ RecentActivityAction GetRecentActivityActionFromCollaborationEvent(
   }
 }
 
+std::u16string TimeDeltaToText(base::TimeDelta time_delta) {
+  // TODO(crbug.com/380962101): Implement recency string.
+  return u"";
+}
+
 std::optional<GaiaId> GetGaiaIdFromMessage(
     const collaboration_pb::Message& message) {
   switch (GetMessageCategory(message)) {
@@ -928,8 +933,9 @@ MessagingBackendServiceImpl::ConvertMessageToActivityLogItem(
 
   // By default, we use an empty description. This is special cased below.
   item.description_text = u"";
-  item.time_delta =
+  base::TimeDelta time_delta =
       base::Time::Now() - base::Time::FromTimeT(message.event_timestamp());
+  item.time_delta_text = TimeDeltaToText(time_delta);
   item.action =
       GetRecentActivityActionFromCollaborationEvent(item.collaboration_event);
 

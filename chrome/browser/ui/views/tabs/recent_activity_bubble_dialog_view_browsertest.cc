@@ -62,7 +62,7 @@ collaboration::messaging::ActivityLogItem CreateMockActivityItem(
     std::string_view avatar_url,
     std::string_view last_url,
     std::string_view last_url_description,
-    base::TimeDelta time,
+    std::string_view time_delta,
     tab_groups::CollaborationEvent event,
     bool is_self) {
   GroupMember trig_member;
@@ -83,10 +83,9 @@ collaboration::messaging::ActivityLogItem CreateMockActivityItem(
 
   ActivityLogItem item;
   item.collaboration_event = event;
-  item.user_display_name = name;
-  item.user_is_self = is_self;
-  item.description = base::UTF8ToUTF16(last_url_description);
-  item.time_delta = base::TimeDelta(time);
+  item.title_text = base::UTF8ToUTF16(name);
+  item.description_text = base::UTF8ToUTF16(last_url_description);
+  item.time_delta_text = base::UTF8ToUTF16(time_delta);
   item.show_favicon = true;
   item.action =
       GetRecentActivityActionFromCollaborationEvent(item.collaboration_event);
@@ -100,29 +99,29 @@ CreateMockActivityLogWithAllTypes() {
   std::vector<ActivityLogItem> result;
 
   result.emplace_back(CreateMockActivityItem(
-      "Me", "https://www.google.com/avatar/1", "https://www.google.com/1",
-      "airbnb.com", base::Minutes(5),
+      "You changed a tab", "https://www.google.com/avatar/1",
+      "https://www.google.com/1", "airbnb.com", "5h ago",
       tab_groups::CollaborationEvent::TAB_UPDATED, true));
 
   result.emplace_back(CreateMockActivityItem(
-      "Shirley", "https://www.google.com/avatar/2", "https://www.google.com/2",
-      "hotels.com", base::Hours(4), tab_groups::CollaborationEvent::TAB_UPDATED,
-      false));
+      "Shirley changed a tab", "https://www.google.com/avatar/2",
+      "https://www.google.com/2", "hotels.com", "4h ago",
+      tab_groups::CollaborationEvent::TAB_UPDATED, false));
 
   result.emplace_back(CreateMockActivityItem(
-      "Elisa", "https://www.google.com/avatar/3", "https://www.google.com/3",
-      "expedia.com", base::Hours(6),
+      "Elisa removed a tab", "https://www.google.com/avatar/3",
+      "https://www.google.com/3", "expedia.com", "6h ago",
       tab_groups::CollaborationEvent::TAB_REMOVED, false));
 
   result.emplace_back(CreateMockActivityItem(
-      "Shirley", "https://www.google.com/avatar/2", "https://www.google.com/2",
-      "shirleys-email", base::Hours(8),
+      "Shirley joined the group", "https://www.google.com/avatar/2",
+      "https://www.google.com/2", "shirleys-email", "8h ago",
       tab_groups::CollaborationEvent::COLLABORATION_MEMBER_ADDED, false));
 
   result.emplace_back(CreateMockActivityItem(
-      "Elisa", "https://www.google.com/avatar/3", "https://www.google.com/3",
-      "expedia.com", base::Days(2), tab_groups::CollaborationEvent::TAB_ADDED,
-      false));
+      "Elisa added a tab", "https://www.google.com/avatar/3",
+      "https://www.google.com/3", "expedia.com", "2d ago",
+      tab_groups::CollaborationEvent::TAB_ADDED, false));
 
   return result;
 }
@@ -134,8 +133,8 @@ std::vector<ActivityLogItem> CreateMockActivityLog(int n) {
   for (int i = 0; i < n; i++) {
     // Choose random values to populate list.
     result.emplace_back(CreateMockActivityItem(
-        "Me", "https://www.google.com/avatar/1", "https://www.google.com/1",
-        "airbnb.com", base::Minutes(5),
+        "You changed a tab", "https://www.google.com/avatar/1",
+        "https://www.google.com/1", "airbnb.com", "5m ago",
         tab_groups::CollaborationEvent::TAB_UPDATED, true));
   }
   return result;
@@ -228,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(RecentActivityBubbleDialogViewUnitTest, ShowsAllTypes) {
 
   EXPECT_EQ(bubble->GetRowForTesting(0)->activity_text(), u"You changed a tab");
   EXPECT_EQ(bubble->GetRowForTesting(0)->metadata_text(),
-            u"airbnb.com \u2022 5m ago");
+            u"airbnb.com \u2022 5h ago");
 
   EXPECT_EQ(bubble->GetRowForTesting(1)->activity_text(),
             u"Shirley changed a tab");
