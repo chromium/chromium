@@ -92,9 +92,7 @@ class TabStripActionContainer : public views::View,
     return tab_organization_service_;
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicButton* GetGlicButton() { return glic_button_; }
-#endif  // BUILDFLAG(ENABLE_GLIC)
+  glic::GlicButton *GetGlicButton() { return glic_button_; }
 
   ProductSpecificationsButton* GetProductSpecificationsButton() {
     return product_specifications_button_;
@@ -165,9 +163,7 @@ class TabStripActionContainer : public views::View,
   raw_ptr<TabOrganizationService> tab_organization_service_ = nullptr;
   raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
-#if BUILDFLAG(ENABLE_GLIC)
   raw_ptr<glic::GlicButton, DanglingUntriaged> glic_button_ = nullptr;
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   raw_ptr<const Browser> browser_;
 
