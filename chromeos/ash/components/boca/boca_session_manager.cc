@@ -472,10 +472,25 @@ void BocaSessionManager::NotifyRosterUpdate() {
 }
 
 void BocaSessionManager::NotifyConsumerActivityUpdate() {
-  if (!IsSessionActive(current_session_.get()) || !previous_session_) {
+  if (!IsSessionActive(current_session_.get())) {
     return;
   }
+
   auto current_activity = current_session_->student_statuses();
+
+  if (!previous_session_ && current_activity.empty()) {
+    return;
+  }
+
+  if (!previous_session_) {
+    for (auto& observer : observers_) {
+      observer.OnConsumerActivityUpdated(
+          std::map<std::string, ::boca::StudentStatus>(current_activity.begin(),
+                                                       current_activity.end()));
+    }
+    return;
+  }
+
   auto previous_activity = previous_session_->student_statuses();
   for (auto status : current_activity) {
     auto key = status.first;

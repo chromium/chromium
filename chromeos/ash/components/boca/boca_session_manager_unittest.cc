@@ -1023,6 +1023,36 @@ TEST_F(BocaSessionManagerTest,
                                     base::Seconds(1));
 }
 
+TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenPreviousSessionEmpty) {
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  session_1->set_session_id(kInitialSessionId);
+  ::boca::StudentStatus status;
+  status.set_state(::boca::StudentStatus::ACTIVE);
+  (*session_1->mutable_student_statuses())["1"] = std::move(status);
+  ::boca::StudentStatus status_1;
+  status.set_state(::boca::StudentStatus::ADDED);
+  (*session_1->mutable_student_statuses())["2"] = std::move(status_1);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     nullptr);
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session_1));
+      }));
+
+  EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
+  EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(kDefaultInSessionPollingInterval * 2 +
+                                    base::Seconds(1));
+}
+
 TEST_F(BocaSessionManagerTest, LoadSessionWhenRefreshTokenReady) {
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(2);
   // MakeAccountAvailable fires a fresh token ready event.
