@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotificationData;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -831,9 +830,7 @@ public class CustomTabsConnection {
             return bundle;
         } else if (commandName.equals(IS_AUTH_TAB_SUPPORTED)) {
             var bundle = new Bundle();
-            boolean supported =
-                    ChromeFeatureList.sCctAuthTab.isEnabled()
-                            && FirstRunStatus.getFirstRunFlowComplete();
+            boolean supported = ChromeFeatureList.sCctAuthTab.isEnabled();
             bundle.putBoolean(AUTH_TAB_SUPPORTED_KEY, supported);
             return bundle;
         }
