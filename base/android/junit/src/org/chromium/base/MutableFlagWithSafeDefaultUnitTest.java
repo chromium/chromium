@@ -35,16 +35,16 @@ public class MutableFlagWithSafeDefaultUnitTest {
     }
 
     @Test
-    public void testNativeInitialized_getsFromChromeFeatureList() {
+    public void testNativeInitialized_getsFromFeatureMap() {
         MutableFlagWithSafeDefault featureA =
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
         MutableFlagWithSafeDefault featureB =
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
-        // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestValues(A_ON_B_OFF);
+        // Values from FeatureMap should be used from now on.
+        A_ON_B_OFF.apply();
 
-        // Verify that {@link MutableFlagWithSafeDefault} returns native values.
+        // Verify that {@link MutableFlagWithSafeDefault} returns values from FeatureMap.
         BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
     }
 
@@ -60,7 +60,7 @@ public class MutableFlagWithSafeDefaultUnitTest {
     }
 
     @Test
-    public void testNativeInitializedUsedDefault_getsFromChromeFeatureList() {
+    public void testNativeInitializedUsedDefault_getsFromFeatureMap() {
         MutableFlagWithSafeDefault featureA =
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_A, false);
         MutableFlagWithSafeDefault featureB =
@@ -69,10 +69,10 @@ public class MutableFlagWithSafeDefaultUnitTest {
         // Query the flags to make sure the default values are returned.
         BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
-        // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestValues(A_ON_B_OFF);
+        // Values from FeatureMap should be used from now on.
+        A_ON_B_OFF.apply();
 
-        // Verify that {@link MutableFlagWithSafeDefault} returns native values.
+        // Verify that {@link MutableFlagWithSafeDefault} returns values from FeatureMap.
         BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
     }
 }

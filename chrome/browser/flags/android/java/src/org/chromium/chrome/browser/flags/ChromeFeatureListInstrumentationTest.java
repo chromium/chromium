@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -53,11 +53,11 @@ public class ChromeFeatureListInstrumentationTest {
 
     @Test
     @MediumTest
-    public void testSetTestValues() {
-        FeatureList.TestValues overrides = new FeatureList.TestValues();
-        overrides.addFeatureFlagOverride(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
-        overrides.addFeatureFlagOverride(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
-        FeatureList.setTestValues(overrides);
+    public void testFeatureOverrides() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.TEST_DEFAULT_DISABLED)
+                .disable(ChromeFeatureList.TEST_DEFAULT_ENABLED)
+                .apply();
 
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));

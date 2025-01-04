@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -125,12 +124,12 @@ public class CachedFlagUnitTest {
     }
 
     @Test
-    public void testFeatureListOverride_returnsForcedValue() {
+    public void testFeatureOverride_returnsForcedValue() {
         CachedFlag featureA = new CachedFlag(mFeatureMap, FEATURE_A, false);
         CachedFlag featureB = new CachedFlag(mFeatureMap, FEATURE_B, true);
 
         // Force different values
-        FeatureList.setTestValues(A_ON_B_OFF);
+        A_ON_B_OFF.apply();
 
         // Verify that the forced value is returned.
         assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);

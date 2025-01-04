@@ -45,8 +45,8 @@ public abstract class FeatureMap {
      *
      * <p>Should be called only after native is loaded. If {@link FeatureList#isInitialized()}
      * returns true, this method is safe to call. In tests, this will return any values set
-     * through @Enable/@DisableFeatures annotations or {@link
-     * FeatureList#setTestValues(FeatureList.TestValues)}, even before native is loaded.
+     * through @Enable/@DisableFeatures annotations or {@link FeatureOverrides}, even before native
+     * is loaded.
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.
