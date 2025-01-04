@@ -235,7 +235,7 @@ void BocaSessionManager::UpdateTabActivity(std::u16string title) {
       !device_id.empty() ? device_id : kDummyDeviceId,
       base::BindOnce(
           [](base::expected<bool, google_apis::ApiErrorCode> result) {
-            if (result.has_value()) {
+            if (!result.has_value()) {
               // TODO(b/366316261):Add metrics for update failure.
               LOG(WARNING) << "[Boca]Failed to update student activity.";
             }
@@ -535,6 +535,7 @@ void BocaSessionManager::UpdateLocalSessionDurationTracker() {
     }
   } else {
     session_duration_timer_.Stop();
+    last_session_duration_ = base::Seconds(0);
   }
 }
 

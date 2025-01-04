@@ -1380,7 +1380,8 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
         session_client_impl(), account_id, /*is_producer=*/true);
   }
 
- private:
+ protected:
+  base::Time session_start_time_ = base::Time::Now();
   std::unique_ptr<BocaSessionManager> boca_session_manager_;
 };
 
@@ -1390,6 +1391,50 @@ TEST_F(BocaSessionManagerNoPollingTest, DoNotPollWhenPollingIntervalIsZero) {
                                     base::Seconds(1));
   task_environment()->FastForwardBy(kDefaultIndefinitePollingInterval * 1 +
                                     base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerNoPollingTest,
+       ConsecutiveSessionShouldEndWhenNetworkOffline) {
+  boca_session_manager_->AddObserver(observer());
+  // Set up the test with no polling to simplify session mock.
+  ::boca::Session session_1;
+  session_1.set_session_state(::boca::Session::ACTIVE);
+  session_1.set_session_id(kInitialSessionId);
+  session_1.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_1.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
+
+  boca_session_manager_->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
+
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
+
+  task_environment()->FastForwardBy(
+      base::Seconds(kInitialSessionDurationInSecs) +
+      base::Seconds(BocaSessionManager::kLocalSessionTrackerBufferInSeconds) +
+      base::Seconds(1));
+
+  // Start another session
+  ::boca::Session session_2;
+  session_2.set_session_state(::boca::Session::ACTIVE);
+  session_2.set_session_id(kInitialSessionId);
+  session_2.mutable_duration()->set_seconds(kInitialSessionDurationInSecs);
+  session_2.mutable_start_time()->set_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+  EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
+
+  boca_session_manager_->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session_2), /*dispatch_event=*/true);
+
+  EXPECT_CALL(*observer(), OnSessionEnded(_)).Times(1);
+
+  // Verify second session ends properly.
+  task_environment()->FastForwardBy(
+      base::Seconds(kInitialSessionDurationInSecs) +
+      base::Seconds(BocaSessionManager::kLocalSessionTrackerBufferInSeconds) +
+      base::Seconds(1));
 }
 
 class BocaSessionManagerCustomPollingTest : public BocaSessionManagerTestBase {
@@ -1428,5 +1473,6 @@ TEST_F(BocaSessionManagerCustomPollingTest, CustomPollingInterval) {
   task_environment()->FastForwardBy(
       base::Seconds(kOutOfSessionPollingInterval + 1));
 }
+
 }  // namespace
 }  // namespace ash::boca
