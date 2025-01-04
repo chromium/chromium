@@ -132,6 +132,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override;
   void OnMainFrameInteractive() override;
   void OnDispatchLoadEvent() override;
+  void OnDidInstallNewDocument() override;
   base::TimeDelta UnreportedTaskTime() const override;
 
   bool IsWaitingForContentfulPaint() const;

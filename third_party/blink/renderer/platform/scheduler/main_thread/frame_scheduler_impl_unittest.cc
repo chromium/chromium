@@ -1706,53 +1706,6 @@ TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut) {
       testing::UnorderedElementsAre());
 }
 
-TEST_F(FrameSchedulerImplTest, BackForwardCacheOptOut_FrameNavigated) {
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-
-  auto feature_handle = frame_scheduler_->RegisterFeature(
-      SchedulingPolicy::Feature::kWebSocket,
-      {SchedulingPolicy::DisableBackForwardCache()});
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
-
-  frame_scheduler_->RegisterStickyFeature(
-      SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
-      {SchedulingPolicy::DisableBackForwardCache()});
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(
-          SchedulingPolicy::Feature::kWebSocket,
-          SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-
-  // Same document navigations don't affect anything.
-  frame_scheduler_->DidCommitProvisionalLoad(
-      false, FrameScheduler::NavigationType::kSameDocument);
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre(
-          SchedulingPolicy::Feature::kWebSocket,
-          SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore));
-
-  // Regular navigations reset all features.
-  frame_scheduler_->DidCommitProvisionalLoad(
-      false, FrameScheduler::NavigationType::kOther);
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-
-  // Resetting a feature handle after navigation shouldn't do anything.
-  feature_handle.reset();
-
-  EXPECT_THAT(
-      frame_scheduler_->GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
-      testing::UnorderedElementsAre());
-}
-
 TEST_F(FrameSchedulerImplTest, FeatureUpload) {
   ResetFrameScheduler(/*is_in_embedded_frame_tree=*/false,
                       FrameScheduler::FrameType::kMainFrame);

@@ -171,6 +171,9 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Tells the scheduler that the load event has been dispatched for this frame.
   virtual void OnDispatchLoadEvent() = 0;
 
+  // Tells the scheduler that a new document has been installed for this frame.
+  virtual void OnDidInstallNewDocument() = 0;
+
   // Returns true if this frame is should not throttled (e.g. due to an active
   // connection).
   // Note that this only applies to the current frame,

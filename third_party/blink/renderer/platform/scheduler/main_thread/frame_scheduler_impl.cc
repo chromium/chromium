@@ -725,7 +725,6 @@ FrameSchedulerImpl::CompositorTaskRunner() {
 }
 
 void FrameSchedulerImpl::ResetForNavigation() {
-  document_bound_weak_factory_.InvalidateWeakPtrs();
   back_forward_cache_disabling_feature_tracker_.Reset();
 }
 
@@ -1026,6 +1025,10 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
 
 void FrameSchedulerImpl::OnDispatchLoadEvent() {
   is_load_event_dispatched_ = true;
+}
+
+void FrameSchedulerImpl::OnDidInstallNewDocument() {
+  document_bound_weak_factory_.InvalidateWeakPtrs();
 }
 
 bool FrameSchedulerImpl::IsWaitingForContentfulPaint() const {

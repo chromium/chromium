@@ -191,6 +191,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   void OnMainFrameInteractive() override {}
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   void OnDispatchLoadEvent() override {}
+  void OnDidInstallNewDocument() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>
   GetPauseSubresourceLoadingHandle() override {
