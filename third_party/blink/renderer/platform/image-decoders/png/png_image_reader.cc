@@ -699,7 +699,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
     } else {
       auto is_necessary_ancillary = [](const png_byte* chunk) {
         for (const char* tag : {"tRNS", "cHRM", "iCCP", "sRGB", "gAMA", "cICP",
-                                "cLLi", "mDCv", "eXIf"}) {
+                                "cLLi", "cLLI", "mDCv", "mDCV", "eXIf"}) {
           if (IsChunk(chunk, tag)) {
             return true;
           }
