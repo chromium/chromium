@@ -509,6 +509,29 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeConsiderKAnonymity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEnforceKAnonymity);
 
+// Configures a limit on the number of `selectableBuyerAndSellerReportingIds`
+// per ad. This is implemented with two parameters, a hard limit and a soft
+// limit, intended to ensure that interest groups joined or updated before a
+// reduction in the limit don't immediately become unusable. The hard limit is
+// enforced both when an interest group is joined or updated, and also anytime
+// the interest group is deserialized. The soft limit is only enforced when an
+// interest group is joined or updated. To execute a reduction in the limit, the
+// soft limit would first be changed to reflect the new value, and only after
+// the "maximum interest group TTL" amount of time has passed, the hard limit
+// would be lowered to match. Except during such a reduction, the hard limit and
+// soft limits should always match. Increases in the limit can be applied to
+// both the hard and soft limits simultaneously. The hard limit should always be
+// greater than or equal to the soft limit. For each parameter, a negative value
+// indicates that that no limit should be enforced.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeLimitSelectableBuyerAndSellerReportingIds);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsHardLimit);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);

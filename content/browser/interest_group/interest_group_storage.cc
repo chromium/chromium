@@ -3452,7 +3452,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
     base::Time exact_join_time,
     base::Time last_updated,
     base::Time next_update_after) {
-  DCHECK(data.IsValid());
+  DCHECK(data.IsValid() && data.IsValidForJoinAndUpdate());
   url::Origin joining_origin = url::Origin::Create(joining_url);
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
@@ -3875,7 +3875,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
         std::move(update.aggregation_coordinator_origin);
   }
 
-  if (!updated_group.IsValid()) {
+  if (!updated_group.IsValid() || !updated_group.IsValidForJoinAndUpdate()) {
     // TODO(behamilton): Report errors to devtools.
     return std::nullopt;
   }

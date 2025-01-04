@@ -907,6 +907,21 @@ BASE_FEATURE(kFledgeEnforceKAnonymity,
              "FledgeEnforceKAnonymity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// See the header for more details.
+BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIds,
+             "FledgeLimitSelectableBuyerAndSellerReportingIds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit,
+                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
+                   "SelectableBuyerAndSellerReportingIdsSoftLimit",
+                   -1);
+BASE_FEATURE_PARAM(int,
+                   kFledgeSelectableBuyerAndSellerReportingIdsHardLimit,
+                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
+                   "SelectableBuyerAndSellerReportingIdsHardLimit",
+                   -1);
+
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);

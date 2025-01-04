@@ -913,6 +913,95 @@ TEST_F(InterestGroupStorageTest,
   }
 }
 
+TEST_F(InterestGroupStorageTest, ValidateInterestGroupOnUpdate) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  blink::InterestGroupKey group_key(g.owner, g.name);
+
+  // To cause IsValid and IsValidForJoinAndUpdate to return false, we use the
+  // hard limit and soft limit, respectively, on the number of
+  // selectableBuyerAndSellerReportingIds. We have two here, so we'll use a
+  // limit of one to cause this ad to make its enclosing interest group invalid.
+  InterestGroup::Ad ad1(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+
+  InterestGroup::Ad ad2(ad1_url, "metadata1",
+                        /*size_group=*/std::nullopt,
+                        /*buyer_reporting_id=*/"brid1",
+                        /*buyer_and_seller_reporting_id=*/"shrid1",
+                        /*selectable_buyer_and_seller_reporting_ids=*/
+                        std::vector<std::string>{"selectable_id1"});
+
+  g.ads = {ad1};
+
+  // Join a new interest group.
+  {
+    EXPECT_TRUE(
+        storage->JoinInterestGroup(g, test_origin.GetURL()).has_value());
+  }
+
+  InterestGroupUpdate update;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "1"}});
+
+    // The interest group in the database is invalid because it has an ad
+    // whose number of selectableBuyerAndSellerReportingIds exceeds the hard
+    // limit. This update makes it valid.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // Trying to put back the ad with too many
+    // selectableBuyerAndSellerReportingIds fails.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "2"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+    // With the limit relaxed, this update passes this time.
+    update.ads = {ad1};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+
+    // The interest group in the database is valid because it's still within
+    // the hard limit. This update works because it's still within the soft
+    // limit.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // But this update back to the ad with too many
+    // selectableBuyerAndSellerReportingIds fails because it exceeds the soft
+    // limit.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+}
+
 // Test that joining an interest group twice increments the counter.
 // Test that joining multiple interest groups with the same owner only creates a
 // single distinct owner. Test that leaving one interest group does not affect

@@ -3394,6 +3394,13 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
     return EmptyPromise();
   }
 
+  if (!PerformAdditionalJoinAndUpdateTimeValidations(
+          *mojo_group, error_field_name, error_field_value, error)) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        *group, error_field_name, error_field_value, error));
+    return EmptyPromise();
+  }
+
   bool is_cross_origin =
       !context->GetSecurityOrigin()->IsSameOriginWith(mojo_group->owner.get());
 

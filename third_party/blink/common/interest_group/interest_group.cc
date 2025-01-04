@@ -317,6 +317,15 @@ bool InterestGroup::IsValid() const {
   }
 
   if (ads) {
+    std::optional<size_t> selectable_buyer_and_seller_reporting_ids_hard_limit;
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeLimitSelectableBuyerAndSellerReportingIds) &&
+        features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get() >=
+            0) {
+      selectable_buyer_and_seller_reporting_ids_hard_limit =
+          features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get();
+    }
+
     for (const auto& ad : ads.value()) {
       if (!IsUrlAllowedForRenderUrls(GURL(ad.render_url()))) {
         return false;
@@ -331,6 +340,12 @@ bool InterestGroup::IsValid() const {
         if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
           return false;
         }
+      }
+      if (selectable_buyer_and_seller_reporting_ids_hard_limit &&
+          ad.selectable_buyer_and_seller_reporting_ids &&
+          ad.selectable_buyer_and_seller_reporting_ids->size() >
+              *selectable_buyer_and_seller_reporting_ids_hard_limit) {
+        return false;
       }
       if (ad.allowed_reporting_origins) {
         if (ad.allowed_reporting_origins->size() >
@@ -417,6 +432,31 @@ bool InterestGroup::IsValid() const {
   }
 
   return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
+}
+
+// The logic in this method must be kept in sync with
+// PerformAdditionalJoinAndUpdateTimeValidations in
+// blink/renderer/modules/ad_auction/. The tests for this logic are also
+// there, so they can be compared against each other.
+bool InterestGroup::IsValidForJoinAndUpdate() const {
+  if (!ads ||
+      !base::FeatureList::IsEnabled(
+          features::kFledgeLimitSelectableBuyerAndSellerReportingIds) ||
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get() <
+          0) {
+    return true;
+  }
+
+  size_t selectable_buyer_and_seller_reporting_ids_soft_limit =
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get();
+  for (const auto& ad : ads.value()) {
+    if (ad.selectable_buyer_and_seller_reporting_ids &&
+        ad.selectable_buyer_and_seller_reporting_ids->size() >
+            selectable_buyer_and_seller_reporting_ids_soft_limit) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // If this is changed, also change blink::EstimateBlinkInterestGroupSize().

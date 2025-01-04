@@ -119,6 +119,10 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
 
+  // Additional checks for validity performed only at join and update time.
+  // Performs same checks as PerformAdditionalJoinAndUpdateTimeValidations().
+  bool IsValidForJoinAndUpdate() const;
+
   // Returns the approximate size of the contents of this InterestGroup, in
   // bytes.
   size_t EstimateSize() const;
@@ -177,7 +181,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 180, R"(
+  static_assert(__LINE__ == 184, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and in this class
