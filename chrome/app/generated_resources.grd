@@ -7633,7 +7633,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         You can also ask things like “summarize”
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT" desc="The error text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page even though suggestions were failed to be generated.">
-        No suggestions available. Try asking things like “summarize this page” or your own question.
+        No suggested questions available
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can ask questions about the page.">
         Try asking things like “summarize this page” or your own question.
