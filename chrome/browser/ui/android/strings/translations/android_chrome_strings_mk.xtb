@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
 <translation id="1986685561493779662">Името веќе постои</translation>
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
-<translation id="201060170519281460">Вашето заклучување на профилот ги штити вашите податоци во автомобилот, како и синхронизираните лозинки, плаќања и друго.</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
 <translation id="2038563949887743358">Вклучи „Барај локација на работна површина“</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> има податоци и во Chrome</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">Вклучува темна тема кога е вклучена темната тема или „Штедачот на батерија“ на уредот</translation>
 <translation id="2762000892062317888">пред малку</translation>
 <translation id="276969039800130567">Најавени сте како: <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Останаа <ph name="SECONDS" /> секунди</translation>
 <translation id="2779651927720337254">не успеа</translation>
 <translation id="2781151931089541271">Остана 1 секунда</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">Исклучено <ph name="SEPARATOR" /> Не се препорачува</translation>
 <translation id="5752232708629533680">Сподели само GIF</translation>
 <translation id="5754350196967618083">Не може да се освежи Discover</translation>
-<translation id="5755162682436943950">Одјавени сте. Го отвора дијалогот за најавување и го вклучува синхронизирањето.</translation>
 <translation id="5763382633136178763">Инкогнито картички</translation>
 <translation id="5763514718066511291">Допрете за да ја копирате URL-адресата за апликацијава</translation>
 <translation id="5765517223145864268">Кажете ни за вашето доживување. Може и да ги <ph name="BEGIN_LINK" />промените поставките<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">Уредувај папка</translation>
 <translation id="6633067410344541938">Отклучете го режимот „Инкогнито“</translation>
 <translation id="6636623428211296678">Истражете други поставки долу или завршете сега</translation>
-<translation id="663674369910034433">За повеќе поставки што се однесуваат на приватноста, безбедноста и прибирањето податоци, одете на <ph name="BEGIN_LINK1" />Синхронизација<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Услуги на Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокирај цело време</translation>
 <translation id="6641780377503683465">Отстранете <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 картичка}one{<ph name="NUMBER_OF_TABS" /> картичка}other{<ph name="NUMBER_OF_TABS" /> картички}}</translation>
 <translation id="6929224077895306814">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и во сметката на Google</translation>
 <translation id="6937524809504266803">Персонализација и поврзување</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> • <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Прекар (незадолжително)</translation>
 <translation id="6942665639005891494">Променете ја стандардната локација за преземање во секое време со помош на опцијата „Поставки“ од менито</translation>
 <translation id="694267552845942083">Во моментов ги приспособувате „Поставките за синхронизација“. За да го завршите вклучувањето на синхронизацијата, допрете на копчето „Потврди“ на долниот дел од екранот. Движете се нагоре</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">Пребарајте ги картичките „Инкогнито“</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8909135823018751308">Сподели…</translation>
-<translation id="8921980840204105660">Синхронизирајте за да ги преземете обележувачите од вашите други уреди</translation>
 <translation id="8922289737868596582">Преземете ги страниците преку копчето „Повеќе опции“ за да ги користите офлајн</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> е подготвен</translation>

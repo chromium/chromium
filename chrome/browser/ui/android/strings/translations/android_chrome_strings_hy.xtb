@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="1986685561493779662">Անունն արդեն գոյություն ունի</translation>
 <translation id="200114059308480249">Ներառե՞լ շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
-<translation id="201060170519281460">Պրոֆիլի կողպումը մեքենայում ապահով պահում է ձեր տեղեկությունները, այդ թվում՝ գաղտնաբառերը, վճարումների մասին տվյալները և ավելին։</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> հավելվածը նաև ունի տվյալներ Chrome-ում</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
 <translation id="2762000892062317888">հենց նոր</translation>
 <translation id="276969039800130567">Դուք մուտք եք գործել <ph name="USER_EMAIL_ADDRESS" /> հաշիվ:</translation>
-<translation id="2776236159752647997">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="2777555524387840389">Մնացել է <ph name="SECONDS" /> վրկ</translation>
 <translation id="2779651927720337254">չհաջողվեց ներբեռնել</translation>
 <translation id="2781151931089541271">Մնացել է 1 վրկ</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">Անջատված է <ph name="SEPARATOR" /> Խորհուրդ չի տրվում</translation>
 <translation id="5752232708629533680">Կիսվել միայն GIF ֆայլով</translation>
 <translation id="5754350196967618083">Չհաջողվեց թարմացնել Discover-ը</translation>
-<translation id="5755162682436943950">Դուք դուրս եք եկել հաշվից։ Այս տարբերակը բացում է պատուհան, որում կարող եք մուտք գործել և միացնել համաժամացումը։</translation>
 <translation id="5763382633136178763">Ինկոգնիտո ներդիրներ</translation>
 <translation id="5763514718066511291">Հպեք՝ այս հավելվածի URL-ը պատճենելու համար</translation>
 <translation id="5765517223145864268">Կիսվեք մեզ հետ ձեր կարծիքով։ Կարող եք նաև <ph name="BEGIN_LINK" />փոխել կարգավորումները<ph name="END_LINK" />։</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">Փոփոխել պանակը</translation>
 <translation id="6633067410344541938">Ապակողպել ինկոգնիտո ներդիրները</translation>
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
-<translation id="663674369910034433">Գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներին կարող եք ծանոթանալ <ph name="BEGIN_LINK1" />Համաժամացում<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google-ի ծառայություններ<ph name="END_LINK2" /> բաժիններում։</translation>
 <translation id="6637100877383020115">Հավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_UMA_LINK" />Կառավարել<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Միշտ արգելափակել</translation>
 <translation id="6641780377503683465">Հեռացնել «<ph name="INTEREST" />» հետաքրքրությունը</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ներդիր}one{<ph name="NUMBER_OF_TABS" /> ներդիր}other{<ph name="NUMBER_OF_TABS" /> ներդիր}}</translation>
 <translation id="6929224077895306814">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
 <translation id="6937524809504266803">Անհատականացում և կապում</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Կեղծանուն (պարտադիր չէ)</translation>
 <translation id="6942665639005891494">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը կարգավորումներում</translation>
 <translation id="694267552845942083">Այս պահին դուք համաժամացման կարգավորումների էջում եք։ Համաժամացումը միացնելու համար սեղմեք «Հաստատել» կոճակը էկրանի ներքևի հատվածում: Անցնել վերև</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">Որոնեք ձեր ինկոգնիտո ներդիրներում</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
-<translation id="8921980840204105660">Կատարեք համաժամացում, որպեսզի ձեր մյուս սարքերի էջանիշները հասանելի դառնան։</translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> լեզվի փաթեթը պատրաստ է</translation>

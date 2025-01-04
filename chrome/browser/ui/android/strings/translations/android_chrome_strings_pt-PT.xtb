@@ -224,7 +224,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">O nome já existe</translation>
 <translation id="200114059308480249">Quer incluir o texto circundante nas pesquisas no Google?</translation>
-<translation id="201060170519281460">O bloqueio do perfil mantém as suas informações seguras no carro, incluindo palavras-passe sincronizadas, pagamentos e muito mais.</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
 <translation id="2038563949887743358">Ativar Pedir site para computador</translation>
 <translation id="204321170514947529">A aplicação <ph name="APP_NAME" /> também tem dados no Chrome</translation>
@@ -387,7 +386,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2760989362628427051">Ative o tema escuro quando a Poupança de bateria ou o tema escuro do dispositivo estiver ativado(a).</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="276969039800130567">Com sessão iniciado como <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">Faltam <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">falhou</translation>
 <translation id="2781151931089541271">Falta 1 segundo</translation>
@@ -1035,7 +1033,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5749237766298580851">Desativada <ph name="SEPARATOR" /> Não recomendado</translation>
 <translation id="5752232708629533680">Apenas partilhar GIF</translation>
 <translation id="5754350196967618083">Não é possível atualizar o Discover</translation>
-<translation id="5755162682436943950">Sessão terminada. Abre a caixa de diálogo para iniciar sessão e ativar a sincronização.</translation>
 <translation id="5763382633136178763">Separadores de navegação anónima</translation>
 <translation id="5763514718066511291">Toque para copiar o URL desta aplicação.</translation>
 <translation id="5765517223145864268">Conte-nos a sua experiência. Em alternativa, <ph name="BEGIN_LINK" />altere as definições<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a Navegação anónima</translation>
 <translation id="6636623428211296678">Explore mais definições abaixo ou conclua agora</translation>
-<translation id="663674369910034433">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK1" />Sincronização<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Serviços Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Para ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_UMA_LINK" />Faça a gestão<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Remover <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 separador}other{<ph name="NUMBER_OF_TABS" /> separadores}}</translation>
 <translation id="6929224077895306814">Todos os códigos de segurança guardados no seu dispositivo e Conta Google são eliminados</translation>
 <translation id="6937524809504266803">Personalização e associação</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Alcunha (opcional)</translation>
 <translation id="6942665639005891494">Altere a localização de transferência predefinida em qualquer altura ao utilizar a opção do menu Definições.</translation>
 <translation id="694267552845942083">Está atualmente a personalizar as suas definições de sincronização. Para concluir a ativação da sincronização, toque no botão Confirmar junto à parte inferior do ecrã. Navegar para cima</translation>
@@ -1780,7 +1775,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8890668505403261809">Pesquise nos seus separadores de navegação anónima</translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>
 <translation id="8909135823018751308">Partilhar…</translation>
-<translation id="8921980840204105660">Sincronize para obter os marcadores dos seus outros dispositivos</translation>
 <translation id="8922289737868596582">Descarregue páginas através do botão Mais opções para as utilizar offline.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O idioma <ph name="LANG" /> está pronto</translation>

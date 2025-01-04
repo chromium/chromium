@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1986685561493779662">這個名稱已有人使用</translation>
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
-<translation id="201060170519281460">設定檔鎖定功能可確保你在車上的資訊安全無虞，包括已同步的密碼和付款等。</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
 <translation id="204321170514947529">「<ph name="APP_NAME" />」在 Chrome 中也有資料</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">當裝置開啟深色主題或省電模式時，啟用深色主題</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
-<translation id="2776236159752647997">如需更多有關隱私權、安全性和資料收集的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
 <translation id="2781151931089541271">還剩 1 秒</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">關閉 <ph name="SEPARATOR" /> 不建議</translation>
 <translation id="5752232708629533680">僅分享 GIF</translation>
 <translation id="5754350196967618083">無法重新整理「探索」</translation>
-<translation id="5755162682436943950">已登出。開啟對話方塊即可登入並開啟同步功能。</translation>
 <translation id="5763382633136178763">無痕式分頁</translation>
 <translation id="5763514718066511291">輕觸即可複製這個應用程式的網址</translation>
 <translation id="5765517223145864268">請分享你的使用體驗。如果不想提供意見，則可<ph name="BEGIN_LINK" />變更相關設定<ph name="END_LINK" />。</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
-<translation id="663674369910034433">如需更多有關隱私權、安全性和資料收集的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">為協助改良應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_UMA_LINK" />管理設定<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">一律封鎖</translation>
 <translation id="6641780377503683465">移除<ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 個分頁}other{<ph name="NUMBER_OF_TABS" /> 個分頁}}</translation>
 <translation id="6929224077895306814">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="6937524809504266803">個人化與連結</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">暱稱 (選填)</translation>
 <translation id="6942665639005891494">你隨時可以使用 [設定] 選單選項變更預設的下載位置</translation>
 <translation id="694267552845942083">你正在自訂同步功能設定。如要開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">搜尋無痕分頁</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8921980840204105660">進行同步處理，取得你在其他裝置上的書籤</translation>
 <translation id="8922289737868596582">透過「更多選項」按鈕下載網頁，以便離線存取</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />套件已下載完成</translation>

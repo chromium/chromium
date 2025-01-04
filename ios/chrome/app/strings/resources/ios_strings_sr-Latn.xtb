@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Kupujte, prevodite i identifikujte ono što vidite pomoću kamere.</translation>
 <translation id="2220529011494928058">Prijavi problem</translation>
 <translation id="2223461067862937305">Napravi QR kôd</translation>
+<translation id="2229345671837147090">Mreža udaljenih kartica</translation>
 <translation id="2230173723195178503">Veb-stranica je učitana</translation>
 <translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="2240256190924001613">Dostupan profil konfiguracije</translation>
@@ -367,7 +368,6 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2547458583188611426">Sinhronizacija ne radi. Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu.</translation>
 <translation id="2551153019974022505">Greška sa nalogom</translation>
 <translation id="2559843230610279254">Grupa kartica, <ph name="GROUP_TITLE" />, kartica: <ph name="TABS_NUMBER" />.</translation>
-<translation id="2573859402163467749">Nalogom <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, koji može da pregleda određene informacije.</translation>
 <translation id="2577522251608256362">Deo grada</translation>
 <translation id="2579713773888829241">Deljeni Diskovi</translation>
 <translation id="2597486707832946298">Iskoristite sve prednosti pregledača za računare koji znate i volite na iPhone-u.</translation>
@@ -652,6 +652,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="3994422733891749358">Odaberite koja obaveštenja želite da primate</translation>
 <translation id="3994522032746736727">Prijavi me kao <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">VAŽI</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranica, učitano je <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Administrator je onemogućio deljenje lozinki.</translation>
 <translation id="4002066346123236978">Naslov</translation>
@@ -799,6 +800,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4651927776207937667">{count,plural, =1{Sakrij posle 1 minuta}one{Sakrij posle {count} minuta}few{Sakrij posle {count} minuta}other{Sakrij posle {count} minuta}}</translation>
 <translation id="4652817563047461855">Uverite se da su lozinke bezbedne, saznajte da li su ugrožene i potražite savet o tome kako da se zaštitite onlajn. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Sačuvaj</translation>
+<translation id="466307903888586355">Organizacija blokira čuvanje fajlova</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Organizacija zahteva da pregledate privatno. Grupe kartica se ne sinhronizuju u režimu bez arhiviranja.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -1272,6 +1274,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="6641465290890659327">Delite kopiju lozinke</translation>
 <translation id="6642362222295953972">Pređite na postojeću karticu</translation>
 <translation id="6644512095122093795">Ponudi da sačuvaš lozinke</translation>
+<translation id="664573288952458293">Mreža uobičajenih kartica</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">URL-ovi koje posećujete se šalju Google-u da bi se predvideli sajtovi koje ćete možda sledeće posetiti</translation>
 <translation id="6657585470893396449">Lozinka</translation>
@@ -1662,6 +1665,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8407669440184693619">Nije pronađena nijedna lozinka za ovaj sajt</translation>
 <translation id="8407831512155324054">Lozinke izgledaju jako</translation>
 <translation id="842523302461531262">Podesi kao podrazumevano u Podešavanjima…</translation>
+<translation id="8425826545759040372">Mreža kartica bez arhiviranja</translation>
 <translation id="8428045167754449968">Grad/mesto</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8428634594422941299">Važi</translation>

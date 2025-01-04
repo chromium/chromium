@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
-<translation id="201060170519281460">సింక్ చేసిన పాస్‌వర్డ్‌లు, పేమెంట్‌లు, మరిన్నింటితో సహా కారులో మీ సమాచారాన్ని ప్రొఫైల్ లాక్ సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="2021896219286479412">ఫుల్-స్క్రీన్‌ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ రిక్వెస్ట్‌ను ఆన్ చేయండి</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> డేటాను Chromeలో కూడా కలిగి ఉంటుంది</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">మీ పరికరంలో ముదురు రంగు థీమ్ లేదా బ్యాటరీ సేవర్ ఆన్‌లో ఉన్నప్పుడు, ముదురు రంగు థీమ్‌ను ఆన్ చేయండి</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేశారు.</translation>
-<translation id="2776236159752647997">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను చూడండి</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> సెకన్లు మిగిలి ఉంది</translation>
 <translation id="2779651927720337254">విఫలమైంది</translation>
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">ఆఫ్ <ph name="SEPARATOR" /> సిఫార్సు చేయబడదు</translation>
 <translation id="5752232708629533680">GIFను మాత్రమే షేర్ చేయండి</translation>
 <translation id="5754350196967618083">Discoverను రిఫ్రెష్ చేయడం సాధ్యం కాదు</translation>
-<translation id="5755162682436943950">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయడం కోసం డైలాగ్ తెరవబడుతుంది.</translation>
 <translation id="5763382633136178763">అజ్ఞాత ట్యాబ్‌లు</translation>
 <translation id="5763514718066511291">ఈ యాప్ URLను కాపీ చేయడానికి నొక్కండి</translation>
 <translation id="5765517223145864268">మీ అనుభూతి గురించి మాకు తెలియజేయండి. లేదా <ph name="BEGIN_LINK" />మీ సెట్టింగ్‌లను మార్చండి<ph name="END_LINK" />.</translation>
@@ -1240,7 +1237,6 @@
 <translation id="6627583120233659107">ఫోల్డర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6633067410344541938">అజ్ఞాత ట్యాబ్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="6636623428211296678">కింద మరిన్ని సెట్టింగ్‌లను అన్వేషించండి లేదా ఇప్పుడే పూర్తి చేయండి</translation>
-<translation id="663674369910034433">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK1" />సింక్<ph name="END_LINK1" />‌ను, <ph name="BEGIN_LINK2" />Google సర్వీస్‌ల<ph name="END_LINK2" />ను చూడండి</translation>
 <translation id="6637100877383020115">యాప్‌ను మెరుగుపరచుకోవడంలో సహాయపడటానికి Chrome, వినియోగ, క్రాష్ డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_UMA_LINK" />మేనేజ్ చేయండి<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">అన్ని సమయాలలో బ్లాక్ చేయండి</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ను తీసివేయండి</translation>
@@ -1326,7 +1322,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ట్యాబ్}other{<ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు}}</translation>
 <translation id="6929224077895306814">మీ పరికరంలో, Google ఖాతాలో సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లన్నీ తొలగించబడతాయి</translation>
 <translation id="6937524809504266803">వ్యక్తిగతీకరణ &amp; లింక్ చేయడం</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">మారుపేరు (ఆప్షనల్)</translation>
 <translation id="6942665639005891494">సెట్టింగ్‌ల మెనూ ఎంపికను ఉపయోగించి డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని మార్చండి</translation>
 <translation id="694267552845942083">మీరు ప్రస్తుతం మీ సింక్ సెట్టింగ్‌లను అనుకూలీకరిస్తున్నారు. సింక్‌ను ఆన్ చేయడం పూర్తి చేయడానికి, స్క్రీన్ దిగువ భాగం సమీపంలోని 'నిర్ధారించు' బటన్‌ను ట్యాప్ చేయండి. పైకి నావిగేట్ చేయి</translation>
@@ -1778,7 +1773,6 @@
 <translation id="8890668505403261809">మీ అజ్ఞాత ట్యాబ్‌లను సెర్చ్ చేయండి</translation>
 <translation id="8898822736010347272">కొత్త థ్రెట్స్‌ను గుర్తించడంలో, వెబ్‌లోని అందరు యూజర్‌లను రక్షించడంలో సహాయపడేందుకు మీరు సందర్శించే కొన్ని పేజీల URLలను, కొంత సిస్టమ్ సమాచారాన్ని, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది.</translation>
 <translation id="8909135823018751308">షేర్ చేయండి…</translation>
-<translation id="8921980840204105660">మీ ఇతర పరికరాల నుండి మీ బుక్‌మార్క్‌లను పొందడానికి సింక్ చేయండి</translation>
 <translation id="8922289737868596582">మరిన్ని ఆప్షన్‌లు బటన్ నుండి పేజీలను డౌన్‌లోడ్ చేసుకోవడం ద్వారా వాటిని ఆఫ్‌లైన్‌లో ఉపయోగించండి</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> సిద్ధంగా ఉంది</translation>

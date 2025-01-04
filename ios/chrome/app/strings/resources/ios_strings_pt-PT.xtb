@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Compre, traduza e identifique o que vê com a câmara.</translation>
 <translation id="2220529011494928058">Comunicar um problema</translation>
 <translation id="2223461067862937305">Criar código QR</translation>
+<translation id="2229345671837147090">Grelha de separadores remotos</translation>
 <translation id="2230173723195178503">Página Web carregada</translation>
 <translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2240256190924001613">Perfil de configuração disponível</translation>
@@ -367,7 +368,6 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2547458583188611426">A sincronização não está a funcionar. Para iniciar a sincronização, introduza a sua frase de acesso.</translation>
 <translation id="2551153019974022505">Erro de conta</translation>
 <translation id="2559843230610279254">Grupo de separadores, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> separadores.</translation>
-<translation id="2573859402163467749">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações.</translation>
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="2579713773888829241">Discos partilhados</translation>
 <translation id="2597486707832946298">Tire o máximo partido do navegador de computador que conhece e adora no seu iPhone.</translation>
@@ -652,6 +652,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="3994422733891749358">Escolha as notificações que quer receber</translation>
 <translation id="3994522032746736727">Iniciar sessão como <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregado(s).</translation>
 <translation id="3997522473364371632">A partilha de palavras-passe foi desativada pelo seu administrador.</translation>
 <translation id="4002066346123236978">Título</translation>
@@ -799,6 +800,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4651927776207937667">{count,plural, =1{Ocultar após 1 minuto}other{Ocultar após {count} minutos}}</translation>
 <translation id="4652817563047461855">Certifique-se de que as suas palavras-passe estão seguras, saiba se ficaram comprometidas e obtenha conselhos para se proteger online. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Guardar</translation>
+<translation id="466307903888586355">A sua organização bloqueou a ação de guardar ficheiros</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">A sua organização requer que navegue em privado. Os grupos de separadores não são sincronizados no Modo de navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1272,6 +1274,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="6641465290890659327">Partilhe uma cópia da sua palavra-passe</translation>
 <translation id="6642362222295953972">Mudar para um separador existente</translation>
 <translation id="6644512095122093795">Propor guardar palavras-passe</translation>
+<translation id="664573288952458293">Grelha de separadores normais</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
@@ -1662,6 +1665,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8407669440184693619">Não foram encontradas palavras-passe para este site</translation>
 <translation id="8407831512155324054">As suas palavras-passe parecem fortes</translation>
 <translation id="842523302461531262">Predefinir nas definições…</translation>
+<translation id="8425826545759040372">Grelha de separadores de navegação anónima</translation>
 <translation id="8428045167754449968">Cidade/Localidade</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8428634594422941299">OK</translation>

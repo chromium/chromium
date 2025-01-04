@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
-<translation id="201060170519281460">בעזרת נעילת הפרופיל, המידע שלך מאובטח ברכב, כולל סנכרון של הסיסמאות, תשלומים ועוד.</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="204321170514947529">‏ל-<ph name="APP_NAME" /> יש נתונים גם ב-Chrome</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="276969039800130567">מחובר באמצעות חשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">כבויה <ph name="SEPARATOR" /> לא מומלץ</translation>
 <translation id="5752232708629533680">‏שיתוף קובץ GIF בלבד</translation>
 <translation id="5754350196967618083">‏לא ניתן לרענן את Discover</translation>
-<translation id="5755162682436943950">החשבון לא מחובר. תיפתח תיבת דו-שיח לכניסה לחשבון ולהפעלת הסנכרון.</translation>
 <translation id="5763382633136178763">כרטיסיות אנונימיות</translation>
 <translation id="5763514718066511291">הקשה מעתיקה את כתובת האתר של האפליקציה הזו</translation>
 <translation id="5765517223145864268">נשמח לשמוע על החוויה שלך. אפשר גם <ph name="BEGIN_LINK" />לשנות את ההגדרות<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">עריכת התיקייה</translation>
 <translation id="6633067410344541938">ביטול הנעילה של המצב הפרטי</translation>
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
-<translation id="663674369910034433">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדפים <ph name="BEGIN_LINK1" />סנכרון<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />שירותי Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_UMA_LINK" />ניהול<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">חסימה כל הזמן</translation>
 <translation id="6641780377503683465">הסרה של תחום העניין '<ph name="INTEREST" />'</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{כרטיסייה אחת}one{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}two{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}other{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}}</translation>
 <translation id="6929224077895306814">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון Google שלך יימחקו</translation>
 <translation id="6937524809504266803">התאמה אישית וקישור</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">כינוי (אופציונלי)</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">חיפוש בכרטיסיות הפרטיות</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
-<translation id="8921980840204105660">אפשר לבצע סנכרון כדי להוסיף את הסימניות מהמכשירים האחרים שלך</translation>
 <translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> מוכנה לשימוש</translation>

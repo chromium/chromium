@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
 <translation id="2139300032719313227">‏הפעלה מחדש של ChromeOS</translation>
 <translation id="2151406531797534936">‏יש להפעיל מחדש את Chrome עכשיו</translation>
+<translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
 <translation id="2174917724755363426">ההתקנה לא הושלמה. להמשיך בביטול?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">השגיאה בבדיקת העדכון: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">שינוי דפדפן ברירת המחדל ל:</translation>
 <translation id="2775140325783767197">‏Chrome לא יכול לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2797864378188255696">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chrome עם אותו חשבון</translation>
+<translation id="2799162042226656283">‏ה-Chrome שלך</translation>
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2825024317344269723">‏אתר מסוכן. ‫Chrome הסיר את ההתראות.</translation>
 <translation id="2841525013647267359">תרגום מ:</translation>

@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">ምንም ጥበቃ የለም (አይመከርም)</translation>
 <translation id="1986685561493779662">ስሙ አስቀድሞ አለ</translation>
 <translation id="200114059308480249">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለው ጽሁፍ ይካተት?</translation>
-<translation id="201060170519281460">የእርስዎ የመገለጫ መቆለፊያ የሰመሩ የይለፍ ቃሎችን፣ ክፍያዎችን እና ሌሎችንም ጨምሮ በመኪናው ውስጥ መረጃዎን ደህንነቱን ይጠብቃል።</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገፅ ጣቢያ መቆጣጠሪያዎች</translation>
 <translation id="2038563949887743358">የዴስክቶፕ ጣቢያን ጠይቅን አብራ</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> እንዲሁም በChrome ውስጥ ውሂብ አለው</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">የእርስዎ መሣሪያ በጨለማ ገጽታ ላይ ሲሆን ወይም ባትሪ ቆጣሪ ሲበራ የጨለማ ገጽታን አብራ</translation>
 <translation id="2762000892062317888">አሁን</translation>
 <translation id="276969039800130567">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
-<translation id="2776236159752647997">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች፣ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይመልከቱ</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ሰከንዶች ይቀራሉ</translation>
 <translation id="2779651927720337254">አልተሳካም</translation>
 <translation id="2781151931089541271">1 ሰከንድ ይቀራል</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">አጥፋ <ph name="SEPARATOR" /> አይመከርም</translation>
 <translation id="5752232708629533680">GIFን ብቻ ያጋሩ</translation>
 <translation id="5754350196967618083">Discoverን ዳግም ማደስ አይቻልም</translation>
-<translation id="5755162682436943950">ዘግተው ወጥተዋል። ለመግባት እና ማስመርን ለማብራት መገናኛን ይከፍታል።</translation>
 <translation id="5763382633136178763">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="5763514718066511291">የዚህ መተግበሪያ ዩአርኤል ለመቅዳት መታ ያድርጉ</translation>
 <translation id="5765517223145864268">ስለተሞክሮዎ ይንገሩን። ወይም <ph name="BEGIN_LINK" />ቅንብሮችዎን ይቀይሩ<ph name="END_LINK" />።</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">አቃፊ አርትዕ</translation>
 <translation id="6633067410344541938">ማንነት የማያሳውቅን ክፈት</translation>
 <translation id="6636623428211296678">ተጨማሪ ቅንብሮችን ከታች ያስሱ ወይም አሁን ይጨርሱ</translation>
-<translation id="663674369910034433">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK1" />ስምረት<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የGoogle አገልግሎቶች<ph name="END_LINK2" />ን ይመልከቱ</translation>
 <translation id="6637100877383020115">መተግበሪያውን ለማሻሻል ለማገዝ Chrome የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_UMA_LINK" />ያስተዳድሩ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ሁልጊዜ አግድ</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ን አስወግድ</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ትር}one{<ph name="NUMBER_OF_TABS" /> ትር}other{<ph name="NUMBER_OF_TABS" /> ትሮች}}</translation>
 <translation id="6929224077895306814">በመሣሪያዎ ላይ እና በእርስዎ Google መለያ ውስጥ የተቀመጡ ሁሉም የደህንነት ኮዶች ይሰረዛሉ</translation>
 <translation id="6937524809504266803">ግላዊነት ማላበስ እና ማገናኘት</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ቅጽል ስም (ከተፈለገ)</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">ማንነት የማያሳውቅ ትሮችዎን ይፈልጉ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
-<translation id="8921980840204105660">የእርስዎን እልባቶች ከሌሎች መሣሪያዎችዎ ለማግኘት ያስምሩ</translation>
 <translation id="8922289737868596582">ገጾችን ከመስመር ውጭ ለመጠቀም ከተጨማሪ አማራጮች አዝራሩ ላይ ያውርዱ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ዝግጁ ነው</translation>

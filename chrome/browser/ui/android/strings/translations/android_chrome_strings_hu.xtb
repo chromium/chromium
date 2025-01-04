@@ -224,7 +224,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1986685561493779662">Már van ilyen név</translation>
 <translation id="200114059308480249">Használni szeretné a környező szöveget is a Google Kereső használatakor?</translation>
-<translation id="201060170519281460">A profilzárolásnak köszönhetően adatai (például a szinkronizált jelszavak, a fizetések és egyebek) biztonságban lesznek az autójában is.</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
 <translation id="2038563949887743358">Kapcsolja be az Asztali webhely kérése funkciót</translation>
 <translation id="204321170514947529">A(z) <ph name="APP_NAME" /> a Chrome-ban is rendelkezik adatokkal</translation>
@@ -387,7 +386,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2760989362628427051">Sötét téma bekapcsolása, amikor az eszköz sötét témája vagy Akkumulátorkímélő módja be van kapcsolva</translation>
 <translation id="2762000892062317888">éppen most</translation>
 <translation id="276969039800130567">Bejelentkezve a következőként: <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">A <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> másodperc van hátra</translation>
 <translation id="2779651927720337254">sikertelen</translation>
 <translation id="2781151931089541271">1 másodperc van hátra</translation>
@@ -1035,7 +1033,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5749237766298580851">Ki <ph name="SEPARATOR" /> Nem javasolt</translation>
 <translation id="5752232708629533680">Csak GIF megosztása</translation>
 <translation id="5754350196967618083">A Discover nem frissíthető</translation>
-<translation id="5755162682436943950">Kijelentkezve. Megnyitja a bejelentkezéshez és a szinkronizálás bekapcsolásához szükséges párbeszédpanelt.</translation>
 <translation id="5763382633136178763">Inkognitó lapok</translation>
 <translation id="5763514718066511291">Koppintson az alkalmazás URL-jének másolásához</translation>
 <translation id="5765517223145864268">Ossza meg velünk a tapasztalatait. Másik lehetőségként <ph name="BEGIN_LINK" />módosíthatja is a beállításokat<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6627583120233659107">Mappa szerkesztése</translation>
 <translation id="6633067410344541938">Inkognitó lapok zárolásának feloldása</translation>
 <translation id="6636623428211296678">Felfedezheti alább a többi beállítást, vagy befejezheti most az áttekintést</translation>
-<translation id="663674369910034433">A <ph name="BEGIN_LINK1" />Szinkronizálás<ph name="END_LINK1" /> és a <ph name="BEGIN_LINK2" />Google-szolgáltatások<ph name="END_LINK2" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan.</translation>
 <translation id="6637100877383020115">Az alkalmazás továbbfejlesztése érdekében a Chrome használati és hibaadatokat küld a Google-nak. <ph name="BEGIN_UMA_LINK" />Kezelés<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Letiltás mindig</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> eltávolítása</translation>
@@ -1328,7 +1324,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 lap}other{<ph name="NUMBER_OF_TABS" /> lap}}</translation>
 <translation id="6929224077895306814">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
 <translation id="6937524809504266803">Személyre szabás és összekapcsolás</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Becenév (nem kötelező)</translation>
 <translation id="6942665639005891494">Az alapértelmezett letöltési helyet bármikor módosíthatja a Beállítások menüben</translation>
 <translation id="694267552845942083">Jelenleg a szinkronizálási beállításokat szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
@@ -1780,7 +1775,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8890668505403261809">Keresés az inkognitó lapokon</translation>
 <translation id="8898822736010347272">Egyes felkeresett oldalak URL-jeit, korlátozott rendszer-információkat és bizonyos oldaltartalmakat küld el a Google-nak, hogy könnyebben felfedezhetők legyenek az internetezőkre leselkedő új veszélyek, és meg lehessen védeni a felhasználókat.</translation>
 <translation id="8909135823018751308">Megosztás...</translation>
-<translation id="8921980840204105660">Szinkronizáljon, hogy hozzájusson a többi eszközén mentett könyvjelzőkhöz</translation>
 <translation id="8922289737868596582">A További lehetőségek gomb segítségével letölthet oldalakat offline használatra</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">A(z) <ph name="LANG" /> nyelv készen áll</translation>

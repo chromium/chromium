@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1986685561493779662">نام ازقبل وجود دارد</translation>
 <translation id="200114059308480249">‏نوشتار اطراف در جستجوهای Google لحاظ شوند؟</translation>
-<translation id="201060170519281460">قفل نمایه اطلاعات شما را در خودرو ایمن نگه می‌دارد، ازجمله گذرواژه‌های همگام‌سازی‌شده، پرداخت‌ها، و موارد دیگر.</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
 <translation id="2038563949887743358">روشن کردن درخواست سایت رایانه‌ای</translation>
 <translation id="204321170514947529">‏<ph name="APP_NAME" /> داده‌هایی در Chrome نیز دارد</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">روشن شدن زمینه تاریک وقتی زمینه تاریک دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
-<translation id="2776236159752647997">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
 <translation id="2779651927720337254">انجام نشد</translation>
 <translation id="2781151931089541271">۱ ثانیه باقی‌مانده است</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">خاموش <ph name="SEPARATOR" /> توصیه نمی‌شود</translation>
 <translation id="5752232708629533680">‏فقط هم‌رسانی GIF</translation>
 <translation id="5754350196967618083">«یافته‌ها» بازآوری نمی‌شود</translation>
-<translation id="5755162682436943950">از سیستم خارج شده‌اید. کادر گفتگوی ورود به سیستم و روشن کردن همگام‌سازی را باز می‌کند.</translation>
 <translation id="5763382633136178763">برگه‌های ناشناس</translation>
 <translation id="5763514718066511291">برای کپی کردن نشانی وب این برنامه تک‌ضرب بزنید</translation>
 <translation id="5765517223145864268">درباره تجربه‌تان به ما بگویید. یا <ph name="BEGIN_LINK" />تنظیماتتان را تغییر دهید<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">ویرایش پوشه</translation>
 <translation id="6633067410344541938">باز کردن قفل «حالت ناشناس»</translation>
 <translation id="6636623428211296678">در بخش زیر تنظیمات بیشتری را کاوش کنید یا همین‌حالا کارتان را به‌پایان برسانید</translation>
-<translation id="663674369910034433">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK1" />همگام‌سازی<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />سرویس‌های Google<ph name="END_LINK2" /> را ببینید.</translation>
 <translation id="6637100877383020115">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">همیشه مسدود شود</translation>
 <translation id="6641780377503683465">برداشتن <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫۱ برگه}one{‫<ph name="NUMBER_OF_TABS" /> برگه}other{‫<ph name="NUMBER_OF_TABS" /> برگه}}</translation>
 <translation id="6929224077895306814">‏همه کدهای امنیتی ذخیره‌شده در «حساب Google» و دستگاهتان حذف خواهد شد</translation>
 <translation id="6937524809504266803">شخصی‌سازی و پیونددهی</translation>
-<translation id="6937694220350896339">‫<ph name="DESCRIPTION_FIRST_HALF" />‏ • <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">نام مستعار (اختیاری)</translation>
 <translation id="6942665639005891494">هرزمان بخواهید می‌توانید با استفاده از منوی «تنظیمات»، محل پیش‌فرض بارگیری را تغییر دهید</translation>
 <translation id="694267552845942083">اکنون درحال سفارشی کردن تنظیمات «همگام‌سازی» هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه تک‌ضرب بزنید. پیمایش به بالا</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">جستجوی برگه‌های ناشناس</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
 <translation id="8909135823018751308">هم‌رسانی…</translation>
-<translation id="8921980840204105660">برای دریافت نشانک‌هایتان از دستگاه‌های دیگر، همگام‌سازی کنید</translation>
 <translation id="8922289737868596582">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را با دکمه «گزینه‌های بیشتر» بارگیری کنید</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> آماده است</translation>

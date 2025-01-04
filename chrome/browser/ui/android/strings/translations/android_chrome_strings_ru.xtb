@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">Защита отключена (не рекомендуется)</translation>
 <translation id="1986685561493779662">Это имя уже используется.</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
-<translation id="201060170519281460">Блокировка профиля защищает ваши данные в автомобиле, включая пароли, транзакции и другие сведения.</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
 <translation id="204321170514947529">Приложение "<ph name="APP_NAME" />" также хранит свои данные в Chrome</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">Использовать тёмную тему, когда на устройстве включена тёмная тема или режим энергосбережения</translation>
 <translation id="2762000892062317888">только что</translation>
 <translation id="276969039800130567">Вы вошли как <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделе <ph name="BEGIN_LINK" />Сервисы Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">Осталось <ph name="SECONDS" /> сек.</translation>
 <translation id="2779651927720337254">ошибка</translation>
 <translation id="2781151931089541271">Осталась 1 сек.</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">Отключено <ph name="SEPARATOR" /> Не рекомендуется</translation>
 <translation id="5752232708629533680">Поделиться только GIF</translation>
 <translation id="5754350196967618083">Не удается обновить рекомендации</translation>
-<translation id="5755162682436943950">Выполнен выход. Открывает диалоговое окно для входа и включения синхронизации.</translation>
 <translation id="5763382633136178763">Вкладки в режиме инкогнито</translation>
 <translation id="5763514718066511291">Нажмите, чтобы скопировать URL этого приложения.</translation>
 <translation id="5765517223145864268">Поделитесь впечатлениями! Или <ph name="BEGIN_LINK" />измените настройки<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">Изменить папку</translation>
 <translation id="6633067410344541938">Разблокировать вкладки инкогнито</translation>
 <translation id="6636623428211296678">Вы можете посмотреть другие настройки ниже или завершить проверку.</translation>
-<translation id="663674369910034433">Другие настройки, связанные с конфиденциальностью, безопасностью и сбором данных, можно найти в разделах <ph name="BEGIN_LINK1" />Синхронизация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Сервисы Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Chrome отправляет в Google информацию об использовании и сбоях, которая помогает улучшать приложение. <ph name="BEGIN_UMA_LINK" />Настроить отправку данных<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Блокировать всегда</translation>
 <translation id="6641780377503683465">Удалить интерес "<ph name="INTEREST" />"</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 вкладка}one{<ph name="NUMBER_OF_TABS" /> вкладка}few{<ph name="NUMBER_OF_TABS" /> вкладки}many{<ph name="NUMBER_OF_TABS" /> вкладок}other{<ph name="NUMBER_OF_TABS" /> вкладки}}</translation>
 <translation id="6929224077895306814">Все защитные коды, сохраненные на вашем устройстве и в аккаунте Google, будут удалены.</translation>
 <translation id="6937524809504266803">Персонализация и связывание</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Название (необязательно)</translation>
 <translation id="6942665639005891494">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию, воспользовавшись меню "Настройки".</translation>
 <translation id="694267552845942083">Сейчас вы находитесь на странице настроек синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">Поиск по вкладкам инкогнито</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
-<translation id="8921980840204105660">Чтобы стали доступны закладки с других устройств, выполните синхронизацию.</translation>
 <translation id="8922289737868596582">Скачивайте страницы через меню кнопки "Ещё" и открывайте их без подключения к Интернету</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" />: языковой пакет готов.</translation>

@@ -224,7 +224,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="200114059308480249">Barne hartu nahi al duzu inguruko testua Google-ko bilaketetan?</translation>
-<translation id="201060170519281460">Profilaren blokeoak autoan babestuta mantentzen du informazioa, sinkronizatutako pasahitzak eta ordainketak barne.</translation>
 <translation id="2021896219286479412">Webgunearen pantaila osoko aukerak</translation>
 <translation id="2038563949887743358">Aktibatu ordenagailuetarako webgunea eskatzeko aukera</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> aplikazioak ere baditu datuak Chrome-n</translation>
@@ -387,7 +386,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2760989362628427051">Aktibatu gai iluna gailuaren gai iluna edo bateria-aurreztailea aktibatuta dagoenean</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> gisa dauka saioa hasita.</translation>
-<translation id="2776236159752647997">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> s gelditzen dira</translation>
 <translation id="2779651927720337254">huts egin du</translation>
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
@@ -1035,7 +1033,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5749237766298580851">Desaktibatuta <ph name="SEPARATOR" /> Ez da gomendagarria</translation>
 <translation id="5752232708629533680">Partekatu GIFa soilik</translation>
 <translation id="5754350196967618083">Ezin da freskatu Discover</translation>
-<translation id="5755162682436943950">Amaitu da saioa. Saioa hasteko eta sinkronizazioa aktibatzeko leihoa irekitzen du.</translation>
 <translation id="5763382633136178763">Ezkutuko moduko fitxak</translation>
 <translation id="5763514718066511291">Sakatu aplikazio honen URLa kopiatzeko</translation>
 <translation id="5765517223145864268">Esan iezaguzu zer iruditu zaizun. Bestela, <ph name="BEGIN_LINK" />aldatu ezarpenak<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6627583120233659107">Editatu karpeta</translation>
 <translation id="6633067410344541938">Desblokeatu ezkutuko modua</translation>
 <translation id="6636623428211296678">Arakatu ezarpen gehiago hemen behean edo amaitu orain</translation>
-<translation id="663674369910034433">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK1" />Sinkronizazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google-ren zerbitzuak<ph name="END_LINK2" /> ataletara.</translation>
 <translation id="6637100877383020115">Aplikazioa hobetzeko, erabilerarekin eta hutsegiteekin erlazionatutako datuak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_UMA_LINK" />Kudeatu<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokeatu beti</translation>
 <translation id="6641780377503683465">Kendu <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fitxa}other{<ph name="NUMBER_OF_TABS" /> fitxa}}</translation>
 <translation id="6929224077895306814">Zure gailuko eta Google Kontua ataleko segurtasun-kode guztiak ezabatuko dira</translation>
 <translation id="6937524809504266803">Pertsonalizazioa eta lotzea</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Goitizena (aukerakoa)</translation>
 <translation id="6942665639005891494">Deskargen kokapen lehenetsia aldatzeko, erabili Ezarpenak menuko aukera</translation>
 <translation id="694267552845942083">Sinkronizazio-ezarpenak pertsonalizatzen ari zara. Sinkronizazioa aktibatzen amaitzeko, sakatu pantailaren behealdean dagoen "Berretsi" botoia. Joan gora</translation>
@@ -1780,7 +1775,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8890668505403261809">Bilatu ezkutuko moduko fitxetan</translation>
 <translation id="8898822736010347272">Erabiltzen dituzun orri batzuen URLak, sistemari buruzko informazio mugatua eta orrietako eduki batzuk bidaltzen dizkio Google-ri mehatxuak aurkitzeko eta sarearen erabiltzaile guztiak babesteko.</translation>
 <translation id="8909135823018751308">Partekatu…</translation>
-<translation id="8921980840204105660">Sinkronizatu datuak darabiltzazun beste gailuetako laster-markak eskuratzeko</translation>
 <translation id="8922289737868596582">Sakatu Aukera gehiago botoia orriak deskargatu eta konexiorik gabe erabiltzeko</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Prest dago <ph name="LANG" /></translation>

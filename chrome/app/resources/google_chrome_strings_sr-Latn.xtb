@@ -96,6 +96,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
 <translation id="2139300032719313227">Restartujte Chrome OS</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome</translation>
+<translation id="2163089732491971196">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu</translation>
 <translation id="2174917724755363426">Instalacija nije dovršena. Želite stvarno da je otkažete?</translation>
 <translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2190166659037789668">Greška sa proverom ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -147,6 +148,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
 <translation id="2775140325783767197">Chrome ne može da vam proverava lozinke. Proverite internet vezu.</translation>
 <translation id="2797864378188255696">Kada se prijavljujete u Google usluge kao što su Gmail ili YouTube pomoću naloga <ph name="USER_EMAIL" />, možete automatski da se prijavite u Chrome pomoću istog naloga</translation>
+<translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2825024317344269723">Opasan sajt. Chrome je uklonio obaveštenja.</translation>
 <translation id="2841525013647267359">Prevedite sa jezika</translation>

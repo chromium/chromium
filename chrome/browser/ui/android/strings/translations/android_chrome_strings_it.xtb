@@ -224,7 +224,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1986685561493779662">Il nome esiste già</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
-<translation id="201060170519281460">Il blocco del profilo tiene al sicuro le tue informazioni, ad esempio password sincronizzate, pagamenti e altro.</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
 <translation id="204321170514947529">Anche <ph name="APP_NAME" /> presenta dati in Chrome</translation>
@@ -387,7 +386,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2760989362628427051">Attiva il tema scuro quando sul dispositivo è attivo il tema scuro o il risparmio energetico</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="276969039800130567">Accesso eseguito come <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec rimanenti</translation>
 <translation id="2779651927720337254">non riuscito</translation>
 <translation id="2781151931089541271">1 sec rimanente</translation>
@@ -1035,7 +1033,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5749237766298580851">Disattivata <ph name="SEPARATOR" /> Sconsigliata</translation>
 <translation id="5752232708629533680">Condividi solo GIF</translation>
 <translation id="5754350196967618083">Impossibile aggiornare Discover</translation>
-<translation id="5755162682436943950">Account disconnesso. Apre la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="5763382633136178763">Schede in incognito</translation>
 <translation id="5763514718066511291">Tocca per copiare l'URL di quest'app</translation>
 <translation id="5765517223145864268">Raccontaci la tua esperienza o <ph name="BEGIN_LINK" />cambia le impostazioni<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6627583120233659107">Modifica cartella</translation>
 <translation id="6633067410344541938">Sblocca la modalità in incognito</translation>
 <translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
-<translation id="663674369910034433">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta le sezioni <ph name="BEGIN_LINK1" />Sincronizzazione<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizi Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blocca sempre</translation>
 <translation id="6641780377503683465">Rimuovi <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 scheda}other{<ph name="NUMBER_OF_TABS" /> schede}}</translation>
 <translation id="6929224077895306814">Tutti i codici di sicurezza salvati sul dispositivo e nell'Account Google verranno eliminati</translation>
 <translation id="6937524809504266803">Personalizzazione e collegamento</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Nickname (facoltativo)</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
 <translation id="694267552845942083">Stai personalizzando le impostazioni di sincronizzazione. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
@@ -1780,7 +1775,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8890668505403261809">Cerca nelle schede di navigazione in incognito</translation>
 <translation id="8898822736010347272">Invia a Google gli URL di alcune pagine visitate, informazioni limitate sul sistema e alcuni contenuti delle pagine per contribuire a scoprire le nuove minacce e proteggere tutti gli utenti del web.</translation>
 <translation id="8909135823018751308">Condividi…</translation>
-<translation id="8921980840204105660">Attiva la sincronizzazione per recuperare i preferiti dagli altri tuoi dispositivi</translation>
 <translation id="8922289737868596582">Usa il pulsante Altre opzioni per scaricare le pagine da usare offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">La lingua <ph name="LANG" /> è pronta</translation>

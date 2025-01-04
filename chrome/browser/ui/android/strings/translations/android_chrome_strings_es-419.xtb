@@ -224,7 +224,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="1986685561493779662">El nombre ya existe</translation>
 <translation id="200114059308480249">¿Quieres incluir el texto adyacente en las búsquedas de Google?</translation>
-<translation id="201060170519281460">El bloqueo de perfil protege tu información en el automóvil, lo que incluye contraseñas sincronizadas, pagos y más.</translation>
 <translation id="2021896219286479412">Controles en pantalla completa</translation>
 <translation id="2038563949887743358">Activar la opción para solicitar versión de escritorio</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> también tiene datos en Chrome</translation>
@@ -387,7 +386,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2760989362628427051">Activa el tema oscuro cuando esté activado el Ahorro de batería o el tema oscuro de tu dispositivo</translation>
 <translation id="2762000892062317888">recién</translation>
 <translation id="276969039800130567">Se accedió como <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">error</translation>
 <translation id="2781151931089541271">1 segundo restante</translation>
@@ -1035,7 +1033,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> No se recomienda</translation>
 <translation id="5752232708629533680">Compartir solo el archivo GIF</translation>
 <translation id="5754350196967618083">No se puede actualizar Descubre</translation>
-<translation id="5755162682436943950">Has cerrado sesión. Abre el cuadro de diálogo para acceder y activar la sincronización.</translation>
 <translation id="5763382633136178763">Pestañas en modo de incógnito</translation>
 <translation id="5763514718066511291">Presiona para copiar la URL para esta app</translation>
 <translation id="5765517223145864268">Cuéntanos tu experiencia. O bien <ph name="BEGIN_LINK" />cambia la configuración<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6627583120233659107">Editar la carpeta</translation>
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>
 <translation id="6636623428211296678">Explora más parámetros de configuración a continuación o finaliza ahora.</translation>
-<translation id="663674369910034433">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />Servicios de Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_UMA_LINK" />Administrar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear siempre</translation>
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestaña}other{<ph name="NUMBER_OF_TABS" /> pestañas}}</translation>
 <translation id="6929224077895306814">Se borrarán todos los códigos de seguridad guardados en tu dispositivo y en tu Cuenta de Google</translation>
 <translation id="6937524809504266803">Personalización y vinculación</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Sobrenombre (opcional)</translation>
 <translation id="6942665639005891494">Cambia la ubicación predeterminada de las descargas en cualquier momento en la opción de menú de Configuración</translation>
 <translation id="694267552845942083">Estás personalizando la configuración de sincronización. Para activar la sincronización, presiona el botón Confirmar que se encuentra cerca de la parte inferior de la pantalla. Subir</translation>
@@ -1780,7 +1775,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8890668505403261809">Buscar en tus pestañas de incógnito</translation>
 <translation id="8898822736010347272">Envía a Google las URLs de algunas páginas que visitas, información limitada del sistema y parte del contenido de las páginas para ayudar a detectar nuevas amenazas y proteger a todos los usuarios en la Web.</translation>
 <translation id="8909135823018751308">Compartir…</translation>
-<translation id="8921980840204105660">Utiliza la función de sincronización para acceder a tus favoritos desde otros dispositivos</translation>
 <translation id="8922289737868596582">Descarga páginas desde el botón Más opciones para usarlas sin conexión</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> está listo</translation>

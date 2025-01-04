@@ -224,7 +224,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1986685561493779662">Název již existuje</translation>
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
-<translation id="201060170519281460">Zámek profilu udržuje vaše data v autě v bezpečí, včetně synchronizovaných hesel, plateb a dalších.</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
 <translation id="204321170514947529">Aplikace <ph name="APP_NAME" /> má také data v Chromu</translation>
@@ -387,7 +386,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2760989362628427051">Zapnout tmavý motiv, když je na zařízení zapnutý tmavý motiv nebo spořič baterie</translation>
 <translation id="2762000892062317888">právě teď</translation>
 <translation id="276969039800130567">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v části <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
 <translation id="2781151931089541271">Zbývá: 1 s</translation>
@@ -1035,7 +1033,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5749237766298580851">Vypnuto <ph name="SEPARATOR" /> Nedoporučuje se</translation>
 <translation id="5752232708629533680">Sdílet pouze GIF</translation>
 <translation id="5754350196967618083">Kanál Objevit nelze obnovit</translation>
-<translation id="5755162682436943950">Byli jste odhlášeni. Otevře dialogové okno k přihlášení a zapnutí synchronizace.</translation>
 <translation id="5763382633136178763">Anonymní karty</translation>
 <translation id="5763514718066511291">Klepnutím zkopírujete adresu URL této aplikace</translation>
 <translation id="5765517223145864268">Podělte se s námi o své zkušenosti. Nebo si <ph name="BEGIN_LINK" />změňte nastavení<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6627583120233659107">Upravit složku</translation>
 <translation id="6633067410344541938">Odemknout anonymní karty</translation>
 <translation id="6636623428211296678">Níže prozkoumejte další nastavení nebo skončete</translation>
-<translation id="663674369910034433">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v částech <ph name="BEGIN_LINK1" />Synchronizace<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />Služby Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Za účelem vylepšování aplikace odesílá Chrome do Googlu údaje o využití a selháních. <ph name="BEGIN_UMA_LINK" />Spravovat<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokovat vždy</translation>
 <translation id="6641780377503683465">Odstranit zájem <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> karty}other{<ph name="NUMBER_OF_TABS" /> karet}}</translation>
 <translation id="6929224077895306814">Všechny bezpečnostní kódy uložené v zařízení a v účtu Google budou smazány</translation>
 <translation id="6937524809504266803">Personalizace a propojení</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Přezdívka (volitelné)</translation>
 <translation id="6942665639005891494">Výchozí umístění pro stažené soubory můžete kdykoliv změnit pomocí možnosti v nabídce Nastavení.</translation>
 <translation id="694267552845942083">Momentálně upravujete nastavení synchronizace. Zapnutí synchronizace dokončíte klepnutím na tlačítko Potvrdit, které se nachází u dolního okraje obrazovky. Přejít nahoru</translation>
@@ -1780,7 +1775,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8890668505403261809">Vyhledat na anonymních kartách</translation>
 <translation id="8898822736010347272">Odesílá adresy URL některých navštívených stránek, omezené informace o systému a část obsahu stránek do Googlu a pomáhá tak objevovat nové hrozby a chránit všechny uživatele internetu.</translation>
 <translation id="8909135823018751308">Sdílet…</translation>
-<translation id="8921980840204105660">Pokud chcete získat záložky ze svých ostatních zařízení, zapněte synchronizaci</translation>
 <translation id="8922289737868596582">Stáhněte si stránky k použití offline pomocí tlačítka Další možnosti</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Jazyk <ph name="LANG" /> je připraven</translation>

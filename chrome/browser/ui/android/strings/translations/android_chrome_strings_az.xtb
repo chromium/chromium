@@ -224,7 +224,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="1984417487208496350">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="1986685561493779662">Adı artıq mövcuddur</translation>
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
-<translation id="201060170519281460">Profil kilidi sinxronlaşdırılmış parol, ödəniş və s. məlumatları avtomobildə təhlükəsiz saxlayır.</translation>
 <translation id="2021896219286479412">Tam ekran sayt nəzarətləri</translation>
 <translation id="2038563949887743358">Əsas Versiya Sorğusunu aktiv edin</translation>
 <translation id="204321170514947529">Həmçinin, <ph name="APP_NAME" /> tətbiqinin Chrome'da datası var</translation>
@@ -387,7 +386,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2760989362628427051">Cihazın tünd tema və ya Enerjiyə Qənaət rejimi aktiv olduqda tünd temanı aktiv edin</translation>
 <translation id="2762000892062317888">indicə</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> olaraq hesaba girdi.</translation>
-<translation id="2776236159752647997">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Google xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> saniyə qaldı</translation>
 <translation id="2779651927720337254">alınmadı</translation>
 <translation id="2781151931089541271">1 saniyə qaldı</translation>
@@ -1035,7 +1033,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5749237766298580851">Deaktiv <ph name="SEPARATOR" /> Tövsiyə edilmir</translation>
 <translation id="5752232708629533680">Yalnız GIF paylaşın</translation>
 <translation id="5754350196967618083">Təklifləri yeniləmək olmur</translation>
-<translation id="5755162682436943950">Hesabdan çıxış edilib. Daxil olmaq və sinxronizasiyanı aktiv etmək üçün dialoqu açır.</translation>
 <translation id="5763382633136178763">İnkoqnito vərəqələri</translation>
 <translation id="5763514718066511291">Linki bu tətbiqə kopyalamaq üçün klikləyin</translation>
 <translation id="5765517223145864268">Təcrübəniz haqqında məlumat verin. Və ya <ph name="BEGIN_LINK" />ayarlarınızı dəyişin<ph name="END_LINK" />.</translation>
@@ -1240,7 +1237,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6627583120233659107">Qovluğa düzəliş edin</translation>
 <translation id="6633067410344541938">Anonim rejimi kiliddən çıxarın</translation>
 <translation id="6636623428211296678">Aşağıda digər ayarları araşdırın və ya indi bitirin</translation>
-<translation id="663674369910034433">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK1" />Sinxronizasiya<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Google xidmətləri<ph name="END_LINK2" /> səhifəsinə daxil olun.</translation>
 <translation id="6637100877383020115">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_UMA_LINK" />İdarə edin<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Həmişə bloklayın</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> silin</translation>
@@ -1326,7 +1322,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Cihaz və Google Hesabında yadda saxlanan güvənlik kodları silinəcək</translation>
 <translation id="6937524809504266803">Fərdiləşdirmə və əlaqələndirmə</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Ləqəb (könüllü)</translation>
 <translation id="6942665639005891494">Ayarlarda menyu seçimi ilə istənilən zaman defolt endirmə məkanını dəyişin</translation>
 <translation id="694267552845942083">Hazırda Sinxronizasiya ayarlarını fərdiləşdirirsiniz. Sinxronizasiyanı aktiv etməyi tamamlamaq üçün ekranın aşağısına yaxın yerləşən "Təsdiq edin" düyməsinə toxunun. Yuxarı keçin</translation>
@@ -1778,7 +1773,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8890668505403261809">Anonim tablarınızı axtarın</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>
-<translation id="8921980840204105660">Əlfəcinlərinizi digər cihazlardan əldə etmək üçün sinxronizasiya edin</translation>
 <translation id="8922289737868596582">Oflayn istifadə etmək üçün səhifələri Digər seçimlər düyməsindən endirin</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> hazırdır</translation>

@@ -2553,12 +2553,6 @@ Definir "command_line" impede que uma extensão seja carregada na
 linha de comando.</translation>
 <translation id="2780840673734667062">Desativar o login com mais Contas do Google</translation>
 <translation id="2784880732336446591">Remover dados de navegação ao sair</translation>
-<translation id="2785422026482376078">Especifica se um modelo de Carregamento adaptável tem permissão para controlar o processo de carregamento e prolongar a duração da bateria.
-
-      Quando o dispositivo está no Carregamento adaptável, o modelo avalia se o processo precisa desse controle. Quando o modelo controla o processo de carregamento, ele mantém a bateria carregada até certo nível, como 80%, e só carrega o dispositivo até 100% quando o usuário precisa.
-      Se esta política for definida como verdadeira, o modelo de Carregamento adaptável será ativado e terá permissão para controlar o processo e prolongar a vida útil da bateria. Se a política for definida como falsa ou for deixada sem definição, o modelo de Carregamento adaptável não vai influenciar no processo.
-
-      Observação: essa política não tem efeito se DevicePowerBatteryChargingOptimization estiver definida.</translation>
 <translation id="2787173078141616821">Informações de relatório sobre o status do Android</translation>
 <translation id="2787774054174244402">Definir a política como verdadeira evita que os usuários gravem em dispositivos de armazenamento externo.
 
@@ -8320,21 +8314,6 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
       Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
 
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
-<translation id="67952585272033079">A integridade da bateria pode ser afetada por fatores como cargas completas frequentes e durações de carregamento prolongadas. Esta política oferece três opções para otimizar o comportamento de carregamento e reduzir esses fatores, prolongando a vida útil da bateria.
-
-Se a política for definida como Padrão, a bateria vai carregar normalmente até 100%. Isso desativa o carregamento adaptável e limitado.
-
-Quando a política é definida como Adaptável, o dispositivo aprende seus hábitos de carregamento e atrasa a carga completa até que seja necessária. Isso ajuda a prolongar a integridade da bateria.
-
-Quando a política é definida como Limitada, a bateria é carregada apenas até cerca de 80% para maximizar a vida útil.
-
-Se a política não for definida, a opção padrão será aplicada (quando for o caso).
-
-A política DevicePowerBatteryChargingOptimization substitui a política DevicePowerAdaptiveChargingEnabled.
-
-A política DevicePowerAdaptiveChargingEnabled controla o Carregamento adaptável se a DevicePowerBatteryChargingOptimization estiver desativada.
-
-As políticas DevicePowerBatteryChargingOptimization e DevicePowerAdaptiveChargingEnabled sempre têm precedência sobre as configurações do usuário.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>

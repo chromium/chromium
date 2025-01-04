@@ -224,7 +224,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
 <translation id="1986685561493779662">O nome xa existe</translation>
 <translation id="200114059308480249">Queres incluír o texto circundante nas buscas de Google?</translation>
-<translation id="201060170519281460">O bloqueo do perfil protexe a túa información (contrasinais sincronizados, pagos…) no coche.</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> tamén ten datos en Chrome</translation>
@@ -387,7 +386,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="276969039800130567">Sesión iniciada como <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">produciuse un erro</translation>
 <translation id="2781151931089541271">Queda 1 segundo</translation>
@@ -1035,7 +1033,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> Non recomendado</translation>
 <translation id="5752232708629533680">Compartir só GIF</translation>
 <translation id="5754350196967618083">Non se puido actualizar Discover</translation>
-<translation id="5755162682436943950">Pechouse sesión. Abre un cadro de diálogo para iniciar sesión e activar a sincronización.</translation>
 <translation id="5763382633136178763">Pestanas do modo de incógnito</translation>
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
 <translation id="5765517223145864268">Coméntanos a túa experiencia. Tamén podes <ph name="BEGIN_LINK" />cambiar a configuración<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6633067410344541938">Desbloquear modo de incógnito</translation>
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
-<translation id="663674369910034433">Para ver máis opcións de configuración relacionadas coa privacidade, a seguranza e a recompilación de datos, consulta <ph name="BEGIN_LINK1" />Sincronización<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizos de Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestana}other{<ph name="NUMBER_OF_TABS" /> pestanas}}</translation>
 <translation id="6929224077895306814">Eliminaranse todos os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
 <translation id="6937524809504266803">Personalización e vinculación</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Alcume (opcional)</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando a configuración da sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Desprazarse cara arriba</translation>
@@ -1780,7 +1775,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8890668505403261809">Busca as pestanas do modo de incógnito</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
-<translation id="8921980840204105660">Sincroniza os datos para obter os marcadores dos teus outros dispositivos</translation>
 <translation id="8922289737868596582">Para ver as páxinas cando non teñas conexión, descárgaas a través do botón Máis opcións</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O idioma (<ph name="LANG" />) está listo</translation>

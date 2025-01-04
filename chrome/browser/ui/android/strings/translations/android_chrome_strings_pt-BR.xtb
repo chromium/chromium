@@ -224,7 +224,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">Esse nome já existe</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
-<translation id="201060170519281460">O bloqueio de perfil mantém suas informações em segurança no carro, incluindo senhas sincronizadas, pagamentos e muito mais.</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
 <translation id="204321170514947529">O app <ph name="APP_NAME" /> também tem dados no Chrome</translation>
@@ -387,7 +386,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2760989362628427051">Ativa o tema escuro quando essa opção ou a "Economia de bateria" do dispositivo está ativada</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="276969039800130567">Conectado como <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Para acessar mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> segundos restantes</translation>
 <translation id="2779651927720337254">falha</translation>
 <translation id="2781151931089541271">Um segundo restante</translation>
@@ -1036,7 +1034,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5749237766298580851">Desativado <ph name="SEPARATOR" /> Não recomendado</translation>
 <translation id="5752232708629533680">Compartilhar apenas o GIF</translation>
 <translation id="5754350196967618083">Não é possível atualizar o Discover</translation>
-<translation id="5755162682436943950">Conta desconectada. Abre a caixa de diálogo para fazer login e ativar a sincronização.</translation>
 <translation id="5763382633136178763">Guias anônimas</translation>
 <translation id="5763514718066511291">Toque para copiar o URL desse app</translation>
 <translation id="5765517223145864268">Fale sobre sua experiência. Ou <ph name="BEGIN_LINK" />mude suas configurações<ph name="END_LINK" />.</translation>
@@ -1243,7 +1240,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a navegação anônima</translation>
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
-<translation id="663674369910034433">Para acessar mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK2" />Serviços do Google<ph name="END_LINK2" /> e de <ph name="BEGIN_LINK1" />sincronização<ph name="END_LINK1" /></translation>
 <translation id="6637100877383020115">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Remover <ph name="INTEREST" /></translation>
@@ -1329,7 +1325,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 guia}one{<ph name="NUMBER_OF_TABS" /> guia}other{<ph name="NUMBER_OF_TABS" /> guias}}</translation>
 <translation id="6929224077895306814">Todos os códigos de segurança salvos no seu dispositivo e na sua Conta do Google serão excluídos</translation>
 <translation id="6937524809504266803">Personalização e vinculação</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Apelido (opcional)</translation>
 <translation id="6942665639005891494">Altere o local padrão de download a qualquer momento usando a opção do menu "Configurações"</translation>
 <translation id="694267552845942083">No momento, você está personalizando suas configurações de sincronização. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
@@ -1781,7 +1776,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8890668505403261809">Pesquisar nas guias anônimas</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
-<translation id="8921980840204105660">Sincronize para acessar seus favoritos de outros dispositivos</translation>
 <translation id="8922289737868596582">Use o botão Mais opções para baixar páginas e acessá-las off-line</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">O <ph name="LANG" /> está pronto</translation>

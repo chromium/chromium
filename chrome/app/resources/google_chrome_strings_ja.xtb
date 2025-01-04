@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">翻訳画面を閉じる</translation>
 <translation id="2139300032719313227">ChromeOS を再起動してください</translation>
 <translation id="2151406531797534936">Chrome を今すぐ再起動してください</translation>
+<translation id="2163089732491971196">Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="2174917724755363426">インストールは完了していません。キャンセルしてもよろしいですか？</translation>
 <translation id="2186206192313702726">Google レンズ</translation>
 <translation id="2190166659037789668">更新確認エラー: <ph name="UPDATE_CHECK_ERROR" />。</translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">既定のブラウザを変更:</translation>
 <translation id="2775140325783767197">Chrome がパスワードを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chrome に自動的にログインできます</translation>
+<translation id="2799162042226656283">Chrome</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2825024317344269723">危険なサイトのため、Chrome で通知の権限を削除しました。</translation>
 <translation id="2841525013647267359">原文の言語</translation>

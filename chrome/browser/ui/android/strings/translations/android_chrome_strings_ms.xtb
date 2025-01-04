@@ -224,7 +224,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1984417487208496350">Tiada perlindungan (tidak disyorkan)</translation>
 <translation id="1986685561493779662">Nama sudah wujud</translation>
 <translation id="200114059308480249">Sertakan teks sekitar dalam carian Google?</translation>
-<translation id="201060170519281460">Kunci profil anda melindungi maklumat anda di dalam kereta, termasuk kata laluan yang disegerakkan, pembayaran dan pelbagai lagi.</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
 <translation id="2038563949887743358">Hidupkan Minta tapak desktop</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> juga mempunyai data dalam Chrome</translation>
@@ -387,7 +386,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2760989362628427051">Hidupkan tema gelap apabila tema gelap atau Penjimat Bateri peranti anda dihidupkan</translation>
 <translation id="2762000892062317888">sebentar tadi</translation>
 <translation id="276969039800130567">Log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />perkhidmatan Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> saat lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 saat lagi</translation>
@@ -1035,7 +1033,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5749237766298580851">Dimatikan <ph name="SEPARATOR" /> Tidak disyorkan</translation>
 <translation id="5752232708629533680">Kongsi GIF sahaja</translation>
 <translation id="5754350196967618083">Tidak dapat memuatkan semula Discover</translation>
-<translation id="5755162682436943950">Dilog keluar. Buka dialog untuk log masuk dan hidupkan penyegerakan.</translation>
 <translation id="5763382633136178763">Tab inkognito</translation>
 <translation id="5763514718066511291">Ketik untuk menyalin URL apl ini</translation>
 <translation id="5765517223145864268">Beritahu kami pengalaman anda. Atau <ph name="BEGIN_LINK" />tukar tetapan anda<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Buka kunci Inkognito</translation>
 <translation id="6636623428211296678">Terokai lebih banyak tetapan di bawah atau selesaikan sekarang</translation>
-<translation id="663674369910034433">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK1" />Penyegerakan<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />perkhidmatan Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_UMA_LINK" />Urus<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Sekat sepanjang masa</translation>
 <translation id="6641780377503683465">Alih keluar <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Semua kod keselamatan yang disimpan pada peranti anda dan dalam Google Account akan dipadamkan</translation>
 <translation id="6937524809504266803">Pemeribadian &amp; Pemautan</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Nama panggilan (pilihan)</translation>
 <translation id="6942665639005891494">Tukar lokasi muat turun lalai pada bila-bila masa menggunakan pilihan menu Tetapan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan tetapan Penyegerakan anda. Untuk menyelesaikan tindakan menghidupkan penyegerakan, ketik butang Sahkan berdekatan bahagian bawah skrin. Navigasi ke atas</translation>
@@ -1780,7 +1775,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8890668505403261809">Cari tab Inkognito anda</translation>
 <translation id="8898822736010347272">Menghantar URL sesetengah halaman yang anda lawati, maklumat sistem yang terhad dan sebahagian kandungan halaman kepada Google untuk menemukan ancaman baharu dan melindungi semua pengguna web.</translation>
 <translation id="8909135823018751308">Kongsi…</translation>
-<translation id="8921980840204105660">Segerakkan untuk mendapatkan penanda halaman daripada peranti anda yang lain</translation>
 <translation id="8922289737868596582">Muat turun halaman daripada butang Lagi pilihan untuk digunakan di luar talian</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah sedia</translation>

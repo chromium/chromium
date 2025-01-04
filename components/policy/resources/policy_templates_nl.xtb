@@ -2433,12 +2433,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 Als je 'command_line' instelt, kan de extensie niet worden geladen via de opdrachtregel.</translation>
 <translation id="2780840673734667062">Inloggen met extra Google-accounts uitzetten</translation>
 <translation id="2784880732336446591">Browsegegevens wissen bij afsluiten</translation>
-<translation id="2785422026482376078">Geeft aan of een model voor aangepast opladen het oplaadproces mag onderbreken om de batterijduur te verlengen.
-
-      Als het apparaat gebruikmaakt van wisselstroom, evalueert het model voor aangepast opladen of het oplaadproces moet worden onderbroken om de batterijduur te verlengen. Onderbreekt het model voor aangepast opladen het oplaadproces, dan wordt de batterij op een bepaald niveau gehouden (bijv. 80%) en wordt het apparaat tot 100% opgeladen als de gebruiker dat nodig heeft.
-      Als je dit beleid instelt op Waar, wordt het model voor aangepast opladen aangezet en mag dit het oplaadproces onderbreken om de batterijduur te verlengen. Als je dit beleid instelt op Onwaar of niet instelt, heeft het model voor aangepast opladen geen invloed op het oplaadproces.
-
-      Opmerking: Dit beleid heeft geen effect als DevicePowerBatteryChargingOptimization is ingesteld.</translation>
 <translation id="2787173078141616821">Informatie over de status van Android rapporteren</translation>
 <translation id="2787774054174244402">Als je het beleid instelt op 'True', kunnen gebruikers niets naar externe opslagapparaten schrijven.
 
@@ -7928,21 +7922,6 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
-<translation id="67952585272033079">De batterijconditie kan worden beïnvloed door factoren zoals vaak volledig opladen en langere oplaadtijden. Dit beleid biedt 3 opties om het oplaadgedrag te optimaliseren en deze factoren te beperken, waardoor de levensduur van de batterij wordt verlengd.
-
-Als je het beleid instelt op Standaard, wordt de batterij normaal opgeladen tot 100%. Hiermee zet je aangepast en beperkt opladen uit.
-
-Als je het beleid instelt op Aangepast, leert het apparaat je oplaadgewoonten kennen en wordt opladen tot 100% uitgesteld totdat dat nodig is. Zo gaat de batterij langer mee.
-
-Als je het beleid instelt op Beperkt, wordt de batterij maar tot ongeveer 80% opgeladen om de levensduur te maximaliseren.
-
-Als je dit beleid niet instelt, wordt de optie Standaard toegepast (indien ondersteund).
-
-Het beleid DevicePowerBatteryChargingOptimization overschrijft het beleid DevicePowerAdaptiveChargingEnabled.
-
-DevicePowerAdaptiveChargingEnabled regelt aangepast opladen als DevicePowerBatteryChargingOptimization niet is ingesteld.
-
-Het beleid DevicePowerBatteryChargingOptimization en het beleid DevicePowerAdaptiveChargingEnabled hebben altijd voorrang op gebruikersinstellingen.</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>

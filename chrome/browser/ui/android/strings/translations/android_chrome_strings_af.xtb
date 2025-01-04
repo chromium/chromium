@@ -224,7 +224,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1984417487208496350">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="1986685561493779662">Naam bestaan reeds</translation>
 <translation id="200114059308480249">Sluit omringende teks by Google-soektogte in?</translation>
-<translation id="201060170519281460">Jou profielslot hou jou inligting veilig in die motor, insluitend gesinkroniseerde wagwoorde, betalings en meer.</translation>
 <translation id="2021896219286479412">Volskermwerfkontroles</translation>
 <translation id="2038563949887743358">Skakel Versoek rekenaarwerf aan</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> het ook data in Chrome</translation>
@@ -387,7 +386,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2760989362628427051">Skakel Donkertema aan wanneer jou toestel se Donkertema of Batterybespaarder aan is</translation>
 <translation id="2762000892062317888">sopas</translation>
 <translation id="276969039800130567">Aangemeld as <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Raadpleeg <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekondes oor</translation>
 <translation id="2779651927720337254">misluk</translation>
 <translation id="2781151931089541271">1 sekonde oor</translation>
@@ -1035,7 +1033,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5749237766298580851">Af <ph name="SEPARATOR" /> Nie aanbeveel nie</translation>
 <translation id="5752232708629533680">Deel net GIF</translation>
 <translation id="5754350196967618083">Kan nie Ontdek herlaai nie</translation>
-<translation id="5755162682436943950">Afgemeld. Maak dialoog oop om aan te meld en sinkronisering aan te skakel.</translation>
 <translation id="5763382633136178763">Incognito-oortjies</translation>
 <translation id="5763514718066511291">Tik om hierdie program se URL te kopieer</translation>
 <translation id="5765517223145864268">Vertel ons van jou ervaring. Of <ph name="BEGIN_LINK" />verander jou instellings<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6627583120233659107">Wysig vouer</translation>
 <translation id="6633067410344541938">Ontsluit Incognito</translation>
 <translation id="6636623428211296678">Verken meer instellings hieronder of maak nou klaar</translation>
-<translation id="663674369910034433">Raadpleeg <ph name="BEGIN_LINK1" />Sinkronisering<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
 <translation id="6637100877383020115">Chrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkeer altyd</translation>
 <translation id="6641780377503683465">Verwyder <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 oortjie}other{<ph name="NUMBER_OF_TABS" /> oortjies}}</translation>
 <translation id="6929224077895306814">Alle sekuriteitskodes wat op jou toestel en in jou Google-rekening gestoor is, sal uitgevee word</translation>
 <translation id="6937524809504266803">Personalisering en koppeling</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Bynaam (opsioneel)</translation>
 <translation id="6942665639005891494">Verander enige tyd die verstekaflaailigging met die Instellingskieslysopsie</translation>
 <translation id="694267552845942083">Jy pasmaak tans jou sinkroniseringinstellings. Tik op die Bevestig-knoppie naby die onderkant van die skerm om die aanskakel van sinkronisering te voltooi. Gaan op</translation>
@@ -1780,7 +1775,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8890668505403261809">Soek deur jou Incognito-oortjies</translation>
 <translation id="8898822736010347272">Stuur URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sekere bladsyinhoud na Google toe om te help om nuwe bedreigings te ontdek en almal op die web te beskerm.</translation>
 <translation id="8909135823018751308">Deel …</translation>
-<translation id="8921980840204105660">Sinkroniseer om jou boekmerke van jou ander toestelle af te kry</translation>
 <translation id="8922289737868596582">Laai bladsye vanaf die Meer Opsies-knoppie af om hulle vanlyn te gebruik</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is gereed</translation>

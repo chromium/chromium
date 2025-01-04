@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="1986685561493779662">નામ પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="200114059308480249">શું Google Searchમાં શોધવા માટે આજુબાજુની ટેક્સ્ટ શામેલ કરીએ?</translation>
-<translation id="201060170519281460">તમારું પ્રોફાઇલ લૉક તમારી માહિતી કારમાં સુરક્ષિત રાખે છે, જેમાં સિંક કરેલા પાસવર્ડ, ચુકવણીઓ અને બીજી ઘણી માહિતી શામેલ છે.</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
 <translation id="2038563949887743358">વિનંતી ડેસ્કટૉપ સાઇટ ચાલુ કરો</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> નો ડેટા Chromeમાં પણ છે</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">જ્યારે તમારા ડિવાઇસની ઘેરી થીમ અથવા બૅટરી સેવર ચાલુ હોય ત્યારે ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો.</translation>
-<translation id="2776236159752647997">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> જુઓ</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> સેકંડ બાકી</translation>
 <translation id="2779651927720337254">નિષ્ફળ થયું</translation>
 <translation id="2781151931089541271">1 સેકંડ બાકી</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">બંધ <ph name="SEPARATOR" /> આનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="5752232708629533680">માત્ર GIF શેર કરો</translation>
 <translation id="5754350196967618083">Discover રિફ્રેશ કરી શકાતું નથી</translation>
-<translation id="5755162682436943950">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટે સંવાદ ખોલે છે અને સિંકની સુવિધા ચાલુ કરે છે.</translation>
 <translation id="5763382633136178763">છૂપા ટેબ્સ</translation>
 <translation id="5763514718066511291">આ ઍપ માટેની URL કૉપિ કરવા માટે ટૅપ કરો</translation>
 <translation id="5765517223145864268">અમને તમારા અનુભવ વિશે જણાવો. અથવા <ph name="BEGIN_LINK" />તમારા સેટિંગને બદલો<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">ફોલ્ડરમાં ફેરફાર કરો</translation>
 <translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
-<translation id="663674369910034433">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK1" />સિંક<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Googleની સેવાઓ<ph name="END_LINK2" /> જુઓ</translation>
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">હંમેશાં બ્લૉક કરો</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ટૅબ}one{<ph name="NUMBER_OF_TABS" /> ટૅબ}other{<ph name="NUMBER_OF_TABS" /> ટૅબ}}</translation>
 <translation id="6929224077895306814">તમારા ડિવાઇસ અને તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલા બધા સુરક્ષા કોડ ડિલીટ કરવામાં આવશે</translation>
 <translation id="6937524809504266803">મનગમતું બનાવવું અને લિંક કરવું</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ઉપનામ (વૈકલ્પિક)</translation>
 <translation id="6942665639005891494">સેટિંગ મેનૂ વિકલ્પનો ઉપયોગ કરીને ડિફૉલ્ટ ડાઉનલોડ સ્થાનને કોઈપણ સમયે બદલો</translation>
 <translation id="694267552845942083">તમે હાલમાં તમારા સિંક સેટિંગને કસ્ટમાઇઝ કરી રહ્યાં છો. સિંક ચાલુ કરવાનું પૂર્ણ કરવા માટે, સ્ક્રીનની નીચેની બાજુએ કન્ફર્મ કરો બટન પર ટૅપ કરો. ઉપર નૅવિગેટ કરો</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">તમારા છૂપા ટૅબ શોધો</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
-<translation id="8921980840204105660">તમારા અન્ય ડિવાઇસમાંના તમારા બધા બુકમાર્ક મેળવવા માટે, સિંક કરો</translation>
 <translation id="8922289737868596582">વધુ વિકલ્પો બટનની મદદથી પેજ ડાઉનલોડ કરો, જેથી તમે ઇન્ટરનેટ વિના પણ તેનો ઉપયોગ કરી શકો</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ભાષા તૈયાર છે</translation>

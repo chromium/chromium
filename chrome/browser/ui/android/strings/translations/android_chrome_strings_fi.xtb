@@ -224,7 +224,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1984417487208496350">Ei suojausta (ei suositella)</translation>
 <translation id="1986685561493779662">Nimi on jo käytössä</translation>
 <translation id="200114059308480249">Sisällytetäänkö ympäröivä teksti Google-hakuihin?</translation>
-<translation id="201060170519281460">Profiililukko pitää tietosi (esim. synkronoidut salasanat ja maksut) suojattuina autossa</translation>
 <translation id="2021896219286479412">Ohjaimet koko näytön tilassa</translation>
 <translation id="2038563949887743358">Ota käyttöön Käytä tietokoneversiota</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> sisältää dataa myös Chromessa</translation>
@@ -387,7 +386,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2760989362628427051">Ota tumma teema käyttöön, kun laitteen tumma teema tai virransäästö on käytössä</translation>
 <translation id="2762000892062317888">äsken</translation>
 <translation id="276969039800130567">Kirjautunut osoitteella <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Googlen palvelut<ph name="END_LINK" /> ‑kohdasta.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="2779651927720337254">epäonnistui</translation>
 <translation id="2781151931089541271">1 sekunti jäljellä</translation>
@@ -1035,7 +1033,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5749237766298580851">Pois päältä <ph name="SEPARATOR" /> Ei suositeltu</translation>
 <translation id="5752232708629533680">Jaa vain GIF</translation>
 <translation id="5754350196967618083">Discoveria ei voi päivittää</translation>
-<translation id="5755162682436943950">Kirjautunut ulos. Avaa valintaikkunan, jotta voit kirjautua sisään ja laittaa synkronoinnin päälle.</translation>
 <translation id="5763382633136178763">Incognito-välilehdet</translation>
 <translation id="5763514718066511291">Kosketa kopioidaksesi tämän sovelluksen URL-osoite</translation>
 <translation id="5765517223145864268">Kerro meille kokemuksistasi. Voit myös <ph name="BEGIN_LINK" />muuttaa asetuksia<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6627583120233659107">Muokkaa kansiota</translation>
 <translation id="6633067410344541938">Avaa incognito-välilehden lukitus</translation>
 <translation id="6636623428211296678">Katso muita asetuksia alla tai lopeta nyt</translation>
-<translation id="663674369910034433">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia kohdista <ph name="BEGIN_LINK1" />Synkronointi<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Googlen palvelut<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_UMA_LINK" />Muokkaa<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Estä aina</translation>
 <translation id="6641780377503683465">Poista <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 välilehti}other{<ph name="NUMBER_OF_TABS" /> välilehteä}}</translation>
 <translation id="6929224077895306814">Kaikki laitteelle ja Google-tilille tallennetut turvakoodit poistetaan</translation>
 <translation id="6937524809504266803">Personointi ja linkittäminen</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Lyhytnimi (valinnainen)</translation>
 <translation id="6942665639005891494">Muuta oletuslataussijaintia milloin tahansa Asetukset-valikon kautta</translation>
 <translation id="694267552845942083">Valitset parhaillaan synkronointiasetuksia. Viimeistele synkronoinnin käyttöönotto napauttamalla näytön alaosasta Vahvista-painiketta. Siirry ylös</translation>
@@ -1780,7 +1775,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8890668505403261809">Tee hakuja incognito-välilehdillä</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8909135823018751308">Jaa…</translation>
-<translation id="8921980840204105660">Synkronoi kirjanmerkit muilta laitteilta</translation>
 <translation id="8922289737868596582">Lataa sivuja lisäasetuksien kautta, niin voit käyttää niitä offline-tilassa.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> on valmis</translation>

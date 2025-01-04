@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Teginib kiritiladigan login va parollar toʻliq hajmda ochildi.</translation>
 <translation id="5591247451101092906">Saqlangan parol yoki kod ishlatilsinmi?</translation>
 <translation id="5624120631404540903">Sozlash</translation>
+<translation id="592182999816790476"><ph name="USERNAME" /> paroli <ph name="WEBSITE" /> uchun saqlandi</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> uchun kirish kaliti, ekran qulfidan foydalaning</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu sayt uchun yangi parol}other{Bu sayt uchun yangi parol}}</translation>
 <translation id="7286867818472074330">Kalitni tanlash</translation>

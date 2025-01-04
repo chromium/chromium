@@ -96,6 +96,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
+<translation id="2163089732491971196">Para usar y guardar los datos de Chrome en tu cuenta de Google, introduce tu frase de contraseña</translation>
 <translation id="2174917724755363426">No se ha completado la instalación. ¿Seguro que quieres cancelarla?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error de comprobación de actualizaciones: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -147,6 +148,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2770231113462710648">Cambiar navegador predeterminado por:</translation>
 <translation id="2775140325783767197">Chrome no puede comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
 <translation id="2797864378188255696">Al iniciar sesión en servicios de Google como Gmail o YouTube con <ph name="USER_EMAIL" />, puedes iniciar sesión automáticamente en Chrome con la misma cuenta</translation>
+<translation id="2799162042226656283">Tu Chrome</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2825024317344269723">Sitio peligroso. Chrome ha eliminado las notificaciones.</translation>
 <translation id="2841525013647267359">Traducir del</translation>

@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
 <translation id="200114059308480249">Google-н хайлтуудад эргэн тойрны текстийг оруулах уу?</translation>
-<translation id="201060170519281460">Таны профайлын түгжээ синк хийсэн нууц үгнүүд, төлбөр болон бусад зүйлийг оруулаад мэдээллийг тань автомашинд аюулгүй байлгадаг.</translation>
 <translation id="2021896219286479412">Бүтэн дэлгэцийн сайтын хяналт</translation>
 <translation id="2038563949887743358">Сайтыг компьютерийн горимоор харах хүсэлтийг асаах</translation>
 <translation id="204321170514947529">Мөн Chrome-д <ph name="APP_NAME" />-н өгөгдөл байна</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">Таны төхөөрөмжийн бараан загвар эсвэл Батарей хэмнэгч асаалттай үед бараан загварыг асаах</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />-н нэрээр нэвтэрсэн байна.</translation>
-<translation id="2776236159752647997">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" />-ээс харна уу</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> секунд үлдсэн</translation>
 <translation id="2779651927720337254">татаж чадсангүй</translation>
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
@@ -1035,7 +1033,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5749237766298580851">Унтраалттай <ph name="SEPARATOR" /> Зөвлөдөггүй</translation>
 <translation id="5752232708629533680">Зөвхөн GIF хуваалцана уу</translation>
 <translation id="5754350196967618083">Discover-г сэргээх боломжгүй байна</translation>
-<translation id="5755162682436943950">Гарсан. Нэвтрэх харилцах цонхыг нээж, синк хийхийг асаана.</translation>
 <translation id="5763382633136178763">Мэдээний нууцлалтай цонхууд</translation>
 <translation id="5763514718066511291">URL-г энэ аппад хуулах бол товшино уу</translation>
 <translation id="5765517223145864268">Бидэнд ямар санагдсанаа хэлнэ үү. Эсвэл <ph name="BEGIN_LINK" />тохиргоогоо өөрчилнө үү<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6627583120233659107">Хавтас засах</translation>
 <translation id="6633067410344541938">Нууцлалтай харилцан үйлдлийн түгжээг тайлах</translation>
 <translation id="6636623428211296678">Доорх бусад тохиргоог судлах эсвэл одоо дуусгах</translation>
-<translation id="663674369910034433">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK1" />Синк хийх<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />Google-н үйлчилгээнүүд<ph name="END_LINK2" />-ээс харна уу.</translation>
 <translation id="6637100877383020115">Аппыг сайжруулахад туслахын тулд Chrome нь ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээдэг. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Ямар ч үед блоклох</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />-г хасах</translation>
@@ -1328,7 +1324,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 таб}other{<ph name="NUMBER_OF_TABS" /> таб}}</translation>
 <translation id="6929224077895306814">Таны төхөөрөмж болон Google Бүртгэлд хадгалсан аюулгүй байдлын бүх кодыг устгана</translation>
 <translation id="6937524809504266803">Хувийн болгох, холбох</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Хоч (заавал биш)</translation>
 <translation id="6942665639005891494">Тохиргооны цэсийн сонголтоор таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="694267552845942083">Та одоогоор Синк хийх тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Баталгаажуулах товчлуурыг товшино уу. Дээш шилжих</translation>
@@ -1780,7 +1775,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8890668505403261809">Нууцлалтай табуудаасаа хайх</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
-<translation id="8921980840204105660">Бусад төхөөрөмжөөсөө хавчуургаа авахын тулд синк хийнэ үү</translation>
 <translation id="8922289737868596582">Хуудсыг офлайн үед ашиглахын тулд Бусад сонголт товчлуураас татна уу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> бэлэн байна</translation>

@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">Kamera orqali mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2223461067862937305">QR kod yaratish</translation>
+<translation id="2229345671837147090">Masofaviy sahifa oynasi</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2240256190924001613">Profil konfiguratsiyasi mavjud</translation>
@@ -367,7 +368,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2547458583188611426">Sinxronlash ishlamayapti. Sinxronlashni boshlash uchun kodli iborani kiriting.</translation>
 <translation id="2551153019974022505">Hisob xatosi</translation>
 <translation id="2559843230610279254">Varqlar guruhi, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> ta varaq.</translation>
-<translation id="2573859402163467749">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat oladi.</translation>
 <translation id="2577522251608256362">Mahalla</translation>
 <translation id="2579713773888829241">Umumiy disklar</translation>
 <translation id="2597486707832946298">Kompyuter brauzeridagi barcha tanish funksiyalardan iPhone orqali foydalaning.</translation>
@@ -652,6 +652,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
 <translation id="3994422733891749358">Qaysi bildirishnomalar kelishini tanlang</translation>
 <translation id="3994522032746736727"><ph name="EMAIL" /> nomidan kirish</translation>
+<translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Sahifa yuklanishidagi kutish qatori: <ph name="EMAIL" /> yuklandi.</translation>
 <translation id="3997522473364371632">Parol ulashuvi administrator tomonidan faolsizlantirilgan.</translation>
 <translation id="4002066346123236978">Nomi</translation>
@@ -799,6 +800,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4651927776207937667">{count,plural, =1{1 daqiqadan keyin berkitish}other{{count} daqiqadan keyin berkitish}}</translation>
 <translation id="4652817563047461855">Parollaringiz xavfsiz ekaniga ishonch hosil qiling. Ular oʻgʻirlagan yoki yoʻqligi haqida maʼlumot oling va oʻzingizni onlayn himoya qilish boʻyicha maslahat oling. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Saqlash</translation>
+<translation id="466307903888586355">Tashkilotingiz fayllar saqlashni bloklagan</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tashkilotingiz internetni pinhona kezishni talab qiladi. Inkognito rejimida varaqlar guruhi sinxronlanmaydi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -1272,6 +1274,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6641465290890659327">Parolingiz nusxasini ulashing</translation>
 <translation id="6642362222295953972">Oldin ochilgan varaqqa oʻtish</translation>
 <translation id="6644512095122093795">Parollarni saqlashni taklif qilish</translation>
+<translation id="664573288952458293">Oddiy sahifa oynasi</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">Kelgusida qaysi saytlarga tashrif buyurishingizni bashorat qilish maqsadida siz tashrif qilgan URL manzillar Googlega yuborildi</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -1662,6 +1665,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8407669440184693619">Bu sayt uchun hech qanday parol topilmadi</translation>
 <translation id="8407831512155324054">Parollaringiz ishonchli darajada</translation>
 <translation id="842523302461531262">Sozlamalar orqali birlamchi qilish…</translation>
+<translation id="8425826545759040372">Inkognito sahifa oynasi</translation>
 <translation id="8428045167754449968">Shahar / tuman</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="8428634594422941299">OK</translation>

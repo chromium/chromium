@@ -224,7 +224,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1984417487208496350">Bez aizsardzības (nav ieteicams)</translation>
 <translation id="1986685561493779662">Nosaukums jau pastāv</translation>
 <translation id="200114059308480249">Vai iekļaut apkārtējo tekstu Google meklēšanā?</translation>
-<translation id="201060170519281460">Profila bloķēšana gādā, lai automašīnā jūsu informācija, tostarp sinhronizētās paroles un maksājumi, būtu drošībā.</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
 <translation id="204321170514947529">Pārlūkā Chrome ir arī “<ph name="APP_NAME" />” dati</translation>
@@ -387,7 +386,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2760989362628427051">Ieslēgt tumšo motīvu, kad ierīcē ir ieslēgts tumšais motīvs vai akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="2762000892062317888">tikko</translation>
 <translation id="276969039800130567">Pierakstīts ar adresi <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļā <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">Atlikušas <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neizdevās</translation>
 <translation id="2781151931089541271">Atlikusi 1 s</translation>
@@ -1035,7 +1033,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5749237766298580851">Izslēgta <ph name="SEPARATOR" /> Nav ieteicams</translation>
 <translation id="5752232708629533680">Kopīgot tikai GIF failu</translation>
 <translation id="5754350196967618083">Nevar atsvaidzināt Discover</translation>
-<translation id="5755162682436943950">Jūs esat izrakstījies. Tiek atvērts dialoglodziņš, lai pierakstītos un ieslēgtu sinhronizāciju.</translation>
 <translation id="5763382633136178763">Inkognito režīma cilnes</translation>
 <translation id="5763514718066511291">Pieskarieties, lai kopētu šīs lietotnes URL.</translation>
 <translation id="5765517223145864268">Pastāstiet mums par savu pieredzi. Vai <ph name="BEGIN_LINK" />mainiet iestatījumus<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6627583120233659107">Rediģēt mapi</translation>
 <translation id="6633067410344541938">Atbloķēt inkognito režīmu</translation>
 <translation id="6636623428211296678">Tālāk izpētīt citus iestatījumus vai beigt tūlīt</translation>
-<translation id="663674369910034433">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļās <ph name="BEGIN_LINK1" />Sinhronizēšana<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Google pakalpojumi<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju dati no pārlūka Chrome. <ph name="BEGIN_UMA_LINK" />Pārvaldīt<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Vienmēr bloķēt</translation>
 <translation id="6641780377503683465">Noņemt interesi “<ph name="INTEREST" />”</translation>
@@ -1328,7 +1324,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 cilne}zero{<ph name="NUMBER_OF_TABS" /> cilnes}one{<ph name="NUMBER_OF_TABS" /> cilne}other{<ph name="NUMBER_OF_TABS" /> cilnes}}</translation>
 <translation id="6929224077895306814">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
 <translation id="6937524809504266803">Personalizācija un saistīšana</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Segvārds (neobligāti)</translation>
 <translation id="6942665639005891494">Noklusējuma lejupielādes vietu var mainīt jebkurā laikā, izmantojot izvēlnes Iestatījumi opciju.</translation>
 <translation id="694267552845942083">Pašlaik jūs pielāgojat sinhronizācijas iestatījumus. Lai pabeigtu sinhronizācijas ieslēgšanu, pieskarieties pogai “Apstiprināt” ekrāna apakšdaļā. Pārvietoties augšup</translation>
@@ -1780,7 +1775,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8890668505403261809">Meklējiet inkognito cilnēs</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>
-<translation id="8921980840204105660">Veiciet sinhronizāciju, lai iegūtu grāmatzīmes no savām pārējām ierīcēm</translation>
 <translation id="8922289737868596582">Izmantojiet pogu Vairāk opciju, lai lejupielādētu lapas un piekļūtu tām bezsaistē</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Valodas pakotne “<ph name="LANG" />” ir gatava.</translation>

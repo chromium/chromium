@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
 <translation id="1986685561493779662">ມີຊື່ຢູ່ແລ້ວ</translation>
 <translation id="200114059308480249">ຮວມຂໍ້ຄວາມທີ່ຢູ່ອ້ອມຂ້າງໃນການຊອກຫາ Google ບໍ?</translation>
-<translation id="201060170519281460">ການລັອກໂປຣໄຟລ໌ຂອງທ່ານຊ່ວຍຮັກສາຂໍ້ມູນຂອງທ່ານໃນລົດໃຫ້ປອດໄພ, ຮວມເຖິງລະຫັດຜ່ານທີ່ຊິ້ງແລ້ວ, ການຈ່າຍເງິນ ແລະ ອື່ນໆ.</translation>
 <translation id="2021896219286479412">ການຄວບຄຸມເວັບໄຊແບບເຕັມຈໍ</translation>
 <translation id="2038563949887743358">ເປີດ​ຂໍ​ເວັບ​ໄຊ​ທ໌​ເດັ​ສ​ທັອບ</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />ຍັງມີຂໍ້ມູນໃນ Chrome ນຳ</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">ເປີດຮູບແບບສີສັນມືດເມື່ອຮູບແບບສີສັນມືດ ຫຼື ຕົວປະຢັດແບັດເຕີຣີຂອງອຸປະກອນຂອງທ່ານເປີດຢູ່</translation>
 <translation id="2762000892062317888">ຕອນນີ້</translation>
 <translation id="276969039800130567">ລົງຊື່ເຂົ້າ​ໃຊ້ເປັນ <ph name="USER_EMAIL_ADDRESS" /> ແລ້ວ.</translation>
-<translation id="2776236159752647997">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການບໍລິການຂອງ Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">ຍັງເຫຼືອ <ph name="SECONDS" /> ວິ</translation>
 <translation id="2779651927720337254">ບໍ່ສໍາເລັດ</translation>
 <translation id="2781151931089541271">ຍັງເຫຼືອ 1 ວິ</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">ປິດ <ph name="SEPARATOR" /> ບໍ່ແນະນຳ</translation>
 <translation id="5752232708629533680">ແບ່ງປັນ GIF ເທົ່ານັ້ນ</translation>
 <translation id="5754350196967618083">ບໍ່ສາມາດໂຫຼດຂໍ້ມູນ Discover ຄືນໃໝ່ໄດ້</translation>
-<translation id="5755162682436943950">ອອກຈາກລະບົບແລ້ວ. ເປີດກ່ອງໂຕ້ຕອບເພື່ອເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="5763382633136178763">ແຖບບໍ່ເຜີຍຕົນຕົວ</translation>
 <translation id="5763514718066511291">ແຕະເພື່ອສຳເນົາ URL ສຳລັບແອັບນີ້</translation>
 <translation id="5765517223145864268">ບອກພວກເຮົາວ່າປະສົບການຂອງທ່ານເປັນແນວໃດ. ຫຼື <ph name="BEGIN_LINK" />ປ່ຽນການຕັ້ງຄ່າຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">ແກ້ໄຂໂຟລເດີ</translation>
 <translation id="6633067410344541938">ປົດລັອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6636623428211296678">ສຳຫຼວດການຕັ້ງຄ່າເພີ່ມເຕີມທາງລຸ່ມ ຫຼື ສຳເລັດຕອນນີ້</translation>
-<translation id="663674369910034433">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບກຳຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK1" />ການຊິ້ງຂໍ້ມູນ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ການບໍລິການຂອງ Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_UMA_LINK" />ຈັດການ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ບລັອກຕະຫຼອດເວລາ</translation>
 <translation id="6641780377503683465">ລຶບ <ph name="INTEREST" /> ອອກ</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ແຖບ}other{<ph name="NUMBER_OF_TABS" /> ແຖບ}}</translation>
 <translation id="6929224077895306814">ລະຫັດຄວາມປອດໄພທັງໝົດທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ໃນບັນຊີ Google ຂອງທ່ານຈະຖືກລຶບອອກ</translation>
 <translation id="6937524809504266803">ການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ການລິ້ງ</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ຊື່ຫຼິ້ນ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6942665639005891494">ປ່ຽນບ່ອນຈັດເກັບການດາວໂຫຼດເລີ່ມຕົ້ນໄດ້ທຸກເວລາ ໂດຍໃຊ້ຕົວເລືອກເມນູການຕັ້ງຄ່າ</translation>
 <translation id="694267552845942083">ທ່ານກຳລັງປັບແຕ່ງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນຂອງທ່ານໃນຂະນະນີ້. ເພື່ອສຳເລັດການເປີດການຊິ້ງຂໍ້ມູນ, ກະລຸນາແຕະປຸ່ມຢືນຢັນຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ. ເລື່ອນຂຶ້ນ</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">ຊອກຫາແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ</translation>
 <translation id="8898822736010347272">ສົ່ງ URL ຂອງບາງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງ, ຂໍ້ມູນລະບົບທີ່ຈຳກັດ ແລະ ບາງເນື້ອຫາໃນໜ້າໃຫ້ Google ເພື່ອຊ່ວຍຄົ້ນພົບອັນຕະລາຍໃໝ່ ແລະ ປົກປ້ອງທຸກຄົນໃນເວັບ.</translation>
 <translation id="8909135823018751308">ແຊຣ໌...</translation>
-<translation id="8921980840204105660">ຊິ້ງຂໍ້ມູນເພື່ອໃຊ້ບຸກມາກຂອງທ່ານຈາກອຸປະກອນອື່ນຂອງທ່ານ</translation>
 <translation id="8922289737868596582">ດາວໂຫຼດໜ້າເວັບຕ່າງໆຈາກປຸ່ມຕົວເລືອກເພີ່ມເຕີມເພື່ອໃຊ້ພວກມັນແບບອອບລາຍ</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ພ້ອມແລ້ວ</translation>

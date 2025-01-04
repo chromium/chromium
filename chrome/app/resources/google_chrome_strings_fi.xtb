@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
+<translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">Vaihda oletusselaimeksi:</translation>
 <translation id="2775140325783767197">Chrome ei voi tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
 <translation id="2797864378188255696">Kun kirjaudut Googlen palveluihin (esim. Gmailiin tai YouTubeen) tilillä <ph name="USER_EMAIL" />, voit kirjautua Chromeen automaattisesti samalla tilillä</translation>
+<translation id="2799162042226656283">Oma Chrome</translation>
 <translation id="2799223571221894425">Käynnistä uudelleen</translation>
 <translation id="2825024317344269723">Vaarallinen sivusto. Chrome poisti ilmoitukset.</translation>
 <translation id="2841525013647267359">Käännä kielestä</translation>

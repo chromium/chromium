@@ -2495,12 +2495,6 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
-<translation id="2785422026482376078">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
-
-      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
-      Se questa policy viene impostata su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria. Se questa policy viene impostata su False o se non viene configurata, il modello di ricarica adattiva non influisce sulla procedura di ricarica.
-
-      Nota: questa policy non ha effetto se viene configurata DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Segnala informazioni sullo stato di Android</translation>
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
@@ -8092,21 +8086,6 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
       Se viene impostato su Disattivato, l'icona delle funzionalità sperimentali del browser viene rimossa dalla barra degli strumenti.
 
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questo criterio.</translation>
-<translation id="67952585272033079">L'integrità della batteria può essere influenzata da fattori quali ricariche complete frequenti e ricariche prolungate. Questa policy offre tre opzioni per ottimizzare il comportamento di ricarica e attenuare questi fattori, prolungando così la durata della batteria.
-
-Se la policy viene impostata su Standard, la batteria viene caricata normalmente fino al 100%. Questa operazione disattiva le ricariche adattiva e limitata.
-
-Se la policy viene impostata su Adaptive, il dispositivo apprende le tue abitudini di ricarica e ritarda la ricarica al 100% fino a quando non è necessario. Questo aiuta a prolungare l'integrità della batteria.
-
-Se la policy viene impostata su Limited, la batteria si ricarica solo fino a circa l'80% per massimizzare la durata.
-
-Se la policy non viene configurata, viene applicata l'opzione Standard (se supportata).
-
-La policy DevicePowerBatteryChargingOptimization sostituisce la policy DevicePowerAdaptiveChargingEnabled.
-
-Se DevicePowerBatteryChargingOptimization non viene impostata, DevicePowerAdaptiveChargingEnabled controlla la ricarica adattiva.
-
-Le policy DevicePowerBatteryChargingOptimization e DevicePowerAdaptiveChargingEnabled hanno sempre la precedenza sulle impostazioni utente.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>

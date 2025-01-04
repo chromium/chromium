@@ -224,7 +224,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1986685561493779662">Ce nom existe déjà</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
-<translation id="201060170519281460">Votre verrouillage de profil protège vos informations dans la voiture, y compris les mots de passe synchronisés, les paiements et plus encore.</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> a aussi des données dans Chrome</translation>
@@ -387,7 +386,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou la fonction Économiseur de pile de votre appareil est activé</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Il reste <ph name="SECONDS" /> secondes</translation>
 <translation id="2779651927720337254">échec</translation>
 <translation id="2781151931089541271">Il reste 1 s</translation>
@@ -1035,7 +1033,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5749237766298580851">Désactivée <ph name="SEPARATOR" /> Option non recommandée</translation>
 <translation id="5752232708629533680">Partager le fichier GIF uniquement</translation>
 <translation id="5754350196967618083">Impossible d'actualiser Découvertes</translation>
-<translation id="5755162682436943950">Déconnecté. Ouvre une boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="5763382633136178763">Onglets de navigation privée</translation>
 <translation id="5763514718066511291">Touchez pour copier l'URL pour cette application</translation>
 <translation id="5765517223145864268">Parlez-nous de votre expérience. Ou <ph name="BEGIN_LINK" />modifiez vos paramètres<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6633067410344541938">Déverrouiller le mode de navigation privée</translation>
 <translation id="6636623428211296678">Explorez plus de paramètres ci-dessous ou terminez maintenant</translation>
-<translation id="663674369910034433">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6641780377503683465">Retirez <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6937524809504266803">Personnalisation, association</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
 <translation id="6942665639005891494">Vous pouvez changer le dossier de téléchargement par défaut en tout temps grâce à l'option de menu Paramètres.</translation>
 <translation id="694267552845942083">Vous êtes en train de personnaliser vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir en haut</translation>
@@ -1780,7 +1775,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8890668505403261809">Recherchez dans vos onglets de navigation privée</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8909135823018751308">Partager...</translation>
-<translation id="8921980840204105660">Synchronisez vos données pour ajouter vos favoris de vos autres appareils</translation>
 <translation id="8922289737868596582">Téléchargez des pages à partir du bouton Plus d'options pour les utiliser hors connexion</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> est prêt</translation>

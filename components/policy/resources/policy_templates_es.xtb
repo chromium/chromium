@@ -2437,12 +2437,6 @@ Si se asigna el valor "command_line" a una extensión, se impedirá que se cargu
 dicha extensión desde la línea de comandos.</translation>
 <translation id="2780840673734667062">Inhabilitar el inicio de sesión con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borrar datos de navegación al salir</translation>
-<translation id="2785422026482376078">Especifica si se permite que el modelo de Carga inteligente suspenda el proceso de carga para prolongar la duración de la batería.
-
-      Cuando el dispositivo está conectado a la red eléctrica, el modelo de Carga inteligente evalúa si se debe suspender el proceso de carga para aumentar la duración de la batería. Si el modelo de Carga inteligente suspende el proceso de carga, mantendrá la batería a un determinado nivel (por ejemplo, al 80 %) y, después, cargará el dispositivo al 100 % cuando el usuario lo necesite.
-      Si se asigna el valor True a esta política, se habilitará el modelo de Carga inteligente y se permitirá que suspenda el proceso de carga para ampliar la duración de la batería. Si se le asigna el valor False o no se le asigna ningún valor, el modelo de Carga inteligente no influirá en el proceso de carga.
-
-      Nota: Esta política no tendrá efecto si se establece la política DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Proporcionar información sobre el estado de Android</translation>
 <translation id="2787774054174244402">Si se le asigna el valor "true" a esta política, se evita que los usuarios deban escribir en dispositivos de almacenamiento externos.
 
@@ -8018,21 +8012,6 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="67952585272033079">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política ofrece tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que, en última instancia, prolonga la vida útil de la batería.
-
-Si se asigna el valor Estándar a la política, la batería se cargará con normalidad hasta el 100 %. Se inhabilita Carga inteligente y la carga limitada.
-
-Si se asigna el valor Adaptativa a la política, el dispositivo aprende tus hábitos de carga y retrasa la carga al 100 % hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
-
-Si se asigna el valor Limitada, la batería solo se cargará hasta el 80 % aproximadamente para maximizar su vida útil.
-
-Si no se establece esta política, se aplicará la opción Estándar (si se admite).
-
-La política DevicePowerBatteryChargingOptimization anula la política DevicePowerAdaptiveChargingEnabled.
-
-DevicePowerAdaptiveChargingEnabled controla Carga inteligente si DevicePowerBatteryChargingOptimization no se ha definido.
-
-Las políticas DevicePowerBatteryChargingOptimization y DevicePowerAdaptiveChargingEnabled siempre tienen prioridad sobre la configuración del usuario.</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>

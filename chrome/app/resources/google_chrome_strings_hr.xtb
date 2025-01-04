@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">Zatvorite zaslon za prijevod</translation>
 <translation id="2139300032719313227">Ponovo pokrenite Chrome OS</translation>
 <translation id="2151406531797534936">Sada ponovo pokrenite Chrome</translation>
+<translation id="2163089732491971196">Da biste upotrebljavali i spremali Chromeove podatke spremljene na vašem Google računu, unesite šifru</translation>
 <translation id="2174917724755363426">Instaliranje nije dovršeno. Jeste li sigurni da ga želite otkazati?</translation>
 <translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2190166659037789668">Pogreška provjere ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="2797864378188255696">Kad se na Googleove usluge kao što su Gmail ili YouTube prijavljujete pomoću računa <ph name="USER_EMAIL" />, možete se automatski prijaviti u Chrome istim računom</translation>
+<translation id="2799162042226656283">Vaš Chrome</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2825024317344269723">Opasna web-lokacija. Chrome je uklonio obavijesti.</translation>
 <translation id="2841525013647267359">Jezik izvornika</translation>

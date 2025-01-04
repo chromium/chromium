@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">ปิดหน้าจอแปลภาษา</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
+<translation id="2163089732491971196">โปรดป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="2174917724755363426">การติดตั้งไม่สมบูรณ์ คุณแน่ใจไหมว่าต้องการยกเลิก</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ข้อผิดพลาดในการตรวจสอบการอัปเดต: <ph name="UPDATE_CHECK_ERROR" /></translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">เปลี่ยนเบราว์เซอร์ที่เป็นค่าเริ่มต้นเป็น:</translation>
 <translation id="2775140325783767197">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2797864378188255696">เมื่อลงชื่อเข้าใช้บริการของ Google อย่าง Gmail หรือ YouTube ด้วย <ph name="USER_EMAIL" /> คุณจะลงชื่อเข้าใช้ Chrome ด้วยบัญชีเดียวกันได้โดยอัตโนมัติ</translation>
+<translation id="2799162042226656283">Chrome ที่บ่งบอกความเป็นคุณ</translation>
 <translation id="2799223571221894425">เปิดใหม่</translation>
 <translation id="2825024317344269723">เว็บไซต์อันตราย Chrome นำสิทธิ์เข้าถึงการแจ้งเตือนออกแล้ว</translation>
 <translation id="2841525013647267359">แปลจากภาษา</translation>

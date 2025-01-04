@@ -224,7 +224,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1986685561493779662">El nom ja existeix</translation>
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
-<translation id="201060170519281460">El bloqueig de perfil protegeix la informació al cotxe, incloses les contrasenyes sincronitzades, els pagaments i més.</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> també té dades a Chrome</translation>
@@ -387,7 +386,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2760989362628427051">Activa el tema fosc quan el teu dispositiu tingui activat aquest tema o el mode d'estalvi de bateria</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="276969039800130567">Inici de sessió com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta els <ph name="BEGIN_LINK" />serveis de Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Queden <ph name="SECONDS" /> segons</translation>
 <translation id="2779651927720337254">ha fallat</translation>
 <translation id="2781151931089541271">Queda 1 segon</translation>
@@ -1035,7 +1033,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> Opció no recomanada</translation>
 <translation id="5752232708629533680">Comparteix només el GIF</translation>
 <translation id="5754350196967618083">Discover no est pot actualitzar</translation>
-<translation id="5755162682436943950">Has tancat la sessió. Obre el quadre de diàleg per iniciar la sessió i activar la sincronització.</translation>
 <translation id="5763382633136178763">Pestanyes d'incògnit</translation>
 <translation id="5763514718066511291">Toca per copiar l'URL d'aquesta aplicació</translation>
 <translation id="5765517223145864268">Explica'ns la teva experiència. També pots <ph name="BEGIN_LINK" />canviar la configuració<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6627583120233659107">Edita la carpeta</translation>
 <translation id="6633067410344541938">Desbloqueja el mode d'incògnit</translation>
 <translation id="6636623428211296678">Explora més opcions de configuració a continuació o acaba ara</translation>
-<translation id="663674369910034433">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK1" />Sincronització<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />serveis de Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_UMA_LINK" />Gestiona<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloqueja sempre</translation>
 <translation id="6641780377503683465">Suprimeix <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 pestanya}other{<ph name="NUMBER_OF_TABS" /> pestanyes}}</translation>
 <translation id="6929224077895306814">Se suprimiran tots els codis de seguretat desats al teu dispositiu i al teu Compte de Google</translation>
 <translation id="6937524809504266803">Personalització i enllaçaments</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Àlies (opcional)</translation>
 <translation id="6942665639005891494">Canvia la ubicació predeterminada de baixada en qualsevol moment amb l'opció del menú Configuració</translation>
 <translation id="694267552845942083">Estàs personalitzant la configuració de la sincronització. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha a la part inferior de la pantalla. Navega cap amunt.</translation>
@@ -1780,7 +1775,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8890668505403261809">Cerca a les pestanyes d'incògnit</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
 <translation id="8909135823018751308">Comparteix...</translation>
-<translation id="8921980840204105660">Sincronitza per obtenir les adreces d'interès dels teus altres dispositius</translation>
 <translation id="8922289737868596582">Baixa pàgines amb el botó Més opcions per utilitzar-les sense connexió</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> està a punt</translation>

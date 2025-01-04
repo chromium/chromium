@@ -2435,12 +2435,6 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de com
 Définir "command_line" empêche le chargement de l'extension à partir de la ligne de commande.</translation>
 <translation id="2780840673734667062">Ne pas permettre la connexion avec d'autres comptes Google</translation>
 <translation id="2784880732336446591">Effacer les données de navigation en fin de session</translation>
-<translation id="2785422026482376078">Indique si un modèle de recharge adaptative est autorisé à suspendre le cycle de recharge pour prolonger la durée de vie de la batterie.
-
-      Lorsque l'appareil est branché sur secteur, le modèle de recharge adaptative évalue si le cycle de recharge doit être suspendu pour prolonger la durée de vie de la batterie. Si le modèle de recharge adaptative suspend le cycle de recharge, il maintient la batterie à un certain niveau (par ex., 80 %), puis recharge l'appareil à 100 % quand l'utilisateur en a besoin.
-      Si cette règle est définie sur "True", le modèle de recharge adaptative est activé et autorisé à suspendre le cycle de recharge pour prolonger la durée de vie de la batterie. Si cette règle est définie sur "False" ou n'est pas configurée, le modèle de recharge adaptative n'a pas d'incidence sur le cycle de recharge.
-
-      Remarque : Cette règle n'a aucun effet si la règle DevicePowerBatteryChargingOptimization est configurée.</translation>
 <translation id="2787173078141616821">Transmettre des informations sur l'état d'Android</translation>
 <translation id="2787774054174244402">Si vous définissez cette règle sur "True", les utilisateurs ne peuvent pas modifier les fichiers stockés sur les périphériques de stockage externes.
 
@@ -7977,21 +7971,6 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
       Si cette règle est désactivée, l'icône des fonctionnalités expérimentales du navigateur ne s'affiche pas dans la barre d'outils.
 
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
-<translation id="67952585272033079">L'état de la batterie peut être affecté par des facteurs comme les recharges complètes fréquentes et les recharges prolongées. Cette règle propose trois options pour optimiser la recharge, atténuer ces facteurs et prolonger ainsi la durée de vie de la batterie.
-
-Si vous définissez cette règle sur "Standard", la batterie se recharge normalement à 100 %. Cela désactive les recharges adaptative et limitée.
-
-Si vous définissez cette règle sur "Adaptative", l'appareil apprend vos habitudes de recharge et retarde la recharge à 100 % jusqu'à ce que cela soit nécessaire. Cela contribue à prolonger la durée de vie de la batterie.
-
-Si vous définissez la règle sur "Limitée", la batterie ne se recharge qu'à environ 80 % pour maximiser sa durée de vie.
-
-Si cette règle n'est pas configurée, l'option "Standard" est appliquée (si elle est disponible).
-
-La règle DevicePowerBatteryChargingOptimization remplace la règle DevicePowerAdaptiveChargingEnabled.
-
-La règle DevicePowerAdaptiveChargingEnabled contrôle la recharge adaptative si la règle DevicePowerBatteryChargingOptimization n'est pas configurée.
-
-Les règles DevicePowerBatteryChargingOptimization et DevicePowerAdaptiveChargingEnabled prévalent toujours sur les paramètres utilisateur.</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>

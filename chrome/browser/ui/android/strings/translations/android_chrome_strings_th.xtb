@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="1986685561493779662">มีชื่อนี้อยู่แล้ว</translation>
 <translation id="200114059308480249">รวมข้อความที่อยู่โดยรอบในการค้นหาบน Google ไหม</translation>
-<translation id="201060170519281460">การล็อกโปรไฟล์ช่วยรักษาข้อมูลในรถให้ปลอดภัย ซึ่งข้อมูลนี้รวมถึงรหัสผ่านที่ซิงค์ การชำระเงิน และอื่นๆ</translation>
 <translation id="2021896219286479412">ส่วนควบคุมเว็บไซต์แบบเต็มหน้าจอ</translation>
 <translation id="2038563949887743358">เปิดการขอเว็บไซต์เดสก์ท็อป</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> มีข้อมูลอยู่ใน Chrome ด้วย</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">เปิดธีมสีเข้มเมื่อโหมดธีมสีเข้มหรือโหมดประหยัดแบตเตอรี่ของอุปกรณ์เปิดอยู่</translation>
 <translation id="2762000892062317888">เมื่อสักครู่</translation>
 <translation id="276969039800130567">ลงชื่อเข้าใช้โดยใช้ <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="2776236159752647997">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการต่างๆ ของ Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">เหลือ <ph name="SECONDS" /> วิ</translation>
 <translation id="2779651927720337254">ล้มเหลว</translation>
 <translation id="2781151931089541271">เหลือ 1 วิ</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">ปิด <ph name="SEPARATOR" /> ไม่แนะนำ</translation>
 <translation id="5752232708629533680">แชร์ GIF เท่านั้น</translation>
 <translation id="5754350196967618083">รีเฟรชฟีดสำรวจไม่ได้</translation>
-<translation id="5755162682436943950">ออกจากระบบ เปิดกล่องโต้ตอบเพื่อลงชื่อเข้าใช้และเปิดการซิงค์</translation>
 <translation id="5763382633136178763">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="5763514718066511291">แตะเพื่อคัดลอก URL สำหรับแอปนี้</translation>
 <translation id="5765517223145864268">เล่าประสบการณ์ของคุณให้เราฟัง หรือ<ph name="BEGIN_LINK" />เปลี่ยนการตั้งค่า<ph name="END_LINK" /></translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">แก้ไขโฟลเดอร์</translation>
 <translation id="6633067410344541938">ปลดล็อกเซสชันที่ไม่ระบุตัวตน</translation>
 <translation id="6636623428211296678">สำรวจดูการตั้งค่าเพิ่มเติมด้านล่างหรือสิ้นสุดการตรวจสอบเลย</translation>
-<translation id="663674369910034433">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK1" />การซิงค์<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />บริการต่างๆ ของ Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">บล็อกตลอดเวลา</translation>
 <translation id="6641780377503683465">นำ<ph name="INTEREST" />ออก</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 แท็บ}other{<ph name="NUMBER_OF_TABS" /> แท็บ}}</translation>
 <translation id="6929224077895306814">จะมีการลบรหัสความปลอดภัยทั้งหมดที่บันทึกไว้ในอุปกรณ์และในบัญชี Google ของคุณ</translation>
 <translation id="6937524809504266803">การปรับเปลี่ยนในแบบของคุณและการลิงก์</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ชื่อเล่น (ไม่บังคับ)</translation>
 <translation id="6942665639005891494">เปลี่ยนตำแหน่งเริ่มต้นในการดาวน์โหลดได้ทุกเมื่อโดยใช้ตัวเลือกเมนู "การตั้งค่า"</translation>
 <translation id="694267552845942083">ขณะนี้คุณกำลังปรับแต่งการตั้งค่าการซิงค์ แตะปุ่ม "ยืนยัน" ใกล้ด้านล่างของหน้าจอเพื่อเปิดการซิงค์ให้เสร็จสิ้น กลับ</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">ค้นหาแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="8898822736010347272">ส่ง URL ของหน้าบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้าไปให้ Google เพื่อช่วยตรวจหาภัยคุกคามใหม่ๆ และปกป้องทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="8909135823018751308">แชร์…</translation>
-<translation id="8921980840204105660">ซิงค์เพื่อรับบุ๊กมาร์กจากอุปกรณ์อื่นๆ</translation>
 <translation id="8922289737868596582">ดาวน์โหลดหน้าจากปุ่มตัวเลือกเพิ่มเติมเพื่อใช้งานแบบออฟไลน์</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">ภาษา<ph name="LANG" />พร้อมใช้งานแล้ว</translation>

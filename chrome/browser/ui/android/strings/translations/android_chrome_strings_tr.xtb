@@ -224,7 +224,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
 <translation id="200114059308480249">Seçilen kelimenin etrafındaki metin Google aramalarına dahil edilsin mi?</translation>
-<translation id="201060170519281460">Profil kilidiniz sayesinde; senkronize edilmiş şifreler, ödemeler ve daha pek çok konuyla ilgili bilgileriniz arabada güvende tutulur.</translation>
 <translation id="2021896219286479412">Tam ekran site kontrolleri</translation>
 <translation id="2038563949887743358">Masaüstü sitesi iste işlevini etkinleştir</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> uygulamasına ait veriler Chrome'da da mevcut</translation>
@@ -387,7 +386,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2760989362628427051">Cihazınızın koyu tema veya Pil Tasarrufu özelliği açık olduğunda koyu tema açılır</translation>
 <translation id="2762000892062317888">az önce</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açıldı.</translation>
-<translation id="2776236159752647997">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Google hizmetleri<ph name="END_LINK" /> konusuna bakın</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sn. kaldı</translation>
 <translation id="2779651927720337254">başarısız</translation>
 <translation id="2781151931089541271">1 sn. kaldı</translation>
@@ -1035,7 +1033,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5749237766298580851">Kapalı <ph name="SEPARATOR" /> Önerilmez</translation>
 <translation id="5752232708629533680">Yalnızca GIF paylaşılıyor</translation>
 <translation id="5754350196967618083">Keşfet yenilenemiyor</translation>
-<translation id="5755162682436943950">Oturum kapatıldı. Oturumu ve senkronizasyonu açmayla ilgili iletişim kutusunu açar.</translation>
 <translation id="5763382633136178763">Gizli mod sekmeleri</translation>
 <translation id="5763514718066511291">Bu uygulamanın URL'sini kopyalamak için dokunun</translation>
 <translation id="5765517223145864268">Bize deneyiminizden bahsedin ya da <ph name="BEGIN_LINK" />ayarlarınızı değiştirin<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6627583120233659107">Klasörü düzenle</translation>
 <translation id="6633067410344541938">Gizli modun kilidini aç</translation>
 <translation id="6636623428211296678">Aşağıda diğer ayarlara bakın veya şimdi tamamlayın</translation>
-<translation id="663674369910034433">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK1" />Senkronizasyon<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />Google hizmetleri<ph name="END_LINK2" /> konularına bakın.</translation>
 <translation id="6637100877383020115">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönetin<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Her zaman engelle</translation>
 <translation id="6641780377503683465">Kaldır: <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 sekme}other{<ph name="NUMBER_OF_TABS" /> sekme}}</translation>
 <translation id="6929224077895306814">Cihazınızda ve Google Hesabınızda kayıtlı tüm güvenlik kodları silinecek</translation>
 <translation id="6937524809504266803">Kişiselleştirme ve Bağlama</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Takma ad (isteğe bağlı)</translation>
 <translation id="6942665639005891494">Dosyaların indirileceği varsayılan konumu istediğiniz zaman Ayarlar menü seçeneğini kullanarak değiştirebilirsiniz</translation>
 <translation id="694267552845942083">Şu anda Senkronizasyon ayarlarınızı özelleştiriyorsunuz. Senkronizasyonu etkinleştirme işlemini tamamlamak için ekranın altına yakın bir yerde bulunan Onayla düğmesine dokunun. Yukarı git</translation>
@@ -1780,7 +1775,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8890668505403261809">Gizli sekmelerinizde arama yapın</translation>
 <translation id="8898822736010347272">Yeni tehditleri keşfetmeye ve web'deki herkesi korumaya yardımcı olmak için, ziyaret ettiğiniz bazı sayfaların URL'lerini, sınırlı sistem bilgilerini ve bazı sayfa içeriklerini Google'a gönderir.</translation>
 <translation id="8909135823018751308">Paylaş…</translation>
-<translation id="8921980840204105660">Diğer cihazlarınızdaki yer işaretlerinize ulaşmak için senkronize edin</translation>
 <translation id="8922289737868596582">Çevrimdışı olarak kullanmak istediğiniz sayfaları Diğer seçenekler düğmesini kullanarak indirin</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> hazır</translation>

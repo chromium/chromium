@@ -2559,12 +2559,6 @@ Menyetel "command_line" akan memblokir ekstensi agar tidak dimuat dari
 command line.</translation>
 <translation id="2780840673734667062">Nonaktifkan login dengan Akun Google tambahan</translation>
 <translation id="2784880732336446591">Menghapus Data Penjelajahan saat Keluar</translation>
-<translation id="2785422026482376078">Menentukan apakah model pengisian daya adaptif akan diizinkan untuk menunda proses pengisian daya guna memperpanjang daya tahan baterai.
-
-      Jika perangkat mengaktifkan AC (pengisian daya adaptif), model pengisian daya adaptif akan mengevaluasi apakah proses pengisian daya harus ditunda untuk memperpanjang daya tahan baterai. Jika proses pengisian daya ditunda, model pengisian daya adaptif akan menghentikan proses pengisian daya pada level tertentu (misalnya 80%), lalu kembali mengisi daya perangkat sampai 100% saat pengguna memerlukannya.
-      Jika kebijakan ini disetel ke Benar (True), model pengisian daya adaptif akan diaktifkan dan diizinkan menunda proses pengisian daya guna memperpanjang daya tahan baterai. Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, model pengisian daya adaptif tidak akan memengaruhi proses pengisian daya.
-
-      Catatan: Kebijakan ini tidak akan berpengaruh jika DevicePowerBatteryChargingOptimization disetel.</translation>
 <translation id="2787173078141616821">Informasi laporan tentang status Android</translation>
 <translation id="2787774054174244402">Jika kebijakan ditetapkan ke Benar (True), pengguna tidak akan dapat menulis ke perangkat penyimpanan eksternal.
 
@@ -8343,21 +8337,6 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
       Jika kebijakan disetel ke Nonaktif, ikon fitur eksperimental browser akan dihapus dari toolbar.
 
       chrome://flags dan cara lain untuk menonaktifkan dan mengaktifkan fitur browser akan tetap berperilaku sebagaimana mestinya terlepas dari apakah kebijakan ini disetel ke Aktif atau Nonaktif.</translation>
-<translation id="67952585272033079">Kesehatan baterai dapat dipengaruhi oleh faktor seperti pengisian daya penuh yang sering dan durasi pengisian daya yang lama. Kebijakan ini menyediakan tiga opsi untuk mengoptimalkan perilaku pengisian daya dan memitigasi faktor tersebut, yang pada akhirnya akan memperpanjang masa pakai baterai.
-
-Jika kebijakan ini disetel ke Standar, baterai akan diisi secara normal hingga 100%. Skenario ini akan menonaktifkan pengisian daya adaptif dan terbatas.
-
-Jika kebijakan ini disetel ke Adaptif, perangkat akan mempelajari kebiasaan pengisian daya Anda dan menunda pengisian daya sampai 100% hingga diperlukan. Skenario ini membantu memperpanjang kesehatan baterai.
-
-Jika kebijakan ini disetel ke Terbatas, baterai hanya akan diisi daya hingga sekitar 80% untuk memaksimalkan masa pakainya.
-
-Jika kebijakan ini tidak disetel, opsi Standar akan diterapkan (jika didukung).
-
-Kebijakan DevicePowerBatteryChargingOptimization akan menggantikan kebijakan DevicePowerAdaptiveChargingEnabled.
-
-DevicePowerAdaptiveChargingEnabled mengontrol pengisian daya adaptif jika DevicePowerBatteryChargingOptimization tidak disetel.
-
-Kebijakan DevicePowerBatteryChargingOptimization dan DevicePowerAdaptiveChargingEnabled selalu diutamakan daripada setelan pengguna.</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>

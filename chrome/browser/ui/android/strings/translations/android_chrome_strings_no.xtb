@@ -224,7 +224,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1986685561493779662">Navnet finnes allerede</translation>
 <translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
-<translation id="201060170519281460">Profillåsen holder informasjonen din sikker i bilen, inkludert synkroniserte passord, betalinger med mer.</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
@@ -387,7 +386,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Se <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
 <translation id="2781151931089541271">1 sekund igjen</translation>
@@ -1035,7 +1033,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5749237766298580851">Av <ph name="SEPARATOR" /> Anbefales ikke</translation>
 <translation id="5752232708629533680">Del kun GIF</translation>
 <translation id="5754350196967618083">Kan ikke oppdatere Discover</translation>
-<translation id="5755162682436943950">Logget av. Åpner dialogboksen for å logge på og slå på synkronisering.</translation>
 <translation id="5763382633136178763">Inkognitofaner</translation>
 <translation id="5763514718066511291">Trykk for å kopiere nettadressen for denne appen</translation>
 <translation id="5765517223145864268">Fortell oss om opplevelsen din. Eller <ph name="BEGIN_LINK" />endre innstillingene<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6633067410344541938">Lås opp inkognitomodus</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
-<translation id="663674369910034433">Se <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="6637100877383020115">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkér alltid</translation>
 <translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
 <translation id="6929224077895306814">Alle sikkerhetskoder som er lagret på enheten og i Google-kontoen din, blir slettet</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Kallenavn (valgfritt)</translation>
 <translation id="6942665639005891494">Endre standard nedlastingssted når som helst via menyalternativet Innstillinger</translation>
 <translation id="694267552845942083">Du holder på å tilpasse innstillingene for Synkronisering. For å gjøre deg ferdig med å slå på synkronisering, trykk på Bekreft-knappen nederst på skjermen. Gå opp</translation>
@@ -1780,7 +1775,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8890668505403261809">Søk i inkognitofanene dine</translation>
 <translation id="8898822736010347272">Sender nettadresser for noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google for å bidra til å oppdage nye trusler og beskytte alle på nettet.</translation>
 <translation id="8909135823018751308">Del</translation>
-<translation id="8921980840204105660">Synkroniser for å få bokmerkene dine på andre enheter du bruker</translation>
 <translation id="8922289737868596582">Last ned sider via Flere alternativer-knappen for å bruke dem uten nett</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> er klart</translation>

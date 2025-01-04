@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="1986685561493779662">নামটি আগে থেকেই আছে</translation>
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
-<translation id="201060170519281460">'প্রোফাইল লক' গাড়ির মধ্যে আপনার তথ্য সুরক্ষিত রাখে। এর মধ্যে সিঙ্ক করা পাসওয়ার্ড, পেমেন্ট এবং আরও অনেক কিছু অন্তর্ভুক্ত।</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> অ্যাপের ডেটা Chrome ব্রাউজারেও আছে</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">আপনার ডিভাইসে গাঢ় থিম বা ব্যাটারি সেভার চালু থাকলে, গাঢ় থিম চালু করুন</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> রূপে প্রবেশ করেছেন৷</translation>
-<translation id="2776236159752647997">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
 <translation id="2781151931089541271">১ সেকেন্ড বাকি আছে</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851"><ph name="SEPARATOR" /> বন্ধ করার বিষয়টি সাজেস্ট করা হয়নি</translation>
 <translation id="5752232708629533680">শুধুমাত্র GIF শেয়ার করুন</translation>
 <translation id="5754350196967618083">Discover রিফ্রেশ করা যাচ্ছে না</translation>
-<translation id="5755162682436943950">সাইন-আউট হয়ে গেছেন। সাইন-ইন করতে এবং সিঙ্ক চালু করতে ডায়ালগ বক্স খোলে।</translation>
 <translation id="5763382633136178763">ছদ্মবেশী ট্যাব</translation>
 <translation id="5763514718066511291">এই অ্যাপের ইউআরএল কপি করতে ট্যাপ করুন</translation>
 <translation id="5765517223145864268">আপনার অভিজ্ঞতা সম্পর্কে আমাদের বলুন। অথবা <ph name="BEGIN_LINK" />আপনার সেটিংস পরিবর্তন করুন<ph name="END_LINK" />।</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">ফোল্ডার সম্পাদনা করুন</translation>
 <translation id="6633067410344541938">'ছদ্মবেশী' মোড আনলক করুন</translation>
 <translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
-<translation id="663674369910034433">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK1" />সিঙ্ক<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google পরিষেবা<ph name="END_LINK2" /> দেখুন</translation>
 <translation id="6637100877383020115">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">সবসময় ব্লক করুন</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> সরিয়ে দিন</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{১টি ট্যাব}one{<ph name="NUMBER_OF_TABS" />টি ট্যাব}other{<ph name="NUMBER_OF_TABS" />টি ট্যাব}}</translation>
 <translation id="6929224077895306814">আপনার ডিভাইস ও Google অ্যাকাউন্টে সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
 <translation id="6937524809504266803">পছন্দমতো সাজিয়ে নেওয়া ও লিঙ্ক করা</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">ডাকনাম (ঐচ্ছিক)</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="694267552845942083">এখন আপনার সিঙ্ক সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা "কনফার্ম করুন" বোতামে ট্যাপ করে সিঙ্ক চালু করুন। উপরের দিকে নেভিগেট করুন</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">আপনার ছদ্মবেশী ট্যাব সার্চ করুন</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
-<translation id="8921980840204105660">আপনার অন্যান্য ডিভাইস থেকে বুকমার্ক পেতে সিঙ্ক করুন</translation>
 <translation id="8922289737868596582">পৃষ্ঠাগুলি অফলাইনে ব্যবহার করতে সেগুলি আরও বিকল্প বোতাম থেকে ডাউনলোড করুন</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ভাষা প্রস্তুত</translation>

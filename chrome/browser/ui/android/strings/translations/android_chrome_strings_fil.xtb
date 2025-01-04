@@ -224,7 +224,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
 <translation id="200114059308480249">Isama ang katabing text sa mga paghahanap sa Google?</translation>
-<translation id="201060170519281460">Pinapanatiling secure ng iyong lock ng profile ang impormasyon mo sa kotse, kasama na ang mga naka-sync na password, pagbabayad, at higit pa.</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
 <translation id="2038563949887743358">I-on ang Hilingin ang site sa desktop</translation>
 <translation id="204321170514947529">May data rin ang <ph name="APP_NAME" /> sa Chrome</translation>
@@ -387,7 +386,6 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2760989362628427051">I-on ang madilim na tema kapag naka-on ang madilim na tema o Pantipid ng Baterya ng iyong device</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="276969039800130567">Naka-sign in bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Mga serbisyo ng Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> (na) segundo na lang ang natitira</translation>
 <translation id="2779651927720337254">nabigo</translation>
 <translation id="2781151931089541271">1 segundo na lang ang natitira</translation>
@@ -1035,7 +1033,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5749237766298580851">Naka-off <ph name="SEPARATOR" /> Hindi inirerekomenda</translation>
 <translation id="5752232708629533680">Ibahagi lang ang GIF</translation>
 <translation id="5754350196967618083">Hindi ma-refresh ang Discover</translation>
-<translation id="5755162682436943950">Naka-sign out. Binubuksan ang dialog para mag-sign in at i-on ang pag-sync.</translation>
 <translation id="5763382633136178763">Mga tab na incognito</translation>
 <translation id="5763514718066511291">I-tap upang kopyahin ang URL para sa app na ito</translation>
 <translation id="5765517223145864268">Sabihin sa amin ang iyong karanasan. O <ph name="BEGIN_LINK" />baguhin ang iyong mga setting<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6627583120233659107">I-edit ang folder</translation>
 <translation id="6633067410344541938">I-unlock ang Incognito</translation>
 <translation id="6636623428211296678">Mag-explore pa ng mga setting sa ibaba o tapusin ngayon</translation>
-<translation id="663674369910034433">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pagkolekta ng data, tingnan ang <ph name="BEGIN_LINK1" />Pag-sync<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />Mga serbisyo ng Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_UMA_LINK" />Pamahalaan<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">I-block sa lahat ng pagkakataon</translation>
 <translation id="6641780377503683465">Alisin ang <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}one{<ph name="NUMBER_OF_TABS" /> tab}other{<ph name="NUMBER_OF_TABS" /> na tab}}</translation>
 <translation id="6929224077895306814">Made-delete ang lahat ng panseguridad na code na naka-save sa iyong device at sa Google Account mo</translation>
 <translation id="6937524809504266803">Pag-personalize at Pag-link</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Nickname (opsyonal)</translation>
 <translation id="6942665639005891494">Baguhin ang default na lokasyon ng pag-download anumang oras gamit ang opsyong menu ng Mga Setting</translation>
 <translation id="694267552845942083">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
@@ -1780,7 +1775,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8890668505403261809">Maghanap sa iyong mga tab na Incognito</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
-<translation id="8921980840204105660">Mag-sync para makuha ang iyong mga bookmark mula sa iba pang device mo</translation>
 <translation id="8922289737868596582">I-download ang mga page mula sa button na Higit pang opsyon para magamit ang mga ito offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Handa na ang <ph name="LANG" /></translation>

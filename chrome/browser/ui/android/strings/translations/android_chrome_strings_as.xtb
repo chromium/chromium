@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1986685561493779662">নামটো ইতিমধ্যে আছেই</translation>
 <translation id="200114059308480249">Googleত কৰা সন্ধানত আশে-পাশে থকা পাঠ ব্যৱহাৰ কৰিবনে?</translation>
-<translation id="201060170519281460">আপোনাৰ প্ৰ’ফাইল লকে ছিংক কৰা পাছৱৰ্ড, পৰিশোধ আৰু অধিককে ধৰি আপোনাৰ তথ্য গাড়ীত সুৰক্ষিত কৰি ৰাখে।</translation>
 <translation id="2021896219286479412">সম্পূর্ণ স্ক্ৰীন ছাইটৰ নিয়ন্ত্ৰণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটো অন কৰক</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />ও Chromeত ডেটা আছে</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">আপোনাৰ ডিভাইচত গাঢ় থীম অথবা বেটাৰী সঞ্চয়কাৰী অন থাকিলে গাঢ় ৰঙৰ থীম অন কৰক</translation>
 <translation id="2762000892062317888">এইমাত্ৰ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰিছে।</translation>
-<translation id="2776236159752647997">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিংসমূহৰ বাবে <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" /> চাওক</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ছেকেণ্ড বাকী আছে</translation>
 <translation id="2779651927720337254">ডাউনল'ড কৰিব পৰা নগ'ল</translation>
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">অফ আছে <ph name="SEPARATOR" /> চুপাৰিছ কৰা নহয়</translation>
 <translation id="5752232708629533680">কেৱল GIF শ্বেয়াৰ কৰক</translation>
 <translation id="5754350196967618083">Discover ৰিফ্ৰেশ্ব কৰিব নোৱাৰি</translation>
-<translation id="5755162682436943950">ছাইন আউট কৰা আছে। ছাইন ইন আৰু ছিংক অন কৰিবলৈ ডায়লগ খোলে।</translation>
 <translation id="5763382633136178763">ইনক'গনিট' টেব</translation>
 <translation id="5763514718066511291">এই এপৰ URLটো প্ৰতিলিপি কৰিবলৈ টিপক</translation>
 <translation id="5765517223145864268">আমাক আপোনাৰ অভিজ্ঞতাৰ বিষয়ে কওক। অথবা <ph name="BEGIN_LINK" />আপোনাৰ ছেটিং সলনি কৰক<ph name="END_LINK" />।</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">ফ’ল্ডাৰ সম্পাদনা কৰক</translation>
 <translation id="6633067410344541938">ইনক’গনিট’ আনলক কৰক</translation>
 <translation id="6636623428211296678">তলত অধিক ছেটিং অন্বেষণ কৰক অথবা এতিয়া শেষ কৰক</translation>
-<translation id="663674369910034433">গোপনীয়তা, সুৰক্ষা আৰু ডেটা সংগ্ৰহ সম্পৰ্কীয় অধিক ছেটিংসমূহৰ বাবে <ph name="BEGIN_LINK1" />ছিংক কৰক<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google সেৱাসমূহ<ph name="END_LINK2" /> চাওক</translation>
 <translation id="6637100877383020115">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_UMA_LINK" />পৰিচালনা কৰক<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">সকলো সময়তে অৱৰোধ কৰক</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> আঁতৰাওক</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{১ টা টেব}one{<ph name="NUMBER_OF_TABS" /> টা টেব}other{<ph name="NUMBER_OF_TABS" /> টা টেব}}</translation>
 <translation id="6929224077895306814">আপোনাৰ ডিভাইচত আৰু আপোনাৰ Google একাউণ্টত ছেভ কৰা আটাইবোৰ সুৰক্ষা ক’ড মচি পেলোৱা হ’ব</translation>
 <translation id="6937524809504266803">ব্যক্তিগতকৰণ আৰু লিংক কৰা</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">উপনাম (ঐচ্ছিক)</translation>
 <translation id="6942665639005891494">ছেটিংসমূহ-ৰ মেনুৰ বিকল্পটো ব্যৱহাৰ কৰি ডিফ’ল্ট ডাউনল’ডৰ অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="694267552845942083">আপুনি বৰ্তমান আপোনাৰ ছিংক কৰাৰ ছেটিং কাষ্টমাইজ কৰি আছে। ছিংক কৰাৰ সুবিধাটো অন কৰাটো সম্পূৰ্ণ কৰিবলৈ স্ক্ৰীনখনৰ একেবাৰে তলিৰ কাষত থকা নিশ্চিত কৰক বুটামটো টিপক। ওপৰলৈ যাওক</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">আপোনাৰ ইনক’গ্নিট’ টেবসমূহ সন্ধান কৰক</translation>
 <translation id="8898822736010347272">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত আৰু ৱেবত থকা সকলোকে সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, সীমিত ছিষ্টেমৰ তথ্য আৰু কিছুমান পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়।</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
-<translation id="8921980840204105660">আপোনাৰ অন্য ডিভাইচৰ পৰা নিজৰ বুকমাৰ্কসমূহ পাবলৈ ছিংক কৰক</translation>
 <translation id="8922289737868596582">পৃষ্ঠাসমূহ অফলাইনত ব্যৱহাৰ কৰিবলৈ সেইসমূহ 'অধিক' বিকল্পৰ বুটামটোৰ পৰা ডাউনল’ড কৰক</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> সাজু আছে</translation>

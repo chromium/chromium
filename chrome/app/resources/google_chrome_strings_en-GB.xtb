@@ -96,6 +96,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2137162749895930932">Close translate screen</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
+<translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
 <translation id="2174917724755363426">Installation is not complete. Are you sure that you want to cancel?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Update check error: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -147,6 +148,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="2797864378188255696">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chrome with the same account</translation>
+<translation id="2799162042226656283">Your Chrome</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2825024317344269723">Dangerous site. Chrome removed notifications.</translation>
 <translation id="2841525013647267359">Translate from</translation>

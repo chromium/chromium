@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1986685561493779662">الاسم موجود من قبل</translation>
 <translation id="200114059308480249">‏هل تريد تضمين النص المحيط في عمليات البحث على Google؟</translation>
-<translation id="201060170519281460">يحافظ قفل الملف الشخصي على أمان معلوماتك في السيارة، بما في ذلك كلمات المرور ومعلومات الدفع التي تمت مزامنتها وغير ذلك.</translation>
 <translation id="2021896219286479412">عناصر التحكم لموقع في وضع ملء الشاشة</translation>
 <translation id="2038563949887743358">تفعيل طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="204321170514947529">‏تتوفَّر بيانات<ph name="APP_NAME" /> أيضًا في Chrome</translation>
@@ -388,7 +387,6 @@
 <translation id="2760989362628427051">تفعيل المظهر الداكن عند تفعيل المظهر الداكن للجهاز أو ميزة "توفير شحن البطارية"</translation>
 <translation id="2762000892062317888">الآن</translation>
 <translation id="276969039800130567">تم تسجيل الدخول بحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">تعذَّر التنزيل</translation>
 <translation id="2781151931089541271">يتبقى ثانية واحدة</translation>
@@ -1037,7 +1035,6 @@
 <translation id="5749237766298580851">غير مفعّل <ph name="SEPARATOR" /> (غير مستحسَن)</translation>
 <translation id="5752232708629533680">‏مشاركة ملف GIF فقط</translation>
 <translation id="5754350196967618083">يتعذّر إعادة تحميل ميزة "اقتراحات"</translation>
-<translation id="5755162682436943950">تم تسجيل الخروج. يفتح هذا الزر مربّع حوار لتسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="5763382633136178763">علامات تبويب التصفح المتخفي</translation>
 <translation id="5763514718066511291">‏النقر لنسخ عنوان URL لهذا التطبيق</translation>
 <translation id="5765517223145864268">أخبِرنا عن تجربتك أو <ph name="BEGIN_LINK" />غيِّر إعداداتك<ph name="END_LINK" />.</translation>
@@ -1244,7 +1241,6 @@
 <translation id="6627583120233659107">تعديل مجلد</translation>
 <translation id="6633067410344541938">فتح علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="6636623428211296678">يمكنك التعرّف على المزيد من الإعدادات أدناه أو إنهاء المراجعة الآن.</translation>
-<translation id="663674369910034433">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />المزامنة<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />خدمات Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">‏للمساعدة في تحسين التطبيق، يرسل Chrome بيانات الاستخدام والأعطال إلى Google. <ph name="BEGIN_UMA_LINK" />إدارة<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">حظر ملفات تعريف الارتباط طوال الوقت</translation>
 <translation id="6641780377503683465">إزالة <ph name="INTEREST" /></translation>
@@ -1330,7 +1326,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{علامة تبويب واحدة}zero{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}two{علامتا تبويب (<ph name="NUMBER_OF_TABS" />)}few{‫<ph name="NUMBER_OF_TABS" /> علامات تبويب}many{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}other{‫<ph name="NUMBER_OF_TABS" /> علامة تبويب}}</translation>
 <translation id="6929224077895306814">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي حسابك على Google.</translation>
 <translation id="6937524809504266803">الخيارات المخصَّصة والربط</translation>
-<translation id="6937694220350896339">‫<ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">اللقب (اختياري)</translation>
 <translation id="6942665639005891494">تغيير موقع التنزيل التلقائي في أي وقت باستخدام خيار قائمة "الإعدادات"</translation>
 <translation id="694267552845942083">يتم حاليًا تخصيص إعدادات المزامنة. لتفعيل المزامنة، يُرجى الضغط على زر "التأكيد" بالقرب من أسفل الشاشة. الانتقال إلى أعلى</translation>
@@ -1784,7 +1779,6 @@
 <translation id="8890668505403261809">البحث في علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="8898822736010347272">‏إرسال عناوين URL الخاصّة ببعض الصفحات التي تزورها، وعدد محدود من معلومات النظام، وبعض أنواع محتوى الصفحات إلى Google، وذلك للمساعدة على اكتشاف التهديدات الجديدة وتوفير الحماية لجميع المستخدمين على الويب</translation>
 <translation id="8909135823018751308">مشاركة…</translation>
-<translation id="8921980840204105660">يمكنك تفعيل المزامنة للحصول على الإشارات المرجعية من أجهزتك الأخرى.</translation>
 <translation id="8922289737868596582">تنزيل الصفحات من الزر "مزيد من الخيارات" لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> جاهز</translation>

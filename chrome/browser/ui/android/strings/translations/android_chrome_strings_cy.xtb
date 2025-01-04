@@ -224,7 +224,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1984417487208496350">Dim diogelwch (ni argymhellir)</translation>
 <translation id="1986685561493779662">Mae'r enw eisoes yn bodoli</translation>
 <translation id="200114059308480249">Cynnwys testun o'i amgylch mewn chwiliadau Google?</translation>
-<translation id="201060170519281460">Mae clo eich proffil yn cadw'ch gwybodaeth yn ddiogel yn y car, gan gynnwys cyfrineiriau sydd wedi'u cysoni, taliadau a rhagor.</translation>
 <translation id="2021896219286479412">Rheolyddion gwefan sgrîn lawn</translation>
 <translation id="2038563949887743358">Troi Gofyn am wefan bwrdd gwaith ymlaen</translation>
 <translation id="204321170514947529">Mae gan <ph name="APP_NAME" /> ddata yn Chrome hefyd</translation>
@@ -387,7 +386,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2760989362628427051">Troi'r thema dywyll ymlaen pan fydd thema dywyll neu Arbed Batri eich dyfais wedi'i droi ymlaen</translation>
 <translation id="2762000892062317888">newydd ddigwydd</translation>
 <translation id="276969039800130567">Wedi mewngofnodi fel <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, ewch i <ph name="BEGIN_LINK" />wasanaethau Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> eiliad ar ôl</translation>
 <translation id="2779651927720337254">wedi methu</translation>
 <translation id="2781151931089541271">1 eiliad ar ôl</translation>
@@ -1035,7 +1033,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5749237766298580851">Wedi'i ddiffodd <ph name="SEPARATOR" /> Ni argymhellir</translation>
 <translation id="5752232708629533680">Rhannu GIF yn unig</translation>
 <translation id="5754350196967618083">Methu ag adnewyddu Darganfod</translation>
-<translation id="5755162682436943950">Rydych wedi'ch allgofnodi. Yn agor deialog i fewngofnodi a throi cysoni ymlaen.</translation>
 <translation id="5763382633136178763">Tabiau Anhysbys</translation>
 <translation id="5763514718066511291">Tapiwch i gopïo'r URL ar gyfer yr ap hwn</translation>
 <translation id="5765517223145864268">Dywedwch wrthym am eich profiad. Neu <ph name="BEGIN_LINK" />newidiwch eich gosodiadau<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6627583120233659107">Golygu'r ffolder</translation>
 <translation id="6633067410344541938">Datgloi Anhysbys</translation>
 <translation id="6636623428211296678">Gallwch archwilio rhagor o osodiadau isod neu orffen nawr</translation>
-<translation id="663674369910034433">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch, a chasglu data, gweler <ph name="BEGIN_LINK1" />Cysoni<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />gwasanaethau Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Er mwyn helpu i wella'r ap, mae Chrome yn anfon data defnydd a thoriadau at Google. <ph name="BEGIN_UMA_LINK" />Rheoli<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Rhwystro drwy'r amser</translation>
 <translation id="6641780377503683465">Tynnu <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}zero{<ph name="NUMBER_OF_TABS" /> tab}two{<ph name="NUMBER_OF_TABS" /> dab}few{<ph name="NUMBER_OF_TABS" /> thab}many{<ph name="NUMBER_OF_TABS" /> thab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Bydd yr holl godau diogelwch sy'n cael eu cadw ar eich dyfais a'ch Cyfrif Google yn cael eu dileu</translation>
 <translation id="6937524809504266803">Personoleiddio a Chysylltu</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Llysenw (dewisol)</translation>
 <translation id="6942665639005891494">Newidiwch y lleoliad lawrlwythiadau diofyn unrhyw bryd gan ddefnyddio opsiwn dewislen y Gosodiadau</translation>
 <translation id="694267552845942083">Ar hyn o bryd rydych yn personoleiddio'ch gosodiadau Cysoni. I orffen troi cysoni ymlaen, tapiwch y botwm Cadarnhau ger gwaelod y sgrîn. Llywio i fyny</translation>
@@ -1780,7 +1775,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8890668505403261809">Chwilio eich tabiau Anhysbys</translation>
 <translation id="8898822736010347272">Yn anfon cyfeiriadau URL o rai tudalennau rydych yn ymweld â nhw, gwybodaeth system gyfyngedig, a rhywfaint o gynnwys tudalen at Google, i helpu i ddarganfod bygythiadau newydd ac i amddiffyn pawb ar y we.</translation>
 <translation id="8909135823018751308">Rhannu…</translation>
-<translation id="8921980840204105660">Cysonwch i gael eich nodau tudalen o'ch dyfeisiau eraill</translation>
 <translation id="8922289737868596582">Lawrlwythwch dudalennau o'r botwm Rhagor o ddewisiadau i'w defnyddio all-lein</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Mae <ph name="LANG" /> yn barod</translation>

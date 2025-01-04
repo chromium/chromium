@@ -224,7 +224,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="1986685561493779662">Tên đã tồn tại</translation>
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
-<translation id="201060170519281460">Khoá hồ sơ giúp đảm bảo an toàn cho thông tin của bạn trong ô tô, trong đó có mật khẩu đã đồng bộ hoá, thông tin thanh toán, v.v.</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
@@ -387,7 +386,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
 <translation id="2762000892062317888">vừa xong</translation>
 <translation id="276969039800130567">Đăng nhập bằng địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Còn <ph name="SECONDS" /> giây</translation>
 <translation id="2779651927720337254">không tải xuống được</translation>
 <translation id="2781151931089541271">Còn 1 giây</translation>
@@ -1035,7 +1033,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5749237766298580851">Tắt <ph name="SEPARATOR" /> Không khuyến nghị</translation>
 <translation id="5752232708629533680">Chỉ chia sẻ ảnh GIF</translation>
 <translation id="5754350196967618083">Không thể làm mới tính năng Khám phá</translation>
-<translation id="5755162682436943950">Đã đăng xuất. Mở hộp thoại để đăng nhập và bật tính năng đồng bộ hoá.</translation>
 <translation id="5763382633136178763">Thẻ ẩn danh</translation>
 <translation id="5763514718066511291">Nhấn để sao chép URL cho ứng dụng này</translation>
 <translation id="5765517223145864268">Cho chúng tôi biết về trải nghiệm của bạn. Hoặc <ph name="BEGIN_LINK" />thay đổi các chế độ cài đặt của bạn<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6627583120233659107">Chỉnh sửa thư mục</translation>
 <translation id="6633067410344541938">Mở khóa thẻ Ẩn danh</translation>
 <translation id="6636623428211296678">Khám phá thêm về các chế độ cài đặt bên dưới hoặc hoàn tất ngay bây giờ</translation>
-<translation id="663674369910034433">Bạn có thể xem thêm các tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK1" />Đồng bộ hóa<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Các dịch vụ của Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu sử dụng và dữ liệu sự cố cho Google. <ph name="BEGIN_UMA_LINK" />Quản lý<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Luôn chặn</translation>
 <translation id="6641780377503683465">Xoá <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 thẻ}other{<ph name="NUMBER_OF_TABS" /> thẻ}}</translation>
 <translation id="6929224077895306814">Tất cả mã bảo mật đã lưu trên thiết bị và trong Tài khoản Google của bạn sẽ bị xoá</translation>
 <translation id="6937524809504266803">Chế độ cá nhân hoá và liên kết</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Biệt hiệu (tuỳ ý)</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="694267552845942083">Bạn hiện đang tùy chỉnh các chế độ cài đặt Đồng bộ hóa của mình. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
@@ -1780,7 +1775,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8890668505403261809">Tìm kiếm trong các thẻ ẩn danh</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
-<translation id="8921980840204105660">Đồng bộ hoá để lấy dấu trang từ thiết bị khác</translation>
 <translation id="8922289737868596582">Tải trang xuống từ nút Thêm tùy chọn để sử dụng ngoại tuyến</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> đã sẵn sàng</translation>

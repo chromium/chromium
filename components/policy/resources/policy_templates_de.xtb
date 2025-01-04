@@ -2435,12 +2435,6 @@ Ist die Richtlinie deaktiviert, können Nutzer keine Kerberos-Konten hinzufügen
 Wenn du „command_line“ festlegst, wird das Laden von Erweiterungen über die Befehlszeile blockiert.</translation>
 <translation id="2780840673734667062">Anmeldung mit zusätzlichen Google-Konten deaktivieren</translation>
 <translation id="2784880732336446591">Browserdaten beim Beenden löschen</translation>
-<translation id="2785422026482376078">Gibt an, ob der Ladevorgang durch ein adaptives Lademodell angehalten werden kann, um die Akkulaufzeit zu verlängern.
-
-      Wenn das Gerät im Netzbetrieb ist, prüft das adaptive Lademodell, ob der Ladevorgang angehalten werden sollte, um die Akkulaufzeit zu verlängern. Wenn der Ladevorgang durch das adaptive Lademodell angehalten wird, wird der Akkustand auf einem bestimmten Level gehalten, z. B. bei 80 %. Wenn der Nutzer das Gerät später benötigt, wird der Akku vollständig aufgeladen.
-      Wenn diese Richtlinie auf „True“ gesetzt ist, wird das adaptive Lademodell aktiviert und kann den Ladevorgang anhalten, um die Akkulaufzeit zu verlängern. Ist diese Richtlinie auf „False“ gesetzt oder nicht konfiguriert, hat das adaptive Lademodell keinen Einfluss auf den Ladevorgang.
-
-      Hinweis: Diese Richtlinie hat keine Auswirkungen, wenn „DevicePowerBatteryChargingOptimization“ konfiguriert ist.</translation>
 <translation id="2787173078141616821">Informationen zum Status von Android senden</translation>
 <translation id="2787774054174244402">Wenn die Richtlinie auf "True" festgelegt ist, können Nutzer nicht auf externe Speichergeräte schreiben.
 
@@ -7964,21 +7958,6 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experimentelle Browserfunktionen von der Symbolleiste entfernt.
 
       „chrome://flags“ und alle weiteren Möglichkeiten zum Aktivieren oder Deaktivieren von Browserfunktionen funktionieren weiter wie gewohnt, unabhängig davon, ob diese Richtlinie aktiviert oder deaktiviert ist.</translation>
-<translation id="67952585272033079">Der Akkuzustand kann durch Faktoren wie häufiges vollständiges Aufladen und längere Ladezeiten beeinträchtigt werden. Diese Richtlinie bietet drei Optionen zum Optimieren des Ladeverhaltens und zum Minimieren dieser Beeinträchtigungen, um die Lebensdauer des Akkus zu verlängern.
-
-Wenn die Richtlinie auf „Standard“ gesetzt ist, wird der Akku normal auf 100 % aufgeladen. Dadurch werden das adaptive und das begrenzte Laden deaktiviert.
-
-Wenn die Richtlinie auf „Adaptiv“ gesetzt ist, passt sich dein Gerät deinen Ladegewohnheiten an und wartet mit dem Aufladen auf 100 %, bis es erforderlich ist. Dadurch wird der Akku geschont.
-
-Wenn die Richtlinie auf „Begrenzt“ gesetzt ist, wird der Akku nur bis zu etwa 80 % aufgeladen, um seine Lebensdauer zu maximieren.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird die Standardoption angewendet (sofern unterstützt).
-
-Die Richtlinie „DevicePowerBatteryChargingOptimization“ überschreibt die Richtlinie „DevicePowerAdaptiveChargingEnabled“.
-
-„DevicePowerAdaptiveChargingEnabled“ steuert das adaptive Laden, wenn „DevicePowerBatteryChargingOptimization“ nicht konfiguriert ist.
-
-Die Richtlinien „DevicePowerBatteryChargingOptimization“ und „DevicePowerAdaptiveChargingEnabled“ haben immer Vorrang vor den Nutzereinstellungen.</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6796215185873669533">Standardmäßig Browsereinstellungen für die Hauptversion im User-Agent-String verwenden.</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>

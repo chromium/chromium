@@ -224,7 +224,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1986685561493779662">Namnet finns redan</translation>
 <translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
-<translation id="201060170519281460">Profillåset skyddar dina uppgifter i bilen, till exempel synkroniserade lösenord och betalningar.</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
 <translation id="204321170514947529">Data för <ph name="APP_NAME" /> finns även i Chrome</translation>
@@ -387,7 +386,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2760989362628427051">Aktivera mörkt tema när batterisparläget eller mörkt tema aktiveras på enheten</translation>
 <translation id="2762000892062317888">nyss</translation>
 <translation id="276969039800130567">Inloggad som <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder kvar</translation>
 <translation id="2779651927720337254">misslyckades</translation>
 <translation id="2781151931089541271">1 sekund kvar</translation>
@@ -1036,7 +1034,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5749237766298580851">Av <ph name="SEPARATOR" /> Rekommenderas inte</translation>
 <translation id="5752232708629533680">Dela endast GIF</translation>
 <translation id="5754350196967618083">Det går inte att uppdatera Förslag</translation>
-<translation id="5755162682436943950">Utloggad. Öppnar dialogrutan för att logga in och aktivera synkronisering.</translation>
 <translation id="5763382633136178763">Inkognitoflikar</translation>
 <translation id="5763514718066511291">Tryck om du vill kopiera webbadressen till appen</translation>
 <translation id="5765517223145864268">Berätta vad du tycker. Eller <ph name="BEGIN_LINK" />ändra dina inställningar<ph name="END_LINK" />.</translation>
@@ -1243,7 +1240,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6627583120233659107">Redigera mapp</translation>
 <translation id="6633067410344541938">Lås upp inkognito</translation>
 <translation id="6636623428211296678">Utforska fler inställningar nedan eller avsluta nu</translation>
-<translation id="663674369910034433">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK1" />Synk<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />Googles tjänster<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blockera alltid</translation>
 <translation id="6641780377503683465">Ta bort <ph name="INTEREST" /></translation>
@@ -1329,7 +1325,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flik}other{<ph name="NUMBER_OF_TABS" /> flikar}}</translation>
 <translation id="6929224077895306814">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="6937524809504266803">Anpassning och länkning</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Namn (valfritt)</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
@@ -1781,7 +1776,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
-<translation id="8921980840204105660">Synkronisera om du vill få tillgång till bokmärken från dina andra enheter</translation>
 <translation id="8922289737868596582">Ladda ned sidor via knappen Fler alternativ så att du kan använda dem offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> är redo</translation>

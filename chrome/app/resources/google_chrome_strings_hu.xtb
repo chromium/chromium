@@ -92,6 +92,7 @@
 <translation id="2137162749895930932">Fordítási képernyő bezárása</translation>
 <translation id="2139300032719313227">A ChromeOS újraindítása</translation>
 <translation id="2151406531797534936">Indítsa újra most a Chrome-ot</translation>
+<translation id="2163089732491971196">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát</translation>
 <translation id="2174917724755363426">A telepítés még nem fejeződött be. Biztosan megszakítja a műveletet?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Frissítés-ellenőrzési hiba: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -143,6 +144,7 @@
 <translation id="2770231113462710648">Alapértelmezett böngésző beállítása:</translation>
 <translation id="2775140325783767197">A Chrome nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2797864378188255696">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chrome-ba is.</translation>
+<translation id="2799162042226656283">Az Ön Chrome böngészője</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2825024317344269723">Veszélyes webhely. A Chrome eltávolította az értesítéseket.</translation>
 <translation id="2841525013647267359">Fordítás a következő nyelvről:</translation>

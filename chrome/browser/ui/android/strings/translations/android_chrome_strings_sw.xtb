@@ -224,7 +224,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="1984417487208496350">Hamna ulinzi (haipendekezwi)</translation>
 <translation id="1986685561493779662">Jina tayari lipo</translation>
 <translation id="200114059308480249">Ungependa kujumuisha maandishi yaliyo karibu na maneno uliyoyachagua katika utafutaji kwenye Google?</translation>
-<translation id="201060170519281460">Kufuli lako la wasifu huimarisha usalama wa data yako kwenye gari, ikiwa ni pamoja na manenosiri yaliyosawazishwa, malipo na zaidi.</translation>
 <translation id="2021896219286479412">Vidhibiti vya tovuti vya skrini nzima</translation>
 <translation id="2038563949887743358">Washa Omba Tovuti ya Eneo-kazi</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> pia ina data katika Chrome</translation>
@@ -387,7 +386,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2760989362628427051">Washa hali ya mandhari meusi wakati umewasha kipengele cha mandhari meusi au Kiokoa Betri cha kifaa chako</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
 <translation id="276969039800130567">Umeingia ukitumia <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />huduma za Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">imeshindwa</translation>
 <translation id="2781151931089541271">Imesalia sekunde 1</translation>
@@ -1035,7 +1033,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5749237766298580851">Imezimwa <ph name="SEPARATOR" /> Haipendekezwi</translation>
 <translation id="5752232708629533680">Shiriki GIF pekee</translation>
 <translation id="5754350196967618083">Imeshindwa kuonyesha upya kipengele cha Dokezo</translation>
-<translation id="5755162682436943950">Umeondoka kwenye akaunti. Hufungua kidirisha ili kuingia katika akaunti na kuwasha usawazishaji.</translation>
 <translation id="5763382633136178763">Vichupo fiche</translation>
 <translation id="5763514718066511291">Gusa ili unakili URL ya programu hii</translation>
 <translation id="5765517223145864268">Tupe maoni yako. Unaweza pia <ph name="BEGIN_LINK" />kubadilisha mipangilio yako<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6627583120233659107">Badilisha folda</translation>
 <translation id="6633067410344541938">Fungua hali fiche</translation>
 <translation id="6636623428211296678">Gundua mipangilio zaidi hapa chini au ukamilishe sasa</translation>
-<translation id="663674369910034433">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK1" />Usawazishaji<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />huduma za Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Ili kusaidia kuboresha programu, Chrome hutumia Google data ya matumizi na ripoti za kuacha kufanya kazi. <ph name="BEGIN_UMA_LINK" />Dhibiti<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Zuia kila wakati</translation>
 <translation id="6641780377503683465">Ondoa <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{Kichupo 1}other{Vichupo <ph name="NUMBER_OF_TABS" />}}</translation>
 <translation id="6929224077895306814">Misimbo yote ya usalama iliyohifadhiwa kwenye kifaa chako na katika Akaunti yako ya Google itafutwa</translation>
 <translation id="6937524809504266803">Kuweka Mapendeleo na Kuunganisha</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Jina wakilishi (ni hiari)</translation>
 <translation id="6942665639005891494">Badilisha sehemu chaguomsingi ya kupakua wakati wowote ukitumia chaguo la menyu ya Mipangilio</translation>
 <translation id="694267552845942083">Kwa sasa unaweka mipangilio yako ya Usawazishaji iwe upendavyo. Ili ukamilishe kuwasha usawazishaji, gusa kitufe cha 'Thibitisha' kwenye sehemu ya chini ya skrini. Nenda juu</translation>
@@ -1780,7 +1775,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8890668505403261809">Tafuta kwenye vichupo vya Faragha</translation>
 <translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
 <translation id="8909135823018751308">Shiriki...</translation>
-<translation id="8921980840204105660">Sawazisha ili upate alamisho zako kutoka kwenye vifaa vyako vingine</translation>
 <translation id="8922289737868596582">Pakua kurasa kwenye kitufe cha Chaguo zaidi ili uzitumie nje ya mtandao</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Lugha ya <ph name="LANG" /> iko tayari</translation>

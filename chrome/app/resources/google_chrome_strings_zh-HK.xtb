@@ -96,6 +96,7 @@
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
+<translation id="2163089732491971196">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
 <translation id="2174917724755363426">安裝尚未完成。確定要取消嗎？</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
@@ -147,6 +148,7 @@
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，你可使用同一個帳戶自動登入 Chrome</translation>
+<translation id="2799162042226656283">你的 Chrome</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2825024317344269723">危險網站。Chrome 已移除通知權限。</translation>
 <translation id="2841525013647267359">原文語言</translation>

@@ -224,7 +224,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1984417487208496350">Himoyasiz (tavsiya etilmaydi)</translation>
 <translation id="1986685561493779662">Bu nom band</translation>
 <translation id="200114059308480249">Google qidiruvlariga qamrovli matn kiritilsinmi?</translation>
-<translation id="201060170519281460">Profil qulfi parollar, toʻlovlar kabi axborotlarni avtomobilda xavfsiz saqlaydi.</translation>
 <translation id="2021896219286479412">To‘liq ekranli rejim sozlamalari</translation>
 <translation id="2038563949887743358">Saytning to‘liq versiyasini ko‘rish</translation>
 <translation id="204321170514947529">Chrome brauzeridagi <ph name="APP_NAME" /> maʼlumotlari ham tozalanadi</translation>
@@ -387,7 +386,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2760989362628427051">Qurilmangizda tungi mavzu yoki Quvvat tejash rejimi yoqilganda tungi mavzu faollashadi</translation>
 <translation id="2762000892062317888">hozirgina</translation>
 <translation id="276969039800130567">Siz <ph name="USER_EMAIL_ADDRESS" /> nomidan kirdingiz.</translation>
-<translation id="2776236159752647997">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> soniya qoldi</translation>
 <translation id="2779651927720337254">xatolik:</translation>
 <translation id="2781151931089541271">1 soniya qoldi</translation>
@@ -1035,7 +1033,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5749237766298580851">Faolsizlantirilgan <ph name="SEPARATOR" /> Tavsiya etilmaydi</translation>
 <translation id="5752232708629533680">Faqat GIF ulashish</translation>
 <translation id="5754350196967618083">Discover yangilanmadi</translation>
-<translation id="5755162682436943950">Hisobdan chiqqansiz. Kirish va sinxronlashni yoqish uchun oynani ochadi.</translation>
 <translation id="5763382633136178763">Inkognito rejimidagi ichki oynalar</translation>
 <translation id="5763514718066511291">Ushbu ilova URL manzilini nusxalash uchun bosing</translation>
 <translation id="5765517223145864268">Taassurotlaringizni biz bilan baham koʻring. Yoki <ph name="BEGIN_LINK" />sozlamalarni oʻzgartiring<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6627583120233659107">Jildni tahrirlash</translation>
 <translation id="6633067410344541938">Inkognito qulfini ochish</translation>
 <translation id="6636623428211296678">Quyida koʻproq sozlamalarni varaqlang yoki hozir yakunlang</translation>
-<translation id="663674369910034433">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK1" />Sinxronlash<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />Google xizmatlari<ph name="END_LINK2" /> bilan tanishing</translation>
 <translation id="6637100877383020115">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Obunani boshqarish<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Doim bloklash</translation>
 <translation id="6641780377503683465">Olib tashlash: <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ta varaq}other{<ph name="NUMBER_OF_TABS" /> ta varaq}}</translation>
 <translation id="6929224077895306814">Qurilma va Google hisobingizda saqlangan barcha xavfsizlik kodlari oʻchirib tashlanadi</translation>
 <translation id="6937524809504266803">Moslashtirish va xizmat ulash</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Taxallus (ixtiyoriy)</translation>
 <translation id="6942665639005891494">Yuklanmalar standart jildini istalgan vaqtda sozlamalar menyusidan o‘zgartirish mumkin</translation>
 <translation id="694267552845942083">Siz hozirda sinxronizatsiya sozlamalarini sozlayapsiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
@@ -1780,7 +1775,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8890668505403261809">Inkognito varaqlardan qidirish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
-<translation id="8921980840204105660">Boshqa qurilmalardan bukmarklarni olish uchun sinxronlang</translation>
 <translation id="8922289737868596582">Saytlarni oflayn ko‘rish uchun “Boshqa parametrlar” tugmasidan foydalanib, yuklab oling</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> tayyor</translation>

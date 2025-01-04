@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
 <translation id="1986685561493779662">სახელი უკვე არსებობს</translation>
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
-<translation id="201060170519281460">პროფილის ჩაკეტვა უზრუნველყოფს თქვენი ინფორმაციის (მათ შორის, სინქრონიზებული პაროლების, გადახდებისა და სხვა მონაცემების) დაცულობას მანქანაში.</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
 <translation id="2038563949887743358">საიტის დესკტოპის ვერსიის მოთხოვნის ჩართვა</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />-ს Chrome-შიც აქვს მონაცემები</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">მუქი თემის ჩართვა მოწყობილობაზე მუქი თემის ან ბატარეის დამზოგის გააქტიურებისას</translation>
 <translation id="2762000892062317888">ახლახან</translation>
 <translation id="276969039800130567">შესულია, როგორც <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">დარჩენილია <ph name="SECONDS" /> წმ</translation>
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
 <translation id="2781151931089541271">დარჩენილია 1 წმ</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">გამორთული <ph name="SEPARATOR" /> არ არის რეკომენდებული</translation>
 <translation id="5752232708629533680">მხოლოდ GIF-ის გაზიარება</translation>
 <translation id="5754350196967618083">Discover-ის განახლება ვერ ხერხდება</translation>
-<translation id="5755162682436943950">გამოსული ხართ. გახსნის დიალოგს სისტემაში შესასვლელად და სინქრონიზაციის ჩასართავად.</translation>
 <translation id="5763382633136178763">ინკოგნიტო ჩანართები</translation>
 <translation id="5763514718066511291">შეეხეთ ამ აპის URL-ის კოპირებისთვის</translation>
 <translation id="5765517223145864268">გაგვიზიარეთ, როგორ მოგეწონათ, ან <ph name="BEGIN_LINK" />შეცვალეთ პარამეტრები<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">საქაღალდის რედაქტირება</translation>
 <translation id="6633067410344541938">ინკოგნიტო რეჟიმის განბლოკვა</translation>
 <translation id="6636623428211296678">გაეცანით სხვა ვარიანტებს ქვემოთ, ან დაასრულეთ ახლავე</translation>
-<translation id="663674369910034433">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK1" />სინქრონიზაცია<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />Google სერვისები<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">ამ აპის გაუმჯობესების მიზნით, Chrome უგზავნის მოხმარებისა და ავარიულად გათიშვის მონაცემებს Google-ს. <ph name="BEGIN_UMA_LINK" />მართვა<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">დაბლოკვა ყოველთვის</translation>
 <translation id="6641780377503683465">წაიშალოს <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ჩანართი}other{<ph name="NUMBER_OF_TABS" /> ჩანართი}}</translation>
 <translation id="6929224077895306814">თქვენს მოწყობილობასა და Google ანგარიშში შენახული უსაფრთხოების ყველა კოდი წაიშლება</translation>
 <translation id="6937524809504266803">პერსონალიზაცია და მიბმა</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">მეტსახელი (ნებაყოფლობითი)</translation>
 <translation id="6942665639005891494">ჩამოტვირთვის ნაგულისხმევი მდებარეობის შეცვლა ნებისმიერ დროს შეგიძლიათ მენიუს პარამეტრების ვარიანტის მეშვეობით</translation>
 <translation id="694267552845942083">ამჟამად სინქრონიზაციის პარამეტრების მორგებას ახორციელებთ. სინქრონიზაციის ჩართვის დასასრულებლად შეეხეთ დადასტურების ღილაკს ეკრანის ქვედა ნაწილთან. ნავიგაცია ზემოთ</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">მოიძიეთ ინკოგნიტო ჩანართებში</translation>
 <translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
 <translation id="8909135823018751308">გაზიარება…</translation>
-<translation id="8921980840204105660">შეასრულეთ სინქრონიზაცია, თქვენი სხვა მოწყობილობებიდან სანიშნეები რომ მიიღოთ</translation>
 <translation id="8922289737868596582">ჩამოტვირთეთ გვერდები ხაზგარეშე რეჟიმში გამოსაყენებლად, „დამატებითი ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> მზად არის</translation>

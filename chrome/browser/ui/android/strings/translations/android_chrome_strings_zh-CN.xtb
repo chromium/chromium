@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
-<translation id="201060170519281460">个人资料锁定功能可确保您的信息（包括已同步的密码、付款信息等）安全地存储在车载系统中。</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
 <translation id="204321170514947529">Chrome 中也有<ph name="APP_NAME" />的数据</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">在设备开启深色主题背景或省电模式时启用深色主题背景</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="276969039800130567">您已用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。</translation>
-<translation id="2776236159752647997">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分</translation>
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
 <translation id="2781151931089541271">还剩 1 秒</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">已关闭 <ph name="SEPARATOR" /> 不推荐</translation>
 <translation id="5752232708629533680">仅分享 GIF 图片</translation>
 <translation id="5754350196967618083">无法刷新“探索”</translation>
-<translation id="5755162682436943950">已退出。打开对话框即可登录并开启同步功能。</translation>
 <translation id="5763382633136178763">无痕模式标签页</translation>
 <translation id="5763514718066511291">点按即可复制该应用的网址</translation>
 <translation id="5765517223145864268">与我们分享您的体验。或者，<ph name="BEGIN_LINK" />更改您的设置<ph name="END_LINK" />。</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6633067410344541938">解锁无痕模式</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
-<translation id="663674369910034433">如需了解更多与隐私、安全和数据收集相关的设置，请前往<ph name="BEGIN_LINK1" />同步功能<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服务<ph name="END_LINK2" />部分</translation>
 <translation id="6637100877383020115">为帮助改进该应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">始终屏蔽</translation>
 <translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 个标签页}other{<ph name="NUMBER_OF_TABS" /> 个标签页}}</translation>
 <translation id="6929224077895306814">您的设备和您的 Google 账号中保存的所有安全码都将被删除</translation>
 <translation id="6937524809504266803">个性化和关联</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">昵称（可选）</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
 <translation id="694267552845942083">您正在自定义您的同步设置。如需完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
@@ -1778,7 +1773,6 @@
 <translation id="8890668505403261809">搜索无痕式标签页</translation>
 <translation id="8898822736010347272">向 Google 发送您访问过的部分网页的网址、有限的系统信息以及部分网页内容，以便帮助我们发现新威胁并保护网络上的所有用户。</translation>
 <translation id="8909135823018751308">分享…</translation>
-<translation id="8921980840204105660">同步即可获取您在其他设备上保存的书签</translation>
 <translation id="8922289737868596582">通过“更多选项”按钮下载网页以供离线查看</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">可以使用<ph name="LANG" />了</translation>

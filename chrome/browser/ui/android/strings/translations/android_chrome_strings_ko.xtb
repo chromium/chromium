@@ -224,7 +224,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
-<translation id="201060170519281460">프로필 잠금을 사용하면 동기화된 비밀번호, 결제 등 정보를 자동차에서 안전하게 보호할 수 있습니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />도 Chrome에서 데이터를 보유하고 있습니다</translation>
@@ -387,7 +386,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되었습니다.</translation>
-<translation id="2776236159752647997">개인 정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" />초 남음</translation>
 <translation id="2779651927720337254">실패</translation>
 <translation id="2781151931089541271">1초 남음</translation>
@@ -1035,7 +1033,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5749237766298580851">사용 안함 <ph name="SEPARATOR" /> 권장하지 않음</translation>
 <translation id="5752232708629533680">GIF만 공유</translation>
 <translation id="5754350196967618083">디스커버를 새로고침할 수 없음</translation>
-<translation id="5755162682436943950">로그아웃했습니다. 대화상자를 열어 로그인하고 동기화를 사용 설정합니다.</translation>
 <translation id="5763382633136178763">시크릿 탭</translation>
 <translation id="5763514718066511291">탭하여 이 앱의 URL 복사하기</translation>
 <translation id="5765517223145864268">사용 경험에 관해 알려주세요. 아니면 <ph name="BEGIN_LINK" />설정을 변경하세요<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6627583120233659107">폴더 수정</translation>
 <translation id="6633067410344541938">시크릿 모드 잠금 해제</translation>
 <translation id="6636623428211296678">아래에서 더 많은 설정을 살펴보거나 지금 완료하세요</translation>
-<translation id="663674369910034433">개인 정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
 <translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">항상 차단</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> 삭제</translation>
@@ -1328,7 +1324,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{탭 1개}other{탭 <ph name="NUMBER_OF_TABS" />개}}</translation>
 <translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="6937524809504266803">맞춤설정 및 연결</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">닉네임(선택사항)</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
@@ -1780,7 +1775,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8890668505403261809">시크릿 탭 검색</translation>
 <translation id="8898822736010347272">새로운 위협을 발견하고 모든 웹 사용자를 보호하는데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8909135823018751308">공유…</translation>
-<translation id="8921980840204105660">동기화하여 다른 기기에서 북마크를 가져오세요.</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> 사용 가능</translation>

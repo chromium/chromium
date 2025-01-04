@@ -2550,12 +2550,6 @@ Si estableces “command_line”, se bloqueará la carga de la extensión desde
 la línea de comandos.</translation>
 <translation id="2780840673734667062">Inhabilitar el acceso con cuentas de Google adicionales</translation>
 <translation id="2784880732336446591">Borra los datos de navegación al salir</translation>
-<translation id="2785422026482376078">Especifica si se permite que un modelo de carga adaptable detenga el proceso de carga para extender la duración de la batería.
-
-      Cuando el dispositivo funciona con aire acondicionado, el modelo de carga adaptable evalúa si el proceso de carga se debe detener para extender la duración de la batería. Si el modelo de carga adaptable detiene el proceso de carga, la batería se mantendrá en cierto nivel (es decir, al 80%) y luego cargará el dispositivo hasta el 100% cuando el usuario lo necesite.
-      Si estableces esta política como verdadera, se habilitará el modelo de carga adaptable y se podrá detener el proceso de carga para extender la duración de la batería. Si la estableces como falsa o no la estableces, el modelo de carga adaptable no afectará el proceso de carga.
-
-      Nota: Esta política no tiene efecto si se establece DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Informar datos sobre el estado de Android</translation>
 <translation id="2787774054174244402">Si estableces la política como verdadera, los usuarios no tendrán permiso de escritura en los dispositivos de almacenamiento externo.
 
@@ -3393,7 +3387,7 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
 <translation id="3417418267404583991">Si esta política no se configura o se establece en "true", <ph name="PRODUCT_OS_NAME" /> permitirá iniciar sesión como invitado. Los inicios de sesión como invitado son sesiones de usuario anónimas y no requieren contraseña.
 
       Si esta política se establece en "false", <ph name="PRODUCT_OS_NAME" /> no permitirá el inicio de sesiones de invitados.</translation>
-<translation id="3419726087743433857">Permitir las funciones de IA generativa sin mejorar los modelos de IA</translation>
+<translation id="3419726087743433857">Permitir las funciones potenciadas por IA generativa sin mejorar los modelos de IA</translation>
 <translation id="3423703250826790403">Aplicaciones para Android</translation>
 <translation id="3426434797050451264">Esta política también se puede usar para especificar apps para Android como controladores de archivos estándar.</translation>
 <translation id="3428247105888806363">Habilitar la predicción de red</translation>
@@ -8331,21 +8325,6 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si la inhabilitas, se quitará el ícono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="67952585272033079">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política proporciona tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que prolongará la vida útil de la batería.
-
-Si estableces la política con el valor Standard, la batería se carga normalmente al 100%. Se inhabilita la carga adaptable y limitada.
-
-Si estableces la política con el valor Adaptive, el dispositivo aprende tus hábitos de carga y retrasa la carga al 100% hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
-
-Si estableces la política con el valor Limited, la batería se carga solo al 80% para maximizar su vida útil.
-
-Si no estableces esta política, se aplicará la opción Standard (si es compatible).
-
-La política DevicePowerBatteryChargingOptimization anula la política DevicePowerAdaptiveChargingEnabled.
-
-DevicePowerAdaptiveChargingEnabled controla la carga adaptable si no se establece DevicePowerBatteryChargingOptimization.
-
-Las políticas DevicePowerBatteryChargingOptimization y DevicePowerAdaptiveChargingEnabled siempre tienen prioridad sobre la configuración del usuario.</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
 <translation id="6796215185873669533">Establecer la versión del string usuario-agente en el valor predeterminado de la configuración del navegador</translation>
 <translation id="6800181452282128474">No enviar consultas a Quirks Servers</translation>

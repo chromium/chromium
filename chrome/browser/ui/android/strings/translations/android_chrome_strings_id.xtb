@@ -224,7 +224,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1986685561493779662">Nama sudah ada</translation>
 <translation id="200114059308480249">Sertakan teks di sekitar dalam penelusuran Google?</translation>
-<translation id="201060170519281460">Kunci profil Anda menjaga keamanan info Anda di mobil, termasuk sandi yang disinkronkan, pembayaran, dan lainnya.</translation>
 <translation id="2021896219286479412">Kontrol situs layar penuh</translation>
 <translation id="2038563949887743358">Aktifkan Ubah situs desktop</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> juga memiliki data di Chrome</translation>
@@ -387,7 +386,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2760989362628427051">Aktifkan tema gelap ketika tema gelap perangkat atau Penghemat Baterai aktif</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="276969039800130567">Login sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> detik lagi</translation>
 <translation id="2779651927720337254">gagal</translation>
 <translation id="2781151931089541271">1 detik lagi</translation>
@@ -1035,7 +1033,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5749237766298580851">Nonaktif <ph name="SEPARATOR" /> Tidak direkomendasikan</translation>
 <translation id="5752232708629533680">Hanya bagikan GIF</translation>
 <translation id="5754350196967618083">Tidak dapat memuat ulang Discover</translation>
-<translation id="5755162682436943950">Logout. Membuka dialog untuk login dan mengaktifkan sinkronisasi.</translation>
 <translation id="5763382633136178763">Tab samaran</translation>
 <translation id="5763514718066511291">Ketuk untuk menyalin URL aplikasi ini</translation>
 <translation id="5765517223145864268">Ceritakan pengalaman Anda. Atau <ph name="BEGIN_LINK" />ubah setelan Anda<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Buka Kunci Tab Samaran</translation>
 <translation id="6636623428211296678">Jelajahi setelan lainnya di bawah atau selesaikan sekarang</translation>
-<translation id="663674369910034433">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK1" />Sinkronisasi<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Layanan Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Untuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_UMA_LINK" />Kelola<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokir sepanjang waktu</translation>
 <translation id="6641780377503683465">Hapus <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tab}}</translation>
 <translation id="6929224077895306814">Semua kode keamanan yang disimpan di perangkat dan di Akun Google Anda akan dihapus</translation>
 <translation id="6937524809504266803">Personalisasi &amp; Penautan</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Nama panggilan (opsional)</translation>
 <translation id="6942665639005891494">Ubah lokasi download default kapan saja menggunakan opsi menu Setelan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan setelan Sinkronisasi. Untuk menyelesaikan pengaktifan sinkronisasi, ketuk tombol Konfirmasi di dekat bagian bawah layar. Kembali ke atas</translation>
@@ -1780,7 +1775,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8890668505403261809">Telusuri tab Samaran Anda</translation>
 <translation id="8898822736010347272">Kirim URL beberapa halaman yang Anda kunjungi, informasi sistem terbatas, dan beberapa konten halaman ke Google untuk membantu menemukan ancaman baru dan melindungi semua orang di web.</translation>
 <translation id="8909135823018751308">Bagikan...</translation>
-<translation id="8921980840204105660">Sinkronkan untuk mendapatkan bookmark Anda dari perangkat lainnya</translation>
 <translation id="8922289737868596582">Download halaman dari tombol opsi Lainnya untuk menggunakannya secara offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> sudah siap</translation>

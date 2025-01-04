@@ -224,7 +224,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1986685561493779662">Name ist bereits vorhanden</translation>
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
-<translation id="201060170519281460">Durch die Profilsperre werden deine Daten wie beispielsweise synchronisierte Passwörter und Zahlungen in deinem Auto geschützt.</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> hat auch Daten in Chrome</translation>
@@ -387,7 +386,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2760989362628427051">Dunkles Design verwenden, wenn beim Gerät das dunkle Design oder der Energiesparmodus aktiviert ist</translation>
 <translation id="2762000892062317888">gerade eben</translation>
 <translation id="276969039800130567">Angemeldet als <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="2776236159752647997">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK" />Google-Dienste<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> Sekunden übrig</translation>
 <translation id="2779651927720337254">fehlgeschlagen</translation>
 <translation id="2781151931089541271">1 Sekunde übrig</translation>
@@ -1035,7 +1033,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5749237766298580851">Aus <ph name="SEPARATOR" /> Nicht empfohlen</translation>
 <translation id="5752232708629533680">Nur GIF teilen</translation>
 <translation id="5754350196967618083">Discover kann nicht aktualisiert werden</translation>
-<translation id="5755162682436943950">Abgemeldet. Ein Dialogfeld zum Anmelden und Aktivieren der Synchronisierung wird geöffnet.</translation>
 <translation id="5763382633136178763">Inkognito-Tabs</translation>
 <translation id="5763514718066511291">Tippen, um die URL für diese App zu kopieren</translation>
 <translation id="5765517223145864268">Sage uns deine Meinung zum dunklen Design. Oder <ph name="BEGIN_LINK" />ändere deine Einstellungen<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6633067410344541938">Inkognitotabs entsperren</translation>
 <translation id="6636623428211296678">Weitere Einstellungen ansehen oder jetzt beenden</translation>
-<translation id="663674369910034433">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten findest du unter <ph name="BEGIN_LINK1" />Synchronisierung<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Google-Dienste<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Immer blockieren</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> entfernen</translation>
@@ -1328,7 +1324,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 Tab}other{<ph name="NUMBER_OF_TABS" /> Tabs}}</translation>
 <translation id="6929224077895306814">Alle auf deinem Gerät und in deinem Google-Konto gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="6937524809504266803">Personalisierung &amp; Verknüpfung</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Alias (optional)</translation>
 <translation id="6942665639005891494">Du kannst den Standard-Downloadpfad jederzeit über die Option im Menü „Einstellungen“ ändern</translation>
 <translation id="694267552845942083">Du passt gerade die Synchronisierungseinstellungen an. Wenn du die Aktivierung der Synchronisierung abschließen möchtest, tippe unten auf dem Bildschirm auf „Bestätigen“. Nach oben</translation>
@@ -1780,7 +1775,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8890668505403261809">In meinen Inkognitotabs suchen</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8909135823018751308">Teilen...</translation>
-<translation id="8921980840204105660">Synchronisieren, um die Lesezeichen von deinen anderen Geräten abzurufen</translation>
 <translation id="8922289737868596582">Seiten über die Schaltfläche "Weitere Optionen" zur Offline-Ansicht herunterladen</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ist bereit</translation>

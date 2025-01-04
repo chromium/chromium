@@ -224,7 +224,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="1984417487208496350">Asikho Isivikelo (akunconywa)</translation>
 <translation id="1986685561493779662">Igama selivele likhona</translation>
 <translation id="200114059308480249">Faka phakathi umbhalo ozungezile kusesho lwe-Google?</translation>
-<translation id="201060170519281460">Ukukhiya kwephrofayela yakho kugcina ulwazi lwakho luvikelekile emotweni, okuhlanganisa amaphasiwedi avunyelanisiwe, izinkokhelo nokuningi.</translation>
 <translation id="2021896219286479412">Izilawuli zesayithi zesikrini esiphelele</translation>
 <translation id="2038563949887743358">Vula ukucela isayithi yedeskithophu</translation>
 <translation id="204321170514947529">I-<ph name="APP_NAME" /> iphinda ibe nedatha ku-Chrome</translation>
@@ -387,7 +386,6 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="2760989362628427051">Vula imodi emnyama uma imodi emnyama yedivayisi yakho noma Isilondolozi sebhethri sivuliwe</translation>
 <translation id="2762000892062317888">khona manje</translation>
 <translation id="276969039800130567">Ingene ngemvume njengo-<ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Ukuze uthole amasethingi angeziwe ahlobene nobumfihlo, ukuvikeleka nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> amasekhondi asele</translation>
 <translation id="2779651927720337254">yehlulekile</translation>
 <translation id="2781151931089541271">1 isekhondi elisele</translation>
@@ -1035,7 +1033,6 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="5749237766298580851">Valiwe <ph name="SEPARATOR" /> Akunconywa</translation>
 <translation id="5752232708629533680">Yabelana i-GIF kuphela</translation>
 <translation id="5754350196967618083">Ayikwazi ukuvuselela i-Discover</translation>
-<translation id="5755162682436943950">Uphume ngemvume. Ivula ibhokisi ukuze ungene ngemvume futhi uvule ukuvumelanisa.</translation>
 <translation id="5763382633136178763">Amathebhu we-Incognito</translation>
 <translation id="5763514718066511291">Thepha ukuze ukopishe i-URL yalolu hlelo lokusebenza</translation>
 <translation id="5765517223145864268">Sitshele ngokuhlangenwe nakho kwakho. Noma <ph name="BEGIN_LINK" />shintsha amasethingi akho<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6627583120233659107">Hlela ifolda</translation>
 <translation id="6633067410344541938">Vula i-Incognito</translation>
 <translation id="6636623428211296678">Hlola amasethingi amaningi ngezansi noma uqede manje</translation>
-<translation id="663674369910034433">Ukuze uthole amanye amasethingi ahambisana nobumfihlo, ukuvikeleka, nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK1" />Ukuvumelanisa<ph name="END_LINK1" /> nokuthi <ph name="BEGIN_LINK2" />Amasevisi we-Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Ukusiza ekuthuthukiseni i-app, i-Chrome ithumela idatha yokusetshenziswa neyokuphahlazeka ku-Google. <ph name="BEGIN_UMA_LINK" />Phatha<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Vimba ngaso sonke isikhathi</translation>
 <translation id="6641780377503683465">Susa i-<ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{Ithebhu e-1}one{Amathebhu angu-<ph name="NUMBER_OF_TABS" />}other{Amathebhu angu-<ph name="NUMBER_OF_TABS" />}}</translation>
 <translation id="6929224077895306814">Onke amakhodi okuvikeleka alondolozwe kudivayisi naku-Google Account azosulwa</translation>
 <translation id="6937524809504266803">Ukwenza ngokomuntu ngamunye Nokulinka</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Isiteketiso (ongakukhetha)</translation>
 <translation id="6942665639005891494">Shintsha indawo yokulandwa ezenzakalelayo noma kunini usebenzisa inketho yemenyu yezilungiselelo</translation>
 <translation id="694267552845942083">Okwamanje wenza ngendlela oyifisayo amasethingi wakho Wokuvumelanisa. Ukuze uqedele ukuvula ukuvumelanisa, thepha inkinobho yokuqinisekisa eseduze kwangaphansi kwesikrini. Zulazulela phezulu</translation>
@@ -1780,7 +1775,6 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8890668505403261809">Sesha amathebhu akho e-incognito</translation>
 <translation id="8898822736010347272">Thumela ama-URL wamanye amakhasi owavakashelayo, ulwazi lwesistimu olulinganiselwe, nokunye okuqukethe kwekhasi ku-Google, ukusiza ukuthola izingozi ezintsha nokuvikela wonke umuntu kuwebhu.</translation>
 <translation id="8909135823018751308">Yabelana…</translation>
-<translation id="8921980840204105660">Vumelanisa ukuze uthole amabhukhimakhi akho kwamanye amadivaysi akho</translation>
 <translation id="8922289737868596582">Amakhasi okulanda kusuka kuzinketho eziningi ongawasebenzisa ngokungaxhunyiwe ku-inthanethi</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> ilungile</translation>

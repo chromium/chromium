@@ -224,7 +224,6 @@
 <translation id="1984417487208496350">کوئی تحفظ نہیں (تجویز نہیں کی جاتی ہے)</translation>
 <translation id="1986685561493779662">نام پہلے سے موجود ہے</translation>
 <translation id="200114059308480249">‏Google تلاشیوں میں آس پاس کا متن شامل کریں؟</translation>
-<translation id="201060170519281460">آپ کی پروفائل لاک آپ کی معلومات کو کار میں محفوظ رکھتا ہے، جس میں مطابقت پذیر پاس ورڈز، ادائیگیاں اور بہت کچھ شامل ہیں۔</translation>
 <translation id="2021896219286479412">پوری اسکرین کے سائٹ کنٹرولز</translation>
 <translation id="2038563949887743358">ڈیسک ٹاپ سائٹ کی درخواست کو آن کریں</translation>
 <translation id="204321170514947529">‏<ph name="APP_NAME" /> کا ڈیٹا Chrome میں بھی ہے</translation>
@@ -387,7 +386,6 @@
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
-<translation id="2776236159752647997">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
 <translation id="2781151931089541271">1 سیکنڈ باقی</translation>
@@ -1035,7 +1033,6 @@
 <translation id="5749237766298580851">آف <ph name="SEPARATOR" /> تجاویز کردہ نہیں ہے</translation>
 <translation id="5752232708629533680">‏صرف GIF کا اشتراک کریں</translation>
 <translation id="5754350196967618083">‏Discover کو ریفریش نہیں کر سکتے</translation>
-<translation id="5755162682436943950">سائن آؤٹ ہوگئے۔ سائن ان کرنے اور مطابقت پذیری کو آن کرنے کے لیے ڈائیلاگ کھولتا ہے۔</translation>
 <translation id="5763382633136178763">پوشیدگی ٹیبز</translation>
 <translation id="5763514718066511291">‏اس ایپ کے لیے URL کاپی کرنے کی خاطر تھپتھپائیں</translation>
 <translation id="5765517223145864268">ہمیں اپنے تجربے کے بارے میں بتائیں۔ یا <ph name="BEGIN_LINK" />اپنی ترتیبات تبدیل کریں<ph name="END_LINK" />۔</translation>
@@ -1242,7 +1239,6 @@
 <translation id="6627583120233659107">فولڈر میں ترمیم کریں</translation>
 <translation id="6633067410344541938">پوشیدگی کو غیر مقفل کریں</translation>
 <translation id="6636623428211296678">ذیل میں مزید ترتیبات دریافت کریں یا ابھی مکمل کریں</translation>
-<translation id="663674369910034433">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK1" />مطابقت پذیری<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google سروسز<ph name="END_LINK2" /> دیکھیں</translation>
 <translation id="6637100877383020115">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_UMA_LINK" />نظم کریں<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ہر وقت مسدود کریں</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> ہٹائیں</translation>
@@ -1328,7 +1324,6 @@
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{‫1 ٹیب}other{‫<ph name="NUMBER_OF_TABS" /> ٹیبز}}</translation>
 <translation id="6929224077895306814">‏آپ کے آلے اور آپ کے Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="6937524809504266803">ذاتی نوعیت سازی اور لنک کرنا</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> ‎\u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">عرفی نام (اختیاری)</translation>
 <translation id="6942665639005891494">ترتیبات کا مینیو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="694267552845942083">آپ فی الحال اپنی مطابقت پذیری کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن پر تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
@@ -1780,7 +1775,6 @@
 <translation id="8890668505403261809">اپنے پوشیدگی ٹیبز تلاش کریں</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
-<translation id="8921980840204105660">اپنے دیگر آلات سے اپنے بُک مارکس حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="8922289737868596582">آف لائن صفحات استعمال کرنے کے لیے انہیں مزید اختیارات بٹن سے ڈاؤن لوڈ کریں</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> تیار ہے</translation>

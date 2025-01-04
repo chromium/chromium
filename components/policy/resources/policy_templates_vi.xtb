@@ -2453,12 +2453,6 @@ Nếu bạn tắt chính sách này, người dùng sẽ không thể thêm tài
 Thao tác đặt "command_line" sẽ chặn hoạt động tải tiện ích từ dòng lệnh.</translation>
 <translation id="2780840673734667062">Tắt lựa chọn đăng nhập bằng các tài khoản Google bổ sung</translation>
 <translation id="2784880732336446591">Xóa dữ liệu duyệt web khi thoát</translation>
-<translation id="2785422026482376078">Chỉ định việc có cho phép mô hình sạc thích ứng kìm lại quá trình sạc nhằm kéo dài tuổi thọ pin hay không.
-
-      Khi thiết bị đang kết nối với nguồn điện AC, mô hình sạc thích ứng sẽ đánh giá xem có cần kìm lại quá trình sạc để kéo dài tuổi thọ pin hay không. Nếu có, thì mô hình sạc thích ứng sẽ duy trì pin ở một mức cụ thể (80%) rồi sạc thiết bị lên 100% khi người dùng cần đến.
-      Nếu bạn đặt chính sách này thành Đúng, thì mô hình sạc thích ứng sẽ bật và được phép kìm lại quá trình sạc để kéo dài tuổi thọ pin. Nếu bạn đặt chính sách này thành Sai hoặc không đặt, mô hình sạc thích ứng sẽ không tác động đến quá trình sạc.
-
-      Lưu ý: Chính sách này sẽ không có hiệu lực nếu bạn đặt chính sách DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Báo cáo thông tin về trạng thái của Android</translation>
 <translation id="2787774054174244402">Nếu bạn đặt chính sách này thành True, thì người dùng sẽ không ghi được vào thiết bị lưu trữ bên ngoài.
 
@@ -8143,21 +8137,6 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
       Nếu bạn đặt chính sách này thành Tắt, biểu tượng các tính năng thử nghiệm của trình duyệt sẽ bị xóa khỏi thanh công cụ.
 
       chrome://flags và bất kỳ cách thức nào khác để tắt và bật các tính năng của trình duyệt sẽ vẫn hoạt động như dự kiến, cho dù chính sách này được Bật hay Tắt.</translation>
-<translation id="67952585272033079">Tình trạng pin có thể chịu ảnh hưởng từ các yếu tố như thường xuyên sạc đầy và thời gian sạc kéo dài. Do đó, chính sách này cung cấp ba lựa chọn để tối ưu hoá hành vi sạc và giảm thiểu các yếu tố trên, từ đó kéo dài thời lượng pin.
-
-Nếu bạn đặt chính sách này thành Chuẩn, thì pin sẽ sạc bình thường đến 100%. Khi chọn lựa chọn này, bạn sẽ không thể chọn lựa chọn sạc thích ứng và sạc giới hạn.
-
-Nếu bạn đặt chính sách này thành Thích ứng, thì thiết bị sẽ tìm hiểu thói quen sạc của bạn và trì hoãn quá trình sạc đến 100% cho đến khi cần thiết. Lựa chọn này giúp kéo dài tình trạng pin.
-
-Nếu bạn đặt chính sách này thành Giới hạn, thì pin sẽ chỉ sạc đến khoảng 80% để tăng tối đa tuổi thọ pin.
-
-Nếu bạn không đặt chính sách này, thì lựa chọn Chuẩn sẽ được áp dụng (nếu được hỗ trợ).
-
-Chính sách DevicePowerBatteryChargingOptimization sẽ thay thế chính sách DevicePowerAdaptiveChargingEnabled.
-
-Chính sách DevicePowerAdaptiveChargingEnabled sẽ kiểm soát lựa chọn sạc thích ứng nếu bạn không đặt chính sách DevicePowerBatteryChargingOptimization.
-
-Các chính sách DevicePowerBatteryChargingOptimization và DevicePowerAdaptiveChargingEnabled sẽ luôn được ưu tiên hơn chế độ cài đặt của người dùng.</translation>
 <translation id="6795485990775913659">Chỉ cho phép in khi không có mã PIN</translation>
 <translation id="6796215185873669533">Đặt phiên bản chuỗi User-Agent thành giá trị mặc định của chế độ cài đặt trình duyệt</translation>
 <translation id="6800181452282128474">Không truy vấn máy chủ Quirks</translation>

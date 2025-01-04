@@ -224,7 +224,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1986685561493779662">Nazwa już istnieje</translation>
 <translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
-<translation id="201060170519281460">Dzięki blokadzie profilu Twoje dane w samochodzie, w tym m.in. synchronizowane hasła i płatności, są bezpieczne.</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
 <translation id="204321170514947529">Dane aplikacji <ph name="APP_NAME" /> znajdują się też w Chrome</translation>
@@ -387,7 +386,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2760989362628427051">Włącz ciemny motyw, gdy urządzenie ma włączony ciemny motyw lub Oszczędzanie baterii</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="276969039800130567">Zalogowano jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="2777555524387840389">Pozostało: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">Nie pobrano</translation>
 <translation id="2781151931089541271">Pozostała sekunda</translation>
@@ -1035,7 +1033,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5749237766298580851">Wyłączono <ph name="SEPARATOR" /> Niezalecane</translation>
 <translation id="5752232708629533680">Udostępnij tylko GIF-a</translation>
 <translation id="5754350196967618083">Nie można odświeżyć karty Discover</translation>
-<translation id="5755162682436943950">Wylogowano. Otwiera okno logowania się i włączania synchronizacji.</translation>
 <translation id="5763382633136178763">Karty incognito</translation>
 <translation id="5763514718066511291">Kliknij, by skopiować URL tej aplikacji</translation>
 <translation id="5765517223145864268">Podziel się z nami swoją opinią. Lub <ph name="BEGIN_LINK" />zmień ustawienia<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6627583120233659107">Edytuj folder</translation>
 <translation id="6633067410344541938">Odblokuj tryb incognito</translation>
 <translation id="6636623428211296678">Zobacz więcej ustawień poniżej lub zakończ</translation>
-<translation id="663674369910034433">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK1" />Synchronizacja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Usługi Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_UMA_LINK" />Zarządzaj<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokuj zawsze</translation>
 <translation id="6641780377503683465">Usuń: <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 karta}few{<ph name="NUMBER_OF_TABS" /> karty}many{<ph name="NUMBER_OF_TABS" /> kart}other{<ph name="NUMBER_OF_TABS" /> karty}}</translation>
 <translation id="6929224077895306814">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
 <translation id="6937524809504266803">Personalizacja i łączenie usług</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Pseudonim (opcjonalnie)</translation>
 <translation id="6942665639005891494">W dowolnej chwili w Ustawieniach możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="694267552845942083">W tej chwili dostosowujesz ustawienia synchronizacji. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
@@ -1780,7 +1775,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8890668505403261809">Wyszukaj na kartach incognito</translation>
 <translation id="8898822736010347272">Wysyła do Google adresy URL niektórych odwiedzanych przez Ciebie stron, niektóre informacje o systemie i niektóre treści ze stron, by pomóc w wykrywaniu nowych zagrożeń i chronić wszystkich użytkowników internetu.</translation>
 <translation id="8909135823018751308">Udostępnij…</translation>
-<translation id="8921980840204105660">Aby zobaczyć zakładki z innych urządzeń, włącz synchronizację</translation>
 <translation id="8922289737868596582">Pobierz strony, używając przycisku Więcej opcji, by korzystać z nich w trybie offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Język <ph name="LANG" /> jest gotowy</translation>

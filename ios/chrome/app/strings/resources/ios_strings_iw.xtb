@@ -285,6 +285,7 @@
 <translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2223461067862937305">‏יצירת קוד QR</translation>
+<translation id="2229345671837147090">רשת כרטיסיות מרוחקת</translation>
 <translation id="2230173723195178503">דף האינטרנט נטען</translation>
 <translation id="2236949375853147973">הפעילות שלי</translation>
 <translation id="2240256190924001613">יש פרופיל של הגדרות אישיות</translation>
@@ -367,7 +368,6 @@
 <translation id="2547458583188611426">הסנכרון לא פועל. כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה.</translation>
 <translation id="2551153019974022505">שגיאה בחשבון</translation>
 <translation id="2559843230610279254">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות.</translation>
-<translation id="2573859402163467749">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול לראות חלק מהמידע.</translation>
 <translation id="2577522251608256362">שכונה</translation>
 <translation id="2579713773888829241">תיקיות באחסון השיתופי</translation>
 <translation id="2597486707832946298">מפיקים את המרב מדפדפן המחשב המוכר והאהוב גם באייפון.</translation>
@@ -652,6 +652,7 @@
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="3994422733891749358">אילו התראות היית רוצה לקבל?</translation>
 <translation id="3994522032746736727">כניסה בתור <ph name="EMAIL" /></translation>
+<translation id="3994911892367422121">הבנתי</translation>
 <translation id="3995521777587992544">סרגל התקדמות של טעינת דף, <ph name="EMAIL" /> נטענו.</translation>
 <translation id="3997522473364371632">שיתוף הסיסמאות הושבת על ידי האדמין.</translation>
 <translation id="4002066346123236978">כותרת</translation>
@@ -799,6 +800,7 @@
 <translation id="4651927776207937667">{count,plural, =1{הסתרה לאחר דקה אחת}one{הסתרה לאחר {count} דקות}two{הסתרה לאחר {count} דקות}other{הסתרה לאחר {count} דקות}}</translation>
 <translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">שמירה</translation>
+<translation id="466307903888586355">הארגון שלך חסם את האפשרות לשמור קבצים</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">לפי דרישת הארגון שלך, עליך לגלוש באופן פרטי. קבוצות הכרטיסיות לא מסונכרנות במצב פרטי.
 <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -1272,6 +1274,7 @@
 <translation id="6641465290890659327">שיתוף עותק של הסיסמה שלך</translation>
 <translation id="6642362222295953972">מעבר אל כרטיסייה קיימת</translation>
 <translation id="6644512095122093795">תופיע הצעה לשמור סיסמאות</translation>
+<translation id="664573288952458293">רשת כרטיסיות רגילה</translation>
 <translation id="6645899968535965230">‏קוד QR‏: <ph name="PAGE_TITLE" /></translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -1662,6 +1665,7 @@
 <translation id="8407669440184693619">לא נמצאו סיסמאות בשביל האתר הזה</translation>
 <translation id="8407831512155324054">הסיסמאות נראות חזקות</translation>
 <translation id="842523302461531262">להגדרה כברירת מחדל בהגדרות…</translation>
+<translation id="8425826545759040372">רשת של כרטיסיות פרטיות</translation>
 <translation id="8428045167754449968">עיר / יישוב</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8428634594422941299">הבנתי</translation>

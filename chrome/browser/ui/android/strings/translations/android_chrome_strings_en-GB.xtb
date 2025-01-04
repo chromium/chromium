@@ -224,7 +224,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1986685561493779662">Name already exists</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
-<translation id="201060170519281460">Your profile lock keeps your info secure in the car, including synced passwords, payments and more.</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
@@ -387,7 +386,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2760989362628427051">Turn on dark theme when your device's Dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2776236159752647997">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
 <translation id="2779651927720337254">failed</translation>
 <translation id="2781151931089541271">1 sec left</translation>
@@ -1035,7 +1033,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5749237766298580851">Off <ph name="SEPARATOR" /> Not recommended</translation>
 <translation id="5752232708629533680">Share GIF only</translation>
 <translation id="5754350196967618083">Can't refresh Discover</translation>
-<translation id="5755162682436943950">Signed out. Opens dialogue to sign in and turn on sync.</translation>
 <translation id="5763382633136178763">Incognito tabs</translation>
 <translation id="5763514718066511291">Tap to copy the URL for this app</translation>
 <translation id="5765517223145864268">Tell us about your experience. Or, <ph name="BEGIN_LINK" />change your settings<ph name="END_LINK" />.</translation>
@@ -1242,7 +1239,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Unlock Incognito</translation>
 <translation id="6636623428211296678">Explore more settings below or finish now</translation>
-<translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Block all the time</translation>
 <translation id="6641780377503683465">Remove <ph name="INTEREST" /></translation>
@@ -1328,7 +1324,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}other{<ph name="NUMBER_OF_TABS" /> tabs}}</translation>
 <translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="6937524809504266803">Personalisation and linking</translation>
-<translation id="6937694220350896339"><ph name="DESCRIPTION_FIRST_HALF" /> \u2022 <ph name="TIMESTMAP" /></translation>
 <translation id="6937876069006524083">Nickname (optional)</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
@@ -1780,7 +1775,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8890668505403261809">Search your Incognito tabs</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
-<translation id="8921980840204105660">Sync to get your bookmarks from your other devices</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> is ready</translation>
